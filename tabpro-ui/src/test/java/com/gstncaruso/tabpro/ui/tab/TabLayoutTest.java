@@ -98,4 +98,21 @@ class TabLayoutTest {
         assertEquals(new Rectangle(16, 180, 112, 60), layout.measureBounds(1));
         assertEquals(new Rectangle(16, 320, 76, 60), layout.measureBounds(2));
     }
+
+    @Test
+    void placesStringOneAtTheTopOfTheStaff() {
+        Track track = trackOf(measureOfQuarterBeats(1));
+        TabLayout layout = TabLayout.of(track, 400);
+
+        assertEquals(40, layout.stringY(0, 1));
+    }
+
+    @Test
+    void spacesStringsEvenly() {
+        Track track = trackOf(measureOfQuarterBeats(1));
+        TabLayout layout = TabLayout.of(track, 400);
+
+        assertEquals(52, layout.stringY(0, 2));
+        assertEquals(100, layout.stringY(0, 6));
+    }
 }

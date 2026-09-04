@@ -90,4 +90,8 @@ public final class TabLayout {
     public Rectangle beatBounds(int measure, int beat) {
         return beatBounds.get(measure).get(beat);
     }
+
+    public int stringY(int measure, int string) {
+        return measureBounds(measure).y + (string - 1) * STRING_SPACING;
+    }
 }
