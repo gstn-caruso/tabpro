@@ -67,4 +67,14 @@ class TabLayoutTest {
 
         assertEquals(new Rectangle(40, 40, 44, 60), layout.beatBounds(0, 0));
     }
+
+    @Test
+    void laysOutMeasuresLeftToRightOnOneLine() {
+        Track track = trackOf(measureOfQuarterBeats(1), measureOfQuarterBeats(1));
+        TabLayout layout = TabLayout.of(track, 400);
+
+        assertEquals(1, layout.lineCount());
+        assertEquals(new Rectangle(16, 40, 76, 60), layout.measureBounds(0));
+        assertEquals(new Rectangle(92, 40, 76, 60), layout.measureBounds(1));
+    }
 }
