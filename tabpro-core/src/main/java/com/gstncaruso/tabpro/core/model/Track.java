@@ -27,22 +27,26 @@ public record Track(String name, Tuning tuning, int midiProgram, List<Measure> m
     public Track withMeasure(int index, Measure measure) {
         List<Measure> updated = new ArrayList<>(measures);
         updated.set(index, measure);
-        return new Track(name, tuning, midiProgram, updated);
+        return withMeasures(updated);
     }
 
     public Track withMeasureInsertedAt(int index, Measure measure) {
         List<Measure> updated = new ArrayList<>(measures);
         updated.add(index, measure);
-        return new Track(name, tuning, midiProgram, updated);
+        return withMeasures(updated);
     }
 
     public Track withoutMeasureAt(int index) {
         if (measures.size() == 1) {
             Measure empty = Measure.empty(measure(index).timeSignature(), Duration.quarter());
-            return new Track(name, tuning, midiProgram, List.of(empty));
+            return withMeasures(List.of(empty));
         }
         List<Measure> updated = new ArrayList<>(measures);
         updated.remove(index);
+        return withMeasures(updated);
+    }
+
+    private Track withMeasures(List<Measure> updated) {
         return new Track(name, tuning, midiProgram, updated);
     }
 }

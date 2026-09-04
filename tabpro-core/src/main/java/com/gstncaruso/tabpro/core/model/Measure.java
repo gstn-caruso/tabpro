@@ -31,21 +31,25 @@ public record Measure(TimeSignature timeSignature, List<Beat> beats) {
     public Measure withBeat(int index, Beat beat) {
         List<Beat> updated = new ArrayList<>(beats);
         updated.set(index, beat);
-        return new Measure(timeSignature, updated);
+        return withBeats(updated);
     }
 
     public Measure withBeatInsertedAt(int index, Beat beat) {
         List<Beat> updated = new ArrayList<>(beats);
         updated.add(index, beat);
-        return new Measure(timeSignature, updated);
+        return withBeats(updated);
     }
 
     public Measure withoutBeatAt(int index) {
         if (beats.size() == 1) {
-            return new Measure(timeSignature, List.of(Beat.rest(beat(index).duration())));
+            return withBeats(List.of(Beat.rest(beat(index).duration())));
         }
         List<Beat> updated = new ArrayList<>(beats);
         updated.remove(index);
+        return withBeats(updated);
+    }
+
+    private Measure withBeats(List<Beat> updated) {
         return new Measure(timeSignature, updated);
     }
 }
