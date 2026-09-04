@@ -411,6 +411,50 @@ class EditorTest {
         assertEquals(cursorBefore, editor.cursor());
     }
 
+    @Test
+    void notifiesTheListenerAfterAChange() {
+        Editor editor = new Editor(Score.blank());
+        int[] notifications = new int[1];
+        editor.addListener(() -> notifications[0]++);
+        editor.setFret(5);
+        assertEquals(1, notifications[0]);
+    }
+
+    @Test
+    void notifiesTheListenerAfterACursorMove() {
+        Editor editor = new Editor(Score.blank());
+        int[] notifications = new int[1];
+        editor.addListener(() -> notifications[0]++);
+        editor.moveDown();
+        assertEquals(1, notifications[0]);
+    }
+
+    @Test
+    void notifiesTheListenerAfterUndo() {
+        Editor editor = new Editor(Score.blank());
+        editor.setFret(5);
+        int[] notifications = new int[1];
+        editor.addListener(() -> notifications[0]++);
+        editor.undo();
+        assertEquals(1, notifications[0]);
+    }
+
+    @Test
+    void replacingTheScoreResetsCursorAndHistory() {
+        Editor editor = new Editor(Score.blank());
+        editor.setFret(5);
+        editor.moveDown();
+        int[] notifications = new int[1];
+        editor.addListener(() -> notifications[0]++);
+        Score newScore = Score.blank().withTitle("Nueva");
+        editor.replaceScore(newScore);
+        assertEquals(newScore, editor.score());
+        assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
+        assertFalse(editor.canUndo());
+        assertFalse(editor.canRedo());
+        assertEquals(1, notifications[0]);
+    }
+
     private Editor editorWithMeasure(Measure measure) {
         Track track = Track.standardGuitar("Test").withMeasure(0, measure);
         return new Editor(Score.blank().withTrack(0, track));

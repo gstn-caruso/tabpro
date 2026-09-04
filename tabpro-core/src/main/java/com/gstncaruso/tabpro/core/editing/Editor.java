@@ -1,7 +1,9 @@
 package com.gstncaruso.tabpro.core.editing;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -14,6 +16,7 @@ public final class Editor {
     private Cursor cursor;
     private final Deque<Snapshot> undoStack = new ArrayDeque<>();
     private final Deque<Snapshot> redoStack = new ArrayDeque<>();
+    private final List<EditorListener> listeners = new ArrayList<>();
 
     public Editor(Score initial) {
         this.score = initial;
@@ -181,6 +184,7 @@ public final class Editor {
         redoStack.push(new Snapshot(score, cursor));
         score = snapshot.score();
         cursor = snapshot.cursor();
+        notifyListeners();
     }
 
     public void redo() {
@@ -191,6 +195,19 @@ public final class Editor {
         undoStack.push(new Snapshot(score, cursor));
         score = snapshot.score();
         cursor = snapshot.cursor();
+        notifyListeners();
+    }
+
+    public void replaceScore(Score score) {
+        this.score = score;
+        this.cursor = new Cursor(0, 0, 0, 1);
+        undoStack.clear();
+        redoStack.clear();
+        notifyListeners();
+    }
+
+    public void addListener(EditorListener listener) {
+        listeners.add(listener);
     }
 
     private Cursor cursorAt(int measure, int beat, int string) {
@@ -223,10 +240,18 @@ public final class Editor {
         redoStack.clear();
         score = next;
         cursor = nextCursor;
+        notifyListeners();
     }
 
     private void moveCursor(Cursor next) {
         cursor = next;
+        notifyListeners();
+    }
+
+    private void notifyListeners() {
+        for (EditorListener listener : listeners) {
+            listener.editorChanged();
+        }
     }
 
     private record Snapshot(Score score, Cursor cursor) {
