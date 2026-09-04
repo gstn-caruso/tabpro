@@ -56,6 +56,33 @@ public final class Editor {
         change(withCurrentBeat(currentBeat().withDuration(currentBeat().duration().toggledDot())), cursor);
     }
 
+    public void insertBeat() {
+        Beat rest = Beat.rest(currentBeat().duration());
+        Measure measure = currentMeasure().withBeatInsertedAt(cursor.beat(), rest);
+        change(withCurrentMeasure(measure), cursor);
+    }
+
+    public void deleteBeat() {
+        Measure measure = currentMeasure().withoutBeatAt(cursor.beat());
+        int beat = Math.min(cursor.beat(), measure.beats().size() - 1);
+        change(withCurrentMeasure(measure), cursorAt(cursor.measure(), beat, cursor.string()));
+    }
+
+    public void moveTo(int measure, int beat, int string) {
+        Track track = currentTrack();
+        if (measure < 0 || measure >= track.measures().size()) {
+            throw new IllegalArgumentException("measure fuera de rango: " + measure);
+        }
+        Measure targetMeasure = track.measure(measure);
+        if (beat < 0 || beat >= targetMeasure.beats().size()) {
+            throw new IllegalArgumentException("beat fuera de rango: " + beat);
+        }
+        if (string < 1 || string > track.tuning().stringCount()) {
+            throw new IllegalArgumentException("string fuera de rango: " + string);
+        }
+        moveCursor(cursorAt(measure, beat, string));
+    }
+
     public void moveDown() {
         int maxString = currentTrack().tuning().stringCount();
         moveCursor(cursorAt(cursor.measure(), cursor.beat(), Math.min(maxString, cursor.string() + 1)));

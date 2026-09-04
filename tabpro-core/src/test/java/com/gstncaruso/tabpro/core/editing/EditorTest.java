@@ -6,8 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
+import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TimeSignature;
+import com.gstncaruso.tabpro.core.model.Track;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -109,5 +113,51 @@ class EditorTest {
         assertTrue(editor.currentBeat().duration().dotted());
         editor.toggleDot();
         assertFalse(editor.currentBeat().duration().dotted());
+    }
+
+    @Test
+    void insertsARestBeforeTheCursorWithTheSameDuration() {
+        Beat first = Beat.of(Duration.quarter().shorter(), new Note(1, 3));
+        Editor editor = editorWithMeasure(new Measure(TimeSignature.fourFour(), List.of(first)));
+        editor.insertBeat();
+        assertTrue(editor.currentBeat().isRest());
+        assertEquals(Duration.quarter().shorter(), editor.currentBeat().duration());
+        assertEquals(first, editor.score().track(0).measure(0).beat(1));
+    }
+
+    @Test
+    void deletesTheCursorBeat() {
+        Beat first = Beat.of(Duration.quarter(), new Note(1, 0));
+        Beat second = Beat.of(Duration.quarter(), new Note(1, 1));
+        Editor editor = editorWithMeasure(new Measure(TimeSignature.fourFour(), List.of(first, second)));
+        editor.deleteBeat();
+        assertEquals(List.of(second), editor.score().track(0).measure(0).beats());
+        assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
+    }
+
+    @Test
+    void deletingTheOnlyBeatLeavesARest() {
+        Beat onlyBeat = Beat.of(Duration.quarter().shorter(), new Note(1, 5));
+        Editor editor = editorWithMeasure(new Measure(TimeSignature.fourFour(), List.of(onlyBeat)));
+        editor.deleteBeat();
+        assertTrue(editor.currentBeat().isRest());
+        assertEquals(Duration.quarter().shorter(), editor.currentBeat().duration());
+        assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
+    }
+
+    @Test
+    void deletingTheLastBeatMovesTheCursorToThePreviousOne() {
+        Beat first = Beat.of(Duration.quarter(), new Note(1, 0));
+        Beat second = Beat.of(Duration.quarter(), new Note(1, 1));
+        Editor editor = editorWithMeasure(new Measure(TimeSignature.fourFour(), List.of(first, second)));
+        editor.moveTo(0, 1, 1);
+        editor.deleteBeat();
+        assertEquals(List.of(first), editor.score().track(0).measure(0).beats());
+        assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
+    }
+
+    private Editor editorWithMeasure(Measure measure) {
+        Track track = Track.standardGuitar("Test").withMeasure(0, measure);
+        return new Editor(Score.blank().withTrack(0, track));
     }
 }
