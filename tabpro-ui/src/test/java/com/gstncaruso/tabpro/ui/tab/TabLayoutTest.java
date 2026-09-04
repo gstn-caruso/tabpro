@@ -59,4 +59,12 @@ class TabLayoutTest {
     void makesDottedDurationsWiderThanPlain() {
         assertEquals(50, TabLayout.beatWidth(Duration.quarter().toggledDot()));
     }
+
+    @Test
+    void startsBeatsAfterTheMeasureLeftPadding() {
+        Track track = trackOf(measureOfQuarterBeats(1));
+        TabLayout layout = TabLayout.of(track, 400);
+
+        assertEquals(new Rectangle(40, 40, 44, 60), layout.beatBounds(0, 0));
+    }
 }
