@@ -19,19 +19,31 @@ public final class TabLayout {
 
     private final List<Rectangle> measureBounds;
     private final List<List<Rectangle>> beatBounds;
+    private final int lineCount;
 
-    private TabLayout(List<Rectangle> measureBounds, List<List<Rectangle>> beatBounds) {
+    private TabLayout(List<Rectangle> measureBounds, List<List<Rectangle>> beatBounds, int lineCount) {
         this.measureBounds = measureBounds;
         this.beatBounds = beatBounds;
+        this.lineCount = lineCount;
     }
 
     public static TabLayout of(Track track, int availableWidth) {
         int staffHeight = (track.tuning().stringCount() - 1) * STRING_SPACING;
+        int lineHeight = TOP_MARGIN + staffHeight + LINE_GAP;
         List<Rectangle> measureBounds = new ArrayList<>();
         List<List<Rectangle>> beatBounds = new ArrayList<>();
+        int line = 0;
         int x = LEFT_MARGIN;
-        int y = TOP_MARGIN;
+        boolean lineHasMeasure = false;
         for (Measure measure : track.measures()) {
+            int measureWidth = measureWidth(measure);
+            if (lineHasMeasure && x + measureWidth > availableWidth) {
+                line++;
+                x = LEFT_MARGIN;
+                lineHasMeasure = false;
+            }
+            int y = line * lineHeight + TOP_MARGIN;
+            measureBounds.add(new Rectangle(x, y, measureWidth, staffHeight));
             List<Rectangle> beats = new ArrayList<>();
             int beatX = x + MEASURE_LEFT_PADDING;
             for (Beat beat : measure.beats()) {
@@ -39,12 +51,19 @@ public final class TabLayout {
                 beats.add(new Rectangle(beatX, y, width, staffHeight));
                 beatX += width;
             }
-            int measureWidth = MEASURE_LEFT_PADDING + (beatX - x - MEASURE_LEFT_PADDING) + MEASURE_RIGHT_PADDING;
-            measureBounds.add(new Rectangle(x, y, measureWidth, staffHeight));
             beatBounds.add(beats);
             x += measureWidth;
+            lineHasMeasure = true;
         }
-        return new TabLayout(measureBounds, beatBounds);
+        return new TabLayout(measureBounds, beatBounds, line + 1);
+    }
+
+    private static int measureWidth(Measure measure) {
+        int total = MEASURE_LEFT_PADDING + MEASURE_RIGHT_PADDING;
+        for (Beat beat : measure.beats()) {
+            total += beatWidth(beat.duration());
+        }
+        return total;
     }
 
     public static int beatWidth(Duration duration) {
@@ -61,7 +80,7 @@ public final class TabLayout {
     }
 
     public int lineCount() {
-        return 1;
+        return lineCount;
     }
 
     public Rectangle measureBounds(int measure) {
