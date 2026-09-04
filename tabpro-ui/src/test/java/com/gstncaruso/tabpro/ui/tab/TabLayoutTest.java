@@ -87,4 +87,15 @@ class TabLayoutTest {
         assertEquals(new Rectangle(16, 40, 76, 60), layout.measureBounds(0));
         assertEquals(new Rectangle(16, 180, 76, 60), layout.measureBounds(1));
     }
+
+    @Test
+    void keepsAnOversizedMeasureAloneOnItsLine() {
+        Measure oversized = measureOfBeats(Duration.quarter().longer().longer(), 1);
+        Track track = trackOf(measureOfQuarterBeats(1), oversized, measureOfQuarterBeats(1));
+        TabLayout layout = TabLayout.of(track, 100);
+
+        assertEquals(3, layout.lineCount());
+        assertEquals(new Rectangle(16, 180, 112, 60), layout.measureBounds(1));
+        assertEquals(new Rectangle(16, 320, 76, 60), layout.measureBounds(2));
+    }
 }
