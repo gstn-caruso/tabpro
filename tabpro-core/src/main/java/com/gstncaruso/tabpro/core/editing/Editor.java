@@ -115,6 +115,56 @@ public final class Editor {
         moveCursor(cursorAt(cursor.measure(), cursor.beat(), Math.min(maxString, cursor.string() + 1)));
     }
 
+    public void moveUp() {
+        moveCursor(cursorAt(cursor.measure(), cursor.beat(), Math.max(1, cursor.string() - 1)));
+    }
+
+    public void moveLeft() {
+        if (cursor.beat() > 0) {
+            moveCursor(cursorAt(cursor.measure(), cursor.beat() - 1, cursor.string()));
+            return;
+        }
+        if (cursor.measure() > 0) {
+            int previousMeasure = cursor.measure() - 1;
+            int lastBeat = currentTrack().measure(previousMeasure).beats().size() - 1;
+            moveCursor(cursorAt(previousMeasure, lastBeat, cursor.string()));
+        }
+    }
+
+    public void moveRight() {
+        Measure measure = currentMeasure();
+        if (cursor.beat() + 1 < measure.beats().size()) {
+            moveCursor(cursorAt(cursor.measure(), cursor.beat() + 1, cursor.string()));
+            return;
+        }
+        if (measure.durationTicks() < measure.timeSignature().ticksPerMeasure()) {
+            Beat rest = Beat.rest(currentBeat().duration());
+            int newBeat = measure.beats().size();
+            Measure updated = measure.withBeatInsertedAt(newBeat, rest);
+            change(withCurrentMeasure(updated), cursorAt(cursor.measure(), newBeat, cursor.string()));
+            return;
+        }
+        Track track = currentTrack();
+        if (cursor.measure() + 1 < track.measures().size()) {
+            moveCursor(cursorAt(cursor.measure() + 1, 0, cursor.string()));
+            return;
+        }
+        Measure empty = Measure.empty(measure.timeSignature(), currentBeat().duration());
+        int newMeasure = track.measures().size();
+        Track updatedTrack = track.withMeasureInsertedAt(newMeasure, empty);
+        Score next = score.withTrack(cursor.track(), updatedTrack);
+        change(next, cursorAt(newMeasure, 0, cursor.string()));
+    }
+
+    public void moveToMeasureStart() {
+        moveCursor(cursorAt(cursor.measure(), 0, cursor.string()));
+    }
+
+    public void moveToMeasureEnd() {
+        int lastBeat = currentMeasure().beats().size() - 1;
+        moveCursor(cursorAt(cursor.measure(), lastBeat, cursor.string()));
+    }
+
     public boolean canUndo() {
         return !undoStack.isEmpty();
     }
