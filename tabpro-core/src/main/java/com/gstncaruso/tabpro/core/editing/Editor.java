@@ -173,6 +173,26 @@ public final class Editor {
         return !redoStack.isEmpty();
     }
 
+    public void undo() {
+        if (undoStack.isEmpty()) {
+            return;
+        }
+        Snapshot snapshot = undoStack.pop();
+        redoStack.push(new Snapshot(score, cursor));
+        score = snapshot.score();
+        cursor = snapshot.cursor();
+    }
+
+    public void redo() {
+        if (redoStack.isEmpty()) {
+            return;
+        }
+        Snapshot snapshot = redoStack.pop();
+        undoStack.push(new Snapshot(score, cursor));
+        score = snapshot.score();
+        cursor = snapshot.cursor();
+    }
+
     private Cursor cursorAt(int measure, int beat, int string) {
         return new Cursor(cursor.track(), measure, beat, string);
     }

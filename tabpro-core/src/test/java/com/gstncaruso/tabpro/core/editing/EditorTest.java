@@ -351,6 +351,66 @@ class EditorTest {
         assertThrows(IllegalArgumentException.class, () -> editor.moveTo(5, 0, 1));
     }
 
+    @Test
+    void undoRestoresTheScoreBeforeTheLastChange() {
+        Editor editor = new Editor(Score.blank());
+        Score before = editor.score();
+        editor.setFret(5);
+        editor.undo();
+        assertEquals(before, editor.score());
+    }
+
+    @Test
+    void undoRestoresTheCursorOfTheChange() {
+        Editor editor = new Editor(Score.blank());
+        editor.moveRight();
+        editor.undo();
+        assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
+    }
+
+    @Test
+    void redoReappliesAnUndoneChange() {
+        Editor editor = new Editor(Score.blank());
+        editor.setFret(5);
+        Score afterEdit = editor.score();
+        editor.undo();
+        editor.redo();
+        assertEquals(afterEdit, editor.score());
+    }
+
+    @Test
+    void aNewChangeClearsTheRedoHistory() {
+        Editor editor = new Editor(Score.blank());
+        editor.setFret(5);
+        editor.undo();
+        editor.setFret(3);
+        assertFalse(editor.canRedo());
+    }
+
+    @Test
+    void cursorMovesAreNotUndoSteps() {
+        Editor editor = new Editor(Score.blank());
+        editor.moveDown();
+        assertFalse(editor.canUndo());
+    }
+
+    @Test
+    void movingRightThatCreatesABeatIsAnUndoStep() {
+        Editor editor = new Editor(Score.blank());
+        editor.moveRight();
+        assertTrue(editor.canUndo());
+    }
+
+    @Test
+    void undoWithNothingToUndoDoesNothing() {
+        Editor editor = new Editor(Score.blank());
+        Score before = editor.score();
+        Cursor cursorBefore = editor.cursor();
+        editor.undo();
+        assertEquals(before, editor.score());
+        assertEquals(cursorBefore, editor.cursor());
+    }
+
     private Editor editorWithMeasure(Measure measure) {
         Track track = Track.standardGuitar("Test").withMeasure(0, measure);
         return new Editor(Score.blank().withTrack(0, track));
