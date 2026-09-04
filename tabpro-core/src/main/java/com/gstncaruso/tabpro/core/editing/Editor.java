@@ -74,8 +74,7 @@ public final class Editor {
     public void insertMeasure() {
         Measure empty = Measure.empty(currentMeasure().timeSignature(), currentBeat().duration());
         Track track = currentTrack().withMeasureInsertedAt(cursor.measure(), empty);
-        Score next = score.withTrack(cursor.track(), track);
-        change(next, cursorAt(cursor.measure(), 0, cursor.string()));
+        change(withCurrentTrack(track), cursorAt(cursor.measure(), 0, cursor.string()));
     }
 
     public void deleteMeasure() {
@@ -86,8 +85,7 @@ public final class Editor {
             measure--;
             beat = 0;
         }
-        Score next = score.withTrack(cursor.track(), track);
-        change(next, cursorAt(measure, beat, cursor.string()));
+        change(withCurrentTrack(track), cursorAt(measure, beat, cursor.string()));
     }
 
     public void setTempo(int bpm) {
@@ -155,8 +153,7 @@ public final class Editor {
         Measure empty = Measure.empty(measure.timeSignature(), currentBeat().duration());
         int newMeasure = track.measures().size();
         Track updatedTrack = track.withMeasureInsertedAt(newMeasure, empty);
-        Score next = score.withTrack(cursor.track(), updatedTrack);
-        change(next, cursorAt(newMeasure, 0, cursor.string()));
+        change(withCurrentTrack(updatedTrack), cursorAt(newMeasure, 0, cursor.string()));
     }
 
     public void moveToMeasureStart() {
@@ -227,7 +224,10 @@ public final class Editor {
     }
 
     private Score withCurrentMeasure(Measure measure) {
-        Track track = currentTrack().withMeasure(cursor.measure(), measure);
+        return withCurrentTrack(currentTrack().withMeasure(cursor.measure(), measure));
+    }
+
+    private Score withCurrentTrack(Track track) {
         return score.withTrack(cursor.track(), track);
     }
 
