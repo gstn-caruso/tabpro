@@ -115,4 +115,13 @@ class TabLayoutTest {
         assertEquals(52, layout.stringY(0, 2));
         assertEquals(100, layout.stringY(0, 6));
     }
+
+    @Test
+    void totalHeightCoversAllLines() {
+        Track track = trackOf(measureOfQuarterBeats(1), measureOfQuarterBeats(1));
+        TabLayout layout = TabLayout.of(track, 150);
+
+        assertEquals(2, layout.lineCount());
+        assertEquals(280, layout.totalHeight());
+    }
 }

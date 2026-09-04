@@ -20,11 +20,13 @@ public final class TabLayout {
     private final List<Rectangle> measureBounds;
     private final List<List<Rectangle>> beatBounds;
     private final int lineCount;
+    private final int lineHeight;
 
-    private TabLayout(List<Rectangle> measureBounds, List<List<Rectangle>> beatBounds, int lineCount) {
+    private TabLayout(List<Rectangle> measureBounds, List<List<Rectangle>> beatBounds, int lineCount, int lineHeight) {
         this.measureBounds = measureBounds;
         this.beatBounds = beatBounds;
         this.lineCount = lineCount;
+        this.lineHeight = lineHeight;
     }
 
     public static TabLayout of(Track track, int availableWidth) {
@@ -55,7 +57,7 @@ public final class TabLayout {
             x += measureWidth;
             lineHasMeasure = true;
         }
-        return new TabLayout(measureBounds, beatBounds, line + 1);
+        return new TabLayout(measureBounds, beatBounds, line + 1, lineHeight);
     }
 
     private static int measureWidth(Measure measure) {
@@ -81,6 +83,10 @@ public final class TabLayout {
 
     public int lineCount() {
         return lineCount;
+    }
+
+    public int totalHeight() {
+        return lineCount * lineHeight;
     }
 
     public Rectangle measureBounds(int measure) {
