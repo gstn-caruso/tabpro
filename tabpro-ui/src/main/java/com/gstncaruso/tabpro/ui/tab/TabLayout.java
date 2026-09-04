@@ -22,16 +22,24 @@ public final class TabLayout {
     private final List<List<Rectangle>> beatBounds;
     private final int lineCount;
     private final int lineHeight;
+    private final int stringCount;
 
-    private TabLayout(List<Rectangle> measureBounds, List<List<Rectangle>> beatBounds, int lineCount, int lineHeight) {
+    private TabLayout(
+            List<Rectangle> measureBounds,
+            List<List<Rectangle>> beatBounds,
+            int lineCount,
+            int lineHeight,
+            int stringCount) {
         this.measureBounds = measureBounds;
         this.beatBounds = beatBounds;
         this.lineCount = lineCount;
         this.lineHeight = lineHeight;
+        this.stringCount = stringCount;
     }
 
     public static TabLayout of(Track track, int availableWidth) {
-        int staffHeight = (track.tuning().stringCount() - 1) * STRING_SPACING;
+        int stringCount = track.tuning().stringCount();
+        int staffHeight = (stringCount - 1) * STRING_SPACING;
         int lineHeight = TOP_MARGIN + staffHeight + LINE_GAP;
         List<Rectangle> measureBounds = new ArrayList<>();
         List<List<Rectangle>> beatBounds = new ArrayList<>();
@@ -47,18 +55,22 @@ public final class TabLayout {
             }
             int y = line * lineHeight + TOP_MARGIN;
             measureBounds.add(new Rectangle(x, y, measureWidth, staffHeight));
-            List<Rectangle> beats = new ArrayList<>();
-            int beatX = x + MEASURE_LEFT_PADDING;
-            for (Beat beat : measure.beats()) {
-                int width = beatWidth(beat.duration());
-                beats.add(new Rectangle(beatX, y, width, staffHeight));
-                beatX += width;
-            }
-            beatBounds.add(beats);
+            beatBounds.add(beatBoundsOf(measure, x, y, staffHeight));
             x += measureWidth;
             lineHasMeasure = true;
         }
-        return new TabLayout(measureBounds, beatBounds, line + 1, lineHeight);
+        return new TabLayout(measureBounds, beatBounds, line + 1, lineHeight, stringCount);
+    }
+
+    private static List<Rectangle> beatBoundsOf(Measure measure, int x, int y, int staffHeight) {
+        List<Rectangle> beats = new ArrayList<>();
+        int beatX = x + MEASURE_LEFT_PADDING;
+        for (Beat beat : measure.beats()) {
+            int width = beatWidth(beat.duration());
+            beats.add(new Rectangle(beatX, y, width, staffHeight));
+            beatX += width;
+        }
+        return beats;
     }
 
     private static int measureWidth(Measure measure) {
@@ -118,7 +130,6 @@ public final class TabLayout {
     }
 
     private int nearestString(int measure, int y) {
-        int stringCount = measureBounds(measure).height / STRING_SPACING + 1;
         int nearest = 1;
         int bestDistance = Integer.MAX_VALUE;
         for (int string = 1; string <= stringCount; string++) {
