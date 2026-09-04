@@ -10,14 +10,19 @@
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>tabpro-core</artifactId>
+  <artifactId>tabpro-ui</artifactId>
   <packaging>jar</packaging>
 
-  <name>Tabpro Core</name>
-  <description>Modelo de dominio de la partitura, sesión de edición y puertos; sin dependencias de framework.</description>
+  <name>Tabpro UI</name>
+  <description>Interfaz gráfica Swing: ventana, canvas de tablatura, teclado y transporte.</description>
   <url>https://github.com/gstn-caruso/tabpro</url>
 
   <dependencies>
+    <dependency>
+      <groupId>com.gstncaruso.tabpro</groupId>
+      <artifactId>tabpro-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
