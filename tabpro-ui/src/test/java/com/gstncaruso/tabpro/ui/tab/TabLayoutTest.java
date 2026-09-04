@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
@@ -123,5 +124,23 @@ class TabLayoutTest {
 
         assertEquals(2, layout.lineCount());
         assertEquals(280, layout.totalHeight());
+    }
+
+    @Test
+    void findsTheBeatAndStringAtAPoint() {
+        Track track = trackOf(measureOfQuarterBeats(1));
+        TabLayout layout = TabLayout.of(track, 400);
+
+        Optional<TabLayout.Hit> hit = layout.hitTest(50, layout.stringY(0, 3));
+
+        assertEquals(Optional.of(new TabLayout.Hit(0, 0, 3)), hit);
+    }
+
+    @Test
+    void returnsEmptyWhenThePointIsOutsideAnyBeat() {
+        Track track = trackOf(measureOfQuarterBeats(1));
+        TabLayout layout = TabLayout.of(track, 400);
+
+        assertEquals(Optional.empty(), layout.hitTest(1000, 1000));
     }
 }

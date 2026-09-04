@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.tab;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
@@ -100,4 +101,35 @@ public final class TabLayout {
     public int stringY(int measure, int string) {
         return measureBounds(measure).y + (string - 1) * STRING_SPACING;
     }
+
+    public Optional<Hit> hitTest(int x, int y) {
+        for (int measure = 0; measure < beatBounds.size(); measure++) {
+            List<Rectangle> beats = beatBounds.get(measure);
+            for (int beat = 0; beat < beats.size(); beat++) {
+                Rectangle bounds = beats.get(beat);
+                Rectangle expanded = new Rectangle(
+                        bounds.x, bounds.y - STRING_SPACING / 2, bounds.width, bounds.height + STRING_SPACING);
+                if (expanded.contains(x, y)) {
+                    return Optional.of(new Hit(measure, beat, nearestString(measure, y)));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    private int nearestString(int measure, int y) {
+        int stringCount = measureBounds(measure).height / STRING_SPACING + 1;
+        int nearest = 1;
+        int bestDistance = Integer.MAX_VALUE;
+        for (int string = 1; string <= stringCount; string++) {
+            int distance = Math.abs(y - stringY(measure, string));
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                nearest = string;
+            }
+        }
+        return nearest;
+    }
+
+    public record Hit(int measure, int beat, int string) {}
 }
