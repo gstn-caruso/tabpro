@@ -39,4 +39,24 @@ class TabLayoutTest {
         assertEquals(1, layout.lineCount());
         assertEquals(new Rectangle(16, 40, 76, 60), layout.measureBounds(0));
     }
+
+    @Test
+    void givesAQuarterBeatItsFixedWidth() {
+        assertEquals(44, TabLayout.beatWidth(Duration.quarter()));
+    }
+
+    @Test
+    void makesLongerDurationsWider() {
+        assertEquals(80, TabLayout.beatWidth(Duration.quarter().longer().longer()));
+        assertEquals(60, TabLayout.beatWidth(Duration.quarter().longer()));
+        assertEquals(34, TabLayout.beatWidth(Duration.quarter().shorter()));
+        assertEquals(28, TabLayout.beatWidth(Duration.quarter().shorter().shorter()));
+        assertEquals(24, TabLayout.beatWidth(Duration.quarter().shorter().shorter().shorter()));
+        assertEquals(22, TabLayout.beatWidth(Duration.quarter().shorter().shorter().shorter().shorter()));
+    }
+
+    @Test
+    void makesDottedDurationsWiderThanPlain() {
+        assertEquals(50, TabLayout.beatWidth(Duration.quarter().toggledDot()));
+    }
 }

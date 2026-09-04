@@ -28,7 +28,16 @@ public final class TabLayout {
     }
 
     public static int beatWidth(Duration duration) {
-        return 44;
+        int base = switch (duration.value()) {
+            case WHOLE -> 80;
+            case HALF -> 60;
+            case QUARTER -> 44;
+            case EIGHTH -> 34;
+            case SIXTEENTH -> 28;
+            case THIRTY_SECOND -> 24;
+            case SIXTY_FOURTH -> 22;
+        };
+        return duration.dotted() ? base + 6 : base;
     }
 
     public int lineCount() {
