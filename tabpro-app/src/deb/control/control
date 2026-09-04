@@ -1,0 +1,9 @@
+Package: tabpro
+Version: [[version]]
+Section: sound
+Priority: optional
+Architecture: all
+Depends: default-jre-headless | openjdk-25-jre-headless
+Maintainer: Gastón Caruso <gstn.caruso@gmail.com>
+Description: Editor de tablaturas de guitarra
+ Clon libre de Guitar Pro 5.

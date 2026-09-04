@@ -15,6 +15,7 @@
 
   <name>Tabpro Core</name>
   <description>Modelo de dominio y parsing de tablaturas, sin dependencias de UI.</description>
+  <url>https://github.com/gstn-caruso/tabpro</url>
 
   <dependencies>
     <dependency>
