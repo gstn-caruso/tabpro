@@ -80,12 +80,10 @@ public final class Editor {
     public void deleteMeasure() {
         Track track = currentTrack().withoutMeasureAt(cursor.measure());
         int measure = cursor.measure();
-        int beat = cursor.beat();
         if (measure >= track.measures().size()) {
             measure--;
-            beat = 0;
         }
-        change(withCurrentTrack(track), cursorAt(measure, beat, cursor.string()));
+        change(withCurrentTrack(track), cursorAt(measure, 0, cursor.string()));
     }
 
     public void setTempo(int bpm) {

@@ -188,6 +188,19 @@ class EditorEditingTest {
     }
 
     @Test
+    void deletingAMeasureInTheMiddleMovesTheCursorToTheStartOfTheNextOne() {
+        Measure first = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.rest(Duration.quarter()), Beat.rest(Duration.quarter()),
+                Beat.rest(Duration.quarter()), Beat.rest(Duration.quarter())));
+        Measure second = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
+        Editor editor = editorWithMeasures(first, second);
+        editor.moveTo(0, 3, 1);
+        editor.deleteMeasure();
+        assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
+        assertTrue(editor.currentBeat().isRest());
+    }
+
+    @Test
     void changesTheTempo() {
         Editor editor = new Editor(Score.blank());
         editor.setTempo(140);
