@@ -3,7 +3,7 @@ Version: [[version]]
 Section: sound
 Priority: optional
 Architecture: all
-Depends: default-jre-headless | openjdk-25-jre-headless
+Depends: openjdk-25-jre | java25-runtime
 Maintainer: Gastón Caruso <gstn.caruso@gmail.com>
 Description: Editor de tablaturas de guitarra
  Clon libre de Guitar Pro 5.
