@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import java.util.Optional;
@@ -85,5 +86,28 @@ class EditorTest {
         editor.clearBeat();
         assertTrue(editor.currentBeat().isRest());
         assertEquals(editor.score().track(0).measure(0).beat(0).duration(), editor.currentBeat().duration());
+    }
+
+    @Test
+    void lengthensTheCursorBeat() {
+        Editor editor = new Editor(Score.blank());
+        editor.lengthenDuration();
+        assertEquals(Duration.quarter().longer(), editor.currentBeat().duration());
+    }
+
+    @Test
+    void shortensTheCursorBeat() {
+        Editor editor = new Editor(Score.blank());
+        editor.shortenDuration();
+        assertEquals(Duration.quarter().shorter(), editor.currentBeat().duration());
+    }
+
+    @Test
+    void togglesTheDotOfTheCursorBeat() {
+        Editor editor = new Editor(Score.blank());
+        editor.toggleDot();
+        assertTrue(editor.currentBeat().duration().dotted());
+        editor.toggleDot();
+        assertFalse(editor.currentBeat().duration().dotted());
     }
 }

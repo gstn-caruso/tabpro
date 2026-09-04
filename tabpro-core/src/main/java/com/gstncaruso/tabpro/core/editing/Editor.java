@@ -44,6 +44,18 @@ public final class Editor {
         change(withCurrentBeat(Beat.rest(currentBeat().duration())), cursor);
     }
 
+    public void lengthenDuration() {
+        change(withCurrentBeat(currentBeat().withDuration(currentBeat().duration().longer())), cursor);
+    }
+
+    public void shortenDuration() {
+        change(withCurrentBeat(currentBeat().withDuration(currentBeat().duration().shorter())), cursor);
+    }
+
+    public void toggleDot() {
+        change(withCurrentBeat(currentBeat().withDuration(currentBeat().duration().toggledDot())), cursor);
+    }
+
     public void moveDown() {
         int maxString = currentTrack().tuning().stringCount();
         moveCursor(cursorAt(cursor.measure(), cursor.beat(), Math.min(maxString, cursor.string() + 1)));
