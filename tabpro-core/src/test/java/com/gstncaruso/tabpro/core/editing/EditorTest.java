@@ -156,8 +156,74 @@ class EditorTest {
         assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
     }
 
+    @Test
+    void insertsAnEmptyMeasureBeforeTheCursorMeasure() {
+        Measure existing = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 3))));
+        Editor editor = editorWithMeasures(existing);
+        editor.insertMeasure();
+        assertEquals(2, editor.score().track(0).measures().size());
+        assertTrue(editor.score().track(0).measure(0).beat(0).isRest());
+        assertEquals(existing, editor.score().track(0).measure(1));
+        assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
+    }
+
+    @Test
+    void deletesTheCursorMeasure() {
+        Measure first = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
+        Measure second = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 9))));
+        Editor editor = editorWithMeasures(first, second);
+        editor.deleteMeasure();
+        assertEquals(1, editor.score().track(0).measures().size());
+        assertEquals(second, editor.score().track(0).measure(0));
+        assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
+    }
+
+    @Test
+    void deletingTheLastMeasureMovesTheCursorBack() {
+        Measure first = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
+        Measure second = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
+        Editor editor = editorWithMeasures(first, second);
+        editor.moveTo(1, 0, 1);
+        editor.deleteMeasure();
+        assertEquals(1, editor.score().track(0).measures().size());
+        assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
+    }
+
+    @Test
+    void deletingTheOnlyMeasureLeavesAnEmptyOne() {
+        Measure onlyMeasure = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 9))));
+        Editor editor = editorWithMeasures(onlyMeasure);
+        editor.deleteMeasure();
+        assertEquals(1, editor.score().track(0).measures().size());
+        assertTrue(editor.score().track(0).measure(0).beat(0).isRest());
+        assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
+    }
+
+    @Test
+    void changesTheTempo() {
+        Editor editor = new Editor(Score.blank());
+        editor.setTempo(140);
+        assertEquals(140, editor.score().tempo());
+    }
+
+    @Test
+    void changesTheTitle() {
+        Editor editor = new Editor(Score.blank());
+        editor.setTitle("Mi cancion");
+        assertEquals("Mi cancion", editor.score().title());
+    }
+
     private Editor editorWithMeasure(Measure measure) {
         Track track = Track.standardGuitar("Test").withMeasure(0, measure);
+        return new Editor(Score.blank().withTrack(0, track));
+    }
+
+    private Editor editorWithMeasures(Measure... measures) {
+        Track base = Track.standardGuitar("Test");
+        Track track = base.withMeasure(0, measures[0]);
+        for (int i = 1; i < measures.length; i++) {
+            track = track.withMeasureInsertedAt(i, measures[i]);
+        }
         return new Editor(Score.blank().withTrack(0, track));
     }
 }

@@ -68,6 +68,33 @@ public final class Editor {
         change(withCurrentMeasure(measure), cursorAt(cursor.measure(), beat, cursor.string()));
     }
 
+    public void insertMeasure() {
+        Measure empty = Measure.empty(currentMeasure().timeSignature(), currentBeat().duration());
+        Track track = currentTrack().withMeasureInsertedAt(cursor.measure(), empty);
+        Score next = score.withTrack(cursor.track(), track);
+        change(next, cursorAt(cursor.measure(), 0, cursor.string()));
+    }
+
+    public void deleteMeasure() {
+        Track track = currentTrack().withoutMeasureAt(cursor.measure());
+        int measure = cursor.measure();
+        int beat = cursor.beat();
+        if (measure >= track.measures().size()) {
+            measure--;
+            beat = 0;
+        }
+        Score next = score.withTrack(cursor.track(), track);
+        change(next, cursorAt(measure, beat, cursor.string()));
+    }
+
+    public void setTempo(int bpm) {
+        change(score.withTempo(bpm), cursor);
+    }
+
+    public void setTitle(String title) {
+        change(score.withTitle(title), cursor);
+    }
+
     public void moveTo(int measure, int beat, int string) {
         Track track = currentTrack();
         if (measure < 0 || measure >= track.measures().size()) {
