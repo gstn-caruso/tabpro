@@ -1,0 +1,23 @@
+package com.gstncaruso.tabpro.format;
+
+import java.util.List;
+
+import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Pitch;
+import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.Tuning;
+
+public record TrackDto(String name, int midiProgram, List<Integer> tuning, List<MeasureDto> measures) {
+
+    public static TrackDto from(Track track) {
+        List<Integer> tuning = track.tuning().strings().stream().map(Pitch::midiNumber).toList();
+        List<MeasureDto> measures = track.measures().stream().map(MeasureDto::from).toList();
+        return new TrackDto(track.name(), track.midiProgram(), tuning, measures);
+    }
+
+    public Track toTrack() {
+        List<Pitch> pitches = tuning.stream().map(Pitch::new).toList();
+        List<Measure> domainMeasures = measures.stream().map(MeasureDto::toMeasure).toList();
+        return new Track(name, new Tuning(pitches), midiProgram, domainMeasures);
+    }
+}
