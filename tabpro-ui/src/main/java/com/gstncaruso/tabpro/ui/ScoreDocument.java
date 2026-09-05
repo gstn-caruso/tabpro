@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public final class ScoreDocument {
 
+    public static final String UNTITLED = "Sin título";
+
     private final Editor editor;
     private final ScoreFiles files;
 
@@ -17,5 +19,9 @@ public final class ScoreDocument {
 
     public Optional<Path> path() {
         return Optional.empty();
+    }
+
+    public String displayName() {
+        return UNTITLED;
     }
 }

@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
@@ -18,6 +19,13 @@ class ScoreDocumentTest {
         ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles());
 
         assertTrue(document.path().isEmpty());
+    }
+
+    @Test
+    void describesAnUntitledDocument() {
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles());
+
+        assertEquals(ScoreDocument.UNTITLED, document.displayName());
     }
 
     private static final class FakeScoreFiles implements ScoreFiles {
