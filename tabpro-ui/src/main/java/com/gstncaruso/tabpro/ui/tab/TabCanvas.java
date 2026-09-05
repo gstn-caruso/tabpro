@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.tab;
 import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -16,6 +17,7 @@ import javax.swing.Scrollable;
 public final class TabCanvas extends JComponent implements Scrollable {
 
     private final Editor editor;
+    private Optional<BeatPosition> playing = Optional.empty();
 
     public TabCanvas(Editor editor) {
         this.editor = editor;
@@ -38,7 +40,14 @@ public final class TabCanvas extends JComponent implements Scrollable {
     protected void paintComponent(Graphics g) {
         Track track = currentTrack();
         TabLayout layout = TabLayout.of(track, getWidth());
-        TabPainter.paint((Graphics2D) g, layout, track, editor.cursor(), Optional.empty());
+        TabPainter.paint((Graphics2D) g, layout, track, editor.cursor(), playing);
+    }
+
+    public void showPlaying(Optional<BeatPosition> playing) {
+        this.playing = playing;
+        repaint();
+        playing.ifPresent(position ->
+                scrollRectToVisible(layoutForCurrentWidth().beatBounds(position.measure(), position.beat())));
     }
 
     @Override
