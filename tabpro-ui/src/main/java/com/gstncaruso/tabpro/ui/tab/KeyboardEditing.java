@@ -12,6 +12,11 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
+/**
+ * Lo que se escribe con el teclado sobre la partitura y no pasa por los menus:
+ * los digitos de los trastes y el movimiento del cursor. Todo lo que tiene
+ * atajo en un menu vive en el catalogo de comandos, para no tenerlo dos veces.
+ */
 public final class KeyboardEditing {
 
     private final Editor editor;
@@ -30,13 +35,8 @@ public final class KeyboardEditing {
         bindings.put(KeyStroke.getKeyStroke("DOWN"), editor::moveDown);
         bindings.put(KeyStroke.getKeyStroke("HOME"), editor::moveToMeasureStart);
         bindings.put(KeyStroke.getKeyStroke("END"), editor::moveToMeasureEnd);
-        bindings.put(KeyStroke.getKeyStroke("INSERT"), editor::insertBeat);
-        bindings.put(KeyStroke.getKeyStroke("DELETE"), editor::deleteBeat);
-        bindings.put(KeyStroke.getKeyStroke("ctrl INSERT"), editor::insertMeasure);
-        bindings.put(KeyStroke.getKeyStroke("ctrl DELETE"), editor::deleteMeasure);
         bindings.put(KeyStroke.getKeyStroke("BACK_SPACE"), editor::clearNote);
-        bindings.put(KeyStroke.getKeyStroke("ctrl Z"), editor::undo);
-        bindings.put(KeyStroke.getKeyStroke("ctrl Y"), editor::redo);
+        bindings.put(KeyStroke.getKeyStroke("TAB"), editor::moveRight);
         bindings.replaceAll((keyStroke, action) -> resettingDigitsBefore(action));
         return bindings;
     }
@@ -48,20 +48,13 @@ public final class KeyboardEditing {
         };
     }
 
+    /** Los digitos escriben el traste; dos seguidos forman los trastes de dos cifras. */
     public void keyTyped(char c) {
         if (Character.isDigit(c)) {
             editor.setFret(digits.fretFor(c));
             return;
         }
         digits.reset();
-        switch (c) {
-            case '+' -> editor.lengthenDuration();
-            case '-' -> editor.shortenDuration();
-            case '.' -> editor.toggleDot();
-            case 'r', 'R' -> editor.clearBeat();
-            default -> {
-            }
-        }
     }
 
     public void install(JComponent component) {

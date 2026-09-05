@@ -69,39 +69,8 @@ class KeyboardEditingTest {
         assertEquals(1, editor.cursor().beat());
     }
 
-    @Test
-    void bindsPlusAndMinusToDuration() {
-        Editor editor = new Editor(Score.blank());
-        KeyboardEditing keyboard = keyboardEditing(editor);
-        Duration original = editor.currentBeat().duration();
 
-        keyboard.keyTyped('+');
-        assertEquals(original.longer(), editor.currentBeat().duration());
 
-        keyboard.keyTyped('-');
-        assertEquals(original, editor.currentBeat().duration());
-    }
-
-    @Test
-    void bindsPeriodToTheDot() {
-        Editor editor = new Editor(Score.blank());
-        keyboardEditing(editor).keyTyped('.');
-        assertTrue(editor.currentBeat().duration().dotted());
-    }
-
-    @Test
-    void bindsRToRest() {
-        Editor editor = new Editor(Score.blank());
-        editor.setFret(3);
-        KeyboardEditing keyboard = keyboardEditing(editor);
-
-        keyboard.keyTyped('r');
-        assertTrue(editor.currentBeat().isRest());
-
-        editor.setFret(3);
-        keyboard.keyTyped('R');
-        assertTrue(editor.currentBeat().isRest());
-    }
 
     @Test
     void bindsBackspaceToClearNote() {
@@ -114,45 +83,8 @@ class KeyboardEditingTest {
         assertEquals(Optional.empty(), editor.currentBeat().noteOn(1));
     }
 
-    @Test
-    void bindsInsertAndDeleteToBeats() {
-        Editor editor = new Editor(Score.blank());
-        Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
-        int before = editor.score().track(0).measure(0).beats().size();
 
-        bindings.get(KeyStroke.getKeyStroke("INSERT")).run();
-        assertEquals(before + 1, editor.score().track(0).measure(0).beats().size());
 
-        bindings.get(KeyStroke.getKeyStroke("DELETE")).run();
-        assertEquals(before, editor.score().track(0).measure(0).beats().size());
-    }
-
-    @Test
-    void bindsCtrlInsertAndCtrlDeleteToMeasures() {
-        Editor editor = new Editor(Score.blank());
-        Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
-        int before = editor.score().track(0).measures().size();
-
-        bindings.get(KeyStroke.getKeyStroke("ctrl INSERT")).run();
-        assertEquals(before + 1, editor.score().track(0).measures().size());
-
-        bindings.get(KeyStroke.getKeyStroke("ctrl DELETE")).run();
-        assertEquals(before, editor.score().track(0).measures().size());
-    }
-
-    @Test
-    void bindsCtrlZAndCtrlYToUndoRedo() {
-        Editor editor = new Editor(Score.blank());
-        KeyboardEditing keyboard = keyboardEditing(editor);
-        keyboard.keyTyped('5');
-        Map<KeyStroke, Runnable> bindings = keyboard.bindings();
-
-        bindings.get(KeyStroke.getKeyStroke("ctrl Z")).run();
-        assertEquals(Optional.empty(), editor.currentBeat().noteOn(1));
-
-        bindings.get(KeyStroke.getKeyStroke("ctrl Y")).run();
-        assertEquals(Optional.of(new Note(1, 5)), editor.currentBeat().noteOn(1));
-    }
 
     @Test
     void movingTheCursorResetsTheDigitBuffer() {

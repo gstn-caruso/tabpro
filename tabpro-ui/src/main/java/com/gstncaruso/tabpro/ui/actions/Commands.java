@@ -116,8 +116,7 @@ public final class Commands {
     private void defineBarCommands() {
         define("bar.insert", "Insertar un compás", editor::insertMeasure)
                 .withAccelerator("ctrl INSERT").withIcon(Icons.insertBar());
-        define("bar.delete", "Borrar el compás", editor::deleteMeasure)
-                .withAccelerator("ctrl DELETE").withIcon(Icons.deleteBar());
+        define("bar.delete", "Borrar el compás", editor::deleteMeasure).withIcon(Icons.deleteBar());
         define("bar.keySignature", "Armadura…", dialogs::keySignature).withIcon(Icons.keySignature());
         define("bar.timeSignature", "Medida del compás…", dialogs::timeSignature).withIcon(Icons.timeSignature());
         define("bar.tripletFeel", "Triplet feel…", dialogs::tripletFeel);
