@@ -9,10 +9,6 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import org.junit.jupiter.api.Test;
 
-/**
- * Misma logica que {@link com.gstncaruso.tabpro.ui.StatusText}, portada a este paquete para que la
- * barra de estado nueva la use sin depender de la clase vieja.
- */
 class BeatDescriptionTest {
 
     @Test

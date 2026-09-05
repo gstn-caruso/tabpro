@@ -7,9 +7,6 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 
 /**
  * Describe en una linea donde esta parado el cursor: compas, beat, cuerda y la figura que suena.
- *
- * <p>Es la misma logica de {@link com.gstncaruso.tabpro.ui.StatusText}, portada a este paquete
- * para que la barra de estado nueva la use sin depender de la clase vieja.
  */
 public final class BeatDescription {
 

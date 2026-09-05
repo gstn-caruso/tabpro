@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.status.StatusBar;
 import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.toolbar.ToolBars;
 import com.gstncaruso.tabpro.ui.tracks.TrackPanel;
@@ -71,16 +72,16 @@ public final class MainFrame extends JFrame {
         toolBars.addToSoundRow(tempoSpinner);
         setJMenuBar(new MenuBar(commands).build());
 
-        JLabel status = statusBar();
+        StatusBar status = new StatusBar(editor);
+        status.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 0, 0, Palette.separator()),
+                BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         transport.addListener(() -> {
             canvas.showPlayhead(transport.playhead());
             trackPanel.showPlayingMeasure(transport.playhead().measure());
             beatViews.showPlayhead(transport.playhead());
         });
-        editor.addListener(() -> {
-            status.setText(StatusText.describe(editor.cursor(), editor.currentBeat()));
-            updateTitle();
-        });
+        editor.addListener(this::updateTitle);
 
         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, trackPanel);
         split.setResizeWeight(1);
@@ -114,14 +115,6 @@ public final class MainFrame extends JFrame {
         } catch (ScoreFileException e) {
             showError(e);
         }
-    }
-
-    private JLabel statusBar() {
-        JLabel status = new JLabel(StatusText.describe(editor.cursor(), editor.currentBeat()));
-        status.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, Palette.separator()),
-                BorderFactory.createEmptyBorder(4, 8, 4, 8)));
-        return status;
     }
 
     private JSpinner tempoSpinner() {
