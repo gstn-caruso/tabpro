@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
@@ -20,9 +21,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Receiver;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.ShortMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,11 +34,11 @@ import org.junit.jupiter.api.Test;
 
 class MidiPlayerTest {
 
+    private Sequencer sequencer;
     private MidiPlayer player;
 
     @BeforeEach
     void setUp() {
-        Sequencer sequencer;
         try {
             sequencer = MidiSystem.getSequencer(false);
         } catch (MidiUnavailableException e) {
@@ -49,6 +53,20 @@ class MidiPlayerTest {
         if (player != null) {
             player.close();
         }
+    }
+
+    @Test
+    void soundsASingleNoteThroughItsReceiver() {
+        List<ShortMessage> received = new CopyOnWriteArrayList<>();
+        MidiPlayer withFakeSynth = new MidiPlayer(sequencer, () -> receiverInto(received));
+
+        withFakeSynth.playNote(new Pitch(60), 25);
+
+        assertTrue(
+                received.stream().anyMatch(message ->
+                        message.getCommand() == ShortMessage.NOTE_ON && message.getData1() == 60),
+                "la nota no llego al sintetizador");
+        withFakeSynth.close();
     }
 
     @Test
@@ -142,6 +160,19 @@ class MidiPlayerTest {
 
         assertTrue(firstBeatLatch.await(5, TimeUnit.SECONDS));
         assertEquals(new BeatPosition(0, 0, 0), firstBeat.get());
+    }
+
+    private static Receiver receiverInto(List<ShortMessage> received) {
+        return new Receiver() {
+            @Override
+            public void send(MidiMessage message, long timeStamp) {
+                received.add((ShortMessage) message);
+            }
+
+            @Override
+            public void close() {
+            }
+        };
     }
 
     private Timeline shortTimeline() {

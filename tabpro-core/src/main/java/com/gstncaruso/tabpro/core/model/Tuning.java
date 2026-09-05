@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.core.model;
 
 import java.util.List;
+import java.util.Optional;
 
 public record Tuning(List<Pitch> strings) {
 
@@ -42,5 +43,14 @@ public record Tuning(List<Pitch> strings) {
 
     public Pitch pitchOf(Note note) {
         return pitchOfString(note.string()).transposed(note.fret());
+    }
+
+    /** La nota que suena asi de aguda en esa cuerda, si es que la cuerda llega. */
+    public Optional<Note> noteFor(Pitch pitch, int string) {
+        int fret = pitch.midiNumber() - pitchOfString(string).midiNumber();
+        if (fret < 0 || fret > Note.MAX_FRET) {
+            return Optional.empty();
+        }
+        return Optional.of(new Note(string, fret));
     }
 }
