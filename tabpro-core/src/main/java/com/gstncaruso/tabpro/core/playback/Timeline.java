@@ -8,7 +8,11 @@ import java.util.List;
 public record Timeline(int tempoBpm, int ticksPerQuarter, List<TrackTimeline> tracks) {
 
     public static Timeline of(Score score) {
-        PlayOrder order = PlayOrder.of(score);
+        return of(score, PlayOrder.of(score));
+    }
+
+    /** El mismo armado, pero recorriendo un orden de compases propio: un rango, un loop, una posicion. */
+    public static Timeline of(Score score, PlayOrder order) {
         List<TrackTimeline> trackTimelines = new ArrayList<>();
         for (int index = 0; index < score.trackCount(); index++) {
             boolean audible = score.isAudible(index);
