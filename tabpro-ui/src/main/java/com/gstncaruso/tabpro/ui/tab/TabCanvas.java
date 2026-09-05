@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Optional;
 import javax.swing.JComponent;
 import javax.swing.Scrollable;
@@ -20,6 +22,16 @@ public final class TabCanvas extends JComponent implements Scrollable {
         setOpaque(true);
         setFocusable(true);
         editor.addListener(this::editorChanged);
+        new KeyboardEditing(editor, new FretDigits(System::currentTimeMillis)).install(this);
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                requestFocusInWindow();
+                layoutForCurrentWidth()
+                        .hitTest(e.getX(), e.getY())
+                        .ifPresent(hit -> editor.moveTo(hit.measure(), hit.beat(), hit.string()));
+            }
+        });
     }
 
     @Override
