@@ -57,6 +57,36 @@ class BeatViewsTest {
     }
 
     @Test
+    void letsYouWriteWhileNothingSounds() {
+        Editor editor = new Editor(Score.blank());
+
+        assertTrue(BeatViews.showsTheCursorBeat(editor, Playhead.silent()));
+    }
+
+    @Test
+    void doesNotLetYouWriteOnABeatYouAreNotSeeing() {
+        Editor editor = new Editor(Score.blank());
+        editor.moveRight();
+
+        Playhead playhead = Playhead.silent().advancedTo(new BeatPosition(0, 0, 0));
+
+        assertFalse(
+                BeatViews.showsTheCursorBeat(editor, playhead),
+                "mientras suena se ve el beat que suena, no el del cursor");
+    }
+
+    @Test
+    void letsYouWriteWhileAnotherTrackSounds() {
+        Editor editor = new Editor(Score.blank());
+        editor.addTrack(Track.standardBass("Bajo"));
+        editor.selectTrack(0);
+
+        Playhead playhead = Playhead.silent().advancedTo(new BeatPosition(1, 0, 0));
+
+        assertTrue(BeatViews.showsTheCursorBeat(editor, playhead));
+    }
+
+    @Test
     void usesTheTuningOfTheTrackTheCursorIsOn() {
         Editor editor = new Editor(Score.blank());
         editor.addTrack(Track.standardBass("Bajo"));
@@ -70,7 +100,7 @@ class BeatViewsTest {
 
     @Test
     void bothViewsCanBeHidden() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()));
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
 
         assertTrue(views.isFretboardVisible());
         assertTrue(views.isKeyboardVisible());
@@ -85,7 +115,7 @@ class BeatViewsTest {
     @Test
     void followsTheEditorWithoutBlowingUp() {
         Editor editor = new Editor(Score.blank());
-        BeatViews views = new BeatViews(editor);
+        BeatViews views = new BeatViews(editor, new RecordingPlayer());
 
         editor.setFret(Note.MAX_FRET);
         editor.addTrack(Track.standardBass("Bajo"));

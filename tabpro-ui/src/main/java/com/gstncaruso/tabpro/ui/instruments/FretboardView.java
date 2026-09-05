@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.notation.PitchName;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BasicStroke;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -13,6 +14,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.swing.JComponent;
 
@@ -35,6 +37,7 @@ public final class FretboardView extends JComponent {
     public FretboardView() {
         setOpaque(true);
         setBackground(ScoreColors.SURFACE);
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setPreferredSize(new Dimension(0, PREFERRED_HEIGHT));
         setMinimumSize(new Dimension(0, PREFERRED_HEIGHT));
     }
@@ -62,6 +65,31 @@ public final class FretboardView extends JComponent {
 
     public int stringY(int string) {
         return TOP_MARGIN + (int) Math.round((string - 1) * stringGap());
+    }
+
+    /** La nota que se pisa en ese punto del mastil, o nada si el punto cae afuera. */
+    public Optional<Note> noteAt(int x, int y) {
+        return stringAt(y).flatMap(string -> fretAt(x).map(fret -> new Note(string, fret)));
+    }
+
+    private Optional<Integer> stringAt(int y) {
+        int string = (int) Math.round((y - TOP_MARGIN) / stringGap()) + 1;
+        if (string < 1 || string > stringCount()) {
+            return Optional.empty();
+        }
+        boolean onTheNeck = Math.abs(y - stringY(string)) <= stringGap() / 2;
+        return onTheNeck ? Optional.of(string) : Optional.empty();
+    }
+
+    private Optional<Integer> fretAt(int x) {
+        if (x < SIDE_MARGIN) {
+            return Optional.empty();
+        }
+        if (x < nutX()) {
+            return Optional.of(0);
+        }
+        int fret = (int) Math.floor((x - nutX()) / fretWidth()) + 1;
+        return fret > FRETS ? Optional.empty() : Optional.of(fret);
     }
 
     private double fretWidth() {

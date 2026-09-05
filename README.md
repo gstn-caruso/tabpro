@@ -4,7 +4,7 @@ Clon libre de Guitar Pro 5: editor de tablaturas para guitarra, minimal, en Java
 
 ## Estado
 
-**v0.4.2 — Multipista.** Editor de tablatura con edición por teclado al estilo
+**v0.5.0 — Escribir tocando.** Editor de tablatura con edición por teclado al estilo
 Guitar Pro 5, guardado y apertura en formato propio `.tabpro`, y reproducción MIDI
 con cursor que sigue la música.
 
@@ -15,6 +15,13 @@ plicas, barras de unión, silencios, puntillos y alteraciones.
 Arriba, el **diapasón** y el **teclado** marcan las notas del beat en el que estás
 parado y, mientras suena, las del beat que está sonando. El diapasón se adapta a la
 afinación de la pista, así que un bajo muestra cuatro cuerdas.
+
+Los dos se tocan: **un clic en un traste o en una tecla escribe esa nota** en el beat
+del cursor y la hace sonar. En el diapasón el clic elige la cuerda, y el cursor se muda
+ahí; las notas se van sumando, así que se arma un acorde pisando cuerda por cuerda. En
+el teclado la nota se escribe en la cuerda donde está el cursor, y si esa cuerda no
+llega a esa altura el clic no hace nada. Mientras la partitura suena las dos vistas
+muestran lo que está sonando, no lo que se edita, así que ahí el clic no escribe.
 
 Abajo, el **panel de pistas** las lista todas con su instrumento General MIDI (con un
 ícono por familia), volumen, paneo, silenciar y solo, y al costado una grilla con un
@@ -31,7 +38,7 @@ tresillos e importación o exportación de archivos `.gp5`.
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.4.2_all.deb
+sudo apt install ./tabpro_0.5.0_all.deb
 tabpro
 ```
 
@@ -41,12 +48,13 @@ Queda también en el menú de aplicaciones. Necesita una JRE 25 con entorno grá
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.4.2.jar
+java -jar tabpro-app-0.5.0.jar
 ```
 
 ## Uso
 
-El cursor marca una celda (compás, beat, cuerda). Todo se hace desde el teclado:
+El cursor marca una celda (compás, beat, cuerda). Se escribe desde el teclado de la
+computadora, o clickeando el diapasón y el teclado de arriba:
 
 | Tecla | Acción |
 |---|---|
@@ -126,10 +134,11 @@ el formato y con MIDI solo a través de los puertos `ScoreFiles` y `Player` defi
   reproducción y puertos; sin dependencias de framework.
 - `tabpro-format` — persistencia en el formato propio `.tabpro` (JSON con Gson).
 - `tabpro-midi` — reproducción con `javax.sound.midi`, con un marcador por beat para
-  mover el cursor sin polling.
+  mover el cursor sin polling, y una nota suelta para escuchar la que se acaba de escribir.
 - `tabpro-ui` — interfaz Swing: ventana, canvas de la partitura (layout en sistemas,
-  pentagrama y tablatura), diapasón y teclado del beat actual, panel de pistas con el
-  mixer y la grilla de compases, teclado, documento y transporte (sin FlatLaf).
+  pentagrama y tablatura), diapasón y teclado del beat actual —que además escriben al
+  clic—, panel de pistas con el mixer y la grilla de compases, teclado, documento y
+  transporte (sin FlatLaf).
 - `tabpro-app` — `main`, FlatLaf, cableado de módulos y empaquetado (jar ejecutable + `.deb`).
 
 ## Build
@@ -142,7 +151,7 @@ Genera `tabpro-app/target/tabpro-app-<versión>.jar` (ejecutable) y
 `tabpro-app/target/tabpro_<versión>_all.deb`.
 
 ```sh
-java -jar tabpro-app/target/tabpro-app-0.4.2.jar
+java -jar tabpro-app/target/tabpro-app-0.5.0.jar
 ```
 
 ## Desarrollo

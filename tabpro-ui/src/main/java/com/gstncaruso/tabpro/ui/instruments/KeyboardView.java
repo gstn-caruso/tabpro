@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import javax.swing.JComponent;
 
@@ -39,6 +41,7 @@ public final class KeyboardView extends JComponent {
     public KeyboardView() {
         setOpaque(true);
         setBackground(ScoreColors.SURFACE);
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setPreferredSize(new Dimension(0, PREFERRED_HEIGHT));
         setMinimumSize(new Dimension(0, PREFERRED_HEIGHT));
     }
@@ -58,6 +61,21 @@ public final class KeyboardView extends JComponent {
             return Optional.empty();
         }
         return Optional.of(isWhite(midiNumber) ? whiteKeyBounds(midiNumber) : blackKeyBounds(midiNumber));
+    }
+
+    /** La tecla que hay en ese punto: las negras primero, que estan encima de las blancas. */
+    public OptionalInt keyAt(int x, int y) {
+        OptionalInt black = keyAt(x, y, false);
+        return black.isPresent() ? black : keyAt(x, y, true);
+    }
+
+    private OptionalInt keyAt(int x, int y, boolean white) {
+        for (int key : keysInRange(white)) {
+            if (keyBounds(key).orElseThrow().contains(x, y)) {
+                return OptionalInt.of(key);
+            }
+        }
+        return OptionalInt.empty();
     }
 
     private Rectangle whiteKeyBounds(int midiNumber) {

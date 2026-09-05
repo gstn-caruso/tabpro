@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class FretboardViewTest {
@@ -89,6 +90,58 @@ class FretboardViewTest {
                     !hasMarkNear(image, view.fretCenterX(5), view.stringY(string)),
                     "un silencio no tiene que marcar nada");
         }
+    }
+
+    @Test
+    void readsBackTheNoteUnderEachFretAndString() {
+        FretboardView view = sized(new FretboardView());
+        view.show(Tuning.standard(), Beat.rest(Duration.quarter()));
+
+        for (int string = 1; string <= 6; string++) {
+            for (int fret = 0; fret <= FretboardView.FRETS; fret++) {
+                assertEquals(
+                        Optional.of(new Note(string, fret)),
+                        view.noteAt(view.fretCenterX(fret), view.stringY(string)),
+                        "el punto de la cuerda " + string + " traste " + fret);
+            }
+        }
+    }
+
+    @Test
+    void hasNoNoteOffTheNeck() {
+        FretboardView view = sized(new FretboardView());
+        view.show(Tuning.standard(), Beat.rest(Duration.quarter()));
+
+        assertEquals(Optional.empty(), view.noteAt(view.fretCenterX(5), 0));
+        assertEquals(Optional.empty(), view.noteAt(view.fretCenterX(5), HEIGHT - 1));
+    }
+
+    @Test
+    void hasNoNoteBeyondTheLastFret() {
+        FretboardView view = sized(new FretboardView());
+        view.show(Tuning.standard(), Beat.rest(Duration.quarter()));
+
+        assertEquals(Optional.empty(), view.noteAt(WIDTH - 1, view.stringY(1)));
+    }
+
+    @Test
+    void hasNoNoteBeforeTheOpenStrings() {
+        FretboardView view = sized(new FretboardView());
+        view.show(Tuning.standard(), Beat.rest(Duration.quarter()));
+
+        assertEquals(Optional.empty(), view.noteAt(0, view.stringY(1)));
+    }
+
+    @Test
+    void aBassStopsAtItsFourthString() {
+        FretboardView bass = sized(new FretboardView());
+        bass.show(Tuning.standardBass(), Beat.rest(Duration.quarter()));
+
+        int lastString = bass.stringY(4);
+        int aWholeStringFurtherDown = lastString + (lastString - bass.stringY(3));
+
+        assertEquals(Optional.of(new Note(4, 3)), bass.noteAt(bass.fretCenterX(3), lastString));
+        assertEquals(Optional.empty(), bass.noteAt(bass.fretCenterX(3), aWholeStringFurtherDown));
     }
 
     private static FretboardView sized(FretboardView view) {
