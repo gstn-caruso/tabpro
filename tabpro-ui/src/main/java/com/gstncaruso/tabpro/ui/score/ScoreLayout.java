@@ -228,6 +228,16 @@ public final class ScoreLayout {
         return TOP_MARGIN + systemCount * (blockHeightTotal + SYSTEM_GAP) - SYSTEM_GAP + BOTTOM_MARGIN;
     }
 
+    /** El techo de un sistema entero, con todas sus pistas apiladas adentro. */
+    public int systemTop(int system) {
+        return TOP_MARGIN + system * (blockHeightTotal + SYSTEM_GAP);
+    }
+
+    /** Cuanto mide de alto un sistema, con todas las pistas ya apiladas. */
+    public int systemHeight() {
+        return blockHeightTotal;
+    }
+
     public int trackTop(int track, int measure) {
         int systemY = TOP_MARGIN + systemOf(measure) * (blockHeightTotal + SYSTEM_GAP);
         return systemY + blockTop[track];
