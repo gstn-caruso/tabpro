@@ -24,7 +24,7 @@ public final class ScoreDocument {
     }
 
     public String displayName() {
-        return UNTITLED;
+        return path == null ? UNTITLED : path.getFileName().toString();
     }
 
     public boolean save() {

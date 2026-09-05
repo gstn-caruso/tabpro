@@ -92,6 +92,16 @@ class ScoreDocumentTest {
         assertEquals(Score.blank(), editor.score());
     }
 
+    @Test
+    void describesTheDocumentByItsFileName() {
+        FakeScoreFiles files = new FakeScoreFiles();
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files);
+
+        document.saveAs(Path.of("carpeta", "cancion.tabpro"));
+
+        assertEquals("cancion.tabpro", document.displayName());
+    }
+
     private static final class FakeScoreFiles implements ScoreFiles {
 
         private final Map<Path, Score> scores = new HashMap<>();
