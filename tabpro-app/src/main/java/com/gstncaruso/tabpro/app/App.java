@@ -26,10 +26,11 @@ public class App {
         Optional<MidiPlayer> midiPlayer = openMidiPlayer();
         midiPlayer.ifPresent(App::warmUpInBackground);
         Player player = midiPlayer.<Player>map(midi -> midi).orElseGet(App::silentPlayer);
+        MidiDeviceSetup devices = new MidiDeviceSetup(midiPlayer);
         Optional<Path> fileToOpen = fileFrom(args);
 
         SwingUtilities.invokeLater(() -> {
-            MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player, theme);
+            MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player, theme, devices);
             frame.setIconImages(AppIcon.sizes());
             midiPlayer.ifPresent(midi -> frame.addWindowListener(closeOnDispose(midi)));
             frame.setVisible(true);

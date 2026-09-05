@@ -291,6 +291,7 @@ public final class Commands {
         define("sound.metronome", "Metrónomo", playback::toggleMetronome).withIcon(Icons.metronome());
         define("sound.countDown", "Cuenta regresiva", playback::toggleCountDown).withIcon(Icons.countDown());
         define("sound.stepBack", "Nota anterior", playback::stepBack);
+        define("sound.midiInput", "Entrada MIDI activa", playback::toggleMidiInput);
         define("sound.stepForward", "Nota siguiente", playback::stepForward);
         define("nav.firstBar", "Primer compás", editor::moveToFirstMeasure)
                 .withAccelerator("ctrl HOME").withIcon(Icons.firstBar());
@@ -327,6 +328,7 @@ public final class Commands {
         for (String theme : themes) {
             define("view.theme." + theme, theme, () -> view.useTheme(theme));
         }
+        define("options.midiSetup", "Configuración MIDI…", dialogs::midiSetup);
         define("options.preferences", "Preferencias…", dialogs::preferences).withAccelerator("F12");
     }
 

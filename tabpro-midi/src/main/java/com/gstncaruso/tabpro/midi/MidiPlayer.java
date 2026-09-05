@@ -21,6 +21,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
     private final Supplier<Receiver> synthesizers;
     private volatile PlaybackListener listener;
     private NotePreview preview;
+    private javax.sound.midi.MidiDevice chosenOutput;
 
     public MidiPlayer(Sequencer sequencer) {
         this(sequencer, MidiPlayer::defaultSynthesizer);
@@ -84,6 +85,42 @@ public final class MidiPlayer implements Player, AutoCloseable {
             preview.close();
         }
         sequencer.close();
+        closeChosenOutput();
+    }
+
+    /**
+     * Manda el sonido a otro dispositivo, como pide la ventana de configuracion
+     * MIDI. El secuenciador viene enchufado al sintetizador del sistema, asi que
+     * primero hay que desenchufarlo.
+     */
+    public void useOutput(javax.sound.midi.MidiDevice.Info info) {
+        try {
+            javax.sound.midi.MidiDevice device = MidiSystem.getMidiDevice(info);
+            device.open();
+            openSequencer();
+            for (javax.sound.midi.Transmitter transmitter : sequencer.getTransmitters()) {
+                transmitter.close();
+            }
+            sequencer.getTransmitter().setReceiver(device.getReceiver());
+            replacePreviewWith(device.getReceiver());
+            closeChosenOutput();
+            chosenOutput = device;
+        } catch (MidiUnavailableException e) {
+            System.err.println("No se pudo usar la salida MIDI " + info.getName() + ": " + e.getMessage());
+        }
+    }
+
+    private void replacePreviewWith(Receiver receiver) {
+        if (preview != null) {
+            preview.close();
+        }
+        preview = new NotePreview(receiver);
+    }
+
+    private void closeChosenOutput() {
+        if (chosenOutput != null) {
+            chosenOutput.close();
+        }
     }
 
     private NotePreview preview() {

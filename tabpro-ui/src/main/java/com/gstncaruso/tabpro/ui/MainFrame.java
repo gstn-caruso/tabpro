@@ -7,7 +7,11 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import com.gstncaruso.tabpro.ui.browser.ScoreBrowser;
+import com.gstncaruso.tabpro.core.model.Pitch;
+import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.sound.LoopDialog;
+import com.gstncaruso.tabpro.ui.sound.MidiSetupDialog;
+import com.gstncaruso.tabpro.ui.sound.StringAssignment;
 import com.gstncaruso.tabpro.ui.sound.RelativeTempoDialog;
 import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
@@ -50,15 +54,19 @@ public final class MainFrame extends JFrame {
     private final TrackPanel trackPanel;
     private final ToolBars toolBars;
     private final ThemeSwitch themes;
+    private final Ports.Devices devices;
+    private StringAssignment stringAssignment = StringAssignment.NO_CHANNEL_DETECTION;
     private final JSplitPane split;
 
     public MainFrame(Editor editor, ScoreFiles files, Player player) {
-        this(editor, files, player, ThemeSwitch.NONE);
+        this(editor, files, player, ThemeSwitch.NONE, Ports.Devices.NONE);
     }
 
-    public MainFrame(Editor editor, ScoreFiles files, Player player, ThemeSwitch themes) {
+    public MainFrame(
+            Editor editor, ScoreFiles files, Player player, ThemeSwitch themes, Ports.Devices devices) {
         super("tabpro");
         this.themes = themes;
+        this.devices = devices;
         this.editor = editor;
         this.files = files;
         this.document = new ScoreDocument(editor, files);
@@ -358,12 +366,12 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void stepForward() {
-            editor.moveRight();
+            transport.stepForward();
         }
 
         @Override
         public void stepBack() {
-            editor.moveLeft();
+            transport.stepBack();
         }
 
         @Override
@@ -378,6 +386,23 @@ public final class MainFrame extends JFrame {
             } catch (NumberFormatException e) {
                 showTempoError();
             }
+        }
+
+        @Override
+        public void toggleMidiInput() {
+            if (devices.isCapturing()) {
+                devices.stopCapture();
+                return;
+            }
+            if (devices.inputs().isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        MainFrame.this,
+                        "No hay ningún instrumento MIDI conectado.",
+                        "tabpro",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            devices.startCapture(new CapturedNotes());
         }
 
         @Override
@@ -487,6 +512,40 @@ public final class MainFrame extends JFrame {
         }
     }
 
+    /**
+     * Lo que llega del instrumento MIDI: la nota se escribe en la cuerda que
+     * corresponda y el cursor avanza al beat siguiente, como dice el manual.
+     */
+    private final class CapturedNotes implements Ports.CapturedNote {
+
+        @Override
+        public void inTheSameChord(int midiNumber, int channel) {
+            SwingUtilities.invokeLater(() -> write(midiNumber, channel));
+        }
+
+        @Override
+        public void inANewBeat(int midiNumber, int channel) {
+            SwingUtilities.invokeLater(() -> {
+                editor.moveRight();
+                write(midiNumber, channel);
+            });
+        }
+
+        private void write(int midiNumber, int channel) {
+            Track track = editor.currentTrack();
+            Pitch pitch = new Pitch(Math.clamp(midiNumber, 0, 127));
+            stringAssignment.stringFor(channel, track.stringCount()).stream()
+                    .boxed()
+                    .flatMap(string -> track.tuning().noteFor(pitch, string).stream())
+                    .findFirst()
+                    .or(() -> track.tuning().bestNoteFor(pitch, track.settings().fretCount()))
+                    .ifPresent(note -> {
+                        editor.moveTo(editor.cursor().measure(), editor.cursor().beat(), note.string());
+                        editor.setFret(note.fret());
+                    });
+        }
+    }
+
     /** Las ventanas que todavia no estan construidas. */
     private final class NotYet implements Ports.Dialogs {
 
@@ -503,6 +562,15 @@ public final class MainFrame extends JFrame {
         @Override
         public void preferences() {
             announce("Las preferencias");
+        }
+
+        @Override
+        public void midiSetup() {
+            MidiSetupDialog.ask(MainFrame.this, devices, stringAssignment).ifPresent(setup -> {
+                devices.useOutput(setup.output());
+                devices.useInput(setup.input());
+                stringAssignment = setup.strings();
+            });
         }
 
         @Override

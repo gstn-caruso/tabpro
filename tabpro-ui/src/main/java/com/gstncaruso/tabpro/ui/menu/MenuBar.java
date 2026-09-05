@@ -157,7 +157,7 @@ public final class MenuBar {
         menu.addSeparator();
         add(menu, "sound.tempo", "sound.relativeTempo", "sound.metronome", "sound.countDown");
         menu.addSeparator();
-        add(menu, "sound.stepBack", "sound.stepForward");
+        add(menu, "sound.stepBack", "sound.stepForward", "sound.midiInput");
         menu.addSeparator();
         add(menu, "nav.firstBar", "nav.previousBar", "nav.nextBar", "nav.lastBar");
         return menu;
@@ -178,7 +178,7 @@ public final class MenuBar {
     private JMenu optionsMenu() {
         JMenu menu = new JMenu("Opciones");
         themesMenu().ifPresent(menu::add);
-        add(menu, "options.preferences");
+        add(menu, "options.midiSetup", "options.preferences");
         return menu;
     }
 

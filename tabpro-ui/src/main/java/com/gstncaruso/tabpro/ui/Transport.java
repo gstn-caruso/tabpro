@@ -128,6 +128,27 @@ public final class Transport {
         notifyListeners();
     }
 
+    /** El modo paso a paso del manual: mover el cursor y escuchar lo que hay ahi. */
+    public void stepForward() {
+        editor.moveRight();
+        playCurrentBeat();
+    }
+
+    public void stepBack() {
+        editor.moveLeft();
+        playCurrentBeat();
+    }
+
+    private void playCurrentBeat() {
+        if (player.isPlaying()) {
+            return;
+        }
+        int program = editor.currentTrack().channel().program();
+        for (com.gstncaruso.tabpro.core.model.Note note : editor.currentBeat().notes()) {
+            player.playNote(editor.currentTrack().pitchOf(note), program);
+        }
+    }
+
     /** Escucha una partitura que no es la que se esta editando, como el explorador. */
     public void preview(Score score) {
         stop();
