@@ -39,7 +39,9 @@ public final class TrackStrip extends JPanel {
         this.trackIndex = trackIndex;
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setOpaque(true);
-        setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
+        setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 4, 0, 0, TrackColors.of(trackIndex)),
+                BorderFactory.createEmptyBorder(2, 6, 2, 8)));
         fixHeight();
 
         addColumn(icon, TrackPanel.ICON_WIDTH);
