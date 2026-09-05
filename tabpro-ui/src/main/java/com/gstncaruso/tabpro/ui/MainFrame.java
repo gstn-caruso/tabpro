@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.tracks.TrackPanel;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -22,6 +23,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SpinnerNumberModel;
@@ -58,8 +60,11 @@ public final class MainFrame extends JFrame {
         tempoSpinner.addChangeListener(e -> editor.setTempo((Integer) tempoSpinner.getValue()));
         editor.addListener(() -> tempoSpinner.setValue(editor.score().tempo()));
 
+        TrackPanel trackPanel = new TrackPanel(editor);
+
         transport.addListener(() -> {
             canvas.showPlayhead(transport.playhead());
+            trackPanel.showPlayingMeasure(transport.playhead().measure());
             playButton.setText(transport.isPlaying() ? "Detener" : "Reproducir");
         });
 
@@ -67,10 +72,16 @@ public final class MainFrame extends JFrame {
         status.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         editor.addListener(() -> status.setText(StatusText.describe(editor.cursor(), editor.currentBeat())));
 
-        setJMenuBar(menuBar(togglePlayback));
+        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, trackPanel);
+        split.setResizeWeight(1);
+        split.setBorder(BorderFactory.createEmptyBorder());
+        split.setDividerSize(6);
+        split.setDividerLocation(getHeight() - trackPanel.preferredPanelHeight());
+
+        setJMenuBar(menuBar(togglePlayback, trackPanel, canvas));
         setLayout(new BorderLayout());
         add(toolBar(playButton, tempoSpinner), BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
+        add(split, BorderLayout.CENTER);
         add(status, BorderLayout.SOUTH);
         updateTitle();
 
@@ -94,12 +105,30 @@ public final class MainFrame extends JFrame {
         return toolBar;
     }
 
-    private JMenuBar menuBar(Runnable togglePlayback) {
+    private JMenuBar menuBar(Runnable togglePlayback, TrackPanel trackPanel, ScoreCanvas canvas) {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu());
         menuBar.add(editMenu());
+        menuBar.add(trackMenu(trackPanel, canvas));
         menuBar.add(playMenu(togglePlayback));
         return menuBar;
+    }
+
+    private JMenu trackMenu(TrackPanel trackPanel, ScoreCanvas canvas) {
+        JMenu menu = new JMenu("Pista");
+        menu.add(menuItem("Agregar guitarra", "ctrl shift G", backToTheScore(trackPanel::addGuitar, canvas)));
+        menu.add(menuItem("Agregar bajo", "ctrl shift B", backToTheScore(trackPanel::addBass, canvas)));
+        menu.addSeparator();
+        menu.add(menuItem("Renombrar…", null, backToTheScore(trackPanel::renameSelectedTrack, canvas)));
+        menu.add(menuItem("Quitar pista", null, backToTheScore(trackPanel::removeSelectedTrack, canvas)));
+        return menu;
+    }
+
+    private Runnable backToTheScore(Runnable action, ScoreCanvas canvas) {
+        return () -> {
+            action.run();
+            canvas.requestFocusInWindow();
+        };
     }
 
     private JMenu playMenu(Runnable togglePlayback) {
