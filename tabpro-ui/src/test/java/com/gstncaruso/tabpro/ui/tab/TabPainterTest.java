@@ -23,6 +23,20 @@ class TabPainterTest {
         assertEquals(TabPainter.BACKGROUND.getRGB(), image.getRGB(0, 0));
     }
 
+    @Test
+    void paintsStringLinesAcrossTheStaff() {
+        Track track = Track.standardGuitar("Guitarra");
+        TabLayout layout = TabLayout.of(track, 800);
+        BufferedImage image = new BufferedImage(800, 300, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = graphicsOf(image);
+
+        TabPainter.paint(g, layout, track, new Cursor(0, 0, 0, 1), Optional.empty());
+
+        int x = layout.measureBounds(0).x + layout.measureBounds(0).width / 2;
+        int y = layout.stringY(0, 3);
+        assertEquals(TabPainter.STRING.getRGB(), image.getRGB(x, y));
+    }
+
     private Graphics2D graphicsOf(BufferedImage image) {
         Graphics2D g = image.createGraphics();
         g.setClip(0, 0, image.getWidth(), image.getHeight());
