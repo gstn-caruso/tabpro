@@ -1,11 +1,15 @@
 package com.gstncaruso.tabpro.ui.tab;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
+import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -21,6 +25,8 @@ public final class TabPainter {
     public static final Color CURSOR = new Color(0x3574F0);
     public static final Color PLAYING = new Color(0x35, 0x74, 0xF0, 0x40);
 
+    private static final Font FRET_FONT = new Font(Font.MONOSPACED, Font.BOLD, 11);
+
     private TabPainter() {
     }
 
@@ -30,6 +36,7 @@ public final class TabPainter {
         paintBackground(g);
         for (int m = 0; m < track.measures().size(); m++) {
             paintMeasure(g, layout, track, m);
+            paintNotes(g, layout, track.measure(m), m);
         }
         playing.ifPresent(position -> paintPlaying(g, layout, cursor, position));
         paintCursor(g, layout, cursor);
@@ -59,6 +66,36 @@ public final class TabPainter {
 
         g.setColor(measure.isComplete() ? TEXT : WARNING);
         g.drawString(String.valueOf(m + 1), bounds.x + 2, bounds.y - 6);
+    }
+
+    private static void paintNotes(Graphics2D g, TabLayout layout, Measure measure, int m) {
+        for (int b = 0; b < measure.beats().size(); b++) {
+            Beat beat = measure.beat(b);
+            for (Note note : beat.notes()) {
+                paintNote(g, layout, m, b, note);
+            }
+        }
+    }
+
+    private static void paintNote(Graphics2D g, TabLayout layout, int m, int b, Note note) {
+        Rectangle beatBounds = layout.beatBounds(m, b);
+        int centerX = beatBounds.x + beatBounds.width / 2;
+        int y = layout.stringY(m, note.string());
+        String fret = String.valueOf(note.fret());
+
+        g.setFont(FRET_FONT);
+        FontMetrics metrics = g.getFontMetrics();
+        int textWidth = metrics.stringWidth(fret);
+        int cutWidth = textWidth + 4;
+        int cutHeight = TabLayout.STRING_SPACING - 2;
+
+        g.setColor(BACKGROUND);
+        g.fillRect(centerX - cutWidth / 2, y - cutHeight / 2, cutWidth, cutHeight);
+
+        g.setColor(TEXT);
+        int textX = centerX - textWidth / 2;
+        int textY = y + (metrics.getAscent() - metrics.getDescent()) / 2;
+        g.drawString(fret, textX, textY);
     }
 
     private static void paintPlaying(Graphics2D g, TabLayout layout, Cursor cursor, BeatPosition playing) {
