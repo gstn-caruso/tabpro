@@ -4,13 +4,17 @@ Clon libre de Guitar Pro 5: editor de tablaturas para guitarra, minimal, en Java
 
 ## Estado
 
-**v0.3.0 — Multipista.** Editor de tablatura con edición por teclado al estilo
+**v0.4.0 — Multipista.** Editor de tablatura con edición por teclado al estilo
 Guitar Pro 5, guardado y apertura en formato propio `.tabpro`, y reproducción MIDI
 con cursor que sigue la música.
 
 La partitura se ve como en Guitar Pro: cada pista con su **pentagrama** arriba y su
 tablatura abajo, todas apiladas y alineadas compás a compás, con clave, figuras,
 plicas, barras de unión, silencios, puntillos y alteraciones.
+
+Arriba, el **diapasón** y el **teclado** marcan las notas del beat en el que estás
+parado y, mientras suena, las del beat que está sonando. El diapasón se adapta a la
+afinación de la pista, así que un bajo muestra cuatro cuerdas.
 
 Abajo, el **panel de pistas** las lista todas con su instrumento General MIDI (con un
 ícono por familia), volumen, paneo, silenciar y solo, y al costado una grilla con un
@@ -27,7 +31,7 @@ tresillos e importación o exportación de archivos `.gp5`.
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.3.0_all.deb
+sudo apt install ./tabpro_0.4.0_all.deb
 tabpro
 ```
 
@@ -37,7 +41,7 @@ Queda también en el menú de aplicaciones. Necesita una JRE 25 con entorno grá
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.3.0.jar
+java -jar tabpro-app-0.4.0.jar
 ```
 
 ## Uso
@@ -60,6 +64,7 @@ El cursor marca una celda (compás, beat, cuerda). Todo se hace desde el teclado
 | `Espacio` | Reproducir / detener. El tempo se cambia desde la barra de herramientas. |
 | `Ctrl+N` `Ctrl+O` `Ctrl+S` | Nueva partitura / abrir / guardar. |
 | `Ctrl+Shift+G` `Ctrl+Shift+B` | Agregar una pista de guitarra / de bajo. |
+| `Ctrl+1` `Ctrl+2` | Mostrar u ocultar el diapasón / el teclado. |
 
 Un clic sobre cualquier pista mueve el cursor a esa celda y, si hace falta, cambia de
 pista. El número de compás se pinta en naranja cuando la suma de figuras no coincide
@@ -123,8 +128,8 @@ el formato y con MIDI solo a través de los puertos `ScoreFiles` y `Player` defi
 - `tabpro-midi` — reproducción con `javax.sound.midi`, con un marcador por beat para
   mover el cursor sin polling.
 - `tabpro-ui` — interfaz Swing: ventana, canvas de la partitura (layout en sistemas,
-  pentagrama y tablatura), panel de pistas con el mixer y la grilla de compases,
-  teclado, documento y transporte (sin FlatLaf).
+  pentagrama y tablatura), diapasón y teclado del beat actual, panel de pistas con el
+  mixer y la grilla de compases, teclado, documento y transporte (sin FlatLaf).
 - `tabpro-app` — `main`, FlatLaf, cableado de módulos y empaquetado (jar ejecutable + `.deb`).
 
 ## Build
@@ -137,7 +142,7 @@ Genera `tabpro-app/target/tabpro-app-<versión>.jar` (ejecutable) y
 `tabpro-app/target/tabpro_<versión>_all.deb`.
 
 ```sh
-java -jar tabpro-app/target/tabpro-app-0.3.0.jar
+java -jar tabpro-app/target/tabpro-app-0.4.0.jar
 ```
 
 ## Desarrollo

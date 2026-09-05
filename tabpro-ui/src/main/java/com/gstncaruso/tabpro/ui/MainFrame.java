@@ -4,10 +4,13 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.playback.Player;
+import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.tracks.TrackPanel;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -21,8 +24,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -39,7 +44,7 @@ public final class MainFrame extends JFrame {
         super("tabpro");
         this.editor = editor;
         this.document = new ScoreDocument(editor, files);
-        setSize(1000, 640);
+        setSize(windowSize());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         ScoreCanvas canvas = new ScoreCanvas(editor);
@@ -61,10 +66,12 @@ public final class MainFrame extends JFrame {
         editor.addListener(() -> tempoSpinner.setValue(editor.score().tempo()));
 
         TrackPanel trackPanel = new TrackPanel(editor);
+        BeatViews beatViews = new BeatViews(editor);
 
         transport.addListener(() -> {
             canvas.showPlayhead(transport.playhead());
             trackPanel.showPlayingMeasure(transport.playhead().measure());
+            beatViews.showPlayhead(transport.playhead());
             playButton.setText(transport.isPlaying() ? "Detener" : "Reproducir");
         });
 
@@ -78,9 +85,13 @@ public final class MainFrame extends JFrame {
         split.setDividerSize(6);
         split.setDividerLocation(getHeight() - trackPanel.preferredPanelHeight());
 
-        setJMenuBar(menuBar(togglePlayback, trackPanel, canvas));
+        JPanel top = new JPanel(new BorderLayout());
+        top.add(toolBar(playButton, tempoSpinner), BorderLayout.NORTH);
+        top.add(beatViews, BorderLayout.CENTER);
+
+        setJMenuBar(menuBar(togglePlayback, trackPanel, canvas, beatViews));
         setLayout(new BorderLayout());
-        add(toolBar(playButton, tempoSpinner), BorderLayout.NORTH);
+        add(top, BorderLayout.NORTH);
         add(split, BorderLayout.CENTER);
         add(status, BorderLayout.SOUTH);
         updateTitle();
@@ -105,13 +116,44 @@ public final class MainFrame extends JFrame {
         return toolBar;
     }
 
-    private JMenuBar menuBar(Runnable togglePlayback, TrackPanel trackPanel, ScoreCanvas canvas) {
+    private JMenuBar menuBar(
+            Runnable togglePlayback, TrackPanel trackPanel, ScoreCanvas canvas, BeatViews beatViews) {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu());
         menuBar.add(editMenu());
         menuBar.add(trackMenu(trackPanel, canvas));
+        menuBar.add(viewMenu(beatViews, canvas));
         menuBar.add(playMenu(togglePlayback));
         return menuBar;
+    }
+
+    private JMenu viewMenu(BeatViews beatViews, ScoreCanvas canvas) {
+        JMenu menu = new JMenu("Ver");
+        menu.add(checkBoxItem("Diapasón", "ctrl 1", beatViews.isFretboardVisible(), shown -> {
+            beatViews.setFretboardVisible(shown);
+            canvas.requestFocusInWindow();
+        }));
+        menu.add(checkBoxItem("Teclado", "ctrl 2", beatViews.isKeyboardVisible(), shown -> {
+            beatViews.setKeyboardVisible(shown);
+            canvas.requestFocusInWindow();
+        }));
+        return menu;
+    }
+
+    private JCheckBoxMenuItem checkBoxItem(
+            String label, String accelerator, boolean selected, java.util.function.Consumer<Boolean> onToggle) {
+        JCheckBoxMenuItem item = new JCheckBoxMenuItem(label, selected);
+        if (accelerator != null) {
+            item.setAccelerator(KeyStroke.getKeyStroke(accelerator));
+        }
+        item.addActionListener(e -> onToggle.accept(item.isSelected()));
+        return item;
+    }
+
+    /** Lo mas grande que entre comodo en la pantalla, sin pasarse. */
+    private static Dimension windowSize() {
+        Dimension screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getSize();
+        return new Dimension(Math.min(1280, screen.width - 60), Math.min(900, screen.height - 60));
     }
 
     private JMenu trackMenu(TrackPanel trackPanel, ScoreCanvas canvas) {
