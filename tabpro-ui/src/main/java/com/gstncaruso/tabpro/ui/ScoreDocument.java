@@ -33,4 +33,9 @@ public final class ScoreDocument {
         files.save(editor.score(), path);
         return true;
     }
+
+    public void saveAs(Path path) {
+        files.save(editor.score(), path);
+        this.path = path;
+    }
 }

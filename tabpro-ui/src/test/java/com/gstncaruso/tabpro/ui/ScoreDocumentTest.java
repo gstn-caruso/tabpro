@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class ScoreDocumentTest {
@@ -36,6 +37,18 @@ class ScoreDocumentTest {
 
         assertFalse(document.save());
         assertEquals(0, files.saveCount);
+    }
+
+    @Test
+    void saveAsRemembersThePath() {
+        FakeScoreFiles files = new FakeScoreFiles();
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files);
+        Path path = Path.of("cancion.tabpro");
+
+        document.saveAs(path);
+
+        assertEquals(Optional.of(path), document.path());
+        assertEquals(1, files.saveCount);
     }
 
     private static final class FakeScoreFiles implements ScoreFiles {
