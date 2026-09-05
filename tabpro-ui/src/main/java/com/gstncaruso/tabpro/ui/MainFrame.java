@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
+import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.tab.TabCanvas;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
@@ -10,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.file.Path;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,7 +20,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public final class MainFrame extends JFrame {
@@ -26,7 +32,7 @@ public final class MainFrame extends JFrame {
     private final ScoreDocument document;
     private final Editor editor;
 
-    public MainFrame(Editor editor, ScoreFiles files) {
+    public MainFrame(Editor editor, ScoreFiles files, Player player) {
         super("tabpro");
         this.editor = editor;
         this.document = new ScoreDocument(editor, files);
@@ -37,12 +43,31 @@ public final class MainFrame extends JFrame {
         JScrollPane scrollPane = new JScrollPane(canvas);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
+        Transport transport = new Transport(editor, player, SwingUtilities::invokeLater);
+        Runnable togglePlayback = () -> {
+            transport.toggle();
+            canvas.requestFocusInWindow();
+        };
+
+        JButton playButton = new JButton("Reproducir");
+        playButton.addActionListener(e -> togglePlayback.run());
+
+        JSpinner tempoSpinner = new JSpinner(new SpinnerNumberModel(editor.score().tempo(), 20, 400, 1));
+        tempoSpinner.addChangeListener(e -> editor.setTempo((Integer) tempoSpinner.getValue()));
+        editor.addListener(() -> tempoSpinner.setValue(editor.score().tempo()));
+
+        transport.addListener(() -> {
+            canvas.showPlaying(transport.playing());
+            playButton.setText(transport.isPlaying() ? "Detener" : "Reproducir");
+        });
+
         JLabel status = new JLabel(StatusText.describe(editor.cursor(), editor.currentBeat()));
         status.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         editor.addListener(() -> status.setText(StatusText.describe(editor.cursor(), editor.currentBeat())));
 
-        setJMenuBar(menuBar());
+        setJMenuBar(menuBar(togglePlayback));
         setLayout(new BorderLayout());
+        add(toolBar(playButton, tempoSpinner), BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(status, BorderLayout.SOUTH);
         updateTitle();
@@ -56,11 +81,27 @@ public final class MainFrame extends JFrame {
         });
     }
 
-    private JMenuBar menuBar() {
+    private JToolBar toolBar(JButton playButton, JSpinner tempoSpinner) {
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        toolBar.add(playButton);
+        toolBar.add(new JLabel("Tempo"));
+        toolBar.add(tempoSpinner);
+        return toolBar;
+    }
+
+    private JMenuBar menuBar(Runnable togglePlayback) {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu());
         menuBar.add(editMenu());
+        menuBar.add(playMenu(togglePlayback));
         return menuBar;
+    }
+
+    private JMenu playMenu(Runnable togglePlayback) {
+        JMenu menu = new JMenu("Reproducir");
+        menu.add(menuItem("Reproducir / Detener", "SPACE", togglePlayback));
+        return menu;
     }
 
     private JMenu fileMenu() {
