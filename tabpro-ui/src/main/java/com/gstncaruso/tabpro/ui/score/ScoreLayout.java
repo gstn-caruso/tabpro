@@ -40,12 +40,16 @@ public final class ScoreLayout {
     public static final int MIN_MEASURE_WIDTH = 76;
     /** Lo que se reserva al arranque de cada sistema para la clave y la indicacion de compas. */
     public static final int SYSTEM_HEAD_WIDTH = 54;
+    /** Lo que se reserva en medio de un sistema cuando cambia la armadura o el compas. */
+    public static final int SIGNATURE_CHANGE_WIDTH = 30;
 
     private final Score score;
     private final int[] columnWidth;
     private final int[] headWidth;
     private final int[] columnX;
     private final int[] system;
+    private final boolean[] systemStart;
+    private final boolean[] signatureChange;
     private final int[] blockTop;
     private final int blockHeightTotal;
     private final int systemCount;
@@ -57,6 +61,8 @@ public final class ScoreLayout {
             int[] headWidth,
             int[] columnX,
             int[] system,
+            boolean[] systemStart,
+            boolean[] signatureChange,
             int[] blockTop,
             int blockHeightTotal,
             int systemCount,
@@ -66,6 +72,8 @@ public final class ScoreLayout {
         this.headWidth = headWidth;
         this.columnX = columnX;
         this.system = system;
+        this.systemStart = systemStart;
+        this.signatureChange = signatureChange;
         this.blockTop = blockTop;
         this.blockHeightTotal = blockHeightTotal;
         this.systemCount = systemCount;
@@ -80,6 +88,8 @@ public final class ScoreLayout {
         int[] columnX = new int[measureCount];
         int[] headWidth = new int[measureCount];
         int[] system = new int[measureCount];
+        boolean[] systemStart = new boolean[measureCount];
+        boolean[] signatureChange = new boolean[measureCount];
         int currentSystem = 0;
         int x = LEFT_MARGIN;
         for (int measure = 0; measure < measureCount; measure++) {
@@ -89,9 +99,12 @@ public final class ScoreLayout {
                 x = LEFT_MARGIN;
                 startsASystem = true;
             }
-            headWidth[measure] = startsASystem ? SYSTEM_HEAD_WIDTH : 0;
+            boolean changesSignature = !startsASystem && measure > 0 && signatureChangedAt(score, measure);
+            headWidth[measure] = startsASystem ? SYSTEM_HEAD_WIDTH : (changesSignature ? SIGNATURE_CHANGE_WIDTH : 0);
             columnX[measure] = x;
             system[measure] = currentSystem;
+            systemStart[measure] = startsASystem;
+            signatureChange[measure] = changesSignature;
             x += columnWidth[measure] + headWidth[measure];
         }
 
@@ -109,10 +122,19 @@ public final class ScoreLayout {
                 headWidth,
                 columnX,
                 system,
+                systemStart,
+                signatureChange,
                 blockTop,
                 blockHeightTotal,
                 measureCount == 0 ? 1 : currentSystem + 1,
                 beatBoundsOf(score, columnX, headWidth, columnWidth));
+    }
+
+    /** Si la armadura o el compas de este comienzo difieren de los del compas anterior. */
+    private static boolean signatureChangedAt(Score score, int measure) {
+        boolean timeChanged = !score.timeSignatureOf(measure).equals(score.timeSignatureOf(measure - 1));
+        boolean keyChanged = !score.attributesOf(measure).keySignature().equals(score.attributesOf(measure - 1).keySignature());
+        return timeChanged || keyChanged;
     }
 
     private static int[] columnWidths(Score score, int measureCount) {
@@ -224,7 +246,12 @@ public final class ScoreLayout {
     }
 
     public boolean startsASystem(int measure) {
-        return headWidth[measure] > 0;
+        return systemStart[measure];
+    }
+
+    /** Si en medio de un sistema cambia la armadura o el compas, y hay que volver a escribirlos. */
+    public boolean hasSignatureChange(int measure) {
+        return signatureChange[measure];
     }
 
     public int totalHeight() {

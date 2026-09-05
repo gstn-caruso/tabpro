@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.score;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -216,6 +217,26 @@ class ScoreLayoutTest {
 
         assertTrue(manySystems > oneSystem);
         assertNotEquals(0, oneSystem);
+    }
+
+    @Test
+    void aMidSystemTimeSignatureChangeReservesRoom() {
+        Measure fourFour = quarters(4);
+        Measure threeFour = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 0)))).withTimeSignature(new TimeSignature(3, 4));
+        Track guitar = Track.standardGuitar("Guitarra");
+        Score score = new Score("", 120, List.of(new Track(
+                "Guitarra", guitar.tuning(), guitar.channel(), List.of(fourFour, threeFour, threeFour))));
+
+        ScoreLayout layout = ScoreLayout.of(score, WIDE);
+
+        assertFalse(layout.startsASystem(1), "sigue siendo el mismo sistema");
+        assertTrue(layout.hasSignatureChange(1));
+        assertEquals(ScoreLayout.SIGNATURE_CHANGE_WIDTH, layout.headWidth(1));
+        assertFalse(layout.hasSignatureChange(2), "el compas 2 sigue en el mismo compas que el 1, no cambia nada");
+        assertFalse(layout.hasSignatureChange(0), "el primer compas de la partitura no cambia nada");
     }
 
     private int firstMeasureOfSystem(ScoreLayout layout, int system, int measureCount) {
