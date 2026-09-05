@@ -108,16 +108,39 @@ class TransportTest {
         transport.addListener(() -> notifications[0]++);
 
         transport.toggle();
+        assertEquals(1, notifications[0], "empezar a sonar es un cambio");
+
         player.emitBeat(new BeatPosition(0, 0, 0));
-        assertEquals(1, notifications[0]);
+        assertEquals(2, notifications[0], "cada beat mueve el cursor de reproducción");
 
         player.emitFinished();
-        assertEquals(2, notifications[0]);
+        assertEquals(3, notifications[0], "terminar tambien es un cambio");
 
         transport.toggle();
-        assertEquals(2, notifications[0]);
-        transport.toggle();
-        assertEquals(3, notifications[0]);
+        assertEquals(4, notifications[0]);
+    }
+
+    @Test
+    void theMetronomeAndTheCountDownAreOffUntilOneAsksForThem() {
+        assertFalse(transport.isMetronomeOn());
+        assertFalse(transport.isCountDownOn());
+
+        transport.toggleMetronome();
+        transport.toggleCountDown();
+
+        assertTrue(transport.isMetronomeOn());
+        assertTrue(transport.isCountDownOn());
+    }
+
+    @Test
+    void aLoopKeepsPlayingUntilOneStopsIt() {
+        transport.loopOver(new com.gstncaruso.tabpro.core.playback.LoopRange(0, 0), null);
+
+        assertTrue(transport.loop().isPresent());
+
+        transport.stopLooping();
+
+        assertTrue(transport.loop().isEmpty());
     }
 
     private static final class FakePlayer implements Player {

@@ -40,10 +40,20 @@ public final class MidiPlayer implements Player, AutoCloseable {
 
     @Override
     public void play(Timeline timeline, PlaybackListener listener) {
+        play(timeline, java.util.List.of(), listener);
+    }
+
+    @Override
+    public void play(
+            Timeline timeline,
+            java.util.List<com.gstncaruso.tabpro.core.playback.MetronomeClick> clicks,
+            PlaybackListener listener) {
         open();
         this.listener = listener;
         try {
-            sequencer.setSequence(MidiSequences.fromTimeline(timeline));
+            javax.sound.midi.Sequence sequence = MidiSequences.fromTimeline(timeline);
+            MidiSequences.addMetronomeTrack(sequence, clicks);
+            sequencer.setSequence(sequence);
         } catch (InvalidMidiDataException e) {
             throw new IllegalStateException(e);
         }

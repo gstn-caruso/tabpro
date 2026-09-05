@@ -26,6 +26,11 @@ public record Timeline(int tempoBpm, int ticksPerQuarter, List<TrackTimeline> tr
     }
 
     /** El mismo timeline empezando mas tarde: para anteponerle una cuenta regresiva. */
+    /** La misma musica a otra velocidad, como pide el entrenador de velocidad. */
+    public Timeline withTempo(int bpm) {
+        return new Timeline(bpm, ticksPerQuarter, tracks);
+    }
+
     public Timeline shiftedBy(long ticks) {
         return new Timeline(tempoBpm, ticksPerQuarter, tracks.stream().map(track -> track.shiftedBy(ticks)).toList());
     }

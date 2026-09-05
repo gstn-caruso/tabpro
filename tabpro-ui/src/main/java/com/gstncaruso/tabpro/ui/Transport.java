@@ -1,23 +1,45 @@
 package com.gstncaruso.tabpro.ui;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.editing.Selection;
+import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
-import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.core.playback.CountIn;
+import com.gstncaruso.tabpro.core.playback.LoopRange;
+import com.gstncaruso.tabpro.core.playback.Metronome;
+import com.gstncaruso.tabpro.core.playback.MetronomeClick;
+import com.gstncaruso.tabpro.core.playback.PlayOrder;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
+import com.gstncaruso.tabpro.core.playback.PlaybackRange;
 import com.gstncaruso.tabpro.core.playback.Player;
+import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.core.playback.RelativeTempo;
+import com.gstncaruso.tabpro.core.playback.SpeedTrainer;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+/**
+ * El transporte: lo que el menu Sonido del manual ofrece para escuchar la
+ * partitura, con metronomo, cuenta regresiva, loop, entrenador de velocidad y
+ * tempo relativo.
+ */
 public final class Transport {
 
     private final Editor editor;
     private final Player player;
     private final Consumer<Runnable> uiThread;
     private final List<Runnable> listeners = new ArrayList<>();
+
     private Playhead playhead = Playhead.silent();
+    private Metronome metronome = Metronome.off();
+    private CountIn countIn = CountIn.off();
+    private RelativeTempo relativeTempo = RelativeTempo.normal();
+    private Optional<SpeedTrainer> speedTrainer = Optional.empty();
+    private Optional<LoopRange> loop = Optional.empty();
+    private int lap;
 
     public Transport(Editor editor, Player player, Consumer<Runnable> uiThread) {
         this.editor = editor;
@@ -25,22 +47,25 @@ public final class Transport {
         this.uiThread = uiThread;
     }
 
-    /** Escucha una partitura que no es la que se esta editando, como el explorador. */
-    public void preview(com.gstncaruso.tabpro.core.model.Score score) {
-        if (player.isPlaying()) {
-            player.stop();
-        }
-        player.play(Timeline.of(score), new InternalListener());
-    }
-
     public void toggle() {
         if (player.isPlaying()) {
-            player.stop();
-            playhead = Playhead.silent();
-            notifyListeners();
+            stop();
             return;
         }
-        player.play(Timeline.of(editor.score()), new InternalListener());
+        lap = 0;
+        playFrom(editor.cursor().measure());
+    }
+
+    public void playFromTheBeginning() {
+        stop();
+        lap = 0;
+        playFrom(0);
+    }
+
+    public void stop() {
+        player.stop();
+        playhead = Playhead.silent();
+        notifyListeners();
     }
 
     public boolean isPlaying() {
@@ -55,8 +80,103 @@ public final class Transport {
         return playhead.on(track);
     }
 
+    // ---- lo que el menu Sonido configura ----------------------------------
+
+    public boolean isMetronomeOn() {
+        return metronome.enabled();
+    }
+
+    public void toggleMetronome() {
+        metronome = metronome.enabled() ? Metronome.off() : Metronome.on();
+        notifyListeners();
+    }
+
+    public boolean isCountDownOn() {
+        return countIn.enabled();
+    }
+
+    public void toggleCountDown() {
+        countIn = countIn.enabled() ? CountIn.off() : CountIn.on();
+        notifyListeners();
+    }
+
+    public RelativeTempo relativeTempo() {
+        return relativeTempo;
+    }
+
+    public void setRelativeTempo(RelativeTempo tempo) {
+        relativeTempo = tempo;
+        notifyListeners();
+    }
+
+    public Optional<LoopRange> loop() {
+        return loop;
+    }
+
+    /** Repite un rango de compases, opcionalmente subiendo el tempo en cada vuelta. */
+    public void loopOver(LoopRange range, SpeedTrainer trainer) {
+        loop = Optional.of(range);
+        speedTrainer = Optional.ofNullable(trainer);
+        lap = 0;
+        stop();
+        playFrom(range.fromMeasure());
+    }
+
+    public void stopLooping() {
+        loop = Optional.empty();
+        speedTrainer = Optional.empty();
+        notifyListeners();
+    }
+
+    /** Escucha una partitura que no es la que se esta editando, como el explorador. */
+    public void preview(Score score) {
+        stop();
+        player.play(Timeline.of(score), new InternalListener());
+    }
+
     public void addListener(Runnable listener) {
         listeners.add(listener);
+    }
+
+    // ---- como se arma lo que suena ----------------------------------------
+
+    private void playFrom(int measure) {
+        Score score = editor.score();
+        PlayOrder order = orderFrom(score, measure);
+        Timeline timeline = relativeTempo.applyTo(Timeline.of(score, order)).withTempo(tempoOfThisLap(score));
+        List<MetronomeClick> clicks = metronome.clicksFor(score, order);
+        long leadIn = countIn.leadInTicks(score.timeSignatureOf(order.measureAt(0)));
+        player.play(timeline.shiftedBy(leadIn), shifted(clicks, leadIn), new InternalListener());
+        notifyListeners();
+    }
+
+    private PlayOrder orderFrom(Score score, int measure) {
+        if (loop.isPresent()) {
+            return loop.get().asPlayOrder(1);
+        }
+        return editor.selection()
+                .map(selection -> rangeOf(selection).asPlayOrder(score))
+                .orElseGet(() -> PlaybackRange.from(measure, score).asPlayOrder(score));
+    }
+
+    private static PlaybackRange rangeOf(Selection selection) {
+        return new PlaybackRange(selection.fromMeasure(), selection.toMeasure());
+    }
+
+    /** En el entrenador de velocidad cada vuelta suena un poco mas rapido. */
+    private int tempoOfThisLap(Score score) {
+        return speedTrainer.map(trainer -> trainer.tempoForLap(lap)).orElse(score.tempo());
+    }
+
+    private static List<MetronomeClick> shifted(List<MetronomeClick> clicks, long ticks) {
+        if (ticks == 0) {
+            return clicks;
+        }
+        List<MetronomeClick> moved = new ArrayList<>(clicks.size());
+        for (MetronomeClick click : clicks) {
+            moved.add(new MetronomeClick(click.tick() + ticks, click.accented()));
+        }
+        return moved;
     }
 
     private void notifyListeners() {
@@ -79,6 +199,11 @@ public final class Transport {
         public void playbackFinished() {
             uiThread.accept(() -> {
                 playhead = Playhead.silent();
+                if (loop.isPresent()) {
+                    lap++;
+                    playFrom(loop.get().fromMeasure());
+                    return;
+                }
                 notifyListeners();
             });
         }

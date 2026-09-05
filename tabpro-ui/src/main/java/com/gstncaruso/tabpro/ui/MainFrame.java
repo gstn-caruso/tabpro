@@ -7,6 +7,8 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import com.gstncaruso.tabpro.ui.browser.ScoreBrowser;
+import com.gstncaruso.tabpro.ui.sound.LoopDialog;
+import com.gstncaruso.tabpro.ui.sound.RelativeTempoDialog;
 import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
@@ -330,24 +332,28 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void playFromTheBeginning() {
-            editor.moveToFirstMeasure();
-            transport.toggle();
+            transport.playFromTheBeginning();
             backToTheScore();
         }
 
         @Override
         public void loopAndSpeedTrainer() {
-            PendingFeature.announce(MainFrame.this, "El loop y el entrenador de velocidad");
+            if (transport.loop().isPresent()) {
+                transport.stopLooping();
+                return;
+            }
+            LoopDialog.ask(MainFrame.this, editor, transport.relativeTempo())
+                    .ifPresent(loop -> transport.loopOver(loop.range(), loop.trainer().orElse(null)));
         }
 
         @Override
         public void toggleMetronome() {
-            PendingFeature.announce(MainFrame.this, "El metrónomo");
+            transport.toggleMetronome();
         }
 
         @Override
         public void toggleCountDown() {
-            PendingFeature.announce(MainFrame.this, "La cuenta regresiva");
+            transport.toggleCountDown();
         }
 
         @Override
@@ -376,7 +382,8 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void relativeTempo() {
-            PendingFeature.announce(MainFrame.this, "El tempo relativo");
+            RelativeTempoDialog.ask(MainFrame.this, transport.relativeTempo())
+                    .ifPresent(transport::setRelativeTempo);
         }
 
         private void showTempoError() {
