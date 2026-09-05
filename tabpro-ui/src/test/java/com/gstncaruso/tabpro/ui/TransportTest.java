@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -9,6 +10,7 @@ import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +39,15 @@ class TransportTest {
         transport.toggle();
 
         assertFalse(transport.isPlaying());
+    }
+
+    @Test
+    void showsThePlayingBeat() {
+        transport.toggle();
+
+        player.emitBeat(new BeatPosition(0, 0, 1));
+
+        assertEquals(Optional.of(new BeatPosition(0, 0, 1)), transport.playing());
     }
 
     private static final class FakePlayer implements Player {
