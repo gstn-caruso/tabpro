@@ -8,7 +8,8 @@ import com.gstncaruso.tabpro.core.model.Track;
 
 public record ScoreDto(int format, String title, int tempo, List<TrackDto> tracks) {
 
-    public static final int CURRENT_FORMAT = 1;
+    public static final int CURRENT_FORMAT = 2;
+    private static final int OLDEST_READABLE_FORMAT = 1;
 
     public static ScoreDto from(Score score) {
         List<TrackDto> tracks = score.tracks().stream().map(TrackDto::from).toList();
@@ -16,7 +17,7 @@ public record ScoreDto(int format, String title, int tempo, List<TrackDto> track
     }
 
     public Score toScore() {
-        if (format != CURRENT_FORMAT) {
+        if (format < OLDEST_READABLE_FORMAT || format > CURRENT_FORMAT) {
             throw new ScoreFileException("version de formato no soportada: " + format);
         }
         if (tracks == null) {

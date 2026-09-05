@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -70,7 +71,7 @@ class TabPainterTest {
     void highlightsThePlayingBeat() {
         Measure measure = new Measure(
                 TimeSignature.fourFour(), List.of(Beat.rest(Duration.quarter()), Beat.rest(Duration.quarter())));
-        Track track = new Track("Guitarra", Tuning.standard(), 25, List.of(measure));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         TabLayout layout = TabLayout.of(track, 800);
         BufferedImage image = new BufferedImage(800, 300, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = graphicsOf(image);
@@ -88,7 +89,7 @@ class TabPainterTest {
     @Test
     void cutsTheStringLineWhereANoteIsPlayed() {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(3, 5))));
-        Track track = new Track("Guitarra", Tuning.standard(), 25, List.of(measure));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         TabLayout layout = TabLayout.of(track, 800);
         BufferedImage image = new BufferedImage(800, 300, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = graphicsOf(image);
@@ -113,7 +114,7 @@ class TabPainterTest {
                     Beat.rest(Duration.quarter()));
             measures.add(new Measure(TimeSignature.fourFour(), beats));
         }
-        Track track = new Track("Guitarra", Tuning.standard(), 25, measures);
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), measures);
         TabLayout layout = TabLayout.of(track, 400);
         BufferedImage image = new BufferedImage(400, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = graphicsOf(image);

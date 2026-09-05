@@ -4,13 +4,17 @@ Clon libre de Guitar Pro 5: editor de tablaturas para guitarra, minimal, en Java
 
 ## Estado
 
-**v0.2.1 — MVP.** Editor de tablatura de una pista con edición por teclado al estilo
+**v0.2.2 — MVP.** Editor de tablatura de una pista con edición por teclado al estilo
 Guitar Pro 5, guardado y apertura en formato propio `.tabpro`, y reproducción MIDI
 con cursor que sigue la música.
 
+El modelo ya es multipista y cada pista tiene su mixer (instrumento General MIDI,
+volumen, paneo, silenciar y solo), que se guarda en el archivo y se escucha en la
+reproducción; la interfaz todavía muestra una sola pista.
+
 Fuera de alcance por ahora: pentagrama (notación estándar), efectos (bends, slides,
-ligados), dos voces por compás, tresillos, varias pistas en la interfaz e
-importación o exportación de archivos `.gp5`.
+ligados), dos voces por compás, tresillos e importación o exportación de archivos
+`.gp5`.
 
 ## Instalación
 
@@ -18,7 +22,7 @@ importación o exportación de archivos `.gp5`.
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.2.1_all.deb
+sudo apt install ./tabpro_0.2.2_all.deb
 tabpro
 ```
 
@@ -28,7 +32,7 @@ Queda también en el menú de aplicaciones. Necesita una JRE 25 con entorno grá
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.2.1.jar
+java -jar tabpro-app-0.2.2.jar
 ```
 
 ## Uso
@@ -58,17 +62,22 @@ en naranja cuando la suma de figuras no coincide con el compás.
 
 JSON legible y versionado. Las afinaciones son números MIDI (cuerda 1 = la más aguda),
 `value` es el denominador de la figura (4 = negra, 8 = corchea, …) y un beat sin notas
-es un silencio:
+es un silencio. `volume` y `pan` van de 0 a 127 (paneo centrado en 64); los archivos de
+la versión 1 se siguen abriendo y toman los valores por defecto:
 
 ```json
 {
-  "format": 1,
+  "format": 2,
   "title": "Prueba",
   "tempo": 120,
   "tracks": [
     {
       "name": "Guitarra",
       "midiProgram": 25,
+      "volume": 100,
+      "pan": 64,
+      "muted": false,
+      "solo": false,
       "tuning": [64, 59, 55, 50, 45, 40],
       "measures": [
         {
@@ -116,7 +125,7 @@ Genera `tabpro-app/target/tabpro-app-<versión>.jar` (ejecutable) y
 `tabpro-app/target/tabpro_<versión>_all.deb`.
 
 ```sh
-java -jar tabpro-app/target/tabpro-app-0.2.1.jar
+java -jar tabpro-app/target/tabpro-app-0.2.2.jar
 ```
 
 ## Desarrollo

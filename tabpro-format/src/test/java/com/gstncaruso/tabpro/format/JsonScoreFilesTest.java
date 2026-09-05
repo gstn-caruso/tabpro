@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -47,7 +48,7 @@ class JsonScoreFilesTest {
         scoreFiles.save(score, path);
 
         String content = Files.readString(path);
-        assertTrue(content.startsWith("{\n  \"format\": 1,"));
+        assertTrue(content.startsWith("{\n  \"format\": 2,"));
     }
 
     @Test
@@ -59,16 +60,41 @@ class JsonScoreFilesTest {
         Beat firstBeat = Beat.of(Duration.quarter(), new Note(6, 0), new Note(5, 2));
         Beat secondBeat = Beat.rest(new Duration(NoteValue.EIGHTH, true));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(firstBeat, secondBeat));
-        Track track = new Track("Guitarra", Tuning.standard(), 25, List.of(measure));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score expected = new Score("Prueba", 120, List.of(track));
 
         assertEquals(expected, loaded);
     }
 
     @Test
+    void aVersionOneFileGetsTheDefaultMixerSettings() throws URISyntaxException {
+        Path path = Path.of(getClass().getResource("/v1-one-measure.tabpro").toURI());
+
+        Channel channel = scoreFiles.load(path).track(0).channel();
+
+        assertEquals(Channel.DEFAULT_VOLUME, channel.volume());
+        assertEquals(Channel.CENTER_PAN, channel.pan());
+        assertFalse(channel.muted());
+        assertFalse(channel.solo());
+    }
+
+    @Test
+    void savesAndLoadsTheMixerOfEveryTrack(@TempDir Path tempDir) {
+        Track guitar = Track.standardGuitar("Guitarra")
+                .withChannel(Channel.playing(30).withVolume(80).withPan(20).toggledSolo());
+        Track bass = Track.standardBass("Bajo").withChannel(Channel.playing(33).toggledMute());
+        Score score = new Score("Prueba", 120, List.of(guitar, bass));
+        Path path = tempDir.resolve("score.tabpro");
+
+        scoreFiles.save(score, path);
+
+        assertEquals(score, scoreFiles.load(path));
+    }
+
+    @Test
     void rejectsAnUnsupportedFormatVersion(@TempDir Path tempDir) throws IOException, URISyntaxException {
         String validContent = Files.readString(Path.of(getClass().getResource("/v1-one-measure.tabpro").toURI()));
-        String unsupportedContent = validContent.replaceFirst("\"format\": 1", "\"format\": 2");
+        String unsupportedContent = validContent.replaceFirst("\"format\": 1", "\"format\": 3");
         Path path = tempDir.resolve("score.tabpro");
         Files.writeString(path, unsupportedContent);
 

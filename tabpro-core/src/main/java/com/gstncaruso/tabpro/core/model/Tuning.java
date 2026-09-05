@@ -21,6 +21,14 @@ public record Tuning(List<Pitch> strings) {
                 new Pitch(40)));
     }
 
+    public static Tuning standardBass() {
+        return new Tuning(List.of(
+                new Pitch(43),
+                new Pitch(38),
+                new Pitch(33),
+                new Pitch(28)));
+    }
+
     public int stringCount() {
         return strings.size();
     }

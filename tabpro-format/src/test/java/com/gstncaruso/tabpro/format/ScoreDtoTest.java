@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -33,7 +34,7 @@ class ScoreDtoTest {
         Beat beatWithNotes = Beat.of(Duration.quarter(), new Note(6, 0), new Note(5, 2));
         Beat rest = Beat.rest(Duration.quarter());
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beatWithNotes, rest));
-        Track track = new Track("Guitarra", Tuning.standard(), 25, List.of(measure));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score score = new Score("Prueba", 120, List.of(track));
 
         ScoreDto dto = ScoreDto.from(score);
@@ -46,7 +47,7 @@ class ScoreDtoTest {
         Duration dottedEighth = new Duration(NoteValue.EIGHTH, true);
         Beat beat = Beat.rest(dottedEighth);
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
-        Track track = new Track("Guitarra", Tuning.standard(), 25, List.of(measure));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score score = new Score("Prueba", 120, List.of(track));
 
         ScoreDto dto = ScoreDto.from(score);
@@ -59,7 +60,7 @@ class ScoreDtoTest {
         Measure firstMeasure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
         Measure secondMeasure = new Measure(TimeSignature.fourFour(),
                 List.of(Beat.of(Duration.quarter(), new Note(1, 3))));
-        Track track = new Track("Guitarra", Tuning.standard(), 25, List.of(firstMeasure, secondMeasure));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(firstMeasure, secondMeasure));
         Score score = new Score("Prueba", 120, List.of(track));
 
         ScoreDto dto = ScoreDto.from(score);
@@ -83,7 +84,7 @@ class ScoreDtoTest {
         NoteDto note = new NoteDto(7, 0);
         BeatDto beat = new BeatDto(4, false, List.of(note));
         MeasureDto measure = new MeasureDto(new TimeSignatureDto(4, 4), List.of(beat));
-        TrackDto track = new TrackDto("Guitarra", 25, List.of(64, 59, 55, 50, 45, 40), List.of(measure));
+        TrackDto track = new TrackDto("Guitarra", 25, null, null, null, null, List.of(64, 59, 55, 50, 45, 40), List.of(measure));
         ScoreDto dto = new ScoreDto(ScoreDto.CURRENT_FORMAT, "Prueba", 120, List.of(track));
 
         assertThrows(ScoreFileException.class, dto::toScore);
@@ -100,7 +101,7 @@ class ScoreDtoTest {
     void rejectsAnUnknownNoteValue() {
         BeatDto beat = new BeatDto(3, false, List.of());
         MeasureDto measure = new MeasureDto(new TimeSignatureDto(4, 4), List.of(beat));
-        TrackDto track = new TrackDto("Guitarra", 25, List.of(64, 59, 55, 50, 45, 40), List.of(measure));
+        TrackDto track = new TrackDto("Guitarra", 25, null, null, null, null, List.of(64, 59, 55, 50, 45, 40), List.of(measure));
         ScoreDto dto = new ScoreDto(ScoreDto.CURRENT_FORMAT, "Prueba", 120, List.of(track));
 
         assertThrows(ScoreFileException.class, dto::toScore);
