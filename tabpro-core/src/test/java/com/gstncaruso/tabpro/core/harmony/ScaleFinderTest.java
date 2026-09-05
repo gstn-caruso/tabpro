@@ -31,7 +31,7 @@ class ScaleFinderTest {
         assertEquals(0, candidatas.get(0).incidentNotes());
         assertTrue(candidatas.stream()
                 .anyMatch(m -> m.incidentNotes() == 0
-                        && m.tonic().equals(PitchClass.of("Do"))
+                        && m.tonic().equals(PitchClass.of("C"))
                         && m.scale().equals(ScaleLibrary.major())));
     }
 
@@ -51,7 +51,7 @@ class ScaleFinderTest {
         List<ScaleMatch> candidatas = ScaleFinder.find(conUnaNotaExtranha);
 
         ScaleMatch doMayor = candidatas.stream()
-                .filter(m -> m.tonic().equals(PitchClass.of("Do")) && m.scale().equals(ScaleLibrary.major()))
+                .filter(m -> m.tonic().equals(PitchClass.of("C")) && m.scale().equals(ScaleLibrary.major()))
                 .findFirst()
                 .orElseThrow();
         assertEquals(1, doMayor.incidentNotes());

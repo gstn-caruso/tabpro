@@ -20,16 +20,38 @@ class PitchClassTest {
 
     @Test
     void distingueSolDeSiPorElPrefijo() {
-        assertEquals("Sol", PitchClass.of("Sol").name());
-        assertEquals("Si", PitchClass.of("Si").name());
+        assertEquals("G", PitchClass.of("Sol").name());
+        assertEquals("B", PitchClass.of("Si").name());
+    }
+
+    @Test
+    void seEscribeConLetraYSeCantaConSolfeo() {
+        assertEquals("A", PitchClass.of("La").name());
+        assertEquals("La", PitchClass.of("La").solfegeName());
+        assertEquals("Bb", PitchClass.of("Sib").name());
+        assertEquals("Sib", PitchClass.of("Sib").solfegeName());
+    }
+
+    @Test
+    void tambienEntiendeLosNombresConLetra() {
+        assertEquals(PitchClass.of("La"), PitchClass.of("A"));
+        assertEquals(PitchClass.of("Do#"), PitchClass.of("C#"));
+        assertEquals(PitchClass.of("Sib"), PitchClass.of("Bb"));
+    }
+
+    @Test
+    void unNombreConLetraNoSeConfundeConUnoDeSolfeo() {
+        assertEquals(PitchClass.of("Re"), PitchClass.of("D"));
+        assertEquals(PitchClass.of("Mi"), PitchClass.of("E"));
+        assertEquals(PitchClass.of("Fa"), PitchClass.of("F"));
     }
 
     @Test
     void reconoceSostenidosYBemoles() {
         assertEquals(1, PitchClass.of("Do#").semitone());
-        assertEquals("Do#", PitchClass.of("Do#").name());
+        assertEquals("C#", PitchClass.of("Do#").name());
         assertEquals(1, PitchClass.of("Reb").semitone());
-        assertEquals("Reb", PitchClass.of("Reb").name());
+        assertEquals("Db", PitchClass.of("Reb").name());
     }
 
     @Test
@@ -66,9 +88,9 @@ class PitchClassTest {
 
     @Test
     void seDeletreaSiempreConSostenidosPorDefecto() {
-        assertEquals("Do#", PitchClass.fromSemitone(1).name());
-        assertEquals("Re#", PitchClass.fromSemitone(3).name());
-        assertEquals("Do", PitchClass.fromSemitone(0).name());
+        assertEquals("C#", PitchClass.fromSemitone(1).name());
+        assertEquals("D#", PitchClass.fromSemitone(3).name());
+        assertEquals("C", PitchClass.fromSemitone(0).name());
     }
 
     @Test

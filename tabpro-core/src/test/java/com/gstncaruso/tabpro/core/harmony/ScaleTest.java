@@ -13,13 +13,13 @@ class ScaleTest {
     @Test
     void doMayorSonLasSieteNaturales() {
         assertEquals(
-                List.of("Do", "Re", "Mi", "Fa", "Sol", "La", "Si"),
-                MAJOR.notesFrom(PitchClass.of("Do")).stream().map(nota -> nota.pitchClass().name()).toList());
+                List.of("C", "D", "E", "F", "G", "A", "B"),
+                MAJOR.notesFrom(PitchClass.of("C")).stream().map(nota -> nota.pitchClass().name()).toList());
     }
 
     @Test
     void elGradoEsLaPosicionEnLaEscala() {
-        List<ScaleTone> notas = MAJOR.notesFrom(PitchClass.of("Do"));
+        List<ScaleTone> notas = MAJOR.notesFrom(PitchClass.of("C"));
         assertEquals(1, notas.get(0).degree());
         assertEquals(5, notas.get(4).degree());
         assertEquals(7, notas.get(6).degree());
@@ -27,7 +27,7 @@ class ScaleTest {
 
     @Test
     void elIntervaloEsRelativoALaTonica() {
-        List<ScaleTone> notas = MAJOR.notesFrom(PitchClass.of("Do"));
+        List<ScaleTone> notas = MAJOR.notesFrom(PitchClass.of("C"));
         assertEquals(Interval.MAJOR_THIRD, notas.get(2).interval());
         assertEquals(Interval.PERFECT_FIFTH, notas.get(4).interval());
     }
@@ -35,8 +35,8 @@ class ScaleTest {
     @Test
     void reMayorLlevaSostenidos() {
         assertEquals(
-                List.of("Re", "Mi", "Fa#", "Sol", "La", "Si", "Do#"),
-                MAJOR.notesFrom(PitchClass.of("Re")).stream().map(nota -> nota.pitchClass().name()).toList());
+                List.of("D", "E", "F#", "G", "A", "B", "C#"),
+                MAJOR.notesFrom(PitchClass.of("D")).stream().map(nota -> nota.pitchClass().name()).toList());
     }
 
     @Test

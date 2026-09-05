@@ -14,81 +14,81 @@ class ScaleLibraryTest {
 
     @Test
     void mayorEsDoReMiFaSolLaSi() {
-        assertEquals(List.of("Do", "Re", "Mi", "Fa", "Sol", "La", "Si"), namesOf(ScaleLibrary.major(), "Do"));
+        assertEquals(List.of("C", "D", "E", "F", "G", "A", "B"), namesOf(ScaleLibrary.major(), "C"));
     }
 
     @Test
     void dorianoDeReEsElRestoDeLasTeclasBlancas() {
-        assertEquals(List.of("Re", "Mi", "Fa", "Sol", "La", "Si", "Do"), namesOf(ScaleLibrary.dorian(), "Re"));
+        assertEquals(List.of("D", "E", "F", "G", "A", "B", "C"), namesOf(ScaleLibrary.dorian(), "D"));
     }
 
     @Test
     void menorNaturalDeLaEsElRestoDeLasTeclasBlancas() {
-        assertEquals(List.of("La", "Si", "Do", "Re", "Mi", "Fa", "Sol"), namesOf(ScaleLibrary.naturalMinor(), "La"));
+        assertEquals(List.of("A", "B", "C", "D", "E", "F", "G"), namesOf(ScaleLibrary.naturalMinor(), "A"));
     }
 
     @Test
     void menorArmonicaLlevaLaSensibleNaturalMayor() {
-        assertEquals(List.of("La", "Si", "Do", "Re", "Mi", "Fa", "Sol#"), namesOf(ScaleLibrary.harmonicMinor(), "La"));
+        assertEquals(List.of("A", "B", "C", "D", "E", "F", "G#"), namesOf(ScaleLibrary.harmonicMinor(), "A"));
     }
 
     @Test
     void menorMelodicaSoloAlteraLaTercera() {
-        assertEquals(List.of("La", "Si", "Do", "Re", "Mi", "Fa#", "Sol#"), namesOf(ScaleLibrary.melodicMinor(), "La"));
+        assertEquals(List.of("A", "B", "C", "D", "E", "F#", "G#"), namesOf(ScaleLibrary.melodicMinor(), "A"));
     }
 
     @Test
     void pentatonicaMayorSonCincoNotasSinCuartaNiSeptima() {
-        assertEquals(List.of("Do", "Re", "Mi", "Sol", "La"), namesOf(ScaleLibrary.majorPentatonic(), "Do"));
+        assertEquals(List.of("C", "D", "E", "G", "A"), namesOf(ScaleLibrary.majorPentatonic(), "C"));
     }
 
     @Test
     void pentatonicaMenorSonCincoNotasConTerceraYSeptimaMenor() {
-        assertEquals(List.of("La", "Do", "Re", "Mi", "Sol"), namesOf(ScaleLibrary.minorPentatonic(), "La"));
+        assertEquals(List.of("A", "C", "D", "E", "G"), namesOf(ScaleLibrary.minorPentatonic(), "A"));
     }
 
     @Test
     void bluesAgregaLaQuintaDisminuidaALaPentatonicaMenor() {
-        assertEquals(List.of("Do", "Mib", "Fa", "Solb", "Sol", "Sib"), namesOf(ScaleLibrary.blues(), "Do"));
+        assertEquals(List.of("C", "Eb", "F", "Gb", "G", "Bb"), namesOf(ScaleLibrary.blues(), "C"));
     }
 
     @Test
     void tonosEnterosSonSeisNotasEquidistantes() {
-        assertEquals(List.of("Do", "Re", "Mi", "Fa#", "Sol#", "La#"), namesOf(ScaleLibrary.wholeTone(), "Do"));
+        assertEquals(List.of("C", "D", "E", "F#", "G#", "A#"), namesOf(ScaleLibrary.wholeTone(), "C"));
     }
 
     @Test
     void cromaticaTieneLasDoceNotas() {
         assertEquals(12, ScaleLibrary.chromatic().degreeCount());
         assertEquals(
-                List.of("Do", "Do#", "Re", "Re#", "Mi", "Fa", "Fa#", "Sol", "Sol#", "La", "La#", "Si"),
-                namesOf(ScaleLibrary.chromatic(), "Do"));
+                List.of("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"),
+                namesOf(ScaleLibrary.chromatic(), "C"));
     }
 
     @Test
     void disminuidaTonoSemitonoTieneOchoNotas() {
         assertEquals(
-                List.of("Do", "Re", "Mib", "Fa", "Solb", "Lab", "La", "Si"),
-                namesOf(ScaleLibrary.diminishedWholeHalf(), "Do"));
+                List.of("C", "D", "Eb", "F", "Gb", "Ab", "A", "B"),
+                namesOf(ScaleLibrary.diminishedWholeHalf(), "C"));
     }
 
     @Test
     void diminuidaDominanteEsSemitonoTono() {
         assertEquals(
-                List.of("Do", "Reb", "Mib", "Mi", "Fa#", "Sol", "La", "Sib"),
-                namesOf(ScaleLibrary.diminishedHalfWhole(), "Do"));
+                List.of("C", "Db", "Eb", "E", "F#", "G", "A", "Bb"),
+                namesOf(ScaleLibrary.diminishedHalfWhole(), "C"));
     }
 
     @Test
     void laEscalaEspanolaEsUnaFrigiaConTerceraMayor() {
         assertEquals(
-                List.of("Mi", "Fa", "Sol#", "La", "Si", "Do", "Re"), namesOf(ScaleLibrary.phrygianDominant(), "Mi"));
+                List.of("E", "F", "G#", "A", "B", "C", "D"), namesOf(ScaleLibrary.phrygianDominant(), "E"));
     }
 
     @Test
     void todasLasEscalasSeDeletreanSinRepetirLetrasDeMasNiSaltearlas() {
         for (Scale scale : ScaleLibrary.all()) {
-            List<ScaleTone> notas = scale.notesFrom(PitchClass.of("Do"));
+            List<ScaleTone> notas = scale.notesFrom(PitchClass.of("C"));
             assertEquals(scale.degreeCount(), notas.size(), scale.name());
         }
     }

@@ -42,15 +42,15 @@ class ChordTest {
 
     @Test
     void elNombreLlevaLaFundamentalYElSufijo() {
-        assertEquals("Do", Chord.of(PitchClass.of("Do"), ChordType.MAJOR).name());
-        assertEquals("Lam", Chord.of(PitchClass.of("La"), ChordType.MINOR).name());
-        assertEquals("Sol7", Chord.of(PitchClass.of("Sol"), ChordType.SEVENTH).name());
+        assertEquals("C", Chord.of(PitchClass.of("Do"), ChordType.MAJOR).name());
+        assertEquals("Am", Chord.of(PitchClass.of("La"), ChordType.MINOR).name());
+        assertEquals("G7", Chord.of(PitchClass.of("Sol"), ChordType.SEVENTH).name());
     }
 
     @Test
     void unaInversionSeEscribeConBarra() {
         Chord doConMiEnElBajo = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Mi"));
-        assertEquals("Do/Mi", doConMiEnElBajo.name());
+        assertEquals("C/E", doConMiEnElBajo.name());
     }
 
     @Test

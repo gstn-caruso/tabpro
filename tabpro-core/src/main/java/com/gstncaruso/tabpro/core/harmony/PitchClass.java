@@ -6,8 +6,15 @@ package com.gstncaruso.tabpro.core.harmony;
  */
 public record PitchClass(int letter, int alteration) {
 
-    /** Las siete letras, en el orden en que suenan a partir de Do. */
-    private static final String[] LETTER_NAMES = {"Do", "Re", "Mi", "Fa", "Sol", "La", "Si"};
+    /**
+     * Las siete letras, en el orden en que suenan a partir de Do. Los acordes se
+     * escriben con la nomenclatura anglosajona en todos lados, tambien aca: un
+     * La menor se anota Am, no Lam.
+     */
+    private static final String[] LETTER_NAMES = {"C", "D", "E", "F", "G", "A", "B"};
+
+    /** Los mismos siete grados con el nombre con que se los canta. */
+    private static final String[] SOLFEGE_NAMES = {"Do", "Re", "Mi", "Fa", "Sol", "La", "Si"};
 
     /** El semitono natural de cada letra (sin alterar). */
     private static final int[] LETTER_SEMITONES = {0, 2, 4, 5, 7, 9, 11};
@@ -24,19 +31,26 @@ public record PitchClass(int letter, int alteration) {
         }
     }
 
-    /** Interpreta un nombre como "Do", "Fa#" o "Sib". */
+    /** Interpreta un nombre como "C", "F#", "Bb", y tambien "Do", "Fa#" o "Sib". */
     public static PitchClass of(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("una nota necesita un nombre");
         }
         String trimmed = name.trim();
-        for (int letter = 0; letter < LETTER_NAMES.length; letter++) {
-            String letterName = LETTER_NAMES[letter];
-            if (trimmed.regionMatches(true, 0, letterName, 0, letterName.length())) {
-                return new PitchClass(letter, parseAlteration(trimmed.substring(letterName.length())));
+        return read(trimmed, SOLFEGE_NAMES)
+                .or(() -> read(trimmed, LETTER_NAMES))
+                .orElseThrow(() -> new IllegalArgumentException("nota desconocida: " + name));
+    }
+
+    private static java.util.Optional<PitchClass> read(String name, String[] names) {
+        for (int letter = 0; letter < names.length; letter++) {
+            String candidate = names[letter];
+            if (name.regionMatches(true, 0, candidate, 0, candidate.length())) {
+                return java.util.Optional.of(
+                        new PitchClass(letter, parseAlteration(name.substring(candidate.length()))));
             }
         }
-        throw new IllegalArgumentException("nota desconocida: " + name);
+        return java.util.Optional.empty();
     }
 
     private static int parseAlteration(String suffix) {
@@ -44,12 +58,12 @@ public record PitchClass(int letter, int alteration) {
             return 0;
         }
         char symbol = suffix.charAt(0);
-        boolean esSostenido = symbol == '#';
-        boolean esBemol = symbol == 'b';
-        if ((!esSostenido && !esBemol) || suffix.chars().anyMatch(c -> c != symbol)) {
+        boolean sharp = symbol == '#';
+        boolean flat = symbol == 'b';
+        if ((!sharp && !flat) || suffix.chars().anyMatch(character -> character != symbol)) {
             throw new IllegalArgumentException("alteracion desconocida: " + suffix);
         }
-        return esSostenido ? suffix.length() : -suffix.length();
+        return sharp ? suffix.length() : -suffix.length();
     }
 
     /** El deletreo por defecto de un semitono, siempre con sostenidos. */
@@ -79,9 +93,18 @@ public record PitchClass(int letter, int alteration) {
         return new PitchClass(newLetter, alteration);
     }
 
+    /** El nombre con que se escribe un acorde: "C", "F#", "Bb". */
     public String name() {
-        String accidental = alteration > 0 ? "#".repeat(alteration) : "b".repeat(-alteration);
-        return LETTER_NAMES[letter] + accidental;
+        return LETTER_NAMES[letter] + accidental();
+    }
+
+    /** El nombre con que se canta la nota: "Do", "Fa#", "Sib". */
+    public String solfegeName() {
+        return SOLFEGE_NAMES[letter] + accidental();
+    }
+
+    private String accidental() {
+        return alteration > 0 ? "#".repeat(alteration) : "b".repeat(-alteration);
     }
 
     @Override

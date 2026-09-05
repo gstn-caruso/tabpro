@@ -18,7 +18,7 @@ class ChordNamerTest {
         List<Chord> nombres = ChordNamer.namesFor(diagrama, Tuning.standard());
 
         assertFalse(nombres.isEmpty());
-        assertEquals("Do", nombres.get(0).name());
+        assertEquals("C", nombres.get(0).name());
     }
 
     @Test
@@ -27,7 +27,7 @@ class ChordNamerTest {
 
         List<Chord> nombres = ChordNamer.namesFor(diagrama, Tuning.standard());
 
-        assertEquals("Lam", nombres.get(0).name());
+        assertEquals("Am", nombres.get(0).name());
     }
 
     @Test
@@ -37,7 +37,7 @@ class ChordNamerTest {
 
         List<Chord> nombres = ChordNamer.namesFor(doConMiEnElBajo, Tuning.standard());
 
-        assertTrue(nombres.stream().anyMatch(c -> c.name().equals("Do/Mi")));
+        assertTrue(nombres.stream().anyMatch(c -> c.name().equals("C/E")));
     }
 
     @Test
