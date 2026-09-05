@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
+import com.gstncaruso.tabpro.core.model.Score;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -42,5 +43,10 @@ public final class ScoreDocument {
     public void open(Path path) {
         editor.replaceScore(files.load(path));
         this.path = path;
+    }
+
+    public void newScore() {
+        editor.replaceScore(Score.blank());
+        path = null;
     }
 }

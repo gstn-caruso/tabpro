@@ -79,6 +79,19 @@ class ScoreDocumentTest {
         assertEquals(Optional.of(path), document.path());
     }
 
+    @Test
+    void newForgetsThePath() {
+        FakeScoreFiles files = new FakeScoreFiles();
+        Editor editor = new Editor(Score.blank());
+        ScoreDocument document = new ScoreDocument(editor, files);
+        document.saveAs(Path.of("cancion.tabpro"));
+
+        document.newScore();
+
+        assertTrue(document.path().isEmpty());
+        assertEquals(Score.blank(), editor.score());
+    }
+
     private static final class FakeScoreFiles implements ScoreFiles {
 
         private final Map<Path, Score> scores = new HashMap<>();
