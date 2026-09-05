@@ -16,6 +16,9 @@ public record ScoreDto(int format, String title, int tempo, List<TrackDto> track
     }
 
     public Score toScore() {
+        if (format != CURRENT_FORMAT) {
+            throw new ScoreFileException("version de formato no soportada: " + format);
+        }
         if (tracks == null) {
             throw new ScoreFileException("falta el campo tracks");
         }

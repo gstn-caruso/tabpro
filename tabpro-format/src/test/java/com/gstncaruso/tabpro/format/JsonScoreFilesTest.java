@@ -1,8 +1,10 @@
 package com.gstncaruso.tabpro.format;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -60,5 +62,15 @@ class JsonScoreFilesTest {
         Score expected = new Score("Prueba", 120, List.of(track));
 
         assertEquals(expected, loaded);
+    }
+
+    @Test
+    void rejectsAnUnsupportedFormatVersion(@TempDir Path tempDir) throws IOException, URISyntaxException {
+        String validContent = Files.readString(Path.of(getClass().getResource("/v1-one-measure.tabpro").toURI()));
+        String unsupportedContent = validContent.replaceFirst("\"format\": 1", "\"format\": 2");
+        Path path = tempDir.resolve("score.tabpro");
+        Files.writeString(path, unsupportedContent);
+
+        assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
     }
 }
