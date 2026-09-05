@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.core.playback;
 
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -23,7 +24,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.IntFunction;
 
 /**
  * Convierte una pista en su linea de tiempo: recorre el orden real de los
@@ -66,12 +69,12 @@ final class TrackRenderer {
                 continue;
             }
             Measure measure = track.measure(measureIndex);
-            var feel = measure.attributes().tripletFeel();
+            TripletFeel feel = measure.attributes().tripletFeel();
             renderVoice(measure.voice(VoicePart.LEAD), tick, feel, measureIndex, lead, true);
             renderVoice(measure.voice(VoicePart.BASS), tick, feel, measureIndex, bass, false);
             tick += measure.durationTicks();
         }
-        var channel = track.channel();
+        Channel channel = track.channel();
         int volume = audible ? channel.volume() : 0;
         return new TrackTimeline(channel.program(), volume, channel.pan(), track.isPercussion(), notes, beats);
     }
@@ -101,7 +104,7 @@ final class TrackRenderer {
             long noteTick = tick + i * strokeDelay;
             long noteBeatTicks = beatTicks;
 
-            var grace = note.effects().grace();
+            Optional<GraceNote> grace = note.effects().grace();
             if (grace.isPresent()) {
                 long graceTicks = new Duration(grace.get().duration(), false).ticks();
                 if (grace.get().onBeat()) {
@@ -202,7 +205,7 @@ final class TrackRenderer {
         scheduleAlternating(note, tick, soundTicks, unit, index -> pitch);
     }
 
-    private void scheduleAlternating(Note note, long tick, long soundTicks, long unit, java.util.function.IntFunction<Pitch> pitchAt) {
+    private void scheduleAlternating(Note note, long tick, long soundTicks, long unit, IntFunction<Pitch> pitchAt) {
         int count = (int) Math.max(1, soundTicks / Math.max(1, unit));
         long remaining = soundTicks;
         long cursorTick = tick;
