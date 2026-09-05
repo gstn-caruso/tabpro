@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -51,7 +52,7 @@ final class TabPainter {
         Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, beatIndex);
         int centerX = bounds.x + bounds.width / 2;
         int y = layout.stringY(trackIndex, measureIndex, note.string());
-        String fret = String.valueOf(note.fret());
+        String fret = fretText(note);
 
         g.setFont(FRET_FONT);
         FontMetrics metrics = g.getFontMetrics();
@@ -61,6 +62,15 @@ final class TabPainter {
 
         g.setColor(ScoreColors.INK);
         g.drawString(fret, centerX - textWidth / 2, y + (metrics.getAscent() - metrics.getDescent()) / 2);
+    }
+
+    /** La nota muerta se escribe X y la fantasma entre parentesis, como pide el manual. */
+    private static String fretText(Note note) {
+        if (note.has(Ornament.DEAD)) {
+            return "X";
+        }
+        String digits = String.valueOf(note.fret());
+        return note.has(Ornament.GHOST) ? "(" + digits + ")" : digits;
     }
 
     private static void clearBehindTheDigits(Graphics2D g, int centerX, int y, int textWidth) {

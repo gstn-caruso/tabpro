@@ -136,6 +136,33 @@ class ScorePainterTest {
         assertDoesNotThrow(() -> paint(scoreWith(crowded), new Cursor(0, 0, 0, 1), Playhead.silent()));
     }
 
+    @Test
+    void survivesEverySymbolTheManualListsForTheTablature() {
+        Note ghost = new Note(1, 5).toggling(
+                com.gstncaruso.tabpro.core.model.effects.Ornament.GHOST);
+        Note dead = new Note(2, 0).toggling(com.gstncaruso.tabpro.core.model.effects.Ornament.DEAD);
+        Note tied = new Note(3, 3).toggling(com.gstncaruso.tabpro.core.model.effects.Ornament.HAMMER_ON_PULL_OFF);
+        Note tiedTo = Note.tiedOn(3).withFret(5);
+        Note bent = new Note(4, 7).withBend(
+                com.gstncaruso.tabpro.core.model.effects.Bend.of(
+                        com.gstncaruso.tabpro.core.model.effects.BendType.BEND, 4));
+        Note slid = new Note(5, 2).withSlide(com.gstncaruso.tabpro.core.model.effects.SlideType.OUT_UPWARDS);
+        Note harmonic = new Note(6, 12).withHarmonic(com.gstncaruso.tabpro.core.model.effects.HarmonicType.NATURAL);
+
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), ghost, dead)
+                        .withEffects(com.gstncaruso.tabpro.core.model.effects.BeatEffects.none()
+                                .withTapping(true)
+                                .withStroke(com.gstncaruso.tabpro.core.model.effects.Stroke.of(
+                                        com.gstncaruso.tabpro.core.model.effects.StrokeDirection.DOWN))
+                                .withText("rit.")),
+                Beat.of(Duration.quarter(), tied),
+                Beat.of(Duration.quarter(), tiedTo, bent),
+                Beat.of(Duration.quarter(), slid, harmonic)));
+
+        assertDoesNotThrow(() -> paint(scoreWith(measure), new Cursor(0, 0, 0, 1), Playhead.silent()));
+    }
+
     private static Measure measureOf(Beat... beats) {
         return new Measure(TimeSignature.fourFour(), List.of(beats));
     }
