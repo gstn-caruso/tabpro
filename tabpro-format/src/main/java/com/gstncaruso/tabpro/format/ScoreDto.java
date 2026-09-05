@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.format;
 
 import java.util.List;
 
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 
@@ -15,6 +16,9 @@ public record ScoreDto(int format, String title, int tempo, List<TrackDto> track
     }
 
     public Score toScore() {
+        if (tracks == null) {
+            throw new ScoreFileException("falta el campo tracks");
+        }
         List<Track> domainTracks = tracks.stream().map(TrackDto::toTrack).toList();
         return new Score(title, tempo, domainTracks);
     }

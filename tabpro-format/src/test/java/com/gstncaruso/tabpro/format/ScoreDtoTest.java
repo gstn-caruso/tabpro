@@ -87,4 +87,11 @@ class ScoreDtoTest {
 
         assertThrows(ScoreFileException.class, dto::toScore);
     }
+
+    @Test
+    void rejectsAMissingTracksField() {
+        ScoreDto dto = new ScoreDto(ScoreDto.CURRENT_FORMAT, "Prueba", 120, null);
+
+        assertThrows(ScoreFileException.class, dto::toScore);
+    }
 }
