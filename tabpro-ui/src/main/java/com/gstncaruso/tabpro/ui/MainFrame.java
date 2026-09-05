@@ -86,7 +86,6 @@ public final class MainFrame extends JFrame {
         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, trackPanel);
         split.setResizeWeight(1);
         split.setBorder(BorderFactory.createEmptyBorder());
-        split.setDividerLocation(getHeight() - trackPanel.preferredPanelHeight());
 
         JPanel top = new JPanel(new BorderLayout());
         top.add(toolBars.component(), BorderLayout.NORTH);
@@ -102,9 +101,15 @@ public final class MainFrame extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent event) {
+                showMixTable();
                 canvas.requestFocusInWindow();
             }
         });
+    }
+
+    /** La mesa de mezcla ocupa lo suyo abajo; el resto es partitura. */
+    private void showMixTable() {
+        split.setDividerLocation(Math.max(0, split.getHeight() - trackPanel.preferredPanelHeight()));
     }
 
     /** Abre la partitura que el escritorio paso por linea de comandos. */
@@ -445,9 +450,11 @@ public final class MainFrame extends JFrame {
         @Override
         public void toggleMixTable() {
             trackPanel.setVisible(!trackPanel.isVisible());
-            split.setDividerLocation(trackPanel.isVisible()
-                    ? getHeight() - trackPanel.preferredPanelHeight()
-                    : getHeight());
+            if (trackPanel.isVisible()) {
+                showMixTable();
+            } else {
+                split.setDividerLocation(split.getHeight());
+            }
             backToTheScore();
         }
 
