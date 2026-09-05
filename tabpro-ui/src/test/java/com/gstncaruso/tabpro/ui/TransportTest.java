@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
@@ -130,6 +131,10 @@ class TransportTest {
             this.lastTimeline = timeline;
             this.listener = listener;
             this.playing = true;
+        }
+
+        @Override
+        public void playNote(Pitch pitch, int program) {
         }
 
         @Override

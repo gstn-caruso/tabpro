@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.app;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.Player;
@@ -60,6 +61,10 @@ public class App {
             @Override
             public void play(Timeline timeline, PlaybackListener listener) {
                 listener.playbackFinished();
+            }
+
+            @Override
+            public void playNote(Pitch pitch, int program) {
             }
 
             @Override
