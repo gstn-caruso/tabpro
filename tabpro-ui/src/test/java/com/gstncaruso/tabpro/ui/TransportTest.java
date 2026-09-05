@@ -10,6 +10,8 @@ import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,6 +70,23 @@ class TransportTest {
         transport.toggle();
 
         assertEquals(Optional.empty(), transport.playing());
+    }
+
+    @Test
+    void deliversPlayerCallbacksThroughTheUiThread() {
+        Deque<Runnable> pending = new ArrayDeque<>();
+        Transport queuedTransport = new Transport(editor, player, pending::add);
+        queuedTransport.toggle();
+
+        player.emitBeat(new BeatPosition(0, 0, 1));
+
+        assertEquals(Optional.empty(), queuedTransport.playing());
+
+        while (!pending.isEmpty()) {
+            pending.poll().run();
+        }
+
+        assertEquals(Optional.of(new BeatPosition(0, 0, 1)), queuedTransport.playing());
     }
 
     private static final class FakePlayer implements Player {
