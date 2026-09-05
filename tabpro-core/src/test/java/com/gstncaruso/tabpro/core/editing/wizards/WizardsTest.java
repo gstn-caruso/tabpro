@@ -1,0 +1,141 @@
+package com.gstncaruso.tabpro.core.editing.wizards;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.Duration;
+import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TimeSignature;
+import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.effects.Dynamic;
+import com.gstncaruso.tabpro.core.model.effects.Ornament;
+import java.util.List;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
+
+class WizardsTest {
+
+    @Test
+    void transposingRaisesEveryFretOfTheTrack() {
+        Score score = scoreWith(Beat.of(Duration.quarter(), new Note(1, 5), new Note(2, 3)));
+
+        Score raised = Transposition.transposeTrack(score, 0, 2);
+
+        assertEquals(7, raised.track(0).measure(0).beat(0).noteOn(1).orElseThrow().fret());
+        assertEquals(5, raised.track(0).measure(0).beat(0).noteOn(2).orElseThrow().fret());
+    }
+
+    @Test
+    void transposingKeepsThePitchWhenTheStringRunsOut() {
+        Score score = scoreWith(Beat.of(Duration.quarter(), new Note(1, 0)));
+
+        Score lowered = Transposition.transposeTrack(score, 0, -2);
+
+        Note moved = lowered.track(0).measure(0).beat(0).notes().getFirst();
+        Tuning tuning = lowered.track(0).tuning();
+        assertEquals(62, tuning.pitchOf(moved).midiNumber());
+        assertEquals(2, moved.string());
+    }
+
+    @Test
+    void transposingLeavesThePercussionAlone() {
+        Score score = new Score("Prueba", 120, List.of(Track.percussion("Bateria")));
+
+        assertEquals(score, Transposition.transposeEveryTrack(score, 3));
+    }
+
+    @Test
+    void theDurationCheckFindsTheBarsThatDoNotCloseTheirTime() {
+        Score score = scoreWith(Beat.rest(Duration.quarter()));
+
+        List<BarDurationCheck.Finding> findings = BarDurationCheck.run(score);
+
+        assertEquals(1, findings.size());
+        assertTrue(findings.getFirst().tooShort());
+    }
+
+    @Test
+    void theRestFillerCompletesAShortBar() {
+        Score score = scoreWith(Beat.of(Duration.quarter(), new Note(1, 5)));
+
+        Score filled = RestFiller.run(score, MeasureRange.wholeScore(1));
+
+        assertTrue(filled.track(0).measure(0).isComplete());
+    }
+
+    @Test
+    void theRestFillerTakesTheSpareRestsOffALongBar() {
+        Score score = scoreWith(
+                Beat.of(Duration.of(NoteValue.WHOLE), new Note(1, 5)), Beat.rest(Duration.quarter()));
+
+        Score reduced = RestFiller.run(score, MeasureRange.wholeScore(1));
+
+        assertTrue(reduced.track(0).measure(0).isComplete());
+        assertEquals(1, reduced.track(0).measure(0).beats().size());
+    }
+
+    @Test
+    void theBarArrangerPushesTheSpareBeatsToTheNextBar() {
+        Measure crowded = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3)),
+                Beat.of(Duration.quarter(), new Note(1, 4)),
+                Beat.of(Duration.quarter(), new Note(1, 5))));
+        Score score = new Score("Prueba", 120,
+                List.of(new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(crowded))));
+
+        Score arranged = BarArranger.run(score);
+
+        assertEquals(2, arranged.track(0).measureCount());
+        assertEquals(4, arranged.track(0).measure(0).beats().size());
+        assertEquals(5, arranged.track(0).measure(1).beat(0).noteOn(1).orElseThrow().fret());
+    }
+
+    @Test
+    void theStringOptionsWizardOnlyTouchesTheStringsItIsGiven() {
+        Score score = scoreWith(Beat.of(Duration.quarter(), new Note(1, 5), new Note(6, 0)));
+
+        Score muted = StringOptions.applyOrnament(
+                score, 0, MeasureRange.wholeScore(1), Set.of(6), Ornament.PALM_MUTE, true);
+
+        assertFalse(muted.track(0).measure(0).beat(0).noteOn(1).orElseThrow().has(Ornament.PALM_MUTE));
+        assertTrue(muted.track(0).measure(0).beat(0).noteOn(6).orElseThrow().has(Ornament.PALM_MUTE));
+    }
+
+    @Test
+    void theDynamicWizardWritesTheDynamicOfTheStringsItIsGiven() {
+        Score score = scoreWith(Beat.of(Duration.quarter(), new Note(1, 5)));
+
+        Score louder = StringOptions.applyDynamic(
+                score, 0, MeasureRange.wholeScore(1), Set.of(1), Dynamic.FORTISSIMO);
+
+        assertEquals(Dynamic.FORTISSIMO,
+                louder.track(0).measure(0).beat(0).noteOn(1).orElseThrow().effects().dynamic());
+    }
+
+    @Test
+    void theAutomaticFingeringKeepsEveryPitch() {
+        Score score = scoreWith(Beat.of(Duration.quarter(), new Note(6, 12)));
+        Tuning tuning = score.track(0).tuning();
+        int before = tuning.pitchOf(score.track(0).measure(0).beat(0).notes().getFirst()).midiNumber();
+
+        Score fingered = AutomaticFingering.run(score, 0);
+
+        Note after = fingered.track(0).measure(0).beat(0).notes().getFirst();
+        assertEquals(before, tuning.pitchOf(after).midiNumber());
+    }
+
+    private static Score scoreWith(Beat... beats) {
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Prueba", 120, List.of(track));
+    }
+}
