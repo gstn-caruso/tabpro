@@ -20,7 +20,7 @@ import javax.swing.SwingUtilities;
 public class App {
 
     public static void main(String[] args) {
-        Theme.install();
+        Theme theme = Theme.install();
         Editor editor = new Editor(Score.blank());
 
         Optional<MidiPlayer> midiPlayer = openMidiPlayer();
@@ -29,7 +29,7 @@ public class App {
         Optional<Path> fileToOpen = fileFrom(args);
 
         SwingUtilities.invokeLater(() -> {
-            MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player);
+            MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player, theme);
             frame.setIconImages(AppIcon.sizes());
             midiPlayer.ifPresent(midi -> frame.addWindowListener(closeOnDispose(midi)));
             frame.setVisible(true);

@@ -177,8 +177,23 @@ public final class MenuBar {
 
     private JMenu optionsMenu() {
         JMenu menu = new JMenu("Opciones");
+        themesMenu().ifPresent(menu::add);
         add(menu, "options.preferences");
         return menu;
+    }
+
+    /** El menu de temas solo aparece si la aplicacion ofrece alguno. */
+    private java.util.Optional<JMenu> themesMenu() {
+        java.util.List<String> names = commands.all().keySet().stream()
+                .filter(name -> name.startsWith("view.theme."))
+                .sorted()
+                .toList();
+        if (names.isEmpty()) {
+            return java.util.Optional.empty();
+        }
+        JMenu menu = new JMenu("Tema");
+        add(menu, names.toArray(String[]::new));
+        return java.util.Optional.of(menu);
     }
 
     private JMenu helpMenu() {

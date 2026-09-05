@@ -28,6 +28,7 @@ public final class Commands {
     private final Ports.Playback playback;
     private final Ports.View view;
     private final Ports.Document document;
+    private final java.util.List<String> themes;
     private final Map<String, Command> commands = new LinkedHashMap<>();
 
     public Commands(
@@ -36,6 +37,17 @@ public final class Commands {
             Ports.Dialogs dialogs,
             Ports.Playback playback,
             Ports.View view) {
+        this(editor, document, dialogs, playback, view, java.util.List.of());
+    }
+
+    public Commands(
+            Editor editor,
+            Ports.Document document,
+            Ports.Dialogs dialogs,
+            Ports.Playback playback,
+            Ports.View view,
+            java.util.List<String> themes) {
+        this.themes = java.util.List.copyOf(themes);
         this.editor = editor;
         this.document = document;
         this.dialogs = dialogs;
@@ -312,6 +324,9 @@ public final class Commands {
         define("view.percussion", "Asistente de percusión", view::togglePercussionAssistant);
         define("view.mixTable", "Mesa de mezcla", view::toggleMixTable).withIcon(Icons.mixTable());
         define("view.toolBars", "Barras de herramientas", view::toggleToolBars);
+        for (String theme : themes) {
+            define("view.theme." + theme, theme, () -> view.useTheme(theme));
+        }
         define("options.preferences", "Preferencias…", dialogs::preferences).withAccelerator("F12");
     }
 

@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.status.StatusBar;
 import com.gstncaruso.tabpro.ui.theme.Palette;
+import com.gstncaruso.tabpro.ui.theme.ThemeSwitch;
 import com.gstncaruso.tabpro.ui.toolbar.ToolBars;
 import com.gstncaruso.tabpro.ui.tracks.TrackPanel;
 import java.awt.BorderLayout;
@@ -46,10 +47,16 @@ public final class MainFrame extends JFrame {
     private final BeatViews beatViews;
     private final TrackPanel trackPanel;
     private final ToolBars toolBars;
+    private final ThemeSwitch themes;
     private final JSplitPane split;
 
     public MainFrame(Editor editor, ScoreFiles files, Player player) {
+        this(editor, files, player, ThemeSwitch.NONE);
+    }
+
+    public MainFrame(Editor editor, ScoreFiles files, Player player, ThemeSwitch themes) {
         super("tabpro");
+        this.themes = themes;
         this.editor = editor;
         this.files = files;
         this.document = new ScoreDocument(editor, files);
@@ -66,7 +73,8 @@ public final class MainFrame extends JFrame {
         beatViews = new BeatViews(editor, player);
 
         JSpinner tempoSpinner = tempoSpinner();
-        Commands commands = new Commands(editor, new Document(), new NotYet(), new Playback(), new View());
+        Commands commands = new Commands(
+                editor, new Document(), new NotYet(), new Playback(), new View(), themes.names());
         toolBars = new ToolBars(commands);
         toolBars.addToSoundRow(new JLabel("Tempo "));
         toolBars.addToSoundRow(tempoSpinner);
@@ -461,6 +469,13 @@ public final class MainFrame extends JFrame {
         @Override
         public void toggleToolBars() {
             toolBars.setVisible(!toolBars.isVisible());
+            backToTheScore();
+        }
+
+        @Override
+        public void useTheme(String name) {
+            themes.apply(name);
+            SwingUtilities.updateComponentTreeUI(MainFrame.this);
             backToTheScore();
         }
     }

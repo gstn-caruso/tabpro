@@ -142,6 +142,9 @@ public final class Ports {
         void toggleMixTable();
 
         void toggleToolBars();
+
+        /** Cambia el aspecto de la ventana, como el menu Skin del manual. */
+        void useTheme(String name);
     }
 
     /** El archivo abierto: crear, abrir, guardar, importar, exportar e imprimir. */
