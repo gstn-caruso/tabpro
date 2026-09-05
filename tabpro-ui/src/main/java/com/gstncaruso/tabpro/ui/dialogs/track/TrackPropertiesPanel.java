@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.TrackDisplay;
 import com.gstncaruso.tabpro.core.model.TrackSettings;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.Player;
+import com.gstncaruso.tabpro.ui.dialogs.style.ColorSwatchButton;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
