@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.tab.TabCanvas;
+import com.gstncaruso.tabpro.ui.tab.TabPainter;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -42,6 +43,7 @@ public final class MainFrame extends JFrame {
         TabCanvas canvas = new TabCanvas(editor);
         JScrollPane scrollPane = new JScrollPane(canvas);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(TabPainter.BACKGROUND);
 
         Transport transport = new Transport(editor, player, SwingUtilities::invokeLater);
         Runnable togglePlayback = () -> {
@@ -85,7 +87,9 @@ public final class MainFrame extends JFrame {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         toolBar.add(playButton);
-        toolBar.add(new JLabel("Tempo"));
+        toolBar.addSeparator();
+        toolBar.add(new JLabel("Tempo "));
+        tempoSpinner.setMaximumSize(tempoSpinner.getPreferredSize());
         toolBar.add(tempoSpinner);
         return toolBar;
     }
