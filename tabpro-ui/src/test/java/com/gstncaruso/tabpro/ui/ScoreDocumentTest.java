@@ -117,6 +117,78 @@ class ScoreDocumentTest {
         assertEquals(Score.blank(), editor.score());
     }
 
+
+    @Test
+    void aFreshDocumentHasNothingToSave() {
+        Editor editor = new Editor(Score.blank());
+        ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
+
+        assertFalse(document.hasUnsavedChanges());
+    }
+
+    @Test
+    void writingANoteLeavesUnsavedChanges() {
+        Editor editor = new Editor(Score.blank());
+        ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
+
+        editor.setFret(5);
+
+        assertTrue(document.hasUnsavedChanges());
+    }
+
+    @Test
+    void savingClearsTheUnsavedChanges() {
+        Editor editor = new Editor(Score.blank());
+        ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
+        document.saveAs(Path.of("/tmp/prueba.tabpro"));
+
+        editor.setFret(5);
+        document.save();
+
+        assertFalse(document.hasUnsavedChanges());
+    }
+
+    @Test
+    void theWindowTitleShowsTheFileTheChangesAndTheScore() {
+        Editor editor = new Editor(Score.blank().withTitle("Mi canción"));
+        ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
+
+        editor.setFret(5);
+
+        assertTrue(document.windowTitle().startsWith(ScoreDocument.UNTITLED + " *"));
+        assertTrue(document.windowTitle().contains("Mi canción"));
+    }
+
+    @Test
+    void openingAFileRemembersItAmongTheRecentOnes() {
+        Preferences preferences = testPreferences();
+        Editor editor = new Editor(Score.blank());
+        FakeScoreFiles files = new FakeScoreFiles();
+        Path path = Path.of("/tmp/prueba.tabpro");
+        files.scores.put(path, Score.blank());
+        ScoreDocument document = new ScoreDocument(editor, files, preferences);
+
+        document.open(path);
+
+        assertEquals(java.util.List.of(path), preferences.recentFiles());
+    }
+
+    @Test
+    void anImportedScoreHasNoFileOfItsOwn() {
+        Editor editor = new Editor(Score.blank());
+        ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
+
+        document.adopt(Score.blank().withTitle("Importada"));
+
+        assertTrue(document.path().isEmpty());
+        assertTrue(document.hasUnsavedChanges());
+    }
+
+    private static Preferences testPreferences() {
+        return new Preferences(java.util.prefs.Preferences.userRoot()
+                .node("com/gstncaruso/tabpro/test/" + java.util.UUID.randomUUID()));
+    }
+
     private static final class FakeScoreFiles implements ScoreFiles {
 
         private final Map<Path, Score> scores = new HashMap<>();
