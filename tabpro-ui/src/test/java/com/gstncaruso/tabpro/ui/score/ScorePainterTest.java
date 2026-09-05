@@ -193,6 +193,23 @@ class ScorePainterTest {
         assertDoesNotThrow(() -> paint(score, new Cursor(0, 0, 0, 1), Playhead.silent()));
     }
 
+    @Test
+    void survivesRepeatsAlternateEndingsDirectionsAndMarkers() {
+        Measure opens = measureOf(Beat.of(Duration.quarter(), new Note(1, 0)))
+                .mappingAttributes(attrs -> attrs.withRepeatOpen(true)
+                        .withMarker(com.gstncaruso.tabpro.core.model.bars.Marker.named("Intro")));
+        Measure firstEnding = measureOf(Beat.of(Duration.quarter(), new Note(1, 1)))
+                .mappingAttributes(attrs -> attrs.withAlternateEndings(List.of(1)));
+        Measure closes = measureOf(Beat.of(Duration.quarter(), new Note(1, 2)))
+                .mappingAttributes(attrs -> attrs.withRepeatCount(1).withDoubleBar(true)
+                        .withSymbol(com.gstncaruso.tabpro.core.model.bars.DirectionSymbol.CODA)
+                        .withJump(com.gstncaruso.tabpro.core.model.bars.DirectionJump.DA_CAPO_AL_CODA));
+
+        Score score = scoreWith(opens, firstEnding, closes);
+
+        assertDoesNotThrow(() -> paint(score, new Cursor(0, 0, 0, 1), Playhead.silent()));
+    }
+
     private static Score scoreWith(Measure... measures) {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measures));
         return new Score("", 120, List.of(track));

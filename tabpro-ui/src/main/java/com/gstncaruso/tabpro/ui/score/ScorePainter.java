@@ -64,6 +64,10 @@ public final class ScorePainter {
             TabPainter.paintFrets(g, layout, track, trackIndex, measureIndex);
             TabNotationPainter.paintMeasure(g, layout, track, trackIndex, measureIndex);
             TabSymbolPainter.paintMeasure(g, layout, track, trackIndex, measureIndex);
+            BarStructurePainter.paintPerTrack(g, layout, track, clef, trackIndex, measureIndex);
+            if (trackIndex == 0) {
+                BarStructurePainter.paintScoreWide(g, layout, track, trackIndex, measureIndex);
+            }
         }
     }
 
