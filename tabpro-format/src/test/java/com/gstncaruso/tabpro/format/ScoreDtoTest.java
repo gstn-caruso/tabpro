@@ -94,4 +94,14 @@ class ScoreDtoTest {
 
         assertThrows(ScoreFileException.class, dto::toScore);
     }
+
+    @Test
+    void rejectsAnUnknownNoteValue() {
+        BeatDto beat = new BeatDto(3, false, List.of());
+        MeasureDto measure = new MeasureDto(new TimeSignatureDto(4, 4), List.of(beat));
+        TrackDto track = new TrackDto("Guitarra", 25, List.of(64, 59, 55, 50, 45, 40), List.of(measure));
+        ScoreDto dto = new ScoreDto(ScoreDto.CURRENT_FORMAT, "Prueba", 120, List.of(track));
+
+        assertThrows(ScoreFileException.class, dto::toScore);
+    }
 }

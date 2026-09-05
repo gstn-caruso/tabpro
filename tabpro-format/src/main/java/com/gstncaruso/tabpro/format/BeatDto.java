@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.format;
 import java.util.Arrays;
 import java.util.List;
 
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -25,6 +26,6 @@ public record BeatDto(int value, boolean dotted, List<NoteDto> notes) {
         return Arrays.stream(NoteValue.values())
                 .filter(candidate -> candidate.denominator() == denominator)
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new ScoreFileException("value no es un denominador de figura valido: " + denominator));
     }
 }
