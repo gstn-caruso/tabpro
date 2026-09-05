@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.format;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
@@ -103,5 +104,15 @@ class ScoreDtoTest {
         ScoreDto dto = new ScoreDto(ScoreDto.CURRENT_FORMAT, "Prueba", 120, List.of(track));
 
         assertThrows(ScoreFileException.class, dto::toScore);
+    }
+
+    @Test
+    void wrapsDomainInvariantsInScoreFileException() {
+        TrackDto track = TrackDto.from(Track.standardGuitar("Guitarra"));
+        ScoreDto dto = new ScoreDto(ScoreDto.CURRENT_FORMAT, "Prueba", 0, List.of(track));
+
+        ScoreFileException thrown = assertThrows(ScoreFileException.class, dto::toScore);
+
+        assertInstanceOf(IllegalArgumentException.class, thrown.getCause());
     }
 }

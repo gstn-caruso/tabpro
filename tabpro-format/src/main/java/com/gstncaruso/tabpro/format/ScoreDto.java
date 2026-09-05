@@ -19,7 +19,11 @@ public record ScoreDto(int format, String title, int tempo, List<TrackDto> track
         if (tracks == null) {
             throw new ScoreFileException("falta el campo tracks");
         }
-        List<Track> domainTracks = tracks.stream().map(TrackDto::toTrack).toList();
-        return new Score(title, tempo, domainTracks);
+        try {
+            List<Track> domainTracks = tracks.stream().map(TrackDto::toTrack).toList();
+            return new Score(title, tempo, domainTracks);
+        } catch (IllegalArgumentException e) {
+            throw new ScoreFileException("la partitura no cumple sus invariantes: " + e.getMessage(), e);
+        }
     }
 }
