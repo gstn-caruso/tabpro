@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import java.awt.event.MouseEvent;
 import org.junit.jupiter.api.Test;
 
 class MixTableTest {
@@ -57,6 +58,36 @@ class MixTableTest {
         for (MixTableRow row : table.rows()) {
             assertTrue(row.parameterCells().stream().allMatch(java.awt.Component::isVisible));
         }
+    }
+
+    @Test
+    void clickingAColumnTitleTogglesThatParameterEverywhere() {
+        Editor editor = new Editor(Score.blank());
+        editor.addTrack(Track.standardBass("Bajo"));
+        MixTable table = new MixTable(editor);
+
+        table.headerFor(MixParameter.VOLUME).dispatchEvent(pressOn(table.headerFor(MixParameter.VOLUME)));
+
+        assertEquals(DisplayMode.NUMBER, table.model().displayModeOf(MixParameter.VOLUME));
+        for (MixTableRow row : table.rows()) {
+            assertTrue(row.parameterCells().get(0).isShowingNumber());
+        }
+    }
+
+    @Test
+    void theReduceButtonHidesEveryKnobAndTheRestoreButtonBringsThemBack() {
+        Editor editor = new Editor(Score.blank());
+        MixTable table = new MixTable(editor);
+
+        table.reduceButton().doClick();
+        assertTrue(table.rows().get(0).parameterCells().stream().noneMatch(java.awt.Component::isVisible));
+
+        table.restoreButton().doClick();
+        assertTrue(table.rows().get(0).parameterCells().stream().allMatch(java.awt.Component::isVisible));
+    }
+
+    private static MouseEvent pressOn(java.awt.Component target) {
+        return new MouseEvent(target, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, 2, 2, 1, false);
     }
 
     @Test

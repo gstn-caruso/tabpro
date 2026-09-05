@@ -10,7 +10,9 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -51,6 +53,9 @@ public final class MixTable extends JPanel {
     private final MixTableModel model = new MixTableModel();
     private final JPanel rowsPanel = new JPanel();
     private final List<MixTableRow> rows = new ArrayList<>();
+    private final Map<MixParameter, JLabel> parameterHeaders = new EnumMap<>(MixParameter.class);
+    private JButton reduceButton;
+    private JButton restoreButton;
 
     public MixTable(Editor editor) {
         this.editor = editor;
@@ -81,6 +86,18 @@ public final class MixTable extends JPanel {
 
     List<MixTableRow> rows() {
         return List.copyOf(rows);
+    }
+
+    JLabel headerFor(MixParameter parameter) {
+        return parameterHeaders.get(parameter);
+    }
+
+    JButton reduceButton() {
+        return reduceButton;
+    }
+
+    JButton restoreButton() {
+        return restoreButton;
     }
 
     private void rebuild() {
@@ -121,8 +138,10 @@ public final class MixTable extends JPanel {
         JPanel buttons = new JPanel();
         buttons.setOpaque(false);
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        buttons.add(flatButton("−", "Reducir todos los parametros", model::reduceAllParameters));
-        buttons.add(flatButton("+", "Restaurar todos los parametros", model::restoreAllParameters));
+        reduceButton = flatButton("−", "Reducir todos los parametros", model::reduceAllParameters);
+        restoreButton = flatButton("+", "Restaurar todos los parametros", model::restoreAllParameters);
+        buttons.add(reduceButton);
+        buttons.add(restoreButton);
         buttons.add(Box.createHorizontalStrut(COLUMN_GAP));
         return buttons;
     }
@@ -157,6 +176,7 @@ public final class MixTable extends JPanel {
                 refresh();
             }
         });
+        parameterHeaders.put(parameter, title);
         header.add(title);
         header.add(Box.createHorizontalStrut(COLUMN_GAP));
     }
