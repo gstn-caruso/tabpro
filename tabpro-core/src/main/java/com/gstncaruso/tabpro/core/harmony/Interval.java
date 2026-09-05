@@ -10,8 +10,10 @@ import java.util.Optional;
  */
 public enum Interval {
     ROOT(0, 0, "1"),
+    AUGMENTED_UNISON(0, 1, "#1"),
     MINOR_SECOND(1, 1, "b2"),
     MAJOR_SECOND(1, 2, "2"),
+    AUGMENTED_SECOND(1, 3, "#2"),
     MINOR_THIRD(2, 3, "b3"),
     MAJOR_THIRD(2, 4, "3"),
     PERFECT_FOURTH(3, 5, "4"),
@@ -21,6 +23,7 @@ public enum Interval {
     AUGMENTED_FIFTH(4, 8, "#5"),
     MINOR_SIXTH(5, 8, "b6"),
     MAJOR_SIXTH(5, 9, "6"),
+    AUGMENTED_SIXTH(5, 10, "#6"),
     DIMINISHED_SEVENTH(6, 9, "bb7"),
     MINOR_SEVENTH(6, 10, "b7"),
     MAJOR_SEVENTH(6, 11, "7"),
