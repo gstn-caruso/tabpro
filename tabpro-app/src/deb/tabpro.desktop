@@ -2,7 +2,7 @@
 Type=Application
 Name=tabpro
 Comment=Editor de tablaturas de guitarra
-Exec=tabpro %f
+Exec=tabpro
 Terminal=false
 Categories=AudioVideo;Audio;Music;
 Keywords=tablatura;guitarra;guitar;tab;
