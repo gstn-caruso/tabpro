@@ -13,6 +13,11 @@ import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.core.model.Voice;
+import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
+import com.gstncaruso.tabpro.core.model.effects.Dynamic;
+import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -158,5 +163,115 @@ class TimelineTest {
         long endTick = Timeline.of(score).endTick();
 
         assertEquals(new Duration(NoteValue.WHOLE, false).ticks(), endTick);
+    }
+
+    @Test
+    void unaNotaSinDinamicaSuenaConLaVelocidadPorDefecto() {
+        Score score = scoreWithLeadBeat(Beat.of(Duration.quarter(), new Note(1, 0)));
+
+        ScheduledNote note = Timeline.of(score).tracks().get(0).notes().get(0);
+
+        assertEquals(Dynamic.defaultDynamic().velocity(), note.velocity().value());
+    }
+
+    @Test
+    void unaNotaAcentuadaSuenaMasFuerte() {
+        Note accented = new Note(1, 0).toggling(Ornament.ACCENTED);
+        Score score = scoreWithLeadBeat(Beat.of(Duration.quarter(), accented));
+
+        ScheduledNote note = Timeline.of(score).tracks().get(0).notes().get(0);
+
+        assertEquals(accented.velocity().value(), note.velocity().value());
+        assertTrue(note.velocity().value() > Dynamic.defaultDynamic().velocity());
+    }
+
+    @Test
+    void unaNotaStaccatoDuraLaMitadDeSuFigura() {
+        Note staccato = new Note(1, 0).toggling(Ornament.STACCATO);
+        Score score = scoreWithLeadBeat(Beat.of(Duration.quarter(), staccato));
+
+        ScheduledNote note = Timeline.of(score).tracks().get(0).notes().get(0);
+
+        assertEquals(Duration.quarter().ticks() / 2, note.durationTicks());
+    }
+
+    @Test
+    void unaNotaLetRingSeSuperponeConLoQueSigue() {
+        Note letRing = new Note(1, 0).toggling(Ornament.LET_RING);
+        Score score = scoreWithLeadBeat(Beat.of(Duration.quarter(), letRing));
+
+        ScheduledNote note = Timeline.of(score).tracks().get(0).notes().get(0);
+
+        assertEquals((long) (Duration.quarter().ticks() * 2.0), note.durationTicks());
+    }
+
+    @Test
+    void unaNotaLigadaNoSeAtacaYSumaSuDuracionALaAnterior() {
+        Note first = new Note(1, 0);
+        Note tied = Note.tiedOn(1);
+        Score score = scoreWithLeadBeats(
+                Beat.of(Duration.quarter(), first), Beat.of(Duration.quarter(), tied));
+
+        List<ScheduledNote> notes = Timeline.of(score).tracks().get(0).notes();
+
+        assertEquals(1, notes.size());
+        assertEquals(Duration.quarter().ticks() * 2, notes.get(0).durationTicks());
+    }
+
+    @Test
+    void laVozDeBajosTambienSuena() {
+        Track track = Track.standardGuitar("Guitarra").withMeasure(0,
+                new Measure(TimeSignature.fourFour(), MeasureAttributes.plain(), List.of(
+                        new Voice(List.of(Beat.of(Duration.quarter(), new Note(1, 0)))),
+                        new Voice(List.of(Beat.of(Duration.quarter(), new Note(6, 0)))))));
+        Score score = Score.blank().withTrack(0, track);
+
+        List<ScheduledNote> notes = Timeline.of(score).tracks().get(0).notes();
+
+        assertEquals(2, notes.size());
+        assertTrue(notes.stream().anyMatch(note -> note.pitch().equals(new Pitch(64))));
+        assertTrue(notes.stream().anyMatch(note -> note.pitch().equals(new Pitch(40))));
+    }
+
+    @Test
+    void unaPistaDePercusionUsaElNumeroDeLaTablaturaComoSonido() {
+        Track track = Track.percussion("Bateria").withMeasure(0,
+                new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 38)))));
+        Score score = Score.blank().withTrack(0, track);
+
+        TrackTimeline timeline = Timeline.of(score).tracks().get(0);
+
+        assertTrue(timeline.percussion());
+        assertEquals(new Pitch(38), timeline.notes().get(0).pitch());
+    }
+
+    @Test
+    void respetaElOrdenDeReproduccionConRepeticiones() {
+        Score score = Score.blank().withMeasureInsertedInEveryTrackAt(1);
+        Track guitar = score.track(0)
+                .withMeasure(0, new Measure(TimeSignature.fourFour(),
+                        MeasureAttributes.plain().withRepeatOpen(true),
+                        List.of(new Voice(List.of(Beat.of(Duration.quarter(), new Note(1, 0)))), Voice.unused())))
+                .withMeasure(1, new Measure(TimeSignature.fourFour(),
+                        MeasureAttributes.plain().withRepeatCount(2),
+                        List.of(new Voice(List.of(Beat.of(Duration.quarter(), new Note(1, 1)))), Voice.unused())));
+        Score withRepeat = score.withTrack(0, guitar);
+
+        List<ScheduledNote> notes = Timeline.of(withRepeat).tracks().get(0).notes();
+
+        assertEquals(4, notes.size());
+        long quarter = Duration.quarter().ticks();
+        assertEquals(List.of(0L, quarter, quarter * 2, quarter * 3),
+                notes.stream().map(ScheduledNote::startTick).toList());
+    }
+
+    private Score scoreWithLeadBeat(Beat beat) {
+        return scoreWithLeadBeats(beat);
+    }
+
+    private Score scoreWithLeadBeats(Beat... beatsInOrder) {
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(beatsInOrder));
+        Track track = Track.standardGuitar("Guitarra").withMeasure(0, measure);
+        return Score.blank().withTrack(0, track);
     }
 }
