@@ -73,4 +73,12 @@ class JsonScoreFilesTest {
 
         assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
     }
+
+    @Test
+    void rejectsMalformedJson(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("score.tabpro");
+        Files.writeString(path, "{ esto no es json valido");
+
+        assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+    }
 }

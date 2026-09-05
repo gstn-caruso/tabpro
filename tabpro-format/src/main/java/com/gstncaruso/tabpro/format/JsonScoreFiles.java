@@ -6,6 +6,7 @@ import java.nio.file.Path;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -22,6 +23,10 @@ public final class JsonScoreFiles implements ScoreFiles {
             return dto.toScore();
         } catch (IOException e) {
             throw new ScoreFileException("no se pudo leer " + path, e);
+        } catch (JsonParseException e) {
+            throw new ScoreFileException("el archivo " + path + " no contiene JSON valido", e);
+        } catch (NullPointerException e) {
+            throw new ScoreFileException("el archivo " + path + " esta vacio", e);
         }
     }
 
