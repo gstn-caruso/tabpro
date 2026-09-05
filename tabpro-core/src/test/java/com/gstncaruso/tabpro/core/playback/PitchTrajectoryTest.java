@@ -65,6 +65,16 @@ class PitchTrajectoryTest {
     }
 
     @Test
+    void rampingToLlegaGradualmenteAlValorPedido() {
+        PitchTrajectory trajectory = PitchTrajectory.flat().rampingTo(1000, 2.0, 100);
+
+        assertEquals(0.0, trajectory.semitonesAt(899));
+        assertEquals(1.0, trajectory.semitonesAt(950));
+        assertEquals(2.0, trajectory.semitonesAt(1000));
+        assertEquals(2.0, trajectory.semitonesAt(2000));
+    }
+
+    @Test
     void plusSumaDosCurvasEnCadaPuntoQueCualquieraDeLasDosDefine() {
         PitchTrajectory a = new PitchTrajectory(java.util.List.of(
                 new PitchTrajectory.Point(0, 0.0), new PitchTrajectory.Point(100, 2.0)));

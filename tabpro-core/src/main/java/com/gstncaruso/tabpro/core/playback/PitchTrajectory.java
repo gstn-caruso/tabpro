@@ -87,12 +87,18 @@ public record PitchTrajectory(List<Point> points) {
         return from.semitones() + (to.semitones() - from.semitones()) * progress;
     }
 
-    /** Un cambio de altura instantaneo, sin rampa: como el de un ligado. */
-    public PitchTrajectory withJumpAt(long tick, double semitones) {
+    /** Una rampa que llega a esa altura en ese tick, arrancando rampTicks antes. */
+    public PitchTrajectory rampingTo(long tick, double semitones, long rampTicks) {
+        long from = Math.max(0, tick - Math.max(rampTicks, 1));
         List<Point> updated = new ArrayList<>(points);
-        updated.add(new Point(tick - 1, semitonesAt(tick)));
+        updated.add(new Point(from, semitonesAt(from)));
         updated.add(new Point(tick, semitones));
         return new PitchTrajectory(updated);
+    }
+
+    /** Un cambio de altura instantaneo, sin rampa: como el de un ligado. */
+    public PitchTrajectory withJumpAt(long tick, double semitones) {
+        return rampingTo(tick, semitones, 1);
     }
 
     /** La suma de esta curva con otra, punto a punto, en la union de los ticks que definen. */
