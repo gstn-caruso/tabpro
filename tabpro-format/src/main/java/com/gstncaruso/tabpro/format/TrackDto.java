@@ -17,6 +17,12 @@ public record TrackDto(String name, int midiProgram, List<Integer> tuning, List<
     }
 
     public Track toTrack() {
+        if (tuning == null) {
+            throw new ScoreFileException("falta el campo tuning");
+        }
+        if (measures == null) {
+            throw new ScoreFileException("falta el campo measures");
+        }
         List<Pitch> pitches = tuning.stream().map(Pitch::new).toList();
         List<Measure> domainMeasures = measures.stream().map(MeasureDto::toMeasure).toList();
         requireNotesWithinTuning(domainMeasures, pitches.size());

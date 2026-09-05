@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.format;
 
 import java.util.List;
 
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
 
@@ -13,6 +14,9 @@ public record MeasureDto(TimeSignatureDto timeSignature, List<BeatDto> beats) {
     }
 
     public Measure toMeasure() {
+        if (beats == null) {
+            throw new ScoreFileException("falta el campo beats");
+        }
         List<Beat> domainBeats = beats.stream().map(BeatDto::toBeat).toList();
         return new Measure(timeSignature.toTimeSignature(), domainBeats);
     }

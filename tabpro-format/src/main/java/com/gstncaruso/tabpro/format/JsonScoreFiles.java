@@ -20,13 +20,14 @@ public final class JsonScoreFiles implements ScoreFiles {
         try {
             String json = Files.readString(path);
             ScoreDto dto = gson.fromJson(json, ScoreDto.class);
+            if (dto == null) {
+                throw new ScoreFileException("el archivo " + path + " esta vacio");
+            }
             return dto.toScore();
         } catch (IOException e) {
             throw new ScoreFileException("no se pudo leer " + path, e);
         } catch (JsonParseException e) {
             throw new ScoreFileException("el archivo " + path + " no contiene JSON valido", e);
-        } catch (NullPointerException e) {
-            throw new ScoreFileException("el archivo " + path + " esta vacio", e);
         }
     }
 

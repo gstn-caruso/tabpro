@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.format;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -87,5 +88,35 @@ class JsonScoreFilesTest {
         Path path = tempDir.resolve("no-existe.tabpro");
 
         assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+    }
+
+    @Test
+    void rejectsAMissingNestedField(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("score.tabpro");
+        String jsonWithoutBeats = """
+                {
+                  "format": 1,
+                  "title": "Prueba",
+                  "tempo": 120,
+                  "tracks": [
+                    {
+                      "name": "Guitarra",
+                      "midiProgram": 25,
+                      "tuning": [64, 59, 55, 50, 45, 40],
+                      "measures": [
+                        {
+                          "timeSignature": { "beats": 4, "beatUnit": 4 }
+                        }
+                      ]
+                    }
+                  ]
+                }
+                """;
+        Files.writeString(path, jsonWithoutBeats);
+
+        ScoreFileException thrown = assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+
+        assertTrue(thrown.getMessage().contains("beats"));
+        assertFalse(thrown.getMessage().contains("vacio"));
     }
 }

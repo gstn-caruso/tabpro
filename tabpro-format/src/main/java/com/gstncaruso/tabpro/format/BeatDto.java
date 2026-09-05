@@ -17,6 +17,9 @@ public record BeatDto(int value, boolean dotted, List<NoteDto> notes) {
     }
 
     public Beat toBeat() {
+        if (notes == null) {
+            throw new ScoreFileException("falta el campo notes");
+        }
         NoteValue noteValue = noteValueOf(value);
         List<Note> domainNotes = notes.stream().map(NoteDto::toNote).toList();
         return new Beat(new Duration(noteValue, dotted), domainNotes);
