@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
@@ -100,6 +101,20 @@ class ScoreDocumentTest {
         document.saveAs(Path.of("carpeta", "cancion.tabpro"));
 
         assertEquals("cancion.tabpro", document.displayName());
+    }
+
+    @Test
+    void aFailedOpenKeepsThePreviousPath() {
+        FakeScoreFiles files = new FakeScoreFiles();
+        Path savedPath = Path.of("cancion.tabpro");
+        Editor editor = new Editor(Score.blank());
+        ScoreDocument document = new ScoreDocument(editor, files);
+        document.saveAs(savedPath);
+
+        assertThrows(ScoreFileException.class, () -> document.open(Path.of("no-existe.tabpro")));
+
+        assertEquals(Optional.of(savedPath), document.path());
+        assertEquals(Score.blank(), editor.score());
     }
 
     private static final class FakeScoreFiles implements ScoreFiles {
