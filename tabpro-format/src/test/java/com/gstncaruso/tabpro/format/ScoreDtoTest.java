@@ -1,7 +1,9 @@
 package com.gstncaruso.tabpro.format;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
@@ -73,5 +75,16 @@ class ScoreDtoTest {
         ScoreDto dto = ScoreDto.from(score);
 
         assertEquals(score, dto.toScore());
+    }
+
+    @Test
+    void rejectsAStringBeyondTheTuning() {
+        NoteDto note = new NoteDto(7, 0);
+        BeatDto beat = new BeatDto(4, false, List.of(note));
+        MeasureDto measure = new MeasureDto(new TimeSignatureDto(4, 4), List.of(beat));
+        TrackDto track = new TrackDto("Guitarra", 25, List.of(64, 59, 55, 50, 45, 40), List.of(measure));
+        ScoreDto dto = new ScoreDto(ScoreDto.CURRENT_FORMAT, "Prueba", 120, List.of(track));
+
+        assertThrows(ScoreFileException.class, dto::toScore);
     }
 }
