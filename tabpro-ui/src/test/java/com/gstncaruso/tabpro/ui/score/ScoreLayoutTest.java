@@ -155,6 +155,37 @@ class ScoreLayoutTest {
     }
 
     @Test
+    void aClickOnTheStaffFindsTheSameBeatAsAClickOnTheTablature() {
+        Score score = scoreWith(Beat.of(Duration.quarter(), new Note(6, 0)));
+        ScoreLayout layout = ScoreLayout.of(score, WIDE);
+        Rectangle target = layout.beatBounds(0, 0, 0);
+        int staffY = layout.staffTop(0, 0) + 2;
+
+        Optional<ScoreLayout.Hit> hit = layout.hitTest(target.x + target.width / 2, staffY);
+
+        assertTrue(hit.isPresent(), "un clic en el pentagrama tiene que encontrar el compas y el beat");
+        assertEquals(0, hit.get().measure());
+        assertEquals(0, hit.get().beat());
+    }
+
+    @Test
+    void aClickOnTheStaffFindsTheStringOfTheNearestNote() {
+        Score score = scoreWith(Beat.of(Duration.quarter(), new Note(6, 0)));
+        ScoreLayout layout = ScoreLayout.of(score, WIDE);
+        Rectangle target = layout.beatBounds(0, 0, 0);
+        int staffY = layout.staffTop(0, 0);
+
+        Optional<ScoreLayout.Hit> hit = layout.hitTest(target.x + target.width / 2, staffY);
+
+        assertEquals(6, hit.get().string());
+    }
+
+    private static Score scoreWith(Beat beat) {
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
+        return new Score("", 120, List.of(trackWith(measure)));
+    }
+
+    @Test
     void findsNothingBeyondTheScore() {
         ScoreLayout layout = ScoreLayout.of(Score.blank(), WIDE);
 

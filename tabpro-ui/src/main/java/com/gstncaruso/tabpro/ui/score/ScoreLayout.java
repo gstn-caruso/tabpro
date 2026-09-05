@@ -3,8 +3,11 @@ package com.gstncaruso.tabpro.ui.score;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.notation.Clef;
+import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
@@ -299,7 +302,7 @@ public final class ScoreLayout {
                 if (!withinBlock(track, measure, x, y)) {
                     continue;
                 }
-                return Optional.of(new Hit(track, measure, nearestBeat(track, measure, x), nearestString(track, measure, y)));
+                return Optional.of(new Hit(track, measure, nearestBeat(track, measure, x), nearestString(track, measure, x, y)));
             }
         }
         return Optional.empty();
@@ -324,7 +327,19 @@ public final class ScoreLayout {
         return beats.size() - 1;
     }
 
-    private int nearestString(int track, int measure, int y) {
+    /**
+     * La cuerda mas cercana al clic. Arriba de la tablatura se busca entre las notas del beat
+     * mas cercano cual queda mas cerca en el pentagrama; en la tablatura, la cuerda mas cercana
+     * por distancia vertical entre lineas.
+     */
+    private int nearestString(int track, int measure, int x, int y) {
+        if (y < tabTop(track, measure)) {
+            return nearestStringOnStaff(track, measure, x, y);
+        }
+        return nearestStringOnTab(track, measure, y);
+    }
+
+    private int nearestStringOnTab(int track, int measure, int y) {
         int stringCount = score.track(track).tuning().stringCount();
         int nearest = 1;
         int bestDistance = Integer.MAX_VALUE;
@@ -333,6 +348,26 @@ public final class ScoreLayout {
             if (distance < bestDistance) {
                 bestDistance = distance;
                 nearest = string;
+            }
+        }
+        return nearest;
+    }
+
+    private int nearestStringOnStaff(int track, int measure, int x, int y) {
+        Track trackModel = score.track(track);
+        Beat beat = trackModel.measure(measure).beat(nearestBeat(track, measure, x));
+        if (beat.notes().isEmpty()) {
+            return nearestStringOnTab(track, measure, y);
+        }
+        Clef clef = Clef.forTuning(trackModel.tuning());
+        int nearest = beat.notes().get(0).string();
+        int bestDistance = Integer.MAX_VALUE;
+        for (Note note : beat.notes()) {
+            StaffPosition position = StaffPosition.of(trackModel.pitchOf(note), clef);
+            int distance = Math.abs(y - stepY(track, measure, position.step()));
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                nearest = note.string();
             }
         }
         return nearest;
