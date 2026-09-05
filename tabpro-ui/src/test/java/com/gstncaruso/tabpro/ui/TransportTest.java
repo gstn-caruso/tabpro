@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -27,6 +28,15 @@ class TransportTest {
         transport.toggle();
 
         assertEquals(Timeline.of(editor.score()), player.lastTimeline);
+    }
+
+    @Test
+    void toggleWhilePlayingStops() {
+        transport.toggle();
+
+        transport.toggle();
+
+        assertFalse(transport.isPlaying());
     }
 
     private static final class FakePlayer implements Player {

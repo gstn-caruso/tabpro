@@ -18,6 +18,14 @@ public final class Transport {
     }
 
     public void toggle() {
+        if (player.isPlaying()) {
+            player.stop();
+            return;
+        }
         player.play(Timeline.of(editor.score()), null);
+    }
+
+    public boolean isPlaying() {
+        return player.isPlaying();
     }
 }
