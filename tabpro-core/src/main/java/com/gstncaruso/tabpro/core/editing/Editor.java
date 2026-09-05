@@ -4,7 +4,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.function.UnaryOperator;
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -72,18 +75,82 @@ public final class Editor {
     }
 
     public void insertMeasure() {
-        Measure empty = Measure.empty(currentMeasure().timeSignature(), currentBeat().duration());
-        Track track = currentTrack().withMeasureInsertedAt(cursor.measure(), empty);
-        change(withCurrentTrack(track), cursorAt(cursor.measure(), 0, cursor.string()));
+        change(score.withMeasureInsertedInEveryTrackAt(cursor.measure()),
+                cursorAt(cursor.measure(), 0, cursor.string()));
     }
 
     public void deleteMeasure() {
-        Track track = currentTrack().withoutMeasureAt(cursor.measure());
-        int measure = cursor.measure();
-        if (measure >= track.measures().size()) {
-            measure--;
+        Score next = score.withoutMeasureInEveryTrackAt(cursor.measure());
+        int measure = Math.min(cursor.measure(), next.track(cursor.track()).measureCount() - 1);
+        change(next, cursorAt(measure, 0, cursor.string()));
+    }
+
+    public void addTrack(Track track) {
+        Track padded = paddedToScoreLength(track);
+        Score next = score.withTrackAdded(padded);
+        change(next, clampedCursorIn(next, next.trackCount() - 1));
+    }
+
+    public void removeCurrentTrack() {
+        Score next = score.withoutTrackAt(cursor.track());
+        change(next, clampedCursorIn(next, Math.max(0, cursor.track() - 1)));
+    }
+
+    public void selectTrack(int index) {
+        if (index < 0 || index >= score.trackCount()) {
+            throw new IllegalArgumentException("track fuera de rango: " + index);
         }
-        change(withCurrentTrack(track), cursorAt(measure, 0, cursor.string()));
+        moveCursor(clampedCursorIn(score, index));
+    }
+
+    public void renameTrack(int index, String name) {
+        changeTrack(index, track -> track.withName(name));
+    }
+
+    public void setProgram(int index, int program) {
+        changeChannel(index, channel -> channel.withProgram(program));
+    }
+
+    public void setVolume(int index, int volume) {
+        changeChannel(index, channel -> channel.withVolume(volume));
+    }
+
+    public void setPan(int index, int pan) {
+        changeChannel(index, channel -> channel.withPan(pan));
+    }
+
+    public void toggleMute(int index) {
+        changeChannel(index, Channel::toggledMute);
+    }
+
+    public void toggleSolo(int index) {
+        changeChannel(index, Channel::toggledSolo);
+    }
+
+    private void changeChannel(int index, UnaryOperator<Channel> howToChange) {
+        changeTrack(index, track -> track.withChannel(howToChange.apply(track.channel())));
+    }
+
+    private void changeTrack(int index, UnaryOperator<Track> howToChange) {
+        change(score.withTrack(index, howToChange.apply(score.track(index))), cursor);
+    }
+
+    private Track paddedToScoreLength(Track track) {
+        Track padded = track;
+        while (padded.measureCount() < score.measureCount()) {
+            Measure empty = Measure.empty(
+                    padded.measure(padded.measureCount() - 1).timeSignature(), Duration.quarter());
+            padded = padded.withMeasureInsertedAt(padded.measureCount(), empty);
+        }
+        return padded;
+    }
+
+    private Cursor clampedCursorIn(Score next, int trackIndex) {
+        Track track = next.track(trackIndex);
+        int measure = Math.min(cursor.measure(), track.measureCount() - 1);
+        int beat = Math.min(cursor.beat(), track.measure(measure).beats().size() - 1);
+        int string = Math.min(cursor.string(), track.tuning().stringCount());
+        return new Cursor(trackIndex, measure, beat, string);
     }
 
     public void setTempo(int bpm) {
@@ -148,10 +215,8 @@ public final class Editor {
             moveCursor(cursorAt(cursor.measure() + 1, 0, cursor.string()));
             return;
         }
-        Measure empty = Measure.empty(measure.timeSignature(), currentBeat().duration());
-        int newMeasure = track.measures().size();
-        Track updatedTrack = track.withMeasureInsertedAt(newMeasure, empty);
-        change(withCurrentTrack(updatedTrack), cursorAt(newMeasure, 0, cursor.string()));
+        int newMeasure = track.measureCount();
+        change(score.withMeasureInsertedInEveryTrackAt(newMeasure), cursorAt(newMeasure, 0, cursor.string()));
     }
 
     public void moveToMeasureStart() {
@@ -209,7 +274,7 @@ public final class Editor {
         return new Cursor(cursor.track(), measure, beat, string);
     }
 
-    private Track currentTrack() {
+    public Track currentTrack() {
         return score.track(cursor.track());
     }
 

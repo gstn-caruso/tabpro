@@ -4,13 +4,14 @@ Clon libre de Guitar Pro 5: editor de tablaturas para guitarra, minimal, en Java
 
 ## Estado
 
-**v0.2.2 — MVP.** Editor de tablatura de una pista con edición por teclado al estilo
+**v0.2.3 — MVP.** Editor de tablatura de una pista con edición por teclado al estilo
 Guitar Pro 5, guardado y apertura en formato propio `.tabpro`, y reproducción MIDI
 con cursor que sigue la música.
 
 El modelo ya es multipista y cada pista tiene su mixer (instrumento General MIDI,
 volumen, paneo, silenciar y solo), que se guarda en el archivo y se escucha en la
-reproducción; la interfaz todavía muestra una sola pista.
+reproducción. La sesión de edición sabe agregar, seleccionar y quitar pistas y
+mantiene todas alineadas compás a compás; la interfaz todavía muestra una sola pista.
 
 Fuera de alcance por ahora: pentagrama (notación estándar), efectos (bends, slides,
 ligados), dos voces por compás, tresillos e importación o exportación de archivos
@@ -22,7 +23,7 @@ ligados), dos voces por compás, tresillos e importación o exportación de arch
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.2.2_all.deb
+sudo apt install ./tabpro_0.2.3_all.deb
 tabpro
 ```
 
@@ -32,7 +33,7 @@ Queda también en el menú de aplicaciones. Necesita una JRE 25 con entorno grá
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.2.2.jar
+java -jar tabpro-app-0.2.3.jar
 ```
 
 ## Uso
@@ -125,7 +126,7 @@ Genera `tabpro-app/target/tabpro-app-<versión>.jar` (ejecutable) y
 `tabpro-app/target/tabpro_<versión>_all.deb`.
 
 ```sh
-java -jar tabpro-app/target/tabpro-app-0.2.2.jar
+java -jar tabpro-app/target/tabpro-app-0.2.3.jar
 ```
 
 ## Desarrollo
