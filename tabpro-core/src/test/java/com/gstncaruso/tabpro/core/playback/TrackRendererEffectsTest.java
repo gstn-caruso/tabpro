@@ -9,14 +9,19 @@ import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.Voice;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.effects.Bend;
+import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
+import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.GraceNote;
+import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.core.model.effects.NoteEffects;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
@@ -138,15 +143,14 @@ class TrackRendererEffectsTest {
     @Test
     void unRasgueoHaciaAbajoArrancaPorLaCuerdaMasGrave() {
         Beat chord = Beat.of(QUARTER, new Note(1, 0), new Note(6, 0))
-                .withEffects(com.gstncaruso.tabpro.core.model.effects.BeatEffects.none()
-                        .withStroke(Stroke.of(StrokeDirection.DOWN)));
+                .withEffects(BeatEffects.none().withStroke(Stroke.of(StrokeDirection.DOWN)));
         Score score = scoreWithLeadBeats(chord);
 
         List<ScheduledNote> notes = notesOf(score);
 
         assertEquals(2, notes.size());
         ScheduledNote lowestFirst = notes.stream().min((a, b) -> Long.compare(a.startTick(), b.startTick())).get();
-        assertEquals(new com.gstncaruso.tabpro.core.model.Pitch(40), lowestFirst.pitch()); // cuerda 6, mas grave
+        assertEquals(new Pitch(40), lowestFirst.pitch()); // cuerda 6, mas grave
         assertTrue(notes.get(0).startTick() != notes.get(1).startTick());
     }
 
@@ -154,8 +158,8 @@ class TrackRendererEffectsTest {
     void unaNotaDeAdornoSobreElBeatOcupaElComienzo() {
         Note note = new Note(1, 5).withEffects(NoteEffects.none()
                 .withGrace(new GraceNote(3, NoteValue.THIRTY_SECOND,
-                        com.gstncaruso.tabpro.core.model.effects.Dynamic.defaultDynamic(),
-                        com.gstncaruso.tabpro.core.model.effects.GraceTransition.NONE, true, false)));
+                        Dynamic.defaultDynamic(),
+                        GraceTransition.NONE, true, false)));
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, note));
 
         List<ScheduledNote> notes = notesOf(score);
@@ -171,8 +175,8 @@ class TrackRendererEffectsTest {
     void unaNotaDeAdornoFueraDelBeatSuenaAntes() {
         Note note = new Note(1, 5).withEffects(NoteEffects.none()
                 .withGrace(new GraceNote(3, NoteValue.THIRTY_SECOND,
-                        com.gstncaruso.tabpro.core.model.effects.Dynamic.defaultDynamic(),
-                        com.gstncaruso.tabpro.core.model.effects.GraceTransition.NONE, false, false)));
+                        Dynamic.defaultDynamic(),
+                        GraceTransition.NONE, false, false)));
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, note));
 
         List<ScheduledNote> notes = notesOf(score);
@@ -187,7 +191,7 @@ class TrackRendererEffectsTest {
     @Test
     void unFadeInQuedaMarcadoEnLaNota() {
         Beat beat = Beat.of(QUARTER, new Note(1, 0))
-                .withEffects(com.gstncaruso.tabpro.core.model.effects.BeatEffects.none().withFadeIn(true));
+                .withEffects(BeatEffects.none().withFadeIn(true));
         Score score = scoreWithLeadBeats(beat);
 
         ScheduledNote note = notesOf(score).get(0);
@@ -199,7 +203,7 @@ class TrackRendererEffectsTest {
     void unaPalancaCurvaTodasLasNotasDelBeat() {
         Bend tremoloBar = Bend.of(BendType.BEND_RELEASE, 4);
         Beat beat = Beat.of(QUARTER, new Note(1, 0))
-                .withEffects(com.gstncaruso.tabpro.core.model.effects.BeatEffects.none().withTremoloBar(tremoloBar));
+                .withEffects(BeatEffects.none().withTremoloBar(tremoloBar));
         Score score = scoreWithLeadBeats(beat);
 
         ScheduledNote note = notesOf(score).get(0);
@@ -212,9 +216,9 @@ class TrackRendererEffectsTest {
         Duration eighth = new Duration(NoteValue.EIGHTH, false);
         Measure measure = new Measure(TimeSignature.fourFour(),
                 MeasureAttributes.plain().withTripletFeel(TripletFeel.EIGHTH),
-                List.of(new com.gstncaruso.tabpro.core.model.Voice(List.of(
+                List.of(new Voice(List.of(
                         Beat.of(eighth, new Note(1, 0)), Beat.of(eighth, new Note(1, 1)))),
-                        com.gstncaruso.tabpro.core.model.Voice.unused()));
+                        Voice.unused()));
         Track track = Track.standardGuitar("Guitarra").withMeasure(0, measure);
         Score score = Score.blank().withTrack(0, track);
 

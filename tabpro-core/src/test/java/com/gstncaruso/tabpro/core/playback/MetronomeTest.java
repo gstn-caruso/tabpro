@@ -3,7 +3,9 @@ package com.gstncaruso.tabpro.core.playback;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +46,7 @@ class MetronomeTest {
 
         List<MetronomeClick> clicks = Metronome.on().clicksFor(score);
 
-        long quarter = com.gstncaruso.tabpro.core.model.Duration.quarter().ticks();
+        long quarter = Duration.quarter().ticks();
         assertEquals(List.of(0L, quarter, quarter * 2, quarter * 3),
                 clicks.stream().map(MetronomeClick::tick).toList());
     }
@@ -61,11 +63,10 @@ class MetronomeTest {
     void sigueElOrdenDeReproduccionConRepeticiones() {
         Score score = Score.blank().withMeasureInsertedInEveryTrackAt(1);
         Score withRepeat = score.withAttributesInEveryTrackAt(1,
-                com.gstncaruso.tabpro.core.model.bars.MeasureAttributes.plain()
-                        .withRepeatOpen(false).withRepeatCount(2));
+                MeasureAttributes.plain().withRepeatOpen(false).withRepeatCount(2));
         // ambos compases se repiten si el primero abre y el segundo cierra
         Score fullScore = withRepeat.withAttributesInEveryTrackAt(0,
-                com.gstncaruso.tabpro.core.model.bars.MeasureAttributes.plain().withRepeatOpen(true));
+                MeasureAttributes.plain().withRepeatOpen(true));
 
         List<MetronomeClick> clicks = Metronome.on().clicksFor(fullScore);
 

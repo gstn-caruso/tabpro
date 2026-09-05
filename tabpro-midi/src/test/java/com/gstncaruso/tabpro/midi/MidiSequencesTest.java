@@ -5,7 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Pitch;
+import com.gstncaruso.tabpro.core.model.effects.Velocity;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
+import com.gstncaruso.tabpro.core.playback.MetronomeClick;
+import com.gstncaruso.tabpro.core.playback.PitchTrajectory;
 import com.gstncaruso.tabpro.core.playback.ScheduledBeat;
 import com.gstncaruso.tabpro.core.playback.ScheduledNote;
 import com.gstncaruso.tabpro.core.playback.Timeline;
@@ -266,9 +269,9 @@ class MidiSequencesTest {
 
     @Test
     void laVelocidadDeLaNotaSeUsaComoVelocityMidi() {
-        var note = new ScheduledNote(0, 960, new Pitch(64),
-                new com.gstncaruso.tabpro.core.model.effects.Velocity(45),
-                com.gstncaruso.tabpro.core.playback.PitchTrajectory.flat(), false);
+        ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64),
+                new Velocity(45),
+                PitchTrajectory.flat(), false);
         TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, false, List.of(note), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
 
@@ -313,9 +316,9 @@ class MidiSequencesTest {
 
     @Test
     void unaNotaConBendEmiteEventosDePitchBendQueSiguenLaCurva() {
-        var bend = com.gstncaruso.tabpro.core.playback.PitchTrajectory.ramp(0, 0.0, 960, 2.0);
-        var note = new ScheduledNote(0, 960, new Pitch(64),
-                new com.gstncaruso.tabpro.core.model.effects.Velocity(100), bend, false);
+        PitchTrajectory bend = PitchTrajectory.ramp(0, 0.0, 960, 2.0);
+        ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64),
+                new Velocity(100), bend, false);
         TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, false, List.of(note), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
 
@@ -332,9 +335,9 @@ class MidiSequencesTest {
 
     @Test
     void unaPistaConNotasConBendConfiguraElRangoDePitchBend() {
-        var bend = com.gstncaruso.tabpro.core.playback.PitchTrajectory.ramp(0, 0.0, 960, 2.0);
-        var note = new ScheduledNote(0, 960, new Pitch(64),
-                new com.gstncaruso.tabpro.core.model.effects.Velocity(100), bend, false);
+        PitchTrajectory bend = PitchTrajectory.ramp(0, 0.0, 960, 2.0);
+        ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64),
+                new Velocity(100), bend, false);
         TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, false, List.of(note), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
 
@@ -345,9 +348,9 @@ class MidiSequencesTest {
 
     @Test
     void unaNotaConFadeInEmiteUnaRampaDeExpresion() {
-        var note = new ScheduledNote(0, 960, new Pitch(64),
-                new com.gstncaruso.tabpro.core.model.effects.Velocity(100),
-                com.gstncaruso.tabpro.core.playback.PitchTrajectory.flat(), true);
+        ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64),
+                new Velocity(100),
+                PitchTrajectory.flat(), true);
         TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, false, List.of(note), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
 
@@ -396,9 +399,9 @@ class MidiSequencesTest {
     void agregaUnaPistaDeMetronomoConSusClicksEnElCanalDePercusion() {
         Timeline timeline = new Timeline(120, 960, List.of());
         Sequence sequence = MidiSequences.fromTimeline(timeline);
-        List<com.gstncaruso.tabpro.core.playback.MetronomeClick> clicks = List.of(
-                new com.gstncaruso.tabpro.core.playback.MetronomeClick(0, true),
-                new com.gstncaruso.tabpro.core.playback.MetronomeClick(960, false));
+        List<MetronomeClick> clicks = List.of(
+                new MetronomeClick(0, true),
+                new MetronomeClick(960, false));
 
         MidiSequences.addMetronomeTrack(sequence, clicks);
 
