@@ -24,33 +24,38 @@ public final class Glyphs {
         return placed.createTransformedShape(head);
     }
 
-    /** Una figura completa: cabeza, plica y corchetes segun su valor. */
-    public static void note(Graphics2D graphics, double centerX, double baseY, double scale, NoteValue value, boolean dotted) {
+    /** Una cabeza blanca: el ovalo de afuera menos el hueco de adentro. */
+    public static Shape hollowHead(double centerX, double centerY, double width) {
+        java.awt.geom.Area head = new java.awt.geom.Area(noteHead(centerX, centerY, width, true));
+        head.subtract(new java.awt.geom.Area(noteHead(centerX, centerY, width * 0.5, true)));
+        return head;
+    }
+
+    /**
+     * Una figura completa: cabeza, plica y corchetes segun su valor. Todo se
+     * mide respecto del ancho de la cabeza, asi que la figura escala pareja.
+     */
+    public static void note(Graphics2D graphics, double centerX, double baseY, double headWidth, NoteValue value, boolean dotted) {
         boolean hollow = value == NoteValue.WHOLE || value == NoteValue.HALF;
-        double headWidth = 4.4 * scale;
-        Shape head = noteHead(centerX, baseY, headWidth, hollow);
-        graphics.setStroke(new BasicStroke((float) (0.9 * scale)));
-        if (hollow) {
-            graphics.fill(head);
-            graphics.setColor(graphics.getBackground());
-            AffineTransform inner = AffineTransform.getTranslateInstance(centerX, baseY);
-            inner.rotate(Math.toRadians(-20));
-            inner.scale(0.5, 0.42);
-            graphics.fill(inner.createTransformedShape(new Ellipse2D.Double(-headWidth / 2, -headWidth / 2, headWidth, headWidth)));
-            graphics.setColor(graphics.getColor());
-        } else {
-            graphics.fill(head);
+        graphics.setStroke(new BasicStroke((float) (headWidth * 0.16)));
+        graphics.fill(hollow ? hollowHead(centerX, baseY, headWidth) : noteHead(centerX, baseY, headWidth, false));
+        if (value == NoteValue.WHOLE) {
+            markDot(graphics, centerX, baseY, headWidth, dotted);
+            return;
         }
-        if (value != NoteValue.WHOLE) {
-            double stemX = centerX + headWidth / 2 - 0.4 * scale;
-            double stemTop = baseY - 11 * scale;
-            graphics.draw(new java.awt.geom.Line2D.Double(stemX, baseY - 0.8 * scale, stemX, stemTop));
-            flags(graphics, stemX, stemTop, scale, flagsOf(value));
+        double stemX = centerX + headWidth * 0.44;
+        double stemTop = baseY - headWidth * 2.1;
+        graphics.draw(new java.awt.geom.Line2D.Double(stemX, baseY - headWidth * 0.2, stemX, stemTop));
+        flags(graphics, stemX, stemTop, headWidth, flagsOf(value));
+        markDot(graphics, centerX, baseY, headWidth, dotted);
+    }
+
+    private static void markDot(Graphics2D graphics, double centerX, double baseY, double headWidth, boolean dotted) {
+        if (!dotted) {
+            return;
         }
-        if (dotted) {
-            double dot = 1.5 * scale;
-            graphics.fill(new Ellipse2D.Double(centerX + headWidth * 0.75, baseY - dot / 2, dot, dot));
-        }
+        double dot = headWidth * 0.32;
+        graphics.fill(new Ellipse2D.Double(centerX + headWidth * 0.8, baseY - dot / 2, dot, dot));
     }
 
     private static int flagsOf(NoteValue value) {
@@ -63,13 +68,13 @@ public final class Glyphs {
         };
     }
 
-    private static void flags(Graphics2D graphics, double stemX, double stemTop, double scale, int count) {
+    private static void flags(Graphics2D graphics, double stemX, double stemTop, double headWidth, int count) {
         for (int index = 0; index < count; index++) {
-            double y = stemTop + index * 3.0 * scale;
+            double y = stemTop + index * headWidth * 0.5;
             Path2D flag = new Path2D.Double();
             flag.moveTo(stemX, y);
-            flag.quadTo(stemX + 4.5 * scale, y + 1.5 * scale, stemX + 3.2 * scale, y + 6 * scale);
-            flag.quadTo(stemX + 3.6 * scale, y + 2.4 * scale, stemX, y + 2.4 * scale);
+            flag.quadTo(stemX + headWidth, y + headWidth * 0.35, stemX + headWidth * 0.7, y + headWidth * 1.3);
+            flag.quadTo(stemX + headWidth * 0.8, y + headWidth * 0.55, stemX, y + headWidth * 0.55);
             flag.closePath();
             graphics.fill(flag);
         }
@@ -77,6 +82,7 @@ public final class Glyphs {
 
     /** Un silencio de negra, el que se usa como simbolo de silencio en general. */
     public static void quarterRest(Graphics2D graphics, double centerX, double centerY, double scale) {
+        // El silencio se dibuja con la misma unidad que la cabeza de nota.
         Path2D rest = new Path2D.Double();
         rest.moveTo(centerX - 2 * scale, centerY - 7 * scale);
         rest.lineTo(centerX + 2.2 * scale, centerY - 2 * scale);

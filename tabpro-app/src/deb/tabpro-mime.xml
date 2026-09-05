@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-tabpro">
+    <comment>Partitura de tabpro</comment>
+    <comment xml:lang="en">tabpro score</comment>
+    <glob pattern="*.tabpro"/>
+    <icon name="tabpro"/>
+  </mime-type>
+  <mime-type type="application/x-guitar-pro">
+    <comment>Partitura de Guitar Pro</comment>
+    <comment xml:lang="en">Guitar Pro score</comment>
+    <glob pattern="*.gp3"/>
+    <glob pattern="*.gp4"/>
+    <glob pattern="*.gp5"/>
+    <glob pattern="*.gtp"/>
+    <icon name="tabpro"/>
+  </mime-type>
+</mime-info>

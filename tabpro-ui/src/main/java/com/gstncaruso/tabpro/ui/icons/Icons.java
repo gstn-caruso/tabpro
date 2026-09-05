@@ -192,16 +192,16 @@ public final class Icons {
     // ---- figuras ----------------------------------------------------------
 
     public static Icon note(NoteValue value) {
-        return icon((graphics, size) -> Glyphs.note(graphics, size * 0.38, size * 0.76, size / 18.0, value, false));
+        return icon((graphics, size) -> Glyphs.note(graphics, size * 0.36, size * 0.8, size * 0.34, value, false));
     }
 
     public static Icon dottedNote() {
         return icon((graphics, size) ->
-                Glyphs.note(graphics, size * 0.34, size * 0.76, size / 18.0, NoteValue.QUARTER, true));
+                Glyphs.note(graphics, size * 0.32, size * 0.8, size * 0.34, NoteValue.QUARTER, true));
     }
 
     public static Icon rest() {
-        return icon((graphics, size) -> Glyphs.quarterRest(graphics, size * 0.5, size * 0.5, size / 18.0));
+        return icon((graphics, size) -> Glyphs.quarterRest(graphics, size * 0.5, size * 0.5, size / 13.0));
     }
 
     public static Icon tuplet() {
@@ -463,6 +463,18 @@ public final class Icons {
         });
     }
 
+    public static Icon zoomIn() {
+        return icon((graphics, size) -> magnifier(graphics, size, 1));
+    }
+
+    public static Icon zoomOut() {
+        return icon((graphics, size) -> magnifier(graphics, size, -1));
+    }
+
+    public static Icon zoomReset() {
+        return icon((graphics, size) -> magnifier(graphics, size, 0));
+    }
+
     public static Icon multitrack() {
         return icon((graphics, size) -> {
             Glyphs.staff(graphics, size * 0.12, size * 0.16, size * 0.76, size * 0.06);
@@ -534,6 +546,23 @@ public final class Icons {
     }
 
     // ---- trazos compartidos -----------------------------------------------
+
+    /** La lupa del zoom: con mas, con menos, o vacia para volver al 100%. */
+    private static void magnifier(Graphics2D graphics, int size, int sign) {
+        graphics.setStroke(thin());
+        double diameter = size * 0.52;
+        graphics.draw(new Ellipse2D.Double(size * 0.12, size * 0.12, diameter, diameter));
+        graphics.draw(new Line2D.Double(size * 0.6, size * 0.6, size * 0.86, size * 0.86));
+        double centerX = size * 0.12 + diameter / 2;
+        double centerY = size * 0.12 + diameter / 2;
+        double arm = size * 0.13;
+        if (sign != 0) {
+            graphics.draw(new Line2D.Double(centerX - arm, centerY, centerX + arm, centerY));
+        }
+        if (sign > 0) {
+            graphics.draw(new Line2D.Double(centerX, centerY - arm, centerX, centerY + arm));
+        }
+    }
 
     private static void page(Graphics2D graphics, int size) {
         graphics.setStroke(thin());

@@ -27,9 +27,9 @@ public final class ToolBars {
         rows.setLayout(new BoxLayout(rows, BoxLayout.Y_AXIS));
         rows.setBackground(Palette.panel());
         rows.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Palette.separator()));
-        rows.add(documentRow());
-        rows.add(structureRow());
-        rows.add(notationRow());
+        rows.add(leftAligned(documentRow()));
+        rows.add(leftAligned(structureRow()));
+        rows.add(leftAligned(notationRow()));
     }
 
     public JComponent component() {
@@ -105,6 +105,13 @@ public final class ToolBars {
         bar.addSeparator();
         add(bar, "note.chord", "effect.text", "note.mixTableChange");
         return bar;
+    }
+
+    /** Las filas arrancan pegadas a la izquierda, como en una barra de verdad. */
+    private static JComponent leftAligned(JComponent row) {
+        row.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, row.getPreferredSize().height));
+        return row;
     }
 
     private static JPanel transparentRow() {

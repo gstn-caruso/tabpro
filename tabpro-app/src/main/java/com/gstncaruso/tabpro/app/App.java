@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.app;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -12,6 +11,7 @@ import com.gstncaruso.tabpro.midi.MidiPlayer;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.nio.file.Path;
 import java.util.Optional;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -20,18 +20,26 @@ import javax.swing.SwingUtilities;
 public class App {
 
     public static void main(String[] args) {
-        FlatDarculaLaf.setup();
+        Theme.install();
         Editor editor = new Editor(Score.blank());
 
         Optional<MidiPlayer> midiPlayer = openMidiPlayer();
         midiPlayer.ifPresent(App::warmUpInBackground);
         Player player = midiPlayer.<Player>map(midi -> midi).orElseGet(App::silentPlayer);
+        Optional<Path> fileToOpen = fileFrom(args);
 
         SwingUtilities.invokeLater(() -> {
             MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player);
+            frame.setIconImages(AppIcon.sizes());
             midiPlayer.ifPresent(midi -> frame.addWindowListener(closeOnDispose(midi)));
             frame.setVisible(true);
+            fileToOpen.ifPresent(frame::openOnStartup);
         });
+    }
+
+    /** El archivo que el escritorio pasa al abrir una partitura con tabpro. */
+    private static Optional<Path> fileFrom(String[] args) {
+        return args.length == 0 ? Optional.empty() : Optional.of(Path.of(args[0]));
     }
 
     private static Optional<MidiPlayer> openMidiPlayer() {

@@ -300,9 +300,9 @@ public final class Commands {
                 .withIcon(Icons.verticalScreen());
         define("view.horizontalScreen", "Pantalla horizontal", view::horizontalScreenMode)
                 .withIcon(Icons.horizontalScreen());
-        define("view.zoomIn", "Acercar", view::zoomIn).withAccelerator("ctrl EQUALS");
-        define("view.zoomOut", "Alejar", view::zoomOut).withAccelerator("ctrl MINUS");
-        define("view.resetZoom", "Zoom al 100%", view::resetZoom).withAccelerator("ctrl 0");
+        define("view.zoomIn", "Acercar", view::zoomIn).withAccelerator("ctrl EQUALS").withIcon(Icons.zoomIn());
+        define("view.zoomOut", "Alejar", view::zoomOut).withAccelerator("ctrl MINUS").withIcon(Icons.zoomOut());
+        define("view.resetZoom", "Zoom al 100%", view::resetZoom).withAccelerator("ctrl 0").withIcon(Icons.zoomReset());
         define("view.multitrack", "Vista multipista", view::toggleMultitrack).withIcon(Icons.multitrack());
         define("view.hideStandardNotation", "Ocultar el pentagrama", view::toggleStandardNotation);
         define("view.hideTablature", "Ocultar la tablatura", view::toggleTablature);

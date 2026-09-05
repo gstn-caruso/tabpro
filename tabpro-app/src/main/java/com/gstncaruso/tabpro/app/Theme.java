@@ -9,7 +9,7 @@ import javax.swing.UIManager;
  * El aspecto de tabpro: oscuro, plano y con un acento calido. Se apoya en
  * FlatLaf y le agrega las claves propias que usa la interfaz.
  */
-final class Theme {
+public final class Theme {
 
     private static final Color BACKGROUND = new Color(0x1E1F22);
     private static final Color PANEL = new Color(0x2B2D30);
@@ -25,7 +25,7 @@ final class Theme {
     private Theme() {
     }
 
-    static void install() {
+    public static void install() {
         FlatDarkLaf.setup();
         UIManager.put("tabpro.background", BACKGROUND);
         UIManager.put("tabpro.panel", PANEL);
