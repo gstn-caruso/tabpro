@@ -13,6 +13,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.Optional;
+import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
 
 class KeyboardViewTest {
@@ -113,6 +114,47 @@ class KeyboardViewTest {
         BufferedImage image = paint(view);
 
         assertFalse(isPressed(image, view.keyBounds(60).orElseThrow()));
+    }
+
+    @Test
+    void readsBackTheKeyYouPointAt() {
+        KeyboardView view = sized();
+
+        for (int key = KeyboardView.LOWEST; key <= KeyboardView.HIGHEST; key++) {
+            Rectangle bounds = view.keyBounds(key).orElseThrow();
+            int x = bounds.x + bounds.width / 2;
+            int y = KeyboardView.isWhite(key) ? bounds.y + bounds.height - 4 : bounds.y + bounds.height / 2;
+
+            assertEquals(OptionalInt.of(key), view.keyAt(x, y), "la tecla " + key);
+        }
+    }
+
+    @Test
+    void theBlackKeyWinsWhereItSitsOverTheWhiteOne() {
+        KeyboardView view = sized();
+        Rectangle c4 = view.keyBounds(60).orElseThrow();
+        Rectangle cSharp4 = view.keyBounds(61).orElseThrow();
+        int whereTheyOverlap = c4.x + c4.width - 2;
+
+        assertEquals(OptionalInt.of(61), view.keyAt(whereTheyOverlap, cSharp4.y + cSharp4.height / 2));
+    }
+
+    @Test
+    void underTheBlackKeyTheWhiteOneShowsAgain() {
+        KeyboardView view = sized();
+        Rectangle c4 = view.keyBounds(60).orElseThrow();
+        int whereTheyOverlap = c4.x + c4.width - 2;
+
+        assertEquals(OptionalInt.of(60), view.keyAt(whereTheyOverlap, c4.y + c4.height - 4));
+    }
+
+    @Test
+    void hasNoKeyOffTheKeyboard() {
+        KeyboardView view = sized();
+
+        assertEquals(OptionalInt.empty(), view.keyAt(0, HEIGHT / 2));
+        assertEquals(OptionalInt.empty(), view.keyAt(WIDTH / 2, 0));
+        assertEquals(OptionalInt.empty(), view.keyAt(WIDTH / 2, HEIGHT - 1));
     }
 
     private static KeyboardView sized() {

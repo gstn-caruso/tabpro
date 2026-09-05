@@ -66,7 +66,7 @@ public final class MainFrame extends JFrame {
         editor.addListener(() -> tempoSpinner.setValue(editor.score().tempo()));
 
         TrackPanel trackPanel = new TrackPanel(editor);
-        BeatViews beatViews = new BeatViews(editor);
+        BeatViews beatViews = new BeatViews(editor, player);
 
         transport.addListener(() -> {
             canvas.showPlayhead(transport.playhead());

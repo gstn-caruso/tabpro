@@ -8,10 +8,13 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Optional;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -21,7 +24,8 @@ import javax.swing.JPanel;
 
 /**
  * El diapason y el teclado, arriba de la partitura: muestran las notas del beat en el que
- * estas parado y, mientras suena, las del beat que esta sonando en esa misma pista.
+ * estas parado y, mientras suena, las del beat que esta sonando en esa misma pista. Un clic
+ * sobre un traste o una tecla escribe esa nota en el beat del cursor.
  */
 public final class BeatViews extends JPanel {
 
@@ -34,7 +38,7 @@ public final class BeatViews extends JPanel {
     private final JPanel keyboardBox;
     private Playhead playhead = Playhead.silent();
 
-    public BeatViews(Editor editor) {
+    public BeatViews(Editor editor, Player player) {
         this.editor = editor;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(ScoreColors.SURFACE);
@@ -45,6 +49,7 @@ public final class BeatViews extends JPanel {
         add(fretboardBox);
         add(keyboardBox);
 
+        installWriting(new InstrumentEditing(editor, player));
         editor.addListener(this::refresh);
         refresh();
     }
@@ -87,6 +92,14 @@ public final class BeatViews extends JPanel {
         return soundingBeat(editor, playhead).orElseGet(editor::currentBeat);
     }
 
+    /**
+     * Si lo que se ve es el beat del cursor. Mientras suena se ve el beat que suena, que no es el
+     * que se editaria: ahi el clic no escribe, para no cambiar a ciegas un beat que no esta a la vista.
+     */
+    public static boolean showsTheCursorBeat(Editor editor, Playhead playhead) {
+        return soundingBeat(editor, playhead).isEmpty();
+    }
+
     private static Optional<Beat> soundingBeat(Editor editor, Playhead playhead) {
         Cursor cursor = editor.cursor();
         return playhead.on(cursor.track()).flatMap(position -> beatAt(editor.currentTrack(), position));
@@ -101,6 +114,25 @@ public final class BeatViews extends JPanel {
             return Optional.empty();
         }
         return Optional.of(measure.beat(position.beat()));
+    }
+
+    private void installWriting(InstrumentEditing editing) {
+        fretboard.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (showsTheCursorBeat(editor, playhead)) {
+                    fretboard.noteAt(e.getX(), e.getY()).ifPresent(editing::pressFret);
+                }
+            }
+        });
+        keyboard.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (showsTheCursorBeat(editor, playhead)) {
+                    keyboard.keyAt(e.getX(), e.getY()).ifPresent(editing::pressKey);
+                }
+            }
+        });
     }
 
     private void refresh() {
