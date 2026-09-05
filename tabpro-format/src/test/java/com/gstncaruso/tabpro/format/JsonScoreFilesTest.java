@@ -81,4 +81,11 @@ class JsonScoreFilesTest {
 
         assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
     }
+
+    @Test
+    void rejectsAMissingFile(@TempDir Path tempDir) {
+        Path path = tempDir.resolve("no-existe.tabpro");
+
+        assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+    }
 }
