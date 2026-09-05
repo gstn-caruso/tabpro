@@ -23,9 +23,9 @@ import javax.swing.JComponent;
 public final class KeyboardView extends JComponent {
 
     /** Do1: mas grave que la cuerda mas grave de un bajo de cinco cuerdas. */
-    public static final int LOWEST = 24;
+    public static final int LOWEST = 21;
     /** Do7: mas agudo que el traste 24 de la primera cuerda de una guitarra. */
-    public static final int HIGHEST = 96;
+    public static final int HIGHEST = 108;
     public static final int PREFERRED_HEIGHT = 92;
 
     private static final int SIDE_MARGIN = 10;

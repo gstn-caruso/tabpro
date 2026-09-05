@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.instruments;
 
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.TrackSettings;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.notation.PitchName;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
@@ -21,7 +22,7 @@ import javax.swing.JComponent;
 /** El mastil, con las notas del beat en el que estas parado marcadas donde se pisan. */
 public final class FretboardView extends JComponent {
 
-    public static final int FRETS = Note.MAX_FRET;
+    public static final int FRETS = TrackSettings.DEFAULT_FRET_COUNT;
     public static final int PREFERRED_HEIGHT = 118;
 
     private static final int SIDE_MARGIN = 10;

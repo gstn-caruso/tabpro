@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import org.junit.jupiter.api.Test;
@@ -117,7 +118,7 @@ class BeatViewsTest {
         Editor editor = new Editor(Score.blank());
         BeatViews views = new BeatViews(editor, new RecordingPlayer());
 
-        editor.setFret(Note.MAX_FRET);
+        editor.setFret(Tuning.MAX_FRET);
         editor.addTrack(Track.standardBass("Bajo"));
         editor.setFret(4);
         views.showPlayhead(Playhead.silent().advancedTo(new BeatPosition(1, 0, 0)));

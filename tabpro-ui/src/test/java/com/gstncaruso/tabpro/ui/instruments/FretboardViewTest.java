@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.TrackSettings;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -61,8 +62,8 @@ class FretboardViewTest {
     }
 
     @Test
-    void reachesTheLastFretTheModelAllows() {
-        assertEquals(Note.MAX_FRET, FretboardView.FRETS);
+    void reachesTheLastFretOfAStandardInstrument() {
+        assertEquals(TrackSettings.DEFAULT_FRET_COUNT, FretboardView.FRETS);
     }
 
     @Test

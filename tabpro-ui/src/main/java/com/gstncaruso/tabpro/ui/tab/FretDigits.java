@@ -1,6 +1,6 @@
 package com.gstncaruso.tabpro.ui.tab;
 
-import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.Tuning;
 import java.util.function.LongSupplier;
 
 public final class FretDigits {
@@ -24,7 +24,7 @@ public final class FretDigits {
     public int fretFor(char digit) {
         int typed = digit - '0';
         int combined = pendingFret == null ? -1 : pendingFret * 10 + typed;
-        if (pendingFret != null && withinWindow() && combined <= Note.MAX_FRET) {
+        if (pendingFret != null && withinWindow() && combined <= Tuning.MAX_FRET) {
             reset();
             return combined;
         }

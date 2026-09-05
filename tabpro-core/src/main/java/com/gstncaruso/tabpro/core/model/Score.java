@@ -1,10 +1,14 @@
 package com.gstncaruso.tabpro.core.model;
 
+import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
-public record Score(String title, int tempo, List<Track> tracks) {
+/** La partitura entera: sus datos, su tempo, sus pistas y su letra. */
+public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics) {
+
+    public static final int MAX_TRACKS = 256;
 
     public Score {
         if (tempo <= 0) {
@@ -13,11 +17,22 @@ public record Score(String title, int tempo, List<Track> tracks) {
         if (tracks.isEmpty()) {
             throw new IllegalArgumentException("una partitura necesita al menos una pista");
         }
+        if (tracks.size() > MAX_TRACKS) {
+            throw new IllegalArgumentException("una partitura admite hasta " + MAX_TRACKS + " pistas");
+        }
         tracks = List.copyOf(tracks);
     }
 
+    public Score(String title, int tempo, List<Track> tracks) {
+        this(ScoreInfo.titled(title), tempo, tracks, Lyrics.none());
+    }
+
     public static Score blank() {
-        return new Score("", 120, List.of(Track.standardGuitar("Guitarra")));
+        return new Score(ScoreInfo.empty(), 120, List.of(Track.standardGuitar("Guitarra")), Lyrics.none());
+    }
+
+    public String title() {
+        return info.title();
     }
 
     public Track track(int index) {
@@ -30,6 +45,19 @@ public record Score(String title, int tempo, List<Track> tracks) {
 
     public int measureCount() {
         return tracks.stream().mapToInt(Track::measureCount).max().orElse(0);
+    }
+
+    /** Los atributos de un compas valen para toda la partitura: los define la primera pista. */
+    public MeasureAttributes attributesOf(int measureIndex) {
+        Track first = track(0);
+        int clamped = Math.clamp(measureIndex, 0, first.measureCount() - 1);
+        return first.attributesOf(clamped);
+    }
+
+    public TimeSignature timeSignatureOf(int measureIndex) {
+        Track first = track(0);
+        int clamped = Math.clamp(measureIndex, 0, first.measureCount() - 1);
+        return first.measure(clamped).timeSignature();
     }
 
     public boolean isAudible(int index) {
@@ -46,9 +74,17 @@ public record Score(String title, int tempo, List<Track> tracks) {
         return withTracks(updated);
     }
 
+    public Score mappingTrack(int index, UnaryOperator<Track> change) {
+        return withTrack(index, change.apply(track(index)));
+    }
+
     public Score withTrackAdded(Track track) {
+        return withTrackInsertedAt(tracks.size(), track);
+    }
+
+    public Score withTrackInsertedAt(int index, Track track) {
         List<Track> updated = new ArrayList<>(tracks);
-        updated.add(track);
+        updated.add(index, track);
         return withTracks(updated);
     }
 
@@ -61,6 +97,16 @@ public record Score(String title, int tempo, List<Track> tracks) {
         return withTracks(updated);
     }
 
+    /** Mueve una pista de lugar, para reordenar la mesa de mezcla. */
+    public Score withTrackMoved(int from, int to) {
+        if (to < 0 || to >= tracks.size()) {
+            return this;
+        }
+        List<Track> updated = new ArrayList<>(tracks);
+        updated.add(to, updated.remove(from));
+        return withTracks(updated);
+    }
+
     public Score withMeasureInsertedInEveryTrackAt(int index) {
         return mapTracks(track -> {
             int insertionPoint = Math.min(index, track.measureCount());
@@ -70,8 +116,29 @@ public record Score(String title, int tempo, List<Track> tracks) {
     }
 
     public Score withoutMeasureInEveryTrackAt(int index) {
-        return mapTracks(track ->
-                index < track.measureCount() ? track.withoutMeasureAt(index) : track);
+        return mapTracks(track -> index < track.measureCount() ? track.withoutMeasureAt(index) : track);
+    }
+
+    /** Los atributos de compas son los mismos en todas las pistas, como en Guitar Pro. */
+    public Score withAttributesInEveryTrackAt(int index, MeasureAttributes attributes) {
+        return mapTracks(track -> index < track.measureCount()
+                ? track.mappingMeasure(index, measure -> measure.withAttributes(attributes))
+                : track);
+    }
+
+    /** Un cambio de compas rige desde ese compas hasta el proximo cambio. */
+    public Score withTimeSignatureFrom(int index, TimeSignature timeSignature) {
+        return mapTracks(track -> {
+            Track changed = track;
+            TimeSignature previous = track.measure(Math.min(index, track.measureCount() - 1)).timeSignature();
+            for (int measure = index; measure < track.measureCount(); measure++) {
+                if (measure > index && !changed.measure(measure).timeSignature().equals(previous)) {
+                    break;
+                }
+                changed = changed.mappingMeasure(measure, it -> it.withTimeSignature(timeSignature));
+            }
+            return changed;
+        });
     }
 
     private static TimeSignature timeSignatureAround(Track track, int index) {
@@ -84,11 +151,19 @@ public record Score(String title, int tempo, List<Track> tracks) {
     }
 
     public Score withTempo(int bpm) {
-        return new Score(title, bpm, tracks);
+        return new Score(info, bpm, tracks, lyrics);
+    }
+
+    public Score withInfo(ScoreInfo info) {
+        return new Score(info, tempo, tracks, lyrics);
     }
 
     public Score withTitle(String title) {
-        return new Score(title, tempo, tracks);
+        return withInfo(info.withTitle(title));
+    }
+
+    public Score withLyrics(Lyrics lyrics) {
+        return new Score(info, tempo, tracks, lyrics);
     }
 
     private boolean anyTrackPlaysSolo() {
@@ -96,6 +171,6 @@ public record Score(String title, int tempo, List<Track> tracks) {
     }
 
     private Score withTracks(List<Track> updated) {
-        return new Score(title, tempo, updated);
+        return new Score(info, tempo, updated, lyrics);
     }
 }

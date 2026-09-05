@@ -48,7 +48,7 @@ class JsonScoreFilesTest {
         scoreFiles.save(score, path);
 
         String content = Files.readString(path);
-        assertTrue(content.startsWith("{\n  \"format\": 2,"));
+        assertTrue(content.startsWith("{\n  \"format\": " + ScoreDto.CURRENT_FORMAT + ","));
     }
 
     @Test
@@ -94,7 +94,7 @@ class JsonScoreFilesTest {
     @Test
     void rejectsAnUnsupportedFormatVersion(@TempDir Path tempDir) throws IOException, URISyntaxException {
         String validContent = Files.readString(Path.of(getClass().getResource("/v1-one-measure.tabpro").toURI()));
-        String unsupportedContent = validContent.replaceFirst("\"format\": 1", "\"format\": 3");
+        String unsupportedContent = validContent.replaceFirst("\"format\": 1", "\"format\": 99");
         Path path = tempDir.resolve("score.tabpro");
         Files.writeString(path, unsupportedContent);
 

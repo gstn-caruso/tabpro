@@ -30,9 +30,9 @@ class FretDigitsTest {
 
     @Test
     void aCombinationAboveTheHighestFretStartsANewFret() {
-        assertEquals(3, digits.fretFor('3'));
+        assertEquals(4, digits.fretFor('4'));
         now[0] += 100;
-        assertEquals(5, digits.fretFor('5'));
+        assertEquals(8, digits.fretFor('8'));
     }
 
     @Test

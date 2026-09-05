@@ -81,7 +81,7 @@ class KeyboardViewTest {
         KeyboardView view = sized();
 
         assertTrue(view.keyBounds(Tuning.standardBass().pitchOfString(4).midiNumber()).isPresent());
-        assertTrue(view.keyBounds(new Pitch(64 + Note.MAX_FRET).midiNumber()).isPresent());
+        assertTrue(view.keyBounds(new Pitch(64 + Tuning.MAX_FRET).midiNumber()).isPresent());
     }
 
     @Test
