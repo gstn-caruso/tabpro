@@ -155,6 +155,22 @@ class KeyboardEditingTest {
     }
 
     @Test
+    void movingTheCursorResetsTheDigitBuffer() {
+        Editor editor = new Editor(Score.blank());
+        KeyboardEditing keyboard = keyboardEditing(editor);
+        Map<KeyStroke, Runnable> bindings = keyboard.bindings();
+
+        keyboard.keyTyped('2');
+        bindings.get(KeyStroke.getKeyStroke("RIGHT")).run();
+        now[0] += 100;
+        keyboard.keyTyped('0');
+
+        assertEquals(
+                Optional.of(new Note(1, 2)), editor.score().track(0).measure(0).beat(0).noteOn(1));
+        assertEquals(Optional.of(new Note(1, 0)), editor.currentBeat().noteOn(1));
+    }
+
+    @Test
     void aNonDigitKeyResetsTheDigitBuffer() {
         Editor editor = new Editor(Score.blank());
         KeyboardEditing keyboard = keyboardEditing(editor);

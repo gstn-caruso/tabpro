@@ -37,7 +37,15 @@ public final class KeyboardEditing {
         bindings.put(KeyStroke.getKeyStroke("BACK_SPACE"), editor::clearNote);
         bindings.put(KeyStroke.getKeyStroke("ctrl Z"), editor::undo);
         bindings.put(KeyStroke.getKeyStroke("ctrl Y"), editor::redo);
+        bindings.replaceAll((keyStroke, action) -> resettingDigitsBefore(action));
         return bindings;
+    }
+
+    private Runnable resettingDigitsBefore(Runnable action) {
+        return () -> {
+            digits.reset();
+            action.run();
+        };
     }
 
     public void keyTyped(char c) {
