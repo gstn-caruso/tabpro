@@ -1,19 +1,109 @@
 # tabpro
 
-Clon libre de Guitar Pro 5: editor de tablaturas para guitarra.
+Clon libre de Guitar Pro 5: editor de tablaturas para guitarra, minimal, en Java 25 con Swing.
+
+## Estado
+
+**v0.1.0 — MVP.** Editor de tablatura de una pista con edición por teclado al estilo
+Guitar Pro 5, guardado y apertura en formato propio `.tabpro`, y reproducción MIDI
+con cursor que sigue la música.
+
+Fuera de alcance por ahora: pentagrama (notación estándar), efectos (bends, slides,
+ligados), dos voces por compás, tresillos, varias pistas en la interfaz e
+importación o exportación de archivos `.gp5`.
+
+## Instalación
+
+**Debian / Ubuntu:** bajá el `.deb` de la última
+[release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
+
+```sh
+sudo apt install ./tabpro_0.1.0_all.deb
+tabpro
+```
+
+Queda también en el menú de aplicaciones. Necesita una JRE 25 con entorno gráfico
+(`openjdk-25-jre`); la variante *headless* no alcanza.
+
+**Cualquier sistema con Java 25:**
+
+```sh
+java -jar tabpro-app-0.1.0.jar
+```
+
+## Uso
+
+El cursor marca una celda (compás, beat, cuerda). Todo se hace desde el teclado:
+
+| Tecla | Acción |
+|---|---|
+| `0`–`9` | Escribir el traste en la cuerda del cursor. Dos dígitos seguidos (menos de 700 ms) forman trastes del 10 al 24. |
+| `←` `→` | Beat anterior / siguiente. Al final de un compás incompleto agrega un silencio; al final de la partitura agrega un compás. |
+| `↑` `↓` | Cuerda anterior / siguiente. |
+| `Inicio` `Fin` | Primer / último beat del compás. |
+| `+` `-` | Alargar / acortar la figura del beat (redonda … semifusa). |
+| `.` | Puntillo. |
+| `R` | Convertir el beat en silencio. |
+| `Retroceso` | Borrar la nota bajo el cursor. |
+| `Insert` `Supr` | Insertar un silencio antes del cursor / borrar el beat. |
+| `Ctrl+Insert` `Ctrl+Supr` | Insertar un compás vacío antes del actual / borrar el compás. |
+| `Ctrl+Z` `Ctrl+Y` | Deshacer / rehacer. |
+| `Espacio` | Reproducir / detener. El tempo se cambia desde la barra de herramientas. |
+| `Ctrl+N` `Ctrl+O` `Ctrl+S` | Nueva partitura / abrir / guardar. |
+
+Un clic sobre la tablatura mueve el cursor a esa celda. El número de compás se pinta
+en naranja cuando la suma de figuras no coincide con el compás.
+
+## Formato `.tabpro`
+
+JSON legible y versionado. Las afinaciones son números MIDI (cuerda 1 = la más aguda),
+`value` es el denominador de la figura (4 = negra, 8 = corchea, …) y un beat sin notas
+es un silencio:
+
+```json
+{
+  "format": 1,
+  "title": "Prueba",
+  "tempo": 120,
+  "tracks": [
+    {
+      "name": "Guitarra",
+      "midiProgram": 25,
+      "tuning": [64, 59, 55, 50, 45, 40],
+      "measures": [
+        {
+          "timeSignature": { "beats": 4, "beatUnit": 4 },
+          "beats": [
+            { "value": 4, "dotted": false, "notes": [ { "string": 6, "fret": 0 } ] },
+            { "value": 8, "dotted": true, "notes": [] }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
 
 ## Stack
 
 - Java 25
 - Maven (multi-módulo)
 - Swing + FlatLaf (look Darcula)
+- Gson para el formato propio
+- `javax.sound.midi` para la reproducción
 
 ## Módulos
 
-- `tabpro-core` — modelo de dominio de la partitura, sesión de edición y puertos; sin dependencias de framework.
+Las dependencias van en una sola dirección hacia `tabpro-core`; la interfaz habla con
+el formato y con MIDI solo a través de los puertos `ScoreFiles` y `Player` definidos en core.
+
+- `tabpro-core` — modelo de dominio de la partitura (inmutable), sesión de edición con
+  undo/redo, timeline de reproducción y puertos; sin dependencias de framework.
 - `tabpro-format` — persistencia en el formato propio `.tabpro` (JSON con Gson).
-- `tabpro-midi` — reproducción con `javax.sound.midi`.
-- `tabpro-ui` — interfaz Swing: ventana, canvas de tablatura, teclado y transporte (sin FlatLaf).
+- `tabpro-midi` — reproducción con `javax.sound.midi`, con un marcador por beat para
+  mover el cursor sin polling.
+- `tabpro-ui` — interfaz Swing: ventana, canvas de tablatura, teclado, documento y
+  transporte (sin FlatLaf).
 - `tabpro-app` — `main`, FlatLaf, cableado de módulos y empaquetado (jar ejecutable + `.deb`).
 
 ## Build
@@ -22,16 +112,19 @@ Clon libre de Guitar Pro 5: editor de tablaturas para guitarra.
 mvn verify
 ```
 
-Ejecutar:
+Genera `tabpro-app/target/tabpro-app-<versión>.jar` (ejecutable) y
+`tabpro-app/target/tabpro_<versión>_all.deb`.
 
 ```sh
-java -jar tabpro-app/target/tabpro-app-0.1.0-SNAPSHOT.jar
+java -jar tabpro-app/target/tabpro-app-0.1.0.jar
 ```
 
-## Estado
+## Desarrollo
 
-Fase 0: cinco módulos en el reactor y ventana vacía. El desarrollo sigue TDD
-(test que falla → mínimo código para pasarlo → refactor).
+Todo comportamiento entra por un test que falla primero (TDD). Cada cambio va en una
+branch, se abre un PR contra `main` y el CI (`mvn -B verify`, headless) es el gate para
+mergear. Un tag `vX.Y.Z` en `main` dispara el workflow de release, que construye el `.deb`
+y lo publica en GitHub Releases.
 
 ## Licencia
 
