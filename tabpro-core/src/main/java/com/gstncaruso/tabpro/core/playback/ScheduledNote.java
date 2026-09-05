@@ -21,6 +21,10 @@ public record ScheduledNote(
         return new ScheduledNote(startTick, durationTicks, pitch, velocity, bend, fadeIn);
     }
 
+    ScheduledNote withStartTick(long startTick) {
+        return new ScheduledNote(startTick, durationTicks, pitch, velocity, bend, fadeIn);
+    }
+
     public ScheduledNote withBend(PitchTrajectory bend) {
         return new ScheduledNote(startTick, durationTicks, pitch, velocity, bend, fadeIn);
     }

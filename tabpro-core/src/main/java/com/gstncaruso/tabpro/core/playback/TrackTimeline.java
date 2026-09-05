@@ -20,4 +20,10 @@ public record TrackTimeline(
         long beatEnd = beats.stream().mapToLong(ScheduledBeat::tick).max().orElse(0);
         return Math.max(noteEnd, beatEnd);
     }
+
+    TrackTimeline shiftedBy(long ticks) {
+        return new TrackTimeline(program, volume, pan, percussion,
+                notes.stream().map(note -> note.withStartTick(note.startTick() + ticks)).toList(),
+                beats.stream().map(beat -> beat.shiftedBy(ticks)).toList());
+    }
 }

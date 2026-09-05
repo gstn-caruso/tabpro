@@ -1,12 +1,14 @@
 package com.gstncaruso.tabpro.midi;
 
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
+import com.gstncaruso.tabpro.core.playback.MetronomeClick;
 import com.gstncaruso.tabpro.core.playback.PitchTrajectory;
 import com.gstncaruso.tabpro.core.playback.ScheduledBeat;
 import com.gstncaruso.tabpro.core.playback.ScheduledNote;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.core.playback.TrackTimeline;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
@@ -56,6 +58,30 @@ public final class MidiSequences {
                 writeTrack(sequence.createTrack(), index, channel, trackTimeline);
             }
             return sequence;
+        } catch (InvalidMidiDataException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /** La velocidad y la duracion con que suena cada click del metronomo. */
+    private static final int METRONOME_VELOCITY = 100;
+    private static final long METRONOME_CLICK_TICKS = 60;
+
+    /** Agrega el metronomo como una pista mas de percusion, si es que tiene algun click para tocar. */
+    public static void addMetronomeTrack(Sequence sequence, List<MetronomeClick> clicks) {
+        if (clicks.isEmpty()) {
+            return;
+        }
+        try {
+            Track track = sequence.createTrack();
+            track.add(programChangeEvent(PERCUSSION_CHANNEL, 0));
+            for (MetronomeClick click : clicks) {
+                ShortMessage on = new ShortMessage(
+                        ShortMessage.NOTE_ON, PERCUSSION_CHANNEL, click.sound(), METRONOME_VELOCITY);
+                ShortMessage off = new ShortMessage(ShortMessage.NOTE_OFF, PERCUSSION_CHANNEL, click.sound(), 0);
+                track.add(new MidiEvent(on, click.tick()));
+                track.add(new MidiEvent(off, click.tick() + METRONOME_CLICK_TICKS));
+            }
         } catch (InvalidMidiDataException e) {
             throw new IllegalStateException(e);
         }

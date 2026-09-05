@@ -392,6 +392,39 @@ class MidiSequencesTest {
         return sawRpnMsb && sawRpnLsb && sawDataEntry;
     }
 
+    @Test
+    void agregaUnaPistaDeMetronomoConSusClicksEnElCanalDePercusion() {
+        Timeline timeline = new Timeline(120, 960, List.of());
+        Sequence sequence = MidiSequences.fromTimeline(timeline);
+        List<com.gstncaruso.tabpro.core.playback.MetronomeClick> clicks = List.of(
+                new com.gstncaruso.tabpro.core.playback.MetronomeClick(0, true),
+                new com.gstncaruso.tabpro.core.playback.MetronomeClick(960, false));
+
+        MidiSequences.addMetronomeTrack(sequence, clicks);
+
+        Track metronomeTrack = sequence.getTracks()[sequence.getTracks().length - 1];
+        List<ShortMessage> notesOn = java.util.stream.IntStream.range(0, metronomeTrack.size())
+                .mapToObj(metronomeTrack::get)
+                .map(MidiEvent::getMessage)
+                .filter(message -> message instanceof ShortMessage sm && sm.getCommand() == ShortMessage.NOTE_ON)
+                .map(message -> (ShortMessage) message)
+                .toList();
+        assertEquals(2, notesOn.size());
+        assertEquals(9, notesOn.get(0).getChannel());
+        assertTrue(notesOn.get(0).getData1() != notesOn.get(1).getData1(), "el acento suena distinto del pulso comun");
+    }
+
+    @Test
+    void sinClicksNoAgregaNingunaPista() {
+        Timeline timeline = new Timeline(120, 960, List.of());
+        Sequence sequence = MidiSequences.fromTimeline(timeline);
+        int tracksBefore = sequence.getTracks().length;
+
+        MidiSequences.addMetronomeTrack(sequence, List.of());
+
+        assertEquals(tracksBefore, sequence.getTracks().length);
+    }
+
     private List<Integer> expressionValues(Track track) {
         return java.util.stream.IntStream.range(0, track.size())
                 .mapToObj(track::get)

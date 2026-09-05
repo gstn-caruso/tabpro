@@ -24,4 +24,9 @@ public record Timeline(int tempoBpm, int ticksPerQuarter, List<TrackTimeline> tr
     public long endTick() {
         return tracks.stream().mapToLong(TrackTimeline::endTick).max().orElse(0);
     }
+
+    /** El mismo timeline empezando mas tarde: para anteponerle una cuenta regresiva. */
+    public Timeline shiftedBy(long ticks) {
+        return new Timeline(tempoBpm, ticksPerQuarter, tracks.stream().map(track -> track.shiftedBy(ticks)).toList());
+    }
 }

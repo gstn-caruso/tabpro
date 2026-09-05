@@ -265,6 +265,28 @@ class TimelineTest {
                 notes.stream().map(ScheduledNote::startTick).toList());
     }
 
+    @Test
+    void shiftedByCorreTodasLasNotasYLosBeatsElMismoTiempo() {
+        Score score = scoreWithLeadBeats(Beat.of(Duration.quarter(), new Note(1, 0)));
+
+        Timeline shifted = Timeline.of(score).shiftedBy(480);
+
+        ScheduledNote note = shifted.tracks().get(0).notes().get(0);
+        ScheduledBeat beat = shifted.tracks().get(0).beats().get(0);
+        assertEquals(480, note.startTick());
+        assertEquals(480, beat.tick());
+    }
+
+    @Test
+    void shiftedByNoCambiaElTempoNiLasDuraciones() {
+        Score score = scoreWithLeadBeats(Beat.of(Duration.quarter(), new Note(1, 0)));
+
+        Timeline shifted = Timeline.of(score).shiftedBy(480);
+
+        assertEquals(score.tempo(), shifted.tempoBpm());
+        assertEquals(Duration.quarter().ticks(), shifted.tracks().get(0).notes().get(0).durationTicks());
+    }
+
     private Score scoreWithLeadBeat(Beat beat) {
         return scoreWithLeadBeats(beat);
     }
