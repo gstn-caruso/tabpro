@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -99,13 +100,50 @@ class TimelineTest {
     }
 
     @Test
-    void carriesTempoAndMidiProgram() {
+    void carriesTempoAndTheChannelSettingsOfEachTrack() {
         Score score = Score.blank().withTempo(90);
+        Track loud = score.track(0).withChannel(score.track(0).channel().withVolume(110).withPan(20));
 
-        Timeline timeline = Timeline.of(score);
+        Timeline timeline = Timeline.of(score.withTrack(0, loud));
 
         assertEquals(90, timeline.tempoBpm());
-        assertEquals(25, timeline.tracks().get(0).midiProgram());
+        TrackTimeline track = timeline.tracks().get(0);
+        assertEquals(25, track.program());
+        assertEquals(110, track.volume());
+        assertEquals(20, track.pan());
+    }
+
+    @Test
+    void aMutedTrackKeepsItsNotesButIsScheduledSilent() {
+        Score score = Score.blank().withTrack(0,
+                Track.standardGuitar("Guitarra").withMeasure(0,
+                        new Measure(TimeSignature.fourFour(),
+                                List.of(Beat.of(Duration.quarter(), new Note(1, 0))))));
+        Track muted = score.track(0).withChannel(score.track(0).channel().toggledMute());
+
+        TrackTimeline track = Timeline.of(score.withTrack(0, muted)).tracks().get(0);
+
+        assertEquals(0, track.volume());
+        assertEquals(1, track.notes().size());
+        assertEquals(1, track.beats().size());
+    }
+
+    @Test
+    void aTrackThatIsNotSoloIsScheduledSilentWhileAnotherPlaysSolo() {
+        Score score = Score.blank().withTrackAdded(Track.standardBass("Bajo"));
+        Track soloed = score.track(1).withChannel(score.track(1).channel().toggledSolo());
+
+        Timeline timeline = Timeline.of(score.withTrack(1, soloed));
+
+        assertEquals(0, timeline.tracks().get(0).volume());
+        assertEquals(Channel.DEFAULT_VOLUME, timeline.tracks().get(1).volume());
+    }
+
+    @Test
+    void keepsOneTimelinePerTrack() {
+        Score score = Score.blank().withTrackAdded(Track.standardBass("Bajo"));
+
+        assertEquals(2, Timeline.of(score).tracks().size());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.core.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,7 +14,7 @@ class TrackTest {
     void aStandardGuitarTrackHasStandardTuningAndOneEmptyMeasure() {
         Track track = Track.standardGuitar("Guitarra");
         assertEquals(Tuning.standard(), track.tuning());
-        assertEquals(25, track.midiProgram());
+        assertEquals(Channel.playing(25), track.channel());
         assertEquals(1, track.measures().size());
         assertTrue(track.measure(0).beat(0).isRest());
     }
@@ -31,7 +32,7 @@ class TrackTest {
         Measure first = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 0))));
         Measure second = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 1))));
         Measure inserted = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 9))));
-        Track track = new Track("Guitarra", Tuning.standard(), 25, List.of(first, second));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(first, second));
         Track result = track.withMeasureInsertedAt(1, inserted);
         assertEquals(List.of(first, inserted, second), result.measures());
     }
@@ -40,7 +41,7 @@ class TrackTest {
     void appendsAMeasure() {
         Measure first = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 0))));
         Measure appended = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 9))));
-        Track track = new Track("Guitarra", Tuning.standard(), 25, List.of(first));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(first));
         Track result = track.withMeasureInsertedAt(track.measures().size(), appended);
         assertEquals(List.of(first, appended), result.measures());
     }
@@ -49,7 +50,7 @@ class TrackTest {
     void removesAMeasure() {
         Measure first = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 0))));
         Measure second = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 1))));
-        Track track = new Track("Guitarra", Tuning.standard(), 25, List.of(first, second));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(first, second));
         Track result = track.withoutMeasureAt(0);
         assertEquals(List.of(second), result.measures());
     }
@@ -58,7 +59,7 @@ class TrackTest {
     void removingTheOnlyMeasureLeavesAnEmptyOne() {
         TimeSignature threeFour = new TimeSignature(3, 4);
         Measure onlyMeasure = new Measure(threeFour, List.of(Beat.of(Duration.quarter().longer(), new Note(1, 5))));
-        Track track = new Track("Guitarra", Tuning.standard(), 25, List.of(onlyMeasure));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(onlyMeasure));
         Track result = track.withoutMeasureAt(0);
         assertEquals(1, result.measures().size());
         Measure resultMeasure = result.measure(0);
@@ -68,22 +69,50 @@ class TrackTest {
     }
 
     @Test
-    void rejectsAMidiProgramBelowZero() {
-        Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
-        assertThrows(IllegalArgumentException.class,
-                () -> new Track("Guitarra", Tuning.standard(), -1, List.of(measure)));
+    void aStandardBassTrackIsTunedFourStringsBelowTheGuitar() {
+        Track track = Track.standardBass("Bajo");
+        assertEquals(Tuning.standardBass(), track.tuning());
+        assertEquals(4, track.tuning().stringCount());
     }
 
     @Test
-    void rejectsAMidiProgramAbove127() {
+    void changesItsChannelAndItsName() {
+        Track track = Track.standardGuitar("Guitarra");
+
+        assertEquals(80, track.withChannel(track.channel().withVolume(80)).channel().volume());
+        assertEquals("Ritmica", track.withName("Ritmica").name());
+        assertEquals(track.measures(), track.withName("Ritmica").measures());
+    }
+
+    @Test
+    void knowsWhichOfItsMeasuresCarryNotes() {
+        Measure sounding = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 3))));
+        Measure silent = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(sounding, silent));
+
+        assertTrue(track.hasNotesIn(0));
+        assertFalse(track.hasNotesIn(1));
+    }
+
+    @Test
+    void hasNoNotesBeyondItsLastMeasure() {
+        Track track = Track.standardGuitar("Guitarra");
+
+        assertFalse(track.hasNotesIn(7));
+        assertFalse(track.hasNotesIn(-1));
+    }
+
+    @Test
+    void countsItsMeasures() {
         Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
-        assertThrows(IllegalArgumentException.class,
-                () -> new Track("Guitarra", Tuning.standard(), 128, List.of(measure)));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure, measure));
+
+        assertEquals(2, track.measureCount());
     }
 
     @Test
     void rejectsATrackWithoutMeasures() {
         assertThrows(IllegalArgumentException.class,
-                () -> new Track("Guitarra", Tuning.standard(), 25, List.of()));
+                () -> new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of()));
     }
 }

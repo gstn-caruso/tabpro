@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
@@ -17,7 +18,7 @@ import org.junit.jupiter.api.Test;
 class TabLayoutTest {
 
     private Track trackOf(Measure... measures) {
-        return new Track("Guitarra", Tuning.standard(), 25, List.of(measures));
+        return new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measures));
     }
 
     private Measure measureOfBeats(Duration duration, int count) {

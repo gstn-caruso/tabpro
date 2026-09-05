@@ -3,12 +3,12 @@ package com.gstncaruso.tabpro.core.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public record Track(String name, Tuning tuning, int midiProgram, List<Measure> measures) {
+public record Track(String name, Tuning tuning, Channel channel, List<Measure> measures) {
+
+    public static final int GUITAR_PROGRAM = 25;
+    public static final int BASS_PROGRAM = 33;
 
     public Track {
-        if (midiProgram < 0 || midiProgram > 127) {
-            throw new IllegalArgumentException("midiProgram debe estar entre 0 y 127: " + midiProgram);
-        }
         if (measures.isEmpty()) {
             throw new IllegalArgumentException("una pista necesita al menos un compas");
         }
@@ -16,12 +16,38 @@ public record Track(String name, Tuning tuning, int midiProgram, List<Measure> m
     }
 
     public static Track standardGuitar(String name) {
-        Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
-        return new Track(name, Tuning.standard(), 25, List.of(measure));
+        return new Track(name, Tuning.standard(), Channel.playing(GUITAR_PROGRAM), List.of(emptyMeasure()));
+    }
+
+    public static Track standardBass(String name) {
+        return new Track(name, Tuning.standardBass(), Channel.playing(BASS_PROGRAM), List.of(emptyMeasure()));
+    }
+
+    private static Measure emptyMeasure() {
+        return Measure.empty(TimeSignature.fourFour(), Duration.quarter());
     }
 
     public Measure measure(int index) {
         return measures.get(index);
+    }
+
+    public int measureCount() {
+        return measures.size();
+    }
+
+    public boolean hasNotesIn(int measureIndex) {
+        if (measureIndex < 0 || measureIndex >= measureCount()) {
+            return false;
+        }
+        return measure(measureIndex).beats().stream().anyMatch(beat -> !beat.isRest());
+    }
+
+    public Track withName(String name) {
+        return new Track(name, tuning, channel, measures);
+    }
+
+    public Track withChannel(Channel channel) {
+        return new Track(name, tuning, channel, measures);
     }
 
     public Track withMeasure(int index, Measure measure) {
@@ -47,6 +73,6 @@ public record Track(String name, Tuning tuning, int midiProgram, List<Measure> m
     }
 
     private Track withMeasures(List<Measure> updated) {
-        return new Track(name, tuning, midiProgram, updated);
+        return new Track(name, tuning, channel, updated);
     }
 }

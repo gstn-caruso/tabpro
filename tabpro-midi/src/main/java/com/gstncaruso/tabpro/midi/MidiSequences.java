@@ -19,6 +19,10 @@ public final class MidiSequences {
     private static final int TEMPO_META_TYPE = 0x51;
     private static final int MARKER_META_TYPE = 0x06;
     private static final int NOTE_VELOCITY = 100;
+    private static final int VOLUME_CONTROLLER = 7;
+    private static final int PAN_CONTROLLER = 10;
+    private static final int PERCUSSION_CHANNEL = 9;
+    private static final int CHANNEL_COUNT = 16;
 
     private MidiSequences() {
     }
@@ -28,10 +32,8 @@ public final class MidiSequences {
             Sequence sequence = new Sequence(Sequence.PPQ, timeline.ticksPerQuarter());
             sequence.createTrack().add(tempoEvent(timeline.tempoBpm()));
 
-            int channel = 0;
-            for (TrackTimeline trackTimeline : timeline.tracks()) {
-                writeTrack(sequence.createTrack(), channel, trackTimeline);
-                channel++;
+            for (int index = 0; index < timeline.tracks().size(); index++) {
+                writeTrack(sequence.createTrack(), index, timeline.tracks().get(index));
             }
             return sequence;
         } catch (InvalidMidiDataException e) {
@@ -50,16 +52,29 @@ public final class MidiSequences {
                 Integer.parseInt(parts[2])));
     }
 
-    private static void writeTrack(Track track, int channel, TrackTimeline trackTimeline)
+    static int channelFor(int trackIndex) {
+        int slot = trackIndex % (CHANNEL_COUNT - 1);
+        return slot < PERCUSSION_CHANNEL ? slot : slot + 1;
+    }
+
+    private static void writeTrack(Track track, int trackIndex, TrackTimeline trackTimeline)
             throws InvalidMidiDataException {
-        track.add(programChangeEvent(channel, trackTimeline.midiProgram()));
+        int channel = channelFor(trackIndex);
+        track.add(programChangeEvent(channel, trackTimeline.program()));
+        track.add(controlChangeEvent(channel, VOLUME_CONTROLLER, trackTimeline.volume()));
+        track.add(controlChangeEvent(channel, PAN_CONTROLLER, trackTimeline.pan()));
         for (ScheduledNote note : trackTimeline.notes()) {
             track.add(noteOnEvent(channel, note));
             track.add(noteOffEvent(channel, note));
         }
         for (ScheduledBeat beat : trackTimeline.beats()) {
-            track.add(markerEvent(channel, beat));
+            track.add(markerEvent(trackIndex, beat));
         }
+    }
+
+    private static MidiEvent controlChangeEvent(int channel, int controller, int value)
+            throws InvalidMidiDataException {
+        return new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, controller, value), 0);
     }
 
     private static MidiEvent tempoEvent(int tempoBpm) throws InvalidMidiDataException {
