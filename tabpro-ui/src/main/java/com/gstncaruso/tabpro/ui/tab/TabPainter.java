@@ -31,6 +31,7 @@ public final class TabPainter {
         for (int m = 0; m < track.measures().size(); m++) {
             paintMeasure(g, layout, track, m);
         }
+        playing.ifPresent(position -> paintPlaying(g, layout, cursor, position));
         paintCursor(g, layout, cursor);
     }
 
@@ -58,6 +59,17 @@ public final class TabPainter {
 
         g.setColor(measure.isComplete() ? TEXT : WARNING);
         g.drawString(String.valueOf(m + 1), bounds.x + 2, bounds.y - 6);
+    }
+
+    private static void paintPlaying(Graphics2D g, TabLayout layout, Cursor cursor, BeatPosition playing) {
+        if (playing.track() != cursor.track()) {
+            return;
+        }
+        Rectangle beat = layout.beatBounds(playing.measure(), playing.beat());
+        int half = TabLayout.STRING_SPACING / 2;
+
+        g.setColor(PLAYING);
+        g.fillRect(beat.x, beat.y - half, beat.width, beat.height + 2 * half);
     }
 
     private static void paintCursor(Graphics2D g, TabLayout layout, Cursor cursor) {
