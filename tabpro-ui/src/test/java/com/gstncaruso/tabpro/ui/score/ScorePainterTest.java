@@ -163,6 +163,41 @@ class ScorePainterTest {
         assertDoesNotThrow(() -> paint(scoreWith(measure), new Cursor(0, 0, 0, 1), Playhead.silent()));
     }
 
+    @Test
+    void survivesTwoVoicesAKeySignatureAndATuplet() {
+        Measure leadOnly = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 5)),
+                Beat.of(Duration.quarter(), new Note(1, 7)),
+                Beat.of(Duration.quarter(), new Note(1, 8)),
+                Beat.of(Duration.quarter(), new Note(1, 5))));
+        Measure withBass = leadOnly.withVoice(
+                com.gstncaruso.tabpro.core.model.VoicePart.BASS,
+                new com.gstncaruso.tabpro.core.model.Voice(List.of(
+                        Beat.of(Duration.quarter(), new Note(6, 0)),
+                        Beat.of(Duration.quarter(), new Note(6, 0)),
+                        Beat.of(Duration.quarter(), new Note(6, 3)),
+                        Beat.of(Duration.quarter(), new Note(6, 0)))));
+        Duration eighthTriplet = new Duration(NoteValue.EIGHTH, false)
+                .in(com.gstncaruso.tabpro.core.model.Tuplet.of(3));
+        Measure withTuplet = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(eighthTriplet, new Note(1, 0)),
+                Beat.of(eighthTriplet, new Note(1, 2)),
+                Beat.of(eighthTriplet, new Note(1, 4)),
+                Beat.of(Duration.quarter(), new Note(1, 0))))
+                .mappingAttributes(attrs -> attrs.withKeySignature(
+                        new com.gstncaruso.tabpro.core.model.bars.KeySignature(
+                                2, com.gstncaruso.tabpro.core.model.bars.Mode.MAJOR)));
+
+        Score score = scoreWith(withBass, withTuplet);
+
+        assertDoesNotThrow(() -> paint(score, new Cursor(0, 0, 0, 1), Playhead.silent()));
+    }
+
+    private static Score scoreWith(Measure... measures) {
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measures));
+        return new Score("", 120, List.of(track));
+    }
+
     private static Measure measureOf(Beat... beats) {
         return new Measure(TimeSignature.fourFour(), List.of(beats));
     }

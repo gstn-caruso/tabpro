@@ -60,7 +60,7 @@ public final class ScorePainter {
                 TabPainter.paintTabMark(g, layout, track, trackIndex, measureIndex);
             }
             TabPainter.paintMeasureNumber(g, layout, track, trackIndex, measureIndex);
-            StaffPainter.paintMeasure(g, layout, track, clef, trackIndex, measureIndex);
+            StaffPainter.paintMeasure(g, layout, track, clef, trackIndex, measureIndex, cursor.voice());
             TabPainter.paintFrets(g, layout, track, trackIndex, measureIndex);
             TabNotationPainter.paintMeasure(g, layout, track, trackIndex, measureIndex);
             TabSymbolPainter.paintMeasure(g, layout, track, trackIndex, measureIndex);
