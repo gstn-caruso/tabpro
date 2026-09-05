@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
+import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
@@ -16,7 +17,7 @@ public final class Transport {
     private final Player player;
     private final Consumer<Runnable> uiThread;
     private final List<Runnable> listeners = new ArrayList<>();
-    private Optional<BeatPosition> playing = Optional.empty();
+    private Playhead playhead = Playhead.silent();
 
     public Transport(Editor editor, Player player, Consumer<Runnable> uiThread) {
         this.editor = editor;
@@ -27,7 +28,7 @@ public final class Transport {
     public void toggle() {
         if (player.isPlaying()) {
             player.stop();
-            playing = Optional.empty();
+            playhead = Playhead.silent();
             notifyListeners();
             return;
         }
@@ -38,8 +39,12 @@ public final class Transport {
         return player.isPlaying();
     }
 
-    public Optional<BeatPosition> playing() {
-        return playing;
+    public Playhead playhead() {
+        return playhead;
+    }
+
+    public Optional<BeatPosition> playingOn(int track) {
+        return playhead.on(track);
     }
 
     public void addListener(Runnable listener) {
@@ -57,7 +62,7 @@ public final class Transport {
         @Override
         public void beatStarted(BeatPosition position) {
             uiThread.accept(() -> {
-                playing = Optional.of(position);
+                playhead = playhead.advancedTo(position);
                 notifyListeners();
             });
         }
@@ -65,7 +70,7 @@ public final class Transport {
         @Override
         public void playbackFinished() {
             uiThread.accept(() -> {
-                playing = Optional.empty();
+                playhead = Playhead.silent();
                 notifyListeners();
             });
         }

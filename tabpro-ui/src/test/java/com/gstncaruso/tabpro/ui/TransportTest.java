@@ -49,7 +49,7 @@ class TransportTest {
 
         player.emitBeat(new BeatPosition(0, 0, 1));
 
-        assertEquals(Optional.of(new BeatPosition(0, 0, 1)), transport.playing());
+        assertEquals(Optional.of(new BeatPosition(0, 0, 1)), transport.playingOn(0));
     }
 
     @Test
@@ -59,7 +59,7 @@ class TransportTest {
 
         player.emitFinished();
 
-        assertEquals(Optional.empty(), transport.playing());
+        assertEquals(Optional.empty(), transport.playingOn(0));
     }
 
     @Test
@@ -69,7 +69,7 @@ class TransportTest {
 
         transport.toggle();
 
-        assertEquals(Optional.empty(), transport.playing());
+        assertEquals(Optional.empty(), transport.playingOn(0));
     }
 
     @Test
@@ -80,13 +80,25 @@ class TransportTest {
 
         player.emitBeat(new BeatPosition(0, 0, 1));
 
-        assertEquals(Optional.empty(), queuedTransport.playing());
+        assertEquals(Optional.empty(), queuedTransport.playingOn(0));
 
         while (!pending.isEmpty()) {
             pending.poll().run();
         }
 
-        assertEquals(Optional.of(new BeatPosition(0, 0, 1)), queuedTransport.playing());
+        assertEquals(Optional.of(new BeatPosition(0, 0, 1)), queuedTransport.playingOn(0));
+    }
+
+    @Test
+    void followsEveryTrackAtOnce() {
+        transport.toggle();
+
+        player.emitBeat(new BeatPosition(0, 2, 1));
+        player.emitBeat(new BeatPosition(1, 2, 0));
+
+        assertEquals(Optional.of(new BeatPosition(0, 2, 1)), transport.playingOn(0));
+        assertEquals(Optional.of(new BeatPosition(1, 2, 0)), transport.playingOn(1));
+        assertEquals(java.util.OptionalInt.of(2), transport.playhead().measure());
     }
 
     @Test

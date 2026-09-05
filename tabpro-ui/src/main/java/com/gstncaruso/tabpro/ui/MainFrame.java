@@ -4,8 +4,8 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.playback.Player;
-import com.gstncaruso.tabpro.ui.tab.TabCanvas;
-import com.gstncaruso.tabpro.ui.tab.TabPainter;
+import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
+import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -40,10 +40,10 @@ public final class MainFrame extends JFrame {
         setSize(1000, 640);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        TabCanvas canvas = new TabCanvas(editor);
+        ScoreCanvas canvas = new ScoreCanvas(editor);
         JScrollPane scrollPane = new JScrollPane(canvas);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getViewport().setBackground(TabPainter.BACKGROUND);
+        scrollPane.getViewport().setBackground(ScoreColors.BACKGROUND);
 
         Transport transport = new Transport(editor, player, SwingUtilities::invokeLater);
         Runnable togglePlayback = () -> {
@@ -59,7 +59,7 @@ public final class MainFrame extends JFrame {
         editor.addListener(() -> tempoSpinner.setValue(editor.score().tempo()));
 
         transport.addListener(() -> {
-            canvas.showPlaying(transport.playing());
+            canvas.showPlayhead(transport.playhead());
             playButton.setText(transport.isPlaying() ? "Detener" : "Reproducir");
         });
 

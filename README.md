@@ -4,18 +4,18 @@ Clon libre de Guitar Pro 5: editor de tablaturas para guitarra, minimal, en Java
 
 ## Estado
 
-**v0.2.4 — MVP.** Editor de tablatura de una pista con edición por teclado al estilo
+**v0.2.5 — MVP.** Editor de tablatura con edición por teclado al estilo
 Guitar Pro 5, guardado y apertura en formato propio `.tabpro`, y reproducción MIDI
 con cursor que sigue la música.
 
-El modelo ya es multipista y cada pista tiene su mixer (instrumento General MIDI,
-volumen, paneo, silenciar y solo), que se guarda en el archivo y se escucha en la
-reproducción. La sesión de edición sabe agregar, seleccionar y quitar pistas y
-mantiene todas alineadas compás a compás; la interfaz todavía muestra una sola pista.
+La partitura se ve como en Guitar Pro: cada pista con su **pentagrama** arriba y su
+tablatura abajo, todas apiladas y alineadas compás a compás, con clave, figuras,
+plicas, barras de unión, silencios, puntillos y alteraciones. Cada pista tiene su
+mixer (instrumento General MIDI, volumen, paneo, silenciar y solo), que se guarda en
+el archivo y se escucha en la reproducción.
 
-Fuera de alcance por ahora: pentagrama (notación estándar), efectos (bends, slides,
-ligados), dos voces por compás, tresillos e importación o exportación de archivos
-`.gp5`.
+Fuera de alcance por ahora: efectos (bends, slides, ligados), dos voces por compás,
+tresillos e importación o exportación de archivos `.gp5`.
 
 ## Instalación
 
@@ -23,7 +23,7 @@ ligados), dos voces por compás, tresillos e importación o exportación de arch
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.2.4_all.deb
+sudo apt install ./tabpro_0.2.5_all.deb
 tabpro
 ```
 
@@ -33,7 +33,7 @@ Queda también en el menú de aplicaciones. Necesita una JRE 25 con entorno grá
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.2.4.jar
+java -jar tabpro-app-0.2.5.jar
 ```
 
 ## Uso
@@ -56,8 +56,12 @@ El cursor marca una celda (compás, beat, cuerda). Todo se hace desde el teclado
 | `Espacio` | Reproducir / detener. El tempo se cambia desde la barra de herramientas. |
 | `Ctrl+N` `Ctrl+O` `Ctrl+S` | Nueva partitura / abrir / guardar. |
 
-Un clic sobre la tablatura mueve el cursor a esa celda. El número de compás se pinta
-en naranja cuando la suma de figuras no coincide con el compás.
+Un clic sobre cualquier pista mueve el cursor a esa celda y, si hace falta, cambia de
+pista. El número de compás se pinta en naranja cuando la suma de figuras no coincide
+con el compás.
+
+La clave de cada pista sale de su afinación: clave de fa para un bajo, de sol para una
+guitarra. Como corresponde, ambas se escriben una octava arriba de lo que suenan.
 
 ## Formato `.tabpro`
 
@@ -108,12 +112,13 @@ Las dependencias van en una sola dirección hacia `tabpro-core`; la interfaz hab
 el formato y con MIDI solo a través de los puertos `ScoreFiles` y `Player` definidos en core.
 
 - `tabpro-core` — modelo de dominio de la partitura (inmutable), sesión de edición con
-  undo/redo, timeline de reproducción y puertos; sin dependencias de framework.
+  undo/redo, notación (clave, grados del pentagrama, barras de unión), timeline de
+  reproducción y puertos; sin dependencias de framework.
 - `tabpro-format` — persistencia en el formato propio `.tabpro` (JSON con Gson).
 - `tabpro-midi` — reproducción con `javax.sound.midi`, con un marcador por beat para
   mover el cursor sin polling.
-- `tabpro-ui` — interfaz Swing: ventana, canvas de tablatura, teclado, documento y
-  transporte (sin FlatLaf).
+- `tabpro-ui` — interfaz Swing: ventana, canvas de la partitura (layout en sistemas,
+  pentagrama y tablatura), teclado, documento y transporte (sin FlatLaf).
 - `tabpro-app` — `main`, FlatLaf, cableado de módulos y empaquetado (jar ejecutable + `.deb`).
 
 ## Build
@@ -126,7 +131,7 @@ Genera `tabpro-app/target/tabpro-app-<versión>.jar` (ejecutable) y
 `tabpro-app/target/tabpro_<versión>_all.deb`.
 
 ```sh
-java -jar tabpro-app/target/tabpro-app-0.2.4.jar
+java -jar tabpro-app/target/tabpro-app-0.2.5.jar
 ```
 
 ## Desarrollo
