@@ -50,6 +50,16 @@ class TransportTest {
         assertEquals(Optional.of(new BeatPosition(0, 0, 1)), transport.playing());
     }
 
+    @Test
+    void hidesThePlayingBeatWhenPlaybackFinishes() {
+        transport.toggle();
+        player.emitBeat(new BeatPosition(0, 0, 1));
+
+        player.emitFinished();
+
+        assertEquals(Optional.empty(), transport.playing());
+    }
+
     private static final class FakePlayer implements Player {
 
         private Timeline lastTimeline;
