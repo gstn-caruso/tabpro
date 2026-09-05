@@ -89,6 +89,24 @@ class TransportTest {
         assertEquals(Optional.of(new BeatPosition(0, 0, 1)), queuedTransport.playing());
     }
 
+    @Test
+    void notifiesListenersOnEveryChange() {
+        int[] notifications = {0};
+        transport.addListener(() -> notifications[0]++);
+
+        transport.toggle();
+        player.emitBeat(new BeatPosition(0, 0, 0));
+        assertEquals(1, notifications[0]);
+
+        player.emitFinished();
+        assertEquals(2, notifications[0]);
+
+        transport.toggle();
+        assertEquals(2, notifications[0]);
+        transport.toggle();
+        assertEquals(3, notifications[0]);
+    }
+
     private static final class FakePlayer implements Player {
 
         private Timeline lastTimeline;
