@@ -93,6 +93,7 @@ public final class MidiScoreExporter {
     }
 
     private static void writeConductor(javax.sound.midi.Track conductor, Score score) throws InvalidMidiDataException {
+        addMetaText(conductor, TRACK_NAME_META, score.title(), 0);
         addTempo(conductor, score.tempo());
         Track reference = score.track(0);
         TimeSignature previousSignature = null;
