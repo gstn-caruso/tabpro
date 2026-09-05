@@ -37,10 +37,21 @@ public final class ScorePainter {
     public static void paint(
             Graphics2D g, ScoreLayout layout, Score score, Cursor cursor, Playhead playhead,
             Optional<Selection> selection) {
+        paint(g, layout, score, cursor, playhead, selection, true);
+    }
+
+    /** Igual que {@link #paint}, pero puede saltear el fondo oscuro: lo usa el Modo Pagina para
+     * dibujar solo la tinta sobre un lienzo transparente que despues se invierte y se pega sobre
+     * la hoja clara (ver {@link PaperRenderer}). */
+    static void paint(
+            Graphics2D g, ScoreLayout layout, Score score, Cursor cursor, Playhead playhead,
+            Optional<Selection> selection, boolean paintBackground) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-        paintBackground(g);
+        if (paintBackground) {
+            paintBackground(g);
+        }
 
         for (int trackIndex = 0; trackIndex < score.trackCount(); trackIndex++) {
             paintTrack(g, layout, score, trackIndex, cursor, playhead);
