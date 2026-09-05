@@ -14,7 +14,12 @@ public final class StatusText {
         return "Compás " + (cursor.measure() + 1)
                 + " · Beat " + (cursor.beat() + 1)
                 + " · Cuerda " + cursor.string()
-                + " · " + nameOf(beat.duration());
+                + " · " + describe(beat);
+    }
+
+    private static String describe(Beat beat) {
+        String name = nameOf(beat.duration());
+        return beat.isRest() ? "Silencio de " + name.toLowerCase() : name;
     }
 
     private static String nameOf(Duration duration) {

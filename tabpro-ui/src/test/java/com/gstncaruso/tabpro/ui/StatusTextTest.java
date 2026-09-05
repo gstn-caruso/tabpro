@@ -26,4 +26,12 @@ class StatusTextTest {
 
         assertEquals("Compás 1 · Beat 1 · Cuerda 1 · Blanca con puntillo", StatusText.describe(cursor, beat));
     }
+
+    @Test
+    void describesARest() {
+        Cursor cursor = new Cursor(0, 0, 0, 1);
+        Beat beat = Beat.rest(Duration.quarter());
+
+        assertEquals("Compás 1 · Beat 1 · Cuerda 1 · Silencio de negra", StatusText.describe(cursor, beat));
+    }
 }
