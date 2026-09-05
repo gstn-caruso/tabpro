@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -30,6 +31,7 @@ public final class TabPainter {
         for (int m = 0; m < track.measures().size(); m++) {
             paintMeasure(g, layout, track, m);
         }
+        paintCursor(g, layout, cursor);
     }
 
     private static void paintBackground(Graphics2D g) {
@@ -56,5 +58,17 @@ public final class TabPainter {
 
         g.setColor(measure.isComplete() ? TEXT : WARNING);
         g.drawString(String.valueOf(m + 1), bounds.x + 2, bounds.y - 6);
+    }
+
+    private static void paintCursor(Graphics2D g, TabLayout layout, Cursor cursor) {
+        Rectangle beat = layout.beatBounds(cursor.measure(), cursor.beat());
+        int x = beat.x + 2;
+        int y = layout.stringY(cursor.measure(), cursor.string()) - TabLayout.STRING_SPACING / 2 + 1;
+        int w = beat.width - 4;
+        int h = TabLayout.STRING_SPACING - 2;
+
+        g.setColor(CURSOR);
+        g.setStroke(new BasicStroke(2));
+        g.drawRect(x, y, w, h);
     }
 }
