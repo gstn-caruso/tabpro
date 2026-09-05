@@ -11,6 +11,7 @@ public final class ScoreDocument {
 
     private final Editor editor;
     private final ScoreFiles files;
+    private Path path;
 
     public ScoreDocument(Editor editor, ScoreFiles files) {
         this.editor = editor;
@@ -18,10 +19,18 @@ public final class ScoreDocument {
     }
 
     public Optional<Path> path() {
-        return Optional.empty();
+        return Optional.ofNullable(path);
     }
 
     public String displayName() {
         return UNTITLED;
+    }
+
+    public boolean save() {
+        if (path == null) {
+            return false;
+        }
+        files.save(editor.score(), path);
+        return true;
     }
 }
