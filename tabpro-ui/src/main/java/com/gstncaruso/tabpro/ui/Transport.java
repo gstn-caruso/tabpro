@@ -24,6 +24,7 @@ public final class Transport {
     public void toggle() {
         if (player.isPlaying()) {
             player.stop();
+            playing = Optional.empty();
             return;
         }
         player.play(Timeline.of(editor.score()), new InternalListener());
