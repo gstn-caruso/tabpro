@@ -97,6 +97,59 @@ class InstrumentEditingTest {
     }
 
     @Test
+    void togglingAnEmptyFretAddsIt() {
+        editing.toggleFret(new Note(6, 3));
+
+        assertEquals(Optional.of(new Note(6, 3)), editor.currentBeat().noteOn(6));
+    }
+
+    @Test
+    void togglingTheSameFretAgainRemovesIt() {
+        editing.toggleFret(new Note(6, 3));
+
+        editing.toggleFret(new Note(6, 3));
+
+        assertEquals(Optional.empty(), editor.currentBeat().noteOn(6));
+    }
+
+    @Test
+    void togglingADifferentFretOnTheSameStringReplacesItInstead() {
+        editing.toggleFret(new Note(6, 3));
+
+        editing.toggleFret(new Note(6, 5));
+
+        assertEquals(Optional.of(new Note(6, 5)), editor.currentBeat().noteOn(6));
+    }
+
+    @Test
+    void pressingAndAdvancingWritesAndMovesToTheNextBeat() {
+        editing.pressFretAndAdvance(new Note(6, 3));
+
+        assertEquals(Optional.of(new Note(6, 3)), editor.currentTrack().measure(0).beat(0).noteOn(6));
+        assertEquals(1, editor.cursor().beat());
+    }
+
+    @Test
+    void togglingAKeyAddsAndThenRemovesIt() {
+        editor.moveTo(0, 0, 3);
+
+        editing.toggleKey(60);
+        assertEquals(Optional.of(new Note(3, 5)), editor.currentBeat().noteOn(3));
+
+        editing.toggleKey(60);
+        assertEquals(Optional.empty(), editor.currentBeat().noteOn(3));
+    }
+
+    @Test
+    void pressingAKeyAndAdvancingMovesToTheNextBeat() {
+        editor.moveTo(0, 0, 3);
+
+        editing.pressKeyAndAdvance(60);
+
+        assertEquals(1, editor.cursor().beat());
+    }
+
+    @Test
     void undoingTakesBackOnePressAtATime() {
         editing.pressFret(new Note(6, 3));
         editing.pressFret(new Note(5, 2));

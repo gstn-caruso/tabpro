@@ -22,6 +22,13 @@ public final class InstrumentColors {
     public static final Color PRESSED = new Color(0xE5484D);
     public static final Color PRESSED_INK = new Color(0xFFFFFF);
 
+    /** El color de contexto: lo que suma un modo de vista ademas del beat. */
+    public static final Color CONTEXT = new Color(0x3574F0);
+    public static final Color CONTEXT_INK = new Color(0xFFFFFF);
+
+    /** El anillo que sigue al mouse, sin que haga falta hacer clic. */
+    public static final Color HOVER = new Color(0xE8EAED);
+
     private InstrumentColors() {
     }
 }
