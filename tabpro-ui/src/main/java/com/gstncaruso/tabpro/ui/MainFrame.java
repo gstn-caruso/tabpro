@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import com.gstncaruso.tabpro.ui.browser.ScoreBrowser;
 import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
@@ -37,6 +38,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public final class MainFrame extends JFrame {
 
     private final Editor editor;
+    private final ScoreFiles files;
     private final ScoreDocument document;
     private final ScoreCanvas canvas;
     private final Transport transport;
@@ -48,6 +50,7 @@ public final class MainFrame extends JFrame {
     public MainFrame(Editor editor, ScoreFiles files, Player player) {
         super("tabpro");
         this.editor = editor;
+        this.files = files;
         this.document = new ScoreDocument(editor, files);
         setSize(windowSize());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -192,7 +195,19 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void browse() {
-            PendingFeature.announce(MainFrame.this, "El explorador de partituras");
+            ScoreBrowser browser = new ScoreBrowser(MainFrame.this, files, this::openQuietly, transport::preview);
+            browser.searchIn(document.path().map(Path::getParent).orElse(Path.of(System.getProperty("user.home"))));
+            browser.setVisible(true);
+        }
+
+        private void openQuietly(Path path) {
+            try {
+                document.open(path);
+                updateTitle();
+                backToTheScore();
+            } catch (ScoreFileException e) {
+                showError(e);
+            }
         }
 
         @Override

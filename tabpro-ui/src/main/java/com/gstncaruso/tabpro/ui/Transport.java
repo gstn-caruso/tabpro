@@ -25,6 +25,14 @@ public final class Transport {
         this.uiThread = uiThread;
     }
 
+    /** Escucha una partitura que no es la que se esta editando, como el explorador. */
+    public void preview(com.gstncaruso.tabpro.core.model.Score score) {
+        if (player.isPlaying()) {
+            player.stop();
+        }
+        player.play(Timeline.of(score), new InternalListener());
+    }
+
     public void toggle() {
         if (player.isPlaying()) {
             player.stop();
