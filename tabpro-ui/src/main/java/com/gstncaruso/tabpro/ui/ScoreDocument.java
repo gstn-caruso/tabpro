@@ -38,4 +38,9 @@ public final class ScoreDocument {
         files.save(editor.score(), path);
         this.path = path;
     }
+
+    public void open(Path path) {
+        editor.replaceScore(files.load(path));
+        this.path = path;
+    }
 }
