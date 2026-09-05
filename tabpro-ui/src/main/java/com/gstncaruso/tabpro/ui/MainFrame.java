@@ -120,7 +120,27 @@ public final class MainFrame extends JFrame {
             @Override
             public void windowOpened(WindowEvent event) {
                 showMixTable();
+                offerToRecover();
                 canvas.requestFocusInWindow();
+            }
+        });
+    }
+
+    /**
+     * Si quedo una copia de recuperacion de una sesion anterior, se ofrece
+     * abrirla, que es lo que hace Guitar Pro despues de una terminacion anormal.
+     */
+    private void offerToRecover() {
+        document.pendingRecovery().ifPresent(recovery -> {
+            int answer = JOptionPane.showConfirmDialog(
+                    this,
+                    "Quedó una partitura sin guardar de la última sesión. ¿Recuperarla?",
+                    "tabpro",
+                    JOptionPane.YES_NO_OPTION);
+            if (answer == JOptionPane.YES_OPTION) {
+                openOnStartup(recovery);
+            } else {
+                document.discardRecovery();
             }
         });
     }
