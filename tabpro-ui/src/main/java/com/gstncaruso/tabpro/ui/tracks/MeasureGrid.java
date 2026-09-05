@@ -4,6 +4,8 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -24,6 +26,12 @@ public final class MeasureGrid extends JComponent {
 
     public static final int CELL_WIDTH = 15;
     public static final int NUMBER_EVERY = 5;
+
+    private static final Color PLAYING_TINT = new Color(
+            ScoreColors.PLAYING_MEASURE.getRed(),
+            ScoreColors.PLAYING_MEASURE.getGreen(),
+            ScoreColors.PLAYING_MEASURE.getBlue(),
+            60);
 
     private final Editor editor;
     private OptionalInt playingMeasure = OptionalInt.empty();
@@ -82,20 +90,35 @@ public final class MeasureGrid extends JComponent {
         g.setColor(ScoreColors.SURFACE);
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        playingMeasure.ifPresent(measure -> paintPlayingColumn(g, score, measure));
+        playingMeasure.ifPresent(measure -> tintPlayingColumn(g, score, measure));
         paintMeasureNumbers(g, score);
 
         for (int track = 0; track < score.trackCount(); track++) {
             paintRow(g, score.track(track), track, track == editor.cursor().track());
         }
+        playingMeasure.ifPresent(measure -> outlinePlayingColumn(g, score, measure));
     }
 
-    private void paintPlayingColumn(Graphics2D g, Score score, int measure) {
-        if (measure < 0 || measure >= score.measureCount()) {
+    private void tintPlayingColumn(Graphics2D g, Score score, int measure) {
+        if (isOutside(score, measure)) {
+            return;
+        }
+        g.setColor(PLAYING_TINT);
+        g.fillRect(measure * CELL_WIDTH, 0, CELL_WIDTH, getHeight());
+    }
+
+    /** El borde va despues de las celdas, para que marque la columna sin taparla. */
+    private void outlinePlayingColumn(Graphics2D g, Score score, int measure) {
+        if (isOutside(score, measure)) {
             return;
         }
         g.setColor(ScoreColors.PLAYING_MEASURE);
-        g.fillRect(measure * CELL_WIDTH, 0, CELL_WIDTH, getHeight());
+        g.setStroke(new BasicStroke(2));
+        g.drawRect(measure * CELL_WIDTH + 1, 1, CELL_WIDTH - 2, getHeight() - 2);
+    }
+
+    private boolean isOutside(Score score, int measure) {
+        return measure < 0 || measure >= score.measureCount();
     }
 
     private void paintMeasureNumbers(Graphics2D g, Score score) {
@@ -106,6 +129,16 @@ public final class MeasureGrid extends JComponent {
                 g.drawString(String.valueOf(measure + 1), measure * CELL_WIDTH + 2, TrackPanel.HEADER_HEIGHT - 7);
             }
         }
+    }
+
+    /** Una pista que no suena se ve apagada, igual que su nombre en la lista. */
+    private Color colorOf(int trackIndex) {
+        Color color = TrackColors.of(trackIndex);
+        return editor.score().isAudible(trackIndex) ? color : faded(color);
+    }
+
+    private static Color faded(Color color) {
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), 70);
     }
 
     private void paintRow(Graphics2D g, Track track, int trackIndex, boolean selected) {
@@ -119,7 +152,7 @@ public final class MeasureGrid extends JComponent {
             g.setColor(ScoreColors.BORDER);
             g.drawRect(cell.x + 1, cell.y + 1, cell.width - 3, cell.height - 3);
             if (track.hasNotesIn(measure)) {
-                g.setColor(selected ? ScoreColors.ACCENT : ScoreColors.LABEL);
+                g.setColor(colorOf(trackIndex));
                 g.fillRect(cell.x + 4, cell.y + 4, cell.width - 8, cell.height - 8);
             }
         }
