@@ -16,6 +16,7 @@ public enum Interval {
     AUGMENTED_SECOND(1, 3, "#2"),
     MINOR_THIRD(2, 3, "b3"),
     MAJOR_THIRD(2, 4, "3"),
+    DIMINISHED_FOURTH(3, 4, "b4"),
     PERFECT_FOURTH(3, 5, "4"),
     AUGMENTED_FOURTH(3, 6, "#4"),
     DIMINISHED_FIFTH(4, 6, "b5"),

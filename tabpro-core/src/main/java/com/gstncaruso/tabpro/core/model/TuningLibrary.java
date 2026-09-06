@@ -30,6 +30,18 @@ public final class TuningLibrary {
                 Tuning.of("Open A", 64, 61, 57, 52, 45, 40),
                 Tuning.of("DADGAD", 62, 57, 55, 50, 45, 38),
                 Tuning.of("Nuevo estandar", 71, 64, 57, 50, 43, 36),
+                Tuning.of("Open Cm", 63, 60, 55, 48, 43, 36),
+                Tuning.of("Open C6", 64, 57, 55, 48, 43, 36),
+                Tuning.of("Open Dm", 62, 57, 53, 50, 45, 38),
+                Tuning.of("Open D5", 62, 57, 54, 50, 45, 38),
+                Tuning.of("Open Dsus4", 62, 57, 55, 50, 45, 38),
+                Tuning.of("Open Em", 64, 59, 55, 52, 47, 40),
+                Tuning.of("Open Gm", 62, 58, 55, 50, 43, 38),
+                Tuning.of("Open G6", 62, 59, 55, 50, 45, 38),
+                Tuning.of("Open Gsus4", 62, 60, 55, 50, 43, 38),
+                Tuning.of("Open Am", 64, 60, 57, 52, 45, 40),
+                Tuning.of("Open F", 65, 60, 57, 53, 45, 41),
+                Tuning.of("Nashville", 64, 59, 67, 62, 57, 52),
                 Tuning.of("Guitarra de 7 cuerdas", 64, 59, 55, 50, 45, 40, 35),
                 Tuning.of("Guitarra de 7 cuerdas Drop A", 64, 59, 55, 50, 45, 40, 33));
     }
@@ -46,11 +58,17 @@ public final class TuningLibrary {
 
     public static List<Tuning> otherStringInstruments() {
         return List.of(
-                Tuning.of("Banjo estandar", 62, 59, 55, 50, 67),
+                Tuning.of("Banjo Open G", 62, 59, 55, 50, 67),
+                Tuning.of("Banjo Open D", 62, 57, 54, 50, 66),
+                Tuning.of("Banjo Drop C", 62, 59, 55, 48, 67),
+                Tuning.of("Banjo Sol menor", 62, 58, 55, 50, 67),
+                Tuning.of("Banjo Sol modal", 62, 57, 55, 50, 67),
                 Tuning.of("Mandolina", 76, 69, 62, 55),
-                Tuning.of("Ukelele", 69, 64, 60, 67),
+                Tuning.of("Ukelele en Do", 69, 64, 60, 67),
+                Tuning.of("Ukelele en Sol", 71, 66, 62, 69),
                 Tuning.of("Violin", 76, 69, 62, 55),
-                Tuning.of("Violoncello", 69, 62, 55, 48));
+                Tuning.of("Viola", 69, 62, 55, 48),
+                Tuning.of("Violoncello", 57, 50, 43, 36));
     }
 
     /** Todas las afinaciones, en el orden en que las ofrece la biblioteca. */

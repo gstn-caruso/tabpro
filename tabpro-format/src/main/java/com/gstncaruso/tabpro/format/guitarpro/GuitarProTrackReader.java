@@ -19,7 +19,8 @@ final class GuitarProTrackReader {
     private static final int STAFF_SHOWS_TABLATURE = 0x01;
     private static final int STAFF_SHOWS_STANDARD_NOTATION = 0x02;
 
-    GuitarProTrackHeader read(GuitarProByteReader reader, GuitarProVersion version) {
+    GuitarProTrackHeader read(GuitarProByteReader reader, GuitarProVersion version, int trackNumber) {
+        skipByteBeforeTheFlags(reader, version, trackNumber);
         int flags = reader.readUnsignedByte();
         String name = reader.readFixedString(NAME_FIELD_SIZE);
         int stringCount = reader.readInt();
@@ -36,6 +37,17 @@ final class GuitarProTrackReader {
                 name.isBlank() ? "Pista" : name, tuning, channelIndex, effectChannelIndex, Math.max(1, fretCount),
                 Math.max(0, capo), color, (flags & FLAG_PERCUSSION) != 0, (flags & FLAG_TWELVE_STRING) != 0,
                 (flags & FLAG_BANJO) != 0, display);
+    }
+
+    /**
+     * En v5 hay un byte suelto antes de las banderas: en 5.10 solo delante de la
+     * primera pista, y en 5.00 delante de todas.
+     */
+    private static void skipByteBeforeTheFlags(
+            GuitarProByteReader reader, GuitarProVersion version, int trackNumber) {
+        if (version.hasTrackExtras() && (trackNumber == 1 || version == GuitarProVersion.GP5_00)) {
+            reader.skip(1);
+        }
     }
 
     private List<Integer> readTuning(GuitarProByteReader reader, int stringCount) {
