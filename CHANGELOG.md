@@ -1,3 +1,9 @@
+## [0.17.1](https://github.com/gstn-caruso/tabpro/compare/v0.17.0...v0.17.1) (2026-09-06)
+
+### Bug Fixes
+
+* el lector de Guitar Pro deja de deformar los archivos reales ([#69](https://github.com/gstn-caruso/tabpro/issues/69)) ([7d13f2f](https://github.com/gstn-caruso/tabpro/commit/7d13f2f650d48d9ab8387072af67e61bfe6f3399))
+
 ## [0.17.0](https://github.com/gstn-caruso/tabpro/compare/v0.16.0...v0.17.0) (2026-09-06)
 
 ### Features
