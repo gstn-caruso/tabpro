@@ -5,7 +5,7 @@ Java 25 con Swing.
 
 ## Estado
 
-**v0.6.0 — El clon.** tabpro hace lo que describe el manual de Guitar Pro 5, con
+**v0.6.1 — El clon.** tabpro hace lo que describe el manual de Guitar Pro 5, con
 la misma forma de pantalla pero con una estética moderna y plana en vez de la de
 Windows XP.
 
@@ -43,10 +43,9 @@ genera los diagramas para cualquier afinación, los nombra y los digita, y la
 rango de compases. Más el afinador, el asistente de percusión y los seis
 asistentes del menú Herramientas.
 
-**Lo que todavía no está:** exportar a PDF (se puede imprimir a PDF desde el
-diálogo de impresión del sistema). El lector de archivos de Guitar Pro está hecho
-y probado contra archivos armados byte a byte, pero falta contrastarlo con
-archivos reales.
+**Lo que todavía no está:** el lector de archivos de Guitar Pro está hecho y
+probado contra archivos armados byte a byte, pero falta contrastarlo con archivos
+reales.
 
 ## Instalación
 
@@ -54,7 +53,7 @@ archivos reales.
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.6.0_all.deb
+sudo apt install ./tabpro_0.6.1_all.deb
 tabpro
 ```
 
@@ -65,7 +64,7 @@ variante *headless* no alcanza.
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.6.0.jar [archivo]
+java -jar tabpro-app-0.6.1.jar [archivo]
 ```
 
 ## Uso
@@ -93,7 +92,8 @@ pista, los diez datos del encabezado y la letra. Sigue abriendo los archivos de
 las versiones 1 y 2.
 
 También importa y exporta MIDI, tablatura ASCII y MusicXML, exporta la partitura
-como imagen, la imprime, y abre archivos `.gp3`, `.gp4`, `.gp5` y `.gtp`.
+como imagen y como PDF, la imprime, y abre archivos `.gp3`, `.gp4`, `.gp5` y
+`.gtp`.
 
 ## Stack
 

@@ -23,8 +23,9 @@ public enum ScaleType {
         return label;
     }
 
-    boolean has(int semitonesFromRoot) {
-        return intervals.contains(Math.floorMod(semitonesFromRoot, 12));
+    /** Los semitonos que forman la escala, contados desde la tonica. */
+    public Set<Integer> semitones() {
+        return intervals;
     }
 
     @Override

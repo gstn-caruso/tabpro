@@ -88,6 +88,7 @@ public final class MainFrame extends JFrame {
     private final ToolBars toolBars;
     private final ThemeSwitch themes;
     private final Ports.Devices devices;
+    private final Ports.Microphone microphone;
     private final Player player;
     private StringAssignment stringAssignment = StringAssignment.NO_CHANNEL_DETECTION;
     private PageSetup pageSetup = PageSetup.defaults();
@@ -98,7 +99,7 @@ public final class MainFrame extends JFrame {
     private final JSplitPane split;
 
     public MainFrame(Editor editor, ScoreFiles files, Player player) {
-        this(editor, files, player, ThemeSwitch.NONE, Ports.Devices.NONE, ScoreExchange.NONE);
+        this(editor, files, player, ThemeSwitch.NONE, Ports.Devices.NONE, ScoreExchange.NONE, Ports.Microphone.NONE);
     }
 
     public MainFrame(
@@ -107,9 +108,11 @@ public final class MainFrame extends JFrame {
             Player player,
             ThemeSwitch themes,
             Ports.Devices devices,
-            ScoreExchange exchange) {
+            ScoreExchange exchange,
+            Ports.Microphone microphone) {
         super("tabpro");
         this.exchange = exchange;
+        this.microphone = microphone;
         this.themes = themes;
         this.devices = devices;
         this.player = player;
@@ -189,6 +192,12 @@ public final class MainFrame extends JFrame {
                 document.discardRecovery();
             }
         });
+    }
+
+    /** La escala elegida se dibuja tambien sobre el diapason y el teclado. */
+    private void showChosenScaleOnTheInstruments() {
+        chosenScale.tonic().ifPresent(tonic ->
+                beatViews.showScale(tonic.semitone(), chosenScale.semitonesFromTheTonic()));
     }
 
     /** La mesa de mezcla ocupa lo suyo abajo; el resto es partitura. */
@@ -363,7 +372,18 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void exportPdf() {
-            PendingFeature.announce(MainFrame.this, "La exportación a PDF");
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileFilter(new FileNameExtensionFilter("PDF (*.pdf)", "pdf"));
+            if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            try {
+                ScorePrinting.exportPdf(editor.score(), ScorePrinting.withPdfExtension(chooser.getSelectedFile()));
+                backToTheScore();
+            } catch (java.io.UncheckedIOException e) {
+                JOptionPane.showMessageDialog(
+                        MainFrame.this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
+            }
         }
 
         @Override
@@ -857,12 +877,13 @@ public final class MainFrame extends JFrame {
         @Override
         public void scales() {
             ScalesDialog.show(MainFrame.this, editor, player, chosenScale);
+            showChosenScaleOnTheInstruments();
             backToTheScore();
         }
 
         @Override
         public void tuner() {
-            TunerDialog.show(MainFrame.this, editor, player);
+            TunerDialog.show(MainFrame.this, editor, player, microphone);
             backToTheScore();
         }
 

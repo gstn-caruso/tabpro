@@ -31,7 +31,7 @@ public class App {
         Optional<Path> fileToOpen = fileFrom(args);
 
         SwingUtilities.invokeLater(() -> {
-            MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player, theme, devices, new FileExchange());
+            MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player, theme, devices, new FileExchange(), new Microphone());
             frame.setIconImages(AppIcon.sizes());
             midiPlayer.ifPresent(midi -> frame.addWindowListener(closeOnDispose(midi)));
             frame.setVisible(true);

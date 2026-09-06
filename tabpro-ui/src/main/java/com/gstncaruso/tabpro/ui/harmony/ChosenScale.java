@@ -33,6 +33,14 @@ public final class ChosenScale {
         tonic = null;
     }
 
+    /** Los semitonos que forman la escala, contados desde su tonica. */
+    public List<Integer> semitonesFromTheTonic() {
+        return tones().stream()
+                .map(tone -> Math.floorMod(tone.pitchClass().semitone() - tonic.semitone(), 12))
+                .distinct()
+                .toList();
+    }
+
     /** Las notas de la escala elegida, con su intervalo y su grado. */
     public List<ScaleTone> tones() {
         return scale == null || tonic == null ? List.of() : scale.notesFrom(tonic);

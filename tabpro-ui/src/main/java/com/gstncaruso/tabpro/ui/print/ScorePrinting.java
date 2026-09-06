@@ -39,6 +39,24 @@ public final class ScorePrinting {
         }
     }
 
+    /** Exporta la partitura a PDF, una hoja por pagina. */
+    public static void exportPdf(Score score, Path path) {
+        PdfDocument pdf = new PdfDocument();
+        ScoreSheets.renderPages(score, Zoom.whole()).forEach(pdf::addPage);
+        try (java.io.OutputStream out = java.nio.file.Files.newOutputStream(path)) {
+            pdf.writeTo(out);
+        } catch (IOException e) {
+            throw new UncheckedIOException("no se pudo escribir " + path, e);
+        }
+    }
+
+    public static Path withPdfExtension(File file) {
+        String name = file.getName();
+        return name.toLowerCase(java.util.Locale.ROOT).endsWith(".pdf")
+                ? file.toPath()
+                : file.toPath().resolveSibling(name + ".pdf");
+    }
+
     private static String formatOf(Path path) {
         String name = path.getFileName().toString().toLowerCase(java.util.Locale.ROOT);
         return name.endsWith(".jpg") || name.endsWith(".jpeg") ? "jpg" : "png";

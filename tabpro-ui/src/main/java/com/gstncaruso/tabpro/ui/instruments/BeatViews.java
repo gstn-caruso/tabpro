@@ -61,6 +61,13 @@ public final class BeatViews extends JPanel {
         refresh();
     }
 
+    /** Dibuja en el diapason y en el teclado la escala que eligio la ventana de escalas. */
+    public void showScale(int rootPitchClass, java.util.Collection<Integer> semitones) {
+        Scale scale = Scale.of(rootPitchClass, semitones);
+        fretboard.setScale(scale);
+        keyboard.setScale(scale);
+    }
+
     public void showPlayhead(Playhead playhead) {
         this.playhead = playhead;
         refresh();

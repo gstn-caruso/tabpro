@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.print;
 import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.ui.score.PageLayout;
 import com.gstncaruso.tabpro.ui.score.PageScorePainter;
 import com.gstncaruso.tabpro.ui.score.ViewMode;
 import com.gstncaruso.tabpro.ui.score.Zoom;
@@ -42,6 +43,25 @@ public final class ScoreSheets {
         paintOn(graphics, score, zoom);
         graphics.dispose();
         return sheet;
+    }
+
+    /**
+     * La partitura repartida en hojas. En modo pagina las hojas se apilan una
+     * debajo de la otra, separadas por un hueco, asi que alcanza con cortar.
+     */
+    public static java.util.List<BufferedImage> renderPages(Score score, Zoom zoom) {
+        BufferedImage whole = render(score, zoom);
+        int pageHeight = (int) Math.round(PageLayout.PAGE_HEIGHT * zoom.factor());
+        int gap = (int) Math.round(PageLayout.PAGE_GAP * zoom.factor());
+        java.util.List<BufferedImage> sheets = new java.util.ArrayList<>();
+        for (int top = 0; top < whole.getHeight(); top += pageHeight + gap) {
+            int height = Math.min(pageHeight, whole.getHeight() - top);
+            if (height <= 0) {
+                break;
+            }
+            sheets.add(whole.getSubimage(0, top, whole.getWidth(), height));
+        }
+        return sheets.isEmpty() ? java.util.List.of(whole) : sheets;
     }
 
     /** Dibuja la partitura sobre un lienzo ajeno, como el de la impresora. */
