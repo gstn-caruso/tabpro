@@ -118,6 +118,77 @@ class MidiScoreExporterTest {
         assertEquals(0, noteOnOf(midiTrack, 64).getChannel(), "la limpia se queda en el canal de la pista");
     }
 
+    /**
+     * Ch y Ch2 de la mesa de mezcla se editaban y se guardaban, pero MidiSequences calculaba sus
+     * propios canales a partir del orden de la pista e ignoraba lo configurado: poner una pista
+     * en el canal 5 no la ponia en el canal 5.
+     */
+    @Test
+    void aTrackPlaysOnTheChannelTheMixingConsoleConfiguredInsteadOfAnAutomaticOne() {
+        Channel onChannelFive = Channel.playing(25).withNumber(5).withEffectChannel(6);
+        Track track = Track.standardGuitar("Guitarra").withChannel(onChannelFive)
+                .withMeasure(0, new Measure(TimeSignature.fourFour(),
+                        List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 0)))));
+        Score score = new Score("Prueba", 120, List.of(track));
+
+        javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
+
+        // el canal 5 de la mesa de mezcla es el indice 4: MIDI numera sus canales desde 0
+        assertEquals(4, onlyShortMessageOf(midiTrack, ShortMessage.NOTE_ON).getChannel());
+    }
+
+    @Test
+    void aBentNoteGoesToTheConfiguredEffectsChannelNotAnAutomaticOne() {
+        Channel onChannelFive = Channel.playing(25).withNumber(5).withEffectChannel(6);
+        Note bent = new Note(6, 0).withBend(Bend.of(BendType.BEND, 4));
+        Measure measure = new Measure(TimeSignature.fourFour(),
+                List.of(Beat.of(Duration.of(NoteValue.WHOLE), bent, new Note(1, 0))));
+        Track track = Track.standardGuitar("Guitarra").withChannel(onChannelFive).withMeasure(0, measure);
+        Score score = new Score("Prueba", 120, List.of(track));
+
+        javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
+
+        assertEquals(5, noteOnOf(midiTrack, 40).getChannel(), "el bend viaja por el canal de efectos configurado (Ch2)");
+        assertEquals(4, noteOnOf(midiTrack, 64).getChannel(), "la limpia se queda en el canal configurado (Ch)");
+    }
+
+    /**
+     * La percusion vive siempre en el canal 10 de MIDI por convencion del estandar, sin importar
+     * que numero haya quedado cargado en su Channel.
+     */
+    @Test
+    void aPercussionTrackAlwaysUsesChannelTenEvenIfItsChannelIsConfiguredOtherwise() {
+        Channel misconfigured = Channel.percussion().withNumber(3).withEffectChannel(4);
+        Track drums = Track.percussion("Bateria").withChannel(misconfigured)
+                .withMeasure(0, new Measure(TimeSignature.fourFour(),
+                        List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 38)))));
+        Score score = new Score("Prueba", 120, List.of(drums));
+
+        javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
+
+        assertEquals(9, onlyShortMessageOf(midiTrack, ShortMessage.NOTE_ON).getChannel());
+    }
+
+    /**
+     * Guitar Pro deja compartir un canal entre pistas -una partitura puede tener mas pistas que
+     * canales libres- y el archivo tiene que respetarlo tal cual llega, no reacomodarlo por su
+     * cuenta: que se pisen es una decision del usuario, no un bug de la exportacion.
+     */
+    @Test
+    void twoTracksConfiguredOnTheSameChannelBothSoundOnIt() {
+        Channel sharedChannel = Channel.playing(25).withNumber(5).withEffectChannel(6);
+        Measure measure = new Measure(TimeSignature.fourFour(),
+                List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 0))));
+        Track first = Track.standardGuitar("Uno").withChannel(sharedChannel).withMeasure(0, measure);
+        Track second = Track.standardBass("Dos").withChannel(sharedChannel.withProgram(33)).withMeasure(0, measure);
+        Score score = new Score("Prueba", 120, List.of(first, second));
+
+        Sequence sequence = exporter.toSequence(score);
+
+        assertEquals(4, onlyShortMessageOf(sequence.getTracks()[1], ShortMessage.NOTE_ON).getChannel());
+        assertEquals(4, onlyShortMessageOf(sequence.getTracks()[2], ShortMessage.NOTE_ON).getChannel());
+    }
+
     @Test
     void namesTheScoreAndEachTrack() {
         Score score = new Score("Cancion", 120,

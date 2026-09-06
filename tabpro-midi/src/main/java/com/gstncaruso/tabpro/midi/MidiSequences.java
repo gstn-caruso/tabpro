@@ -44,7 +44,6 @@ public final class MidiSequences {
     private static final int DATA_ENTRY_MSB_CONTROLLER = 6;
     private static final int DATA_ENTRY_LSB_CONTROLLER = 38;
     private static final int PERCUSSION_CHANNEL = 9;
-    private static final int CHANNEL_COUNT = 16;
 
     /** Cuantos semitonos representa el rango completo de pitch bend, para poder pedir bends de varios tonos. */
     private static final int PITCH_BEND_SENSITIVITY_SEMITONES = 24;
@@ -118,12 +117,11 @@ public final class MidiSequences {
                 conductor.add(tempoEvent(stretch));
             }
 
-            int nonPercussionOrdinal = 0;
             for (IndexedTrack indexed : tracks) {
                 TrackTimeline trackTimeline = indexed.track();
                 TrackChannels channels = trackTimeline.percussion()
                         ? TrackChannels.percussion()
-                        : TrackChannels.ofTheTrackNumber(nonPercussionOrdinal++);
+                        : TrackChannels.configuredIn(trackTimeline);
                 writeTrack(sequence.createTrack(), indexed.originalIndex(), channels, trackTimeline,
                         indexed.limitPitchVariation());
             }
@@ -167,16 +165,11 @@ public final class MidiSequences {
                 Integer.parseInt(parts[2])));
     }
 
-    /** El canal MIDI que le toca a la enesima ranura, salteando siempre el 9 (percusion). */
-    static int channelFor(int slotNumber) {
-        int slot = slotNumber % (CHANNEL_COUNT - 1);
-        return slot < PERCUSSION_CHANNEL ? slot : slot + 1;
-    }
-
     /**
-     * Los dos canales de una pista, como los reparte Guitar Pro: uno para las
-     * notas limpias y el siguiente para las que llevan efecto, asi correrle la
-     * altura a una no arrastra a las demas. La percusion toca todo en el suyo.
+     * Los dos canales de una pista: el limpio y el de efectos, tal como los dejo
+     * la mesa de mezcla (Ch y Ch2), asi correrle la altura a una nota no arrastra
+     * a las demas. La percusion, sin importar lo que diga esa configuracion,
+     * toca todo en el canal 10 del estandar MIDI.
      */
     private record TrackChannels(int clean, int effects) {
 
@@ -184,8 +177,9 @@ public final class MidiSequences {
             return new TrackChannels(PERCUSSION_CHANNEL, PERCUSSION_CHANNEL);
         }
 
-        static TrackChannels ofTheTrackNumber(int nonPercussionOrdinal) {
-            return new TrackChannels(channelFor(2 * nonPercussionOrdinal), channelFor(2 * nonPercussionOrdinal + 1));
+        /** El canal y el canal de efectos que configuro la pista, pasados de 1-based (el modelo) a 0-based (MIDI). */
+        static TrackChannels configuredIn(TrackTimeline trackTimeline) {
+            return new TrackChannels(trackTimeline.channel() - 1, trackTimeline.effectChannel() - 1);
         }
 
         int of(ScheduledNote note) {

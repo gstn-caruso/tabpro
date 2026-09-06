@@ -52,16 +52,20 @@ class MidiSequencesByPortTest {
     }
 
     @Test
-    void eachPortNumbersItsChannelsFromZeroRegardlessOfTheOtherPorts() {
-        TrackTimeline primeraDelPuerto1 = new TrackTimeline(25, 100, 64, false, 1, List.of(), List.of(), List.of());
-        TrackTimeline segundaDelPuerto1 = new TrackTimeline(26, 100, 64, false, 1, List.of(), List.of(), List.of());
-        TrackTimeline unicaDelPuerto2 = new TrackTimeline(30, 100, 64, false, 2, List.of(), List.of(), List.of());
+    void eachPortUsesTheChannelsItsTracksConfiguredRegardlessOfTheOtherPorts() {
+        // program, volumen, pan, chorus, reverb, phaser, tremolo, percusion, puerto, canal, canal de efectos, ...
+        TrackTimeline primeraDelPuerto1 = new TrackTimeline(
+                25, 100, 64, 0, 0, 0, 0, false, 1, 1, 2, List.of(), List.of(), List.of(), List.of());
+        TrackTimeline segundaDelPuerto1 = new TrackTimeline(
+                26, 100, 64, 0, 0, 0, 0, false, 1, 3, 4, List.of(), List.of(), List.of(), List.of());
+        TrackTimeline unicaDelPuerto2 = new TrackTimeline(
+                30, 100, 64, 0, 0, 0, 0, false, 2, 1, 2, List.of(), List.of(), List.of(), List.of());
         Timeline timeline = new Timeline(
                 120, 960, List.of(primeraDelPuerto1, segundaDelPuerto1, unicaDelPuerto2));
 
         Map<Integer, Sequence> byPort = MidiSequences.sequencesByPort(timeline, Set.of());
 
-        // cada pista se lleva un par de canales consecutivos: uno limpio y uno para sus efectos.
+        // el mismo canal 1 usado en los dos puertos no los hace interferir: cada uno arma su propia secuencia.
         Track[] puerto1 = byPort.get(1).getTracks();
         assertEquals(0, channelOf(puerto1[1]));
         assertEquals(2, channelOf(puerto1[2]));

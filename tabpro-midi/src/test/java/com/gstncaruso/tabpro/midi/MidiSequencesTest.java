@@ -158,17 +158,18 @@ class MidiSequencesTest {
     }
 
     @Test
-    void handsOutTwoConsecutiveChannelsToEachTrack() {
-        TrackTimeline first = new TrackTimeline(25, 100, 64,
-                List.of(), List.of());
-        TrackTimeline second = new TrackTimeline(30, 100, 64,
-                List.of(), List.of());
+    void eachTrackIsSetUpOnTheChannelsTheMixingConsoleConfigured() {
+        // program, volumen, pan, chorus, reverb, phaser, tremolo, percusion, puerto, canal, canal de efectos, ...
+        TrackTimeline first = new TrackTimeline(
+                25, 100, 64, 0, 0, 0, 0, false, 1, 3, 4, List.of(), List.of(), List.of(), List.of());
+        TrackTimeline second = new TrackTimeline(
+                30, 100, 64, 0, 0, 0, 0, false, 1, 7, 8, List.of(), List.of(), List.of(), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(first, second));
 
         Sequence sequence = MidiSequences.fromTimeline(timeline);
 
-        assertEquals(List.of(0, 1), channelsSetUpIn(sequence.getTracks()[1]));
-        assertEquals(List.of(2, 3), channelsSetUpIn(sequence.getTracks()[2]));
+        assertEquals(List.of(2, 3), channelsSetUpIn(sequence.getTracks()[1]));
+        assertEquals(List.of(6, 7), channelsSetUpIn(sequence.getTracks()[2]));
     }
 
     @Test
@@ -260,17 +261,20 @@ class MidiSequencesTest {
     }
 
     @Test
-    void skipsThePercussionChannelWhenHandingOutChannels() {
-        List<TrackTimeline> tracks = java.util.stream.IntStream.range(0, 11)
-                .mapToObj(i -> new TrackTimeline(25, 100, 64, List.of(), List.of()))
-                .toList();
-        Timeline timeline = new Timeline(120, 960, tracks);
+    void twoTracksConfiguredOnTheSameChannelBothPrepareThatChannel() {
+        // Guitar Pro deja compartir un canal entre pistas -por ejemplo cuando la partitura tiene
+        // mas pistas que canales libres- asi que dos pistas configuradas igual se pisan tal cual
+        // el usuario lo pidio, en vez de que la exportacion las reacomode por su cuenta.
+        TrackTimeline first = new TrackTimeline(
+                25, 100, 64, 0, 0, 0, 0, false, 1, 5, 6, List.of(), List.of(), List.of(), List.of());
+        TrackTimeline second = new TrackTimeline(
+                30, 100, 64, 0, 0, 0, 0, false, 1, 5, 6, List.of(), List.of(), List.of(), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(first, second));
 
         Sequence sequence = MidiSequences.fromTimeline(timeline);
 
-        assertEquals(List.of(6, 7), channelsSetUpIn(sequence.getTracks()[4]));
-        assertEquals(List.of(8, 10), channelsSetUpIn(sequence.getTracks()[5]));
-        assertEquals(List.of(11, 12), channelsSetUpIn(sequence.getTracks()[6]));
+        assertEquals(List.of(4, 5), channelsSetUpIn(sequence.getTracks()[1]));
+        assertEquals(List.of(4, 5), channelsSetUpIn(sequence.getTracks()[2]));
     }
 
     @Test
