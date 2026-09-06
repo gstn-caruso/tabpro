@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.ui.print.PrintSettings;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 
 class PrintPanelTest {
@@ -75,5 +76,16 @@ class PrintPanelTest {
         PrintSettings settings = new PrintPanel(1).toPrintSettings();
 
         assertEquals(1, settings.sheetsToPrint());
+    }
+
+    @Test
+    void thePositionAreaHasAConfigureButtonForThePrinterPaper() {
+        PrintPanel panel = new PrintPanel(SEVEN_SHEETS);
+        AtomicBoolean clicked = new AtomicBoolean(false);
+
+        panel.configureButton().addActionListener(event -> clicked.set(true));
+        panel.configureButton().doClick();
+
+        assertTrue(clicked.get(), "el boton Configurar tiene que avisar a quien lo escuche");
     }
 }

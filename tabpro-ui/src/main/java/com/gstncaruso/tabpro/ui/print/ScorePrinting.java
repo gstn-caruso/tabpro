@@ -45,6 +45,16 @@ public final class ScorePrinting {
         return ScoreSheets.pageCount(score, setup);
     }
 
+    /**
+     * El boton Configure del manual, en la ventana de Imprimir: deja elegir el papel y la
+     * orientacion de la impresora misma. Es otro formato distinto del {@link PageSetup} de la
+     * partitura -ese lo pide "Configurar pagina [F8]" y describe el documento, no el aparato.
+     */
+    public static void configurePrinterPage() {
+        PrinterJob job = PrinterJob.getPrinterJob();
+        job.pageDialog(job.defaultPage());
+    }
+
     public static void exportImage(Score score, PageSetup setup, Path path, ViewMode viewMode) {
         String format = formatOf(path);
         if (format.equals("bmp") && viewMode != ViewMode.PAGE) {
