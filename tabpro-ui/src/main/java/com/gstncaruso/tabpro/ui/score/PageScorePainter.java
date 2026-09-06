@@ -67,6 +67,22 @@ public final class PageScorePainter {
         return placementsFor(layoutFor(score, viewport), viewport).size();
     }
 
+    /** En que hoja cae cada compas, que es lo que la barra de estado muestra. */
+    public static Pagination paginationOf(Score score, ScoreViewport viewport) {
+        ScoreLayout layout = layoutFor(score, viewport);
+        if (!viewport.mode().paginates()) {
+            return Pagination.single();
+        }
+        PageLayout pages = pagesOf(layout, viewport);
+        List<Integer> firstMeasureOfPage = new ArrayList<>(List.of(0));
+        for (int measure = 0; measure < layout.measureCount(); measure++) {
+            if (pages.pageOf(layout.systemOf(measure)) == firstMeasureOfPage.size()) {
+                firstMeasureOfPage.add(measure);
+            }
+        }
+        return Pagination.startingAtMeasures(firstMeasureOfPage);
+    }
+
     /**
      * Una sola hoja dibujada en el origen, como la necesitan la impresora y el PDF: la misma hoja
      * que se ve en pantalla, pero sola y sin el hueco que la separa de la siguiente.
@@ -184,11 +200,15 @@ public final class PageScorePainter {
         return (int) Math.round(pixels / sheet.scoreScale());
     }
 
+    private static PageLayout pagesOf(ScoreLayout layout, ScoreViewport viewport) {
+        return viewport.mode().paginates()
+                ? PageLayout.paginated(layout, viewport.sheet().layoutHeight())
+                : PageLayout.parchment(layout);
+    }
+
     private static List<PagePlacement> placementsFor(ScoreLayout layout, ScoreViewport viewport) {
         PageMetrics sheet = viewport.sheet();
-        PageLayout pages = viewport.mode().paginates()
-                ? PageLayout.paginated(layout, sheet.layoutHeight())
-                : PageLayout.parchment(layout);
+        PageLayout pages = pagesOf(layout, viewport);
         List<PagePlacement> placements = new ArrayList<>();
         int screenTop = 0;
         for (int page = 0; page < pages.pageCount(); page++) {

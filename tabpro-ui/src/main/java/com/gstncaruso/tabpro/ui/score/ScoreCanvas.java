@@ -28,6 +28,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
 
     private final Editor editor;
     private final TrackVisibility visibleTracks;
+    private final java.util.List<Runnable> paginationListeners = new java.util.ArrayList<>();
     private VisibleNotations visibleNotations = VisibleNotations.both();
     private boolean graysTheInactiveVoice = true;
     private Playhead playhead = Playhead.silent();
@@ -80,8 +81,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
 
     public void setViewMode(ViewMode viewMode) {
         this.viewMode = viewMode;
-        revalidate();
-        repaint();
+        repaginate();
     }
 
     public Zoom zoom() {
@@ -111,8 +111,23 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     /** El boton Actualizar partitura de Configurar pagina: la hoja cambia y hay que redibujar. */
     public void setPageSetup(PageSetup pageSetup) {
         this.pageSetup = pageSetup;
+        repaginate();
+    }
+
+    /** En cuantas hojas quedo repartida la partitura y donde cae cada compas. */
+    public Pagination pagination() {
+        return PageScorePainter.paginationOf(editor.score(), viewport());
+    }
+
+    /** Avisar cuando cambia el reparto en hojas, que es lo que muestra la barra de estado. */
+    public void onPaginationChange(Runnable listener) {
+        paginationListeners.add(listener);
+    }
+
+    private void repaginate() {
         revalidate();
         repaint();
+        paginationListeners.forEach(Runnable::run);
     }
 
     // ---- Vista multipista: el menu Ver la prende y apaga, la mesa de mezcla apaga pistas ----

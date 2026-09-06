@@ -16,8 +16,8 @@ class StatusBarTest {
         Editor editor = new Editor(Score.blank());
         StatusBar bar = new StatusBar(editor);
 
-        assertEquals("Pág. 1", bar.pageText());
-        assertEquals("Compás 1 · Pista 1", bar.positionText());
+        assertEquals("Pág. 1/1", bar.pageText());
+        assertEquals("Compás 1/1 · Pista 1", bar.positionText());
         assertEquals("Guitarra", bar.trackNameText());
     }
 
@@ -47,7 +47,7 @@ class StatusBarTest {
 
         editor.selectTrack(1);
 
-        assertEquals("Compás 1 · Pista 2", bar.positionText());
+        assertEquals("Compás 1/1 · Pista 2", bar.positionText());
         assertEquals("Bajo", bar.trackNameText());
     }
 }

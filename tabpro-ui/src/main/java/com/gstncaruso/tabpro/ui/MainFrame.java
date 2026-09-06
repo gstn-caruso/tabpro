@@ -149,7 +149,8 @@ public final class MainFrame extends JFrame {
         toolBars.addToSoundRow(tempoSpinner);
         setJMenuBar(new MenuBar(commands).build());
 
-        StatusBar status = new StatusBar(editor);
+        StatusBar status = new StatusBar(editor, canvas::pagination);
+        canvas.onPaginationChange(status::refresh);
         status.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(1, 0, 0, 0, Palette.separator()),
                 BorderFactory.createEmptyBorder(4, 8, 4, 8)));
