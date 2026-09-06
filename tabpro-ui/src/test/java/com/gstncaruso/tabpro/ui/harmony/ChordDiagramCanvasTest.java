@@ -88,6 +88,30 @@ class ChordDiagramCanvasTest {
     }
 
     @Test
+    void laFilaDeDigitacionQuedaDebajoDeLaUltimaFilaDeTrastes() {
+        ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
+        canvas.show(ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1)), Tuning.standard());
+
+        assertTrue(canvas.fingerRowY() > canvas.fretRowY(canvas.rowCount() - 1));
+        assertTrue(canvas.isFingerRow(canvas.fingerRowY()));
+        assertFalse(canvas.isFingerRow(canvas.fretRowY(0)));
+    }
+
+    @Test
+    void unClicEnLaFilaDeDigitacionAvisaConLaCuerda() {
+        ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
+        canvas.show(ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1)), Tuning.standard());
+        java.util.concurrent.atomic.AtomicInteger avisada = new java.util.concurrent.atomic.AtomicInteger(-1);
+        canvas.onFingerClick(avisada::set);
+
+        canvas.dispatchEvent(new java.awt.event.MouseEvent(
+                canvas, java.awt.event.MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0,
+                canvas.stringX(2), canvas.fingerRowY(), 1, false));
+
+        assertEquals(2, avisada.get());
+    }
+
+    @Test
     void identificaElEncabezadoDeCadaCuerda() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
         canvas.show(ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1)), Tuning.standard());

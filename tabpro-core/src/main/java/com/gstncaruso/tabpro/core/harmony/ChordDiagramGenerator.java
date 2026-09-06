@@ -39,8 +39,19 @@ public final class ChordDiagramGenerator {
 
     /** Todas las posiciones posibles, ordenadas de mas facil a mas dificil y filtradas por complejidad. */
     public static List<ChordDiagram> generate(Chord chord, Tuning tuning, int maxSpan, ChordComplexity maxComplexity) {
+        return generate(chord, tuning, maxSpan, maxComplexity, Set.of());
+    }
+
+    /**
+     * Lo mismo, pero dejando que el usuario relaje la busqueda tildando que tonos del acorde no
+     * hace falta que suenen (los casilleros 1', 3', 5'... de la ventana de acordes). Omitir un
+     * tono no lo prohibe: solo deja de exigirlo, asi aparecen posiciones mas simples que antes
+     * no calificaban.
+     */
+    public static List<ChordDiagram> generate(
+            Chord chord, Tuning tuning, int maxSpan, ChordComplexity maxComplexity, Set<Interval> omittedTones) {
         Set<Integer> formula = chord.formulaSemitones();
-        Set<Integer> essential = chord.essentialSemitones();
+        Set<Integer> essential = chord.essentialSemitones(omittedTones);
         int bassSemitone = chord.bass().semitone();
         String name = chord.name();
 

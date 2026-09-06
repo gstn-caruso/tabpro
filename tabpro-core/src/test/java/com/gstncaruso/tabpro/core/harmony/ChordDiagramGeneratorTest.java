@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class ChordDiagramGeneratorTest {
@@ -92,6 +93,30 @@ class ChordDiagramGeneratorTest {
         List<ChordDiagram> diagramas = ChordDiagramGenerator.generate(reMayor, dadgad);
 
         assertFalse(diagramas.isEmpty());
+    }
+
+    @Test
+    void omitirUnTonoRelajaLaBusquedaSinProhibirlo() {
+        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+        List<ChordDiagram> normal = ChordDiagramGenerator.generate(
+                doMayor, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX, Set.of());
+        List<ChordDiagram> sinQuintaObligatoria = ChordDiagramGenerator.generate(
+                doMayor, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX,
+                Set.of(Interval.PERFECT_FIFTH));
+
+        assertTrue(sinQuintaObligatoria.containsAll(normal), "omitir relaja el requisito, no prohibe la nota");
+        assertTrue(sinQuintaObligatoria.size() > normal.size(), "aparecen posiciones nuevas sin la quinta");
+    }
+
+    @Test
+    void omitirUnIntervaloQueElAcordeNoTieneNoCambiaNada() {
+        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+        List<ChordDiagram> normal = ChordDiagramGenerator.generate(doMayor, Tuning.standard());
+        List<ChordDiagram> conOmisionIrrelevante = ChordDiagramGenerator.generate(
+                doMayor, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX,
+                Set.of(Interval.MINOR_SEVENTH));
+
+        assertEquals(normal, conOmisionIrrelevante);
     }
 
     private static int ultimaCuerdaQueSuena(ChordDiagram diagrama) {
