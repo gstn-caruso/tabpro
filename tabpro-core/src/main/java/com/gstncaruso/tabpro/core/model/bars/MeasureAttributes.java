@@ -31,27 +31,6 @@ public record MeasureAttributes(
         alternateEndings = alternateEndings.stream().distinct().sorted().toList();
     }
 
-    /**
-     * Constructor de compatibilidad con el arreglo previo a {@link OctaveMark}: tabpro-format
-     * arma estos atributos con la lista de argumentos vieja al leer Guitar Pro y el JSON propio.
-     * En vez de tocar ese modulo (fuera del alcance de este cambio), esta forma delega con
-     * {@link OctaveMark#NONE} -que es exactamente el comportamiento de antes.
-     */
-    public MeasureAttributes(
-            KeySignature keySignature,
-            TripletFeel tripletFeel,
-            boolean doubleBar,
-            boolean repeatOpen,
-            int repeatCount,
-            List<Integer> alternateEndings,
-            Optional<DirectionSymbol> symbol,
-            Optional<DirectionJump> jump,
-            Optional<Marker> marker,
-            LineBreak lineBreak) {
-        this(keySignature, tripletFeel, doubleBar, repeatOpen, repeatCount, alternateEndings, symbol, jump,
-                marker, lineBreak, OctaveMark.NONE);
-    }
-
     public static MeasureAttributes plain() {
         return PLAIN;
     }

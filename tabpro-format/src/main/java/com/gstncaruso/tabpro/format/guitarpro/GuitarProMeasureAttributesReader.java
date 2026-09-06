@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,13 @@ final class GuitarProMeasureAttributesReader {
         MeasureAttributes attributes = new MeasureAttributes(
                 keySignature, tail.tripletFeel(), doubleBar, repeatOpen, repeatCount, tail.alternateEndings(),
                 java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.ofNullable(marker),
-                LineBreak.AUTOMATIC);
+                // El master bar de Guitar Pro no trae salto de linea: es un dato de la vista de
+                // tabpro, no de la partitura que este formato guarda.
+                LineBreak.AUTOMATIC,
+                // Tampoco trae marca de octava en el master bar -en Guitar Pro real vive en el
+                // beat/nota (la propiedad "ottava" del efecto), y este lector todavia no la lee.
+                // No es que nos olvidamos: este importador no llega a esa parte del formato.
+                OctaveMark.NONE);
         return new GuitarProMasterBar(timeSignature, attributes);
     }
 
