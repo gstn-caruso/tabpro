@@ -6,12 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
+import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Pitch;
+import com.gstncaruso.tabpro.core.model.TimeSignature;
+import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.VoicePart;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
@@ -97,7 +103,7 @@ class KeyboardViewTest {
         KeyboardView view = sized();
         Beat chord = Beat.of(Duration.quarter(), new Note(6, 0), new Note(1, 0));
 
-        view.show(Tuning.standard(), chord);
+        view.show(locationOf(Track.standardGuitar("g"), chord));
         BufferedImage image = paint(view);
 
         Rectangle lowE = view.keyBounds(40).orElseThrow();
@@ -110,10 +116,36 @@ class KeyboardViewTest {
     void aRestPressesNothing() {
         KeyboardView view = sized();
 
-        view.show(Tuning.standard(), Beat.rest(Duration.quarter()));
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
         BufferedImage image = paint(view);
 
         assertFalse(isPressed(image, view.keyBounds(60).orElseThrow()));
+    }
+
+    @Test
+    void theMeasureModeMarksTheOtherBeatInTheContextColor() {
+        KeyboardView view = sized();
+        Track track = Track.standardGuitar("g").withMeasure(0, new Measure(
+                TimeSignature.fourFour(),
+                List.of(Beat.of(Duration.quarter(), new Note(1, 0)), Beat.of(Duration.quarter(), new Note(1, 3)))));
+        view.show(new BeatLocation(track, 0, VoicePart.LEAD, 0));
+        view.setDisplayMode(KeyboardDisplayMode.BEAT_AND_MEASURE);
+        BufferedImage image = paint(view);
+
+        Rectangle context = view.keyBounds(67).orElseThrow();
+        assertTrue(isMarked(image, context, InstrumentColors.CONTEXT), "el traste del beat siguiente es contexto");
+    }
+
+    @Test
+    void tracksTheKeyUnderTheMouseWithoutClicking() {
+        KeyboardView view = sized();
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+
+        Rectangle c4 = view.keyBounds(60).orElseThrow();
+        view.dispatchEvent(new MouseEvent(view, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0,
+                c4.x + c4.width / 2, c4.y + c4.height - 4, 0, false));
+
+        assertEquals(OptionalInt.of(60), view.hoveredKey());
     }
 
     @Test
@@ -157,6 +189,11 @@ class KeyboardViewTest {
         assertEquals(OptionalInt.empty(), view.keyAt(WIDTH / 2, HEIGHT - 1));
     }
 
+    private static BeatLocation locationOf(Track track, Beat beat) {
+        Track updated = track.withMeasure(0, new Measure(TimeSignature.fourFour(), List.of(beat)));
+        return new BeatLocation(updated, 0, VoicePart.LEAD, 0);
+    }
+
     private static KeyboardView sized() {
         KeyboardView view = new KeyboardView();
         view.setSize(WIDTH, HEIGHT);
@@ -172,8 +209,12 @@ class KeyboardViewTest {
     }
 
     private static boolean isPressed(BufferedImage image, Rectangle key) {
+        return isMarked(image, key, InstrumentColors.PRESSED);
+    }
+
+    private static boolean isMarked(BufferedImage image, Rectangle key, java.awt.Color color) {
         int x = key.x + key.width / 2;
         int y = key.y + key.height - 6;
-        return image.getRGB(x, y) == InstrumentColors.PRESSED.getRGB();
+        return image.getRGB(x, y) == color.getRGB();
     }
 }
