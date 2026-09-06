@@ -164,7 +164,7 @@ public final class Transport {
     private void playFrom(int measure) {
         Score score = editor.score();
         PlayOrder order = orderFrom(score, measure);
-        Timeline timeline = relativeTempo.applyTo(Timeline.of(score, order)).withTempo(tempoOfThisLap(score));
+        Timeline timeline = relativeTempo.applyTo(atTheTempoOfThisLap(Timeline.of(score, order)));
         List<MetronomeClick> clicks = metronome.clicksFor(score, order);
         long leadIn = countIn.leadInTicks(score.timeSignatureOf(order.measureAt(0)));
         player.play(timeline.shiftedBy(leadIn), shifted(clicks, leadIn), new InternalListener());
@@ -184,9 +184,13 @@ public final class Transport {
         return new PlaybackRange(selection.fromMeasure(), selection.toMeasure());
     }
 
-    /** En el entrenador de velocidad cada vuelta suena un poco mas rapido. */
-    private int tempoOfThisLap(Score score) {
-        return speedTrainer.map(trainer -> trainer.tempoForLap(lap)).orElse(score.tempo());
+    /**
+     * En el entrenador de velocidad cada vuelta suena un poco mas rapido. Sin
+     * entrenador no hay nada que decir sobre el tempo: el que trae la partitura,
+     * con los cambios que le hayan metido en el medio, es el bueno.
+     */
+    private Timeline atTheTempoOfThisLap(Timeline timeline) {
+        return speedTrainer.map(trainer -> timeline.withTempo(trainer.tempoForLap(lap))).orElse(timeline);
     }
 
     private static List<MetronomeClick> shifted(List<MetronomeClick> clicks, long ticks) {

@@ -23,6 +23,8 @@ public final class ScoreColors {
     public static final Color PLAYING_MEASURE = new Color(0xE5484D);
     public static final Color WARNING = new Color(0xE5A44A);
 
+    /** El rectangulito rojo que anuncia un cambio de parametro sin simbolo musical propio. */
+    public static final Color PARAMETER_CHANGE = new Color(0xD32F3B);
     /** El compas que no suma lo que su medida pide, salvo el que se esta editando. */
     public static final Color INCOMPLETE_MEASURE = new Color(0xE5484D);
     /** El rectangulo que resalta una seleccion multiple. */

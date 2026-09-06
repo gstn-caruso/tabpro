@@ -35,8 +35,32 @@ public record PlayOrder(List<Integer> measureIndexes) {
         return new PlayOrder(sequenceOf(score));
     }
 
+    /** Un orden que no toca nada. */
+    public static PlayOrder nothing() {
+        return new PlayOrder(List.of());
+    }
+
     public int size() {
         return measureIndexes.size();
+    }
+
+    public boolean isEmpty() {
+        return measureIndexes.isEmpty();
+    }
+
+    /**
+     * Lo que suena antes de que le llegue el turno a ese compas. Es como se
+     * recuperan los cambios de parametro anteriores cuando la reproduccion
+     * arranca en el medio: lo anterior es lo anterior en el orden en que suena
+     * la partitura, no en el que esta escrita.
+     */
+    public PlayOrder before(int measure) {
+        for (int step = 0; step < size(); step++) {
+            if (measureAt(step) == measure) {
+                return new PlayOrder(measureIndexes.subList(0, step));
+            }
+        }
+        return nothing();
     }
 
     public int measureAt(int step) {

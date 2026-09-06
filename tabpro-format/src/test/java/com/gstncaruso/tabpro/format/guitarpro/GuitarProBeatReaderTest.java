@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuplet;
+import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
+import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
 
 class GuitarProBeatReaderTest {
@@ -14,6 +17,7 @@ class GuitarProBeatReaderTest {
     private static final int NO_FLAGS = 0x00;
     private static final int DOTTED = 0x01;
     private static final int WITH_TUPLET = 0x20;
+    private static final int WITH_MIX_TABLE = 0x10;
     private static final int WITH_STATUS = 0x40;
     private static final int REST_STATUS = 0x02;
 
@@ -27,6 +31,10 @@ class GuitarProBeatReaderTest {
 
     /** El unico dato que trae una nota normal es su tipo y su traste. */
     private static final int NOTE_WITH_FRET = 0x20;
+
+    /** Guitar Pro escribe en -1 el parametro que el cambio no toca. */
+    private static final int UNCHANGED = -1;
+    private static final int NO_STRINGS = 0x00;
     private static final int NORMAL_NOTE = 1;
     private static final int TIED_NOTE = 2;
     private static final int DEAD_NOTE = 3;
@@ -125,7 +133,76 @@ class GuitarProBeatReaderTest {
         assertFalse(beat.isRest());
     }
 
+    @Test
+    void aMixTableChangeBecomesAParameterChange() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(WITH_MIX_TABLE)
+                .writeSignedByte(QUARTER)
+                .writeSignedByte(30)
+                .writeSignedByte(40)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeInt(90)
+                .writeSignedByte(2)
+                .writeSignedByte(4)
+                .writeUnsignedByte(NO_STRINGS));
+
+        ParameterChange change = beat.effects().parameterChange();
+        assertEquals(OptionalInt.of(30), change.valueOf(SoundParameter.PROGRAM));
+        assertEquals(OptionalInt.of(40), change.valueOf(SoundParameter.VOLUME));
+        assertEquals(OptionalInt.of(90), change.valueOf(SoundParameter.TEMPO));
+        assertFalse(change.changes(SoundParameter.PAN), "lo que viene en -1 no cambia");
+    }
+
+    @Test
+    void theLongestOfTheTransitionsIsTheOneThatCounts() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(WITH_MIX_TABLE)
+                .writeSignedByte(QUARTER)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(40)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeInt(90)
+                .writeSignedByte(2)
+                .writeSignedByte(4)
+                .writeUnsignedByte(NO_STRINGS));
+
+        assertEquals(4, beat.effects().parameterChange().transitionBeats());
+    }
+
+    @Test
+    void aBeatWithoutAMixTableChangeChangesNothing() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(NO_FLAGS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(NO_STRINGS));
+
+        assertTrue(beat.effects().parameterChange().isEmpty());
+    }
+
+    @Test
+    void theMaskOfTracksDecidesIfTheChangeIsForEveryTrack() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(WITH_MIX_TABLE)
+                .writeSignedByte(QUARTER)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(40)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeInt(UNCHANGED)
+                .writeSignedByte(0)
+                .writeUnsignedByte(0x01)
+                .writeUnsignedByte(NO_STRINGS), GuitarProVersion.GP4);
+
+        assertTrue(beat.effects().parameterChange().everyTrack());
+    }
+
     private Beat read(GuitarProFileWriter written) {
-        return reader.read(new GuitarProByteReader(written.bytes()), GuitarProVersion.GP3, 6);
+        return read(written, GuitarProVersion.GP3);
+    }
+
+    private Beat read(GuitarProFileWriter written, GuitarProVersion version) {
+        return reader.read(new GuitarProByteReader(written.bytes()), version, 6);
     }
 }
