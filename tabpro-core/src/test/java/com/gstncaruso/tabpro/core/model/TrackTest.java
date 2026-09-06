@@ -182,6 +182,34 @@ class TrackTest {
         assertEquals(new Pitch(67 + 1), banjo.pitchOf(new Note(5, 1)));
     }
 
+    @Test
+    void aRegularGuitarDoesNotDoubleAnyString() {
+        Track guitar = Track.standardGuitar("Guitarra");
+
+        assertTrue(guitar.twelveStringDoublingInterval(1).isEmpty());
+        assertTrue(guitar.twelveStringDoublingInterval(6).isEmpty());
+    }
+
+    @Test
+    void aTwelveStringGuitarDoublesTheTrebleStringsAtTheUnison() {
+        Track twelveString = twelveStringGuitar();
+
+        assertEquals(0, twelveString.twelveStringDoublingInterval(1).orElseThrow());
+        assertEquals(0, twelveString.twelveStringDoublingInterval(2).orElseThrow());
+    }
+
+    @Test
+    void aTwelveStringGuitarDoublesTheBassStringsAtTheOctave() {
+        Track twelveString = twelveStringGuitar();
+
+        assertEquals(12, twelveString.twelveStringDoublingInterval(3).orElseThrow());
+        assertEquals(12, twelveString.twelveStringDoublingInterval(6).orElseThrow());
+    }
+
+    private static Track twelveStringGuitar() {
+        return Track.standardGuitar("Guitarra").mappingSettings(settings -> settings.withTwelveString(true));
+    }
+
     private static Track banjoWithFifthStringOption() {
         Track banjo = new Track(
                 "Banjo", Tuning.of("Banjo Open G", 62, 59, 55, 50, 67), Channel.playing(Track.GUITAR_PROGRAM),

@@ -138,6 +138,8 @@ final class TrackRenderer {
             int index = notes.size();
             notes.add(scheduled);
             cursor.open(note.string(), index);
+            track.twelveStringDoublingInterval(note.string())
+                    .ifPresent(interval -> notes.add(scheduled.withPitch(pitch.transposed(interval))));
         }
 
         if (targetsNextNoteWithoutRepicking(note)) {
