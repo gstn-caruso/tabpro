@@ -1,3 +1,9 @@
+## [0.22.0](https://github.com/gstn-caruso/tabpro/compare/v0.21.2...v0.22.0) (2026-09-06)
+
+### Features
+
+* la casilla "usar 2 canales por pista" al importar MIDI ([#80](https://github.com/gstn-caruso/tabpro/issues/80)) ([8750539](https://github.com/gstn-caruso/tabpro/commit/8750539a62ac46c67ea5dad3458a2b4d29d8aa6e)), closes [#83](https://github.com/gstn-caruso/tabpro/issues/83) [#83](https://github.com/gstn-caruso/tabpro/issues/83)
+
 ## [0.21.2](https://github.com/gstn-caruso/tabpro/compare/v0.21.1...v0.21.2) (2026-09-06)
 
 ### Bug Fixes
