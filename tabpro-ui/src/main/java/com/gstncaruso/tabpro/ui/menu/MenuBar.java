@@ -133,7 +133,8 @@ public final class MenuBar {
 
     private JMenu effectsMenu() {
         JMenu menu = new JMenu("Efectos");
-        add(menu, "effect.hammer", "effect.legatoSlide", "effect.shiftSlide", "effect.noSlide");
+        add(menu, "effect.hammer", "effect.legatoSlide", "effect.shiftSlide", "effect.slideInFromBelow",
+                "effect.slideInFromAbove", "effect.slideOutDownwards", "effect.slideOutUpwards", "effect.noSlide");
         menu.addSeparator();
         add(menu, "effect.bend", "effect.tremoloBar", "effect.vibrato", "effect.wideVibrato",
                 "effect.trill", "effect.tremoloPicking");

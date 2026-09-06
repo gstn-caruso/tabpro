@@ -197,6 +197,42 @@ class ScorePainterTest {
         assertDoesNotThrow(() -> paint(scoreWith(measure), new Cursor(0, 0, 0, 1), Playhead.silent()));
     }
 
+    /**
+     * El manual describe seis tipos de slide (linea 1250 y siguientes). Cada uno tiene que
+     * dibujarse distinto de no tener slide, y distinto de los otros cinco -no alcanza con que el
+     * enum tenga seis valores si despues el pintor los confunde.
+     */
+    @Test
+    void everySlideTypeDrawsSomethingDifferentOnTheTablature() {
+        Painted sinSlide = paint(scoreWith(measureWithSlide(null)), new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        List<Painted> conCadaTipo = new ArrayList<>();
+        for (com.gstncaruso.tabpro.core.model.effects.SlideType tipo :
+                com.gstncaruso.tabpro.core.model.effects.SlideType.values()) {
+            Painted painted = paint(scoreWith(measureWithSlide(tipo)), new Cursor(0, 0, 0, 1), Playhead.silent());
+            assertFalse(painted.looksLike(sinSlide), "el " + tipo + " no dibuja nada distinto de no tener slide");
+            conCadaTipo.add(painted);
+        }
+
+        for (int i = 0; i < conCadaTipo.size(); i++) {
+            for (int j = i + 1; j < conCadaTipo.size(); j++) {
+                assertFalse(conCadaTipo.get(i).looksLike(conCadaTipo.get(j)),
+                        "el pintor dibuja lo mismo para "
+                                + com.gstncaruso.tabpro.core.model.effects.SlideType.values()[i] + " y "
+                                + com.gstncaruso.tabpro.core.model.effects.SlideType.values()[j]);
+            }
+        }
+    }
+
+    private static Measure measureWithSlide(com.gstncaruso.tabpro.core.model.effects.SlideType tipo) {
+        Note primera = tipo == null ? new Note(1, 3) : new Note(1, 3).withSlide(tipo);
+        return measureOf(
+                Beat.of(Duration.quarter(), primera),
+                Beat.of(Duration.quarter(), new Note(1, 7)),
+                Beat.rest(Duration.quarter()),
+                Beat.rest(Duration.quarter()));
+    }
+
     @Test
     void survivesTwoVoicesAKeySignatureAndATuplet() {
         Measure leadOnly = new Measure(TimeSignature.fourFour(), List.of(

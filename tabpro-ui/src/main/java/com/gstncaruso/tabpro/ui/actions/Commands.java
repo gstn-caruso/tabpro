@@ -256,6 +256,10 @@ public final class Commands {
                 .withAccelerator("S").withIcon(Icons.slide());
         define("effect.shiftSlide", "Slide con ataque", () -> editor.setSlide(SlideType.SHIFT))
                 .withAccelerator("alt S");
+        define("effect.slideInFromBelow", "Entrando desde abajo", () -> editor.setSlide(SlideType.IN_FROM_BELOW));
+        define("effect.slideInFromAbove", "Entrando desde arriba", () -> editor.setSlide(SlideType.IN_FROM_ABOVE));
+        define("effect.slideOutDownwards", "Saliendo hacia abajo", () -> editor.setSlide(SlideType.OUT_DOWNWARDS));
+        define("effect.slideOutUpwards", "Saliendo hacia arriba", () -> editor.setSlide(SlideType.OUT_UPWARDS));
         define("effect.noSlide", "Sin slide", () -> editor.setSlide(null));
         define("effect.bend", "Bend…", dialogs::bend).withAccelerator("B").withIcon(Icons.bend());
         define("effect.tremoloBar", "Palanca…", dialogs::tremoloBar);

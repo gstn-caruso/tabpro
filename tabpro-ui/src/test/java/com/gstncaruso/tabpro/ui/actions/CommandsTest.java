@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
+import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
@@ -179,6 +181,28 @@ class CommandsTest {
         commands.get("effect.palmMute").actionPerformed(event());
 
         assertTrue(editor.currentNote().orElseThrow().has(Ornament.PALM_MUTE));
+    }
+
+    /**
+     * El manual describe seis tipos de slide (linea 1250 y siguientes: legato, con ataque, y los
+     * cuatro que entran o salen de un traste indefinido). Cada uno necesita su propio comando en
+     * el menu Efectos.
+     */
+    @Test
+    void everySlideTypeTheManualDescribesHasItsOwnCommand() {
+        editor.setFret(5);
+        Map<String, SlideType> commandNameToType = Map.of(
+                "effect.legatoSlide", SlideType.LEGATO,
+                "effect.shiftSlide", SlideType.SHIFT,
+                "effect.slideInFromBelow", SlideType.IN_FROM_BELOW,
+                "effect.slideInFromAbove", SlideType.IN_FROM_ABOVE,
+                "effect.slideOutDownwards", SlideType.OUT_DOWNWARDS,
+                "effect.slideOutUpwards", SlideType.OUT_UPWARDS);
+
+        commandNameToType.forEach((name, type) -> {
+            commands.get(name).actionPerformed(event());
+            assertEquals(Optional.of(type), editor.currentNote().orElseThrow().effects().slide(), name);
+        });
     }
 
     @Test

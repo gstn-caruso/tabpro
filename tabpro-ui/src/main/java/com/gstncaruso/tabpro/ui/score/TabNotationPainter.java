@@ -75,7 +75,8 @@ final class TabNotationPainter {
                 }
                 note.effects().slide().ifPresent(slide -> {
                     if (slide.towardsTheNextNote() && sameMeasure) {
-                        paintSlideToNext(g, layout, trackIndex, measureIndex, beatIndex, nextIndex, note.string());
+                        paintSlideToNext(
+                                g, layout, trackIndex, measureIndex, beatIndex, nextIndex, note.string(), slide);
                     }
                 });
             }
@@ -254,8 +255,15 @@ final class TabNotationPainter {
         g.draw(new Arc2D.Double(fromX, y - 6, toX - fromX, 10, 20, 140, Arc2D.OPEN));
     }
 
+    /**
+     * El legato y el shift slide van los dos hacia la nota siguiente, pero el manual los
+     * distingue: en el legato la nota de destino no se ataca de nuevo, en el shift si
+     * ({@link SlideType#picksTheDestination()}). Esa diferencia se ve en la raya: solida para uno,
+     * cortada para el otro.
+     */
     private static void paintSlideToNext(
-            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, int fromBeat, int toBeat, int string) {
+            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, int fromBeat, int toBeat, int string,
+            SlideType slide) {
         Rectangle from = layout.beatBounds(trackIndex, measureIndex, fromBeat);
         Rectangle to = layout.beatBounds(trackIndex, measureIndex, toBeat);
         int y = layout.stringY(trackIndex, measureIndex, string);
@@ -265,7 +273,9 @@ final class TabNotationPainter {
             return;
         }
         g.setColor(ScoreColors.LABEL);
-        g.setStroke(new BasicStroke(1.4f));
+        g.setStroke(slide.picksTheDestination()
+                ? new BasicStroke(1.4f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, new float[] {3f, 2f}, 0f)
+                : new BasicStroke(1.4f));
         g.draw(new Line2D.Double(fromX, y + 3, toX, y - 3));
     }
 
