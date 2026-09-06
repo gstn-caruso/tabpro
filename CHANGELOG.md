@@ -1,3 +1,9 @@
+## [0.24.0](https://github.com/gstn-caruso/tabpro/compare/v0.23.3...v0.24.0) (2026-09-06)
+
+### Features
+
+* escribir notas en el pentagrama, no sólo en la tablatura ([#91](https://github.com/gstn-caruso/tabpro/issues/91)) ([7c62763](https://github.com/gstn-caruso/tabpro/commit/7c627639e24745900f3fb039fdcc4c73bcca5636))
+
 ## [0.23.3](https://github.com/gstn-caruso/tabpro/compare/v0.23.2...v0.23.3) (2026-09-06)
 
 ### Bug Fixes
