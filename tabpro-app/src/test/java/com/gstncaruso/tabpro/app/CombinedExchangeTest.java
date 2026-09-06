@@ -1,16 +1,19 @@
 package com.gstncaruso.tabpro.app;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.files.AudioQuality;
+import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.playback.Timeline;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class CombinedExchangeTest {
@@ -38,35 +41,6 @@ class CombinedExchangeTest {
         assertEquals(List.of(), soundCalls);
     }
 
-    /**
-     * Si el puerto crece y el compuesto no lo acompaña, el metodo nuevo cae en el default de
-     * ScoreExchange, que avisa "todavia no esta disponible": la ventana pierde la funcion en
-     * silencio, con los tests de la implementacion en verde. Esto lo caza antes.
-     */
-    @Test
-    void delegatesEverySingleMethodOfThePort() {
-        List<String> forgotten = new ArrayList<>();
-        for (Method ofThePort : ScoreExchange.class.getDeclaredMethods()) {
-            if (!Modifier.isPublic(ofThePort.getModifiers()) || Modifier.isStatic(ofThePort.getModifiers())) {
-                continue;
-            }
-            if (!declaredIn(CombinedExchange.class, ofThePort)) {
-                forgotten.add(ofThePort.getName());
-            }
-        }
-
-        assertTrue(forgotten.isEmpty(), "CombinedExchange no delega: " + forgotten);
-    }
-
-    private static boolean declaredIn(Class<?> type, Method method) {
-        try {
-            type.getDeclaredMethod(method.getName(), method.getParameterTypes());
-            return true;
-        } catch (NoSuchMethodException e) {
-            return false;
-        }
-    }
-
     private ScoreExchange notation() {
         return new ScoreExchange() {
             @Override
@@ -85,6 +59,91 @@ class CombinedExchangeTest {
             public void exportMusicXml(Score score, Path path) {
                 notationCalls.add("exportMusicXml");
             }
+
+            @Override
+            public void exportMidi(Score score, Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public List<MidiTrackInfo> midiTracksIn(Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importMidiQuick(
+                    Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
+                    Optional<NoteValue> precision) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Track importMidiInto(
+                    Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
+                    Optional<NoteValue> precision) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importMidiTitleAndTimeSignatures(Score target, Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public void exportWave(Score score, Path path, AudioQuality quality) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Timeline midiTrackTimeline(Path path, List<Integer> midiTrackIndices) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importAscii(Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public void exportAscii(Score score, Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Track importAsciiInto(
+                    Track target, String text, Optional<NoteValue> fixedRhythm, int intervalsPerQuarterNote) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public String previewAscii(Track track, int columnsPerLine) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public void exportAscii(Track track, Path path, int columnsPerLine) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importMusicXml(Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importTabEdit(Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public void exportGuitarPro(Score score, Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public List<String> guitarProExportWarnings(Score score) {
+                throw irrelevantForThisTest();
+            }
         };
     }
 
@@ -99,6 +158,100 @@ class CombinedExchangeTest {
             public void exportWave(Score score, Path path, AudioQuality quality) {
                 soundCalls.add("exportWave");
             }
+
+            @Override
+            public Score importMidi(Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public List<MidiTrackInfo> midiTracksIn(Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importMidiQuick(
+                    Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
+                    Optional<NoteValue> precision) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Track importMidiInto(
+                    Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
+                    Optional<NoteValue> precision) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importMidiTitleAndTimeSignatures(Score target, Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Timeline midiTrackTimeline(Path path, List<Integer> midiTrackIndices) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importAscii(Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public void exportAscii(Score score, Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Track importAsciiInto(
+                    Track target, String text, Optional<NoteValue> fixedRhythm, int intervalsPerQuarterNote) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public String previewAscii(Track track, int columnsPerLine) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public void exportAscii(Track track, Path path, int columnsPerLine) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importMusicXml(Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public void exportMusicXml(Score score, Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importGuitarPro(Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importTabEdit(Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public void exportGuitarPro(Score score, Path path) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public List<String> guitarProExportWarnings(Score score) {
+                throw irrelevantForThisTest();
+            }
         };
+    }
+
+    private static ScoreFileException irrelevantForThisTest() {
+        return ScoreExchange.notSupported("un método que este test no ejercita");
     }
 }
