@@ -11,6 +11,8 @@ import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Los fixtures son del propio repositorio de powertabeditor
@@ -106,14 +108,32 @@ class PowerTabFileTest {
         assertEquals(99, score.tempo());
     }
 
-    @Test
-    void aMultibarRestIsReportedInsteadOfGuessed() {
-        assertThrows(ScoreFileException.class, () -> read("positions"));
+    @ParameterizedTest
+    @ValueSource(strings = {"positions", "merge_multibar_rests"})
+    void aMultibarRestIsReportedInsteadOfGuessed(String name) {
+        assertThrows(ScoreFileException.class, () -> read(name));
     }
 
     @Test
     void aGuitarReassignmentIsReportedInsteadOfGuessed() {
         assertThrows(ScoreFileException.class, () -> read("guitar_ins"));
+    }
+
+    /**
+     * Estos fixtures ejercitan secciones que se descartan a proposito (diagramas
+     * de acorde, texto de acorde, texto flotante, direcciones, dinamicas, bend,
+     * volume swell, tremolo bar): lo que importa aca es que el lector no pierda
+     * la sincronia del archivo al saltearlas, no el contenido que se descarta.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "chord_diagrams", "chordtext", "floating_text", "directions", "bends", "tremolo_bars", "volume_swells"
+    })
+    void aFileWithDiscardedSectionsStillReadsItsNotes(String name) {
+        Score score = read(name);
+
+        assertTrue(score.trackCount() >= 1);
+        assertTrue(score.track(0).measureCount() >= 1);
     }
 
     @Test
