@@ -224,6 +224,41 @@ public final class Ports {
         void stopCapture();
     }
 
+    /** La entrada de audio que escucha el afinador digital. */
+    public interface Microphone {
+
+        /** Cuando la maquina no tiene entrada de audio, el afinador digital queda apagado. */
+        Microphone NONE = new Microphone() {
+
+            @Override
+            public boolean isAvailable() {
+                return false;
+            }
+
+            @Override
+            public void startListening(java.util.function.Consumer<HeardPitch> heard) {
+            }
+
+            @Override
+            public void stopListening() {
+            }
+        };
+
+        boolean isAvailable();
+
+        void startListening(java.util.function.Consumer<HeardPitch> heard);
+
+        void stopListening();
+    }
+
+    /** Lo que el afinador escucha: la nota mas cercana y cuanto se desvia de ella. */
+    public record HeardPitch(boolean audible, int nearestMidiNumber, double frequencyHz) {
+
+        public static HeardPitch nothing() {
+            return new HeardPitch(false, 0, 0);
+        }
+    }
+
     /** Lo que llega de un instrumento MIDI mientras se escribe la partitura tocando. */
     public interface CapturedNote {
 

@@ -88,6 +88,7 @@ public final class MainFrame extends JFrame {
     private final ToolBars toolBars;
     private final ThemeSwitch themes;
     private final Ports.Devices devices;
+    private final Ports.Microphone microphone;
     private final Player player;
     private StringAssignment stringAssignment = StringAssignment.NO_CHANNEL_DETECTION;
     private PageSetup pageSetup = PageSetup.defaults();
@@ -98,7 +99,7 @@ public final class MainFrame extends JFrame {
     private final JSplitPane split;
 
     public MainFrame(Editor editor, ScoreFiles files, Player player) {
-        this(editor, files, player, ThemeSwitch.NONE, Ports.Devices.NONE, ScoreExchange.NONE);
+        this(editor, files, player, ThemeSwitch.NONE, Ports.Devices.NONE, ScoreExchange.NONE, Ports.Microphone.NONE);
     }
 
     public MainFrame(
@@ -107,9 +108,11 @@ public final class MainFrame extends JFrame {
             Player player,
             ThemeSwitch themes,
             Ports.Devices devices,
-            ScoreExchange exchange) {
+            ScoreExchange exchange,
+            Ports.Microphone microphone) {
         super("tabpro");
         this.exchange = exchange;
+        this.microphone = microphone;
         this.themes = themes;
         this.devices = devices;
         this.player = player;
@@ -880,7 +883,7 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void tuner() {
-            TunerDialog.show(MainFrame.this, editor, player);
+            TunerDialog.show(MainFrame.this, editor, player, microphone);
             backToTheScore();
         }
 
