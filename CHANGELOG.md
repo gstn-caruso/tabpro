@@ -1,3 +1,13 @@
+## [0.23.0](https://github.com/gstn-caruso/tabpro/compare/v0.22.0...v0.23.0) (2026-09-06)
+
+### Features
+
+* forzar a mano las barras de unión y la dirección de las plicas ([#86](https://github.com/gstn-caruso/tabpro/issues/86)) ([76caf2a](https://github.com/gstn-caruso/tabpro/commit/76caf2ad9d4cb02807ce87cdb065dfe1d2d74d5a))
+
+### Bug Fixes
+
+* los archivos .gp5 auténticos ahora abren, y entran bien ([#87](https://github.com/gstn-caruso/tabpro/issues/87)) ([180c274](https://github.com/gstn-caruso/tabpro/commit/180c274ba70538061aadce6c5a495863657c3c40))
+
 ## [0.22.0](https://github.com/gstn-caruso/tabpro/compare/v0.21.2...v0.22.0) (2026-09-06)
 
 ### Features
