@@ -28,7 +28,7 @@ import javax.swing.SpinnerNumberModel;
 
 /**
  * Una fila de la mesa de mezcla: numero, nombre, visibilidad en la vista multipista, puerto,
- * canal, instrumento, los seis parametros de sonido, silencio y solo.
+ * los dos canales de la pista, instrumento, los seis parametros de sonido, silencio y solo.
  */
 public final class MixTableRow extends JPanel {
 
@@ -42,6 +42,7 @@ public final class MixTableRow extends JPanel {
     private final JLabel name = new JLabel();
     private final JSpinner port = new JSpinner(new SpinnerNumberModel(1, 1, Channel.PORT_COUNT, 1));
     private final JSpinner channel = new JSpinner(new SpinnerNumberModel(1, 1, Channel.CHANNELS_PER_PORT, 1));
+    private final JSpinner effectChannel = new JSpinner(new SpinnerNumberModel(1, 1, Channel.CHANNELS_PER_PORT, 1));
     private final JComboBox<String> instrument = new JComboBox<>(Instruments.names().toArray(new String[0]));
     private final List<ParameterCell> parameterCells = new ArrayList<>();
     private final JToggleButton mute = new JToggleButton("M");
@@ -79,8 +80,13 @@ public final class MixTableRow extends JPanel {
         spinner(port, () -> editor.setPort(trackIndex, (Integer) port.getValue()));
         addColumn(port, MixTable.PORT_WIDTH);
 
+        channel.setToolTipText("Canal MIDI de la pista");
         spinner(channel, () -> editor.setChannelNumber(trackIndex, (Integer) channel.getValue()));
         addColumn(channel, MixTable.CHANNEL_WIDTH);
+
+        effectChannel.setToolTipText("Canal MIDI donde suenan los efectos de la pista");
+        spinner(effectChannel, () -> editor.setEffectChannel(trackIndex, (Integer) effectChannel.getValue()));
+        addColumn(effectChannel, MixTable.CHANNEL_WIDTH);
 
         instrument.setFocusable(false);
         instrument.addActionListener(e -> pushProgram());
@@ -110,6 +116,7 @@ public final class MixTableRow extends JPanel {
         name.setText(track.name());
         port.setValue(ch.port());
         channel.setValue(ch.number());
+        effectChannel.setValue(ch.effectChannel());
         refreshInstrumentCombo(track);
         mute.setSelected(ch.muted());
         solo.setSelected(ch.solo());
@@ -144,6 +151,10 @@ public final class MixTableRow extends JPanel {
 
     JSpinner channelField() {
         return channel;
+    }
+
+    JSpinner effectChannelField() {
+        return effectChannel;
     }
 
     JComboBox<String> instrumentField() {

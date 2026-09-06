@@ -79,6 +79,27 @@ class MixTableRowTest {
     }
 
     @Test
+    void changingTheSecondChannelPushesItToTheEditor() {
+        Editor editor = twoTrackEditor();
+        MixTableRow row = new MixTableRow(editor, new MixTableModel(), 0);
+
+        row.effectChannelField().setValue(9);
+
+        assertEquals(9, editor.score().track(0).channel().effectChannel());
+    }
+
+    @Test
+    void showsTheTwoChannelsOfTheTrack() {
+        Editor editor = twoTrackEditor();
+        editor.setChannelNumber(0, 5);
+        editor.setEffectChannel(0, 6);
+        MixTableRow row = new MixTableRow(editor, new MixTableModel(), 0);
+
+        assertEquals(5, row.channelField().getValue());
+        assertEquals(6, row.effectChannelField().getValue());
+    }
+
+    @Test
     void reducingAllParametersHidesTheKnobColumnsOnly() {
         Editor editor = twoTrackEditor();
         MixTableModel model = new MixTableModel();
