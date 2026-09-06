@@ -15,6 +15,8 @@ public final class PreferencesPanel extends FormPanel {
     private final JCheckBox showBassInChordName =
             new JCheckBox("Indicar el bajo en el nombre del acorde cuando es distinto de la fundamental");
     private final JCheckBox undoEnabled = new JCheckBox("Deshacer y rehacer");
+    private final JCheckBox forceMultitrack =
+            new JCheckBox("Forzar la vista multipista en la pantalla horizontal");
     private final JSpinner autosaveEvery = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
 
     public PreferencesPanel(Preferences initial) {
@@ -22,6 +24,7 @@ public final class PreferencesPanel extends FormPanel {
         addFullWidthRow(autoScroll);
         addFullWidthRow(showBassInChordName);
         addFullWidthRow(undoEnabled);
+        addFullWidthRow(forceMultitrack);
         addRow("Guardado automatico cada N acciones", autosaveEvery);
         apply(initial);
     }
@@ -32,6 +35,7 @@ public final class PreferencesPanel extends FormPanel {
         showBassInChordName.setSelected(preferences.showBassInChordName());
         undoEnabled.setSelected(preferences.undoEnabled());
         autosaveEvery.setValue(preferences.autosaveEvery());
+        forceMultitrack.setSelected(preferences.forceMultitrackInHorizontalMode());
     }
 
     public Preferences toPreferences() {
@@ -40,6 +44,7 @@ public final class PreferencesPanel extends FormPanel {
                 autoScroll.isSelected(),
                 showBassInChordName.isSelected(),
                 undoEnabled.isSelected(),
-                (Integer) autosaveEvery.getValue());
+                (Integer) autosaveEvery.getValue(),
+                forceMultitrack.isSelected());
     }
 }
