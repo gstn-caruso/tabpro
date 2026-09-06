@@ -8,7 +8,7 @@ final class PowerTabGuitarInReader {
         int staff = reader.readUnsignedByte();
         int position = reader.readUnsignedByte();
         int data = reader.readUnsignedShort();
-        int staffGuitarsMask = data & 0xFF;
+        int staffGuitarsMask = (data >>> 8) & 0xFF; // el byte alto: el bajo es para rhythm slash.
         return new PowerTabGuitarIn(system, staff, position, staffGuitarsMask);
     }
 }
