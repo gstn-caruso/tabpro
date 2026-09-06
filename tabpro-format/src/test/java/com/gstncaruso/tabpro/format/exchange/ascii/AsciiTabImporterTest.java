@@ -48,7 +48,8 @@ class AsciiTabImporterTest {
     void infersDurationFromTheSpacingBetweenColumns() {
         String text = block(6, "--5--0--");
 
-        Score score = importer.importScore(text, AsciiTabImportOptions.standard().withRhythm(RhythmStrategy.fromSpacing()));
+        // 2 intervalos por negra: cada columna vale una corchea (960/2 tics).
+        Score score = importer.importScore(text, AsciiTabImportOptions.standard().withRhythm(RhythmStrategy.fromSpacing(2)));
 
         List<Beat> beats = track(score).measure(0).beats();
         // hay un silencio de negra antes de la primera nota (arranca en la columna 2 de 8)
@@ -56,6 +57,22 @@ class AsciiTabImporterTest {
         assertEquals(List.of(new Note(1, 5)), beats.get(1).notes());
         assertEquals(new Duration(NoteValue.QUARTER, true).ticks(), beats.get(1).duration().ticks());
         assertEquals(List.of(new Note(1, 0)), beats.get(2).notes());
+    }
+
+    @Test
+    void aDifferentNumberOfIntervalsPerQuarterNoteInfersADifferentRhythmFromTheSameSpacing() {
+        // la misma tablatura ASCII, pero pidiendo el doble de intervalos por negra: cada columna
+        // pasa a valer la mitad de tics (una semicorchea en vez de una corchea), y el mismo
+        // espaciado entre columnas da otro ritmo.
+        String text = block(6, "--5--0--");
+
+        Score coarse = importer.importScore(text, AsciiTabImportOptions.standard().withRhythm(RhythmStrategy.fromSpacing(2)));
+        Score fine = importer.importScore(text, AsciiTabImportOptions.standard().withRhythm(RhythmStrategy.fromSpacing(4)));
+
+        Beat coarseNote = track(coarse).measure(0).beats().get(1);
+        Beat fineNote = track(fine).measure(0).beats().get(1);
+        assertEquals(new Duration(NoteValue.QUARTER, true).ticks(), coarseNote.duration().ticks());
+        assertEquals(new Duration(NoteValue.EIGHTH, true).ticks(), fineNote.duration().ticks());
     }
 
     @Test

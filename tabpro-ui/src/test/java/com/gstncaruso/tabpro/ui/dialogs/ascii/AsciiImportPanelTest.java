@@ -50,4 +50,33 @@ class AsciiImportPanelTest {
 
         assertFalse(panel.fixedRhythm().isPresent());
     }
+
+    @Test
+    void defaultsToFourIntervalsPerQuarterNote() {
+        AsciiImportPanel panel = new AsciiImportPanel();
+
+        assertEquals(4, panel.intervalsPerQuarterNote());
+    }
+
+    @Test
+    void choosingAnotherIntervalCountChangesIt() {
+        AsciiImportPanel panel = new AsciiImportPanel();
+
+        panel.chooseIntervalsPerQuarterNote(8);
+
+        assertEquals(8, panel.intervalsPerQuarterNote());
+    }
+
+    @Test
+    void theIntervalsPerQuarterNoteAreOnlyRelevantWhenTheRhythmIsVariable() {
+        AsciiImportPanel panel = new AsciiImportPanel();
+
+        assertFalse(panel.intervalsPerQuarterNoteEditable(), "por defecto el ritmo es fijo");
+
+        panel.chooseVariableRhythm();
+        assertTrue(panel.intervalsPerQuarterNoteEditable());
+
+        panel.chooseFixedRhythm(NoteValue.QUARTER);
+        assertFalse(panel.intervalsPerQuarterNoteEditable());
+    }
 }

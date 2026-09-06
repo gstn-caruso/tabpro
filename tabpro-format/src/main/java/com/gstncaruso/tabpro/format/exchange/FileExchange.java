@@ -119,8 +119,9 @@ public final class FileExchange implements ScoreExchange {
     }
 
     @Override
-    public Track importAsciiInto(Track target, String text, Optional<NoteValue> fixedRhythm) {
-        RhythmStrategy rhythm = fixedRhythm.map(value -> RhythmStrategy.fixed(Duration.of(value))).orElseGet(RhythmStrategy::fromSpacing);
+    public Track importAsciiInto(Track target, String text, Optional<NoteValue> fixedRhythm, int intervalsPerQuarterNote) {
+        RhythmStrategy rhythm = fixedRhythm.map(value -> RhythmStrategy.fixed(Duration.of(value)))
+                .orElseGet(() -> RhythmStrategy.fromSpacing(intervalsPerQuarterNote));
         AsciiTabImportOptions options = AsciiTabImportOptions.standard().withRhythm(rhythm);
         return asciiImporter.importInto(target, text, options);
     }

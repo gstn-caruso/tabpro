@@ -38,7 +38,9 @@ class AsciiTabRoundTripTest {
         Score original = new Score("Prueba", 120, List.of(track));
 
         String tab = exporter.export(original, AsciiTabExportOptions.standard());
-        Score imported = importer.importScore(tab, AsciiTabImportOptions.standard().withRhythm(RhythmStrategy.fromSpacing()));
+        // el exportador usa una columna por semicorchea (4 por negra): con esa misma cantidad de
+        // intervalos por negra la ida y vuelta preserva las duraciones exactas.
+        Score imported = importer.importScore(tab, AsciiTabImportOptions.standard().withRhythm(RhythmStrategy.fromSpacing(4)));
 
         assertEquals(List.of(chord, first, second, third, fourth), imported.track(0).measure(0).beats());
     }

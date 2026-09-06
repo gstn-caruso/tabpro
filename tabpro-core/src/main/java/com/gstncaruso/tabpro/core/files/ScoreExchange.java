@@ -80,9 +80,11 @@ public interface ScoreExchange {
 
     /**
      * El import de la ventana de ASCII: cae sobre la pista activa. fixedRhythm vacio es el
-     * "&lt;variable&gt;" del manual (el ritmo se deduce del espaciado); presente es un ritmo fijo.
+     * "&lt;variable&gt;" del manual (el ritmo se deduce del espaciado, tomando en cuenta
+     * intervalsPerQuarterNote -- la "segunda lista" para el espaciado entre dos negras);
+     * presente es un ritmo fijo (e intervalsPerQuarterNote no se usa).
      */
-    default Track importAsciiInto(Track target, String text, Optional<NoteValue> fixedRhythm) {
+    default Track importAsciiInto(Track target, String text, Optional<NoteValue> fixedRhythm, int intervalsPerQuarterNote) {
         throw notSupported("la importación de tablatura ASCII");
     }
 

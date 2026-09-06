@@ -160,7 +160,8 @@ public final class AsciiTabImporter {
         TimeSignature timeSignature = options.defaultTimeSignature();
         List<Beat> beats = switch (options.rhythm()) {
             case RhythmStrategy.Fixed fixed -> beatsWithFixedRhythm(attacks, fixed.duration(), timeSignature);
-            case RhythmStrategy.FromSpacing ignored -> beatsFromSpacing(attacks, to - from, timeSignature);
+            case RhythmStrategy.FromSpacing fromSpacing ->
+                    beatsFromSpacing(attacks, fromSpacing.intervalsPerQuarterNote(), timeSignature);
         };
         return new Measure(timeSignature, beats);
     }
@@ -201,17 +202,22 @@ public final class AsciiTabImporter {
         return beats;
     }
 
-    private static List<Beat> beatsFromSpacing(List<Attack> attacks, int cellWidth, TimeSignature timeSignature) {
+    /**
+     * El ritmo {@code <variable>} del manual: cada columna vale una fraccion fija de negra (la
+     * grilla que fija intervalsPerQuarterNote, la "segunda lista"), sin importar cuantas columnas
+     * tenga el tramo -- cuanto mas lejos la siguiente nota, mas larga la anterior.
+     */
+    private static List<Beat> beatsFromSpacing(List<Attack> attacks, int intervalsPerQuarterNote, TimeSignature timeSignature) {
         long ticksPerMeasure = timeSignature.ticksPerMeasure();
         List<Beat> beats = new ArrayList<>();
         long position = 0;
         for (int i = 0; i < attacks.size(); i++) {
             Attack attack = attacks.get(i);
-            long startTick = tickOf(attack.localStart(), cellWidth, ticksPerMeasure);
+            long startTick = tickOf(attack.localStart(), intervalsPerQuarterNote);
             if (startTick > position) {
                 beats.addAll(restsFor(startTick - position));
             }
-            long nextTick = i + 1 < attacks.size() ? tickOf(attacks.get(i + 1).localStart(), cellWidth, ticksPerMeasure) : ticksPerMeasure;
+            long nextTick = i + 1 < attacks.size() ? tickOf(attacks.get(i + 1).localStart(), intervalsPerQuarterNote) : ticksPerMeasure;
             Duration duration = DurationTicks.nearestTo(nextTick - startTick);
             beats.add(new Beat(duration, notesOf(attack)));
             position = startTick + duration.ticks();
@@ -222,8 +228,8 @@ public final class AsciiTabImporter {
         return beats;
     }
 
-    private static long tickOf(int localColumn, int cellWidth, long ticksPerMeasure) {
-        return Math.round(localColumn / (double) cellWidth * ticksPerMeasure);
+    private static long tickOf(int localColumn, int intervalsPerQuarterNote) {
+        return Math.round(localColumn * (Duration.TICKS_PER_QUARTER / (double) intervalsPerQuarterNote));
     }
 
     private static List<Beat> restsFor(long ticks) {
