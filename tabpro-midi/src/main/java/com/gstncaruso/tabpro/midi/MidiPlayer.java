@@ -91,9 +91,32 @@ public final class MidiPlayer implements Player, AutoCloseable {
         return sequencer.getSequence();
     }
 
+    /** Para tests: en que tick quedo el secuenciador de ese puerto, o -1 si no tiene ninguno. */
+    long tickPositionOfPort(int port) {
+        if (port == PRIMARY_PORT) {
+            return sequencer.getTickPosition();
+        }
+        PortOutput output = secondaryPorts.get(port);
+        return output == null ? -1 : output.tickPosition();
+    }
+
     @Override
     public void playNote(Pitch pitch, int program) {
         preview().play(pitch, program);
+    }
+
+    /**
+     * Salta la reproduccion en curso a ese tick sin frenarla. La reproduccion arma una secuencia
+     * por puerto MIDI, con un secuenciador por puerto, asi que el salto tiene que alcanzarlos a
+     * todos -no solo al principal- o el sonido de un puerto secundario se queda donde estaba.
+     */
+    @Override
+    public void seekTo(long tick) {
+        long safeTick = Math.max(0, tick);
+        if (sequencer.isRunning()) {
+            sequencer.setTickPosition(safeTick);
+        }
+        secondaryPorts.values().forEach(port -> port.seekTo(safeTick));
     }
 
     @Override
@@ -298,6 +321,16 @@ public final class MidiPlayer implements Player, AutoCloseable {
             if (sequencer.isRunning()) {
                 sequencer.stop();
             }
+        }
+
+        void seekTo(long tick) {
+            if (!isSilent() && sequencer.isRunning()) {
+                sequencer.setTickPosition(tick);
+            }
+        }
+
+        long tickPosition() {
+            return isSilent() ? -1 : sequencer.getTickPosition();
         }
 
         @Override

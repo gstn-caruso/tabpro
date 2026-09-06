@@ -184,6 +184,35 @@ class ScoreCanvasTest {
         assertTrue(canvas.contextMenuAt(-100, -100).isEmpty());
     }
 
+    /**
+     * El manual deja reposicionar el audio con un clic durante la reproduccion. El lienzo no
+     * sabe nada del Transport, asi que avisa donde cayo el clic para que quien lo escuche
+     * decida si hay que saltar la reproduccion ahi.
+     */
+    @Test
+    void aClickOnTheScoreTellsWhoeverIsListeningWhereItLanded() {
+        ScoreLayout layout = ScoreLayout.of(editor.score(), 900);
+        Rectangle firstBeat = layout.beatBounds(0, 0, 0);
+        List<ScoreLayout.Hit> notified = new java.util.ArrayList<>();
+        canvas.onClickReposition(notified::add);
+
+        press(canvas, centerX(firstBeat), layout.stringY(0, 0, 1), false);
+
+        assertEquals(1, notified.size());
+        assertEquals(0, notified.get(0).measure());
+        assertEquals(0, notified.get(0).beat());
+    }
+
+    @Test
+    void clickingOutsideTheScoreDoesNotNotifyAnyReposition() {
+        List<ScoreLayout.Hit> notified = new java.util.ArrayList<>();
+        canvas.onClickReposition(notified::add);
+
+        press(canvas, -100, -100, false);
+
+        assertTrue(notified.isEmpty());
+    }
+
     private static Editor editorWithTwoMeasures() {
         Track guitar = Track.standardGuitar("Guitarra").withMeasures(List.of(
                 Measure.empty(TimeSignature.fourFour(), Duration.quarter()),

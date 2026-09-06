@@ -15,6 +15,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
+import java.util.function.Consumer;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.Scrollable;
@@ -31,6 +32,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     private final Editor editor;
     private final TrackVisibility visibleTracks;
     private final java.util.List<Runnable> paginationListeners = new java.util.ArrayList<>();
+    private final java.util.List<Consumer<ScoreLayout.Hit>> clickListeners = new java.util.ArrayList<>();
     private VisibleNotations visibleNotations = VisibleNotations.both();
     private boolean graysTheInactiveVoice = true;
     private Playhead playhead = Playhead.silent();
@@ -265,8 +267,18 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
                 editor.selectTrack(h.track());
             }
             editor.moveTo(h.measure(), h.beat(), h.string());
+            clickListeners.forEach(listener -> listener.accept(h));
         });
         return hit;
+    }
+
+    /**
+     * El manual deja reposicionar el audio con un clic durante la reproduccion. El lienzo no
+     * sabe nada del Transport -no le corresponde-, asi que solo avisa donde cayo el clic; quien
+     * escucha decide si hay que saltar la reproduccion ahi.
+     */
+    public void onClickReposition(Consumer<ScoreLayout.Hit> listener) {
+        clickListeners.add(listener);
     }
 
     /**

@@ -213,6 +213,49 @@ class TransportTest {
                 "arrancar en el medio recupera el tempo que dejó el cambio anterior");
     }
 
+    /**
+     * El manual: durante la reproduccion se puede hacer clic en la partitura para volver a
+     * arrancar desde ahi sin frenar. Sin reproduccion no hay nada que saltar.
+     */
+    @Test
+    void seekToDoesNothingWhenNotPlaying() {
+        transport.seekTo(0, 0);
+
+        assertEquals(null, player.lastSeekTick);
+    }
+
+    @Test
+    void clickingDuringPlaybackAsksThePlayerToJumpToThatTick() {
+        Editor editorDeDosCompases = new Editor(twoMeasureScore());
+        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
+        transportDeDosCompases.toggle();
+
+        transportDeDosCompases.seekTo(1, 0);
+
+        assertEquals(Long.valueOf(Duration.quarter().ticks() * 4), player.lastSeekTick);
+    }
+
+    @Test
+    void seekingToABeatThatDoesNotExistDoesNothing() {
+        transport.toggle();
+
+        transport.seekTo(99, 0);
+
+        assertEquals(null, player.lastSeekTick);
+    }
+
+    private static Score twoMeasureScore() {
+        Measure first = new Measure(TimeSignature.fourFour(), java.util.List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Measure second = new Measure(TimeSignature.fourFour(), java.util.List.of(
+                Beat.of(Duration.quarter(), new Note(1, 4))));
+        return new Score("", 120, java.util.List.of(
+                Track.standardGuitar("Guitarra").withMeasures(java.util.List.of(first, second))));
+    }
+
     private static Score scoreSlowingDownInTheFirstMeasure() {
         Beat slowsDown = Beat.of(Duration.quarter(), new Note(1, 0)).withEffects(
                 BeatEffects.none().withParameterChange(
@@ -228,6 +271,7 @@ class TransportTest {
         private Timeline lastTimeline;
         private PlaybackListener listener;
         private boolean playing;
+        private Long lastSeekTick;
 
         @Override
         public void play(Timeline timeline, PlaybackListener listener) {
@@ -238,6 +282,11 @@ class TransportTest {
 
         @Override
         public void playNote(Pitch pitch, int program) {
+        }
+
+        @Override
+        public void seekTo(long tick) {
+            lastSeekTick = tick;
         }
 
         @Override

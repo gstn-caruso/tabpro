@@ -16,6 +16,7 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.effects.Velocity;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.PitchTrajectory;
+import com.gstncaruso.tabpro.core.playback.ScheduledBeat;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.ScheduledNote;
 import com.gstncaruso.tabpro.core.playback.Timeline;
@@ -164,6 +165,70 @@ class MidiPlayerTest {
 
         assertTrue(firstBeatLatch.await(5, TimeUnit.SECONDS));
         assertEquals(new BeatPosition(0, 0, 0), firstBeat.get());
+    }
+
+    /**
+     * El test que hace falta no es "el player recibio la orden de saltar" sino "despues de
+     * saltar, lo que suena es el compas pedido": el primer compas es una nota larga que a este
+     * tempo tardaria cuatro segundos en terminar sola; si el salto funciona, la nota del segundo
+     * compas se escucha mucho antes de eso.
+     */
+    @Test
+    void afterSeekingWhatSoundsIsTheRequestedMeasure() throws Exception {
+        long measureTicks = 4L * Duration.TICKS_PER_QUARTER;
+        ScheduledNote firstMeasure = new ScheduledNote(0, measureTicks, new Pitch(60));
+        ScheduledNote secondMeasure = new ScheduledNote(measureTicks, measureTicks, new Pitch(72));
+        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, false, 1,
+                List.of(firstMeasure, secondMeasure),
+                List.of(new ScheduledBeat(0, 0, 0), new ScheduledBeat(measureTicks, 1, 0)), List.of());
+        Timeline timeline = new Timeline(60, Duration.TICKS_PER_QUARTER, List.of(trackTimeline));
+
+        CountDownLatch secondMeasureSounded = new CountDownLatch(1);
+        player.open();
+        sequencer.getTransmitter().setReceiver(new Receiver() {
+            @Override
+            public void send(MidiMessage message, long timeStamp) {
+                if (message instanceof ShortMessage sm
+                        && sm.getCommand() == ShortMessage.NOTE_ON && sm.getData1() == 72) {
+                    secondMeasureSounded.countDown();
+                }
+            }
+
+            @Override
+            public void close() {
+            }
+        });
+
+        player.play(timeline, noOpListener());
+        player.seekTo(measureTicks);
+
+        assertTrue(
+                secondMeasureSounded.await(2, TimeUnit.SECONDS),
+                "el segundo compas -de cuatro segundos de largo el primero- tendria que sonar bien antes");
+    }
+
+    /**
+     * La reproduccion arma una secuencia por puerto MIDI, con un secuenciador por puerto: el
+     * salto tiene que alcanzarlos a todos, no solo al principal, o el puerto secundario se queda
+     * sonando donde estaba antes de saltar.
+     */
+    @Test
+    void seekingReachesEverySequencerNotJustThePrimaryPort() {
+        TrackTimeline enElPuertoUno = new TrackTimeline(25, 100, 64, false, 1,
+                List.of(new ScheduledNote(0, 4L * Duration.TICKS_PER_QUARTER, new Pitch(60))),
+                List.of(new ScheduledBeat(0, 0, 0)), List.of());
+        TrackTimeline enElPuertoDos = new TrackTimeline(30, 100, 64, false, 2,
+                List.of(new ScheduledNote(0, 4L * Duration.TICKS_PER_QUARTER, new Pitch(60))),
+                List.of(new ScheduledBeat(0, 0, 0)), List.of());
+        Timeline timeline = new Timeline(120, Duration.TICKS_PER_QUARTER, List.of(enElPuertoUno, enElPuertoDos));
+        long target = 2L * Duration.TICKS_PER_QUARTER;
+
+        player.play(timeline, noOpListener());
+        player.seekTo(target);
+        player.stop();
+
+        assertTrue(Math.abs(player.tickPositionOfPort(1) - target) < 100, "el puerto principal no salto");
+        assertTrue(Math.abs(player.tickPositionOfPort(2) - target) < 100, "el puerto secundario no salto");
     }
 
     @Test

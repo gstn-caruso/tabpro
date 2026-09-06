@@ -34,6 +34,7 @@ public final class Transport {
     private final List<Runnable> listeners = new ArrayList<>();
 
     private Playhead playhead = Playhead.silent();
+    private Timeline currentTimeline;
     private Metronome metronome = Metronome.off();
     private CountIn countIn = CountIn.off();
     private RelativeTempo relativeTempo = RelativeTempo.normal();
@@ -70,6 +71,18 @@ public final class Transport {
 
     public boolean isPlaying() {
         return player.isPlaying();
+    }
+
+    /**
+     * El manual: moverse por la partitura durante la reproduccion vuelve a arrancar el audio
+     * desde la posicion senalada, sin frenar. Sin reproduccion no hay nada que saltar, y si esa
+     * posicion no existe en lo que esta sonando -un compas que no se llego a tocar- tampoco.
+     */
+    public void seekTo(int measure, int beat) {
+        if (!player.isPlaying() || currentTimeline == null) {
+            return;
+        }
+        currentTimeline.tickOf(measure, beat).ifPresent(player::seekTo);
     }
 
     public Playhead playhead() {
@@ -186,7 +199,8 @@ public final class Transport {
         Timeline timeline = relativeTempo.applyTo(atTheTempoOfThisLap(Timeline.of(score, order)));
         List<MetronomeClick> clicks = metronome.clicksFor(score, order);
         long leadIn = countIn.leadInTicks(score.timeSignatureOf(order.measureAt(0)));
-        player.play(timeline.shiftedBy(leadIn), shifted(clicks, leadIn), new InternalListener());
+        currentTimeline = timeline.shiftedBy(leadIn);
+        player.play(currentTimeline, shifted(clicks, leadIn), new InternalListener());
         notifyListeners();
     }
 

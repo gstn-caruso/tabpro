@@ -297,6 +297,57 @@ class TimelineTest {
         assertEquals(Duration.quarter().ticks(), shifted.tracks().get(0).notes().get(0).durationTicks());
     }
 
+    @Test
+    void tickOfEncuentraElTickDelPrimerCompasQueEsSiempreCero() {
+        Timeline timeline = Timeline.of(Score.blank());
+
+        assertEquals(java.util.OptionalLong.of(0), timeline.tickOf(0, 0));
+    }
+
+    @Test
+    void tickOfNoEncuentraUnBeatQueNoExisteEnEseCompas() {
+        Timeline timeline = Timeline.of(Score.blank());
+
+        assertEquals(java.util.OptionalLong.empty(), timeline.tickOf(0, 1));
+    }
+
+    @Test
+    void tickOfNoEncuentraUnCompasQueNoExiste() {
+        Timeline timeline = Timeline.of(Score.blank());
+
+        assertEquals(java.util.OptionalLong.empty(), timeline.tickOf(5, 0));
+    }
+
+    @Test
+    void tickOfEncuentraElTickDeUnBeatEnMedioDeLaPartitura() {
+        Track track = Track.standardGuitar("Guitarra")
+                .withMeasure(0, new Measure(TimeSignature.fourFour(),
+                        List.of(Beat.of(Duration.quarter(), new Note(1, 0)),
+                                Beat.of(Duration.quarter(), new Note(1, 1)))))
+                .withMeasureInsertedAt(1, new Measure(TimeSignature.fourFour(),
+                        List.of(Beat.of(Duration.quarter(), new Note(1, 2)))));
+        Score score = Score.blank().withTrack(0, track);
+
+        assertEquals(java.util.OptionalLong.of(Duration.quarter().ticks() * 2), Timeline.of(score).tickOf(1, 0));
+    }
+
+    @Test
+    void tickOfEncuentraElBeatAunqueSoloUnaPistaLlegueAEseSubcompas() {
+        Track corta = Track.standardGuitar("Corta").withMeasure(0,
+                new Measure(TimeSignature.fourFour(),
+                        List.of(Beat.of(new Duration(NoteValue.WHOLE, false), new Note(1, 0)))));
+        Track larga = Track.standardGuitar("Larga").withMeasure(0,
+                new Measure(TimeSignature.fourFour(), List.of(
+                        Beat.of(Duration.quarter(), new Note(1, 0)),
+                        Beat.of(Duration.quarter(), new Note(1, 1)),
+                        Beat.of(Duration.quarter(), new Note(1, 2)),
+                        Beat.of(Duration.quarter(), new Note(1, 3)))));
+        Score score = new Score("", 120, List.of(corta, larga));
+
+        assertEquals(
+                java.util.OptionalLong.of(Duration.quarter().ticks() * 3), Timeline.of(score).tickOf(0, 3));
+    }
+
     private Score scoreWithLeadBeat(Beat beat) {
         return scoreWithLeadBeats(beat);
     }

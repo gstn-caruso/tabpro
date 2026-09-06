@@ -167,6 +167,9 @@ public final class MainFrame extends JFrame {
             trackPanel.showPlayingMeasure(transport.playhead().measure());
             beatViews.showPlayhead(transport.playhead());
         });
+        // El manual: moverse por la partitura durante la reproduccion vuelve a arrancar el
+        // audio desde la posicion senalada, sin frenar.
+        canvas.onClickReposition(hit -> transport.seekTo(hit.measure(), hit.beat()));
         editor.addListener(this::updateTitle);
 
         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, trackPanel);
