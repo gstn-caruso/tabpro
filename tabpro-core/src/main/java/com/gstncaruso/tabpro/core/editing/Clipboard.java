@@ -6,32 +6,47 @@ import java.util.List;
 
 /**
  * Lo ultimo que se corto o se copio. Dentro de un compas se copian beats; en
- * cualquier otro caso, compases enteros, como explica el manual.
+ * cualquier otro caso, compases enteros, como explica el manual. Donde vive
+ * ese dato en realidad es cosa de {@link ClipboardStorage}; por defecto es
+ * privado de esta sesion, como fue siempre.
  */
 public final class Clipboard {
 
-    private Clipping clipping = Clipping.EMPTY;
+    private final ClipboardStorage storage;
+
+    public Clipboard() {
+        this(ClipboardStorage.inMemory());
+    }
+
+    public Clipboard(ClipboardStorage storage) {
+        this.storage = storage;
+    }
 
     public void hold(Clipping clipping) {
-        this.clipping = clipping;
+        storage.hold(clipping);
     }
 
     public Clipping content() {
-        return clipping;
+        return storage.content();
     }
 
     public boolean isEmpty() {
-        return clipping.isEmpty();
+        return content().isEmpty();
     }
 
     public void clear() {
-        clipping = Clipping.EMPTY;
+        storage.hold(Clipping.EMPTY);
     }
 
     /** Lo copiado, con la cantidad de cuerdas de donde salio para saber donde entra. */
     public record Clipping(List<List<Measure>> measuresByTrack, List<Beat> beats, int stringCount) {
 
-        static final Clipping EMPTY = new Clipping(List.of(), List.of(), 0);
+        /**
+         * Publico porque una implementacion de {@link ClipboardStorage} de otro modulo (el
+         * portapapeles del sistema operativo, por ejemplo) lo necesita para decir "esto que
+         * encontre no es un clipping de tabpro" sin salir del vocabulario del puerto.
+         */
+        public static final Clipping EMPTY = new Clipping(List.of(), List.of(), 0);
 
         public Clipping {
             measuresByTrack = measuresByTrack.stream().map(List::copyOf).toList();

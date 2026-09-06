@@ -66,15 +66,24 @@ public final class Editor {
     private Cursor selectionAnchor;
     private boolean selectingWholeMeasures;
     private final EditorHistory history = new EditorHistory();
-    private final Clipboard clipboard = new Clipboard();
+    private final Clipboard clipboard;
     private final List<EditorListener> listeners = new ArrayList<>();
     private boolean undoEnabled = true;
     /** Preferencias [F12], "Figura por defecto al insertar": la usa {@link #insertBeat()}. */
     private NoteValue defaultNoteValue = NoteValue.QUARTER;
 
     public Editor(Score initial) {
+        this(initial, ClipboardStorage.inMemory());
+    }
+
+    /**
+     * Con un lugar de portapapeles compartido: copiar en un Editor y pegar en otro que
+     * use el mismo storage es lo que el manual pide entre dos sesiones de Guitar Pro.
+     */
+    public Editor(Score initial, ClipboardStorage clipboardStorage) {
         this.score = initial;
         this.cursor = new Cursor(0, 0, 0, 1);
+        this.clipboard = new Clipboard(clipboardStorage);
     }
 
     public Score score() {
