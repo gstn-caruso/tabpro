@@ -1,3 +1,9 @@
+## [0.25.0](https://github.com/gstn-caruso/tabpro/compare/v0.24.1...v0.25.0) (2026-09-06)
+
+### Features
+
+* el explorador salta al archivo siguiente, y la pantalla horizontal puede forzar multipista ([#94](https://github.com/gstn-caruso/tabpro/issues/94)) ([dca2e9e](https://github.com/gstn-caruso/tabpro/commit/dca2e9efbd5f45e084bf225ea75ba222dac78ca9))
+
 ## [0.24.1](https://github.com/gstn-caruso/tabpro/compare/v0.24.0...v0.24.1) (2026-09-06)
 
 ### Bug Fixes
