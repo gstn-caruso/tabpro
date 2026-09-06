@@ -26,15 +26,24 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     private static final int FALLBACK_WIDTH = 900;
 
     private final Editor editor;
+    private final TrackVisibility visibleTracks;
     private Playhead playhead = Playhead.silent();
     private ViewMode viewMode = ViewMode.SCREEN_VERTICAL;
     private Zoom zoom = Zoom.whole();
-    private VisibleTracks visibleTracks = VisibleTracks.all();
     private Cursor selectionAnchor;
     private Selection selection;
 
     public ScoreCanvas(Editor editor) {
+        this(editor, new TrackVisibility());
+    }
+
+    public ScoreCanvas(Editor editor, TrackVisibility visibleTracks) {
         this.editor = editor;
+        this.visibleTracks = visibleTracks;
+        visibleTracks.onChange(() -> {
+            revalidate();
+            repaint();
+        });
         setOpaque(true);
         setFocusable(true);
         setBackground(ScoreColors.BACKGROUND);
@@ -92,21 +101,15 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     // ---- Vista multipista: el menu Ver la prende y apaga, la mesa de mezcla apaga pistas ----
 
     public boolean isMultitrack() {
-        return visibleTracks.multitrack();
+        return visibleTracks.isMultitrack();
     }
 
     public void setMultitrack(boolean multitrack) {
-        showing(visibleTracks.withMultitrack(multitrack));
+        visibleTracks.setMultitrack(multitrack);
     }
 
     public void setTrackShown(int track, boolean shown) {
-        showing(visibleTracks.withTrackShown(track, shown));
-    }
-
-    private void showing(VisibleTracks visibleTracks) {
-        this.visibleTracks = visibleTracks;
-        revalidate();
-        repaint();
+        visibleTracks.setTurnedOn(track, shown);
     }
 
     // ---- Seleccion multiple: la ventana principal puede leerla, fijarla o limpiarla ----
@@ -205,7 +208,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     /** La pista activa la manda el cursor, asi que se lee recien al dibujar. */
     private ScoreViewport viewport() {
         return new ScoreViewport(
-                viewMode, zoom, viewportWidth(), visibleTracks.withActiveTrack(editor.cursor().track()));
+                viewMode, zoom, viewportWidth(), visibleTracks.tracks().withActiveTrack(editor.cursor().track()));
     }
 
     private int viewportWidth() {

@@ -18,11 +18,16 @@ public record VisibleTracks(boolean multitrack, int activeTrack, Set<Integer> tu
         return new VisibleTracks(true, 0, Set.of());
     }
 
+    /** Si la pista esta prendida, sin importar si es la que se esta editando. */
+    public boolean isTurnedOn(int track) {
+        return !turnedOff.contains(track);
+    }
+
     public boolean shows(int track) {
         if (track == activeTrack) {
             return true;
         }
-        return multitrack && !turnedOff.contains(track);
+        return multitrack && isTurnedOn(track);
     }
 
     public VisibleTracks withMultitrack(boolean multitrack) {
