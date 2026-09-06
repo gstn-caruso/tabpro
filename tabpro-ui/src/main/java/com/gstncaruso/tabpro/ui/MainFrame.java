@@ -205,14 +205,26 @@ public final class MainFrame extends JFrame {
         split.setDividerLocation(Math.max(0, split.getHeight() - trackPanel.preferredPanelHeight()));
     }
 
-    /** Abre la partitura que el escritorio paso por linea de comandos. */
+    /**
+     * Abre la partitura que el escritorio paso por linea de comandos. Puede ser
+     * un archivo propio o uno de Guitar Pro, que se importa como partitura nueva.
+     */
     public void openOnStartup(Path path) {
         try {
-            document.open(path);
+            if (isAGuitarProFile(path)) {
+                document.adopt(exchange.importGuitarPro(path));
+            } else {
+                document.open(path);
+            }
             updateTitle();
         } catch (ScoreFileException e) {
             showError(e);
         }
+    }
+
+    private static boolean isAGuitarProFile(Path path) {
+        String name = path.getFileName().toString().toLowerCase(java.util.Locale.ROOT);
+        return name.endsWith(".gp3") || name.endsWith(".gp4") || name.endsWith(".gp5") || name.endsWith(".gtp");
     }
 
     private JSpinner tempoSpinner() {
@@ -299,13 +311,8 @@ public final class MainFrame extends JFrame {
         }
 
         private void openQuietly(Path path) {
-            try {
-                document.open(path);
-                updateTitle();
-                backToTheScore();
-            } catch (ScoreFileException e) {
-                showError(e);
-            }
+            openOnStartup(path);
+            backToTheScore();
         }
 
         @Override

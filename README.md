@@ -59,7 +59,8 @@ tabpro
 ```
 
 Queda en el menú de aplicaciones y se asocia a los archivos `.tabpro` y a los de
-Guitar Pro. Necesita una JRE 25 con entorno gráfico (`openjdk-25-jre`); la
+Guitar Pro: abrir cualquiera de los dos desde el escritorio abre tabpro con esa
+partitura. Necesita una JRE 25 con entorno gráfico (`openjdk-25-jre`); la
 variante *headless* no alcanza.
 
 **Cualquier sistema con Java 25:**
