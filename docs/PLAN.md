@@ -69,7 +69,7 @@ checkout compartido; `docs/` lo maneja esta sesión; y quien vaya a tocar
 |---|---|
 | 0. Limpieza del árbol (PR #41 y #42 mergeados, worktrees y branches podadas) | ✅ hecho |
 | 1. Auditoría del manual contra el código | ✅ hecho — ver [auditoria-manual.md](auditoria-manual.md) |
-| 1b. Auditoría de las tablas de atajos que quedaron fuera del recorte | ✅ hecho — 37 de 41 atajos correctos |
+| 1b. Auditoría de las tablas de atajos que quedaron fuera del recorte | ✅ re-auditado 2026-09-06 — ver abajo |
 | 2. Versionado automático con semantic-release | ✅ hecho — publicó la v0.9.0 sola |
 | 3. Implementación de los huecos, un PR por hueco | 🔜 en curso |
 | 4. Verificación independiente de los formatos binarios | 🔜 en curso — ver abajo |
@@ -91,6 +91,43 @@ Dos cosas que conviene no volver a aprender:
    no que las notas se pudieran generar. El primer release real falló por un
    preset incompatible que el dry-run nunca llegó a ejercitar. Para probar de
    verdad hay que correrlo sacando los plugins que piden credenciales.
+
+### Re-auditoría de atajos (2026-09-06)
+
+El "37 de 41" era de antes de una docena de PRs y nadie lo había vuelto a
+medir. Se rehizo entero contra `Commands.java`, cotejando las 76 filas del
+capítulo Reference del manual (páginas 79 a 81) una por una — no si "algún"
+comando tenía la tecla, si el comando **correcto** la tenía. Test que sostiene
+esto: `ManualKeyboardShortcutsTest` (72 filas comparables 1:1 contra el
+catálogo).
+
+- **72 de 72 coinciden.** Ni una sola diferencia contra el manual hoy.
+- **4 no pasan por el catálogo pero están:** Home/End (primer/último beat del
+  compás) y el `*` del puntillo los resuelve `KeyboardEditing` como tecla
+  cruda del lienzo (con su propio test); Page Up/Page Down los resuelve Swing
+  solo, scrolleando el `JScrollPane` de la partitura.
+- **Atajos que tiene tabpro y el manual no lista:** zoom (`Ctrl +`/`Ctrl -`/
+  `Ctrl 0`), diapasón (`Ctrl 3`) y teclado (`Ctrl 4`). No pisan ningún atajo
+  del manual, se dejan.
+- **Feature faltante, no atajo:** `Enter` como "agregar nota en notación
+  estándar" no existe — ya estaba anotado en
+  [auditoria-manual.md](auditoria-manual.md) ("Enter no agrega una nota en
+  notación estándar — AUSENTE · grande"). tabpro solo escribe por dígitos de
+  traste.
+- **Bug real encontrado y arreglado — no en el catálogo, en la plomería:**
+  `JScrollPane` y `JSplitPane` traen atajos de fábrica (scroll, navegar el
+  split) que Swing revisa *antes* que el acelerador de un menú. Con el foco en
+  la partitura -la situación normal al editar- se comían `Ctrl+Home`
+  (nav.firstBar), `Ctrl+Fin` (nav.lastBar), `F6` (track.properties), `F8`
+  (file.pageSetup) y `Ctrl+Tab` (marker.next): el catálogo declaraba la tecla
+  correcta y colgaba de su menú, pero apretarla no hacía nada. Arreglado por
+  `AcceleratorGuard` (`AcceleratorGuardTest`); ver el PR de la branch
+  `fix/los-atajos-que-el-manual-manda`.
+- **Sin colisiones.** `CommandsTest.noTwoCommandsShareTheSameShortcut` ya
+  cubría esto y sigue en verde; se sumó
+  `MenuBarTest.todoComandoConAceleradorCuelgaDeAlgunMenu` para que un atajo
+  declarado y nunca colgado de un menú (la otra forma de quedar muerto) tampoco
+  pase desapercibido.
 
 ## Los huecos de esta sesión
 

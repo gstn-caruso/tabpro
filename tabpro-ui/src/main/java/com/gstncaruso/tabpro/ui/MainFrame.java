@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFileFormat;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.playback.Player;
+import com.gstncaruso.tabpro.ui.actions.AcceleratorGuard;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import com.gstncaruso.tabpro.ui.browser.ScoreBrowser;
@@ -178,6 +179,11 @@ public final class MainFrame extends JFrame {
         editor.addListener(this::updateTitle);
 
         scoreMixSplit = new ScoreMixSplit(scrollPane, trackPanel);
+        // El JScrollPane de la partitura y el JSplitPane que la comparte con la mesa de mezcla
+        // traen atajos propios (scroll, F6/F8 para el split) que le ganan a un atajo de menu
+        // mientras la partitura tiene el foco. Sin este barrido, Ctrl+Home, Ctrl+Fin, F6, F8 y
+        // Ctrl+Tab quedan muertos justo cuando mas se los usa: editando.
+        AcceleratorGuard.letCommandsWin(commands, scrollPane, scoreMixSplit.component());
 
         JPanel top = new JPanel(new BorderLayout());
         top.add(toolBars.component(), BorderLayout.NORTH);

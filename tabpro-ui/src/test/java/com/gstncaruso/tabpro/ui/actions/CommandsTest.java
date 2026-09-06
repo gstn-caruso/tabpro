@@ -21,11 +21,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
@@ -56,22 +54,6 @@ class CommandsTest {
             String previous = byShortcut.put(shortcut, name);
             assertEquals(null, previous, "el atajo " + shortcut + " lo usan " + previous + " y " + name);
         });
-    }
-
-    @Test
-    void theShortcutsOfTheManualAreThere() {
-        Set<String> expected = new HashSet<>(List.of(
-                "ctrl N", "ctrl O", "ctrl S", "ctrl P", "ctrl Z", "ctrl X", "ctrl C", "ctrl V", "ctrl A",
-                "F1", "F2", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "SPACE",
-                "PLUS", "MINUS", "ctrl G", "ctrl TAB", "shift TAB", "ENTER"));
-        commands.all().values().stream()
-                .map(Command::accelerator)
-                .filter(java.util.Objects::nonNull)
-                .map(KeyStroke::toString)
-                .forEach(shortcut -> expected.removeIf(wanted ->
-                        KeyStroke.getKeyStroke(wanted).toString().equals(shortcut)));
-
-        assertTrue(expected.isEmpty(), "faltan los atajos " + expected);
     }
 
     /**
