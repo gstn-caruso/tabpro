@@ -136,9 +136,19 @@ public final class GuitarProFile {
         Voice lead = readVoice(reader, version, stringCount);
         Voice bass = version.hasSecondVoice() ? readVoice(reader, version, stringCount) : Voice.unused();
         if (version.hasSecondVoice()) {
-            reader.readUnsignedByte();
+            skipLineBreak(reader);
         }
         return new Measure(bar.timeSignature(), bar.attributes(), List.of(usable(lead), bass));
+    }
+
+    /**
+     * Cada compas de GP5 cierra con el salto de linea que lo separa del siguiente, salvo
+     * el ultimo de la ultima pista: ahi Guitar Pro corta el archivo sin escribirlo.
+     */
+    private static void skipLineBreak(GuitarProByteReader reader) {
+        if (reader.hasMore()) {
+            reader.readUnsignedByte();
+        }
     }
 
     private Voice readVoice(GuitarProByteReader reader, GuitarProVersion version, int stringCount) {
