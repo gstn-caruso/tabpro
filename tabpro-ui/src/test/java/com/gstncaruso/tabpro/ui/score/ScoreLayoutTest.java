@@ -239,6 +239,89 @@ class ScoreLayoutTest {
         assertFalse(layout.hasSignatureChange(0), "el primer compas de la partitura no cambia nada");
     }
 
+    @Test
+    void aTrackThatIsNotShownTakesNoRoom() {
+        Score score = new Score("", 120, List.of(trackWith(quarters(4)), trackWith(quarters(4))));
+        VisibleTracks withoutTheFirst = VisibleTracks.all().withActiveTrack(1).withTrackShown(0, false);
+
+        ScoreLayout both = ScoreLayout.of(score, WIDE);
+        ScoreLayout onlyTheSecond = ScoreLayout.of(score, WIDE, withoutTheFirst);
+
+        assertTrue(onlyTheSecond.totalHeight() < both.totalHeight());
+        assertEquals(both.trackTop(0, 0), onlyTheSecond.trackTop(1, 0),
+                "la pista que queda sube al lugar de la que se apago");
+    }
+
+    @Test
+    void aTrackThatIsNotShownIsNotUnderThePointerEither() {
+        Score score = new Score("", 120, List.of(trackWith(quarters(4)), trackWith(quarters(4))));
+        VisibleTracks withoutTheFirst = VisibleTracks.all().withActiveTrack(1).withTrackShown(0, false);
+        ScoreLayout layout = ScoreLayout.of(score, WIDE, withoutTheFirst);
+        Rectangle target = layout.beatBounds(1, 0, 2);
+
+        Optional<ScoreLayout.Hit> hit = layout.hitTest(
+                target.x + target.width / 2, layout.stringY(1, 0, 3));
+
+        assertEquals(1, hit.orElseThrow().track());
+    }
+
+    @Test
+    void withoutTheMultitrackViewOnlyTheActiveTrackTakesRoom() {
+        Score score = new Score("", 120, List.of(trackWith(quarters(4)), trackWith(quarters(4))));
+        VisibleTracks single = VisibleTracks.all().withMultitrack(false).withActiveTrack(1);
+
+        ScoreLayout layout = ScoreLayout.of(score, WIDE, single);
+
+        assertEquals(ScoreLayout.TOP_MARGIN, layout.trackTop(1, 0));
+        assertEquals(0, layout.trackHeight(0));
+    }
+
+    @Test
+    void theFirstTrackThatShowsIsTheOneThatCarriesTheBarStructure() {
+        Score score = new Score("", 120, List.of(trackWith(quarters(4)), trackWith(quarters(4))));
+
+        assertEquals(0, ScoreLayout.of(score, WIDE).firstShownTrack());
+        assertEquals(1, ScoreLayout.of(score, WIDE,
+                VisibleTracks.all().withActiveTrack(1).withTrackShown(0, false)).firstShownTrack());
+    }
+
+    @Test
+    void hidingTheStaffLiftsTheTablatureIntoItsPlace() {
+        Score score = Score.blank();
+
+        ScoreLayout both = ScoreLayout.of(score, WIDE);
+        ScoreLayout onlyTablature = ScoreLayout.of(score, WIDE, VisibleTracks.all(),
+                VisibleNotations.both().withStandardNotation(false));
+
+        assertTrue(onlyTablature.totalHeight() < both.totalHeight());
+        assertEquals(both.staffTop(0, 0), onlyTablature.tabTop(0, 0),
+                "la tablatura sube al lugar donde arrancaba el pentagrama");
+    }
+
+    @Test
+    void hidingTheTablatureLeavesTheStaffWhereItWas() {
+        Score score = Score.blank();
+
+        ScoreLayout both = ScoreLayout.of(score, WIDE);
+        ScoreLayout onlyStaff = ScoreLayout.of(score, WIDE, VisibleTracks.all(),
+                VisibleNotations.both().withTablature(false));
+
+        assertEquals(both.staffTop(0, 0), onlyStaff.staffTop(0, 0));
+        assertEquals(both.staffBottom(0, 0), onlyStaff.staffBottom(0, 0));
+        assertTrue(onlyStaff.totalHeight() < both.totalHeight());
+        assertEquals(onlyStaff.tabTop(0, 0), onlyStaff.tabBottom(0, 0),
+                "sin tablatura, la franja de la tablatura no mide nada");
+    }
+
+    @Test
+    void theLayoutAnswersWhichNotationsEachTrackDraws() {
+        ScoreLayout onlyTablature = ScoreLayout.of(Score.blank(), WIDE, VisibleTracks.all(),
+                VisibleNotations.both().withStandardNotation(false));
+
+        assertFalse(onlyTablature.showsStandardNotation(0));
+        assertTrue(onlyTablature.showsTablature(0));
+    }
+
     private int firstMeasureOfSystem(ScoreLayout layout, int system, int measureCount) {
         for (int measure = 0; measure < measureCount; measure++) {
             if (layout.systemOf(measure) == system) {

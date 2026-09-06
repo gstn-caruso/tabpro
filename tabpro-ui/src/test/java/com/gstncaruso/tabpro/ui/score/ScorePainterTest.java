@@ -248,6 +248,38 @@ class ScorePainterTest {
         g.dispose();
     }
 
+    @Test
+    void aTrackThatIsNotShownIsNotDrawnAtAll() {
+        Track guitar = Track.standardGuitar("Guitarra");
+        Score two = new Score("", 120, List.of(guitar, guitar));
+        Score one = new Score("", 120, List.of(guitar));
+
+        Painted withoutTheFirst = paint(two, new Cursor(1, 0, 0, 1), Playhead.silent(),
+                VisibleTracks.all().withActiveTrack(1).withTrackShown(0, false));
+        Painted alone = paint(one, new Cursor(0, 0, 0, 1), Playhead.silent(), VisibleTracks.all());
+
+        assertTrue(withoutTheFirst.looksLike(alone),
+                "apagar una pista tiene que dar la misma hoja que no tenerla");
+    }
+
+    @Test
+    void theBarStructureIsDrawnEvenWhenTheFirstTrackIsNotShown() {
+        Track guitar = Track.standardGuitar("Guitarra");
+        Measure repeated = Measure.empty(TimeSignature.fourFour(), Duration.quarter())
+                .withAttributes(Measure.empty(TimeSignature.fourFour(), Duration.quarter())
+                        .attributes().withRepeatOpen(true));
+        Track second = new Track("Bajo", guitar.tuning(), guitar.channel(), List.of(repeated));
+        Score score = new Score("", 120, List.of(
+                new Track("Guitarra", guitar.tuning(), guitar.channel(), List.of(repeated)), second));
+
+        Painted painted = paint(score, new Cursor(1, 0, 0, 1), Playhead.silent(),
+                VisibleTracks.all().withActiveTrack(1).withTrackShown(0, false));
+
+        int x = painted.layout().measureX(0) + 2;
+        int y = (painted.layout().staffTop(1, 0) + painted.layout().tabBottom(1, 0)) / 2;
+        assertTrue(painted.hasInkNear(x, y, 3), "falta la barra de repeticion de la pista que si se ve");
+    }
+
     private static Score scoreWith(Measure... measures) {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measures));
         return new Score("", 120, List.of(track));
@@ -263,7 +295,11 @@ class ScorePainterTest {
     }
 
     private static Painted paint(Score score, Cursor cursor, Playhead playhead) {
-        ScoreLayout layout = ScoreLayout.of(score, WIDTH);
+        return paint(score, cursor, playhead, VisibleTracks.all());
+    }
+
+    private static Painted paint(Score score, Cursor cursor, Playhead playhead, VisibleTracks visibleTracks) {
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH, visibleTracks);
         BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
         g.setClip(0, 0, WIDTH, layout.totalHeight());
@@ -285,6 +321,20 @@ class ScorePainterTest {
                 }
             }
             return false;
+        }
+
+        boolean looksLike(Painted other) {
+            if (image.getWidth() != other.image.getWidth() || image.getHeight() != other.image.getHeight()) {
+                return false;
+            }
+            for (int x = 0; x < image.getWidth(); x++) {
+                for (int y = 0; y < image.getHeight(); y++) {
+                    if (image.getRGB(x, y) != other.image.getRGB(x, y)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         private boolean isInside(int x, int y) {

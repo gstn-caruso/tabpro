@@ -17,15 +17,17 @@ import javax.swing.JComponent;
 import javax.swing.Scrollable;
 
 /**
- * El lienzo de la partitura: dibuja todas las pistas segun el {@link ViewMode} y el {@link Zoom}
- * elegidos, y traduce los clics a movimientos del cursor o, arrastrando, a una seleccion
- * multiple.
+ * El lienzo de la partitura: dibuja las pistas que se ven segun el {@link ViewMode}, el
+ * {@link Zoom} y las {@link VisibleTracks} elegidas, y traduce los clics a movimientos del
+ * cursor o, arrastrando, a una seleccion multiple.
  */
 public final class ScoreCanvas extends JComponent implements Scrollable {
 
     private static final int FALLBACK_WIDTH = 900;
 
     private final Editor editor;
+    private final TrackVisibility visibleTracks;
+    private VisibleNotations visibleNotations = VisibleNotations.both();
     private Playhead playhead = Playhead.silent();
     private ViewMode viewMode = ViewMode.SCREEN_VERTICAL;
     private Zoom zoom = Zoom.whole();
@@ -33,7 +35,16 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     private Selection selection;
 
     public ScoreCanvas(Editor editor) {
+        this(editor, new TrackVisibility());
+    }
+
+    public ScoreCanvas(Editor editor, TrackVisibility visibleTracks) {
         this.editor = editor;
+        this.visibleTracks = visibleTracks;
+        visibleTracks.onChange(() -> {
+            revalidate();
+            repaint();
+        });
         setOpaque(true);
         setFocusable(true);
         setBackground(ScoreColors.BACKGROUND);
@@ -88,6 +99,42 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
         setZoom(zoom.out());
     }
 
+    // ---- Vista multipista: el menu Ver la prende y apaga, la mesa de mezcla apaga pistas ----
+
+    public boolean isMultitrack() {
+        return visibleTracks.isMultitrack();
+    }
+
+    public void setMultitrack(boolean multitrack) {
+        visibleTracks.setMultitrack(multitrack);
+    }
+
+    public void setTrackShown(int track, boolean shown) {
+        visibleTracks.setTurnedOn(track, shown);
+    }
+
+    public boolean showsStandardNotation() {
+        return visibleNotations.standardNotation();
+    }
+
+    public boolean showsTablature() {
+        return visibleNotations.tablature();
+    }
+
+    public void setStandardNotationShown(boolean shown) {
+        showing(visibleNotations.withStandardNotation(shown));
+    }
+
+    public void setTablatureShown(boolean shown) {
+        showing(visibleNotations.withTablature(shown));
+    }
+
+    private void showing(VisibleNotations visibleNotations) {
+        this.visibleNotations = visibleNotations;
+        revalidate();
+        repaint();
+    }
+
     // ---- Seleccion multiple: la ventana principal puede leerla, fijarla o limpiarla ----
 
     public Optional<Selection> selection() {
@@ -106,8 +153,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
 
     @Override
     protected void paintComponent(Graphics g) {
-        PageScorePainter.paint((Graphics2D) g, editor.score(), editor.cursor(), playhead, selection(),
-                viewMode, zoom, viewportWidth());
+        PageScorePainter.paint((Graphics2D) g, editor.score(), editor.cursor(), playhead, selection(), viewport());
     }
 
     public void showPlayhead(Playhead playhead) {
@@ -115,13 +161,12 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
         repaint();
         playhead.on(editor.cursor().track())
                 .ifPresent(position -> scrollRectToVisible(PageScorePainter.boundsOf(
-                        editor.score(), viewMode, zoom, viewportWidth(),
-                        position.track(), position.measure(), position.beat())));
+                        editor.score(), viewport(), position.track(), position.measure(), position.beat())));
     }
 
     @Override
     public Dimension getPreferredSize() {
-        return PageScorePainter.canvasSize(editor.score(), viewMode, zoom, viewportWidth());
+        return PageScorePainter.canvasSize(editor.score(), viewport());
     }
 
     @Override
@@ -152,7 +197,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     }
 
     private void moveCursorTo(int x, int y) {
-        PageScorePainter.hitTest(editor.score(), viewMode, zoom, viewportWidth(), x, y).ifPresent(hit -> {
+        PageScorePainter.hitTest(editor.score(), viewport(), x, y).ifPresent(hit -> {
             if (hit.track() != editor.cursor().track()) {
                 editor.selectTrack(hit.track());
             }
@@ -164,7 +209,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
         if (selectionAnchor == null) {
             return;
         }
-        PageScorePainter.hitTest(editor.score(), viewMode, zoom, viewportWidth(), x, y).ifPresent(hit -> {
+        PageScorePainter.hitTest(editor.score(), viewport(), x, y).ifPresent(hit -> {
             if (hit.track() != selectionAnchor.track()) {
                 return;
             }
@@ -180,7 +225,15 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
 
     private Rectangle cursorBounds(Cursor cursor) {
         return PageScorePainter.boundsOf(
-                editor.score(), viewMode, zoom, viewportWidth(), cursor.track(), cursor.measure(), cursor.beat());
+                editor.score(), viewport(), cursor.track(), cursor.measure(), cursor.beat());
+    }
+
+    /** La pista activa la manda el cursor, asi que se lee recien al dibujar. */
+    private ScoreViewport viewport() {
+        return new ScoreViewport(
+                viewMode, zoom, viewportWidth(),
+                visibleTracks.tracks().withActiveTrack(editor.cursor().track()),
+                visibleNotations);
     }
 
     private int viewportWidth() {

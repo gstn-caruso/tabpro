@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.score.PageLayout;
 import com.gstncaruso.tabpro.ui.score.PageScorePainter;
+import com.gstncaruso.tabpro.ui.score.ScoreViewport;
 import com.gstncaruso.tabpro.ui.score.ViewMode;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.Color;
@@ -27,7 +28,7 @@ public final class ScoreSheets {
     }
 
     public static Dimension sizeOf(Score score, Zoom zoom) {
-        return PageScorePainter.canvasSize(score, ViewMode.PAGE, zoom, DEFAULT_WIDTH);
+        return PageScorePainter.canvasSize(score, sheetViewport(zoom));
     }
 
     /** Toda la partitura en una sola imagen, lista para guardar o para imprimir. */
@@ -67,8 +68,12 @@ public final class ScoreSheets {
     /** Dibuja la partitura sobre un lienzo ajeno, como el de la impresora. */
     public static void paintOn(Graphics2D graphics, Score score, Zoom zoom) {
         PageScorePainter.paint(
-                graphics, score, hiddenCursor(), Playhead.silent(), Optional.empty(),
-                ViewMode.PAGE, zoom, DEFAULT_WIDTH);
+                graphics, score, hiddenCursor(), Playhead.silent(), Optional.empty(), sheetViewport(zoom));
+    }
+
+    /** La hoja impresa siempre lleva la partitura entera, con todas sus pistas. */
+    private static ScoreViewport sheetViewport(Zoom zoom) {
+        return ScoreViewport.of(ViewMode.PAGE, zoom, DEFAULT_WIDTH);
     }
 
     /** Un cursor que no se ve porque apunta a una pista que no existe. */

@@ -1,22 +1,27 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
+import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Lo que decide como se ve la mesa de mezcla, separado de quien la dibuja: si cada parametro se
- * muestra como potenciometro o como numero, si esta todo reducido, y que pistas se ven en la
- * vista multipista. No es un dato de la partitura: no se guarda en el archivo.
+ * muestra como potenciometro o como numero y si esta todo reducido. Que pistas se ven en la
+ * vista multipista lo lleva {@link TrackVisibility}, que comparte con la partitura. Nada de
+ * esto es un dato de la partitura: no se guarda en el archivo.
  */
 public final class MixTableModel {
 
     private final Map<MixParameter, DisplayMode> displayModes = new EnumMap<>(MixParameter.class);
-    private final Set<Integer> hiddenInMultitrackView = new HashSet<>();
+    private final TrackVisibility visibleTracks;
     private boolean reduced;
 
     public MixTableModel() {
+        this(new TrackVisibility());
+    }
+
+    public MixTableModel(TrackVisibility visibleTracks) {
+        this.visibleTracks = visibleTracks;
         for (MixParameter parameter : MixParameter.values()) {
             displayModes.put(parameter, DisplayMode.KNOB);
         }
@@ -31,7 +36,7 @@ public final class MixTableModel {
     }
 
     public boolean isVisibleInMultitrackView(int trackIndex) {
-        return !hiddenInMultitrackView.contains(trackIndex);
+        return visibleTracks.isTurnedOn(trackIndex);
     }
 
     public void toggleVisibleInMultitrackView(int trackIndex) {
@@ -39,11 +44,7 @@ public final class MixTableModel {
     }
 
     public void setVisibleInMultitrackView(int trackIndex, boolean visible) {
-        if (visible) {
-            hiddenInMultitrackView.remove(trackIndex);
-        } else {
-            hiddenInMultitrackView.add(trackIndex);
-        }
+        visibleTracks.setTurnedOn(trackIndex, visible);
     }
 
     public boolean isReduced() {

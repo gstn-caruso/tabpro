@@ -54,7 +54,9 @@ public final class ScorePainter {
         }
 
         for (int trackIndex = 0; trackIndex < score.trackCount(); trackIndex++) {
-            paintTrack(g, layout, score, trackIndex, cursor, playhead);
+            if (layout.shows(trackIndex)) {
+                paintTrack(g, layout, score, trackIndex, cursor, playhead);
+            }
         }
         selection.ifPresent(sel -> paintSelection(g, layout, score, sel));
         if (showsTheEditingCursor(score, cursor)) {
@@ -82,6 +84,8 @@ public final class ScorePainter {
         Track track = score.track(trackIndex);
         Clef clef = Clef.forTuning(track.tuning());
         TrackDisplay display = track.settings().display();
+        boolean standardNotation = layout.showsStandardNotation(trackIndex);
+        boolean tablature = layout.showsTablature(trackIndex);
         boolean selected = cursor.track() == trackIndex;
 
         playhead.on(trackIndex).ifPresent(position -> paintPlaying(g, layout, trackIndex, position));
@@ -90,20 +94,20 @@ public final class ScorePainter {
             boolean beingEdited = selected && cursor.measure() == measureIndex;
             paintIncompleteMeasureBackground(g, layout, track, trackIndex, measureIndex, beingEdited);
 
-            if (display.standardNotation()) {
+            if (standardNotation) {
                 StaffPainter.paintStaffLines(g, layout, trackIndex, measureIndex);
             }
-            if (display.tablature()) {
+            if (tablature) {
                 TabPainter.paintMeasure(g, layout, track, trackIndex, measureIndex);
             }
             if (layout.startsASystem(measureIndex)) {
                 paintTrackLabel(g, layout, track, trackIndex, measureIndex, selected);
-                if (display.standardNotation()) {
+                if (standardNotation) {
                     StaffPainter.paintClef(g, layout, clef, trackIndex, measureIndex);
                     StaffPainter.paintTimeSignature(g, layout, track, trackIndex, measureIndex,
                             layout.measureX(measureIndex) + ScoreLayout.SYSTEM_HEAD_WIDTH - 20);
                 }
-                if (display.tablature()) {
+                if (tablature) {
                     TabPainter.paintTabMark(g, layout, track, trackIndex, measureIndex);
                     if (display.tuningLegend()) {
                         TabPainter.paintTuningLegend(g, layout, track, trackIndex, measureIndex);
@@ -111,10 +115,10 @@ public final class ScorePainter {
                 }
             }
             TabPainter.paintMeasureNumber(g, layout, track, trackIndex, measureIndex);
-            if (display.standardNotation()) {
+            if (standardNotation) {
                 StaffPainter.paintMeasure(g, layout, track, clef, trackIndex, measureIndex, cursor.voice());
             }
-            if (display.tablature()) {
+            if (tablature) {
                 if (track.isPercussion()) {
                     PercussionPainter.paintMeasure(g, layout, track, trackIndex, measureIndex);
                 } else {
@@ -128,7 +132,7 @@ public final class ScorePainter {
             }
             ChordDiagramPainter.paintMeasure(g, layout, track, trackIndex, measureIndex);
             BarStructurePainter.paintPerTrack(g, layout, track, clef, trackIndex, measureIndex);
-            if (trackIndex == 0) {
+            if (trackIndex == layout.firstShownTrack()) {
                 BarStructurePainter.paintScoreWide(g, layout, track, trackIndex, measureIndex);
             }
         }

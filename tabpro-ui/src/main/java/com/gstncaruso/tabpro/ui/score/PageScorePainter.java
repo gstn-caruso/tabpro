@@ -26,23 +26,25 @@ public final class PageScorePainter {
     private PageScorePainter() {
     }
 
-    public static Dimension canvasSize(Score score, ViewMode mode, Zoom zoom, int viewportWidth) {
-        ScoreLayout layout = layoutFor(score, mode, viewportWidth);
-        double factor = zoom.factor();
+    public static Dimension canvasSize(Score score, ScoreViewport viewport) {
+        ViewMode mode = viewport.mode();
+        ScoreLayout layout = layoutFor(score, viewport);
+        double factor = viewport.factor();
         if (mode.showsPaper()) {
             List<PagePlacement> pages = placementsFor(layout, mode);
             int height = pages.isEmpty() ? 0 : pages.get(pages.size() - 1).bottom();
             return scaled(PageLayout.PAGE_WIDTH, height, factor);
         }
-        int width = mode.scrollsHorizontally() ? naturalWidthOf(layout) : viewportWidth;
+        int width = mode.scrollsHorizontally() ? naturalWidthOf(layout) : viewport.width();
         return scaled(width, layout.totalHeight(), factor);
     }
 
     public static void paint(
             Graphics2D g, Score score, Cursor cursor, Playhead playhead, Optional<Selection> selection,
-            ViewMode mode, Zoom zoom, int viewportWidth) {
-        ScoreLayout layout = layoutFor(score, mode, viewportWidth);
-        g.scale(zoom.factor(), zoom.factor());
+            ScoreViewport viewport) {
+        ViewMode mode = viewport.mode();
+        ScoreLayout layout = layoutFor(score, viewport);
+        g.scale(viewport.factor(), viewport.factor());
 
         if (!mode.showsPaper()) {
             ScorePainter.paint(g, layout, score, cursor, playhead, selection);
@@ -66,9 +68,10 @@ public final class PageScorePainter {
 
     /** Traduce un clic de pantalla (ya sin el factor de zoom) a compas/beat/cuerda. */
     public static Optional<ScoreLayout.Hit> hitTest(
-            Score score, ViewMode mode, Zoom zoom, int viewportWidth, int screenX, int screenY) {
-        ScoreLayout layout = layoutFor(score, mode, viewportWidth);
-        double factor = zoom.factor();
+            Score score, ScoreViewport viewport, int screenX, int screenY) {
+        ViewMode mode = viewport.mode();
+        ScoreLayout layout = layoutFor(score, viewport);
+        double factor = viewport.factor();
         int x = (int) Math.round(screenX / factor);
         int y = (int) Math.round(screenY / factor);
         if (!mode.showsPaper()) {
@@ -85,8 +88,9 @@ public final class PageScorePainter {
 
     /** Donde cae, en coordenadas de pantalla ya con el zoom aplicado, un beat de la partitura. */
     public static Rectangle boundsOf(
-            Score score, ViewMode mode, Zoom zoom, int viewportWidth, int track, int measure, int beat) {
-        ScoreLayout layout = layoutFor(score, mode, viewportWidth);
+            Score score, ScoreViewport viewport, int track, int measure, int beat) {
+        ViewMode mode = viewport.mode();
+        ScoreLayout layout = layoutFor(score, viewport);
         Rectangle bounds = layout.beatBounds(track, measure, beat);
         int top = layout.trackTop(track, measure);
         Rectangle block = new Rectangle(bounds.x, top, bounds.width, layout.trackHeight(track));
@@ -99,17 +103,18 @@ public final class PageScorePainter {
                 break;
             }
         }
-        double factor = zoom.factor();
+        double factor = viewport.factor();
         return new Rectangle(
                 (int) Math.round(block.x * factor), (int) Math.round(block.y * factor),
                 (int) Math.round(block.width * factor), (int) Math.round(block.height * factor));
     }
 
-    static ScoreLayout layoutFor(Score score, ViewMode mode, int viewportWidth) {
+    static ScoreLayout layoutFor(Score score, ScoreViewport viewport) {
+        ViewMode mode = viewport.mode();
         int width = mode.showsPaper()
                 ? PageLayout.PAGE_WIDTH - 2 * PageLayout.PAGE_MARGIN
-                : (mode.scrollsHorizontally() ? UNWRAPPED_WIDTH : Math.max(200, viewportWidth));
-        return ScoreLayout.of(score, width);
+                : (mode.scrollsHorizontally() ? UNWRAPPED_WIDTH : Math.max(200, viewport.width()));
+        return ScoreLayout.of(score, width, viewport.visibleTracks(), viewport.visibleNotations());
     }
 
     private static int naturalWidthOf(ScoreLayout layout) {
