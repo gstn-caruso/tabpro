@@ -1,7 +1,11 @@
 package com.gstncaruso.tabpro.core.files;
 
+import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.Track;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Los formatos ajenos que el programa sabe leer y escribir, como los enumera el
@@ -22,11 +26,49 @@ public interface ScoreExchange {
         throw notSupported("la exportación a MIDI");
     }
 
+    /** Las pistas del archivo MIDI, para elegirlas en la ventana de import. */
+    default List<MidiTrackInfo> midiTracksIn(Path path) {
+        throw notSupported("la importación de MIDI");
+    }
+
+    /** El "import rápido" del manual, pero solo con las pistas elegidas en la ventana. */
+    default Score importMidiQuick(Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave) {
+        throw notSupported("la importación de MIDI");
+    }
+
+    /** El "import paso a paso": la o las pistas MIDI elegidas reemplazan los compases de target. */
+    default Track importMidiInto(Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave) {
+        throw notSupported("la importación de MIDI");
+    }
+
+    /** El botón "importar título y cambios de compás" del import paso a paso de MIDI. */
+    default Score importMidiTitleAndTimeSignatures(Score target, Path path) {
+        throw notSupported("la importación de MIDI");
+    }
+
     default Score importAscii(Path path) {
         throw notSupported("la importación de tablatura ASCII");
     }
 
     default void exportAscii(Score score, Path path) {
+        throw notSupported("la exportación a tablatura ASCII");
+    }
+
+    /**
+     * El import de la ventana de ASCII: cae sobre la pista activa. fixedRhythm vacio es el
+     * "&lt;variable&gt;" del manual (el ritmo se deduce del espaciado); presente es un ritmo fijo.
+     */
+    default Track importAsciiInto(Track target, String text, Optional<NoteValue> fixedRhythm) {
+        throw notSupported("la importación de tablatura ASCII");
+    }
+
+    /** La vista previa de la ventana de export de ASCII: el texto de una sola pista. */
+    default String previewAscii(Track track, int columnsPerLine) {
+        throw notSupported("la exportación a tablatura ASCII");
+    }
+
+    /** El botón Exportar de la ventana de export de ASCII: solo la pista activa. */
+    default void exportAscii(Track track, Path path, int columnsPerLine) {
         throw notSupported("la exportación a tablatura ASCII");
     }
 
