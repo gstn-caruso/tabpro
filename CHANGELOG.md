@@ -1,3 +1,9 @@
+## [0.27.0](https://github.com/gstn-caruso/tabpro/compare/v0.26.0...v0.27.0) (2026-09-06)
+
+### Features
+
+* copiar en una sesión de tabpro y pegar en otra ([#99](https://github.com/gstn-caruso/tabpro/issues/99)) ([1224a96](https://github.com/gstn-caruso/tabpro/commit/1224a96a35c8904d88a113251cb7832262a1d7f3))
+
 ## [0.26.0](https://github.com/gstn-caruso/tabpro/compare/v0.25.1...v0.26.0) (2026-09-06)
 
 ### Features
