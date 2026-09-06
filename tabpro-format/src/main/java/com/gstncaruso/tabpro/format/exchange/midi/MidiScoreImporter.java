@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.TreeMap;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
@@ -28,9 +29,9 @@ import javax.sound.midi.Sequence;
 /**
  * Trae una partitura desde un archivo MIDI (formato 0 o 1). Ofrece el "import rapido" del
  * manual, una pista de tabpro por cada pista MIDI con la afinacion deducida de su nombre o
- * instrumento, y el "paso a paso", que trae una pista MIDI elegida sobre una pista existente
- * (con su propia afinacion) y permite transportarla una octava abajo. Las notas que no entran
- * en la afinacion elegida se descartan.
+ * instrumento, y el "paso a paso", que trae una o varias pistas MIDI elegidas (fusionadas en
+ * una sola si son varias) sobre una pista existente (con su propia afinacion) y permite
+ * transportarla una octava abajo. Las notas que no entran en la afinacion elegida se descartan.
  */
 public final class MidiScoreImporter {
 
@@ -43,26 +44,52 @@ public final class MidiScoreImporter {
     /** Una pista de tabpro por cada pista del MIDI que tenga notas. */
     public Score importQuick(Path path) {
         ParsedMidiFile file = parse(path);
-        if (file.tracks().isEmpty()) {
+        return importQuick(path, file, file.tracks(), false);
+    }
+
+    /** El import rapido, pero solo con las pistas MIDI elegidas y con transposicion opcional. */
+    public Score importQuick(Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave) {
+        ParsedMidiFile file = parse(path);
+        List<RawMidiTrack> raws = file.tracks().stream()
+                .filter(raw -> selectedMidiTrackIndices.contains(raw.index()))
+                .toList();
+        return importQuick(path, file, raws, transposeDownOneOctave);
+    }
+
+    private static Score importQuick(Path path, ParsedMidiFile file, List<RawMidiTrack> raws, boolean transposeDownOneOctave) {
+        if (raws.isEmpty()) {
             throw new ScoreFileException("el archivo " + path + " no tiene pistas con notas para importar");
         }
-        List<Track> tracks = file.tracks().stream().map(raw -> quickTrack(raw, file.grid())).toList();
+        List<Track> tracks = raws.stream().map(raw -> quickTrack(raw, file.grid(), transposeDownOneOctave)).toList();
         String title = file.title().orElseGet(() -> titleFromFileName(path));
         return new Score(title, file.tempoBpm(), tracks);
     }
 
-    /** Los compases de una pista MIDI elegida, listos para reemplazar los de una pista propia. */
-    public List<Measure> importMeasures(Path path, int midiTrackIndex, Tuning tuning, int fretCount, boolean transposeDownOneOctave) {
+    /** Los compases de una o varias pistas MIDI elegidas (fusionadas si son varias), listos para reemplazar los de una pista propia. */
+    public List<Measure> importMeasures(
+            Path path, List<Integer> midiTrackIndices, Tuning tuning, int fretCount, boolean transposeDownOneOctave) {
         ParsedMidiFile file = parse(path);
-        RawMidiTrack raw = trackAt(file, midiTrackIndex);
+        RawMidiTrack raw = merge(tracksAt(file, midiTrackIndices));
         return measuresOf(raw, file.grid(), tuning, fretCount, transposeDownOneOctave);
     }
 
-    /** El "paso a paso" del manual: la pista MIDI elegida reemplaza los compases de target. */
-    public Track importInto(Track target, Path path, int midiTrackIndex, boolean transposeDownOneOctave) {
+    /** El "paso a paso" del manual: la o las pistas MIDI elegidas reemplazan los compases de target. */
+    public Track importInto(Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave) {
         List<Measure> measures =
-                importMeasures(path, midiTrackIndex, target.tuning(), target.settings().fretCount(), transposeDownOneOctave);
+                importMeasures(path, midiTrackIndices, target.tuning(), target.settings().fretCount(), transposeDownOneOctave);
         return target.withMeasures(measures);
+    }
+
+    /** El boton "importar titulo y cambios de compas" del paso a paso: no toca ninguna pista. */
+    public Score importTitleAndTimeSignatures(Score target, Path path) {
+        ParsedMidiFile file = parse(path);
+        String title = file.title().orElseGet(() -> titleFromFileName(path));
+        Score result = target.withTitle(title).withTempo(file.tempoBpm());
+        int measureCount = Math.min(result.measureCount(), file.grid().measureCount());
+        for (int index = 0; index < measureCount; index++) {
+            result = result.withTimeSignatureFrom(index, file.grid().timeSignatureOf(index));
+        }
+        return result;
     }
 
     private static ParsedMidiFile parse(Path path) {
@@ -76,6 +103,14 @@ public final class MidiScoreImporter {
         }
     }
 
+    private static List<RawMidiTrack> tracksAt(ParsedMidiFile file, List<Integer> midiTrackIndices) {
+        List<RawMidiTrack> raws = midiTrackIndices.stream().map(index -> trackAt(file, index)).toList();
+        if (raws.isEmpty()) {
+            throw new ScoreFileException("no se eligio ninguna pista del archivo MIDI para importar");
+        }
+        return raws;
+    }
+
     private static RawMidiTrack trackAt(ParsedMidiFile file, int midiTrackIndex) {
         return file.tracks().stream()
                 .filter(raw -> raw.index() == midiTrackIndex)
@@ -83,9 +118,23 @@ public final class MidiScoreImporter {
                 .orElseThrow(() -> new ScoreFileException("el archivo MIDI no tiene notas en la pista " + midiTrackIndex));
     }
 
-    private static Track quickTrack(RawMidiTrack raw, MeasureGrid grid) {
+    /** Junta las notas de varias pistas MIDI en una sola, tick a tick, como pide el "paso a paso" para fusionar pistas. */
+    private static RawMidiTrack merge(List<RawMidiTrack> raws) {
+        if (raws.size() == 1) {
+            return raws.getFirst();
+        }
+        SortedMap<Long, List<RawNote>> notesByTick = new TreeMap<>();
+        for (RawMidiTrack raw : raws) {
+            raw.notesByTick().forEach((tick, notes) -> notesByTick.computeIfAbsent(tick, key -> new ArrayList<>()).addAll(notes));
+        }
+        boolean percussion = raws.stream().allMatch(RawMidiTrack::percussion);
+        return new RawMidiTrack(
+                raws.getFirst().index(), "", 0, 1, 1, Channel.DEFAULT_VOLUME, Channel.CENTER_PAN, 0, 0, 0, 0, percussion, notesByTick);
+    }
+
+    private static Track quickTrack(RawMidiTrack raw, MeasureGrid grid, boolean transposeDownOneOctave) {
         Tuning tuning = raw.percussion() ? PercussionKit.tuning() : TrackTuningGuess.forQuickImport(raw.name(), raw.program());
-        List<Measure> measures = measuresOf(raw, grid, tuning, TrackSettings.DEFAULT_FRET_COUNT, false);
+        List<Measure> measures = measuresOf(raw, grid, tuning, TrackSettings.DEFAULT_FRET_COUNT, transposeDownOneOctave);
         TrackSettings settings = raw.percussion()
                 ? TrackSettings.percussion(Track.colorFor(raw.index()))
                 : TrackSettings.standard(Track.colorFor(raw.index()));

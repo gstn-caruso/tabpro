@@ -54,6 +54,25 @@ public final class AsciiTabImporter {
         }
     }
 
+    /**
+     * El import de la ventana de ASCII: cae sobre la pista activa, como pide el manual, en vez de
+     * reemplazar toda la partitura. Si el texto trae bloques de otra cantidad de cuerdas a la
+     * mitad, solo se usa el primer grupo (el que coincide con el resto del texto) -- el import
+     * cae sobre una sola pista, y el resto se ignora.
+     */
+    public Track importInto(Track target, String text, AsciiTabImportOptions options) {
+        List<List<String>> blocks = AsciiTabBlocks.blocksIn(text);
+        if (blocks.isEmpty()) {
+            throw new ScoreFileException("el texto no tiene ninguna tablatura reconocible");
+        }
+        try {
+            List<List<String>> firstGroup = groupIntoTracks(blocks).getFirst();
+            return target.withMeasures(measuresFrom(firstGroup, options));
+        } catch (IllegalArgumentException e) {
+            throw new ScoreFileException("la tablatura no se pudo interpretar: " + e.getMessage(), e);
+        }
+    }
+
     /** Bloques seguidos con la misma cantidad de cuerdas son sistemas de una misma pista. */
     private static List<List<List<String>>> groupIntoTracks(List<List<String>> blocks) {
         List<List<List<String>>> tracks = new ArrayList<>();
@@ -70,18 +89,23 @@ public final class AsciiTabImporter {
     }
 
     private static Track trackFrom(List<List<String>> blocks, int index, AsciiTabImportOptions options) {
+        int stringCount = blocks.getFirst().size();
+        List<Measure> measures = measuresFrom(blocks, options);
+        Tuning tuning = tuningForStringCount(stringCount);
+        int program = tuning.equals(Tuning.standardBass()) ? Track.BASS_PROGRAM : Track.GUITAR_PROGRAM;
+        return new Track("Pista " + (index + 1), tuning, Channel.playing(program), measures);
+    }
+
+    /** Los compases de un grupo de bloques homogeneo (misma cantidad de cuerdas en todos). */
+    private static List<Measure> measuresFrom(List<List<String>> blocks, AsciiTabImportOptions options) {
         List<String> lines = concatenate(blocks);
-        int stringCount = lines.size();
         List<int[]> cells = cellsOf(barColumnsOf(lines), lines.getFirst().length());
         List<Measure> measures = cells.stream()
                 .map(cell -> measureFrom(cell[0], cell[1], lines, options))
                 .toList();
-        if (measures.isEmpty()) {
-            measures = List.of(Measure.empty(options.defaultTimeSignature(), Duration.quarter()));
-        }
-        Tuning tuning = tuningForStringCount(stringCount);
-        int program = tuning.equals(Tuning.standardBass()) ? Track.BASS_PROGRAM : Track.GUITAR_PROGRAM;
-        return new Track("Pista " + (index + 1), tuning, Channel.playing(program), measures);
+        return measures.isEmpty()
+                ? List.of(Measure.empty(options.defaultTimeSignature(), Duration.quarter()))
+                : measures;
     }
 
     /** Pega, cuerda por cuerda, los bloques de una misma pista uno atras del otro. */

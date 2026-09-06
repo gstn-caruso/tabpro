@@ -32,8 +32,21 @@ public final class AsciiTabExporter {
     }
 
     public void export(Score score, Path path, AsciiTabExportOptions options) {
+        write(path, export(score, options));
+    }
+
+    /** La ventana de export de ASCII exporta solo la pista activa, como pide el manual. */
+    public String export(Track track, AsciiTabExportOptions options) {
+        return exportTrack(track, options);
+    }
+
+    public void export(Track track, Path path, AsciiTabExportOptions options) {
+        write(path, export(track, options));
+    }
+
+    private static void write(Path path, String text) {
         try {
-            Files.writeString(path, export(score, options));
+            Files.writeString(path, text);
         } catch (IOException e) {
             throw new ScoreFileException("no se pudo escribir " + path, e);
         }

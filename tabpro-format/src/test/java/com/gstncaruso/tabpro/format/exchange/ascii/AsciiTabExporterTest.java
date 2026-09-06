@@ -95,6 +95,18 @@ class AsciiTabExporterTest {
         assertTrue(tab.contains("Bajo"));
     }
 
+    @Test
+    void exportsOnlyTheGivenTrackNotTheWholeScore() {
+        Track guitar = new Track("Guitarra", Tuning.standard(), com.gstncaruso.tabpro.core.model.Channel.playing(25),
+                List.of(Measure.empty(TimeSignature.fourFour(), Duration.of(NoteValue.WHOLE))));
+        Track bass = Track.standardBass("Bajo");
+
+        String tab = exporter.export(guitar, AsciiTabExportOptions.standard());
+
+        assertTrue(tab.contains("Guitarra"));
+        assertTrue(!tab.contains("Bajo"), "no debe traer otras pistas: " + tab);
+    }
+
     private static List<String> linesOf(String text) {
         return Arrays.stream(text.split("\n", -1)).toList();
     }
