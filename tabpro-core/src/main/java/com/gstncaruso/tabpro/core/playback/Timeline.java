@@ -18,12 +18,14 @@ public record Timeline(TempoMap tempo, int ticksPerQuarter, List<TrackTimeline> 
 
     /** El mismo armado, pero recorriendo un orden de compases propio: un rango, un loop, una posicion. */
     public static Timeline of(Score score, PlayOrder order) {
+        SoundAutomation automation = SoundAutomation.of(score, order);
         List<TrackTimeline> trackTimelines = new ArrayList<>();
         for (int index = 0; index < score.trackCount(); index++) {
             boolean audible = score.isAudible(index);
-            trackTimelines.add(new TrackRenderer(score.track(index), order, audible).render());
+            trackTimelines.add(new TrackRenderer(score.track(index), order, audible).render()
+                    .with(automation.onTrack(index)));
         }
-        return new Timeline(TempoMap.steady(score.tempo()), Duration.TICKS_PER_QUARTER, trackTimelines);
+        return new Timeline(automation.tempo(), Duration.TICKS_PER_QUARTER, trackTimelines);
     }
 
     /** El tempo con el que arranca la reproduccion. */
