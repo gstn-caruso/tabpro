@@ -136,7 +136,7 @@ cinco `.gp5` abría **uno solo**.
 > transición cambiada. No hay forma de arreglarlos desde el archivo ya
 > importado: volvé a importar el original.
 
-Importa archivos `.tef` de TablEdit.
+Importa archivos `.tef` de TablEdit y `.ptb` de PowerTab.
 
 Importa y exporta MIDI, tablatura ASCII y MusicXML, con sus ventanas: la de MIDI
 lista las pistas del archivo y deja importarlas de una o fusionar varias sobre una
@@ -145,6 +145,10 @@ importarla sobre la pista activa.
 
 Exporta también la partitura como imagen y como PDF, y la imprime eligiendo el
 rango de páginas y la escala.
+
+El explorador de partituras (`Ctrl+B`) recorre una carpeta y deja escuchar cada
+archivo sin abrirlo: se elige cuántos compases suenan y la reproducción pasa sola
+al siguiente.
 
 ## Instalación
 
@@ -186,7 +190,7 @@ Herramientas, Sonido, Ver, Opciones y Ayuda— llevan todo lo demás.
 ## Lo que todavía no está
 
 La exportación a `.gp5` —tabpro exporta a `.gp4`, que es lo que pide el manual;
-los archivos `.gp5` por ahora sólo se leen—. La importación de PowerTab.
+los archivos `.gp5` por ahora sólo se leen—.
 
 ## Cómo está hecho
 
