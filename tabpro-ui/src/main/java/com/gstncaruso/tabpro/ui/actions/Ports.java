@@ -352,6 +352,8 @@ public final class Ports {
 
         void importTabEdit();
 
+        void importPowerTab();
+
         void exportMidi();
 
         void exportWave();

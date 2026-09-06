@@ -231,8 +231,8 @@ public final class MainFrame extends JFrame {
 
     /**
      * Abre la partitura que el escritorio paso por linea de comandos. Puede ser
-     * un archivo propio, uno de Guitar Pro o uno de TablEdit, que se importan
-     * como partitura nueva.
+     * un archivo propio, uno de Guitar Pro, uno de TablEdit o uno de PowerTab,
+     * que se importan como partitura nueva.
      */
     public void openOnStartup(Path path) {
         try {
@@ -240,6 +240,8 @@ public final class MainFrame extends JFrame {
                 document.adopt(exchange.importGuitarPro(path));
             } else if (isATabEditFile(path)) {
                 document.adopt(exchange.importTabEdit(path));
+            } else if (isAPowerTabFile(path)) {
+                document.adopt(exchange.importPowerTab(path));
             } else {
                 document.open(path);
             }
@@ -256,6 +258,10 @@ public final class MainFrame extends JFrame {
 
     private static boolean isATabEditFile(Path path) {
         return path.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".tef");
+    }
+
+    private static boolean isAPowerTabFile(Path path) {
+        return path.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".ptb");
     }
 
     private JSpinner tempoSpinner() {
@@ -490,6 +496,11 @@ public final class MainFrame extends JFrame {
         @Override
         public void importTabEdit() {
             importWith(exchange::importTabEdit, new FileNameExtensionFilter("Archivos de TablEdit (*.tef)", "tef"));
+        }
+
+        @Override
+        public void importPowerTab() {
+            importWith(exchange::importPowerTab, new FileNameExtensionFilter("Partituras de PowerTab", "ptb"));
         }
 
         @Override

@@ -11,7 +11,7 @@ import java.util.Optional;
 /**
  * Los formatos ajenos que el programa sabe leer y escribir, como los enumera el
  * manual en "Import a Score" y "Export a Score". Cada implementacion declara los
- * diecinueve metodos: los que soporta, y los que no con {@link #notSupported}. No
+ * veinte metodos: los que soporta, y los que no con {@link #notSupported}. No
  * hay default que tire por ella, para que "no lo soporto" y "me lo olvide" no se
  * vean iguales.
  */
@@ -118,6 +118,11 @@ public interface ScoreExchange {
         public List<String> guitarProExportWarnings(Score score) {
             throw notSupported("la exportación a Guitar Pro");
         }
+
+        @Override
+        public Score importPowerTab(Path path) {
+            throw notSupported("la importación de archivos de PowerTab");
+        }
     };
 
     Score importMidi(Path path);
@@ -189,6 +194,9 @@ public interface ScoreExchange {
      * segunda voz, autor de la música, etc.), para avisarle al usuario antes de exportar.
      */
     List<String> guitarProExportWarnings(Score score);
+
+    /** "File &gt; Import &gt; PowerTab" del manual. */
+    Score importPowerTab(Path path);
 
     /** La excepción con la que una implementación declara, a mano, que no soporta un formato. */
     static ScoreFileException notSupported(String what) {
