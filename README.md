@@ -5,7 +5,7 @@ Java 25 con Swing.
 
 ## Estado
 
-**v0.7.1 — El clon.** tabpro hace lo que describe el manual de Guitar Pro 5, con
+**v0.7.2 — El clon.** tabpro hace lo que describe el manual de Guitar Pro 5, con
 la misma forma de pantalla pero con una estética moderna y plana en vez de la de
 Windows XP.
 
@@ -58,7 +58,7 @@ Pro; y la importación de PowerTab y de TablEdit.
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.7.1_all.deb
+sudo apt install ./tabpro_0.7.2_all.deb
 tabpro
 ```
 
@@ -70,7 +70,7 @@ variante *headless* no alcanza.
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.7.1.jar [archivo]
+java -jar tabpro-app-0.7.2.jar [archivo]
 ```
 
 ## Uso
