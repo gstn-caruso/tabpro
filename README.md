@@ -120,17 +120,16 @@ Abre archivos `.gp3`, `.gp4`, `.gp5` y `.gtp`, y exporta al formato de Guitar
 Pro 4 (avisando antes qué se pierde, si la partitura usa algo que ese formato no
 soporta).
 
-El lector y el escritor de `.gp4` están verificados contra PyGuitarPro y contra
-los dieciséis archivos auténticos de su suite de pruebas, no contra archivos que
-hubiera escrito tabpro: un lector y un escritor que comparten la misma suposición
+El lector y el escritor están verificados contra PyGuitarPro y contra los
+**sesenta y un archivos auténticos** de su suite de pruebas —diez `.gp3`,
+dieciséis `.gp4` y treinta y cinco `.gp5`—, no contra archivos que hubiera
+escrito tabpro: un lector y un escritor que comparten la misma suposición
 equivocada se dan la razón entre ellos, así que el oráculo tiene que venir de
-afuera. Tres de esos dieciséis ni siquiera abrían antes de esa comprobación.
+afuera.
 
-> **`.gp5` todavía no tiene esa verificación, y sabemos que hay archivos
-> auténticos que no abre.** Es otra generación del formato y la comprobación
-> contra archivos ajenos cubrió la anterior. Se está midiendo cuántos abren y
-> cuántos no; hasta que eso esté, tomá la lectura de `.gp5` como que puede
-> fallar. Si te pasa, el archivo no se toca: tabpro no lo sobrescribe.
+**Abren sesenta de los sesenta y uno**, y el que falta tampoco lo abre
+PyGuitarPro. Antes de esa comprobación abrían veinticuatro: de los treinta y
+cinco `.gp5` abría **uno solo**.
 
 > Si importaste partituras de Guitar Pro con una versión anterior a la 0.17.1,
 > sus bends quedaron a la mitad de profundidad y algunos adornos con la

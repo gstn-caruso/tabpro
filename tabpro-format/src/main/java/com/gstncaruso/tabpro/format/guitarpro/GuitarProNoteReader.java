@@ -28,6 +28,12 @@ final class GuitarProNoteReader {
     private static final int TIE_TYPE = 2;
     private static final int DEAD_TYPE = 3;
 
+    /** El slide que anuncia cada bit de la mascara de GP5, del bit mas bajo al mas alto. */
+    private static final SlideType[] SLIDES_IN_MASK = {
+        SlideType.SHIFT, SlideType.LEGATO, SlideType.OUT_DOWNWARDS,
+        SlideType.OUT_UPWARDS, SlideType.IN_FROM_BELOW, SlideType.IN_FROM_ABOVE,
+    };
+
     private final GuitarProBendReader bendReader = new GuitarProBendReader();
 
     Note read(GuitarProByteReader reader, GuitarProVersion version, int string) {
@@ -45,7 +51,8 @@ final class GuitarProNoteReader {
             skipDurationOverride(reader, version, flags);
         }
 
-        NoteEffects effects = NoteEffects.none();
+        // Guitar Pro solo escribe la dinamica cuando no es la suya por defecto, que es forte.
+        NoteEffects effects = NoteEffects.none().withDynamic(Dynamic.FORTE);
         if ((flags & FLAG_DYNAMIC) != 0) {
             effects = effects.withDynamic(dynamicOf(reader.readSignedByte()));
         }
@@ -127,7 +134,7 @@ final class GuitarProNoteReader {
             }
             if ((flags2 & 0x08) != 0) {
                 slideRead = true;
-                SlideType slide = slideTypeOf(reader.readSignedByte());
+                SlideType slide = slideOf(reader.readSignedByte(), version);
                 if (slide != null) {
                     effects = effects.withSlide(slide);
                 }
@@ -218,6 +225,25 @@ final class GuitarProNoteReader {
             case 15, 17, 22 -> HarmonicType.ARTIFICIAL;
             default -> null;
         };
+    }
+
+    /**
+     * Hasta GP4 el slide es un numero, uno solo por nota. Desde GP5 el mismo byte pasa a
+     * ser una mascara de bits, para que una nota pueda traer varios a la vez: los dos
+     * primeros bits coinciden por casualidad con los numeros viejos, los otros cuatro no.
+     */
+    private static SlideType slideOf(int code, GuitarProVersion version) {
+        return version.hasSlideMask() ? slideInMask(code) : slideTypeOf(code);
+    }
+
+    /** El modelo guarda un solo slide por nota: de los que trae la mascara vale el primero. */
+    private static SlideType slideInMask(int mask) {
+        for (int bit = 0; bit < SLIDES_IN_MASK.length; bit++) {
+            if ((mask & (1 << bit)) != 0) {
+                return SLIDES_IN_MASK[bit];
+            }
+        }
+        return null;
     }
 
     private static SlideType slideTypeOf(int code) {

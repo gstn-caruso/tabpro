@@ -87,10 +87,13 @@ final class GuitarProHeaderReader {
         return new GuitarProDirections(symbols, jumps);
     }
 
-    /** Un slot de destino: el compas al que apunta, o vacio si el valor es -1 (no se usa). */
+    /**
+     * Un slot de destino: el numero del compas al que apunta -- el primero es el uno, no
+     * el cero --, o vacio si no se usa, que es lo que dice un -1.
+     */
     private Optional<Integer> readSlot(GuitarProByteReader reader) {
-        int measureIndex = reader.readShort();
-        return measureIndex >= 0 ? Optional.of(measureIndex) : Optional.empty();
+        int measureNumber = reader.readShort();
+        return measureNumber > 0 ? Optional.of(measureNumber - 1) : Optional.empty();
     }
 
     private ScoreInfo readScoreInfo(GuitarProByteReader reader, GuitarProVersion version) {

@@ -119,26 +119,45 @@ public final class GuitarProFile {
             List<GuitarProMasterBar> bars,
             List<GuitarProTrackHeader> trackHeaders) {
         List<List<Measure>> measuresByTrack = new ArrayList<>();
+        List<GuitarProSoundingFrets> soundingByTrack = new ArrayList<>();
         for (int track = 0; track < trackHeaders.size(); track++) {
             measuresByTrack.add(new ArrayList<>());
+            soundingByTrack.add(new GuitarProSoundingFrets());
         }
         for (GuitarProMasterBar bar : bars) {
             for (int track = 0; track < trackHeaders.size(); track++) {
                 int stringCount = trackHeaders.get(track).tuningMidiNumbers().size();
-                measuresByTrack.get(track).add(readMeasure(reader, version, bar, stringCount));
+                measuresByTrack.get(track).add(
+                        readMeasure(reader, version, bar, stringCount, soundingByTrack.get(track)));
             }
         }
         return measuresByTrack;
     }
 
     private Measure readMeasure(
-            GuitarProByteReader reader, GuitarProVersion version, GuitarProMasterBar bar, int stringCount) {
-        Voice lead = readVoice(reader, version, stringCount);
-        Voice bass = version.hasSecondVoice() ? readVoice(reader, version, stringCount) : Voice.unused();
+            GuitarProByteReader reader,
+            GuitarProVersion version,
+            GuitarProMasterBar bar,
+            int stringCount,
+            GuitarProSoundingFrets sounding) {
+        Voice lead = sounding.resolving(VoicePart.LEAD, readVoice(reader, version, stringCount));
+        Voice bass = version.hasSecondVoice()
+                ? sounding.resolving(VoicePart.BASS, readVoice(reader, version, stringCount))
+                : Voice.unused();
         if (version.hasSecondVoice()) {
-            reader.readUnsignedByte();
+            skipLineBreak(reader);
         }
         return new Measure(bar.timeSignature(), bar.attributes(), List.of(usable(lead), bass));
+    }
+
+    /**
+     * Cada compas de GP5 cierra con el salto de linea que lo separa del siguiente, salvo
+     * el ultimo de la ultima pista: ahi Guitar Pro corta el archivo sin escribirlo.
+     */
+    private static void skipLineBreak(GuitarProByteReader reader) {
+        if (reader.hasMore()) {
+            reader.readUnsignedByte();
+        }
     }
 
     private Voice readVoice(GuitarProByteReader reader, GuitarProVersion version, int stringCount) {

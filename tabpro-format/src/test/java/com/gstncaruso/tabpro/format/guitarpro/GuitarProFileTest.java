@@ -108,6 +108,23 @@ class GuitarProFileTest {
         assertThrows(ScoreFileException.class, () -> files.read(path));
     }
 
+    /**
+     * Guitar Pro no escribe el salto de linea del ultimo compas de la ultima pista: el
+     * archivo termina justo despues de su ultima voz. Todos los .gp5 que graba son asi,
+     * y el lector tiene que darlos por terminados en vez de pedir un byte que no existe.
+     */
+    @Test
+    void readsAGp5ThatEndsWithoutTheLineBreakOfItsLastMeasure(@TempDir Path folder) throws Exception {
+        Path path = folder.resolve("sin-salto-final.gp5");
+        byte[] whole = Files.readAllBytes(fixture("gp5"));
+        Files.write(path, java.util.Arrays.copyOf(whole, whole.length - 1));
+
+        Score score = files.read(path);
+
+        assertEquals(FIRST_MEASURE_FRETS, fretsOf(score.track(0).measure(0)));
+        assertEquals(SECOND_MEASURE_FRETS, fretsOf(score.track(0).measure(1)));
+    }
+
     // ---- el fixture con efectos, acordes, varias pistas y percusion ----------
 
     @ParameterizedTest
@@ -300,10 +317,11 @@ class GuitarProFileTest {
 
         // slot 0 = Coda (el primer simbolo de destino); slot 10 = Da Segno al Coda
         // (el sexto salto), segun el orden documentado del bloque de direcciones de GP5.
+        // Cada casillero guarda el numero del compas, que empieza en uno.
         GuitarProFileWriter block = new GuitarProFileWriter();
         for (int slot = 0; slot < 19; slot++) {
-            int measureIndex = slot == 0 ? 1 : slot == 10 ? 0 : -1;
-            block.writeShort(measureIndex);
+            int measureNumber = slot == 0 ? 2 : slot == 10 ? 1 : -1;
+            block.writeShort(measureNumber);
         }
         block.writeInt(0);
         byte[] directions = block.bytes();

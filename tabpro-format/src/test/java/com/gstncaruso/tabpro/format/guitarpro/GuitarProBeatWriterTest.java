@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
+import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -19,6 +22,15 @@ class GuitarProBeatWriterTest {
     private static final int QUARTER = 0;
     private static final int NO_STRINGS = 0x00;
     private static final int ONLY_FIRST_STRING = 0x40;
+
+    /** Guitar Pro escribe en -1 el parametro que el cambio no toca. */
+    private static final int UNSET = -1;
+
+    /**
+     * Donde arranca el cambio de parametros: banderas, estado, figura y despues el
+     * instrumento, que es el primero de sus valores.
+     */
+    private static final int MIX_TABLE_AT = 3;
 
     private final GuitarProBeatWriter writer = new GuitarProBeatWriter();
 
@@ -40,6 +52,24 @@ class GuitarProBeatWriterTest {
         assertEquals(QUARTER, bytes[2]);
         assertEquals(NO_STRINGS, bytes[3] & 0xFF);
         assertEquals(4, bytes.length, "un silencio son exactamente cuatro bytes");
+    }
+
+    /**
+     * El archivo espera el volumen y el paneo del cambio de parametros en los dieciseis
+     * pasos de la perilla, igual que en la tabla de canales: escribir el valor de MIDI
+     * tal cual deja un cambio que ningun Guitar Pro entiende.
+     */
+    @Test
+    void elCambioDeParametrosEscribeLasPerillasEnSusPasos() {
+        ParameterChange change = ParameterChange.nothing()
+                .changing(SoundParameter.VOLUME, 104)
+                .changing(SoundParameter.PAN, 64);
+        byte[] bytes = write(Beat.rest(Duration.quarter())
+                .withEffects(BeatEffects.none().withParameterChange(change)));
+
+        assertEquals(UNSET, bytes[MIX_TABLE_AT], "el instrumento no cambia");
+        assertEquals(13, bytes[MIX_TABLE_AT + 1]);
+        assertEquals(8, bytes[MIX_TABLE_AT + 2]);
     }
 
     private byte[] write(Beat beat) {

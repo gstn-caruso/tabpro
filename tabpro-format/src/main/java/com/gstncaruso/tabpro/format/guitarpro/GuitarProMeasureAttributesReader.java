@@ -29,6 +29,7 @@ final class GuitarProMeasureAttributesReader {
 
     private TimeSignature timeSignature;
     private KeySignature keySignature;
+    private int roundsAlreadyTaken;
     private final TripletFeel defaultTripletFeel;
 
     GuitarProMeasureAttributesReader(
@@ -51,6 +52,7 @@ final class GuitarProMeasureAttributesReader {
         keySignature = readKeySignature(reader, flags);
         boolean doubleBar = (flags & FLAG_DOUBLE_BAR) != 0;
         Gp5MasterBarTail tail = readGp5Tail(reader, version, flags, preGp5AlternateEndings);
+        rememberRoundsOf(repeatOpen, tail.alternateEndings());
 
         MeasureAttributes attributes = new MeasureAttributes(
                 keySignature, tail.tripletFeel(), doubleBar, repeatOpen, repeatCount, tail.alternateEndings(),
@@ -93,11 +95,28 @@ final class GuitarProMeasureAttributesReader {
         return raw + version.repeatCountOffset();
     }
 
+    /**
+     * Hasta GP4 el byte no dice que vueltas toca este compas sino hasta cual llega: un 2
+     * es "las vueltas 1 y 2". De ahi hay que descontar las que ya se llevaron los compases
+     * anteriores de la misma repeticion, que es lo que hace {@link #roundsAlreadyTaken}.
+     */
     private List<Integer> readPreGp5AlternateEndings(GuitarProByteReader reader, GuitarProVersion version, int flags) {
         if (version.generation() >= 5 || (flags & FLAG_ALTERNATE_ENDINGS_PRE_GP5) == 0) {
             return List.of();
         }
-        return endingsFromMask(reader.readUnsignedByte());
+        int lastRound = Math.clamp(reader.readUnsignedByte(), 0, MeasureAttributes.MAX_ALTERNATE_ENDINGS);
+        return endingsFromMask(((1 << lastRound) - 1) & ~roundsAlreadyTaken);
+    }
+
+    /** Las vueltas que ya se llevaron los compases anteriores; una repeticion nueva las olvida. */
+    private void rememberRoundsOf(boolean repeatOpen, List<Integer> endings) {
+        if (repeatOpen) {
+            roundsAlreadyTaken = 0;
+            return;
+        }
+        for (int round : endings) {
+            roundsAlreadyTaken |= 1 << (round - 1);
+        }
     }
 
     private Marker readMarker(GuitarProByteReader reader, int flags) {
