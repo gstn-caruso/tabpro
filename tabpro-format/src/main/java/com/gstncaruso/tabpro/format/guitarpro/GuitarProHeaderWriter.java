@@ -4,7 +4,6 @@ import com.gstncaruso.tabpro.core.model.LyricLine;
 import com.gstncaruso.tabpro.core.model.Lyrics;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
-import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 
 /**
@@ -58,10 +57,13 @@ final class GuitarProHeaderWriter {
         }
     }
 
+    /**
+     * La armadura inicial es el entero de alteraciones y nada mas. El modo mayor o menor
+     * solo existe en los cambios de armadura de cada compas, que traen dos bytes propios:
+     * el de la cabecera no lo tiene, y meterlo ahi inventa un valor que nadie reconoce.
+     */
     private void writeKeySignatureAndOctave(GuitarProByteWriter writer, KeySignature keySignature) {
-        int accidentals = keySignature.accidentals() & 0xFF;
-        int modeByte = keySignature.mode() == Mode.MAJOR ? 0 : 1;
-        writer.writeInt(accidentals | (modeByte << 8));
+        writer.writeInt(keySignature.accidentals());
         writer.writeUnsignedByte(0); // octava: GP4 la trae pero el lector la descarta.
     }
 }
