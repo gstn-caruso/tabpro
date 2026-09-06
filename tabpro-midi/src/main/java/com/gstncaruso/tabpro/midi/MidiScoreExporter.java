@@ -1,4 +1,4 @@
-package com.gstncaruso.tabpro.format.exchange.midi;
+package com.gstncaruso.tabpro.midi;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
