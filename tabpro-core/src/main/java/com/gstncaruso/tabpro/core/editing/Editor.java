@@ -24,6 +24,7 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
@@ -406,6 +407,16 @@ public final class Editor {
         } else {
             change(score.withLineBreakInTrackAt(cursor.track(), cursor.measure(), lineBreak), cursor);
         }
+    }
+
+    /**
+     * 8va/8vb/15ma/15mb del manual: cambian donde se escribe la nota en el pentagrama de la
+     * pista activa, nunca como suena ni que dice la tablatura -y, como es una decision de
+     * notacion de esa pista en ese pasaje, no de toda la partitura, vale solo para la pista
+     * activa (nunca se propaga a las demas).
+     */
+    public void setOctaveMark(OctaveMark octaveMark) {
+        change(score.withOctaveMarkInTrackAt(cursor.track(), cursor.measure(), octaveMark), cursor);
     }
 
     // ---- pistas -----------------------------------------------------------

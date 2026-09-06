@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.core.model;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.util.ArrayList;
 import java.util.List;
@@ -140,6 +141,18 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
         return mappingTrack(trackIndex, track -> measureIndex < track.measureCount()
                 ? track.mappingMeasure(measureIndex,
                         measure -> measure.withAttributes(measure.attributes().withLineBreak(lineBreak)))
+                : track);
+    }
+
+    /**
+     * 8va/8vb/15ma/15mb del manual: igual que el salto de linea, es una decision de notacion de
+     * una pista en un pasaje concreto, no de toda la partitura -asi que tambien cambia una sola
+     * pista, nunca todas.
+     */
+    public Score withOctaveMarkInTrackAt(int trackIndex, int measureIndex, OctaveMark octaveMark) {
+        return mappingTrack(trackIndex, track -> measureIndex < track.measureCount()
+                ? track.mappingMeasure(measureIndex,
+                        measure -> measure.withAttributes(measure.attributes().withOctaveMark(octaveMark)))
                 : track);
     }
 
