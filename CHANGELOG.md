@@ -1,3 +1,9 @@
+## [0.21.2](https://github.com/gstn-caruso/tabpro/compare/v0.21.1...v0.21.2) (2026-09-06)
+
+### Bug Fixes
+
+* la mesa de mezcla que no sonaba, y los canales que no eran los que decía ([#83](https://github.com/gstn-caruso/tabpro/issues/83)) ([13e9b4a](https://github.com/gstn-caruso/tabpro/commit/13e9b4a04f0da921123068e842ef07a33631b47f))
+
 ## [0.21.1](https://github.com/gstn-caruso/tabpro/compare/v0.21.0...v0.21.1) (2026-09-06)
 
 ### Bug Fixes
