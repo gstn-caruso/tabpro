@@ -1,3 +1,9 @@
+## [0.14.0](https://github.com/gstn-caruso/tabpro/compare/v0.13.0...v0.14.0) (2026-09-06)
+
+### Features
+
+* la configuración MIDI completa, con los cuatro puertos ([#59](https://github.com/gstn-caruso/tabpro/issues/59)) ([eb7e713](https://github.com/gstn-caruso/tabpro/commit/eb7e7134a5151dac7f2dbb3eaff1d7d1f75f9241))
+
 ## [0.13.0](https://github.com/gstn-caruso/tabpro/compare/v0.12.1...v0.13.0) (2026-09-06)
 
 ### Features
