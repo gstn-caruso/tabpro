@@ -51,7 +51,8 @@ final class GuitarProNoteReader {
             skipDurationOverride(reader, version, flags);
         }
 
-        NoteEffects effects = NoteEffects.none();
+        // Guitar Pro solo escribe la dinamica cuando no es la suya por defecto, que es forte.
+        NoteEffects effects = NoteEffects.none().withDynamic(Dynamic.FORTE);
         if ((flags & FLAG_DYNAMIC) != 0) {
             effects = effects.withDynamic(dynamicOf(reader.readSignedByte()));
         }

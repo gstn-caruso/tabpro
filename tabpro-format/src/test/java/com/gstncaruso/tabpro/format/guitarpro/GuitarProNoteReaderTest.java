@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
@@ -30,6 +31,11 @@ class GuitarProNoteReaderTest {
 
     /** El bit del segundo byte de efectos de la nota que anuncia el slide. */
     private static final int HAS_SLIDE = 0x08;
+
+    /** El bit de la nota que dice que trae su propia dinamica, y el codigo del piano. */
+    private static final int NO_FLAGS = 0x00;
+    private static final int HAS_DYNAMIC = 0x10;
+    private static final int PIANO = 3;
 
     private final GuitarProNoteReader reader = new GuitarProNoteReader();
 
@@ -73,6 +79,32 @@ class GuitarProNoteReaderTest {
 
         assertEquals(NoteValue.THIRTY_SECOND, grace.duration());
         assertEquals(GraceTransition.HAMMER, grace.transition());
+    }
+
+    // ---- la dinamica, que solo se escribe cuando no es la de siempre --------
+
+    /**
+     * Guitar Pro no escribe la dinamica de la nota cuando es la suya por defecto, que es
+     * forte. Darla por mezzo forte deja toda nota sin marcar sonando mas suave de lo que
+     * pide el archivo, sin que nada avise.
+     */
+    @Test
+    void aNoteWithoutItsOwnDynamicIsForte() {
+        Note note = read(new GuitarProFileWriter()
+                .writeUnsignedByte(NO_FLAGS),
+                GuitarProVersion.GP4);
+
+        assertEquals(Dynamic.FORTE, note.effects().dynamic());
+    }
+
+    @Test
+    void aNoteThatBringsItsDynamicKeepsIt() {
+        Note note = read(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_DYNAMIC)
+                .writeSignedByte(PIANO),
+                GuitarProVersion.GP4);
+
+        assertEquals(Dynamic.PIANO, note.effects().dynamic());
     }
 
     // ---- el slide, que cambia de codificacion entre GP4 y GP5 ---------------
