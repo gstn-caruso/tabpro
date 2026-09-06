@@ -241,6 +241,11 @@ public final class MidiPlayer implements Player, AutoCloseable {
      * cada puerto manda a un dispositivo distinto y no se puede mezclar sus
      * canales en una sola secuencia. No dirige el tempo compartido ni avisa
      * beats ni el fin de la reproduccion -de eso se encarga el puerto principal.
+     *
+     * <p>Si la maquina no puede darle un secuenciador -no hay mas lineas de
+     * audio libres, o directamente no hay placa- el puerto se queda callado en
+     * vez de romper la reproduccion entera. Es el caso de cualquiera que no
+     * tenga un segundo dispositivo MIDI conectado, que son casi todos.
      */
     private static final class PortOutput implements AutoCloseable {
 
@@ -251,10 +256,20 @@ public final class MidiPlayer implements Player, AutoCloseable {
             this.sequencer = newSequencer();
         }
 
+        private boolean isSilent() {
+            return sequencer == null;
+        }
+
         void useDevice(javax.sound.midi.MidiDevice.Info info) throws MidiUnavailableException {
+            if (isSilent()) {
+                throw new MidiUnavailableException("el puerto no tiene secuenciador disponible");
+            }
             javax.sound.midi.MidiDevice chosen = MidiSystem.getMidiDevice(info);
             chosen.open();
-            openIfNeeded();
+            if (!openIfNeeded()) {
+                chosen.close();
+                throw new MidiUnavailableException("no se pudo abrir el secuenciador del puerto");
+            }
             for (javax.sound.midi.Transmitter transmitter : sequencer.getTransmitters()) {
                 transmitter.close();
             }
@@ -264,7 +279,9 @@ public final class MidiPlayer implements Player, AutoCloseable {
         }
 
         void play(Sequence sequence) {
-            openIfNeeded();
+            if (isSilent() || !openIfNeeded()) {
+                return;
+            }
             try {
                 sequencer.setSequence(sequence);
             } catch (InvalidMidiDataException e) {
@@ -275,6 +292,9 @@ public final class MidiPlayer implements Player, AutoCloseable {
         }
 
         void stop() {
+            if (isSilent()) {
+                return;
+            }
             if (sequencer.isRunning()) {
                 sequencer.stop();
             }
@@ -283,18 +303,22 @@ public final class MidiPlayer implements Player, AutoCloseable {
         @Override
         public void close() {
             stop();
-            sequencer.close();
+            if (!isSilent()) {
+                sequencer.close();
+            }
             closeDevice();
         }
 
-        private void openIfNeeded() {
+        /** Devuelve si el puerto quedo listo para sonar; false si la maquina no lo dejo abrir. */
+        private boolean openIfNeeded() {
             if (sequencer.isOpen()) {
-                return;
+                return true;
             }
             try {
                 sequencer.open();
+                return true;
             } catch (MidiUnavailableException e) {
-                throw new IllegalStateException(e);
+                return false;
             }
         }
 
@@ -309,7 +333,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
             try {
                 return MidiSystem.getSequencer();
             } catch (MidiUnavailableException e) {
-                throw new IllegalStateException(e);
+                return null;
             }
         }
     }
