@@ -85,9 +85,26 @@ public record Track(
         return measure(measureIndex).hasNotes();
     }
 
-    /** La altura que suena esa nota, contando la cejilla. */
+    /** La quinta cuerda del banjo, si esta opcion esta activa. */
+    private static final int BANJO_FIFTH_STRING = 5;
+
+    /**
+     * La quinta cuerda de un banjo no llega hasta la cejuela: arranca en el
+     * traste 6, asi que el primer traste que se puede pisar no es el 1 sino
+     * el 6, y de ahi para arriba.
+     */
+    private static final int BANJO_FIFTH_STRING_FRET_OFFSET = 5;
+
+    /** La altura que suena esa nota, contando la cejilla y la quinta cuerda del banjo. */
     public Pitch pitchOf(Note note) {
-        return tuning.pitchOf(note).transposed(settings.capo());
+        return tuning.pitchOf(effectiveNote(note)).transposed(settings.capo());
+    }
+
+    private Note effectiveNote(Note note) {
+        if (settings.banjoFifthString() && note.string() == BANJO_FIFTH_STRING && note.fret() > 0) {
+            return note.withFret(note.fret() + BANJO_FIFTH_STRING_FRET_OFFSET);
+        }
+        return note;
     }
 
     public Track withName(String name) {

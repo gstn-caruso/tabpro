@@ -150,4 +150,46 @@ class TrackTest {
     void aPercussionTrackRejectsASoundPastTheHighest() {
         assertFalse(Track.percussion("Bateria").acceptsTypedNumber(PercussionKit.HIGHEST_SOUND + 1));
     }
+
+    @Test
+    void aBanjoFifthStringOpenSoundsAtItsTunedPitch() {
+        Track banjo = banjoWithFifthStringOption();
+
+        assertEquals(new Pitch(67), banjo.pitchOf(new Note(5, 0)));
+    }
+
+    @Test
+    void aBanjoFifthStringFrettedStartsCountingAtFretSix() {
+        Track banjo = banjoWithFifthStringOption();
+
+        assertEquals(new Pitch(67 + 6), banjo.pitchOf(new Note(5, 1)));
+        assertEquals(new Pitch(67 + 7), banjo.pitchOf(new Note(5, 2)));
+    }
+
+    @Test
+    void theBanjoFifthStringOptionDoesNotAffectTheOtherStrings() {
+        Track banjo = banjoWithFifthStringOption();
+
+        assertEquals(new Pitch(62 + 3), banjo.pitchOf(new Note(1, 3)));
+    }
+
+    @Test
+    void withoutTheOptionTheFifthStringIsAStringLikeAnyOther() {
+        Track banjo = new Track(
+                "Banjo", Tuning.of("Banjo Open G", 62, 59, 55, 50, 67), Channel.playing(Track.GUITAR_PROGRAM),
+                List.of(emptyMeasure()));
+
+        assertEquals(new Pitch(67 + 1), banjo.pitchOf(new Note(5, 1)));
+    }
+
+    private static Track banjoWithFifthStringOption() {
+        Track banjo = new Track(
+                "Banjo", Tuning.of("Banjo Open G", 62, 59, 55, 50, 67), Channel.playing(Track.GUITAR_PROGRAM),
+                List.of(emptyMeasure()));
+        return banjo.mappingSettings(settings -> settings.withBanjoFifthString(true));
+    }
+
+    private static Measure emptyMeasure() {
+        return Measure.empty(TimeSignature.fourFour(), Duration.quarter());
+    }
 }
