@@ -53,22 +53,6 @@ class PreferencesTest {
         assertEquals(Preferences.MAX_RECENT_FILES, preferences.recentFiles().size());
     }
 
-    @Test
-    void remembersTheViewAndTheZoom() {
-        preferences.setViewMode("HORIZONTAL_SCREEN");
-        preferences.setZoomPercent(150);
-
-        assertEquals("HORIZONTAL_SCREEN", preferences.viewMode());
-        assertEquals(150, preferences.zoomPercent());
-    }
-
-    @Test
-    void theZoomStaysWithinWhatTheManualOffers() {
-        preferences.setZoomPercent(500);
-
-        assertTrue(preferences.zoomPercent() <= 200);
-    }
-
     /**
      * El manual: "You can force the multitrack view when using the Horizontal Screen Mode".
      * Apagada por defecto, para no cambiar lo que ya se ve hoy.

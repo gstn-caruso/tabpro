@@ -21,8 +21,6 @@ public final class Preferences {
     private static final String METRONOME_ENABLED = "metronomeEnabled";
     private static final String DEFAULT_NOTE_VALUE = "defaultNoteValue";
     private static final String AUTO_SCROLL_DURING_PLAYBACK = "autoScrollDuringPlayback";
-    private static final String VIEW_MODE = "viewMode";
-    private static final String ZOOM = "zoom";
     private static final String FORCE_MULTITRACK_IN_HORIZONTAL_MODE = "forceMultitrackInHorizontalMode";
     private static final String SEPARATOR = "\n";
 
@@ -52,10 +50,6 @@ public final class Preferences {
             recent.removeLast();
         }
         stored.put(RECENT_FILES, String.join(SEPARATOR, recent.stream().map(Path::toString).toList()));
-    }
-
-    public void forgetRecentFiles() {
-        stored.remove(RECENT_FILES);
     }
 
     /** Cada cuantas acciones se guarda solo; cero significa que no se guarda. */
@@ -99,22 +93,6 @@ public final class Preferences {
 
     public void setAutoScrollDuringPlayback(boolean autoScrollDuringPlayback) {
         stored.putBoolean(AUTO_SCROLL_DURING_PLAYBACK, autoScrollDuringPlayback);
-    }
-
-    public String viewMode() {
-        return stored.get(VIEW_MODE, "PAGE");
-    }
-
-    public void setViewMode(String mode) {
-        stored.put(VIEW_MODE, mode);
-    }
-
-    public int zoomPercent() {
-        return stored.getInt(ZOOM, 100);
-    }
-
-    public void setZoomPercent(int percent) {
-        stored.putInt(ZOOM, Math.clamp(percent, 30, 200));
     }
 
     /** El manual: forzar la vista multipista al usar la pantalla horizontal. Apagado por defecto. */
