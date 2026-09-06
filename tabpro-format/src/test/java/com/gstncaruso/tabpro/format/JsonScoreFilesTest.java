@@ -20,6 +20,8 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.Voice;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
+import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
+import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -249,6 +251,75 @@ class JsonScoreFilesTest {
                 TimeSignature.fourFour(),
                 MeasureAttributes.plain().withOctaveMark(octaveMark),
                 List.of(new Voice(List.of(Beat.of(Duration.quarter(), new Note(6, 0)))), Voice.unused()));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Prueba", 120, List.of(track));
+    }
+
+    /**
+     * El mismo tipo de perdida que la marca de octava (ver arriba), pero para el corte de barra
+     * a mano que agrega BeamBreak: si BeatDto no lo escribe, forzar un corte se guarda y
+     * desaparece sin aviso al volver a abrir el archivo.
+     */
+    @Test
+    void aBeamBreakSurvivesSavingAndLoading(@TempDir Path tempDir) {
+        Score score = scoreWithBeamBreak(BeamBreak.FORCED);
+        Path path = tempDir.resolve("score.tabpro");
+
+        scoreFiles.save(score, path);
+        Score loaded = scoreFiles.load(path);
+
+        assertEquals(BeamBreak.FORCED, loaded.track(0).measure(0).beat(0).effects().beamBreak());
+    }
+
+    /**
+     * El default de {@link BeamBreak} tambien es AUTOMATIC, asi que sin este otro beat el test
+     * de arriba podria pasar por casualidad aunque el campo nunca se leyera.
+     */
+    @Test
+    void aBeatWithoutABeamBreakLoadsAsAutomatic(@TempDir Path tempDir) {
+        Score score = scoreWithBeamBreak(BeamBreak.AUTOMATIC);
+        Path path = tempDir.resolve("score.tabpro");
+
+        scoreFiles.save(score, path);
+        Score loaded = scoreFiles.load(path);
+
+        assertEquals(BeamBreak.AUTOMATIC, loaded.track(0).measure(0).beat(0).effects().beamBreak());
+    }
+
+    @Test
+    void aStemOverrideSurvivesSavingAndLoading(@TempDir Path tempDir) {
+        Score score = scoreWithStemOverride(StemOverride.UP);
+        Path path = tempDir.resolve("score.tabpro");
+
+        scoreFiles.save(score, path);
+        Score loaded = scoreFiles.load(path);
+
+        assertEquals(StemOverride.UP, loaded.track(0).measure(0).beat(0).effects().stemOverride());
+    }
+
+    @Test
+    void aBeatWithoutAStemOverrideLoadsAsAutomatic(@TempDir Path tempDir) {
+        Score score = scoreWithStemOverride(StemOverride.AUTOMATIC);
+        Path path = tempDir.resolve("score.tabpro");
+
+        scoreFiles.save(score, path);
+        Score loaded = scoreFiles.load(path);
+
+        assertEquals(StemOverride.AUTOMATIC, loaded.track(0).measure(0).beat(0).effects().stemOverride());
+    }
+
+    private static Score scoreWithBeamBreak(BeamBreak beamBreak) {
+        Beat beat = Beat.of(Duration.quarter(), new Note(6, 0))
+                .withEffects(com.gstncaruso.tabpro.core.model.effects.BeatEffects.none().withBeamBreak(beamBreak));
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Prueba", 120, List.of(track));
+    }
+
+    private static Score scoreWithStemOverride(StemOverride stemOverride) {
+        Beat beat = Beat.of(Duration.quarter(), new Note(6, 0))
+                .withEffects(com.gstncaruso.tabpro.core.model.effects.BeatEffects.none().withStemOverride(stemOverride));
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         return new Score("Prueba", 120, List.of(track));
     }
