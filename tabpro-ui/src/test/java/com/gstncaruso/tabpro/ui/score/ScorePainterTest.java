@@ -108,17 +108,40 @@ class ScorePainterTest {
     }
 
     @Test
-    void tintsTheBeatThatIsSounding() {
+    void drawsAThinLineAtTheBeatThatIsSoundingInsteadOfAFilledBlock() {
+        Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
+        Painted silent = paint(score, new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted playing = paint(
+                score, new Cursor(0, 0, 0, 1), Playhead.silent().advancedTo(new BeatPosition(1, 0, 0)));
+
+        Rectangle beat = playing.layout().beatBounds(1, 0, 0);
+        int lineX = beat.x;
+        int elsewhereX = beat.x + beat.width - 2;
+        int y = playing.layout().tabTop(1, 0) + 3;
+
+        assertNotEquals(
+                silent.image().getRGB(lineX, y), playing.image().getRGB(lineX, y),
+                "la linea de reproduccion tiene que marcar donde arranca el beat que suena");
+        assertEquals(
+                silent.image().getRGB(elsewhereX, y), playing.image().getRGB(elsewhereX, y),
+                "el resto del beat no puede quedar tapado por un bloque relleno como antes");
+    }
+
+    @Test
+    void thePlayingLineCrossesTheWholeSystemNotJustTheTrackThatIsSounding() {
         Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
         Playhead playhead = Playhead.silent().advancedTo(new BeatPosition(1, 0, 0));
         Painted painted = paint(score, new Cursor(0, 0, 0, 1), playhead);
 
         Rectangle beat = painted.layout().beatBounds(1, 0, 0);
-        int y = painted.layout().staffTop(1, 0) + 2;
+        int nearSystemTop = painted.layout().trackTop(0, 0) + 5;
 
-        assertFalse(
-                painted.image().getRGB(beat.x + beat.width / 2, y) == ScoreColors.BACKGROUND.getRGB(),
-                "el beat que suena tiene que quedar resaltado");
+        assertTrue(
+                nearSystemTop < painted.layout().staffTop(1, 0),
+                "el punto de control tiene que estar arriba de la pista que suena, no adentro");
+        assertTrue(
+                painted.hasInkNear(beat.x, nearSystemTop, 0),
+                "la linea tiene que cruzar tambien la pista de arriba, no solo la que suena");
     }
 
     @Test

@@ -55,9 +55,10 @@ public final class ScorePainter {
 
         for (int trackIndex = 0; trackIndex < score.trackCount(); trackIndex++) {
             if (layout.shows(trackIndex)) {
-                paintTrack(g, layout, score, trackIndex, cursor, playhead, highlightedVoice);
+                paintTrack(g, layout, score, trackIndex, cursor, highlightedVoice);
             }
         }
+        paintPlayingLines(g, layout, score, playhead);
         selection.ifPresent(sel -> paintSelection(g, layout, score, sel));
         if (showsTheEditingCursor(score, cursor)) {
             paintCursor(g, layout, cursor);
@@ -80,7 +81,7 @@ public final class ScorePainter {
     }
 
     private static void paintTrack(
-            Graphics2D g, ScoreLayout layout, Score score, int trackIndex, Cursor cursor, Playhead playhead,
+            Graphics2D g, ScoreLayout layout, Score score, int trackIndex, Cursor cursor,
             Optional<VoicePart> highlightedVoice) {
         Track track = score.track(trackIndex);
         Clef clef = Clef.forTuning(track.tuning());
@@ -88,8 +89,6 @@ public final class ScorePainter {
         boolean standardNotation = layout.showsStandardNotation(trackIndex);
         boolean tablature = layout.showsTablature(trackIndex);
         boolean selected = cursor.track() == trackIndex;
-
-        playhead.on(trackIndex).ifPresent(position -> paintPlaying(g, layout, trackIndex, position));
 
         for (int measureIndex = 0; measureIndex < track.measureCount(); measureIndex++) {
             boolean beingEdited = selected && cursor.measure() == measureIndex;
@@ -155,11 +154,35 @@ public final class ScorePainter {
         g.drawString(track.name(), x, y);
     }
 
+    /**
+     * Las lineas de reproduccion se dibujan al final, encima de toda la musica: si se pintaran
+     * antes que las notas, cualquier cabeza, plica o numero de traste que cayera en su columna
+     * las taparia por completo.
+     */
+    private static void paintPlayingLines(Graphics2D g, ScoreLayout layout, Score score, Playhead playhead) {
+        for (int trackIndex = 0; trackIndex < score.trackCount(); trackIndex++) {
+            if (!layout.shows(trackIndex)) {
+                continue;
+            }
+            final int track = trackIndex;
+            playhead.on(track).ifPresent(position -> paintPlaying(g, layout, track, position));
+        }
+    }
+
+    /**
+     * Una linea vertical fina que senala donde va la reproduccion, en vez de un bloque que tapa
+     * la musica. Cruza el sistema entero de punta a punta -no solo la pista que esta sonando-
+     * porque todas las pistas del sistema suenan juntas.
+     */
     private static void paintPlaying(Graphics2D g, ScoreLayout layout, int trackIndex, BeatPosition position) {
         Rectangle beat = layout.beatBounds(trackIndex, position.measure(), position.beat());
-        int top = layout.staffTop(trackIndex, position.measure());
+        int top = layout.systemTop(layout.systemOf(position.measure()));
+        int bottom = top + layout.systemHeight();
         g.setColor(ScoreColors.PLAYING);
-        g.fillRect(beat.x, top, beat.width, layout.tabBottom(trackIndex, position.measure()) - top);
+        // fillRect en vez de drawLine: una linea trazada de un pixel de ancho cae justo en el
+        // limite entre dos columnas y el antialiasing la reparte mitad y mitad, dejandola
+        // desteñida. Un rectangulo de una columna cae adentro de un pixel entero y sale nitida.
+        g.fillRect(beat.x, top, 1, bottom - top);
     }
 
     /** El compas que no suma lo que su medida pide se tine de rojo, salvo el que se esta editando. */

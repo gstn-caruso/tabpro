@@ -20,7 +20,8 @@ public final class ScoreColors {
 
     public static final Color ACCENT = new Color(0x3574F0);
     public static final Color CURSOR = ACCENT;
-    public static final Color PLAYING = new Color(0x35, 0x74, 0xF0, 0x3C);
+    /** La linea vertical fina que marca por donde va la reproduccion, como en Guitar Pro. */
+    public static final Color PLAYING = new Color(0x27, 0xAE, 0x60);
     public static final Color PLAYING_MEASURE = new Color(0xE5484D);
     public static final Color WARNING = new Color(0xE5A44A);
 
