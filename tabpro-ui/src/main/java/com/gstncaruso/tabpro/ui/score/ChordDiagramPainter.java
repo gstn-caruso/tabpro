@@ -11,16 +11,21 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.util.List;
 
 /**
  * El diagrama de un acorde: cuerdas, trastes, circulo para cuerda al aire, cruz para cuerda que
- * no se toca y un punto por cada dedo. Se dibuja arriba del pentagrama, en el beat que lo lleva.
+ * no se toca y un punto por cada dedo. Se dibuja arriba del pentagrama, en el beat que lo lleva
+ * -o, si la pista lo pidio, una fila entera de ellos en el encabezado de la pagina, ver
+ * {@link #paintRow}-.
  */
 final class ChordDiagramPainter {
 
     private static final int STRING_GAP = 6;
     private static final int FRET_GAP = 8;
     private static final int VISIBLE_FRETS = 4;
+    /** Separacion horizontal entre diagramas cuando se dibujan en fila, en el encabezado. */
+    private static final int ROW_GAP = 30;
     private static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 10);
     private static final Font FRET_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
 
@@ -37,17 +42,44 @@ final class ChordDiagramPainter {
             int index = beatIndex;
             beat.effects().chord()
                     .filter(ChordDiagram::shown)
-                    .ifPresent(chord -> paintDiagram(g, layout, trackIndex, measureIndex, index, chord));
+                    .ifPresent(chord -> {
+                        Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, index);
+                        int gridBottom = layout.staffTop(trackIndex, measureIndex) - 12;
+                        paintDiagram(g, bounds.x + bounds.width / 2, gridBottom, chord);
+                    });
         }
     }
 
-    private static void paintDiagram(
-            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, int beatIndex, ChordDiagram chord) {
-        Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, beatIndex);
+    /**
+     * Manual, linea 2800: los diagramas "at the top of the score" van una sola vez por hoja, no
+     * compas por compas -{@link com.gstncaruso.tabpro.core.harmony.TrackChords#underTheTitle}
+     * ya junto los que corresponden-. Se reparten en una sola fila, centrados en {@code centerX},
+     * con el mismo dibujo que arriba del pentagrama pero mas chicos porque el encabezado tiene el
+     * alto fijo de {@link PageChromePainter}.
+     */
+    static void paintRow(Graphics2D g, List<ChordDiagram> chords, int centerX, int gridBottom) {
+        if (chords.isEmpty()) {
+            return;
+        }
+        int totalWidth = chords.stream().mapToInt(ChordDiagramPainter::widthOf).sum()
+                + ROW_GAP * (chords.size() - 1);
+        int x = centerX - totalWidth / 2;
+        for (ChordDiagram chord : chords) {
+            int width = widthOf(chord);
+            paintDiagram(g, x + width / 2, gridBottom, chord);
+            x += width + ROW_GAP;
+        }
+    }
+
+    private static int widthOf(ChordDiagram chord) {
+        return (chord.stringCount() - 1) * STRING_GAP;
+    }
+
+    /** El diagrama centrado en {@code centerX}, con la grilla terminando en {@code gridBottom}. */
+    private static void paintDiagram(Graphics2D g, int centerX, int gridBottom, ChordDiagram chord) {
         int stringCount = chord.stringCount();
         int gridWidth = (stringCount - 1) * STRING_GAP;
-        int x = bounds.x + bounds.width / 2 - gridWidth / 2;
-        int gridBottom = layout.staffTop(trackIndex, measureIndex) - 12;
+        int x = centerX - gridWidth / 2;
         int top = gridBottom - VISIBLE_FRETS * FRET_GAP;
 
         g.setFont(NAME_FONT);
