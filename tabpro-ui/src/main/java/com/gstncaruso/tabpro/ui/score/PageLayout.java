@@ -4,19 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Como se reparten los sistemas de un {@link ScoreLayout} en hojas: cada hoja tiene su margen,
- * su encabezado y su pie, y ningun sistema se corta entre dos hojas. En Modo Pagina las hojas
- * miden todas lo mismo y el contenido que no entra pasa a la siguiente; en Modo Pergamino hay
+ * Como se reparten los sistemas de un {@link ScoreLayout} en hojas, sin que ningun sistema quede
+ * cortado entre dos. Paginado, las hojas tienen todas el mismo alto util -el que dicta la
+ * configuracion de pagina- y el contenido que no entra pasa a la siguiente; como pergamino hay
  * una sola hoja que crece tanto como haga falta.
  */
 public final class PageLayout {
-
-    public static final int PAGE_WIDTH = 850;
-    public static final int PAGE_HEIGHT = 1100;
-    public static final int PAGE_MARGIN = 40;
-    public static final int HEADER_HEIGHT = 96;
-    public static final int FOOTER_HEIGHT = 28;
-    public static final int PAGE_GAP = 36;
 
     private final List<Integer> firstSystemOfPage;
     private final List<Integer> pageContentHeight;
@@ -28,16 +21,20 @@ public final class PageLayout {
         this.systemCount = systemCount;
     }
 
-    public static PageLayout of(ScoreLayout layout, boolean paginate) {
+    /** Una sola hoja, tan alta como la partitura entera. */
+    public static PageLayout parchment(ScoreLayout layout) {
         if (layout.systemCount() == 0) {
-            return new PageLayout(List.of(0), List.of(0), 0);
+            return empty();
         }
-        if (!paginate) {
-            int height = layout.systemTop(layout.systemCount() - 1) + layout.systemHeight() - layout.systemTop(0);
-            return new PageLayout(List.of(0), List.of(height), layout.systemCount());
-        }
+        int height = layout.systemTop(layout.systemCount() - 1) + layout.systemHeight() - layout.systemTop(0);
+        return new PageLayout(List.of(0), List.of(height), layout.systemCount());
+    }
 
-        int maxContentHeight = PAGE_HEIGHT - 2 * PAGE_MARGIN - HEADER_HEIGHT - FOOTER_HEIGHT;
+    /** Tantas hojas como haga falta para que en cada una entren {@code maxContentHeight} pixeles. */
+    public static PageLayout paginated(ScoreLayout layout, int maxContentHeight) {
+        if (layout.systemCount() == 0) {
+            return empty();
+        }
         List<Integer> starts = new ArrayList<>(List.of(0));
         List<Integer> heights = new ArrayList<>();
         int pageStart = 0;
@@ -55,6 +52,10 @@ public final class PageLayout {
             }
         }
         return new PageLayout(starts, heights, layout.systemCount());
+    }
+
+    private static PageLayout empty() {
+        return new PageLayout(List.of(0), List.of(0), 0);
     }
 
     public int pageCount() {

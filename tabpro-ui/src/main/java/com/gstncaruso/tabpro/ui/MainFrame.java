@@ -404,7 +404,8 @@ public final class MainFrame extends JFrame {
                 return;
             }
             try {
-                ScorePrinting.exportPdf(editor.score(), ScorePrinting.withPdfExtension(chooser.getSelectedFile()));
+                ScorePrinting.exportPdf(
+                        editor.score(), pageSetup, ScorePrinting.withPdfExtension(chooser.getSelectedFile()));
                 backToTheScore();
             } catch (java.io.UncheckedIOException e) {
                 JOptionPane.showMessageDialog(
@@ -421,7 +422,7 @@ public final class MainFrame extends JFrame {
             }
             try {
                 ScorePrinting.exportImage(
-                        editor.score(), ScorePrinting.withImageExtension(chooser.getSelectedFile()));
+                        editor.score(), pageSetup, ScorePrinting.withImageExtension(chooser.getSelectedFile()));
                 backToTheScore();
             } catch (java.io.UncheckedIOException e) {
                 JOptionPane.showMessageDialog(
@@ -432,7 +433,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void print() {
             try {
-                ScorePrinting.print(editor.score(), document.displayName());
+                ScorePrinting.print(editor.score(), pageSetup, document.displayName());
                 backToTheScore();
             } catch (java.awt.print.PrinterException e) {
                 JOptionPane.showMessageDialog(
@@ -760,8 +761,14 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void pageSetup() {
-            PageSetupDialog.ask(MainFrame.this, pageSetup).ifPresent(setup -> pageSetup = setup);
+            PageSetupDialog.ask(MainFrame.this, pageSetup).ifPresent(this::useSetup);
             backToTheScore();
+        }
+
+        /** El papel elegido manda sobre como se ve la partitura y sobre como sale impresa. */
+        private void useSetup(PageSetup setup) {
+            pageSetup = setup;
+            canvas.setPageSetup(setup);
         }
 
         @Override

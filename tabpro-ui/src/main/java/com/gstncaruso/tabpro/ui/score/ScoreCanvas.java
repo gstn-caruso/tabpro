@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.editing.Selection;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.tab.FretDigits;
 import com.gstncaruso.tabpro.ui.tab.KeyboardEditing;
 import java.awt.Dimension;
@@ -32,6 +33,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     private Playhead playhead = Playhead.silent();
     private ViewMode viewMode = ViewMode.SCREEN_VERTICAL;
     private Zoom zoom = Zoom.whole();
+    private PageSetup pageSetup = PageSetup.defaults();
     private Cursor selectionAnchor;
     private Selection selection;
 
@@ -98,6 +100,19 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
 
     public void zoomOut() {
         setZoom(zoom.out());
+    }
+
+    // ---- Configurar pagina: el papel sobre el que se reparte la partitura ----
+
+    public PageSetup pageSetup() {
+        return pageSetup;
+    }
+
+    /** El boton Actualizar partitura de Configurar pagina: la hoja cambia y hay que redibujar. */
+    public void setPageSetup(PageSetup pageSetup) {
+        this.pageSetup = pageSetup;
+        revalidate();
+        repaint();
     }
 
     // ---- Vista multipista: el menu Ver la prende y apaga, la mesa de mezcla apaga pistas ----
@@ -244,7 +259,8 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
                 viewMode, zoom, viewportWidth(),
                 visibleTracks.tracks().withActiveTrack(editor.cursor().track()),
                 visibleNotations,
-                graysTheInactiveVoice);
+                graysTheInactiveVoice,
+                pageSetup);
     }
 
     private int viewportWidth() {

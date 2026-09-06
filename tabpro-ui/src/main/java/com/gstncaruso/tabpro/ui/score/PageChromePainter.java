@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.score;
 
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
+import com.gstncaruso.tabpro.ui.page.PageMetrics;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -15,6 +16,9 @@ final class PageChromePainter {
     private static final Font CREDIT_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
     private static final Font FOOTER_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 9);
 
+    /** Cuanto sube el pie sobre el borde del margen de abajo. */
+    private static final int FOOTER_BASELINE_OVER_THE_MARGIN = 8;
+
     private PageChromePainter() {
     }
 
@@ -25,9 +29,12 @@ final class PageChromePainter {
         g.fillRect(x, y, width, height);
     }
 
-    static void paintHeader(Graphics2D g, ScoreInfo info, int x, int y, int width, int margin, boolean firstPage) {
+    static void paintHeader(Graphics2D g, ScoreInfo info, PageMetrics sheet, int y, boolean firstPage) {
+        int x = 0;
+        int width = sheet.pageWidth();
+        int margin = sheet.marginRight();
         int centerX = x + width / 2;
-        int top = y + margin;
+        int top = y + sheet.marginTop();
 
         if (!firstPage) {
             paintRunningHeader(g, info, x, top, width);
@@ -72,15 +79,16 @@ final class PageChromePainter {
         return info.title().isBlank() ? info.heading() : info.title();
     }
 
-    static void paintFooter(Graphics2D g, ScoreInfo info, int x, int y, int width, int height, int margin) {
-        int baseline = y + height - margin + 4;
+    static void paintFooter(Graphics2D g, ScoreInfo info, PageMetrics sheet, int y, int height) {
+        int baseline = y + height - sheet.marginBottom() - FOOTER_BASELINE_OVER_THE_MARGIN;
         g.setFont(FOOTER_FONT);
         g.setColor(ScoreColors.PAGE_MUTED);
         if (!info.copyright().isBlank()) {
-            g.drawString(info.copyright(), x + margin, baseline);
+            g.drawString(info.copyright(), sheet.marginLeft(), baseline);
         }
         if (!info.transcriber().isBlank()) {
-            drawRightAligned(g, "Transcripcion: " + info.transcriber(), x + width - margin, baseline);
+            drawRightAligned(
+                    g, "Transcripcion: " + info.transcriber(), sheet.pageWidth() - sheet.marginRight(), baseline);
         }
     }
 

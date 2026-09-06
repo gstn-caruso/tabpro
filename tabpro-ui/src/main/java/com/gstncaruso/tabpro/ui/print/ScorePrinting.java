@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.print;
 
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -22,27 +23,27 @@ public final class ScorePrinting {
     }
 
     /** Abre el diálogo de impresión del sistema y manda la partitura. */
-    public static void print(Score score, String jobName) throws PrinterException {
+    public static void print(Score score, PageSetup setup, String jobName) throws PrinterException {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setJobName(jobName);
-        job.setPrintable(new ScorePages(score));
+        job.setPrintable(new ScorePages(score, setup));
         if (job.printDialog()) {
             job.print();
         }
     }
 
-    public static void exportImage(Score score, Path path) {
+    public static void exportImage(Score score, PageSetup setup, Path path) {
         try {
-            ImageIO.write(ScoreSheets.render(score, Zoom.whole()), formatOf(path), path.toFile());
+            ImageIO.write(ScoreSheets.render(score, Zoom.whole(), setup), formatOf(path), path.toFile());
         } catch (IOException e) {
             throw new UncheckedIOException("no se pudo escribir " + path, e);
         }
     }
 
     /** Exporta la partitura a PDF, una hoja por pagina. */
-    public static void exportPdf(Score score, Path path) {
+    public static void exportPdf(Score score, PageSetup setup, Path path) {
         PdfDocument pdf = new PdfDocument();
-        ScoreSheets.renderPages(score, Zoom.whole()).forEach(pdf::addPage);
+        ScoreSheets.renderPages(score, Zoom.whole(), setup).forEach(pdf::addPage);
         try (java.io.OutputStream out = java.nio.file.Files.newOutputStream(path)) {
             pdf.writeTo(out);
         } catch (IOException e) {
@@ -63,11 +64,11 @@ public final class ScorePrinting {
     }
 
     /** Reparte la partitura en las hojas que le entren al papel de la impresora. */
-    private record ScorePages(Score score) implements Printable {
+    private record ScorePages(Score score, PageSetup setup) implements Printable {
 
         @Override
         public int print(Graphics graphics, PageFormat format, int pageIndex) {
-            Dimension sheet = ScoreSheets.sizeOf(score, Zoom.whole());
+            Dimension sheet = ScoreSheets.sizeOf(score, Zoom.whole(), setup);
             double scale = format.getImageableWidth() / sheet.width;
             int pageHeight = (int) Math.max(1, format.getImageableHeight() / scale);
             int pages = (int) Math.ceil(sheet.height / (double) pageHeight);
@@ -79,7 +80,7 @@ public final class ScorePrinting {
             canvas.scale(scale, scale);
             canvas.translate(0, -pageIndex * (double) pageHeight);
             canvas.clipRect(0, pageIndex * pageHeight, sheet.width, pageHeight);
-            ScoreSheets.paintOn(canvas, score, Zoom.whole());
+            ScoreSheets.paintOn(canvas, score, Zoom.whole(), setup);
             canvas.dispose();
             return PAGE_EXISTS;
         }

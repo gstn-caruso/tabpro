@@ -3,7 +3,8 @@ package com.gstncaruso.tabpro.ui.print;
 import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.playback.Playhead;
-import com.gstncaruso.tabpro.ui.score.PageLayout;
+import com.gstncaruso.tabpro.ui.page.PageMetrics;
+import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.score.PageScorePainter;
 import com.gstncaruso.tabpro.ui.score.ScoreViewport;
 import com.gstncaruso.tabpro.ui.score.ViewMode;
@@ -21,19 +22,16 @@ import java.util.Optional;
  */
 public final class ScoreSheets {
 
-    /** Lo que mide una hoja en pixeles cuando se la dibuja a tamano natural. */
-    public static final int DEFAULT_WIDTH = 900;
-
     private ScoreSheets() {
     }
 
-    public static Dimension sizeOf(Score score, Zoom zoom) {
-        return PageScorePainter.canvasSize(score, sheetViewport(zoom));
+    public static Dimension sizeOf(Score score, Zoom zoom, PageSetup setup) {
+        return PageScorePainter.canvasSize(score, sheetViewport(zoom, setup));
     }
 
     /** Toda la partitura en una sola imagen, lista para guardar o para imprimir. */
-    public static BufferedImage render(Score score, Zoom zoom) {
-        Dimension size = sizeOf(score, zoom);
+    public static BufferedImage render(Score score, Zoom zoom, PageSetup setup) {
+        Dimension size = sizeOf(score, zoom, setup);
         BufferedImage sheet = new BufferedImage(
                 Math.max(1, size.width), Math.max(1, size.height), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = sheet.createGraphics();
@@ -41,7 +39,7 @@ public final class ScoreSheets {
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         graphics.setColor(Color.WHITE);
         graphics.fillRect(0, 0, sheet.getWidth(), sheet.getHeight());
-        paintOn(graphics, score, zoom);
+        paintOn(graphics, score, zoom, setup);
         graphics.dispose();
         return sheet;
     }
@@ -50,10 +48,10 @@ public final class ScoreSheets {
      * La partitura repartida en hojas. En modo pagina las hojas se apilan una
      * debajo de la otra, separadas por un hueco, asi que alcanza con cortar.
      */
-    public static java.util.List<BufferedImage> renderPages(Score score, Zoom zoom) {
-        BufferedImage whole = render(score, zoom);
-        int pageHeight = (int) Math.round(PageLayout.PAGE_HEIGHT * zoom.factor());
-        int gap = (int) Math.round(PageLayout.PAGE_GAP * zoom.factor());
+    public static java.util.List<BufferedImage> renderPages(Score score, Zoom zoom, PageSetup setup) {
+        BufferedImage whole = render(score, zoom, setup);
+        int pageHeight = (int) Math.round(PageMetrics.of(setup).pageHeight() * zoom.factor());
+        int gap = (int) Math.round(PageMetrics.PAGE_GAP * zoom.factor());
         java.util.List<BufferedImage> sheets = new java.util.ArrayList<>();
         for (int top = 0; top < whole.getHeight(); top += pageHeight + gap) {
             int height = Math.min(pageHeight, whole.getHeight() - top);
@@ -66,14 +64,14 @@ public final class ScoreSheets {
     }
 
     /** Dibuja la partitura sobre un lienzo ajeno, como el de la impresora. */
-    public static void paintOn(Graphics2D graphics, Score score, Zoom zoom) {
+    public static void paintOn(Graphics2D graphics, Score score, Zoom zoom, PageSetup setup) {
         PageScorePainter.paint(
-                graphics, score, hiddenCursor(), Playhead.silent(), Optional.empty(), sheetViewport(zoom));
+                graphics, score, hiddenCursor(), Playhead.silent(), Optional.empty(), sheetViewport(zoom, setup));
     }
 
     /** La hoja impresa siempre lleva la partitura entera, con todas sus pistas. */
-    private static ScoreViewport sheetViewport(Zoom zoom) {
-        return ScoreViewport.of(ViewMode.PAGE, zoom, DEFAULT_WIDTH);
+    private static ScoreViewport sheetViewport(Zoom zoom, PageSetup setup) {
+        return ScoreViewport.of(ViewMode.PAGE, zoom, PageMetrics.of(setup).pageWidth()).withPageSetup(setup);
     }
 
     /** Un cursor que no se ve porque apunta a una pista que no existe. */

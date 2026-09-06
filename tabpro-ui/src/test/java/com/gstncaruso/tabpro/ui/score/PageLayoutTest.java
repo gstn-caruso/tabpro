@@ -17,12 +17,13 @@ import org.junit.jupiter.api.Test;
 class PageLayoutTest {
 
     private static final int NARROW_WIDTH = 300;
+    private static final int A_PAGE_TALL = 900;
 
     @Test
     void aParchmentIsAlwaysOnePage() {
         ScoreLayout layout = ScoreLayout.of(scoreWithMeasures(40), NARROW_WIDTH);
 
-        PageLayout parchment = PageLayout.of(layout, false);
+        PageLayout parchment = PageLayout.parchment(layout);
 
         assertEquals(1, parchment.pageCount());
         assertEquals(0, parchment.firstSystemOf(0));
@@ -33,7 +34,7 @@ class PageLayoutTest {
     void aTallScoreSplitsIntoSeveralPages() {
         ScoreLayout layout = ScoreLayout.of(scoreWithMeasures(60), NARROW_WIDTH);
 
-        PageLayout page = PageLayout.of(layout, true);
+        PageLayout page = PageLayout.paginated(layout, A_PAGE_TALL);
 
         assertTrue(page.pageCount() > 1, "una partitura larga tiene que ocupar mas de una hoja");
     }
@@ -41,7 +42,7 @@ class PageLayoutTest {
     @Test
     void everySystemBelongsToExactlyOnePage() {
         ScoreLayout layout = ScoreLayout.of(scoreWithMeasures(60), NARROW_WIDTH);
-        PageLayout page = PageLayout.of(layout, true);
+        PageLayout page = PageLayout.paginated(layout, A_PAGE_TALL);
 
         for (int system = 0; system < layout.systemCount(); system++) {
             int owningPage = page.pageOf(system);
@@ -52,7 +53,7 @@ class PageLayoutTest {
     @Test
     void pagesAreConsecutiveAndCoverEverySystem() {
         ScoreLayout layout = ScoreLayout.of(scoreWithMeasures(60), NARROW_WIDTH);
-        PageLayout page = PageLayout.of(layout, true);
+        PageLayout page = PageLayout.paginated(layout, A_PAGE_TALL);
 
         assertEquals(0, page.firstSystemOf(0));
         for (int p = 0; p < page.pageCount() - 1; p++) {
@@ -65,9 +66,28 @@ class PageLayoutTest {
     void aShortScoreFitsInOnePage() {
         ScoreLayout layout = ScoreLayout.of(Score.blank(), 4000);
 
-        PageLayout page = PageLayout.of(layout, true);
+        PageLayout page = PageLayout.paginated(layout, A_PAGE_TALL);
 
         assertEquals(1, page.pageCount());
+    }
+
+    @Test
+    void aShorterPageNeedsMoreSheetsForTheSameMusic() {
+        ScoreLayout layout = ScoreLayout.of(scoreWithMeasures(60), NARROW_WIDTH);
+
+        PageLayout tallPage = PageLayout.paginated(layout, A_PAGE_TALL);
+        PageLayout shortPage = PageLayout.paginated(layout, A_PAGE_TALL / 3);
+
+        assertTrue(shortPage.pageCount() > tallPage.pageCount(), "en hojas mas cortas entra menos musica");
+    }
+
+    @Test
+    void aSystemTallerThanThePageStillGetsASheetOfItsOwn() {
+        ScoreLayout layout = ScoreLayout.of(scoreWithMeasures(12), NARROW_WIDTH);
+
+        PageLayout page = PageLayout.paginated(layout, 1);
+
+        assertEquals(layout.systemCount(), page.pageCount());
     }
 
     private static Score scoreWithMeasures(int count) {
