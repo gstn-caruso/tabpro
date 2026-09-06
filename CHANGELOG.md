@@ -1,3 +1,9 @@
+## [0.15.1](https://github.com/gstn-caruso/tabpro/compare/v0.15.0...v0.15.1) (2026-09-06)
+
+### Bug Fixes
+
+* **midi:** el .mid exporta lo que suena, no una versión pobre ([#60](https://github.com/gstn-caruso/tabpro/issues/60)) ([68eb721](https://github.com/gstn-caruso/tabpro/commit/68eb7213a4bebcb061086180394bd74baa7dd553)), closes [#52](https://github.com/gstn-caruso/tabpro/issues/52)
+
 ## [0.15.0](https://github.com/gstn-caruso/tabpro/compare/v0.14.1...v0.15.0) (2026-09-06)
 
 ### Features
