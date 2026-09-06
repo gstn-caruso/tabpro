@@ -1,3 +1,9 @@
+## [0.13.0](https://github.com/gstn-caruso/tabpro/compare/v0.12.1...v0.13.0) (2026-09-06)
+
+### Features
+
+* los diálogos de importación como los describe el manual ([#57](https://github.com/gstn-caruso/tabpro/issues/57)) ([604db67](https://github.com/gstn-caruso/tabpro/commit/604db672b2348e2bdb287356e8487372491861d5))
+
 ## [0.12.1](https://github.com/gstn-caruso/tabpro/compare/v0.12.0...v0.12.1) (2026-09-06)
 
 ### Bug Fixes
