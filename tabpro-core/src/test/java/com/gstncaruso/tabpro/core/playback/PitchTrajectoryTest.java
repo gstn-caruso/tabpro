@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.effects.Bend;
+import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -130,5 +132,70 @@ class PitchTrajectoryTest {
         PitchTrajectory trajectory = PitchTrajectory.ramp(0, 0.0, 100, -3.0);
 
         assertTrue(!trajectory.staysWithin(2.0));
+    }
+
+    @Test
+    void unPuntoConVibradaHaceOscilarLaAlturaMientrasDuraSuTramo() {
+        Bend conVibrada = new Bend(BendType.PREBEND, List.of(
+                new BendPoint(0, 4, 2), new BendPoint(BendPoint.LAST_POSITION, 4, 0)));
+
+        PitchTrajectory curva = PitchTrajectory.of(conVibrada, 960);
+
+        assertTrue(maximoEntre(curva, 0, 960) > 2.0, "la vibrada tiene que pasar por encima de la altura del punto");
+        assertTrue(minimoEntre(curva, 0, 960) < 2.0, "la vibrada tiene que pasar por debajo de la altura del punto");
+    }
+
+    @Test
+    void unPuntoSinVibradaMantieneLaAlturaQuieta() {
+        Bend quieto = new Bend(BendType.PREBEND, List.of(
+                new BendPoint(0, 4, 0), new BendPoint(BendPoint.LAST_POSITION, 4, 0)));
+
+        PitchTrajectory curva = PitchTrajectory.of(quieto, 960);
+
+        assertEquals(2.0, maximoEntre(curva, 0, 960));
+        assertEquals(2.0, minimoEntre(curva, 0, 960));
+    }
+
+    @Test
+    void cuantoMasAltoElNivelDeVibradaMasSeApartaLaAltura() {
+        Bend suave = new Bend(BendType.PREBEND, List.of(
+                new BendPoint(0, 4, 1), new BendPoint(BendPoint.LAST_POSITION, 4, 0)));
+        Bend fuerte = new Bend(BendType.PREBEND, List.of(
+                new BendPoint(0, 4, 3), new BendPoint(BendPoint.LAST_POSITION, 4, 0)));
+
+        double apartaSuave = maximoEntre(PitchTrajectory.of(suave, 960), 0, 960);
+        double apartaFuerte = maximoEntre(PitchTrajectory.of(fuerte, 960), 0, 960);
+
+        assertTrue(apartaFuerte > apartaSuave, "tres niveles de vibrada tienen que apartarse mas que uno");
+    }
+
+    @Test
+    void laVibradaDeUnPuntoTerminaDondeEmpiezaElPuntoSiguiente() {
+        Bend soloAlPrincipio = new Bend(BendType.PREBEND, List.of(
+                new BendPoint(0, 4, 3),
+                new BendPoint(BendPoint.LAST_POSITION / 2, 4, 0),
+                new BendPoint(BendPoint.LAST_POSITION, 4, 0)));
+
+        PitchTrajectory curva = PitchTrajectory.of(soloAlPrincipio, 960);
+
+        assertTrue(maximoEntre(curva, 0, 470) > 2.0, "el primer tramo vibra");
+        assertEquals(2.0, maximoEntre(curva, 490, 960), "el tramo sin vibrada queda quieto");
+        assertEquals(2.0, minimoEntre(curva, 490, 960), "el tramo sin vibrada queda quieto");
+    }
+
+    private static double maximoEntre(PitchTrajectory curva, long desde, long hasta) {
+        double maximo = curva.semitonesAt(desde);
+        for (long tick = desde; tick <= hasta; tick++) {
+            maximo = Math.max(maximo, curva.semitonesAt(tick));
+        }
+        return maximo;
+    }
+
+    private static double minimoEntre(PitchTrajectory curva, long desde, long hasta) {
+        double minimo = curva.semitonesAt(desde);
+        for (long tick = desde; tick <= hasta; tick++) {
+            minimo = Math.min(minimo, curva.semitonesAt(tick));
+        }
+        return minimo;
     }
 }

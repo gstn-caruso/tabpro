@@ -4,7 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.Duration;
+import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Pitch;
+import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TimeSignature;
+import com.gstncaruso.tabpro.core.model.effects.Bend;
+import com.gstncaruso.tabpro.core.model.effects.BendPoint;
+import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.Velocity;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
@@ -579,6 +588,39 @@ class MidiSequencesTest {
         Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
 
         assertFalse(pitchBendEvents(track).isEmpty());
+    }
+
+    /**
+     * La vibrada que se le pide a un punto de la curva del bend tiene que llegar
+     * hasta la secuencia: sin ella el pitch bend se queda clavado en la altura del
+     * bend, con ella la pasa por arriba.
+     */
+    @Test
+    void laVibradaDeUnPuntoDelBendMueveElPitchBendDeLaSecuencia() {
+        List<Integer> quieto = pitchBendValuesOfANoteBentWithVibrato(0);
+        List<Integer> vibrado = pitchBendValuesOfANoteBentWithVibrato(3);
+
+        int alturaDelBend = quieto.stream().mapToInt(Integer::intValue).max().orElseThrow();
+        assertEquals(1, quieto.stream().filter(value -> value == alturaDelBend).distinct().count());
+        assertTrue(
+                vibrado.stream().anyMatch(value -> value > alturaDelBend),
+                "la vibrada tiene que empujar el pitch bend por encima de la altura del bend");
+        assertTrue(
+                quieto.stream().noneMatch(value -> value > alturaDelBend),
+                "sin vibrada el bend no puede pasar de su altura");
+    }
+
+    private List<Integer> pitchBendValuesOfANoteBentWithVibrato(int level) {
+        Bend bend = new Bend(BendType.PREBEND, List.of(
+                new BendPoint(0, 4, level), new BendPoint(BendPoint.LAST_POSITION, 4, 0)));
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0).withBend(bend))));
+        Score score = Score.blank().withTrack(0,
+                com.gstncaruso.tabpro.core.model.Track.standardGuitar("Guitarra").withMeasure(0, measure));
+
+        Track track = MidiSequences.fromTimeline(Timeline.of(score)).getTracks()[1];
+
+        return pitchBendEvents(track).stream().map(this::pitchBendValue).toList();
     }
 
     private List<ShortMessage> pitchBendEvents(Track track) {
