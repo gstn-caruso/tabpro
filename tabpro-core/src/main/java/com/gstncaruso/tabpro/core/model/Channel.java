@@ -1,5 +1,7 @@
 package com.gstncaruso.tabpro.core.model;
 
+import java.util.Set;
+
 /**
  * Los parametros de sonido de una pista, los que muestra la mesa de mezcla.
  *
@@ -65,6 +67,38 @@ public record Channel(
             next++;
         }
         return Math.min(next, CHANNELS_PER_PORT);
+    }
+
+    /**
+     * La misma pista con el proximo canal libre y su canal de efectos, el par que no colisiona
+     * con ninguno de los que ya estan usando otras pistas no percutivas -salta el canal de
+     * percusion, para no aterrizar ahi por accidente- y usa {@link #effectChannelNextTo} para
+     * el segundo canal, la misma regla que ya calcula ese valor en cualquier otro lugar. La usan
+     * tanto una pista nueva como el arreglo de un archivo guardado antes de que el canal
+     * configurado llegara a sonar de verdad.
+     */
+    public Channel withNextFreeChannelPairAfter(Set<Integer> channelsInUse) {
+        for (int candidate = 1; candidate <= CHANNELS_PER_PORT; candidate++) {
+            if (candidate == PERCUSSION_CHANNEL || channelsInUse.contains(candidate)) {
+                continue;
+            }
+            int effects = effectChannelNextTo(candidate);
+            if (!channelsInUse.contains(effects)) {
+                return withNumber(candidate).withEffectChannel(effects);
+            }
+        }
+        // no quedo ningun par libre: comparte consigo misma antes que fallar.
+        int onlyFree = firstFreeChannel(channelsInUse);
+        return withNumber(onlyFree).withEffectChannel(onlyFree);
+    }
+
+    private static int firstFreeChannel(Set<Integer> channelsInUse) {
+        for (int candidate = 1; candidate <= CHANNELS_PER_PORT; candidate++) {
+            if (candidate != PERCUSSION_CHANNEL && !channelsInUse.contains(candidate)) {
+                return candidate;
+            }
+        }
+        return 1;
     }
 
     public boolean isPercussionChannel() {

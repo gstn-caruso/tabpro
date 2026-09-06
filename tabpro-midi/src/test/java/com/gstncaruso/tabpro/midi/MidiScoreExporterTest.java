@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.midi;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiSystem;
@@ -187,6 +189,34 @@ class MidiScoreExporterTest {
 
         assertEquals(4, onlyShortMessageOf(sequence.getTracks()[1], ShortMessage.NOTE_ON).getChannel());
         assertEquals(4, onlyShortMessageOf(sequence.getTracks()[2], ShortMessage.NOTE_ON).getChannel());
+    }
+
+    /**
+     * Antes, una pista nueva entraba siempre en el canal 1 -no importaba porque MidiSequences
+     * ignoraba ese valor-. Ahora que el canal configurado llega a sonar, una partitura armada
+     * agregando pistas desde cero, sin tocar la mesa de mezcla, tiene que sonar igual que
+     * siempre: tres pistas, cada una con su instrumento, no las tres pisandose en una sola.
+     */
+    @Test
+    void aFreshScoreWithThreeTracksSoundsAsThreeDistinctTracksWithoutTouchingTheMixer() {
+        Editor editor = new Editor(Score.blank());
+        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardGuitar("Guitarra 2"));
+
+        Sequence sequence = exporter.toSequence(editor.score());
+
+        ShortMessage first = firstProgramChangeOf(sequence.getTracks()[1]);
+        ShortMessage second = firstProgramChangeOf(sequence.getTracks()[2]);
+        ShortMessage third = firstProgramChangeOf(sequence.getTracks()[3]);
+        assertEquals(3, Set.of(first.getChannel(), second.getChannel(), third.getChannel()).size(),
+                "las tres pistas tienen que sonar en canales distintos");
+        assertEquals(25, first.getData1(), "la primera guitarra");
+        assertEquals(33, second.getData1(), "el bajo");
+        assertEquals(25, third.getData1(), "la segunda guitarra");
+    }
+
+    private ShortMessage firstProgramChangeOf(javax.sound.midi.Track track) {
+        return (ShortMessage) track.get(0).getMessage();
     }
 
     @Test

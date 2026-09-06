@@ -45,10 +45,12 @@ import com.gstncaruso.tabpro.core.model.effects.Wah;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 
 /** La sesion de edicion: la partitura, donde esta parado el cursor y como cambiarla. */
@@ -971,11 +973,16 @@ public final class Editor {
     }
 
     /**
-     * Una pista nueva entra con la misma cantidad de compases que la partitura y
-     * con los mismos atributos, porque un compas vale igual en todas las pistas.
+     * Una pista nueva entra con la misma cantidad de compases que la partitura,
+     * con los mismos atributos -porque un compas vale igual en todas las pistas-
+     * y, si no es de percusion, en el proximo canal libre: sin esto quedaria en
+     * el canal por defecto de {@link Channel#playing}, que colisiona con
+     * cualquier otra pista que tampoco lo haya tocado.
      */
     private Track alignedToTheScore(Track track) {
-        Track aligned = track;
+        Track aligned = track.isPercussion()
+                ? track
+                : track.withChannel(track.channel().withNextFreeChannelPairAfter(channelsInUse()));
         while (aligned.measureCount() < score.measureCount()) {
             aligned = aligned.withMeasureInsertedAt(aligned.measureCount(), Measure.empty(TimeSignature.fourFour(), Duration.quarter()));
         }
@@ -986,6 +993,19 @@ public final class Editor {
                     measure -> measure.withTimeSignature(model.timeSignature()).withAttributes(model.attributes()));
         }
         return aligned;
+    }
+
+    /** Los canales -limpio y de efectos- que ya estan usando las pistas no percutivas de la partitura. */
+    private Set<Integer> channelsInUse() {
+        Set<Integer> used = new HashSet<>();
+        for (int index = 0; index < score.trackCount(); index++) {
+            Track existing = score.track(index);
+            if (!existing.isPercussion()) {
+                used.add(existing.channel().number());
+                used.add(existing.channel().effectChannel());
+            }
+        }
+        return used;
     }
 
     private Cursor clampedCursorIn(Score next, int trackIndex) {

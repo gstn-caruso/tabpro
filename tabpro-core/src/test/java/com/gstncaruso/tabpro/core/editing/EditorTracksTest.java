@@ -23,6 +23,41 @@ class EditorTracksTest {
         assertEquals("Bajo", editor.currentTrack().name());
     }
 
+    /**
+     * Antes, una pista nueva entraba siempre en el canal 1: no molestaba porque MidiSequences
+     * ignoraba ese valor y repartia los canales por su cuenta. Ahora que el canal configurado
+     * llega a sonar, una pista nueva tiene que arrancar en un canal que no colisione con las que
+     * ya estan, o toda partitura de varias pistas recien armada sonaria con un solo instrumento.
+     */
+    @Test
+    void addingATrackAssignsItTheNextFreeChannelPair() {
+        Editor editor = new Editor(Score.blank());
+
+        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardGuitar("Guitarra 2"));
+
+        Channel first = editor.score().track(0).channel();
+        Channel second = editor.score().track(1).channel();
+        Channel third = editor.score().track(2).channel();
+        assertEquals(1, first.number());
+        assertEquals(3, second.number());
+        assertEquals(5, third.number());
+        assertEquals(4, second.effectChannel());
+        assertEquals(6, third.effectChannel());
+    }
+
+    /** La percusion sigue yendo siempre al canal 10, nunca al proximo canal libre. */
+    @Test
+    void addingAPercussionTrackKeepsItOnTheTenthChannel() {
+        Editor editor = new Editor(Score.blank());
+
+        editor.addTrack(Track.percussion("Bateria"));
+
+        Channel percussion = editor.score().track(1).channel();
+        assertEquals(Channel.PERCUSSION_CHANNEL, percussion.number());
+        assertEquals(Channel.PERCUSSION_CHANNEL, percussion.effectChannel());
+    }
+
     @Test
     void addingATrackGivesItAsManyMeasuresAsTheScoreAlreadyHas() {
         Editor editor = new Editor(Score.blank());
