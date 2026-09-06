@@ -143,6 +143,36 @@ class TransportTest {
     }
 
     @Test
+    void elMetronomoArrancaConUnVolumenPorDefecto() {
+        assertEquals(100, transport.metronomeVolume());
+    }
+
+    @Test
+    void setMetronomeVolumeCambiaElVolumenSinTocarSiEstaEncendido() {
+        transport.toggleMetronome();
+
+        transport.setMetronomeVolume(42);
+
+        assertEquals(42, transport.metronomeVolume());
+        assertTrue(transport.isMetronomeOn());
+    }
+
+    @Test
+    void setMetronomeEnabledPrendeYApagaSinTocarElVolumen() {
+        transport.setMetronomeVolume(42);
+
+        transport.setMetronomeEnabled(true);
+
+        assertTrue(transport.isMetronomeOn());
+        assertEquals(42, transport.metronomeVolume());
+
+        transport.setMetronomeEnabled(false);
+
+        assertFalse(transport.isMetronomeOn());
+        assertEquals(42, transport.metronomeVolume());
+    }
+
+    @Test
     void aLoopKeepsPlayingUntilOneStopsIt() {
         transport.loopOver(new com.gstncaruso.tabpro.core.playback.LoopRange(0, 0), null);
 

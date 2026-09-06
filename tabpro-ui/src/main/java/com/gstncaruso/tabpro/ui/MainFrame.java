@@ -107,7 +107,6 @@ public final class MainFrame extends JFrame {
     private PageSetup pageSetup = DefaultPageSetup.userSetup().get();
     private com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences editingPreferences =
             com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences.defaults();
-    private MetronomeSettings metronomeSettings = MetronomeSettings.off();
     private final ChosenScale chosenScale = new ChosenScale();
     private final JSplitPane split;
 
@@ -960,8 +959,11 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void metronomeSettings() {
-            MetronomeDialog.ask(MainFrame.this, editor, metronomeSettings)
-                    .ifPresent(settings -> metronomeSettings = settings);
+            MetronomeSettings current = new MetronomeSettings(transport.isMetronomeOn(), transport.metronomeVolume());
+            MetronomeDialog.ask(MainFrame.this, editor, current).ifPresent(settings -> {
+                transport.setMetronomeEnabled(settings.active());
+                transport.setMetronomeVolume(settings.volume());
+            });
             backToTheScore();
         }
 
