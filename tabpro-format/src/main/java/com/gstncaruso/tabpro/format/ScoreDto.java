@@ -26,7 +26,7 @@ public record ScoreDto(
         List<TrackDto> tracks,
         LyricsDto lyrics) {
 
-    public static final int CURRENT_FORMAT = 3;
+    public static final int CURRENT_FORMAT = 4;
     private static final int OLDEST_READABLE_FORMAT = 1;
 
     public static ScoreDto from(Score score) {

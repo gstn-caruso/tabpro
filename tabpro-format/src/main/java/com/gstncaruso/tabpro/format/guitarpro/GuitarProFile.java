@@ -191,6 +191,7 @@ public final class GuitarProFile {
                 sound.tremolo(),
                 1,
                 Math.clamp(header.channelIndex1Based(), 1, Channel.CHANNELS_PER_PORT),
+                Channel.effectChannelNextTo(Math.clamp(header.channelIndex1Based(), 1, Channel.CHANNELS_PER_PORT)),
                 false,
                 false);
     }

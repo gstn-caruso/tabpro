@@ -73,4 +73,48 @@ class ChannelTest {
     void isSilentWhenTurnedAllTheWayDown() {
         assertTrue(Channel.playing(25).withVolume(0).isSilent());
     }
+
+    @Test
+    void playsItsEffectsOnTheChannelNextToItsOwn() {
+        Channel channel = Channel.playing(25);
+
+        assertEquals(1, channel.number());
+        assertEquals(2, channel.effectChannel());
+    }
+
+    @Test
+    void percussionPlaysEverythingOnTheTenthChannel() {
+        Channel percussion = Channel.percussion();
+
+        assertEquals(Channel.PERCUSSION_CHANNEL, percussion.number());
+        assertEquals(Channel.PERCUSSION_CHANNEL, percussion.effectChannel());
+    }
+
+    @Test
+    void movesItsChannelAndItsEffectChannelIndependently() {
+        Channel channel = Channel.playing(25);
+
+        assertEquals(5, channel.withNumber(5).number());
+        assertEquals(2, channel.withNumber(5).effectChannel());
+        assertEquals(6, channel.withEffectChannel(6).effectChannel());
+        assertEquals(1, channel.withEffectChannel(6).number());
+    }
+
+    @Test
+    void rejectsAnEffectChannelOutsideThePort() {
+        Channel channel = Channel.playing(25);
+
+        assertThrows(IllegalArgumentException.class, () -> channel.withEffectChannel(0));
+        assertThrows(IllegalArgumentException.class, () -> channel.withEffectChannel(17));
+    }
+
+    @Test
+    void theChannelNextToTheLastOneIsTheLastOneItself() {
+        assertEquals(Channel.CHANNELS_PER_PORT, Channel.effectChannelNextTo(Channel.CHANNELS_PER_PORT));
+    }
+
+    @Test
+    void theChannelNextToPercussionIsPercussionItself() {
+        assertEquals(Channel.PERCUSSION_CHANNEL, Channel.effectChannelNextTo(Channel.PERCUSSION_CHANNEL));
+    }
 }
