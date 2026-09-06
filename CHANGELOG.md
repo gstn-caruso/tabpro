@@ -1,3 +1,9 @@
+## [0.16.0](https://github.com/gstn-caruso/tabpro/compare/v0.15.2...v0.16.0) (2026-09-06)
+
+### Features
+
+* la reproducción como se ve y como se maneja ([#66](https://github.com/gstn-caruso/tabpro/issues/66)) ([ea3b45a](https://github.com/gstn-caruso/tabpro/commit/ea3b45acdfbb371082618810ca0f1e24fe52d144))
+
 ## [0.15.2](https://github.com/gstn-caruso/tabpro/compare/v0.15.1...v0.15.2) (2026-09-06)
 
 ### Bug Fixes
