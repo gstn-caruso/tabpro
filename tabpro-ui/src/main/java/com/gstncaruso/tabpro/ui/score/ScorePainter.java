@@ -155,18 +155,41 @@ public final class ScorePainter {
     }
 
     /**
-     * Las lineas de reproduccion se dibujan al final, encima de toda la musica: si se pintaran
-     * antes que las notas, cualquier cabeza, plica o numero de traste que cayera en su columna
-     * las taparia por completo.
+     * La linea de reproduccion se dibuja al final, encima de toda la musica: si se pintara antes
+     * que las notas, cualquier cabeza, plica o numero de traste que cayera en su columna la
+     * taparia por completo.
      */
     private static void paintPlayingLines(Graphics2D g, ScoreLayout layout, Score score, Playhead playhead) {
+        soundingNow(layout, score, playhead)
+                .ifPresent(position -> paintPlaying(g, layout, position.track(), position));
+    }
+
+    /**
+     * Todas las pistas suenan a la vez, asi que la reproduccion esta en un solo lugar y le toca
+     * una sola linea. Como cada pista parte el compas distinto -negras en la guitarra, una
+     * redonda en el bajo- el arranque del beat que suena cae en una x distinta segun la pista;
+     * la que vale es la que arranco mas tarde, que es la mas cercana al instante que se oye.
+     */
+    private static Optional<BeatPosition> soundingNow(ScoreLayout layout, Score score, Playhead playhead) {
+        Optional<BeatPosition> latest = Optional.empty();
         for (int trackIndex = 0; trackIndex < score.trackCount(); trackIndex++) {
             if (!layout.shows(trackIndex)) {
                 continue;
             }
-            final int track = trackIndex;
-            playhead.on(track).ifPresent(position -> paintPlaying(g, layout, track, position));
+            Optional<BeatPosition> here = playhead.on(trackIndex);
+            if (here.isPresent() && (latest.isEmpty() || startsLater(layout, here.get(), latest.get()))) {
+                latest = here;
+            }
         }
+        return latest;
+    }
+
+    private static boolean startsLater(ScoreLayout layout, BeatPosition one, BeatPosition other) {
+        return startOf(layout, one) > startOf(layout, other);
+    }
+
+    private static int startOf(ScoreLayout layout, BeatPosition position) {
+        return layout.beatBounds(position.track(), position.measure(), position.beat()).x;
     }
 
     /**
