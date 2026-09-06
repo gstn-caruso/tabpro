@@ -1,0 +1,22 @@
+{
+  "format": 3,
+  "title": "Prueba",
+  "tempo": 120,
+  "tracks": [
+    {
+      "name": "Guitarra",
+      "midiProgram": 25,
+      "port": 2,
+      "channel": 5,
+      "tuning": [64, 59, 55, 50, 45, 40],
+      "measures": [
+        {
+          "timeSignature": { "beats": 4, "beatUnit": 4 },
+          "beats": [
+            { "value": 4, "dotted": false, "notes": [ { "string": 6, "fret": 0 } ] }
+          ]
+        }
+      ]
+    }
+  ]
+}

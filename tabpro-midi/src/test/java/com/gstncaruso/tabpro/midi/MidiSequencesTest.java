@@ -143,7 +143,7 @@ class MidiSequencesTest {
     }
 
     @Test
-    void usesOneChannelPerTrack() {
+    void handsOutTwoConsecutiveChannelsToEachTrack() {
         TrackTimeline first = new TrackTimeline(25, 100, 64,
                 List.of(), List.of());
         TrackTimeline second = new TrackTimeline(30, 100, 64,
@@ -152,10 +152,74 @@ class MidiSequencesTest {
 
         Sequence sequence = MidiSequences.fromTimeline(timeline);
 
-        ShortMessage firstProgramChange = (ShortMessage) sequence.getTracks()[1].get(0).getMessage();
-        ShortMessage secondProgramChange = (ShortMessage) sequence.getTracks()[2].get(0).getMessage();
-        assertEquals(0, firstProgramChange.getChannel());
-        assertEquals(1, secondProgramChange.getChannel());
+        assertEquals(List.of(0, 1), channelsSetUpIn(sequence.getTracks()[1]));
+        assertEquals(List.of(2, 3), channelsSetUpIn(sequence.getTracks()[2]));
+    }
+
+    @Test
+    void setsUpTheInstrumentTheVolumeAndThePanOnBothChannels() {
+        TrackTimeline trackTimeline = new TrackTimeline(25, 80, 20, List.of(), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
+
+        Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
+
+        for (int channel : List.of(0, 1)) {
+            assertEquals(25, programChangeOn(track, channel));
+            assertEquals(80, controllerValueOn(track, channel, 7));
+            assertEquals(20, controllerValueOn(track, channel, 10));
+        }
+    }
+
+    @Test
+    void playsANoteWithAnEffectOnTheSecondChannelOfTheTrack() {
+        ScheduledNote limpia = new ScheduledNote(0, 960, new Pitch(64));
+        ScheduledNote conBend = new ScheduledNote(960, 960, new Pitch(67), new Velocity(100),
+                PitchTrajectory.ramp(0, 0, 960, 2), false);
+        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, List.of(limpia, conBend), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
+
+        Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
+
+        assertEquals(List.of(0, 1), notesOnByChannel(track));
+    }
+
+    @Test
+    void theBendOfANoteTravelsOnTheChannelWhereThatNoteSounds() {
+        ScheduledNote conBend = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100),
+                PitchTrajectory.ramp(0, 0, 960, 2), false);
+        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, List.of(conBend), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
+
+        Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
+
+        List<ShortMessage> bends = messagesOfCommand(track, ShortMessage.PITCH_BEND);
+        assertFalse(bends.isEmpty());
+        assertTrue(bends.stream().allMatch(bend -> bend.getChannel() == 1));
+    }
+
+    @Test
+    void aPercussionTrackPlaysItsEffectsOnTheTenthChannelToo() {
+        ScheduledNote conBend = new ScheduledNote(0, 960, new Pitch(38), new Velocity(100),
+                PitchTrajectory.ramp(0, 0, 960, 2), false);
+        TrackTimeline percussion = new TrackTimeline(0, 100, 64, true, List.of(conBend), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(percussion));
+
+        Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
+
+        assertEquals(List.of(9), channelsSetUpIn(track));
+        assertEquals(List.of(9), notesOnByChannel(track));
+    }
+
+    @Test
+    void aChangeOfParameterReachesBothChannelsOfTheTrack() {
+        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, false, List.of(), List.of(),
+                List.of(new ScheduledParameter(480, SoundParameter.VOLUME, 40)));
+        Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
+
+        Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
+
+        assertEquals(40, controllerValueOn(track, 0, 7, 480));
+        assertEquals(40, controllerValueOn(track, 1, 7, 480));
     }
 
     @Test
@@ -189,9 +253,9 @@ class MidiSequencesTest {
 
         Sequence sequence = MidiSequences.fromTimeline(timeline);
 
-        assertEquals(8, channelOf(sequence.getTracks()[9]));
-        assertEquals(10, channelOf(sequence.getTracks()[10]));
-        assertEquals(11, channelOf(sequence.getTracks()[11]));
+        assertEquals(List.of(6, 7), channelsSetUpIn(sequence.getTracks()[4]));
+        assertEquals(List.of(8, 10), channelsSetUpIn(sequence.getTracks()[5]));
+        assertEquals(List.of(11, 12), channelsSetUpIn(sequence.getTracks()[6]));
     }
 
     @Test
@@ -538,5 +602,64 @@ class MidiSequencesTest {
                         && sm.getCommand() == ShortMessage.CONTROL_CHANGE && sm.getData1() == 11)
                 .map(message -> ((ShortMessage) message).getData2())
                 .toList();
+    }
+
+    /** Los canales que la pista prepara antes de tocar, en el orden en que los prepara. */
+    private List<Integer> channelsSetUpIn(Track track) {
+        return messagesOfCommand(track, ShortMessage.PROGRAM_CHANGE).stream()
+                .map(ShortMessage::getChannel)
+                .distinct()
+                .toList();
+    }
+
+    /** Los canales por los que entra cada nota, en el orden en que entran. */
+    private List<Integer> notesOnByChannel(Track track) {
+        return messagesOfCommand(track, ShortMessage.NOTE_ON).stream()
+                .map(ShortMessage::getChannel)
+                .toList();
+    }
+
+    private List<ShortMessage> messagesOfCommand(Track track, int command) {
+        return java.util.stream.IntStream.range(0, track.size())
+                .mapToObj(track::get)
+                .map(MidiEvent::getMessage)
+                .filter(message -> message instanceof ShortMessage sm && sm.getCommand() == command)
+                .map(message -> (ShortMessage) message)
+                .toList();
+    }
+
+    private int programChangeOn(Track track, int channel) {
+        return messagesOfCommand(track, ShortMessage.PROGRAM_CHANGE).stream()
+                .filter(message -> message.getChannel() == channel)
+                .map(ShortMessage::getData1)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("no se encontro el instrumento del canal " + channel));
+    }
+
+    private int controllerValueOn(Track track, int channel, int controller) {
+        return controllerOn(track, channel, controller).getData2();
+    }
+
+    private int controllerValueOn(Track track, int channel, int controller, long tick) {
+        return java.util.stream.IntStream.range(0, track.size())
+                .mapToObj(track::get)
+                .filter(event -> event.getTick() == tick)
+                .map(MidiEvent::getMessage)
+                .filter(message -> message instanceof ShortMessage sm
+                        && sm.getCommand() == ShortMessage.CONTROL_CHANGE
+                        && sm.getChannel() == channel
+                        && sm.getData1() == controller)
+                .map(message -> ((ShortMessage) message).getData2())
+                .findFirst()
+                .orElseThrow(() -> new AssertionError(
+                        "no se encontro el controlador " + controller + " del canal " + channel));
+    }
+
+    private ShortMessage controllerOn(Track track, int channel, int controller) {
+        return messagesOfCommand(track, ShortMessage.CONTROL_CHANGE).stream()
+                .filter(message -> message.getChannel() == channel && message.getData1() == controller)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError(
+                        "no se encontro el controlador " + controller + " del canal " + channel));
     }
 }

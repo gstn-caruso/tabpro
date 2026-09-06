@@ -67,11 +67,12 @@ de diapasón, zurdo o diestro, y la nota que está bajo el mouse.
 
 ![La mesa de mezcla y la vista global](docs/capturas/mesa-de-mezcla.png)
 
-Puerto, canal, instrumento General MIDI —o kit de batería, si la pista es de
-percusión—, volumen, paneo, chorus, reverb, phaser, trémolo, silenciar y solo.
-Todo editable mientras suena. Al lado, la vista global: una fila de color por
-pista, un cuadradito por compás y la zona de marcadores, para saltar a cualquier
-parte de un clic.
+Puerto, los dos canales de la pista —el suyo y el de sus efectos, para que un bend
+no le corra la afinación a las notas limpias—, instrumento General MIDI —o kit de
+batería, si la pista es de percusión—, volumen, paneo, chorus, reverb, phaser,
+trémolo, silenciar y solo. Todo editable mientras suena. Al lado, la vista global:
+una fila de color por pista, un cuadradito por compás y la zona de marcadores,
+para saltar a cualquier parte de un clic.
 
 ## Las herramientas
 

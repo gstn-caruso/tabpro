@@ -17,6 +17,16 @@ public record ScheduledNote(
         this(startTick, durationTicks, pitch, DEFAULT_VELOCITY, PitchTrajectory.flat(), false);
     }
 
+    /**
+     * Si la nota lleva algun efecto que hay que aplicar sobre el canal entero
+     * mientras suena: correrle la altura o abrirle el volumen de a poco. Son
+     * las que Guitar Pro manda al segundo canal de la pista, para no arrastrar
+     * a las que suenan limpias.
+     */
+    public boolean carriesAnEffect() {
+        return !bend.isFlat() || fadeIn;
+    }
+
     public ScheduledNote withDurationTicks(long durationTicks) {
         return new ScheduledNote(startTick, durationTicks, pitch, velocity, bend, fadeIn);
     }

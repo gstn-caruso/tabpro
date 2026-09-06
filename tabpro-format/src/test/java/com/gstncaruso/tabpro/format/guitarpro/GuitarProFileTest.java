@@ -121,6 +121,17 @@ class GuitarProFileTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"gp3", "gp4", "gp5"})
+    void readsTheTwoChannelsOfEveryTrack(String extension) {
+        Score score = readFeatures(extension);
+
+        assertEquals(1, score.track(0).channel().number());
+        assertEquals(2, score.track(0).channel().effectChannel());
+        assertEquals(Channel.PERCUSSION_CHANNEL, score.track(2).channel().number());
+        assertEquals(Channel.PERCUSSION_CHANNEL, score.track(2).channel().effectChannel());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"gp3", "gp4", "gp5"})
     void readsAPercussionTrackOnItsOwnChannel(String extension) {
         Track drums = readFeatures(extension).track(2);
 

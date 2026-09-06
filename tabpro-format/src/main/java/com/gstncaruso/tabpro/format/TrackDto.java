@@ -24,6 +24,7 @@ public record TrackDto(
         Integer tremolo,
         Integer port,
         Integer channel,
+        Integer effectChannel,
         Boolean muted,
         Boolean solo,
         String tuningName,
@@ -56,6 +57,7 @@ public record TrackDto(
                 sound.tremolo(),
                 sound.port(),
                 sound.number(),
+                sound.effectChannel(),
                 sound.muted(),
                 sound.solo(),
                 track.tuning().name(),
@@ -99,6 +101,7 @@ public record TrackDto(
                 orElse(tremolo, 0),
                 orElse(port, 1),
                 orElse(channel, 1),
+                orElse(effectChannel, Channel.effectChannelNextTo(orElse(channel, 1))),
                 isSet(muted),
                 isSet(solo));
     }

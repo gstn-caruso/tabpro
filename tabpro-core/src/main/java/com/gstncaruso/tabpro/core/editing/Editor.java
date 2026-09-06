@@ -475,6 +475,10 @@ public final class Editor {
         changeChannel(index, channel -> channel.withNumber(number));
     }
 
+    public void setEffectChannel(int index, int number) {
+        changeChannel(index, channel -> channel.withEffectChannel(number));
+    }
+
     public void toggleMute(int index) {
         changeChannel(index, Channel::toggledMute);
     }

@@ -64,8 +64,10 @@ public final class MidiSequences {
             int nonPercussionOrdinal = 0;
             for (int index = 0; index < timeline.tracks().size(); index++) {
                 TrackTimeline trackTimeline = timeline.tracks().get(index);
-                int channel = trackTimeline.percussion() ? PERCUSSION_CHANNEL : channelFor(nonPercussionOrdinal++);
-                writeTrack(sequence.createTrack(), index, channel, trackTimeline);
+                TrackChannels channels = trackTimeline.percussion()
+                        ? TrackChannels.percussion()
+                        : TrackChannels.ofTheTrackNumber(nonPercussionOrdinal++);
+                writeTrack(sequence.createTrack(), index, channels, trackTimeline);
             }
             return sequence;
         } catch (InvalidMidiDataException e) {
@@ -108,26 +110,55 @@ public final class MidiSequences {
                 Integer.parseInt(parts[2])));
     }
 
-    /** El canal MIDI que le toca al enesimo instrumento no percusivo, salteando siempre el 9 (percusion). */
-    static int channelFor(int nonPercussionOrdinal) {
-        int slot = nonPercussionOrdinal % (CHANNEL_COUNT - 1);
+    /** El canal MIDI que le toca a la enesima ranura, salteando siempre el 9 (percusion). */
+    static int channelFor(int slotNumber) {
+        int slot = slotNumber % (CHANNEL_COUNT - 1);
         return slot < PERCUSSION_CHANNEL ? slot : slot + 1;
     }
 
-    private static void writeTrack(Track track, int trackIndex, int channel, TrackTimeline trackTimeline)
+    /**
+     * Los dos canales de una pista, como los reparte Guitar Pro: uno para las
+     * notas limpias y el siguiente para las que llevan efecto, asi correrle la
+     * altura a una no arrastra a las demas. La percusion toca todo en el suyo.
+     */
+    private record TrackChannels(int clean, int effects) {
+
+        static TrackChannels percussion() {
+            return new TrackChannels(PERCUSSION_CHANNEL, PERCUSSION_CHANNEL);
+        }
+
+        static TrackChannels ofTheTrackNumber(int nonPercussionOrdinal) {
+            return new TrackChannels(channelFor(2 * nonPercussionOrdinal), channelFor(2 * nonPercussionOrdinal + 1));
+        }
+
+        int of(ScheduledNote note) {
+            return note.carriesAnEffect() ? effects : clean;
+        }
+
+        /** Los canales que hay que preparar: uno solo cuando la pista usa el mismo para todo. */
+        List<Integer> toPrepare() {
+            return clean == effects ? List.of(clean) : List.of(clean, effects);
+        }
+    }
+
+    private static void writeTrack(Track track, int trackIndex, TrackChannels channels, TrackTimeline trackTimeline)
             throws InvalidMidiDataException {
-        track.add(programChangeEvent(channel, trackTimeline.program()));
-        writePitchBendRange(track, channel);
-        track.add(controlChangeEvent(channel, VOLUME_CONTROLLER, trackTimeline.volume(), 0));
-        track.add(controlChangeEvent(channel, PAN_CONTROLLER, trackTimeline.pan(), 0));
+        for (int channel : channels.toPrepare()) {
+            track.add(programChangeEvent(channel, trackTimeline.program()));
+            writePitchBendRange(track, channel);
+            track.add(controlChangeEvent(channel, VOLUME_CONTROLLER, trackTimeline.volume(), 0));
+            track.add(controlChangeEvent(channel, PAN_CONTROLLER, trackTimeline.pan(), 0));
+        }
         for (ScheduledNote note : trackTimeline.notes()) {
-            writeNote(track, channel, note);
+            writeNote(track, channels.of(note), note);
         }
         for (ScheduledBeat beat : trackTimeline.beats()) {
             track.add(markerEvent(trackIndex, beat));
         }
         for (ScheduledParameter parameter : trackTimeline.parameters()) {
-            track.add(parameterEvent(channel, parameter));
+            for (int channel : channels.toPrepare()) {
+                track.add(parameterEvent(channel, parameter));
+            }
         }
     }
 

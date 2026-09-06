@@ -24,7 +24,7 @@ import javax.swing.JPanel;
 
 /**
  * La mesa de mezcla: una fila por pista con numero, nombre, visibilidad en la vista multipista,
- * solo, silencio, puerto, canal, instrumento y los seis parametros de sonido. El titulo de cada
+ * solo, silencio, puerto, los dos canales, instrumento y los seis parametros de sonido. El titulo de cada
  * parametro se puede clickear para alternar entre potenciometro y numero, y los botones de arriba
  * reducen o restauran todos los parametros a la vez.
  */
@@ -43,7 +43,8 @@ public final class MixTable extends JPanel {
     public static final int REDUCE_BUTTON_WIDTH = 16;
 
     private static final List<Integer> COLUMN_WIDTHS = List.of(
-            NUMBER_WIDTH, VISIBLE_WIDTH, ICON_WIDTH, NAME_WIDTH, PORT_WIDTH, CHANNEL_WIDTH, INSTRUMENT_WIDTH,
+            NUMBER_WIDTH, VISIBLE_WIDTH, ICON_WIDTH, NAME_WIDTH, PORT_WIDTH, CHANNEL_WIDTH, CHANNEL_WIDTH,
+            INSTRUMENT_WIDTH,
             PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH,
             TOGGLE_WIDTH, TOGGLE_WIDTH);
 
@@ -130,7 +131,8 @@ public final class MixTable extends JPanel {
         header.add(reduceRestoreButtons());
         addTitle(header, "", NAME_WIDTH + ICON_WIDTH + VISIBLE_WIDTH - 2 * REDUCE_BUTTON_WIDTH - COLUMN_GAP);
         addTitle(header, "Prt", PORT_WIDTH);
-        addTitle(header, "Cnl", CHANNEL_WIDTH);
+        addTitle(header, "Ch", CHANNEL_WIDTH);
+        addTitle(header, "Ch2", CHANNEL_WIDTH);
         addTitle(header, "Instrumento", INSTRUMENT_WIDTH);
         for (MixParameter parameter : MixParameter.values()) {
             addClickableTitle(header, parameter);
