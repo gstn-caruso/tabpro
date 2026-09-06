@@ -128,6 +128,13 @@ public final class MenuBar {
         add(menu, "note.up", "note.down", "note.toUpperString", "note.toLowerString");
         menu.addSeparator();
         add(menu, "note.dynamics", "note.soundDuration", "note.fingering", "note.chord", "note.mixTableChange");
+        menu.addSeparator();
+        JMenu beams = new JMenu("Barra de unión");
+        add(beams, "note.forceBeamBreak", "note.preventBeamBreak", "note.resetBeamBreak");
+        menu.add(beams);
+        JMenu stems = new JMenu("Plica");
+        add(stems, "note.stemUp", "note.stemDown", "note.stemAutomatic");
+        menu.add(stems);
         return menu;
     }
 
