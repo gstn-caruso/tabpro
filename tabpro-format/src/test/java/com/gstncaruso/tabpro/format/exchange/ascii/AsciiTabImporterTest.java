@@ -85,6 +85,47 @@ class AsciiTabImporterTest {
         assertThrows(ScoreFileException.class, () -> importer.importScore("no hay tablatura aca", AsciiTabImportOptions.standard()));
     }
 
+    @Test
+    void importsOntoTheActiveTrackKeepingItsIdentity() {
+        String text = block(4, "-5-");
+        Track existing = Track.standardBass("Bajo activo");
+
+        Track merged = importer.importInto(existing, text, AsciiTabImportOptions.standard());
+
+        assertEquals("Bajo activo", merged.name());
+        assertEquals(Tuning.standardBass(), merged.tuning());
+        assertEquals(existing.channel(), merged.channel());
+        assertEquals(List.of(new Note(1, 5)), merged.measure(0).beat(0).notes());
+    }
+
+    @Test
+    void mergesConsecutiveBlocksWithTheSameStringCountWhenImportingOntoATrack() {
+        String text = block(6, "-5-") + "\n" + block(6, "-0-");
+        Track existing = Track.standardGuitar("Guitarra activa");
+
+        Track merged = importer.importInto(existing, text, AsciiTabImportOptions.standard());
+
+        assertEquals(2, merged.measureCount());
+    }
+
+    @Test
+    void onlyUsesTheFirstGroupOfBlocksWhenTheStringCountChangesWhileImportingOntoATrack() {
+        String text = block(6, "-5-") + "\n" + block(4, "-3-");
+        Track existing = Track.standardGuitar("Guitarra activa");
+
+        Track merged = importer.importInto(existing, text, AsciiTabImportOptions.standard());
+
+        assertEquals(1, merged.measureCount());
+        assertEquals(List.of(new Note(1, 5)), merged.measure(0).beat(0).notes());
+    }
+
+    @Test
+    void rejectsATextWithoutAnyTabWhenImportingOntoATrack() {
+        Track existing = Track.standardGuitar("Guitarra activa");
+        assertThrows(ScoreFileException.class,
+                () -> importer.importInto(existing, "no hay tablatura aca", AsciiTabImportOptions.standard()));
+    }
+
     /** Un bloque de stringCount lineas: la primera cuerda lleva firstStringContent entre barras, el resto va vacio. */
     private static String block(int stringCount, String firstStringContent) {
         StringBuilder text = new StringBuilder();
