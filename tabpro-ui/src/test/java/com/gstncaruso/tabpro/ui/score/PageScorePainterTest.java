@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.score;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -15,6 +16,8 @@ import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.page.Orientation;
+import com.gstncaruso.tabpro.ui.page.PageBanner;
+import com.gstncaruso.tabpro.ui.page.PageElement;
 import com.gstncaruso.tabpro.ui.page.PageMetrics;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
@@ -145,9 +148,72 @@ class PageScorePainterTest {
     void paintsAnUnusualPaperWithoutThrowing() {
         Score score = scoreWithMeasures(30);
         ScoreViewport viewport = pageViewport(
-                new PageSetup(PaperFormat.LEGAL, Orientation.LANDSCAPE, 5, 40, 35, 5, 60, "", ""));
+                new PageSetup(
+                        PaperFormat.LEGAL, Orientation.LANDSCAPE, 5, 40, 35, 5, 60,
+                        PageBanner.header(), PageBanner.footer()));
 
         assertDoesNotThrow(() -> paintOn(score, viewport));
+    }
+
+    @Test
+    void turningOffAnElementOfTheHeaderChangesWhatTheSheetShows() {
+        Score score = Score.blank().withInfo(ScoreInfo.titled("Cancion de prueba"));
+        PageSetup showingTheTitle = PageSetup.defaults();
+        PageSetup hidingTheTitle = new PageSetup(
+                PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, 100,
+                PageBanner.header().with(PageElement.TITLE, false, "[%title]"), PageBanner.footer());
+
+        assertFalse(
+                sameSheet(render(score, showingTheTitle), render(score, hidingTheTitle)),
+                "destildar el titulo tiene que sacarlo de la hoja");
+    }
+
+    @Test
+    void theHeaderSaysWhatTheSetupSaysAndNotWhatTheScoreInformationSays() {
+        PageSetup fixedHeading = new PageSetup(
+                PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, 100,
+                onlyTheTitleSaying("Cancionero de la casa"), PageBanner.footer());
+
+        BufferedImage one = render(Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
+        BufferedImage another = render(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
+
+        assertTrue(sameSheet(one, another), "el encabezado es el texto configurado, no el titulo de la partitura");
+    }
+
+    private static PageBanner onlyTheTitleSaying(String text) {
+        PageBanner banner = PageBanner.header();
+        for (PageElement element : PageElement.values()) {
+            if (banner.lines().stream().anyMatch(line -> line.element() == element)) {
+                banner = banner.with(element, element == PageElement.TITLE, text);
+            }
+        }
+        return banner;
+    }
+
+    private static BufferedImage render(Score score, PageSetup setup) {
+        ScoreViewport viewport = pageViewport(setup);
+        Dimension size = PageScorePainter.canvasSize(score, viewport);
+        BufferedImage image = new BufferedImage(
+                Math.max(1, size.width), Math.max(1, size.height), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        PageScorePainter.paint(
+                g, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
+        g.dispose();
+        return image;
+    }
+
+    private static boolean sameSheet(BufferedImage one, BufferedImage another) {
+        if (one.getWidth() != another.getWidth() || one.getHeight() != another.getHeight()) {
+            return false;
+        }
+        for (int y = 0; y < one.getHeight(); y++) {
+            for (int x = 0; x < one.getWidth(); x++) {
+                if (one.getRGB(x, y) != another.getRGB(x, y)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private static ScoreViewport pageViewport(PageSetup setup) {
@@ -155,17 +221,17 @@ class PageScorePainterTest {
     }
 
     private static PageSetup paperOf(PaperFormat format, Orientation orientation) {
-        return new PageSetup(format, orientation, 20, 20, 20, 20, 100, "", "");
+        return new PageSetup(format, orientation, 20, 20, 20, 20, 100, PageBanner.header(), PageBanner.footer());
     }
 
     private static PageSetup withMargins(int millimetres) {
         return new PageSetup(
-                PaperFormat.A4, Orientation.PORTRAIT, millimetres, millimetres, millimetres, millimetres, 100, "", "");
+                PaperFormat.A4, Orientation.PORTRAIT, millimetres, millimetres, millimetres, millimetres, 100, PageBanner.header(), PageBanner.footer());
     }
 
     private static PageSetup sized(int scorePercent) {
         return new PageSetup(
-                PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, scorePercent, "", "");
+                PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, scorePercent, PageBanner.header(), PageBanner.footer());
     }
 
     private static void paint(Score score, ViewMode mode, Zoom zoom) {

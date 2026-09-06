@@ -93,16 +93,16 @@ class PageMetricsTest {
     }
 
     private static PageSetup setupOn(PaperFormat format, Orientation orientation) {
-        return new PageSetup(format, orientation, 20, 20, 20, 20, 100, "", "");
+        return new PageSetup(format, orientation, 20, 20, 20, 20, 100, PageBanner.header(), PageBanner.footer());
     }
 
     private static PageSetup withMargins(int top, int bottom, int left, int right) {
         return new PageSetup(
-                PaperFormat.A4, Orientation.PORTRAIT, top, bottom, left, right, 100, "", "");
+                PaperFormat.A4, Orientation.PORTRAIT, top, bottom, left, right, 100, PageBanner.header(), PageBanner.footer());
     }
 
     private static PageSetup sized(int scorePercent) {
         return new PageSetup(
-                PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, scorePercent, "", "");
+                PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, scorePercent, PageBanner.header(), PageBanner.footer());
     }
 }

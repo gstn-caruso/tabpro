@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Selection;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.ui.page.PageFields;
 import com.gstncaruso.tabpro.ui.page.PageMetrics;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -54,8 +55,10 @@ public final class PageScorePainter {
             return;
         }
 
-        for (PagePlacement page : placementsFor(layout, viewport)) {
-            paintSheet(g, score, layout, cursor, playhead, selection, viewport, page, page.screenTop());
+        List<PagePlacement> pages = placementsFor(layout, viewport);
+        for (int page = 0; page < pages.size(); page++) {
+            paintSheet(g, score, layout, cursor, playhead, selection, viewport, pages.get(page),
+                    new PageFields(score.info(), page + 1, pages.size()));
         }
     }
 
@@ -121,11 +124,14 @@ public final class PageScorePainter {
 
     private static void paintSheet(
             Graphics2D g, Score score, ScoreLayout layout, Cursor cursor, Playhead playhead,
-            Optional<Selection> selection, ScoreViewport viewport, PagePlacement page, int top) {
+            Optional<Selection> selection, ScoreViewport viewport, PagePlacement page, PageFields fields) {
         PageMetrics sheet = viewport.sheet();
+        int top = page.screenTop();
         PageChromePainter.paintSheet(g, 0, top, sheet.pageWidth(), page.pageHeight());
-        PageChromePainter.paintHeader(g, score.info(), sheet, top, page.isFirst());
-        PageChromePainter.paintFooter(g, score.info(), sheet, top, page.pageHeight());
+        PageChromePainter.paintHeader(
+                g, viewport.pageSetup().header().fillIn(fields), sheet, top, page.isFirst());
+        PageChromePainter.paintFooter(
+                g, viewport.pageSetup().footer().fillIn(fields), sheet, top, page.pageHeight());
 
         BufferedImage ink = PaperRenderer.renderAsInk(
                 sheet.contentWidth(), page.paintedHeight(), inkGraphics -> {
