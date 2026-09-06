@@ -1,3 +1,9 @@
+## [0.26.0](https://github.com/gstn-caruso/tabpro/compare/v0.25.1...v0.26.0) (2026-09-06)
+
+### Features
+
+* la casilla que faltaba para forzar el multipista en pantalla horizontal ([#97](https://github.com/gstn-caruso/tabpro/issues/97)) ([138c0cf](https://github.com/gstn-caruso/tabpro/commit/138c0cf88ef591976eb31481ffe3d559c98e30cc))
+
 ## [0.25.1](https://github.com/gstn-caruso/tabpro/compare/v0.25.0...v0.25.1) (2026-09-06)
 
 ### Bug Fixes
