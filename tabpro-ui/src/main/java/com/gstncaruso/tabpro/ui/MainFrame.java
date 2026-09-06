@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.actions.AcceleratorGuard;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import com.gstncaruso.tabpro.ui.browser.BrowserPlayback;
 import com.gstncaruso.tabpro.ui.browser.ScoreBrowser;
 import com.gstncaruso.tabpro.ui.harmony.ChordDialog;
 import com.gstncaruso.tabpro.ui.harmony.ChosenScale;
@@ -46,6 +47,7 @@ import com.gstncaruso.tabpro.ui.dialogs.wizards.RestFillerDialog;
 import com.gstncaruso.tabpro.ui.dialogs.wizards.StringOptionsDialog;
 import com.gstncaruso.tabpro.ui.dialogs.wizards.TranspositionDialog;
 import com.gstncaruso.tabpro.core.model.Pitch;
+import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.sound.LoopDialog;
 import com.gstncaruso.tabpro.ui.sound.MidiSetupDialog;
@@ -54,6 +56,7 @@ import com.gstncaruso.tabpro.ui.sound.StringAssignment;
 import com.gstncaruso.tabpro.ui.sound.RelativeTempoDialog;
 import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
+import com.gstncaruso.tabpro.ui.score.HorizontalMultitrack;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.percussion.PercussionAssistant;
 import com.gstncaruso.tabpro.ui.print.ImageExportException;
@@ -429,9 +432,23 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void browse() {
-            ScoreBrowser browser = new ScoreBrowser(MainFrame.this, files, this::openChosen, transport::preview);
+            ScoreBrowser browser = new ScoreBrowser(MainFrame.this, files, this::openChosen, new BrowsedSound());
             browser.searchIn(document.path().map(Path::getParent).orElse(Path.of(System.getProperty("user.home"))));
             browser.setVisible(true);
+        }
+
+        /** Lo que el explorador necesita del transporte para escuchar con salto automático. */
+        private final class BrowsedSound implements BrowserPlayback.Sound {
+
+            @Override
+            public void play(Score score, int bars, Runnable onFinished) {
+                transport.previewBars(score, bars, onFinished);
+            }
+
+            @Override
+            public void stop() {
+                transport.stop();
+            }
         }
 
         @Override
@@ -776,25 +793,27 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void pageMode() {
-            canvas.setViewMode(ViewMode.PAGE);
-            backToTheScore();
+            applyViewMode(ViewMode.PAGE);
         }
 
         @Override
         public void parchmentMode() {
-            canvas.setViewMode(ViewMode.PARCHMENT);
-            backToTheScore();
+            applyViewMode(ViewMode.PARCHMENT);
         }
 
         @Override
         public void verticalScreenMode() {
-            canvas.setViewMode(ViewMode.SCREEN_VERTICAL);
-            backToTheScore();
+            applyViewMode(ViewMode.SCREEN_VERTICAL);
         }
 
         @Override
         public void horizontalScreenMode() {
-            canvas.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+            applyViewMode(ViewMode.SCREEN_HORIZONTAL);
+        }
+
+        private void applyViewMode(ViewMode mode) {
+            canvas.setViewMode(mode);
+            HorizontalMultitrack.applyTo(visibleTracks, mode, preferences.forceMultitrackInHorizontalMode());
             backToTheScore();
         }
 

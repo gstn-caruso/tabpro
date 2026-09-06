@@ -21,6 +21,7 @@ public final class Preferences {
     private static final String COUNT_DOWN_ENABLED = "countDownEnabled";
     private static final String VIEW_MODE = "viewMode";
     private static final String ZOOM = "zoom";
+    private static final String FORCE_MULTITRACK_IN_HORIZONTAL_MODE = "forceMultitrackInHorizontalMode";
     private static final String SEPARATOR = "\n";
 
     private final java.util.prefs.Preferences stored;
@@ -102,5 +103,14 @@ public final class Preferences {
 
     public void setZoomPercent(int percent) {
         stored.putInt(ZOOM, Math.clamp(percent, 30, 200));
+    }
+
+    /** El manual: forzar la vista multipista al usar la pantalla horizontal. Apagado por defecto. */
+    public boolean forceMultitrackInHorizontalMode() {
+        return stored.getBoolean(FORCE_MULTITRACK_IN_HORIZONTAL_MODE, false);
+    }
+
+    public void setForceMultitrackInHorizontalMode(boolean forced) {
+        stored.putBoolean(FORCE_MULTITRACK_IN_HORIZONTAL_MODE, forced);
     }
 }

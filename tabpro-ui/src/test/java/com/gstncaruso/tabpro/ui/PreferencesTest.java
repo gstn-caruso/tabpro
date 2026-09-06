@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
@@ -65,5 +66,21 @@ class PreferencesTest {
         preferences.setZoomPercent(500);
 
         assertTrue(preferences.zoomPercent() <= 200);
+    }
+
+    /**
+     * El manual: "You can force the multitrack view when using the Horizontal Screen Mode".
+     * Apagada por defecto, para no cambiar lo que ya se ve hoy.
+     */
+    @Test
+    void forcingMultitrackOnHorizontalScreenStartsOff() {
+        assertFalse(preferences.forceMultitrackInHorizontalMode());
+    }
+
+    @Test
+    void remembersWhetherToForceMultitrackOnHorizontalScreen() {
+        preferences.setForceMultitrackInHorizontalMode(true);
+
+        assertTrue(preferences.forceMultitrackInHorizontalMode());
     }
 }

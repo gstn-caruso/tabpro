@@ -43,6 +43,7 @@ public final class Transport {
     private Optional<SpeedTrainer> speedTrainer = Optional.empty();
     private Optional<LoopRange> loop = Optional.empty();
     private int lap;
+    private Optional<Runnable> previewFinished = Optional.empty();
 
     public Transport(Editor editor, Player player, Consumer<Runnable> uiThread) {
         this.editor = editor;
@@ -69,6 +70,7 @@ public final class Transport {
         player.stop();
         playhead = Playhead.silent();
         currentTempo = OptionalInt.empty();
+        previewFinished = Optional.empty();
         notifyListeners();
     }
 
@@ -215,6 +217,22 @@ public final class Transport {
         player.play(timeline, new InternalListener());
     }
 
+    /**
+     * El explorador de partituras del manual: "it is possible to set the number of bars to
+     * play before jumping to the next file". Escucha los primeros compases de una partitura
+     * ajena y avisa con onFinished cuando terminan solos, sin que nadie haya parado antes -asi
+     * el explorador sabe cuando saltar al siguiente archivo de la lista-. Si la partitura tiene
+     * menos compases que el limite, el rango se acota solo y suena entera.
+     */
+    public void previewBars(Score score, int bars, Runnable onFinished) {
+        stop();
+        PlayOrder order = new PlaybackRange(0, Math.max(0, bars - 1)).asPlayOrder(score);
+        currentTimeline = Timeline.of(score, order);
+        previewFinished = Optional.ofNullable(onFinished);
+        player.play(currentTimeline, new InternalListener());
+        notifyListeners();
+    }
+
     public void addListener(Runnable listener) {
         listeners.add(listener);
     }
@@ -302,7 +320,10 @@ public final class Transport {
                     playFrom(loop.get().fromMeasure());
                     return;
                 }
+                Optional<Runnable> finished = previewFinished;
+                previewFinished = Optional.empty();
                 notifyListeners();
+                finished.ifPresent(Runnable::run);
             });
         }
     }

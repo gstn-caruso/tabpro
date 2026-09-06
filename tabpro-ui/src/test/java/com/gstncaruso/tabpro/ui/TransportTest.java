@@ -18,6 +18,7 @@ import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
+import com.gstncaruso.tabpro.core.playback.PlaybackRange;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.RelativeTempo;
 import com.gstncaruso.tabpro.core.playback.Timeline;
@@ -52,6 +53,56 @@ class TransportTest {
         transport.previewTimeline(timeline);
 
         assertEquals(timeline, player.lastTimeline);
+    }
+
+    /**
+     * El explorador de partituras del manual: "it is possible to set the number of bars to
+     * play before jumping to the next file". previewBars es quien de verdad acota cuantos
+     * compases suenan; el salto al siguiente archivo lo decide quien lo llama.
+     */
+    @Test
+    void previewBarsPlaysOnlyTheRequestedBars() {
+        Score score = twoMeasureScore();
+
+        transport.previewBars(score, 1, () -> { });
+
+        Timeline expected = Timeline.of(score, new PlaybackRange(0, 0).asPlayOrder(score));
+        assertEquals(expected, player.lastTimeline);
+    }
+
+    @Test
+    void previewBarsWithMoreBarsThanTheScoreHasPlaysItWhole() {
+        Score score = twoMeasureScore();
+
+        transport.previewBars(score, 99, () -> { });
+
+        Timeline expected = Timeline.of(score, new PlaybackRange(0, 98).asPlayOrder(score));
+        assertEquals(expected, player.lastTimeline);
+    }
+
+    @Test
+    void previewBarsNotifiesWhenThoseBarsFinishNaturally() {
+        boolean[] finished = {false};
+        transport.previewBars(twoMeasureScore(), 1, () -> finished[0] = true);
+
+        player.emitFinished();
+
+        assertTrue(finished[0]);
+    }
+
+    /**
+     * Si alguien para la reproduccion a mano antes de que termine, el aviso no tiene que
+     * llegar: quien pidio previewBars -el explorador- no debe saltar al siguiente archivo.
+     */
+    @Test
+    void stoppingBeforeItFinishesCancelsTheNotification() {
+        boolean[] finished = {false};
+        transport.previewBars(twoMeasureScore(), 1, () -> finished[0] = true);
+
+        transport.stop();
+        player.emitFinished();
+
+        assertFalse(finished[0]);
     }
 
     @Test
