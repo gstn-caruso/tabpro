@@ -180,13 +180,18 @@ class GuitarProBeatReaderTest {
         assertFalse(beat.isRest());
     }
 
+    /**
+     * El instrumento y el tempo van tal cual, pero el volumen es una perilla de la mesa:
+     * viene en sus dieciseis pasos, igual que en la tabla de canales, y el modelo lo
+     * maneja en los 0 a 127 de MIDI.
+     */
     @Test
     void aMixTableChangeBecomesAParameterChange() {
         Beat beat = read(new GuitarProFileWriter()
                 .writeUnsignedByte(WITH_MIX_TABLE)
                 .writeSignedByte(QUARTER)
                 .writeSignedByte(30)
-                .writeSignedByte(40)
+                .writeSignedByte(5)
                 .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
                 .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
                 .writeInt(90)
@@ -199,6 +204,25 @@ class GuitarProBeatReaderTest {
         assertEquals(OptionalInt.of(40), change.valueOf(SoundParameter.VOLUME));
         assertEquals(OptionalInt.of(90), change.valueOf(SoundParameter.TEMPO));
         assertFalse(change.changes(SoundParameter.PAN), "lo que viene en -1 no cambia");
+    }
+
+    /** El paneo al centro, que en el archivo es el paso 8 de la perilla y en MIDI el 64. */
+    @Test
+    void aMixTableChangeCentersThePanOnTheEighthStep() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(WITH_MIX_TABLE)
+                .writeSignedByte(QUARTER)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(8)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeInt(UNCHANGED)
+                .writeSignedByte(0)
+                .writeUnsignedByte(NO_STRINGS));
+
+        assertEquals(OptionalInt.of(64),
+                beat.effects().parameterChange().valueOf(SoundParameter.PAN));
     }
 
     @Test

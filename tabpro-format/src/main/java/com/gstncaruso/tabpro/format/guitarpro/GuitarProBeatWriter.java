@@ -162,12 +162,12 @@ final class GuitarProBeatWriter {
 
     private void writeParameterChange(GuitarProByteWriter writer, ParameterChange change) {
         writer.writeSignedByte(valueOrUnset(change, SoundParameter.PROGRAM));
-        writer.writeSignedByte(valueOrUnset(change, SoundParameter.VOLUME));
-        writer.writeSignedByte(valueOrUnset(change, SoundParameter.PAN));
-        writer.writeSignedByte(valueOrUnset(change, SoundParameter.CHORUS));
-        writer.writeSignedByte(valueOrUnset(change, SoundParameter.REVERB));
-        writer.writeSignedByte(valueOrUnset(change, SoundParameter.PHASER));
-        writer.writeSignedByte(valueOrUnset(change, SoundParameter.TREMOLO));
+        writer.writeSignedByte(knobOrUnset(change, SoundParameter.VOLUME));
+        writer.writeSignedByte(knobOrUnset(change, SoundParameter.PAN));
+        writer.writeSignedByte(knobOrUnset(change, SoundParameter.CHORUS));
+        writer.writeSignedByte(knobOrUnset(change, SoundParameter.REVERB));
+        writer.writeSignedByte(knobOrUnset(change, SoundParameter.PHASER));
+        writer.writeSignedByte(knobOrUnset(change, SoundParameter.TREMOLO));
         writer.writeInt(valueOrUnset(change, SoundParameter.TEMPO));
         for (SoundParameter parameter : new SoundParameter[] {
                 SoundParameter.VOLUME, SoundParameter.PAN, SoundParameter.CHORUS, SoundParameter.REVERB,
@@ -181,6 +181,12 @@ final class GuitarProBeatWriter {
 
     private static int valueOrUnset(ParameterChange change, SoundParameter parameter) {
         return change.changes(parameter) ? change.valueOf(parameter).orElseThrow() : -1;
+    }
+
+    /** El archivo espera las perillas de la mesa en sus dieciseis pasos, no en los 0 a 127 de MIDI. */
+    private static int knobOrUnset(ParameterChange change, SoundParameter parameter) {
+        int midi = valueOrUnset(change, parameter);
+        return midi < 0 ? midi : GuitarProMixerLevel.ofMidi(midi).step();
     }
 
     /**

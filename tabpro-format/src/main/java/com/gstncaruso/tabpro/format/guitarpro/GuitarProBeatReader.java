@@ -288,12 +288,12 @@ final class GuitarProBeatReader {
 
         ParameterChange change = ParameterChange.nothing();
         change = changing(change, SoundParameter.PROGRAM, program);
-        change = changing(change, SoundParameter.VOLUME, volume);
-        change = changing(change, SoundParameter.PAN, pan);
-        change = changing(change, SoundParameter.CHORUS, chorus);
-        change = changing(change, SoundParameter.REVERB, reverb);
-        change = changing(change, SoundParameter.PHASER, phaser);
-        change = changing(change, SoundParameter.TREMOLO, tremolo);
+        change = changingKnob(change, SoundParameter.VOLUME, volume);
+        change = changingKnob(change, SoundParameter.PAN, pan);
+        change = changingKnob(change, SoundParameter.CHORUS, chorus);
+        change = changingKnob(change, SoundParameter.REVERB, reverb);
+        change = changingKnob(change, SoundParameter.PHASER, phaser);
+        change = changingKnob(change, SoundParameter.TREMOLO, tremolo);
         change = changing(change, SoundParameter.TEMPO, tempo);
 
         int transition = readTransitionDurations(reader, volume, pan, chorus, reverb, phaser, tremolo);
@@ -316,6 +316,14 @@ final class GuitarProBeatReader {
 
     private static ParameterChange changing(ParameterChange change, SoundParameter parameter, int value) {
         return value < 0 ? change : change.changing(parameter, value);
+    }
+
+    /**
+     * Las perillas de la mesa cambian en sus dieciseis pasos, los mismos de la tabla de
+     * canales; el instrumento y el tempo, en cambio, van tal cual.
+     */
+    private static ParameterChange changingKnob(ParameterChange change, SoundParameter parameter, int step) {
+        return changing(change, parameter, step < 0 ? step : new GuitarProMixerLevel(step).midi());
     }
 
     /** -2 apagado, -1 sin cambios, 0 a 100 de cerrado a abierto: tabpro solo distingue los tres estados. */
