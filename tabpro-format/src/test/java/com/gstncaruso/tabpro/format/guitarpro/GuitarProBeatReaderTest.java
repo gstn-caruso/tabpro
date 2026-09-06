@@ -46,10 +46,35 @@ class GuitarProBeatReaderTest {
         Beat beat = read(new GuitarProFileWriter()
                 .writeUnsignedByte(WITH_STATUS)
                 .writeUnsignedByte(REST_STATUS)
-                .writeSignedByte(QUARTER));
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(NO_STRINGS));
 
         assertTrue(beat.isRest());
         assertEquals(NoteValue.QUARTER, beat.duration().value());
+    }
+
+    /**
+     * El formato escribe la mascara de cuerdas en todo beat, tambien en el silencio.
+     * Si el lector no la consume, se corre un byte y arruina todo lo que sigue.
+     */
+    @Test
+    void unSilencioIgualTraeSuMascaraDeCuerdas() {
+        GuitarProByteReader bytes = new GuitarProByteReader(new GuitarProFileWriter()
+                .writeUnsignedByte(WITH_STATUS)
+                .writeUnsignedByte(REST_STATUS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(NO_STRINGS)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(ONLY_FIRST_STRING)
+                .writeUnsignedByte(NOTE_WITH_FRET).writeUnsignedByte(NORMAL_NOTE).writeSignedByte(9)
+                .bytes());
+
+        Beat silencio = reader.read(bytes, GuitarProVersion.GP4, 6);
+        Beat siguiente = reader.read(bytes, GuitarProVersion.GP4, 6);
+
+        assertTrue(silencio.isRest());
+        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
     }
 
     @Test

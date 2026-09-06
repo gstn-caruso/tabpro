@@ -156,14 +156,26 @@ final class GuitarProNoteReader {
         return effects;
     }
 
+    /**
+     * El adorno trae siempre traste, dinamica, duracion y transicion, pero hasta GP4 la
+     * duracion va antes que la transicion y desde GP5 el orden se invierte. Leerlos al
+     * reves no corre ningun byte: cambia el adorno por otro sin que nada avise.
+     */
     private GraceNote readGraceNote(GuitarProByteReader reader, GuitarProVersion version) {
         int fret = reader.readUnsignedByte();
         Dynamic dynamic = dynamicOf(reader.readSignedByte());
-        GraceTransition transition = graceTransitionOf(reader.readUnsignedByte());
-        NoteValue duration = graceDurationOf(reader.readUnsignedByte());
+        NoteValue duration;
+        GraceTransition transition;
+        if (version.hasGraceTransitionBeforeDuration()) {
+            transition = graceTransitionOf(reader.readUnsignedByte());
+            duration = graceDurationOf(reader.readUnsignedByte());
+        } else {
+            duration = graceDurationOf(reader.readUnsignedByte());
+            transition = graceTransitionOf(reader.readUnsignedByte());
+        }
         boolean onBeat = false;
         boolean dead = false;
-        if (version.generation() >= 5) {
+        if (version.hasGraceFlags()) {
             int graceFlags = reader.readUnsignedByte();
             dead = (graceFlags & 0x01) != 0;
             onBeat = (graceFlags & 0x02) != 0;

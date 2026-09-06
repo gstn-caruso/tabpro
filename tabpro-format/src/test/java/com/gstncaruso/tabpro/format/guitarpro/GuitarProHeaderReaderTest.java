@@ -3,8 +3,10 @@ package com.gstncaruso.tabpro.format.guitarpro;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.model.LyricLine;
 import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
 import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
+import com.gstncaruso.tabpro.core.model.bars.Mode;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -71,6 +73,50 @@ class GuitarProHeaderReaderTest {
         reader.readDirections(byteReader, GuitarProVersion.GP5_00);
 
         assertEquals(42, byteReader.readInt());
+    }
+
+    /**
+     * La armadura de la cabecera es un entero con signo y nada mas: el modo mayor o menor
+     * solo existe en los cambios de armadura por compas. Un entero negativo no puede
+     * leerse como si su segundo byte fuera el modo, porque ahi vive el signo.
+     */
+    @Test
+    void unaArmaduraConBemolesEnLaCabeceraSigueSiendoMayor() {
+        GuitarProByteReader byteReader = new GuitarProByteReader(gp4HeaderWithKey(-3));
+
+        GuitarProHeader header = reader.read(byteReader, GuitarProVersion.GP4);
+
+        assertEquals(-3, header.keySignature().accidentals());
+        assertEquals(Mode.MAJOR, header.keySignature().mode());
+    }
+
+    @Test
+    void unaArmaduraConSostenidosEnLaCabeceraTambienEsMayor() {
+        GuitarProByteReader byteReader = new GuitarProByteReader(gp4HeaderWithKey(4));
+
+        GuitarProHeader header = reader.read(byteReader, GuitarProVersion.GP4);
+
+        assertEquals(4, header.keySignature().accidentals());
+        assertEquals(Mode.MAJOR, header.keySignature().mode());
+    }
+
+    /** La cabecera GP4 mas chica que se puede armar, con la armadura que se le pida. */
+    private static byte[] gp4HeaderWithKey(int accidentals) {
+        GuitarProFileWriter writer = new GuitarProFileWriter();
+        for (int field = 0; field < 8; field++) {
+            writer.writeLengthPrefixedString("");
+        }
+        writer.writeInt(0); // lineas del aviso
+        writer.writeBoolean(false); // triplet feel global
+        writer.writeInt(1); // pista de la letra
+        for (int line = 0; line < LyricLine.MAX_LINES; line++) {
+            writer.writeInt(1);
+            writer.writeIntPrefixedString("");
+        }
+        writer.writeInt(120); // tempo
+        writer.writeInt(accidentals);
+        writer.writeUnsignedByte(0); // octava
+        return writer.bytes();
     }
 
     /** Arma un bloque de 19 slots en -1, salvo los indicados en {@code destinations} (slot -> compas). */
