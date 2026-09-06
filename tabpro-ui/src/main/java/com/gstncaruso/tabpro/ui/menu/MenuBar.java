@@ -2,6 +2,11 @@ package com.gstncaruso.tabpro.ui.menu;
 
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -10,9 +15,18 @@ import javax.swing.JMenuItem;
 public final class MenuBar {
 
     private final Commands commands;
+    private final Supplier<List<Path>> recentFiles;
+    private final Consumer<Path> openRecentFile;
 
+    /** Sin archivos recientes que ofrecer, como en un uso puramente programatico o de test. */
     public MenuBar(Commands commands) {
+        this(commands, List::of, path -> { });
+    }
+
+    public MenuBar(Commands commands, Supplier<List<Path>> recentFiles, Consumer<Path> openRecentFile) {
         this.commands = commands;
+        this.recentFiles = recentFiles;
+        this.openRecentFile = openRecentFile;
     }
 
     public JMenuBar build() {
@@ -35,6 +49,7 @@ public final class MenuBar {
     private JMenu fileMenu() {
         JMenu menu = new JMenu("Archivo");
         add(menu, "file.new", "file.open", "file.browse");
+        recentFilesMenu().ifPresent(menu::add);
         menu.addSeparator();
         add(menu, "file.save", "file.saveAs");
         menu.addSeparator();
@@ -199,6 +214,22 @@ public final class MenuBar {
         JMenu menu = new JMenu("Tema");
         add(menu, names.toArray(String[]::new));
         return java.util.Optional.of(menu);
+    }
+
+    /** El submenu "Abrir reciente" solo aparece si hay algun archivo que ofrecer. */
+    private Optional<JMenu> recentFilesMenu() {
+        List<Path> paths = recentFiles.get();
+        if (paths.isEmpty()) {
+            return Optional.empty();
+        }
+        JMenu menu = new JMenu("Abrir reciente");
+        for (Path path : paths) {
+            JMenuItem item = new JMenuItem(path.getFileName().toString());
+            item.setToolTipText(path.toString());
+            item.addActionListener(event -> openRecentFile.accept(path));
+            menu.add(item);
+        }
+        return Optional.of(menu);
     }
 
     private JMenu helpMenu() {

@@ -144,12 +144,13 @@ public final class MainFrame extends JFrame {
         beatViews = new BeatViews(editor, player);
 
         JSpinner tempoSpinner = tempoSpinner();
+        Document documentActions = new Document();
         commands = new Commands(
-                editor, new Document(), new Windows(), new Playback(), new View(), themes.names());
+                editor, documentActions, new Windows(), new Playback(), new View(), themes.names());
         toolBars = new ToolBars(commands);
         toolBars.addToSoundRow(new JLabel("Tempo "));
         toolBars.addToSoundRow(tempoSpinner);
-        setJMenuBar(new MenuBar(commands).build());
+        setJMenuBar(new MenuBar(commands, document::recentFiles, documentActions::openRecent).build());
 
         StatusBar status = new StatusBar(editor, canvas::pagination);
         canvas.onPaginationChange(status::refresh);
@@ -314,8 +315,19 @@ public final class MainFrame extends JFrame {
             if (chooser.showOpenDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
                 return;
             }
+            openChosen(chooser.getSelectedFile().toPath());
+        }
+
+        /** Lo que pide el menu Archivo al elegir un archivo reciente: abrirlo, con la misma confirmacion que "Abrir". */
+        private void openRecent(Path path) {
+            if (askToDiscardChanges()) {
+                openChosen(path);
+            }
+        }
+
+        private void openChosen(Path path) {
             try {
-                document.open(chooser.getSelectedFile().toPath());
+                document.open(path);
                 updateTitle();
                 backToTheScore();
             } catch (ScoreFileException e) {

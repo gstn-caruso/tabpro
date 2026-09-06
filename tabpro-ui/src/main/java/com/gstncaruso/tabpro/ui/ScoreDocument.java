@@ -37,6 +37,11 @@ public final class ScoreDocument {
         return Optional.ofNullable(path);
     }
 
+    /** Los archivos que se abrieron o guardaron hace poco, para ofrecerlos en el menu Archivo. */
+    public java.util.List<Path> recentFiles() {
+        return preferences.recentFiles();
+    }
+
     public String displayName() {
         return path == null ? UNTITLED : path.getFileName().toString();
     }
