@@ -1,75 +1,58 @@
 package com.gstncaruso.tabpro.midi;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
-import com.gstncaruso.tabpro.core.model.Beat;
-import com.gstncaruso.tabpro.core.model.Channel;
-import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
-import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
-import com.gstncaruso.tabpro.core.model.Voice;
-import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.playback.PlayOrder;
-import com.gstncaruso.tabpro.core.playback.TempoChange;
-import com.gstncaruso.tabpro.core.playback.TempoMap;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.stream.IntStream;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
-import javax.sound.midi.ShortMessage;
 
 /**
- * Pasa una partitura a un archivo MIDI formato 1: una pista de tempo y armadura, y una pista
- * por cada pista audible de la partitura, con su instrumento, volumen, paneo y las notas con
- * su duracion real. Las pistas silenciadas no se exportan, como avisa el manual.
+ * Guarda la partitura como archivo MIDI formato 1, sonando igual que adentro de tabpro: la
+ * rinde a su linea de tiempo —el orden real de los compases, con repeticiones, finales
+ * alternativos y saltos, y con todos los efectos: bends, palanca, slides, ligados, trinos,
+ * tremolos, armonicos, rasgueos, notas de adorno, fade in y swing— y escribe esa misma
+ * secuencia, la que se le manda al sintetizador cuando uno aprieta play.
+ *
+ * <p>Encima le agrega lo unico que un archivo necesita y la reproduccion no: el titulo, el
+ * nombre de cada pista y los cambios de compas y de armadura, ubicados en el tick en el que
+ * suenan. Las pistas que no suenan no se exportan, como avisa el manual.
  */
 public final class MidiScoreExporter {
 
     private static final int SEQUENCE_FORMAT = 1;
 
     private static final int TRACK_NAME_META = 0x03;
-    private static final int MIDI_PORT_META = 0x21;
-    private static final int END_OF_TRACK_META = 0x2F;
-    private static final int TEMPO_META = 0x51;
     private static final int TIME_SIGNATURE_META = 0x58;
     private static final int KEY_SIGNATURE_META = 0x59;
 
-    private static final int VOLUME_CC = 7;
-    private static final int PAN_CC = 10;
-    private static final int REVERB_CC = 91;
-    private static final int TREMOLO_CC = 92;
-    private static final int CHORUS_CC = 93;
-    private static final int PHASER_CC = 95;
-
-    private static final int DEFAULT_PORT = 1;
     private static final int CLOCKS_PER_METRONOME_CLICK = 24;
     private static final int THIRTY_SECONDS_PER_QUARTER = 8;
 
     public Sequence toSequence(Score score) {
+        PlayOrder order = PlayOrder.of(score);
+        List<Integer> audible = audibleTracksOf(score);
+        Sequence sequence = MidiSequences.fromTimeline(whatSounds(score, order, audible));
         try {
-            Sequence sequence = new Sequence(Sequence.PPQ, (int) Duration.TICKS_PER_QUARTER);
-            long[] measureStarts = measureStartTicks(score);
-            writeConductor(sequence.createTrack(), score);
-            for (int index = 0; index < score.trackCount(); index++) {
-                Track track = score.track(index);
-                if (!track.channel().isSilent()) {
-                    writeTrack(sequence.createTrack(), track, measureStarts);
-                }
-            }
-            return sequence;
+            nameThe(sequence, score, audible);
+            writeBarChanges(sequence, score, order);
         } catch (InvalidMidiDataException e) {
             throw new IllegalStateException(e);
         }
+        return sequence;
     }
 
     public void export(Score score, Path path) {
@@ -80,107 +63,58 @@ public final class MidiScoreExporter {
         }
     }
 
-    /** El comienzo de cada compas en tics, segun la medida que define la primera pista. */
-    private static long[] measureStartTicks(Score score) {
-        int measureCount = score.measureCount();
-        long[] starts = new long[measureCount + 1];
-        Track reference = score.track(0);
-        long tick = 0;
-        for (int index = 0; index < measureCount; index++) {
-            starts[index] = tick;
-            TimeSignature signature = index < reference.measureCount()
-                    ? reference.measure(index).timeSignature()
-                    : TimeSignature.fourFour();
-            tick += signature.ticksPerMeasure();
+    /** Lo que se va a escuchar: la partitura rendida, sin las pistas que estan calladas. */
+    private static Timeline whatSounds(Score score, PlayOrder order, List<Integer> audible) {
+        Timeline everything = Timeline.of(score, order);
+        return new Timeline(
+                everything.tempo(),
+                everything.ticksPerQuarter(),
+                audible.stream().map(everything.tracks()::get).toList());
+    }
+
+    private static List<Integer> audibleTracksOf(Score score) {
+        return IntStream.range(0, score.trackCount()).filter(score::isAudible).boxed().toList();
+    }
+
+    /** El titulo va en la pista de tempo, y el nombre de cada pista en la suya. */
+    private static void nameThe(Sequence sequence, Score score, List<Integer> audible)
+            throws InvalidMidiDataException {
+        javax.sound.midi.Track[] tracks = sequence.getTracks();
+        addText(tracks[0], score.title(), 0);
+        for (int position = 0; position < audible.size(); position++) {
+            addText(tracks[position + 1], score.track(audible.get(position)).name(), 0);
         }
-        starts[measureCount] = tick;
-        return starts;
     }
 
     /**
-     * El mapa de tempo de la partitura, recorriendo los compases de corrido: la
-     * exportacion no repite (no sigue repeticiones ni direcciones), asi que el
-     * orden tiene que ser el mismo de un solo paso que usa {@link #measureStartTicks}.
+     * Los cambios de compas y de armadura, en el tick en el que suenan: si una repeticion vuelve
+     * a pasar por un compas de 3/4, el archivo lo vuelve a anunciar.
      */
-    private static TempoMap tempoMapOf(Score score) {
-        PlayOrder straight = new PlayOrder(IntStream.range(0, score.measureCount()).boxed().toList());
-        return Timeline.of(score, straight).tempo();
-    }
-
-    private static void writeConductor(javax.sound.midi.Track conductor, Score score) throws InvalidMidiDataException {
-        addMetaText(conductor, TRACK_NAME_META, score.title(), 0);
-        for (TempoChange change : tempoMapOf(score).changes()) {
-            addTempo(conductor, change.tick(), change.bpm());
-        }
+    private static void writeBarChanges(Sequence sequence, Score score, PlayOrder order)
+            throws InvalidMidiDataException {
+        javax.sound.midi.Track conductor = sequence.getTracks()[0];
         Track reference = score.track(0);
         TimeSignature previousSignature = null;
         KeySignature previousKey = null;
         long tick = 0;
-        for (int index = 0; index < reference.measureCount(); index++) {
-            Measure measure = reference.measure(index);
+        for (int step = 0; step < order.size(); step++) {
+            int measureIndex = order.measureAt(step);
+            if (measureIndex >= reference.measureCount()) {
+                continue;
+            }
+            Measure measure = reference.measure(measureIndex);
             TimeSignature signature = measure.timeSignature();
             KeySignature key = measure.attributes().keySignature();
-            if (index == 0 || !signature.equals(previousSignature)) {
+            if (!signature.equals(previousSignature)) {
                 addTimeSignature(conductor, tick, signature);
             }
-            if (index == 0 || !key.equals(previousKey)) {
+            if (!key.equals(previousKey)) {
                 addKeySignature(conductor, tick, key);
             }
             previousSignature = signature;
             previousKey = key;
-            tick += signature.ticksPerMeasure();
+            tick += measure.durationTicks();
         }
-        addEndOfTrack(conductor, tick);
-    }
-
-    private static void writeTrack(javax.sound.midi.Track midiTrack, Track track, long[] measureStarts)
-            throws InvalidMidiDataException {
-        Channel channel = track.channel();
-        int midiChannel = channel.number() - 1;
-        addMetaText(midiTrack, TRACK_NAME_META, track.name(), 0);
-        if (channel.port() != DEFAULT_PORT) {
-            addPort(midiTrack, channel.port());
-        }
-        addShortMessage(midiTrack, ShortMessage.PROGRAM_CHANGE, midiChannel, channel.program(), 0, 0);
-        addControlChange(midiTrack, midiChannel, VOLUME_CC, channel.volume(), 0);
-        addControlChange(midiTrack, midiChannel, PAN_CC, channel.pan(), 0);
-        addControlChange(midiTrack, midiChannel, REVERB_CC, channel.reverb(), 0);
-        addControlChange(midiTrack, midiChannel, TREMOLO_CC, channel.tremolo(), 0);
-        addControlChange(midiTrack, midiChannel, CHORUS_CC, channel.chorus(), 0);
-        addControlChange(midiTrack, midiChannel, PHASER_CC, channel.phaser(), 0);
-
-        NoteEventWriter lead = new NoteEventWriter(midiTrack, midiChannel);
-        NoteEventWriter bass = new NoteEventWriter(midiTrack, midiChannel);
-        for (int index = 0; index < track.measureCount(); index++) {
-            Measure measure = track.measure(index);
-            writeVoice(lead, measure.voice(VoicePart.LEAD), measureStarts[index], track);
-            if (measure.usesTwoVoices()) {
-                writeVoice(bass, measure.voice(VoicePart.BASS), measureStarts[index], track);
-            }
-        }
-        long trackEnd = measureStarts[track.measureCount()];
-        lead.closeEverythingAt(trackEnd);
-        bass.closeEverythingAt(trackEnd);
-        addEndOfTrack(midiTrack, trackEnd);
-    }
-
-    private static void writeVoice(NoteEventWriter writer, Voice voice, long measureStart, Track track) {
-        long tick = measureStart;
-        for (Beat beat : voice.beats()) {
-            for (Note note : beat.notes()) {
-                int soundOrPitch = track.isPercussion() ? note.fret() : track.pitchOf(note).midiNumber();
-                writer.attack(tick, beat.duration().ticks(), note, soundOrPitch);
-            }
-            tick += beat.duration().ticks();
-        }
-    }
-
-    private static void addTempo(javax.sound.midi.Track track, long tick, int bpm) throws InvalidMidiDataException {
-        int microsecondsPerQuarter = 60_000_000 / bpm;
-        byte[] data = {
-            (byte) (microsecondsPerQuarter >> 16), (byte) (microsecondsPerQuarter >> 8), (byte) microsecondsPerQuarter
-        };
-        addMeta(track, TEMPO_META, data, tick);
     }
 
     private static void addTimeSignature(javax.sound.midi.Track track, long tick, TimeSignature signature)
@@ -198,31 +132,13 @@ public final class MidiScoreExporter {
         addMeta(track, KEY_SIGNATURE_META, data, tick);
     }
 
-    private static void addPort(javax.sound.midi.Track track, int port) throws InvalidMidiDataException {
-        addMeta(track, MIDI_PORT_META, new byte[] {(byte) (port - 1)}, 0);
-    }
-
-    private static void addEndOfTrack(javax.sound.midi.Track track, long tick) throws InvalidMidiDataException {
-        addMeta(track, END_OF_TRACK_META, new byte[0], tick);
-    }
-
-    private static void addMetaText(javax.sound.midi.Track track, int type, String text, long tick)
+    private static void addText(javax.sound.midi.Track track, String text, long tick)
             throws InvalidMidiDataException {
-        addMeta(track, type, text.getBytes(StandardCharsets.UTF_8), tick);
+        addMeta(track, TRACK_NAME_META, text.getBytes(StandardCharsets.UTF_8), tick);
     }
 
     private static void addMeta(javax.sound.midi.Track track, int type, byte[] data, long tick)
             throws InvalidMidiDataException {
         track.add(new MidiEvent(new MetaMessage(type, data, data.length), tick));
-    }
-
-    private static void addControlChange(javax.sound.midi.Track track, int channel, int controller, int value, long tick)
-            throws InvalidMidiDataException {
-        addShortMessage(track, ShortMessage.CONTROL_CHANGE, channel, controller, value, tick);
-    }
-
-    private static void addShortMessage(javax.sound.midi.Track track, int command, int channel, int data1, int data2, long tick)
-            throws InvalidMidiDataException {
-        track.add(new MidiEvent(new ShortMessage(command, channel, data1, data2), tick));
     }
 }
