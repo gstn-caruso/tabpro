@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Lo que la ventana recuerda entre una sesion y la siguiente: la lista de
@@ -22,7 +21,6 @@ public final class Preferences {
     private static final String COUNT_DOWN_ENABLED = "countDownEnabled";
     private static final String VIEW_MODE = "viewMode";
     private static final String ZOOM = "zoom";
-    private static final String SOUND_FONT_FILE = "soundFontFile";
     private static final String SEPARATOR = "\n";
 
     private final java.util.prefs.Preferences stored;
@@ -104,19 +102,5 @@ public final class Preferences {
 
     public void setZoomPercent(int percent) {
         stored.putInt(ZOOM, Math.clamp(percent, 30, 200));
-    }
-
-    /** El banco SoundFont que el usuario eligio a mano, si eligio alguno. */
-    public Optional<Path> soundFontFile() {
-        String saved = stored.get(SOUND_FONT_FILE, "");
-        return saved.isBlank() ? Optional.empty() : Optional.of(Path.of(saved));
-    }
-
-    public void setSoundFontFile(Optional<Path> file) {
-        if (file.isEmpty()) {
-            stored.remove(SOUND_FONT_FILE);
-            return;
-        }
-        stored.put(SOUND_FONT_FILE, file.get().toString());
     }
 }
