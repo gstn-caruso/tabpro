@@ -73,6 +73,40 @@ class MidiScoreExporterTest {
         }
     }
 
+    /**
+     * Las perillas de chorus, reverb, phaser y tremolo de la mesa de mezcla se editaban y se
+     * guardaban, pero nunca llegaban al sintetizador: el .mid no llevaba sus controladores.
+     */
+    @Test
+    void theMixingConsoleEffectsReachTheSynthOnBothChannelsOfTheTrack() {
+        Channel channel = Channel.playing(30).withChorus(10).withReverb(40).withPhaser(70).withTremolo(100);
+        Track track = Track.standardGuitar("Guitarra").withChannel(channel);
+        Score score = new Score("Prueba", 120, List.of(track));
+
+        Sequence sequence = exporter.toSequence(score);
+
+        javax.sound.midi.Track midiTrack = sequence.getTracks()[1];
+        for (int midiChannel : List.of(0, 1)) {
+            assertEquals(10, controlChangeOn(midiTrack, midiChannel, 93), "chorus");
+            assertEquals(40, controlChangeOn(midiTrack, midiChannel, 91), "reverb");
+            assertEquals(70, controlChangeOn(midiTrack, midiChannel, 95), "phaser");
+            assertEquals(100, controlChangeOn(midiTrack, midiChannel, 92), "tremolo");
+        }
+    }
+
+    /** Dos pistas con efectos distintos no pueden terminar sonando con el mismo valor. */
+    @Test
+    void twoTracksWithDifferentReverbSoundDifferentInTheGeneratedMidi() {
+        Track wetTrack = Track.standardGuitar("Con reverb").withChannel(Channel.playing(25).withReverb(100));
+        Track dryTrack = Track.standardBass("Sin reverb").withChannel(Channel.playing(33).withReverb(0));
+        Score score = new Score("Prueba", 120, List.of(wetTrack, dryTrack));
+
+        Sequence sequence = exporter.toSequence(score);
+
+        assertEquals(100, controlChangeOf(sequence.getTracks()[1], 91));
+        assertEquals(0, controlChangeOf(sequence.getTracks()[2], 91));
+    }
+
     @Test
     void sendsTheBentNoteToTheEffectsChannelSoItDoesNotDragTheRest() {
         Note bent = new Note(6, 0).withBend(Bend.of(BendType.BEND, 4));
@@ -293,6 +327,15 @@ class MidiScoreExporterTest {
     private static int controlChangeOn(javax.sound.midi.Track track, int channel, int controller) {
         return shortMessagesOf(track, ShortMessage.CONTROL_CHANGE).stream()
                 .filter(message -> message.getChannel() == channel && message.getData1() == controller)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("no se encontro el controlador " + controller))
+                .getData2();
+    }
+
+    /** El valor de un controlador sin importar en que canal haya quedado la pista. */
+    private static int controlChangeOf(javax.sound.midi.Track track, int controller) {
+        return shortMessagesOf(track, ShortMessage.CONTROL_CHANGE).stream()
+                .filter(message -> message.getData1() == controller)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("no se encontro el controlador " + controller))
                 .getData2();

@@ -69,7 +69,9 @@ final class TrackRenderer {
         Channel channel = track.channel();
         int volume = audible ? channel.volume() : 0;
         return new TrackTimeline(
-                channel.program(), volume, channel.pan(), track.isPercussion(), channel.port(),
+                channel.program(), volume, channel.pan(),
+                channel.chorus(), channel.reverb(), channel.phaser(), channel.tremolo(),
+                track.isPercussion(), channel.port(), channel.number(), channel.effectChannel(),
                 notes, beats, wah, List.of());
     }
 

@@ -207,6 +207,10 @@ public final class MidiSequences {
             writePitchBendRange(track, channel);
             track.add(controlChangeEvent(channel, VOLUME_CONTROLLER, trackTimeline.volume(), 0));
             track.add(controlChangeEvent(channel, PAN_CONTROLLER, trackTimeline.pan(), 0));
+            track.add(controlChangeEvent(channel, CHORUS_CONTROLLER, trackTimeline.chorus(), 0));
+            track.add(controlChangeEvent(channel, REVERB_CONTROLLER, trackTimeline.reverb(), 0));
+            track.add(controlChangeEvent(channel, PHASER_CONTROLLER, trackTimeline.phaser(), 0));
+            track.add(controlChangeEvent(channel, TREMOLO_CONTROLLER, trackTimeline.tremolo(), 0));
         }
         for (ScheduledNote note : trackTimeline.notes()) {
             writeNote(track, channels.of(note), note, limitPitchVariation);
