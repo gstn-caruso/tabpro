@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.playback.TrackTimeline;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
@@ -50,10 +51,22 @@ public final class MidiSequences {
     private static final int FADE_IN_START_EXPRESSION = 20;
     private static final int FULL_EXPRESSION = 127;
 
+    /** Cuanto es "mas de un tono", el limite de Limit Pitch Variation del manual. */
+    static final double LIMITED_PITCH_VARIATION_SEMITONES = 2.0;
+
     private MidiSequences() {
     }
 
     public static Sequence fromTimeline(Timeline timeline) {
+        return fromTimeline(timeline, Set.of());
+    }
+
+    /**
+     * La misma secuencia, pero silenciando la curva de altura de las notas de
+     * los puertos que tildaron Limit Pitch Variation cuando esa curva se
+     * mueve mas de un tono, tal como pide el manual.
+     */
+    public static Sequence fromTimeline(Timeline timeline, Set<Integer> limitedPitchVariationPorts) {
         try {
             Sequence sequence = new Sequence(Sequence.PPQ, timeline.ticksPerQuarter());
             Track conductor = sequence.createTrack();
@@ -65,7 +78,8 @@ public final class MidiSequences {
             for (int index = 0; index < timeline.tracks().size(); index++) {
                 TrackTimeline trackTimeline = timeline.tracks().get(index);
                 int channel = trackTimeline.percussion() ? PERCUSSION_CHANNEL : channelFor(nonPercussionOrdinal++);
-                writeTrack(sequence.createTrack(), index, channel, trackTimeline);
+                boolean limitPitchVariation = limitedPitchVariationPorts.contains(trackTimeline.port());
+                writeTrack(sequence.createTrack(), index, channel, trackTimeline, limitPitchVariation);
             }
             return sequence;
         } catch (InvalidMidiDataException e) {
@@ -114,14 +128,15 @@ public final class MidiSequences {
         return slot < PERCUSSION_CHANNEL ? slot : slot + 1;
     }
 
-    private static void writeTrack(Track track, int trackIndex, int channel, TrackTimeline trackTimeline)
+    private static void writeTrack(
+            Track track, int trackIndex, int channel, TrackTimeline trackTimeline, boolean limitPitchVariation)
             throws InvalidMidiDataException {
         track.add(programChangeEvent(channel, trackTimeline.program()));
         writePitchBendRange(track, channel);
         track.add(controlChangeEvent(channel, VOLUME_CONTROLLER, trackTimeline.volume(), 0));
         track.add(controlChangeEvent(channel, PAN_CONTROLLER, trackTimeline.pan(), 0));
         for (ScheduledNote note : trackTimeline.notes()) {
-            writeNote(track, channel, note);
+            writeNote(track, channel, note, limitPitchVariation);
         }
         for (ScheduledBeat beat : trackTimeline.beats()) {
             track.add(markerEvent(trackIndex, beat));
@@ -154,9 +169,12 @@ public final class MidiSequences {
         };
     }
 
-    private static void writeNote(Track track, int channel, ScheduledNote note) throws InvalidMidiDataException {
+    private static void writeNote(Track track, int channel, ScheduledNote note, boolean limitPitchVariation)
+            throws InvalidMidiDataException {
         track.add(noteOnEvent(channel, note));
-        if (!note.bend().isFlat()) {
+        boolean playsTheBend = !note.bend().isFlat()
+                && (!limitPitchVariation || note.bend().staysWithin(LIMITED_PITCH_VARIATION_SEMITONES));
+        if (playsTheBend) {
             writePitchBendCurve(track, channel, note);
         }
         if (note.fadeIn()) {

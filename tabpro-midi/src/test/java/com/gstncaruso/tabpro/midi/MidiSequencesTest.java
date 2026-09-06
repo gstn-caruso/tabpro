@@ -18,6 +18,7 @@ import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.core.playback.TrackTimeline;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
@@ -461,6 +462,59 @@ class MidiSequencesTest {
         List<Integer> expressionValues = expressionValues(track);
         assertTrue(expressionValues.size() > 1, "el fade in tiene que mandar varios pasos");
         assertTrue(expressionValues.get(0) < expressionValues.get(expressionValues.size() - 1));
+    }
+
+    @Test
+    void aBendBeyondOneToneIsSilencedWhenItsPortLimitsPitchVariation() {
+        PitchTrajectory bend = PitchTrajectory.ramp(0, 0.0, 960, 3.0);
+        ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100), bend, false);
+        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, false, List.of(note), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
+
+        Track track = MidiSequences.fromTimeline(timeline, Set.of(1)).getTracks()[1];
+
+        assertTrue(pitchBendEvents(track).isEmpty());
+    }
+
+    @Test
+    void aBendWithinOneToneStillSoundsEvenWhenThePortLimitsPitchVariation() {
+        PitchTrajectory bend = PitchTrajectory.ramp(0, 0.0, 960, 2.0);
+        ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100), bend, false);
+        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, false, List.of(note), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
+
+        Track track = MidiSequences.fromTimeline(timeline, Set.of(1)).getTracks()[1];
+
+        assertFalse(pitchBendEvents(track).isEmpty());
+    }
+
+    @Test
+    void limitingPitchVariationOnAPortDoesNotAffectAnotherPort() {
+        PitchTrajectory bend = PitchTrajectory.ramp(0, 0.0, 960, 3.0);
+        ScheduledNote limitedNote = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100), bend, false);
+        ScheduledNote freeNote = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100), bend, false);
+        TrackTimeline limitedTrack = new TrackTimeline(
+                25, 100, 64, false, 1, List.of(limitedNote), List.of(), List.of());
+        TrackTimeline freeTrack = new TrackTimeline(
+                30, 100, 64, false, 2, List.of(freeNote), List.of(), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(limitedTrack, freeTrack));
+
+        Sequence sequence = MidiSequences.fromTimeline(timeline, Set.of(1));
+
+        assertTrue(pitchBendEvents(sequence.getTracks()[1]).isEmpty());
+        assertFalse(pitchBendEvents(sequence.getTracks()[2]).isEmpty());
+    }
+
+    @Test
+    void withoutLimitedPortsFromTimelineNeverSilencesABend() {
+        PitchTrajectory bend = PitchTrajectory.ramp(0, 0.0, 960, 5.0);
+        ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100), bend, false);
+        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, false, List.of(note), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
+
+        Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
+
+        assertFalse(pitchBendEvents(track).isEmpty());
     }
 
     private List<ShortMessage> pitchBendEvents(Track track) {
