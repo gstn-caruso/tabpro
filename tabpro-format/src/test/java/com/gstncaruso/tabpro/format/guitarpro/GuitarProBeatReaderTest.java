@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
+import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
@@ -37,6 +38,12 @@ class GuitarProBeatReaderTest {
 
     /** El unico dato que trae una nota normal es su tipo y su traste. */
     private static final int NOTE_WITH_FRET = 0x20;
+
+    /** El bit del segundo byte de efectos que anuncia el sentido de la pua. */
+    private static final int HAS_PICKSTROKE = 0x02;
+
+    /** El bit del primer byte de efectos que marca el vibrato ancho del beat. */
+    private static final int WIDE_VIBRATO = 0x02;
 
     /** El bit del beat que anuncia el rasgueo, y la velocidad que dice que no hay ninguno. */
     private static final int HAS_STROKE = 0x40;
@@ -335,6 +342,56 @@ class GuitarProBeatReaderTest {
 
         assertEquals(Wah.OPEN, wahBeat.effects().wah().orElseThrow());
         assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+    }
+
+    // ---- la pua y el vibrato ancho, que valen para todo el beat -------------
+
+    /** El sentido de la pua es un numero: 1 hacia arriba y 2 hacia abajo, no un signo. */
+    @ParameterizedTest
+    @CsvSource({"1, UP", "2, DOWN"})
+    void thePickstrokeSaysWhichWayThePickGoes(int written, PickstrokeDirection expected) {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(NO_FLAGS).writeUnsignedByte(HAS_PICKSTROKE)
+                .writeSignedByte(written)
+                .writeUnsignedByte(NO_STRINGS), GuitarProVersion.GP4);
+
+        assertEquals(expected, beat.effects().pickstroke().orElseThrow());
+    }
+
+    @Test
+    void aPickstrokeInZeroIsNoPickstrokeAtAll() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(NO_FLAGS).writeUnsignedByte(HAS_PICKSTROKE)
+                .writeSignedByte(0)
+                .writeUnsignedByte(NO_STRINGS), GuitarProVersion.GP4);
+
+        assertTrue(beat.effects().pickstroke().isEmpty());
+    }
+
+    /**
+     * El vibrato ancho es del beat entero y viene en el mismo bit en las tres
+     * generaciones, no solo en GP3.
+     */
+    @ParameterizedTest
+    @CsvSource({"GP3", "GP4", "GP5_10"})
+    void theWideVibratoIsTheSameBitInEveryGeneration(GuitarProVersion version) {
+        GuitarProFileWriter written = new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(WIDE_VIBRATO);
+        if (version != GuitarProVersion.GP3) {
+            written.writeUnsignedByte(NO_FLAGS);
+        }
+        written.writeUnsignedByte(NO_STRINGS);
+        if (version == GuitarProVersion.GP5_10) {
+            written.writeShort(0);
+        }
+
+        assertTrue(read(written, version).effects().wideVibrato());
     }
 
     // ---- el rasgueo: su velocidad y, en GP5, su direccion -------------------

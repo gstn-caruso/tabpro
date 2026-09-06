@@ -32,9 +32,13 @@ final class GuitarProBeatReader {
     private static final int HAS_TUPLET = 0x20;
     private static final int HAS_STATUS = 0x40;
 
-    private static final int STROKE_UP = 0x40;
-    private static final int STROKE_DOWN = 0x02;
     private static final int HAS_TREMOLO_BAR_OR_SLAP = 0x20;
+
+    /** El vibrato ancho es del beat entero, y viene en el mismo bit en las tres generaciones. */
+    private static final int WIDE_VIBRATO = 0x02;
+
+    /** El sentido de la pua, en el segundo byte de efectos que existe desde GP4. */
+    private static final int HAS_PICKSTROKE = 0x02;
 
     /** El byte que en GP3 elige entre la palanca (0) y el golpe. */
     private static final int NO_SLAP = 0;
@@ -126,7 +130,7 @@ final class GuitarProBeatReader {
     private BeatEffects readEffects(
             GuitarProByteReader reader, GuitarProVersion version, BeatEffects effects, int first, int second) {
         BeatEffects read = effects.withFadeIn((first & FADE_IN) != 0);
-        if (!version.hasSecondFlagsByte() && (first & 0x02) != 0) {
+        if ((first & WIDE_VIBRATO) != 0) {
             read = read.withWideVibrato(true);
         }
         if ((first & HAS_TREMOLO_BAR_OR_SLAP) != 0) {
@@ -138,14 +142,24 @@ final class GuitarProBeatReader {
         if ((first & HAS_STROKE) != 0) {
             read = readStroke(reader, version, read);
         }
-        if ((second & 0x02) != 0) {
-            read = read.withPickstroke(
-                    reader.readSignedByte() > 0 ? PickstrokeDirection.UP : PickstrokeDirection.DOWN);
+        if ((second & HAS_PICKSTROKE) != 0) {
+            PickstrokeDirection pickstroke = pickstrokeOf(reader.readSignedByte());
+            if (pickstroke != null) {
+                read = read.withPickstroke(pickstroke);
+            }
         }
         return read;
     }
 
-    /** En gp3 ese bit era la palanca; de gp4 en adelante es tapping, slap o pop. */
+    /** El sentido de la pua es un numero: 1 hacia arriba, 2 hacia abajo, 0 ninguno. */
+    private static PickstrokeDirection pickstrokeOf(int code) {
+        return switch (code) {
+            case 1 -> PickstrokeDirection.UP;
+            case 2 -> PickstrokeDirection.DOWN;
+            default -> null;
+        };
+    }
+
     /**
      * En GP3 el vibrato y los armonicos valen para todo el beat y no traen bytes
      * propios; de GP4 en adelante viven en cada nota. Se los reparte a mano.
