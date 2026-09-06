@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.files.AudioQuality;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
@@ -29,6 +30,7 @@ import com.gstncaruso.tabpro.ui.dialogs.note.FingeringDialog;
 import com.gstncaruso.tabpro.ui.page.DefaultPageSetup;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetupDialog;
+import com.gstncaruso.tabpro.ui.dialogs.wave.WaveExportDialog;
 import com.gstncaruso.tabpro.ui.dialogs.paste.PasteDialog;
 import com.gstncaruso.tabpro.ui.dialogs.preferences.PreferencesDialog;
 import com.gstncaruso.tabpro.ui.dialogs.print.PrintDialog;
@@ -395,6 +397,23 @@ public final class MainFrame extends JFrame {
         @Override
         public void exportMidi() {
             exportWith(exchange::exportMidi, new FileNameExtensionFilter("Archivos MIDI (*.mid)", "mid"), ".mid");
+        }
+
+        @Override
+        public void exportWave() {
+            WaveExportDialog.ask(MainFrame.this, AudioQuality.standard()).ifPresent(quality -> {
+                JFileChooser chooser = new JFileChooser();
+                chooser.setFileFilter(new FileNameExtensionFilter("Audio WAVE (*.wav)", "wav"));
+                if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
+                    return;
+                }
+                try {
+                    exchange.exportWave(editor.score(), withExtension(chooser.getSelectedFile(), ".wav"), quality);
+                    backToTheScore();
+                } catch (ScoreFileException e) {
+                    showError(e);
+                }
+            });
         }
 
         @Override

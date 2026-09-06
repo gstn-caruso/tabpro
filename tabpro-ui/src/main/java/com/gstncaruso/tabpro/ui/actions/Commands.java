@@ -92,6 +92,7 @@ public final class Commands {
         define("file.importMusicXml", "MusicXML…", document::importMusicXml);
         define("file.importGuitarPro", "Guitar Pro…", document::importGuitarPro);
         define("file.exportMidi", "MIDI…", document::exportMidi);
+        define("file.exportWave", "WAVE…", document::exportWave);
         define("file.exportAscii", "Tablatura ASCII…", document::exportAscii);
         define("file.exportMusicXml", "MusicXML…", document::exportMusicXml);
         define("file.exportImage", "Imagen…", document::exportImage);
