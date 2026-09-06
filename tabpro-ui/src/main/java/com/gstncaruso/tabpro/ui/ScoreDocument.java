@@ -87,7 +87,12 @@ public final class ScoreDocument {
     }
 
     public void newScore() {
-        editor.replaceScore(Score.blank());
+        newScore(Score.blank());
+    }
+
+    /** Archivo > Nuevo con una plantilla ya armada, como la que trae "Propiedades por defecto". */
+    public void newScore(Score blank) {
+        editor.replaceScore(blank);
         path = null;
         markSaved();
     }

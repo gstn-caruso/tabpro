@@ -110,6 +110,8 @@ public final class MainFrame extends JFrame {
     private com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences editingPreferences =
             com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences.defaults();
     private final ChosenScale chosenScale = new ChosenScale();
+    private final com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties defaultScoreProperties =
+            com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties.userProperties();
     private final ScoreMixSplit scoreMixSplit;
 
     public MainFrame(Editor editor, ScoreFiles files, Player player) {
@@ -374,8 +376,10 @@ public final class MainFrame extends JFrame {
         @Override
         public void newScore() {
             if (askToDiscardChanges()) {
-                document.newScore();
+                document.newScore(defaultScoreProperties.get().newScore());
                 usePageSetup(DefaultPageSetup.userSetup().get());
+                updateTitle();
+                ScoreInfoDialog.show(MainFrame.this, editor, defaultScoreProperties);
                 updateTitle();
                 backToTheScore();
             }

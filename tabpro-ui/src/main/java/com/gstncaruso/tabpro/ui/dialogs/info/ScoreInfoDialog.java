@@ -14,18 +14,25 @@ public final class ScoreInfoDialog {
     }
 
     public static void show(Component parent, Editor editor) {
+        show(parent, editor, DefaultScoreProperties.userProperties());
+    }
+
+    public static void show(Component parent, Editor editor, DefaultScoreProperties defaultProperties) {
         Score score = editor.score();
         ScoreInfoPanel infoPanel = new ScoreInfoPanel(score.info());
         LyricsPanel lyricsPanel = new LyricsPanel(trackNamesOf(score), score.lyrics());
+        DefaultScorePropertiesPanel defaultsPanel = new DefaultScorePropertiesPanel(defaultProperties.get());
 
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("General", infoPanel);
         tabs.addTab("Letra", lyricsPanel);
+        tabs.addTab("Propiedades por defecto", defaultsPanel);
 
         boolean accepted = DialogShell.ask(parent, "Informacion de la partitura", tabs);
         if (accepted) {
             editor.setInfo(infoPanel.toScoreInfo());
             editor.setLyrics(lyricsPanel.toLyrics());
+            defaultProperties.save(defaultsPanel.toDefaults());
         }
     }
 

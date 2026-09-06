@@ -93,6 +93,21 @@ class ScoreDocumentTest {
         assertEquals(Score.blank(), editor.score());
     }
 
+    /** Archivo > Nuevo con "Propiedades por defecto" cargadas: la que llega es esa, no Score.blank(). */
+    @Test
+    void newScoreConUnaPlantillaUsaEsaPlantillaEnVezDeLaPartituraEnBlanco() {
+        FakeScoreFiles files = new FakeScoreFiles();
+        Editor editor = new Editor(Score.blank());
+        ScoreDocument document = new ScoreDocument(editor, files);
+        document.saveAs(Path.of("cancion.tabpro"));
+        Score plantilla = Score.blank().withTempo(90);
+
+        document.newScore(plantilla);
+
+        assertTrue(document.path().isEmpty());
+        assertEquals(plantilla, editor.score());
+    }
+
     @Test
     void describesTheDocumentByItsFileName() {
         FakeScoreFiles files = new FakeScoreFiles();
