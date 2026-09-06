@@ -26,7 +26,6 @@ final class GuitarProBeatReader {
     private static final int HAS_TUPLET = 0x20;
     private static final int HAS_STATUS = 0x40;
 
-    private static final int STATUS_EMPTY = 0x00;
     private static final int STATUS_REST = 0x02;
 
     private static final int STROKE_UP = 0x40;
@@ -64,13 +63,13 @@ final class GuitarProBeatReader {
         return new Beat(duration, played, effects);
     }
 
-    /** Un beat vacio o un silencio no trae notas; el estado dice cual de los dos es. */
+    /**
+     * El byte de estado dice si el beat es un silencio. Cualquier otro valor,
+     * incluido el cero, trae notas: un beat sin notas se escribe con el estado
+     * de silencio, no con el de vacio.
+     */
     private static boolean readStatus(GuitarProByteReader reader, int flags) {
-        if ((flags & HAS_STATUS) == 0) {
-            return false;
-        }
-        int status = reader.readUnsignedByte();
-        return status == STATUS_REST || status == STATUS_EMPTY;
+        return (flags & HAS_STATUS) != 0 && reader.readUnsignedByte() == STATUS_REST;
     }
 
     private static Duration readDuration(GuitarProByteReader reader, int flags) {
