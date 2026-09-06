@@ -100,7 +100,8 @@ public final class MidiImportDialog {
             }
             try {
                 Score imported = exchange.importMidiQuick(
-                        currentPath[0], selected, panel.transposeDownOneOctave(), Optional.of(panel.precision()));
+                        currentPath[0], selected, panel.transposeDownOneOctave(), Optional.of(panel.precision()),
+                        panel.useTwoChannelsPerTrack());
                 adopt.accept(imported);
                 afterChange.run();
             } catch (ScoreFileException e) {

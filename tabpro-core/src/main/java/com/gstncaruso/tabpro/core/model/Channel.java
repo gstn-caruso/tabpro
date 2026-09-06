@@ -101,6 +101,15 @@ public record Channel(
         return 1;
     }
 
+    /**
+     * La casilla "usar 2 canales por pista" del import de MIDI del manual: con los
+     * dos canales, el de efectos es el que sigue (para bends o slides sin correr
+     * las demas notas); con uno solo, los dos canales son el mismo.
+     */
+    public static int effectChannelFor(int number, boolean useTwoChannelsPerTrack) {
+        return useTwoChannelsPerTrack ? effectChannelNextTo(number) : number;
+    }
+
     public boolean isPercussionChannel() {
         return number == PERCUSSION_CHANNEL;
     }

@@ -86,6 +86,52 @@ class MidiScoreImporterTest {
         assertEquals(38, imported.track(0).measure(0).beat(0).notes().get(0).fret());
     }
 
+    /**
+     * El manual: "Use 2 channels per track" es el default de la importacion rapida, asi que
+     * dos pistas quedan en canales de efectos distintos de los suyos propios.
+     */
+    @Test
+    void quickImportDefaultsToTwoChannelsPerTrack() {
+        Track track = Track.standardGuitar("Guitarra");
+        Path path = export(new Score("Prueba", 120, List.of(track)), newTempDir());
+        List<Integer> indices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
+
+        Score imported = importer.importQuick(path, indices, false, Optional.empty());
+
+        assertEquals(1, imported.track(0).channel().number());
+        assertEquals(2, imported.track(0).channel().effectChannel());
+    }
+
+    /** La casilla destildada equivale a un solo canal por pista. */
+    @Test
+    void quickImportCanUseOnlyOneChannelPerTrack() {
+        Track track = Track.standardGuitar("Guitarra");
+        Path path = export(new Score("Prueba", 120, List.of(track)), newTempDir());
+        List<Integer> indices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
+
+        Score imported = importer.importQuick(path, indices, false, Optional.empty(), false);
+
+        assertEquals(1, imported.track(0).channel().number());
+        assertEquals(1, imported.track(0).channel().effectChannel());
+    }
+
+    /**
+     * La percusion tambien tiene que tener el canal de efectos que le toca, no el de
+     * arranque de una pista comun: antes se quedaba pegado en el canal 2 aunque la
+     * percusion suene siempre en el 10.
+     */
+    @Test
+    void quickImportGivesPercussionItsOwnEffectChannelToo() {
+        Track drums = Track.percussion("Bateria").withMeasure(0,
+                new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 38)))));
+        Path path = export(new Score("Prueba", 120, List.of(drums)), newTempDir());
+
+        Score imported = importer.importQuick(path);
+
+        assertEquals(Channel.PERCUSSION_CHANNEL, imported.track(0).channel().number());
+        assertEquals(Channel.PERCUSSION_CHANNEL, imported.track(0).channel().effectChannel());
+    }
+
     @Test
     void quickImportFallsBackToTheFileNameWhenThereIsNoTrackName() throws Exception {
         Path path = newTempDir().resolve("sin-nombre.mid");

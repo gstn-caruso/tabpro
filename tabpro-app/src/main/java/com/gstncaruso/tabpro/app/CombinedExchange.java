@@ -48,8 +48,10 @@ public final class CombinedExchange implements ScoreExchange {
 
     @Override
     public Score importMidiQuick(
-            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision) {
-        return notation.importMidiQuick(path, selectedMidiTrackIndices, transposeDownOneOctave, precision);
+            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision,
+            boolean useTwoChannelsPerTrack) {
+        return notation.importMidiQuick(
+                path, selectedMidiTrackIndices, transposeDownOneOctave, precision, useTwoChannelsPerTrack);
     }
 
     @Override

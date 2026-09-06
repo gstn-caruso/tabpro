@@ -20,9 +20,10 @@ import javax.swing.ListSelectionModel;
 /**
  * Lo que las dos ventanas de import de MIDI del manual comparten: la lista de pistas del
  * archivo (con seleccion multiple, para poder fusionarlas), si hay que transportar una octava
- * para abajo lo que se importe, y con que precision se cuantiza la posicion y la duracion de
- * las notas -- el manual: "Guitar Pro allows you to precisely define the way it selects the
- * position as well as the duration of the notes".
+ * para abajo lo que se importe, si cada pista usa dos canales de MIDI o uno solo -- el manual:
+ * "handy if you plan on adding bend or slide effects to the tablature" -- y con que precision
+ * se cuantiza la posicion y la duracion de las notas -- el manual: "Guitar Pro allows you to
+ * precisely define the way it selects the position as well as the duration of the notes".
  */
 public final class MidiImportPanel extends JPanel {
 
@@ -32,6 +33,7 @@ public final class MidiImportPanel extends JPanel {
 
     private final JList<MidiTrackInfo> trackList = new JList<>();
     private final JCheckBox transpose = new JCheckBox("Transportar una octava para abajo");
+    private final JCheckBox twoChannelsPerTrack = new JCheckBox("Usar 2 canales por pista", true);
     private final JComboBox<String> precisionChoice = new JComboBox<>(precisionLabels());
 
     public MidiImportPanel(List<MidiTrackInfo> tracks) {
@@ -44,6 +46,7 @@ public final class MidiImportPanel extends JPanel {
 
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, DialogStyle.GAP_S));
         bottom.add(transpose);
+        bottom.add(twoChannelsPerTrack);
         bottom.add(new JLabel("Precisión"));
         bottom.add(precisionChoice);
 
@@ -69,6 +72,11 @@ public final class MidiImportPanel extends JPanel {
 
     public boolean transposeDownOneOctave() {
         return transpose.isSelected();
+    }
+
+    /** El manual: dos canales por pista deja agregarle bend o slide sin correr las demas notas. */
+    public boolean useTwoChannelsPerTrack() {
+        return twoChannelsPerTrack.isSelected();
     }
 
     /** La precision elegida para cuantizar la posicion y la duracion de las notas al importar. */

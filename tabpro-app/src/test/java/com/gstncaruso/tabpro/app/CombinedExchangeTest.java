@@ -73,7 +73,7 @@ class CombinedExchangeTest {
             @Override
             public Score importMidiQuick(
                     Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
-                    Optional<NoteValue> precision) {
+                    Optional<NoteValue> precision, boolean useTwoChannelsPerTrack) {
                 throw irrelevantForThisTest();
             }
 
@@ -177,7 +177,7 @@ class CombinedExchangeTest {
             @Override
             public Score importMidiQuick(
                     Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
-                    Optional<NoteValue> precision) {
+                    Optional<NoteValue> precision, boolean useTwoChannelsPerTrack) {
                 throw irrelevantForThisTest();
             }
 
