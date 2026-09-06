@@ -84,6 +84,95 @@ class EditorBarsTest {
     }
 
     @Test
+    void aKeySignatureChangeReachesTheBarsThatFollow() {
+        insertMeasuresUpTo(5);
+
+        editor.moveTo(1, 0, 1);
+        editor.setKeySignature(new KeySignature(2, Mode.MAJOR));
+
+        assertEquals(KeySignature.cMajor(), editor.score().attributesOf(0).keySignature());
+        assertEquals(new KeySignature(2, Mode.MAJOR), editor.score().attributesOf(1).keySignature());
+        assertEquals(new KeySignature(2, Mode.MAJOR), editor.score().attributesOf(2).keySignature());
+        assertEquals(new KeySignature(2, Mode.MAJOR), editor.score().attributesOf(3).keySignature());
+        assertEquals(new KeySignature(2, Mode.MAJOR), editor.score().attributesOf(4).keySignature());
+    }
+
+    @Test
+    void aSecondKeySignatureChangeCutsThePreviousOne() {
+        insertMeasuresUpTo(5);
+        editor.moveTo(1, 0, 1);
+        editor.setKeySignature(new KeySignature(2, Mode.MAJOR));
+
+        editor.moveTo(3, 0, 1);
+        editor.setKeySignature(new KeySignature(-3, Mode.MINOR));
+
+        assertEquals(KeySignature.cMajor(), editor.score().attributesOf(0).keySignature());
+        assertEquals(new KeySignature(2, Mode.MAJOR), editor.score().attributesOf(1).keySignature());
+        assertEquals(new KeySignature(2, Mode.MAJOR), editor.score().attributesOf(2).keySignature());
+        assertEquals(new KeySignature(-3, Mode.MINOR), editor.score().attributesOf(3).keySignature());
+        assertEquals(new KeySignature(-3, Mode.MINOR), editor.score().attributesOf(4).keySignature());
+    }
+
+    @Test
+    void aTripletFeelChangeReachesTheBarsThatFollow() {
+        insertMeasuresUpTo(5);
+
+        editor.moveTo(1, 0, 1);
+        editor.setTripletFeel(TripletFeel.EIGHTH);
+
+        assertEquals(TripletFeel.NONE, editor.score().attributesOf(0).tripletFeel());
+        assertEquals(TripletFeel.EIGHTH, editor.score().attributesOf(1).tripletFeel());
+        assertEquals(TripletFeel.EIGHTH, editor.score().attributesOf(2).tripletFeel());
+        assertEquals(TripletFeel.EIGHTH, editor.score().attributesOf(3).tripletFeel());
+        assertEquals(TripletFeel.EIGHTH, editor.score().attributesOf(4).tripletFeel());
+    }
+
+    @Test
+    void aSecondTripletFeelChangeCutsThePreviousOne() {
+        insertMeasuresUpTo(5);
+        editor.moveTo(1, 0, 1);
+        editor.setTripletFeel(TripletFeel.EIGHTH);
+
+        editor.moveTo(3, 0, 1);
+        editor.setTripletFeel(TripletFeel.SIXTEENTH);
+
+        assertEquals(TripletFeel.NONE, editor.score().attributesOf(0).tripletFeel());
+        assertEquals(TripletFeel.EIGHTH, editor.score().attributesOf(1).tripletFeel());
+        assertEquals(TripletFeel.EIGHTH, editor.score().attributesOf(2).tripletFeel());
+        assertEquals(TripletFeel.SIXTEENTH, editor.score().attributesOf(3).tripletFeel());
+        assertEquals(TripletFeel.SIXTEENTH, editor.score().attributesOf(4).tripletFeel());
+    }
+
+    @Test
+    void theKeySignaturePropagationReachesEveryTrackNotJustTheActiveOne() {
+        insertMeasuresUpTo(5);
+
+        editor.moveTo(1, 0, 1);
+        editor.setKeySignature(new KeySignature(2, Mode.MAJOR));
+
+        assertEquals(new KeySignature(2, Mode.MAJOR), editor.score().track(1).measure(2).attributes().keySignature());
+        assertEquals(new KeySignature(2, Mode.MAJOR), editor.score().track(1).measure(4).attributes().keySignature());
+    }
+
+    @Test
+    void anAttributeThatDoesNotPropagateStaysOnlyOnItsBar() {
+        insertMeasuresUpTo(5);
+
+        editor.moveTo(1, 0, 1);
+        editor.toggleRepeatOpen();
+
+        assertTrue(editor.score().attributesOf(1).repeatOpen());
+        assertFalse(editor.score().attributesOf(2).repeatOpen());
+        assertFalse(editor.score().attributesOf(0).repeatOpen());
+    }
+
+    private void insertMeasuresUpTo(int measureCount) {
+        while (editor.currentTrack().measureCount() < measureCount) {
+            editor.insertMeasure();
+        }
+    }
+
+    @Test
     void emptyingABarLeavesItsAttributes() {
         editor.setFret(5);
         editor.toggleRepeatOpen();
