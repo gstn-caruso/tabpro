@@ -1,3 +1,9 @@
+## [0.12.1](https://github.com/gstn-caruso/tabpro/compare/v0.12.0...v0.12.1) (2026-09-06)
+
+### Bug Fixes
+
+* cinco ajustes que el programa guardaba y nunca aplicaba ([#56](https://github.com/gstn-caruso/tabpro/issues/56)) ([762ffea](https://github.com/gstn-caruso/tabpro/commit/762ffeaf58403d52375abebaeee80115d6ef11ed))
+
 ## [0.12.0](https://github.com/gstn-caruso/tabpro/compare/v0.11.0...v0.12.0) (2026-09-06)
 
 ### Features
