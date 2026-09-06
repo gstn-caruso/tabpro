@@ -776,25 +776,26 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void pageMode() {
-            canvas.setViewMode(ViewMode.PAGE);
-            backToTheScore();
+            applyViewMode(ViewMode.PAGE);
         }
 
         @Override
         public void parchmentMode() {
-            canvas.setViewMode(ViewMode.PARCHMENT);
-            backToTheScore();
+            applyViewMode(ViewMode.PARCHMENT);
         }
 
         @Override
         public void verticalScreenMode() {
-            canvas.setViewMode(ViewMode.SCREEN_VERTICAL);
-            backToTheScore();
+            applyViewMode(ViewMode.SCREEN_VERTICAL);
         }
 
         @Override
         public void horizontalScreenMode() {
-            canvas.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+            applyViewMode(ViewMode.SCREEN_HORIZONTAL);
+        }
+
+        private void applyViewMode(ViewMode mode) {
+            canvas.setViewMode(mode);
             backToTheScore();
         }
 
