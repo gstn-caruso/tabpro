@@ -115,4 +115,39 @@ class TrackTest {
         assertThrows(IllegalArgumentException.class,
                 () -> new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of()));
     }
+
+    @Test
+    void aGuitarTrackAcceptsFretZero() {
+        assertTrue(Track.standardGuitar("Guitarra").acceptsTypedNumber(0));
+    }
+
+    @Test
+    void aGuitarTrackAcceptsTheHighestFret() {
+        assertTrue(Track.standardGuitar("Guitarra").acceptsTypedNumber(Tuning.MAX_FRET));
+    }
+
+    @Test
+    void aGuitarTrackRejectsAFretPastTheHighest() {
+        assertFalse(Track.standardGuitar("Guitarra").acceptsTypedNumber(Tuning.MAX_FRET + 1));
+    }
+
+    @Test
+    void aPercussionTrackRejectsASoundBelowTheLowest() {
+        assertFalse(Track.percussion("Bateria").acceptsTypedNumber(PercussionKit.LOWEST_SOUND - 1));
+    }
+
+    @Test
+    void aPercussionTrackAcceptsTheLowestSound() {
+        assertTrue(Track.percussion("Bateria").acceptsTypedNumber(PercussionKit.LOWEST_SOUND));
+    }
+
+    @Test
+    void aPercussionTrackAcceptsTheHighestSound() {
+        assertTrue(Track.percussion("Bateria").acceptsTypedNumber(PercussionKit.HIGHEST_SOUND));
+    }
+
+    @Test
+    void aPercussionTrackRejectsASoundPastTheHighest() {
+        assertFalse(Track.percussion("Bateria").acceptsTypedNumber(PercussionKit.HIGHEST_SOUND + 1));
+    }
 }
