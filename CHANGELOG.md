@@ -1,3 +1,9 @@
+## [0.17.0](https://github.com/gstn-caruso/tabpro/compare/v0.16.0...v0.17.0) (2026-09-06)
+
+### Features
+
+* intercambiar vistas, elegir cada barra y estrenar partitura con propiedades propias ([#67](https://github.com/gstn-caruso/tabpro/issues/67)) ([dd21f55](https://github.com/gstn-caruso/tabpro/commit/dd21f55916acc7b502ccf4f26981c2ff72d9f2d7))
+
 ## [0.16.0](https://github.com/gstn-caruso/tabpro/compare/v0.15.2...v0.16.0) (2026-09-06)
 
 ### Features
