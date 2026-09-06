@@ -566,6 +566,12 @@ public final class Editor {
 
     // ---- navegacion -------------------------------------------------------
 
+    /** El TAB del manual (linea 780): alterna entre editar en la tablatura y en el pentagrama,
+     * sin mover el cursor de donde esta. */
+    public void toggleNotation() {
+        moveCursor(cursor.onNotation(cursor.notation().other()));
+    }
+
     public void moveTo(int measure, int beat, int string) {
         Track track = currentTrack();
         if (measure < 0 || measure >= track.measureCount()) {

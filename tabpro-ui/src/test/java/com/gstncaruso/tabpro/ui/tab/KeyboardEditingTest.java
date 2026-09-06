@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.editing.Notation;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.PercussionKit;
@@ -58,6 +59,24 @@ class KeyboardEditingTest {
 
         bindings.get(KeyStroke.getKeyStroke("LEFT")).run();
         assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
+    }
+
+    /**
+     * Manual, linea 780: "The TAB (tabulation) key allows you to switch notation". No mueve el
+     * cursor -eso ya lo hacia moverRight, que TAB usaba antes por descuido-, solo cambia en que
+     * notacion se esta editando.
+     */
+    @Test
+    void bindsTabToToggleTheNotation() {
+        Editor editor = new Editor(Score.blank());
+        Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
+
+        bindings.get(KeyStroke.getKeyStroke("TAB")).run();
+        assertEquals(Notation.STANDARD, editor.cursor().notation());
+        assertEquals(0, editor.cursor().beat(), "TAB no tiene que mover el cursor");
+
+        bindings.get(KeyStroke.getKeyStroke("TAB")).run();
+        assertEquals(Notation.TABLATURE, editor.cursor().notation());
     }
 
     @Test
