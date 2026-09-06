@@ -13,8 +13,10 @@ import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
+import com.gstncaruso.tabpro.core.model.effects.Wah;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Lee un beat del archivo: su figura, su grupo irregular, sus efectos y las
@@ -42,6 +44,11 @@ final class GuitarProBeatReader {
     /** La cuerda 1 del archivo es la mas aguda y ocupa el bit mas alto de la mascara. */
     private static final int HIGHEST_STRING_BIT = 0x40;
 
+    /** El wah del cambio de parametros: -1 no lo toca, -2 lo apaga, 0 a 100 es cerrado a abierto. */
+    private static final int WAH_UNCHANGED = -1;
+    private static final int WAH_OFF = -2;
+    private static final int WAH_HALFWAY = 50;
+
     private final GuitarProNoteReader notes = new GuitarProNoteReader();
     private final GuitarProChordReader chords = new GuitarProChordReader();
     private final GuitarProBendReader bends = new GuitarProBendReader();
@@ -67,7 +74,7 @@ final class GuitarProBeatReader {
             effects = readEffects(reader, version, effects, effectFlags, secondFlags);
         }
         if ((flags & HAS_MIX_TABLE_CHANGE) != 0) {
-            effects = effects.withParameterChange(readMixTableChange(reader, version));
+            effects = readMixTableChange(reader, version, effects);
         }
         List<Note> played = readNotes(reader, version, stringCount);
         skipGp5BeatExtras(reader, version);
@@ -215,10 +222,11 @@ final class GuitarProBeatReader {
     }
 
     /**
-     * El cambio de parametros que la mesa de mezcla inserta desde este beat. Lo
-     * que el cambio no toca viene escrito en -1 y no se lista.
+     * El cambio de parametros que la mesa de mezcla inserta desde este beat, con el wah del
+     * pedal si lo trae -- solo existe desde GP5. Lo que el cambio no toca viene escrito en -1
+     * y no se lista.
      */
-    private static ParameterChange readMixTableChange(GuitarProByteReader reader, GuitarProVersion version) {
+    private static BeatEffects readMixTableChange(GuitarProByteReader reader, GuitarProVersion version, BeatEffects effects) {
         int program = reader.readSignedByte();
         if (version.hasGp5ChordFormat()) {
             reader.skip(16);
@@ -247,15 +255,34 @@ final class GuitarProBeatReader {
         change = change.over(readTransitionDurations(
                 reader, volume, pan, chorus, reverb, phaser, tremolo, tempo));
         change = change.onEveryTrack(readEveryTrackMask(reader, version));
+        effects = effects.withParameterChange(change);
+
         if (version.hasGp5ChordFormat()) {
-            reader.readUnsignedByte();
-            reader.skip(2);
+            Optional<Wah> wah = wahOf(reader.readSignedByte());
+            if (wah.isPresent()) {
+                effects = effects.withWah(wah.get());
+            }
+            if (version.hasRseInstrumentEffect()) {
+                reader.readLengthPrefixedString();
+                reader.readLengthPrefixedString();
+            }
         }
-        return change;
+        return effects;
     }
 
     private static ParameterChange changing(ParameterChange change, SoundParameter parameter, int value) {
         return value < 0 ? change : change.changing(parameter, value);
+    }
+
+    /** -2 apagado, -1 sin cambios, 0 a 100 de cerrado a abierto: tabpro solo distingue los tres estados. */
+    private static Optional<Wah> wahOf(int value) {
+        if (value == WAH_UNCHANGED) {
+            return Optional.empty();
+        }
+        if (value <= WAH_OFF) {
+            return Optional.of(Wah.OFF);
+        }
+        return Optional.of(value >= WAH_HALFWAY ? Wah.OPEN : Wah.CLOSED);
     }
 
     /**

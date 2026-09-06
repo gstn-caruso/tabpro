@@ -81,6 +81,11 @@ enum GuitarProVersion {
         return this == GP5_10;
     }
 
+    /** GP5.10 agrega nombre y categoria de efecto de RSE a cada cambio de parametros, tras el wah. */
+    boolean hasRseInstrumentEffect() {
+        return this == GP5_10;
+    }
+
     /** GP5 agrega la lista de direcciones (Coda, Segno, etc.) en la cabecera. */
     boolean hasDirections() {
         return generation >= 5;
