@@ -15,6 +15,9 @@ import com.gstncaruso.tabpro.core.model.TrackSettings;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.Voice;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
+import com.gstncaruso.tabpro.core.playback.ScheduledNote;
+import com.gstncaruso.tabpro.core.playback.Timeline;
+import com.gstncaruso.tabpro.core.playback.TrackTimeline;
 import com.gstncaruso.tabpro.format.exchange.DurationTicks;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -78,6 +81,24 @@ public final class MidiScoreImporter {
         List<Measure> measures =
                 importMeasures(path, midiTrackIndices, target.tuning(), target.settings().fretCount(), transposeDownOneOctave);
         return target.withMeasures(measures);
+    }
+
+    /**
+     * Lo que hay que reproducir para escuchar la o las pistas elegidas antes de importarlas, tal
+     * como suenan en el archivo -- el manual deja escuchar las pistas MIDI antes de traerlas.
+     */
+    public Timeline timelineOf(Path path, List<Integer> midiTrackIndices) {
+        ParsedMidiFile file = parse(path);
+        RawMidiTrack raw = merge(tracksAt(file, midiTrackIndices));
+        return timelineOf(raw, file.tempoBpm());
+    }
+
+    private static Timeline timelineOf(RawMidiTrack raw, int tempoBpm) {
+        List<ScheduledNote> notes = new ArrayList<>();
+        raw.notesByTick().forEach((tick, chord) -> chord.forEach(
+                note -> notes.add(new ScheduledNote(tick, note.durationTicks(), new Pitch(note.number())))));
+        TrackTimeline track = new TrackTimeline(raw.program(), raw.volume(), raw.pan(), raw.percussion(), notes, List.of());
+        return new Timeline(tempoBpm, Duration.TICKS_PER_QUARTER, List.of(track));
     }
 
     /** El boton "importar titulo y cambios de compas" del paso a paso: no toca ninguna pista. */

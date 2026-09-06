@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.track.AddTrackDialog;
@@ -21,11 +22,12 @@ import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- * La ventana de "MIDI Import" del manual: a la izquierda las pistas del archivo elegido (se
- * puede escuchar el archivo abriendo otro y cambiar la seleccion). El import rapido reemplaza
- * la partitura entera con una pista por cada pista elegida; el paso a paso no borra nada y deja
- * traer el titulo y los cambios de compas, agregar una pista nueva, y fusionar sobre la pista
- * actual una o varias pistas MIDI elegidas -- todo repetible.
+ * La ventana de "MIDI Import" del manual: a la izquierda las pistas del archivo elegido, con la
+ * opcion de escuchar la o las que esten marcadas (tal como suenan en el MIDI, todavia sin
+ * convertir) o de abrir otro archivo. El import rapido reemplaza la partitura entera con una
+ * pista por cada pista elegida; el paso a paso no borra nada y deja traer el titulo y los
+ * cambios de compas, agregar una pista nueva, y fusionar sobre la pista actual una o varias
+ * pistas MIDI elegidas -- todo repetible.
  */
 public final class MidiImportDialog {
 
@@ -39,7 +41,8 @@ public final class MidiImportDialog {
             BooleanSupplier askToDiscardChanges,
             Consumer<Score> adopt,
             Runnable afterChange,
-            Path initialPath) {
+            Path initialPath,
+            Consumer<Timeline> onListen) {
         Path[] currentPath = {initialPath};
         MidiImportPanel panel;
         try {
@@ -50,12 +53,13 @@ public final class MidiImportDialog {
         }
 
         JButton openAnother = DialogStyle.flatButton("Abrir otro archivo…");
+        JButton listen = DialogStyle.flatButton("Escuchar");
         JButton quickImport = DialogStyle.flatButton("Import rápido (reemplaza la partitura)");
         JButton titleAndTimeSignatures = DialogStyle.flatButton("Importar título y cambios de compás");
         JButton addTrack = DialogStyle.flatButton("Agregar una pista");
         JButton importOntoCurrent = DialogStyle.flatButton("Importar sobre la pista actual");
 
-        JPanel top = flowOf(openAnother);
+        JPanel top = flowOf(openAnother, listen);
         JPanel stepByStep = flowOf(titleAndTimeSignatures, addTrack, importOntoCurrent);
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(flowOf(quickImport), BorderLayout.NORTH);
@@ -79,6 +83,14 @@ public final class MidiImportDialog {
                 showError(parent, e);
             }
         });
+
+        listen.addActionListener(event -> withSelection(parent, panel, selected -> {
+            try {
+                onListen.accept(exchange.midiTrackTimeline(currentPath[0], selected));
+            } catch (ScoreFileException e) {
+                showError(parent, e);
+            }
+        }));
 
         quickImport.addActionListener(event -> withSelection(parent, panel, selected -> {
             if (!askToDiscardChanges.getAsBoolean()) {

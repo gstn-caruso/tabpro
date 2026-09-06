@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.format.exchange.ascii.AsciiTabExportOptions;
 import com.gstncaruso.tabpro.format.exchange.ascii.AsciiTabExporter;
 import com.gstncaruso.tabpro.format.exchange.ascii.AsciiTabImportOptions;
@@ -76,6 +77,11 @@ public final class FileExchange implements ScoreExchange {
     @Override
     public Score importMidiTitleAndTimeSignatures(Score target, Path path) {
         return midiImporter.importTitleAndTimeSignatures(target, path);
+    }
+
+    @Override
+    public Timeline midiTrackTimeline(Path path, List<Integer> midiTrackIndices) {
+        return midiImporter.timelineOf(path, midiTrackIndices);
     }
 
     private static MidiTrackInfo toMidiTrackInfo(MidiTrackSummary summary) {

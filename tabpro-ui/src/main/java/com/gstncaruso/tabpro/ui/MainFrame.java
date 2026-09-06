@@ -389,7 +389,7 @@ public final class MainFrame extends JFrame {
                         updateTitle();
                         backToTheScore();
                     },
-                    chooser.getSelectedFile().toPath());
+                    chooser.getSelectedFile().toPath(), transport::previewTimeline);
         }
 
         @Override

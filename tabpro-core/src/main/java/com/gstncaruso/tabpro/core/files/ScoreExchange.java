@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.core.files;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.playback.Timeline;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +53,14 @@ public interface ScoreExchange {
      */
     default void exportWave(Score score, Path path, AudioQuality quality) {
         throw notSupported("la exportación a WAVE");
+    }
+
+    /**
+     * Lo que hay que reproducir para escuchar la o las pistas elegidas antes de importarlas, como
+     * pide el manual: "it is possible to listen to them [the MIDI tracks] or to open another file".
+     */
+    default Timeline midiTrackTimeline(Path path, List<Integer> midiTrackIndices) {
+        throw notSupported("la importación de MIDI");
     }
 
     default Score importAscii(Path path) {

@@ -165,8 +165,13 @@ public final class Transport {
 
     /** Escucha una partitura que no es la que se esta editando, como el explorador. */
     public void preview(Score score) {
+        previewTimeline(Timeline.of(score));
+    }
+
+    /** Escucha un timeline armado aparte, como la pista de un MIDI que todavia no se importo. */
+    public void previewTimeline(Timeline timeline) {
         stop();
-        player.play(Timeline.of(score), new InternalListener());
+        player.play(timeline, new InternalListener());
     }
 
     public void addListener(Runnable listener) {
