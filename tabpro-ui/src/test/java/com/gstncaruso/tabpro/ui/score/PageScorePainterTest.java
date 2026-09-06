@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.DiagramPlacement;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -14,6 +15,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
@@ -234,11 +236,63 @@ class PageScorePainterTest {
         assertFalse(paints(music, ScoreColors.INK), "y no con la tinta clara de la pantalla");
     }
 
+    /**
+     * Manual, linea 2800: Propiedades de la pista [F6] deja elegir si los diagramas de acorde
+     * van "at the top of the score". DiagramPlacement.showsUnderTheTitle() ya calculaba esto
+     * bien, pero {@link PageChromePainter} no lo consultaba: elegir "Debajo del titulo" o "En
+     * los dos lados" no cambiaba un solo pixel. Comparado contra ABOVE_THE_STAFF -que ya se
+     * dibuja arriba del pentagrama desde antes- para aislar el efecto nuevo: BOTH tiene que
+     * agregar el diagrama en el encabezado sin tocarlo donde ya se veia.
+     */
+    @Test
+    void theHeaderGetsTheDiagramWhenThePlacementAsksForBothSides() {
+        BufferedImage aboveOnly = render(scoreWithChordPlacement(DiagramPlacement.ABOVE_THE_STAFF), PageSetup.defaults());
+        BufferedImage both = render(scoreWithChordPlacement(DiagramPlacement.BOTH), PageSetup.defaults());
+
+        assertTrue(sameSheet(musicOf(aboveOnly), musicOf(both)),
+                "el diagrama arriba del pentagrama no tiene que cambiar entre ABOVE_THE_STAFF y BOTH");
+        assertFalse(sameSheet(headerOf(aboveOnly), headerOf(both)),
+                "BOTH tiene que agregar el diagrama tambien en el encabezado");
+    }
+
+    /**
+     * UNDER_THE_TITLE saca el diagrama de arriba del pentagrama (ya lo hacia showsOnTheScore(),
+     * eso no era el bug) pero tiene que aparecer en el encabezado, cosa que HIDDEN nunca hace.
+     */
+    @Test
+    void theHeaderTellsUnderTheTitleApartFromHidden() {
+        BufferedImage hidden = render(scoreWithChordPlacement(DiagramPlacement.HIDDEN), PageSetup.defaults());
+        BufferedImage underTheTitle = render(scoreWithChordPlacement(DiagramPlacement.UNDER_THE_TITLE), PageSetup.defaults());
+
+        assertTrue(sameSheet(musicOf(hidden), musicOf(underTheTitle)),
+                "ninguno de los dos muestra el diagrama arriba del pentagrama");
+        assertFalse(sameSheet(headerOf(hidden), headerOf(underTheTitle)),
+                "UNDER_THE_TITLE tiene que mostrar el diagrama en el encabezado, HIDDEN no");
+    }
+
+    /** El diagrama debajo del titulo va una sola vez por hoja, no compas por compas. */
+    private static Score scoreWithChordPlacement(DiagramPlacement placement) {
+        ChordDiagram am = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
+        Beat chordBeat = Beat.rest(Duration.quarter()).withEffects(BeatEffects.none().withChord(am));
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(
+                chordBeat, Beat.rest(Duration.quarter()), Beat.rest(Duration.quarter()), Beat.rest(Duration.quarter())));
+        Track track = Track.standardGuitar("Guitarra")
+                .withMeasures(List.of(measure))
+                .mappingSettings(settings -> settings.withDisplay(settings.display().withDiagrams(placement)));
+        return new Score("", 120, List.of(track));
+    }
+
     /** Solo la musica de la hoja, sin el encabezado ni el pie, que se dibujan aparte. */
     private static BufferedImage musicOf(BufferedImage sheet) {
         PageMetrics paper = PageMetrics.of(PageSetup.defaults());
         return sheet.getSubimage(
                 paper.contentLeft(), paper.contentTop(), paper.contentWidth(), paper.contentHeight());
+    }
+
+    /** Solo el encabezado de la hoja -donde va el titulo y, ahora, los diagramas del track. */
+    private static BufferedImage headerOf(BufferedImage sheet) {
+        PageMetrics paper = PageMetrics.of(PageSetup.defaults());
+        return sheet.getSubimage(0, 0, sheet.getWidth(), paper.contentTop());
     }
 
     private static Score scoreWithAParameterChange() {

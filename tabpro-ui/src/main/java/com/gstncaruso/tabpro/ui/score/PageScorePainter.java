@@ -2,7 +2,9 @@ package com.gstncaruso.tabpro.ui.score;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Selection;
+import com.gstncaruso.tabpro.core.harmony.TrackChords;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.page.PageFields;
 import com.gstncaruso.tabpro.ui.page.PageMetrics;
@@ -56,9 +58,10 @@ public final class PageScorePainter {
         }
 
         List<PagePlacement> pages = placementsFor(layout, viewport);
+        List<ChordDiagram> diagramsUnderTheTitle = TrackChords.underTheTitle(score);
         for (int page = 0; page < pages.size(); page++) {
             paintSheet(g, score, layout, cursor, playhead, selection, viewport, pages.get(page),
-                    new PageFields(score.info(), page + 1, pages.size()));
+                    new PageFields(score.info(), page + 1, pages.size()), diagramsUnderTheTitle);
         }
     }
 
@@ -95,7 +98,7 @@ public final class PageScorePainter {
         g.scale(viewport.factor(), viewport.factor());
         paintSheet(
                 g, score, layout, cursor, playhead, selection, viewport, pages.get(page).alone(),
-                new PageFields(score.info(), page + 1, pages.size()));
+                new PageFields(score.info(), page + 1, pages.size()), TrackChords.underTheTitle(score));
     }
 
     /** Traduce un clic de pantalla (ya sin el factor de zoom) a compas/beat/cuerda. */
@@ -161,12 +164,14 @@ public final class PageScorePainter {
 
     private static void paintSheet(
             Graphics2D g, Score score, ScoreLayout layout, Cursor cursor, Playhead playhead,
-            Optional<Selection> selection, ScoreViewport viewport, PagePlacement page, PageFields fields) {
+            Optional<Selection> selection, ScoreViewport viewport, PagePlacement page, PageFields fields,
+            List<ChordDiagram> diagramsUnderTheTitle) {
         PageMetrics sheet = viewport.sheet();
         int top = page.screenTop();
         PageChromePainter.paintSheet(g, 0, top, sheet.pageWidth(), page.pageHeight());
         PageChromePainter.paintHeader(
-                g, viewport.pageSetup().header().fillIn(fields), sheet, top, page.isFirst());
+                g, viewport.pageSetup().header().fillIn(fields), sheet, top, page.isFirst(),
+                diagramsUnderTheTitle);
         PageChromePainter.paintFooter(
                 g, viewport.pageSetup().footer().fillIn(fields), sheet, top, page.pageHeight());
 

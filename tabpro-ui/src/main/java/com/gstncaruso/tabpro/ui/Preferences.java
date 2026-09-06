@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui;
 
+import com.gstncaruso.tabpro.core.model.NoteValue;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,9 +19,8 @@ public final class Preferences {
     private static final String AUTOSAVE_EVERY = "autosaveEvery";
     private static final String UNDO_ENABLED = "undoEnabled";
     private static final String METRONOME_ENABLED = "metronomeEnabled";
-    private static final String COUNT_DOWN_ENABLED = "countDownEnabled";
-    private static final String VIEW_MODE = "viewMode";
-    private static final String ZOOM = "zoom";
+    private static final String DEFAULT_NOTE_VALUE = "defaultNoteValue";
+    private static final String AUTO_SCROLL_DURING_PLAYBACK = "autoScrollDuringPlayback";
     private static final String FORCE_MULTITRACK_IN_HORIZONTAL_MODE = "forceMultitrackInHorizontalMode";
     private static final String SEPARATOR = "\n";
 
@@ -52,10 +52,6 @@ public final class Preferences {
         stored.put(RECENT_FILES, String.join(SEPARATOR, recent.stream().map(Path::toString).toList()));
     }
 
-    public void forgetRecentFiles() {
-        stored.remove(RECENT_FILES);
-    }
-
     /** Cada cuantas acciones se guarda solo; cero significa que no se guarda. */
     public int autosaveEvery() {
         return stored.getInt(AUTOSAVE_EVERY, 20);
@@ -81,28 +77,22 @@ public final class Preferences {
         stored.putBoolean(METRONOME_ENABLED, enabled);
     }
 
-    public boolean countDownEnabled() {
-        return stored.getBoolean(COUNT_DOWN_ENABLED, false);
+    /** Preferencias [F12], "Figura por defecto al insertar": la usa {@code Editor.insertBeat}. */
+    public NoteValue defaultNoteValue() {
+        return NoteValue.valueOf(stored.get(DEFAULT_NOTE_VALUE, NoteValue.QUARTER.name()));
     }
 
-    public void setCountDownEnabled(boolean enabled) {
-        stored.putBoolean(COUNT_DOWN_ENABLED, enabled);
+    public void setDefaultNoteValue(NoteValue defaultNoteValue) {
+        stored.put(DEFAULT_NOTE_VALUE, defaultNoteValue.name());
     }
 
-    public String viewMode() {
-        return stored.get(VIEW_MODE, "PAGE");
+    /** Preferencias [F12], "Desplazar la pantalla durante la reproduccion": la usa ScoreCanvas. */
+    public boolean autoScrollDuringPlayback() {
+        return stored.getBoolean(AUTO_SCROLL_DURING_PLAYBACK, true);
     }
 
-    public void setViewMode(String mode) {
-        stored.put(VIEW_MODE, mode);
-    }
-
-    public int zoomPercent() {
-        return stored.getInt(ZOOM, 100);
-    }
-
-    public void setZoomPercent(int percent) {
-        stored.putInt(ZOOM, Math.clamp(percent, 30, 200));
+    public void setAutoScrollDuringPlayback(boolean autoScrollDuringPlayback) {
+        stored.putBoolean(AUTO_SCROLL_DURING_PLAYBACK, autoScrollDuringPlayback);
     }
 
     /** El manual: forzar la vista multipista al usar la pantalla horizontal. Apagado por defecto. */

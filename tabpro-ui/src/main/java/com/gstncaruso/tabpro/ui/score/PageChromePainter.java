@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.score;
 
+import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.ui.page.BannerText;
 import com.gstncaruso.tabpro.ui.page.PageElement;
 import com.gstncaruso.tabpro.ui.page.PageMetrics;
@@ -38,8 +39,15 @@ final class PageChromePainter {
     /**
      * El encabezado entero va solo en la primera hoja; en las siguientes se repite apenas el
      * titulo, chiquito, como hace Guitar Pro.
+     *
+     * <p>Manual, linea 2800: la ventana de Propiedades de la pista deja elegir que los diagramas
+     * de acorde vayan "at the top of the score" -{@code diagramsUnderTheTitle}, que ya viene
+     * armado por {@link com.gstncaruso.tabpro.core.harmony.TrackChords#underTheTitle}-. Van una
+     * sola vez, en la primera hoja, pegados al borde de abajo del encabezado.
      */
-    static void paintHeader(Graphics2D g, List<BannerText> header, PageMetrics sheet, int y, boolean firstPage) {
+    static void paintHeader(
+            Graphics2D g, List<BannerText> header, PageMetrics sheet, int y, boolean firstPage,
+            List<ChordDiagram> diagramsUnderTheTitle) {
         int centerX = sheet.pageWidth() / 2;
         int top = y + sheet.marginTop();
         if (!firstPage) {
@@ -60,6 +68,20 @@ final class PageChromePainter {
                 centeredY += lineHeightOf(g);
             }
         }
+        paintDiagramsUnderTheTitle(g, diagramsUnderTheTitle, sheet, centerX, top, y);
+    }
+
+    /** {@link ChordDiagramPainter} dibuja pensando en el fondo oscuro de la pantalla; envuelto en
+     * {@link PaperGraphics} su tinta clara sale oscura, como el resto de lo que cae en esta hoja. */
+    private static void paintDiagramsUnderTheTitle(
+            Graphics2D g, List<ChordDiagram> chords, PageMetrics sheet, int centerX, int top, int y) {
+        if (chords.isEmpty()) {
+            return;
+        }
+        Graphics2D ink = PaperGraphics.over(g, 0, 0, sheet.pageWidth(), y + sheet.pageHeight());
+        int gridBottom = top + PageMetrics.HEADER_HEIGHT - 4;
+        ChordDiagramPainter.paintRow(ink, chords, centerX, gridBottom);
+        ink.dispose();
     }
 
     static void paintFooter(Graphics2D g, List<BannerText> footer, PageMetrics sheet, int y, int height) {

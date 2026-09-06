@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.core.harmony;
 
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Voice;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
@@ -26,6 +27,28 @@ public final class TrackChords {
                 for (Beat beat : voice.beats()) {
                     beat.effects().chord().ifPresent(chord -> byName.putIfAbsent(chord.name(), chord));
                 }
+            }
+        }
+        return List.copyOf(byName.values());
+    }
+
+    /**
+     * Manual, linea 2800: la ventana de propiedades de la pista permite mostrar los diagramas
+     * "at the top of the score", una sola vez por partitura -no compas por compas-. Junta los
+     * acordes de cada pista que eligio {@link com.gstncaruso.tabpro.core.model.DiagramPlacement
+     * UNDER_THE_TITLE} o {@code BOTH}, en el orden de las pistas y, dentro de cada una, en el
+     * orden en que aparecen sus acordes; si dos pistas repiten el mismo nombre, se cuenta una
+     * sola vez con el diagrama de la primera que lo uso.
+     */
+    public static List<ChordDiagram> underTheTitle(Score score) {
+        Map<String, ChordDiagram> byName = new LinkedHashMap<>();
+        for (int trackIndex = 0; trackIndex < score.trackCount(); trackIndex++) {
+            Track track = score.track(trackIndex);
+            if (!track.settings().display().diagrams().showsUnderTheTitle()) {
+                continue;
+            }
+            for (ChordDiagram chord : usedIn(track)) {
+                byName.putIfAbsent(chord.name(), chord);
             }
         }
         return List.copyOf(byName.values());

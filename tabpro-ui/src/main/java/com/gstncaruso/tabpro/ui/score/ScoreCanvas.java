@@ -36,6 +36,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     private VisibleNotations visibleNotations = VisibleNotations.both();
     private boolean graysTheInactiveVoice = true;
     private boolean showsDynamicNotes = false;
+    private boolean autoScrollDuringPlayback = true;
     private Playhead playhead = Playhead.silent();
     private ViewMode viewMode = ViewMode.SCREEN_VERTICAL;
     private Zoom zoom = Zoom.whole();
@@ -204,6 +205,16 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
         repaint();
     }
 
+    /** Preferencias [F12], "Desplazar la pantalla durante la reproduccion": si {@link #showPlayhead}
+     * puede correr la vista para mantenerlo adentro, o si el usuario prefiere manejarla el mismo. */
+    public boolean autoScrollDuringPlayback() {
+        return autoScrollDuringPlayback;
+    }
+
+    public void setAutoScrollDuringPlayback(boolean autoScrollDuringPlayback) {
+        this.autoScrollDuringPlayback = autoScrollDuringPlayback;
+    }
+
     private void showing(VisibleNotations visibleNotations) {
         this.visibleNotations = visibleNotations;
         revalidate();
@@ -234,6 +245,9 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     public void showPlayhead(Playhead playhead) {
         this.playhead = playhead;
         repaint();
+        if (!autoScrollDuringPlayback) {
+            return;
+        }
         playhead.on(editor.cursor().track())
                 .ifPresent(position -> scrollRectToVisible(PageScorePainter.boundsOf(
                         editor.score(), viewport(), position.track(), position.measure(), position.beat())));

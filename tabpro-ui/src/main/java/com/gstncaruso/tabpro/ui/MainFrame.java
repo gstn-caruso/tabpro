@@ -142,16 +142,18 @@ public final class MainFrame extends JFrame {
         this.document = new ScoreDocument(
                 editor, files, preferences, () -> defaultScoreProperties.get().newScore());
         editor.setUndoEnabled(preferences.undoEnabled());
+        editor.setDefaultNoteValue(preferences.defaultNoteValue());
         useMidiSetup(midiSetupFromPreferences());
         setSize(windowSize());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         canvas = new ScoreCanvas(editor, visibleTracks);
+        canvas.setAutoScrollDuringPlayback(preferences.autoScrollDuringPlayback());
         JScrollPane scrollPane = new JScrollPane(canvas);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(ScoreColors.BACKGROUND);
 
-        transport = new Transport(editor, player, SwingUtilities::invokeLater);
+        transport = new Transport(editor, player, SwingUtilities::invokeLater, preferences.metronomeEnabled());
         trackPanel = new TrackPanel(editor, visibleTracks);
         beatViews = new BeatViews(editor, player);
 
@@ -723,6 +725,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void toggleMetronome() {
             transport.toggleMetronome();
+            preferences.setMetronomeEnabled(transport.isMetronomeOn());
         }
 
         @Override
@@ -997,13 +1000,19 @@ public final class MainFrame extends JFrame {
         @Override
         public void preferences() {
             var current = editingPreferences
+                    .withDefaultNoteValue(preferences.defaultNoteValue())
+                    .withAutoScrollDuringPlayback(preferences.autoScrollDuringPlayback())
                     .withUndoEnabled(preferences.undoEnabled())
                     .withAutosaveEvery(preferences.autosaveEvery());
             PreferencesDialog.ask(MainFrame.this, current).ifPresent(updated -> {
                 editingPreferences = updated;
+                preferences.setDefaultNoteValue(updated.defaultNoteValue());
+                preferences.setAutoScrollDuringPlayback(updated.autoScrollDuringPlayback());
                 preferences.setUndoEnabled(updated.undoEnabled());
                 preferences.setAutosaveEvery(updated.autosaveEvery());
+                editor.setDefaultNoteValue(updated.defaultNoteValue());
                 editor.setUndoEnabled(updated.undoEnabled());
+                canvas.setAutoScrollDuringPlayback(updated.autoScrollDuringPlayback());
             });
             backToTheScore();
         }
@@ -1160,6 +1169,7 @@ public final class MainFrame extends JFrame {
             MetronomeDialog.ask(MainFrame.this, editor, current).ifPresent(settings -> {
                 transport.setMetronomeEnabled(settings.active());
                 transport.setMetronomeVolume(settings.volume());
+                preferences.setMetronomeEnabled(settings.active());
             });
             backToTheScore();
         }

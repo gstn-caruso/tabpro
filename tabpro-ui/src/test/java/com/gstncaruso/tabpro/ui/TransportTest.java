@@ -217,6 +217,25 @@ class TransportTest {
         assertTrue(transport.isMetronomeOn());
     }
 
+    /**
+     * Preferencias [F12], linea 2151 del manual: la pestaña General configura el metronomo.
+     * MainFrame siembra este estado al arrancar -{@code new Transport(..., preferences
+     * .metronomeEnabled())}-, sin que nadie toque Sonido > Metronomo. La prueba no mira si la
+     * preferencia "se leyo": construye el Transport tal cual arranca el programa y comprueba
+     * que el metronomo ya esta sonando.
+     */
+    @Test
+    void startsWithTheMetronomeOnWhenTheProgramSaysSo() {
+        Transport metronomeOnFromTheStart = new Transport(editor, player, Runnable::run, true);
+
+        assertTrue(metronomeOnFromTheStart.isMetronomeOn());
+    }
+
+    @Test
+    void startsWithTheMetronomeOffByDefault() {
+        assertFalse(transport.isMetronomeOn());
+    }
+
     @Test
     void setMetronomeEnabledPrendeYApagaSinTocarElVolumen() {
         transport.setMetronomeVolume(42);

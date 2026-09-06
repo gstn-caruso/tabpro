@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.model.NoteValue;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
@@ -52,22 +53,6 @@ class PreferencesTest {
         assertEquals(Preferences.MAX_RECENT_FILES, preferences.recentFiles().size());
     }
 
-    @Test
-    void remembersTheViewAndTheZoom() {
-        preferences.setViewMode("HORIZONTAL_SCREEN");
-        preferences.setZoomPercent(150);
-
-        assertEquals("HORIZONTAL_SCREEN", preferences.viewMode());
-        assertEquals(150, preferences.zoomPercent());
-    }
-
-    @Test
-    void theZoomStaysWithinWhatTheManualOffers() {
-        preferences.setZoomPercent(500);
-
-        assertTrue(preferences.zoomPercent() <= 200);
-    }
-
     /**
      * El manual: "You can force the multitrack view when using the Horizontal Screen Mode".
      * Apagada por defecto, para no cambiar lo que ya se ve hoy.
@@ -82,5 +67,42 @@ class PreferencesTest {
         preferences.setForceMultitrackInHorizontalMode(true);
 
         assertTrue(preferences.forceMultitrackInHorizontalMode());
+    }
+
+    /**
+     * Preferencias [F12]: "Figura por defecto al insertar" y "Desplazar la pantalla durante la
+     * reproduccion" se quedaban solo en memoria -{@code editingPreferences} en MainFrame- y se
+     * olvidaban al cerrar el programa. Tienen que persistir aca, igual que undoEnabled y
+     * autosaveEvery.
+     */
+    @Test
+    void remembersTheDefaultNoteValueAndTheAutoScrollPreference() {
+        preferences.setDefaultNoteValue(NoteValue.EIGHTH);
+        preferences.setAutoScrollDuringPlayback(false);
+
+        assertEquals(NoteValue.EIGHTH, preferences.defaultNoteValue());
+        assertFalse(preferences.autoScrollDuringPlayback());
+    }
+
+    @Test
+    void defaultNoteValueAndAutoScrollStartAtAQuarterAndOn() {
+        assertEquals(NoteValue.QUARTER, preferences.defaultNoteValue());
+        assertTrue(preferences.autoScrollDuringPlayback());
+    }
+
+    /**
+     * Manual, linea 2151: la pestaña General de Preferencias [F12] configura el metronomo.
+     * MainFrame siembra {@link Transport} con este valor al arrancar.
+     */
+    @Test
+    void remembersTheMetronomePreference() {
+        preferences.setMetronomeEnabled(true);
+
+        assertTrue(preferences.metronomeEnabled());
+    }
+
+    @Test
+    void metronomeStartsOffByDefault() {
+        assertFalse(preferences.metronomeEnabled());
     }
 }

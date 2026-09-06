@@ -37,7 +37,7 @@ public final class Transport {
     private Playhead playhead = Playhead.silent();
     private Timeline currentTimeline;
     private OptionalInt currentTempo = OptionalInt.empty();
-    private Metronome metronome = Metronome.off();
+    private Metronome metronome;
     private CountIn countIn = CountIn.off();
     private RelativeTempo relativeTempo = RelativeTempo.normal();
     private Optional<SpeedTrainer> speedTrainer = Optional.empty();
@@ -46,9 +46,20 @@ public final class Transport {
     private Optional<Runnable> previewFinished = Optional.empty();
 
     public Transport(Editor editor, Player player, Consumer<Runnable> uiThread) {
+        this(editor, player, uiThread, false);
+    }
+
+    /**
+     * Manual, linea 2151: la pestaña General de Preferencias [F12] configura el metronomo.
+     * {@code metronomeEnabled} es ese estado inicial -lo que MainFrame siembra desde
+     * {@code Preferences.metronomeEnabled()} al arrancar, antes de que nadie toque
+     * Sonido > Metronomo-.
+     */
+    public Transport(Editor editor, Player player, Consumer<Runnable> uiThread, boolean metronomeEnabled) {
         this.editor = editor;
         this.player = player;
         this.uiThread = uiThread;
+        this.metronome = metronomeEnabled ? Metronome.on() : Metronome.off();
     }
 
     public void toggle() {

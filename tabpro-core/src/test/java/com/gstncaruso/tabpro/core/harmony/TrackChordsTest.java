@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.DiagramPlacement;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
@@ -41,6 +43,58 @@ class TrackChordsTest {
         Track pista = Track.standardGuitar("Guitarra").withMeasures(List.of(compas1));
 
         assertEquals(List.of(AM), TrackChords.usedIn(pista));
+    }
+
+    @Test
+    void underTheTitleIgnoraLasPistasQueNoLoPidieron() {
+        Measure compas1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
+        Track pista = Track.standardGuitar("Guitarra").withMeasures(List.of(compas1));
+        // ABOVE_THE_STAFF es el placement por defecto: no pidio salir debajo del titulo.
+        Score partitura = new Score("", 120, List.of(pista));
+
+        assertTrue(TrackChords.underTheTitle(partitura).isEmpty());
+    }
+
+    @Test
+    void underTheTitleTraeLosAcordesDeLaPistaQueLoPidio() {
+        Measure compas1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
+        Measure compas2 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(C)));
+        Track pista = Track.standardGuitar("Guitarra")
+                .withMeasures(List.of(compas1, compas2))
+                .mappingSettings(settings -> settings.withDisplay(
+                        settings.display().withDiagrams(DiagramPlacement.UNDER_THE_TITLE)));
+        Score partitura = new Score("", 120, List.of(pista));
+
+        assertEquals(List.of(AM, C), TrackChords.underTheTitle(partitura));
+    }
+
+    @Test
+    void underTheTitleTambienValeParaElPlacementEnLosDosLados() {
+        Measure compas1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
+        Track pista = Track.standardGuitar("Guitarra")
+                .withMeasures(List.of(compas1))
+                .mappingSettings(settings -> settings.withDisplay(
+                        settings.display().withDiagrams(DiagramPlacement.BOTH)));
+        Score partitura = new Score("", 120, List.of(pista));
+
+        assertEquals(List.of(AM), TrackChords.underTheTitle(partitura));
+    }
+
+    @Test
+    void underTheTitleMezclaLasPistasEnOrdenYNoRepiteElMismoNombre() {
+        Measure compasConAm = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
+        Measure compasConC = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(C)));
+        Track primeraPista = Track.standardGuitar("Guitarra 1")
+                .withMeasures(List.of(compasConAm))
+                .mappingSettings(settings -> settings.withDisplay(
+                        settings.display().withDiagrams(DiagramPlacement.UNDER_THE_TITLE)));
+        Track segundaPista = Track.standardGuitar("Guitarra 2")
+                .withMeasures(List.of(compasConAm, compasConC))
+                .mappingSettings(settings -> settings.withDisplay(
+                        settings.display().withDiagrams(DiagramPlacement.UNDER_THE_TITLE)));
+        Score partitura = new Score("", 120, List.of(primeraPista, segundaPista));
+
+        assertEquals(List.of(AM, C), TrackChords.underTheTitle(partitura));
     }
 
     private static Beat beatWithChord(ChordDiagram chord) {

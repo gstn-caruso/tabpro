@@ -11,7 +11,6 @@ import javax.swing.SpinnerNumberModel;
 public final class PreferencesPanel extends FormPanel {
 
     private final JComboBox<NoteValue> defaultNoteValue = new JComboBox<>(NoteValue.values());
-    private final JCheckBox countIn = new JCheckBox("Cuenta regresiva antes de reproducir");
     private final JCheckBox autoScroll = new JCheckBox("Desplazar la pantalla durante la reproduccion");
     private final JCheckBox showBassInChordName =
             new JCheckBox("Indicar el bajo en el nombre del acorde cuando es distinto de la fundamental");
@@ -20,7 +19,6 @@ public final class PreferencesPanel extends FormPanel {
 
     public PreferencesPanel(Preferences initial) {
         addRow("Figura por defecto al insertar", defaultNoteValue);
-        addFullWidthRow(countIn);
         addFullWidthRow(autoScroll);
         addFullWidthRow(showBassInChordName);
         addFullWidthRow(undoEnabled);
@@ -30,7 +28,6 @@ public final class PreferencesPanel extends FormPanel {
 
     public void apply(Preferences preferences) {
         defaultNoteValue.setSelectedItem(preferences.defaultNoteValue());
-        countIn.setSelected(preferences.countIn());
         autoScroll.setSelected(preferences.autoScrollDuringPlayback());
         showBassInChordName.setSelected(preferences.showBassInChordName());
         undoEnabled.setSelected(preferences.undoEnabled());
@@ -40,7 +37,6 @@ public final class PreferencesPanel extends FormPanel {
     public Preferences toPreferences() {
         return new Preferences(
                 (NoteValue) defaultNoteValue.getSelectedItem(),
-                countIn.isSelected(),
                 autoScroll.isSelected(),
                 showBassInChordName.isSelected(),
                 undoEnabled.isSelected(),
