@@ -7,7 +7,10 @@ import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.Track;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.swing.KeyStroke;
@@ -114,5 +117,71 @@ class KeyboardEditingTest {
         keyboard.keyTyped('2');
 
         assertEquals(Optional.of(new Note(1, 2)), editor.currentBeat().noteOn(1));
+    }
+
+    @Test
+    void typingTwoDigitsOnAPercussionTrackWritesTheSoundNumber() {
+        Editor editor = percussionEditor();
+        KeyboardEditing keyboard = keyboardEditing(editor);
+
+        keyboard.keyTyped('4');
+        now[0] += 100;
+        keyboard.keyTyped('9');
+
+        assertEquals(Optional.of(new Note(1, 49)), editor.currentBeat().noteOn(1));
+    }
+
+    @Test
+    void typingTheLowestPercussionSoundCombines() {
+        Editor editor = percussionEditor();
+        KeyboardEditing keyboard = keyboardEditing(editor);
+
+        keyboard.keyTyped('3');
+        now[0] += 100;
+        keyboard.keyTyped('5');
+
+        assertEquals(
+                Optional.of(new Note(1, PercussionKit.LOWEST_SOUND)), editor.currentBeat().noteOn(1));
+    }
+
+    @Test
+    void typingTheHighestPercussionSoundCombines() {
+        Editor editor = percussionEditor();
+        KeyboardEditing keyboard = keyboardEditing(editor);
+
+        keyboard.keyTyped('8');
+        now[0] += 100;
+        keyboard.keyTyped('1');
+
+        assertEquals(
+                Optional.of(new Note(1, PercussionKit.HIGHEST_SOUND)), editor.currentBeat().noteOn(1));
+    }
+
+    @Test
+    void typingBelowTheLowestPercussionSoundStartsANewSoundNumber() {
+        Editor editor = percussionEditor();
+        KeyboardEditing keyboard = keyboardEditing(editor);
+
+        keyboard.keyTyped('2');
+        now[0] += 100;
+        keyboard.keyTyped('0');
+
+        assertEquals(Optional.of(new Note(1, 0)), editor.currentBeat().noteOn(1));
+    }
+
+    @Test
+    void typingAboveTheHighestPercussionSoundStartsANewSoundNumber() {
+        Editor editor = percussionEditor();
+        KeyboardEditing keyboard = keyboardEditing(editor);
+
+        keyboard.keyTyped('9');
+        now[0] += 100;
+        keyboard.keyTyped('9');
+
+        assertEquals(Optional.of(new Note(1, 9)), editor.currentBeat().noteOn(1));
+    }
+
+    private static Editor percussionEditor() {
+        return new Editor(new Score("Cancion", 120, List.of(Track.percussion("Bateria"))));
     }
 }

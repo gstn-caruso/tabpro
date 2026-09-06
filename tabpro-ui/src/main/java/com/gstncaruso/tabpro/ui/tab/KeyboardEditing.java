@@ -48,10 +48,13 @@ public final class KeyboardEditing {
         };
     }
 
-    /** Los digitos escriben el traste; dos seguidos forman los trastes de dos cifras. */
+    /**
+     * Los digitos escriben el numero de la pista: el traste en una pista de cuerdas, el sonido
+     * MIDI en una de percusion. Dos seguidos forman el numero de dos cifras que la pista acepte.
+     */
     public void keyTyped(char c) {
         if (Character.isDigit(c)) {
-            editor.setFret(digits.fretFor(c));
+            editor.setFret(digits.fretFor(c, editor.currentTrack()::acceptsTypedNumber));
             return;
         }
         digits.reset();
