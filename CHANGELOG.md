@@ -1,3 +1,9 @@
+## [0.21.0](https://github.com/gstn-caruso/tabpro/compare/v0.20.0...v0.21.0) (2026-09-06)
+
+### Features
+
+* un banco de sonidos SoundFont en lugar del RSE ([#71](https://github.com/gstn-caruso/tabpro/issues/71)) ([0718625](https://github.com/gstn-caruso/tabpro/commit/07186254b3f25fbd5e262f9c2c5c7b876e59e67c))
+
 ## [0.20.0](https://github.com/gstn-caruso/tabpro/compare/v0.19.0...v0.20.0) (2026-09-06)
 
 ### Features
