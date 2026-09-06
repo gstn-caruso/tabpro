@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
@@ -129,6 +130,79 @@ class ScoreLayoutTest {
         assertEquals(ScoreLayout.SYSTEM_HEAD_WIDTH, layout.headWidth(0));
         assertEquals(0, layout.headWidth(firstOfSecondSystem - 1));
         assertTrue(layout.measureWidth(0) > layout.measureWidth(firstOfSecondSystem - 1));
+    }
+
+    @Test
+    void withoutAnyLineBreaksTheLayoutIsExactlyTheAutomaticOne() {
+        Score score = scoreWithMeasures(12);
+
+        ScoreLayout layout = ScoreLayout.of(score, 800);
+
+        assertEquals(0, layout.systemOf(0));
+        assertEquals(0, layout.systemOf(1));
+        assertEquals(0, layout.systemOf(2));
+        assertEquals(1, layout.systemOf(3));
+        assertEquals(1, layout.systemOf(4));
+        assertEquals(1, layout.systemOf(5));
+        assertEquals(2, layout.systemOf(6));
+        assertEquals(3, layout.systemOf(9));
+        assertEquals(4, layout.systemCount());
+    }
+
+    @Test
+    void aForcedBreakStartsANewSystemEvenWithRoomToSpare() {
+        Score score = withLineBreakAt(scoreWithMeasures(5), 2, LineBreak.FORCED);
+
+        ScoreLayout layout = ScoreLayout.of(score, WIDE);
+
+        assertEquals(0, layout.systemOf(0));
+        assertEquals(0, layout.systemOf(1));
+        assertEquals(1, layout.systemOf(2));
+        assertTrue(layout.startsASystem(2), "el compas forzado tiene que arrancar el sistema");
+        assertEquals(1, layout.systemOf(3), "sobra ancho, asi que el resto sigue en el mismo sistema");
+        assertEquals(2, layout.systemCount());
+    }
+
+    @Test
+    void twoForcedBreaksMakeThreeSystems() {
+        Score withOneBreak = withLineBreakAt(scoreWithMeasures(6), 2, LineBreak.FORCED);
+        Score score = withLineBreakAt(withOneBreak, 4, LineBreak.FORCED);
+
+        ScoreLayout layout = ScoreLayout.of(score, WIDE);
+
+        assertEquals(0, layout.systemOf(1));
+        assertEquals(1, layout.systemOf(2));
+        assertEquals(1, layout.systemOf(3));
+        assertEquals(2, layout.systemOf(4));
+        assertEquals(2, layout.systemOf(5));
+        assertEquals(3, layout.systemCount());
+    }
+
+    @Test
+    void aPreventedBreakStaysInTheCurrentSystemEvenIfTheWidthAsksForABreak() {
+        Score score = withLineBreakAt(scoreWithMeasures(12), 3, LineBreak.PREVENTED);
+
+        ScoreLayout layout = ScoreLayout.of(score, 800);
+
+        assertEquals(0, layout.systemOf(3), "el compas impedido se queda en el sistema anterior, que se estira");
+        assertFalse(layout.startsASystem(3));
+        assertEquals(1, layout.systemOf(4), "el corte se corre al compas siguiente que si puede arrancar sistema");
+        assertTrue(layout.startsASystem(4));
+    }
+
+    @Test
+    void resettingTheLineBreakGoesBackToTheAutomaticLayout() {
+        Score automatic = scoreWithMeasures(12);
+        Score forced = withLineBreakAt(automatic, 1, LineBreak.FORCED);
+        Score reset = withLineBreakAt(forced, 1, LineBreak.AUTOMATIC);
+
+        ScoreLayout forcedLayout = ScoreLayout.of(forced, 800);
+        ScoreLayout resetLayout = ScoreLayout.of(reset, 800);
+        ScoreLayout automaticLayout = ScoreLayout.of(automatic, 800);
+
+        assertEquals(1, forcedLayout.systemOf(1), "forzado, el compas 1 arranca su propio sistema");
+        assertEquals(automaticLayout.systemOf(1), resetLayout.systemOf(1),
+                "reiniciado, vuelve a repartirse igual que si nunca se hubiera tocado");
     }
 
     @Test
@@ -329,6 +403,11 @@ class ScoreLayoutTest {
             }
         }
         throw new AssertionError("no hay un compas en el sistema " + system);
+    }
+
+    private static Score withLineBreakAt(Score score, int measureIndex, LineBreak lineBreak) {
+        return score.mappingTrack(0, track -> track.mappingMeasure(measureIndex,
+                measure -> measure.mappingAttributes(attributes -> attributes.withLineBreak(lineBreak))));
     }
 
     private static Score scoreWithMeasures(int count) {
