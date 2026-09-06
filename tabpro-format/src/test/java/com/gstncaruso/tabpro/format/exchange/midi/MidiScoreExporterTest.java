@@ -13,6 +13,9 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
+import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -116,6 +119,35 @@ class MidiScoreExporterTest {
         assertEquals(38, noteOn.getData1());
     }
 
+    /** El mapa de tempo existe y funciona en la reproduccion; la exportacion tiene que usarlo tambien. */
+    @Test
+    void writesEveryTempoChangeAtItsMeasure() {
+        Beat changingTempo = Beat.of(Duration.of(NoteValue.QUARTER), new Note(6, 0))
+                .withEffects(BeatEffects.none().withParameterChange(
+                        ParameterChange.nothing().changing(SoundParameter.TEMPO, 90)));
+        Measure first = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.rest(Duration.of(NoteValue.QUARTER)),
+                Beat.rest(Duration.of(NoteValue.QUARTER)),
+                Beat.rest(Duration.of(NoteValue.QUARTER)),
+                Beat.rest(Duration.of(NoteValue.QUARTER))));
+        Measure second = new Measure(TimeSignature.fourFour(), List.of(
+                changingTempo,
+                Beat.rest(Duration.of(NoteValue.QUARTER)),
+                Beat.rest(Duration.of(NoteValue.QUARTER)),
+                Beat.rest(Duration.of(NoteValue.QUARTER))));
+        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(first, second));
+        Score score = new Score("Prueba", 140, List.of(track));
+
+        Sequence sequence = exporter.toSequence(score);
+
+        List<MidiEvent> tempos = tempoEventsOf(sequence.getTracks()[0]);
+        assertEquals(2, tempos.size(), "la partitura acelera a mitad de camino: tiene que haber dos eventos de tempo");
+        assertEquals(0L, tempos.get(0).getTick());
+        assertEquals(140, microsecondsPerQuarterToBpm(((MetaMessage) tempos.get(0).getMessage()).getData()));
+        assertEquals(TimeSignature.fourFour().ticksPerMeasure(), tempos.get(1).getTick());
+        assertEquals(90, microsecondsPerQuarterToBpm(((MetaMessage) tempos.get(1).getMessage()).getData()));
+    }
+
     @Test
     void writesATimeSignatureChangeAtItsMeasure() {
         Measure fourFour = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
@@ -188,6 +220,17 @@ class MidiScoreExporterTest {
         List<MetaMessage> found = metaEventsOfType(track, type);
         assertEquals(1, found.size(), "se esperaba un solo meta evento de tipo " + type);
         return found.get(0);
+    }
+
+    private static List<MidiEvent> tempoEventsOf(javax.sound.midi.Track track) {
+        List<MidiEvent> found = new ArrayList<>();
+        for (int i = 0; i < track.size(); i++) {
+            MidiEvent event = track.get(i);
+            if (event.getMessage() instanceof MetaMessage message && message.getType() == 0x51) {
+                found.add(event);
+            }
+        }
+        return found;
     }
 
     private static List<MetaMessage> metaEventsOfType(javax.sound.midi.Track track, int type) {

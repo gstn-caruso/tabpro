@@ -13,9 +13,14 @@ import com.gstncaruso.tabpro.core.model.Voice;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
+import com.gstncaruso.tabpro.core.playback.PlayOrder;
+import com.gstncaruso.tabpro.core.playback.TempoChange;
+import com.gstncaruso.tabpro.core.playback.TempoMap;
+import com.gstncaruso.tabpro.core.playback.Timeline;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.stream.IntStream;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
@@ -92,9 +97,21 @@ public final class MidiScoreExporter {
         return starts;
     }
 
+    /**
+     * El mapa de tempo de la partitura, recorriendo los compases de corrido: la
+     * exportacion no repite (no sigue repeticiones ni direcciones), asi que el
+     * orden tiene que ser el mismo de un solo paso que usa {@link #measureStartTicks}.
+     */
+    private static TempoMap tempoMapOf(Score score) {
+        PlayOrder straight = new PlayOrder(IntStream.range(0, score.measureCount()).boxed().toList());
+        return Timeline.of(score, straight).tempo();
+    }
+
     private static void writeConductor(javax.sound.midi.Track conductor, Score score) throws InvalidMidiDataException {
         addMetaText(conductor, TRACK_NAME_META, score.title(), 0);
-        addTempo(conductor, score.tempo());
+        for (TempoChange change : tempoMapOf(score).changes()) {
+            addTempo(conductor, change.tick(), change.bpm());
+        }
         Track reference = score.track(0);
         TimeSignature previousSignature = null;
         KeySignature previousKey = null;
@@ -158,12 +175,12 @@ public final class MidiScoreExporter {
         }
     }
 
-    private static void addTempo(javax.sound.midi.Track track, int bpm) throws InvalidMidiDataException {
+    private static void addTempo(javax.sound.midi.Track track, long tick, int bpm) throws InvalidMidiDataException {
         int microsecondsPerQuarter = 60_000_000 / bpm;
         byte[] data = {
             (byte) (microsecondsPerQuarter >> 16), (byte) (microsecondsPerQuarter >> 8), (byte) microsecondsPerQuarter
         };
-        addMeta(track, TEMPO_META, data, 0);
+        addMeta(track, TEMPO_META, data, tick);
     }
 
     private static void addTimeSignature(javax.sound.midi.Track track, long tick, TimeSignature signature)
