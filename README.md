@@ -43,10 +43,10 @@ genera los diagramas para cualquier afinación, los nombra y los digita, y la
 rango de compases. Más el afinador, el asistente de percusión y los seis
 asistentes del menú Herramientas.
 
-**Lo que todavía no está:** importar y exportar MusicXML, exportar a PDF, y los
-cambios de parámetros en medio de la partitura (la mesa de mezcla con F10). El
-lector de archivos de Guitar Pro está hecho y probado contra archivos armados
-byte a byte, pero falta contrastarlo con archivos reales.
+**Lo que todavía no está:** exportar a PDF (se puede imprimir a PDF desde el
+diálogo de impresión del sistema). El lector de archivos de Guitar Pro está hecho
+y probado contra archivos armados byte a byte, pero falta contrastarlo con
+archivos reales.
 
 ## Instalación
 
@@ -92,8 +92,8 @@ irregulares, las dos voces, los atributos de cada compás, las propiedades de
 pista, los diez datos del encabezado y la letra. Sigue abriendo los archivos de
 las versiones 1 y 2.
 
-También importa y exporta MIDI y tablatura ASCII, exporta la partitura como
-imagen, la imprime, y abre archivos `.gp3`, `.gp4`, `.gp5` y `.gtp`.
+También importa y exporta MIDI, tablatura ASCII y MusicXML, exporta la partitura
+como imagen, la imprime, y abre archivos `.gp3`, `.gp4`, `.gp5` y `.gtp`.
 
 ## Stack
 
@@ -113,7 +113,7 @@ con el formato y con MIDI sólo a través de los puertos `ScoreFiles`,
   deshacer y rehacer, la notación, la armonía (acordes y escalas), los asistentes
   y la reproducción.
 - `tabpro-format` — el formato propio `.tabpro`, los formatos de intercambio
-  (MIDI, ASCII) y el lector de archivos de Guitar Pro.
+  (MIDI, ASCII, MusicXML) y el lector de archivos de Guitar Pro.
 - `tabpro-midi` — reproducción y captura con `javax.sound.midi`.
 - `tabpro-ui` — la interfaz Swing: partitura, diapasón, teclado, percusión, mesa
   de mezcla, vista global, barra de estado, menús, barras de herramientas y las
