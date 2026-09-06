@@ -41,7 +41,12 @@ public final class Clipboard {
     /** Lo copiado, con la cantidad de cuerdas de donde salio para saber donde entra. */
     public record Clipping(List<List<Measure>> measuresByTrack, List<Beat> beats, int stringCount) {
 
-        static final Clipping EMPTY = new Clipping(List.of(), List.of(), 0);
+        /**
+         * Publico porque una implementacion de {@link ClipboardStorage} de otro modulo (el
+         * portapapeles del sistema operativo, por ejemplo) lo necesita para decir "esto que
+         * encontre no es un clipping de tabpro" sin salir del vocabulario del puerto.
+         */
+        public static final Clipping EMPTY = new Clipping(List.of(), List.of(), 0);
 
         public Clipping {
             measuresByTrack = measuresByTrack.stream().map(List::copyOf).toList();
