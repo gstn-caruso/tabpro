@@ -51,6 +51,10 @@ class WizardsTest {
         assertEquals(score, Transposition.transposeEveryTrack(score, 3));
     }
 
+    /**
+     * El manual (Check Bar Duration) dice que el asistente detecta los compases que no
+     * suman lo que su medida pide; uno que ya cierra no tiene por que aparecer.
+     */
     @Test
     void theDurationCheckFindsTheBarsThatDoNotCloseTheirTime() {
         Score score = scoreWith(Beat.rest(Duration.quarter()));
@@ -59,6 +63,47 @@ class WizardsTest {
 
         assertEquals(1, findings.size());
         assertTrue(findings.getFirst().tooShort());
+    }
+
+    @Test
+    void theDurationCheckIgnoresABarThatAlreadyClosesItsTime() {
+        Score score = scoreWith(
+                Beat.of(Duration.quarter(), new Note(1, 0)), Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)), Beat.of(Duration.quarter(), new Note(1, 3)));
+
+        List<BarDurationCheck.Finding> findings = BarDurationCheck.run(score);
+
+        assertTrue(findings.isEmpty());
+    }
+
+    @Test
+    void theDurationCheckFlagsABarThatWentPastItsTime() {
+        Score score = scoreWith(
+                Beat.of(Duration.of(NoteValue.WHOLE), new Note(1, 0)), Beat.rest(Duration.quarter()));
+
+        List<BarDurationCheck.Finding> findings = BarDurationCheck.run(score);
+
+        assertEquals(1, findings.size());
+        assertTrue(findings.getFirst().tooLong());
+        assertFalse(findings.getFirst().tooShort());
+    }
+
+    @Test
+    void theDurationCheckPointsAtTheExactBarThatFailed() {
+        Measure completeBar = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)), Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)), Beat.of(Duration.quarter(), new Note(1, 3))));
+        Measure shortBar = new Measure(TimeSignature.fourFour(),
+                List.of(Beat.of(Duration.quarter(), new Note(1, 4))));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25),
+                List.of(completeBar, shortBar));
+        Score score = new Score("Prueba", 120, List.of(track));
+
+        List<BarDurationCheck.Finding> findings = BarDurationCheck.run(score);
+
+        assertEquals(1, findings.size());
+        assertEquals(0, findings.getFirst().trackIndex());
+        assertEquals(1, findings.getFirst().measureIndex());
     }
 
     @Test
