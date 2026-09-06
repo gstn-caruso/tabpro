@@ -4,11 +4,15 @@ import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Agrupa los beats de un compas en grupos unidos por barra (beam), como en una partitura.
+ * Agrupa los beats de un compas en grupos unidos por barra (beam), como en una partitura. El
+ * agrupamiento es automatico segun la duracion y el compas, pero el manual (linea 923) permite
+ * "cambiar a mano las barras... usando el menu Nota": cada beat puede forzar o impedir el corte
+ * justo antes suyo, ver {@link BeamBreak}.
  */
 public final class Beaming {
 
@@ -40,18 +44,24 @@ public final class Beaming {
             boolean beamable = isBeamable(beat);
             long beatIndex = tick / ticksPerBeat;
 
-            if (beamable && groupStart >= 0 && beatIndex == groupBeatIndex) {
-                groupEnd = i;
-            } else {
-                if (groupStart >= 0) {
-                    groups.add(new BeamGroup(groupStart, groupEnd));
-                    groupStart = -1;
-                }
-                if (beamable) {
+            if (beamable) {
+                BeamBreak beamBreak = beat.effects().beamBreak();
+                boolean continues = groupStart >= 0 && beamBreak != BeamBreak.FORCED
+                        && (beatIndex == groupBeatIndex || beamBreak == BeamBreak.PREVENTED);
+                if (continues) {
+                    groupEnd = i;
+                    groupBeatIndex = beatIndex;
+                } else {
+                    if (groupStart >= 0) {
+                        groups.add(new BeamGroup(groupStart, groupEnd));
+                    }
                     groupStart = i;
                     groupBeatIndex = beatIndex;
                     groupEnd = i;
                 }
+            } else if (groupStart >= 0) {
+                groups.add(new BeamGroup(groupStart, groupEnd));
+                groupStart = -1;
             }
 
             tick += beat.duration().ticks();
