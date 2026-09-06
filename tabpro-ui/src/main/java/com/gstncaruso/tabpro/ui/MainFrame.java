@@ -47,6 +47,7 @@ import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.percussion.PercussionAssistant;
 import com.gstncaruso.tabpro.ui.print.ScorePrinting;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import com.gstncaruso.tabpro.ui.score.ViewMode;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import com.gstncaruso.tabpro.ui.status.StatusBar;
@@ -82,6 +83,7 @@ public final class MainFrame extends JFrame {
     private final ScoreExchange exchange;
     private final ScoreDocument document;
     private final ScoreCanvas canvas;
+    private final TrackVisibility visibleTracks = new TrackVisibility();
     private final Transport transport;
     private final BeatViews beatViews;
     private final TrackPanel trackPanel;
@@ -122,13 +124,13 @@ public final class MainFrame extends JFrame {
         setSize(windowSize());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        canvas = new ScoreCanvas(editor);
+        canvas = new ScoreCanvas(editor, visibleTracks);
         JScrollPane scrollPane = new JScrollPane(canvas);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(ScoreColors.BACKGROUND);
 
         transport = new Transport(editor, player, SwingUtilities::invokeLater);
-        trackPanel = new TrackPanel(editor);
+        trackPanel = new TrackPanel(editor, visibleTracks);
         beatViews = new BeatViews(editor, player);
 
         JSpinner tempoSpinner = tempoSpinner();
@@ -623,7 +625,7 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void toggleMultitrack() {
-            PendingFeature.announce(MainFrame.this, "La vista multipista");
+            visibleTracks.setMultitrack(!visibleTracks.isMultitrack());
         }
 
         @Override

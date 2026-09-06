@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.tracks;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -29,8 +30,12 @@ public final class TrackPanel extends JPanel {
     private final GlobalView globalView;
 
     public TrackPanel(Editor editor) {
+        this(editor, new TrackVisibility());
+    }
+
+    public TrackPanel(Editor editor, TrackVisibility visibleTracks) {
         this.editor = editor;
-        this.mixTable = new MixTable(editor);
+        this.mixTable = new MixTable(editor, visibleTracks);
         this.globalView = new GlobalView(editor);
         setLayout(new BorderLayout());
         setBackground(ScoreColors.SURFACE);

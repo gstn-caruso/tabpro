@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.tracks;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -50,7 +51,7 @@ public final class MixTable extends JPanel {
             COLUMN_WIDTHS.stream().mapToInt(Integer::intValue).sum() + COLUMN_WIDTHS.size() * COLUMN_GAP + 16;
 
     private final Editor editor;
-    private final MixTableModel model = new MixTableModel();
+    private final MixTableModel model;
     private final JPanel rowsPanel = new JPanel();
     private final List<MixTableRow> rows = new ArrayList<>();
     private final Map<MixParameter, JLabel> parameterHeaders = new EnumMap<>(MixParameter.class);
@@ -58,7 +59,12 @@ public final class MixTable extends JPanel {
     private JButton restoreButton;
 
     public MixTable(Editor editor) {
+        this(editor, new TrackVisibility());
+    }
+
+    public MixTable(Editor editor, TrackVisibility visibleTracks) {
         this.editor = editor;
+        this.model = new MixTableModel(visibleTracks);
         setLayout(new BorderLayout());
         setBackground(ScoreColors.SURFACE);
 
