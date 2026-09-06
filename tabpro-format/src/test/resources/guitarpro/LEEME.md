@@ -15,6 +15,20 @@ segunda voz (sólo en gp5, que es donde el formato la tiene), cambio de compás 
 3/4, repetición con finales alternativos, diagrama de acorde, una pista de bajo
 de cuatro cuerdas y una de percusión en el canal 10.
 
+## `tabpro-effects2.*`
+
+Tres compases con los efectos que el lector ramifica por versión: un par de notas
+ligadas que arma un ligado real, vibrato, trino, trémolo de púa y los armónicos
+artificial, tapped, pinch y semitono. GP3 no soporta el trino, el trémolo ni los
+armónicos que no sean natural o artificial: ahí se pierden al grabar, y no es un
+error del lector.
+
+## `tabpro-features-v5.00.gp5`
+
+El mismo contenido que `tabpro-features.gp5` pero grabado como v5.00, que guarda
+las pistas de otra manera: el byte de banderas va delante de todas y no sólo de
+la primera, y el instrumento de RSE ocupa un byte menos.
+
 ## Origen
 
 Son **contenido original**, generado a propósito para probar el lector de tabpro.

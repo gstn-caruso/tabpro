@@ -6,6 +6,8 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
+import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
+import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
@@ -49,6 +51,7 @@ final class GuitarProBeatReader {
         boolean rest = readStatus(reader, flags);
         Duration duration = readDuration(reader, flags);
         BeatEffects effects = BeatEffects.none();
+        OldOrnaments oldOrnaments = OldOrnaments.NONE;
         if ((flags & HAS_CHORD) != 0) {
             effects = effects.withChord(chords.read(reader, version, stringCount));
         }
@@ -56,14 +59,19 @@ final class GuitarProBeatReader {
             effects = effects.withText(reader.readLengthPrefixedString());
         }
         if ((flags & HAS_EFFECTS) != 0) {
-            effects = readEffects(reader, version, effects);
+            int effectFlags = reader.readUnsignedByte();
+            int secondFlags = version.hasSecondFlagsByte() ? reader.readUnsignedByte() : 0;
+            if (!version.hasSecondFlagsByte()) {
+                oldOrnaments = OldOrnaments.of(effectFlags);
+            }
+            effects = readEffects(reader, version, effects, effectFlags, secondFlags);
         }
         if ((flags & HAS_MIX_TABLE_CHANGE) != 0) {
             skipMixTableChange(reader, version);
         }
         List<Note> played = rest ? List.of() : readNotes(reader, version, stringCount);
         skipGp5BeatExtras(reader, version);
-        return new Beat(duration, played, effects);
+        return new Beat(duration, oldOrnaments.spreadOver(played), effects);
     }
 
     /**
@@ -101,10 +109,12 @@ final class GuitarProBeatReader {
         return Tuplet.AVAILABLE.contains(enters) ? Tuplet.of(enters) : Tuplet.none();
     }
 
-    private BeatEffects readEffects(GuitarProByteReader reader, GuitarProVersion version, BeatEffects effects) {
-        int first = reader.readUnsignedByte();
-        int second = version.hasSecondFlagsByte() ? reader.readUnsignedByte() : 0;
+    private BeatEffects readEffects(
+            GuitarProByteReader reader, GuitarProVersion version, BeatEffects effects, int first, int second) {
         BeatEffects read = effects.withFadeIn((first & FADE_IN) != 0);
+        if (!version.hasSecondFlagsByte() && (first & 0x02) != 0) {
+            read = read.withWideVibrato(true);
+        }
         if ((first & HAS_TREMOLO_BAR_OR_SLAP) != 0) {
             read = readSlapOrTremoloBar(reader, version, read);
         }
@@ -122,6 +132,38 @@ final class GuitarProBeatReader {
     }
 
     /** En gp3 ese bit era la palanca; de gp4 en adelante es tapping, slap o pop. */
+    /**
+     * En GP3 el vibrato y los armonicos valen para todo el beat y no traen bytes
+     * propios; de GP4 en adelante viven en cada nota. Se los reparte a mano.
+     */
+    private record OldOrnaments(boolean vibrato, HarmonicType harmonic) {
+
+        static final OldOrnaments NONE = new OldOrnaments(false, null);
+
+        static OldOrnaments of(int flags) {
+            HarmonicType harmonic = null;
+            if ((flags & 0x04) != 0) {
+                harmonic = HarmonicType.NATURAL;
+            }
+            if ((flags & 0x08) != 0) {
+                harmonic = HarmonicType.ARTIFICIAL;
+            }
+            return new OldOrnaments((flags & 0x01) != 0, harmonic);
+        }
+
+        List<Note> spreadOver(List<Note> played) {
+            if (!vibrato && harmonic == null) {
+                return played;
+            }
+            List<Note> withEffects = new ArrayList<>(played.size());
+            for (Note note : played) {
+                Note updated = vibrato ? note.toggling(Ornament.VIBRATO) : note;
+                withEffects.add(harmonic == null ? updated : updated.withHarmonic(harmonic));
+            }
+            return withEffects;
+        }
+    }
+
     private BeatEffects readSlapOrTremoloBar(
             GuitarProByteReader reader, GuitarProVersion version, BeatEffects effects) {
         if (!version.hasSecondFlagsByte()) {

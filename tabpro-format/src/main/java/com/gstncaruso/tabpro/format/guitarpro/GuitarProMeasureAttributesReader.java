@@ -115,21 +115,21 @@ final class GuitarProMeasureAttributesReader {
         if (version.generation() < 5) {
             return new Gp5MasterBarTail(preGp5AlternateEndings, defaultTripletFeel);
         }
+        // El final alternativo va antes que el agrupamiento de corcheas, no despues.
+        List<Integer> alternateEndings = List.of();
+        if ((flags & FLAG_ALTERNATE_ENDINGS_PRE_GP5) != 0) {
+            alternateEndings = endingsFromMask(reader.readUnsignedByte());
+        }
         // Cuando cambia la medida vienen las cuatro cifras del agrupamiento de corcheas.
         if ((flags & (FLAG_NUMERATOR | FLAG_DENOMINATOR)) != 0) {
             reader.skip(4);
         }
-        // Va un solo byte: la mascara de finales alternativos si los hay, o relleno si no.
-        List<Integer> alternateEndings = (flags & FLAG_ALTERNATE_ENDINGS_PRE_GP5) != 0
-                ? endingsFromMask(reader.readUnsignedByte())
-                : skipped(reader);
+        // Y donde no hay final alternativo va un byte de relleno en su lugar.
+        if ((flags & FLAG_ALTERNATE_ENDINGS_PRE_GP5) == 0) {
+            reader.skip(1);
+        }
         TripletFeel tripletFeel = tripletFeelOf(reader.readUnsignedByte());
         return new Gp5MasterBarTail(alternateEndings, tripletFeel);
-    }
-
-    private static List<Integer> skipped(GuitarProByteReader reader) {
-        reader.skip(1);
-        return List.of();
     }
 
     private static TripletFeel tripletFeelOf(int value) {
