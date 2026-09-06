@@ -43,10 +43,9 @@ genera los diagramas para cualquier afinación, los nombra y los digita, y la
 rango de compases. Más el afinador, el asistente de percusión y los seis
 asistentes del menú Herramientas.
 
-**Lo que todavía no está:** exportar a PDF (se puede imprimir a PDF desde el
-diálogo de impresión del sistema). El lector de archivos de Guitar Pro está hecho
-y probado contra archivos armados byte a byte, pero falta contrastarlo con
-archivos reales.
+**Lo que todavía no está:** el lector de archivos de Guitar Pro está hecho y
+probado contra archivos armados byte a byte, pero falta contrastarlo con archivos
+reales.
 
 ## Instalación
 
@@ -93,7 +92,8 @@ pista, los diez datos del encabezado y la letra. Sigue abriendo los archivos de
 las versiones 1 y 2.
 
 También importa y exporta MIDI, tablatura ASCII y MusicXML, exporta la partitura
-como imagen, la imprime, y abre archivos `.gp3`, `.gp4`, `.gp5` y `.gtp`.
+como imagen y como PDF, la imprime, y abre archivos `.gp3`, `.gp4`, `.gp5` y
+`.gtp`.
 
 ## Stack
 

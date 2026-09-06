@@ -369,7 +369,18 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void exportPdf() {
-            PendingFeature.announce(MainFrame.this, "La exportación a PDF");
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileFilter(new FileNameExtensionFilter("PDF (*.pdf)", "pdf"));
+            if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            try {
+                ScorePrinting.exportPdf(editor.score(), ScorePrinting.withPdfExtension(chooser.getSelectedFile()));
+                backToTheScore();
+            } catch (java.io.UncheckedIOException e) {
+                JOptionPane.showMessageDialog(
+                        MainFrame.this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
+            }
         }
 
         @Override
