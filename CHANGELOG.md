@@ -1,3 +1,9 @@
+## [0.18.0](https://github.com/gstn-caruso/tabpro/compare/v0.17.1...v0.18.0) (2026-09-06)
+
+### Features
+
+* octavas, notas con dinámica, y dos arreglos del manual ([#68](https://github.com/gstn-caruso/tabpro/issues/68)) ([bfeb92e](https://github.com/gstn-caruso/tabpro/commit/bfeb92ebc9d545e2892f347c34d240928a16e664))
+
 ## [0.17.1](https://github.com/gstn-caruso/tabpro/compare/v0.17.0...v0.17.1) (2026-09-06)
 
 ### Bug Fixes
