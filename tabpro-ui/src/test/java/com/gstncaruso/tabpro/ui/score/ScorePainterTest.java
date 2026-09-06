@@ -18,6 +18,9 @@ import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
+import com.gstncaruso.tabpro.core.model.effects.Bend;
+import com.gstncaruso.tabpro.core.model.effects.BendPoint;
+import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
@@ -324,6 +327,26 @@ class ScorePainterTest {
         assertTrue(
                 inkAboveTheTablature(conFade) > inkAboveTheTablature(sinFade),
                 "el fade in tiene que dejar su etiqueta arriba de la tablatura");
+    }
+
+    @Test
+    void laPalancaSeDibujaBajoLaTablatura() {
+        Bend dive = new Bend(BendType.BEND_RELEASE, List.of(
+                BendPoint.at(0, 0), BendPoint.at(30, -4), BendPoint.at(BendPoint.LAST_POSITION, 0)));
+        Beat conPalanca = Beat.of(Duration.quarter(), new Note(1, 5))
+                .withEffects(BeatEffects.none().withTremoloBar(dive));
+        Beat sinPalanca = Beat.of(Duration.quarter(), new Note(1, 5));
+
+        assertTrue(
+                inkUnderTheTablature(conPalanca) > inkUnderTheTablature(sinPalanca),
+                "la palanca suena pero no se ve: falta su curva bajo la tablatura");
+    }
+
+    private static int inkUnderTheTablature(Beat beat) {
+        Painted painted = paint(scoreWith(measureOf(beat)), new Cursor(0, 0, 0, 3), Playhead.silent());
+        Rectangle bounds = painted.layout().beatBounds(0, 0, 0);
+        int tabBottom = painted.layout().tabBottom(0, 0);
+        return painted.inkIn(new Rectangle(bounds.x, tabBottom + 1, bounds.width, 22));
     }
 
     private static int inkAboveTheTablature(Beat beat) {

@@ -68,6 +68,18 @@ public record Bend(BendType type, List<BendPoint> points) {
         return points.stream().mapToInt(BendPoint::quarterTones).max().orElse(0);
     }
 
+    /**
+     * Cuanto se aparta la curva de la nota escrita en el punto que mas lejos
+     * llega, con su signo. La palanca sobre todo baja, asi que la altura que se
+     * le anota no es la maxima sino la mas lejana.
+     */
+    public int farthestQuarterTones() {
+        return points.stream()
+                .max(Comparator.comparingInt(point -> Math.abs(point.quarterTones())))
+                .map(BendPoint::quarterTones)
+                .orElse(0);
+    }
+
     public boolean startsBent() {
         return points.getFirst().quarterTones() != 0;
     }

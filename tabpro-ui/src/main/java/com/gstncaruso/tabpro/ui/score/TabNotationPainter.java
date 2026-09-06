@@ -30,6 +30,12 @@ final class TabNotationPainter {
     private static final Font GRACE_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
     private static final int FINGER_RADIUS = 6;
 
+    /** Cuanto cuelga bajo la tablatura la curva de la palanca. */
+    private static final int BAR_CURVE_HEIGHT = 10;
+
+    private static final int UPWARDS = -1;
+    private static final int DOWNWARDS = 1;
+
     private TabNotationPainter() {
     }
 
@@ -46,6 +52,9 @@ final class TabNotationPainter {
                     ? Optional.of(measure.beat(beatIndex + 1))
                     : nextMeasureFirstBeat;
             int nextBeatIndex = beatIndex + 1 < measure.beats().size() ? beatIndex + 1 : -1;
+
+            beat.effects().tremoloBar().ifPresent(bar ->
+                    paintTremoloBar(g, layout, trackIndex, measureIndex, beatIndex, bar));
 
             for (Note note : beat.notes()) {
                 paintFingering(g, layout, trackIndex, measureIndex, beatIndex, note);
@@ -128,19 +137,52 @@ final class TabNotationPainter {
         curve.moveTo(x, y);
         curve.curveTo(x + 4, top, x + 8, top, x + 10, top);
         g.draw(curve);
-        paintBendArrowhead(g, x + 10, top);
+        paintArrowhead(g, x + 10, top, UPWARDS);
 
         String label = bendLabel(bend.peakQuarterTones());
         g.setFont(BEND_FONT);
         g.drawString(label, x + 12, top + 3);
     }
 
-    private static void paintBendArrowhead(Graphics2D g, int x, int y) {
+    /**
+     * La palanca se anota como el bend, pero vale para el beat entero y cuelga
+     * bajo la tablatura: la curva sale del centro del beat hacia donde lleva la
+     * altura y al lado va cuanto se aparta.
+     */
+    private static void paintTremoloBar(
+            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, int beatIndex, Bend bar) {
+        Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, beatIndex);
+        int x = bounds.x + bounds.width / 2 + 6;
+        int top = layout.tabBottom(trackIndex, measureIndex) + 6;
+        int bottom = top + BAR_CURVE_HEIGHT;
+        int quarterTones = bar.farthestQuarterTones();
+        boolean dives = quarterTones < 0;
+        int from = dives ? top : bottom;
+        int to = dives ? bottom : top;
+
+        g.setColor(ScoreColors.LABEL);
+        g.setStroke(new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        Path2D curve = new Path2D.Double();
+        curve.moveTo(x, from);
+        curve.curveTo(x + 4, to, x + 8, to, x + 10, to);
+        g.draw(curve);
+        paintArrowhead(g, x + 10, to, dives ? DOWNWARDS : UPWARDS);
+
+        g.setFont(BEND_FONT);
+        g.drawString(signedBendLabel(quarterTones), x + 12, bottom);
+    }
+
+    private static void paintArrowhead(Graphics2D g, int x, int y, int direction) {
         Path2D head = new Path2D.Double();
-        head.moveTo(x - 3, y + 3);
+        head.moveTo(x - 3, y - 3 * direction);
         head.lineTo(x, y);
-        head.lineTo(x + 1, y + 4);
+        head.lineTo(x + 1, y - 4 * direction);
         g.draw(head);
+    }
+
+    /** Lo mismo que {@link #bendLabel}, pero para una curva que puede bajar, como la palanca. */
+    static String signedBendLabel(int quarterTones) {
+        return quarterTones < 0 ? "-" + bendLabel(-quarterTones) : bendLabel(quarterTones);
     }
 
     /** Cuanto sube el bend, en la notacion habitual: cuartos, medios y enteros de tono. */
