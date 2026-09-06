@@ -14,6 +14,9 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
+import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.page.Orientation;
 import com.gstncaruso.tabpro.ui.page.PageBanner;
@@ -21,6 +24,7 @@ import com.gstncaruso.tabpro.ui.page.PageElement;
 import com.gstncaruso.tabpro.ui.page.PageMetrics;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -178,6 +182,60 @@ class PageScorePainterTest {
         BufferedImage another = render(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
 
         assertTrue(sameSheet(one, another), "el encabezado es el texto configurado, no el titulo de la partitura");
+    }
+
+    /**
+     * El rectangulito que anuncia un cambio de parametro es rojo porque el rojo es lo que dice
+     * que ahi cambia algo: en la hoja tiene que salir del mismo color que en la pantalla.
+     */
+    @Test
+    void theParameterChangeMarkIsRedOnPaperJustLikeOnScreen() {
+        BufferedImage music = musicOf(render(scoreWithAParameterChange(), PageSetup.defaults()));
+
+        assertTrue(paints(music, ScoreColors.PARAMETER_CHANGE), "el cambio de parametro se anuncia en rojo");
+    }
+
+    /**
+     * Lo que en la pantalla oscura es tinta clara, sobre la hoja tiene que ser tinta oscura: si
+     * llegara al papel del color con el que se dibuja en pantalla, no se veria nada.
+     */
+    @Test
+    void theScoreIsWrittenInDarkInkOnPaper() {
+        BufferedImage music = musicOf(render(scoreWithAParameterChange(), PageSetup.defaults()));
+
+        assertTrue(paints(music, ScoreColors.PAGE_INK), "la partitura se escribe con la tinta de la hoja");
+        assertFalse(paints(music, ScoreColors.INK), "y no con la tinta clara de la pantalla");
+    }
+
+    /** Solo la musica de la hoja, sin el encabezado ni el pie, que se dibujan aparte. */
+    private static BufferedImage musicOf(BufferedImage sheet) {
+        PageMetrics paper = PageMetrics.of(PageSetup.defaults());
+        return sheet.getSubimage(
+                paper.contentLeft(), paper.contentTop(), paper.contentWidth(), paper.contentHeight());
+    }
+
+    private static Score scoreWithAParameterChange() {
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)).withEffects(
+                        BeatEffects.none().withParameterChange(
+                                ParameterChange.nothing().changing(SoundParameter.PAN, 100))),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3)),
+                Beat.of(Duration.quarter(), new Note(1, 5))));
+        Track guitar = Track.standardGuitar("Guitarra");
+        return new Score("", 120, List.of(
+                new Track("Guitarra", guitar.tuning(), guitar.channel(), List.of(measure))));
+    }
+
+    private static boolean paints(BufferedImage sheet, Color color) {
+        for (int y = 0; y < sheet.getHeight(); y++) {
+            for (int x = 0; x < sheet.getWidth(); x++) {
+                if (sheet.getRGB(x, y) == color.getRGB()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static PageBanner onlyTheTitleSaying(String text) {
