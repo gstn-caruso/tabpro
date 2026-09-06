@@ -32,6 +32,7 @@ import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.NoteEffects;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
+import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
@@ -208,6 +209,11 @@ public final class Editor {
         changeNoteEffects(effects -> grace == null ? effects.withoutGrace() : effects.withGrace(grace));
     }
 
+    /** Cuanto suena la nota respecto de su figura, como pide Nota > Duracion del sonido. */
+    public void setSoundDuration(int percent) {
+        changeNoteEffects(effects -> effects.withSoundDuration(percent));
+    }
+
     public void setLeftHandFinger(Finger finger) {
         changeNoteEffects(effects -> effects.withLeftHand(finger));
     }
@@ -256,6 +262,10 @@ public final class Editor {
 
     public void setText(String text) {
         changeBeatEffects(effects -> effects.withText(text));
+    }
+
+    public void setParameterChange(ParameterChange change) {
+        changeBeatEffects(effects -> effects.withParameterChange(change));
     }
 
     public void setChord(ChordDiagram chord) {

@@ -105,7 +105,7 @@ public final class MenuBar {
         menu.addSeparator();
         add(menu, "note.up", "note.down", "note.toUpperString", "note.toLowerString");
         menu.addSeparator();
-        add(menu, "note.dynamics", "note.fingering", "note.chord", "note.mixTableChange");
+        add(menu, "note.dynamics", "note.soundDuration", "note.fingering", "note.chord", "note.mixTableChange");
         return menu;
     }
 

@@ -19,6 +19,8 @@ import com.gstncaruso.tabpro.ui.dialogs.measure.MeasurePropertiesDialog;
 import com.gstncaruso.tabpro.ui.dialogs.metronome.MetronomeDialog;
 import com.gstncaruso.tabpro.ui.dialogs.metronome.MetronomeSettings;
 import com.gstncaruso.tabpro.ui.dialogs.note.DynamicsDialog;
+import com.gstncaruso.tabpro.ui.dialogs.note.ParameterChangeDialog;
+import com.gstncaruso.tabpro.ui.dialogs.note.SoundDurationDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.FingeringDialog;
 import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetup;
 import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetupDialog;
@@ -778,7 +780,14 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void mixTableChange() {
-            PendingFeature.announce(MainFrame.this, "El cambio de parámetros en medio de la partitura");
+            ParameterChangeDialog.show(MainFrame.this, editor);
+            backToTheScore();
+        }
+
+        @Override
+        public void soundDuration() {
+            SoundDurationDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override

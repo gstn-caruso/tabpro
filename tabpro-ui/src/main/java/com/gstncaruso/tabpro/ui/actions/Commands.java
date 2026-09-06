@@ -182,6 +182,7 @@ public final class Commands {
         define("note.repeatToEndOfBar", "Copiar el beat hasta el final del compás",
                 editor::repeatBeatToTheEndOfTheMeasure).withAccelerator("C");
         define("note.dynamics", "Dinámica…", dialogs::dynamics);
+        define("note.soundDuration", "Duración del sonido…", dialogs::soundDuration);
         define("note.fingering", "Digitación…", dialogs::fingering);
         define("note.chord", "Acorde…", dialogs::chordDiagram).withAccelerator("A").withIcon(Icons.chordDiagram());
         define("note.mixTableChange", "Cambio de parámetros…", dialogs::mixTableChange)

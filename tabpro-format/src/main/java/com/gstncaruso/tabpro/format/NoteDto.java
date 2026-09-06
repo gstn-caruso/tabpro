@@ -33,7 +33,8 @@ public record NoteDto(
         String tremoloPicking,
         GraceNoteDto grace,
         String leftHand,
-        String rightHand) {
+        String rightHand,
+        Integer soundDuration) {
 
     public static NoteDto from(Note note) {
         NoteEffects effects = note.effects();
@@ -50,7 +51,8 @@ public record NoteDto(
                 effects.tremoloPicking().map(picking -> picking.speed().name()).orElse(null),
                 effects.grace().map(GraceNoteDto::from).orElse(null),
                 effects.leftHand().map(Enum::name).orElse(null),
-                effects.rightHand().map(Enum::name).orElse(null));
+                effects.rightHand().map(Enum::name).orElse(null),
+                effects.soundDurationPercent() == NoteEffects.FULL_SOUND ? null : effects.soundDurationPercent());
     }
 
     public Note toNote() {
@@ -68,7 +70,8 @@ public record NoteDto(
                 Optional.ofNullable(Enums.read(NoteValue.class, tremoloPicking, null)).map(TremoloPicking::at),
                 Optional.ofNullable(grace).map(GraceNoteDto::toGraceNote),
                 Optional.ofNullable(Enums.read(Finger.class, leftHand, null)),
-                Optional.ofNullable(Enums.read(Finger.class, rightHand, null)));
+                Optional.ofNullable(Enums.read(Finger.class, rightHand, null)),
+                soundDuration == null ? NoteEffects.FULL_SOUND : soundDuration);
     }
 
     private Set<Ornament> toOrnaments() {

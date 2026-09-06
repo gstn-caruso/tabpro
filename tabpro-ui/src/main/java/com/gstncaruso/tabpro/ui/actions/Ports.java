@@ -57,6 +57,8 @@ public final class Ports {
 
         void dynamics();
 
+        void soundDuration();
+
         void fingering();
 
         void chordDiagram();

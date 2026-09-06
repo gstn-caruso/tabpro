@@ -9,7 +9,9 @@ import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.model.effects.Finger;
+import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
@@ -32,7 +34,8 @@ public record BeatDto(
         NoteDto.BendDto tremoloBar,
         String wah,
         String text,
-        ChordDto chord) {
+        ChordDto chord,
+        ParameterChangeDto parameterChange) {
 
     public static BeatDto from(Beat beat) {
         BeatEffects effects = beat.effects();
@@ -52,7 +55,8 @@ public record BeatDto(
                 effects.tremoloBar().map(NoteDto.BendDto::from).orElse(null),
                 effects.wah().map(Enum::name).orElse(null),
                 effects.text().orElse(null),
-                effects.chord().map(ChordDto::from).orElse(null));
+                effects.chord().map(ChordDto::from).orElse(null),
+                effects.parameterChange().isEmpty() ? null : ParameterChangeDto.from(effects.parameterChange()));
     }
 
     public Beat toBeat() {
@@ -80,7 +84,8 @@ public record BeatDto(
                 Optional.ofNullable(tremoloBar).map(NoteDto.BendDto::toBend),
                 Optional.ofNullable(Enums.read(Wah.class, wah, null)),
                 Optional.ofNullable(text),
-                Optional.ofNullable(chord).map(ChordDto::toChord));
+                Optional.ofNullable(chord).map(ChordDto::toChord),
+                parameterChange == null ? ParameterChange.nothing() : parameterChange.toParameterChange());
     }
 
     private static Boolean flag(boolean value) {
@@ -96,6 +101,33 @@ public record BeatDto(
                 .filter(candidate -> candidate.denominator() == denominator)
                 .findFirst()
                 .orElseThrow(() -> new ScoreFileException("value no es un denominador de figura valido: " + denominator));
+    }
+
+    /** El cambio de parametros: solo se listan los que efectivamente cambian. */
+    public record ParameterChangeDto(
+            java.util.Map<String, Integer> values, Integer transitionBeats, Boolean everyTrack) {
+
+        public static ParameterChangeDto from(ParameterChange change) {
+            java.util.Map<String, Integer> values = new java.util.LinkedHashMap<>();
+            change.values().forEach((parameter, value) -> values.put(parameter.name(), value));
+            return new ParameterChangeDto(
+                    values,
+                    change.transitionBeats() == 0 ? null : change.transitionBeats(),
+                    change.everyTrack() ? Boolean.TRUE : null);
+        }
+
+        public ParameterChange toParameterChange() {
+            ParameterChange change = ParameterChange.nothing()
+                    .over(transitionBeats == null ? 0 : transitionBeats)
+                    .onEveryTrack(everyTrack != null && everyTrack);
+            if (values == null) {
+                return change;
+            }
+            for (java.util.Map.Entry<String, Integer> entry : values.entrySet()) {
+                change = change.changing(Enums.required(SoundParameter.class, entry.getKey()), entry.getValue());
+            }
+            return change;
+        }
     }
 
     public record StrokeDto(String direction, String speed, Boolean rasgueado) {

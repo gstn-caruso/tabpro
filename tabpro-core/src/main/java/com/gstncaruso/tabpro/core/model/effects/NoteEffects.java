@@ -15,15 +15,20 @@ public record NoteEffects(
         Optional<TremoloPicking> tremoloPicking,
         Optional<GraceNote> grace,
         Optional<Finger> leftHand,
-        Optional<Finger> rightHand) {
+        Optional<Finger> rightHand,
+        int soundDurationPercent) {
+
+    /** Una nota que suena toda su figura, sin acortarse ni alargarse a mano. */
+    public static final int FULL_SOUND = 100;
 
     private static final NoteEffects NONE = new NoteEffects(
             EnumSet.noneOf(Ornament.class), Dynamic.defaultDynamic(),
             Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-            Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), FULL_SOUND);
 
     public NoteEffects {
         ornaments = Set.copyOf(ornaments);
+        soundDurationPercent = Math.clamp(soundDurationPercent, 1, 200);
     }
 
     public static NoteEffects none() {
@@ -82,8 +87,17 @@ public record NoteEffects(
         return intensity;
     }
 
+    public NoteEffects withSoundDuration(int percent) {
+        return new NoteEffects(
+                ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, grace, leftHand, rightHand, percent);
+    }
+
     /** Que fraccion de su figura suena la nota. */
     public double soundLength() {
+        return ornamentLength() * soundDurationPercent / (double) FULL_SOUND;
+    }
+
+    private double ornamentLength() {
         if (has(Ornament.DEAD)) {
             return 0.1;
         }
@@ -100,63 +114,63 @@ public record NoteEffects(
     }
 
     public NoteEffects withDynamic(Dynamic dynamic) {
-        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, grace, leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, grace, leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withBend(Bend bend) {
-        return new NoteEffects(ornaments, dynamic, Optional.of(bend), slide, harmonic, trill, tremoloPicking, grace, leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, Optional.of(bend), slide, harmonic, trill, tremoloPicking, grace, leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withoutBend() {
-        return new NoteEffects(ornaments, dynamic, Optional.empty(), slide, harmonic, trill, tremoloPicking, grace, leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, Optional.empty(), slide, harmonic, trill, tremoloPicking, grace, leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withSlide(SlideType slide) {
-        return new NoteEffects(ornaments, dynamic, bend, Optional.of(slide), harmonic, trill, tremoloPicking, grace, leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, Optional.of(slide), harmonic, trill, tremoloPicking, grace, leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withoutSlide() {
-        return new NoteEffects(ornaments, dynamic, bend, Optional.empty(), harmonic, trill, tremoloPicking, grace, leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, Optional.empty(), harmonic, trill, tremoloPicking, grace, leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withHarmonic(HarmonicType harmonic) {
-        return new NoteEffects(ornaments, dynamic, bend, slide, Optional.of(harmonic), trill, tremoloPicking, grace, leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, slide, Optional.of(harmonic), trill, tremoloPicking, grace, leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withoutHarmonic() {
-        return new NoteEffects(ornaments, dynamic, bend, slide, Optional.empty(), trill, tremoloPicking, grace, leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, slide, Optional.empty(), trill, tremoloPicking, grace, leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withTrill(Trill trill) {
-        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, Optional.of(trill), tremoloPicking, grace, leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, Optional.of(trill), tremoloPicking, grace, leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withoutTrill() {
-        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, Optional.empty(), tremoloPicking, grace, leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, Optional.empty(), tremoloPicking, grace, leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withTremoloPicking(TremoloPicking tremoloPicking) {
-        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, Optional.of(tremoloPicking), grace, leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, Optional.of(tremoloPicking), grace, leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withoutTremoloPicking() {
-        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, Optional.empty(), grace, leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, Optional.empty(), grace, leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withGrace(GraceNote grace) {
-        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, Optional.of(grace), leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, Optional.of(grace), leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withoutGrace() {
-        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, Optional.empty(), leftHand, rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, Optional.empty(), leftHand, rightHand, soundDurationPercent);
     }
 
     public NoteEffects withLeftHand(Finger finger) {
-        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, grace, Optional.ofNullable(finger), rightHand);
+        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, grace, Optional.ofNullable(finger), rightHand, soundDurationPercent);
     }
 
     public NoteEffects withRightHand(Finger finger) {
-        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, grace, leftHand, Optional.ofNullable(finger));
+        return new NoteEffects(ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, grace, leftHand, Optional.ofNullable(finger), soundDurationPercent);
     }
 
     private EnumSet<Ornament> copyOfOrnaments() {
@@ -166,6 +180,6 @@ public record NoteEffects(
     }
 
     private NoteEffects withOrnaments(Set<Ornament> updated) {
-        return new NoteEffects(updated, dynamic, bend, slide, harmonic, trill, tremoloPicking, grace, leftHand, rightHand);
+        return new NoteEffects(updated, dynamic, bend, slide, harmonic, trill, tremoloPicking, grace, leftHand, rightHand, soundDurationPercent);
     }
 }
