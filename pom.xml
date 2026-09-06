@@ -22,8 +22,8 @@
 
   <modules>
     <module>tabpro-core</module>
-    <module>tabpro-format</module>
     <module>tabpro-midi</module>
+    <module>tabpro-format</module>
     <module>tabpro-ui</module>
     <module>tabpro-app</module>
   </modules>
@@ -71,7 +71,13 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.5.2</version>
           <configuration>
-            <argLine>-Djava.awt.headless=true</argLine>
+            <!--
+              El add-exports es para WaveRenderer (tabpro-midi): renderiza WAVE fuera de
+              tiempo real con com.sun.media.sound.AudioSynthesizer, el unico camino que expone
+              Gervill (el sintetizador del JDK) para eso. No es API publica, pero es la unica
+              forma de pedirle audio al sintetizador mas rapido que en tiempo real.
+            -->
+            <argLine>-Djava.awt.headless=true --add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED</argLine>
           </configuration>
         </plugin>
       </plugins>
