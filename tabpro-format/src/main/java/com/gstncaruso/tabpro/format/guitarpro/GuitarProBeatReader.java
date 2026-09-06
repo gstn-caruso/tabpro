@@ -34,6 +34,9 @@ final class GuitarProBeatReader {
     private static final int HAS_STROKE = 0x40;
     private static final int FADE_IN = 0x10;
 
+    /** Cuando el beat rompe el corchete secundario, dice de cuantas figuras. */
+    private static final int BREAK_SECONDARY_BEAM = 0x0800;
+
     /** La cuerda 1 del archivo es la mas aguda y ocupa el bit mas alto de la mascara. */
     private static final int HIGHEST_STRING_BIT = 0x40;
 
@@ -204,9 +207,8 @@ final class GuitarProBeatReader {
         if (!version.hasSecondVoice()) {
             return;
         }
-        reader.readUnsignedByte();
-        int extra = reader.readUnsignedByte();
-        if ((extra & 0x08) != 0) {
+        int display = reader.readShort();
+        if ((display & BREAK_SECONDARY_BEAM) != 0) {
             reader.readUnsignedByte();
         }
     }
