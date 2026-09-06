@@ -97,15 +97,56 @@ class ScorePainterTest {
                 Playhead.silent()));
     }
 
+    /**
+     * El manual pide el cursor de edicion como una linea vertical fina que cruza el pentagrama y
+     * la tablatura -no como el recuadro de antes, que solo marcaba una cuerda-. Se ubica en el
+     * arranque del beat actual, igual convencion que la linea de reproduccion.
+     */
     @Test
-    void outlinesTheCellUnderTheCursor() {
+    void theEditingCursorIsAThinRedLineAcrossTheStaffAndTheTablature() {
+        Cursor cursor = new Cursor(0, 0, 0, 3);
+        Painted painted = paint(Score.blank(), cursor, Playhead.silent());
+
+        int x = painted.layout().beatBounds(0, 0, 0).x;
+        int nearTheStaff = painted.layout().staffTop(0, 0) + 2;
+        int nearTheTablature = painted.layout().tabBottom(0, 0) - 2;
+
+        assertEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x, nearTheStaff),
+                "la linea del cursor tiene que cruzar el pentagrama");
+        assertEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x, nearTheTablature),
+                "la linea del cursor tiene que cruzar tambien la tablatura");
+    }
+
+    @Test
+    void theEditingCursorIsThinNotARectangleFillingTheBeat() {
         Cursor cursor = new Cursor(0, 0, 0, 3);
         Painted painted = paint(Score.blank(), cursor, Playhead.silent());
 
         Rectangle beat = painted.layout().beatBounds(0, 0, 0);
-        int y = painted.layout().stringY(0, 0, 3) - ScoreLayout.STRING_SPACING / 2 + 1;
+        int y = painted.layout().tabTop(0, 0) + 3;
+        int farFromTheLine = beat.x + beat.width - 2;
 
-        assertEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(beat.x + beat.width / 2, y));
+        assertNotEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(farFromTheLine, y),
+                "el cursor no puede tapar el beat entero como el recuadro de antes");
+    }
+
+    /**
+     * La linea sola no dice en que cuerda esta parado el cursor -eso lo hacia bien el recuadro de
+     * antes-, asi que a la altura de esa cuerda la marca tiene que ensancharse.
+     */
+    @Test
+    void theEditingCursorStillShowsWhichStringItIsOn() {
+        Cursor cursor = new Cursor(0, 0, 0, 3);
+        Painted painted = paint(Score.blank(), cursor, Playhead.silent());
+
+        int x = painted.layout().beatBounds(0, 0, 0).x;
+        int onItsString = painted.layout().stringY(0, 0, 3);
+        int onAnotherString = painted.layout().stringY(0, 0, 5);
+
+        assertEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x - 2, onItsString),
+                "en su cuerda la marca tiene que ser mas ancha que la linea");
+        assertNotEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x - 2, onAnotherString),
+                "en otra cuerda no tiene que aparecer esa marca ancha");
     }
 
     @Test
