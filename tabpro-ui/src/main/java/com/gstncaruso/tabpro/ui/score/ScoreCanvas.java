@@ -17,9 +17,9 @@ import javax.swing.JComponent;
 import javax.swing.Scrollable;
 
 /**
- * El lienzo de la partitura: dibuja todas las pistas segun el {@link ViewMode} y el {@link Zoom}
- * elegidos, y traduce los clics a movimientos del cursor o, arrastrando, a una seleccion
- * multiple.
+ * El lienzo de la partitura: dibuja las pistas que se ven segun el {@link ViewMode}, el
+ * {@link Zoom} y las {@link VisibleTracks} elegidas, y traduce los clics a movimientos del
+ * cursor o, arrastrando, a una seleccion multiple.
  */
 public final class ScoreCanvas extends JComponent implements Scrollable {
 
@@ -29,6 +29,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     private Playhead playhead = Playhead.silent();
     private ViewMode viewMode = ViewMode.SCREEN_VERTICAL;
     private Zoom zoom = Zoom.whole();
+    private VisibleTracks visibleTracks = VisibleTracks.all();
     private Cursor selectionAnchor;
     private Selection selection;
 
@@ -86,6 +87,26 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
 
     public void zoomOut() {
         setZoom(zoom.out());
+    }
+
+    // ---- Vista multipista: el menu Ver la prende y apaga, la mesa de mezcla apaga pistas ----
+
+    public boolean isMultitrack() {
+        return visibleTracks.multitrack();
+    }
+
+    public void setMultitrack(boolean multitrack) {
+        showing(visibleTracks.withMultitrack(multitrack));
+    }
+
+    public void setTrackShown(int track, boolean shown) {
+        showing(visibleTracks.withTrackShown(track, shown));
+    }
+
+    private void showing(VisibleTracks visibleTracks) {
+        this.visibleTracks = visibleTracks;
+        revalidate();
+        repaint();
     }
 
     // ---- Seleccion multiple: la ventana principal puede leerla, fijarla o limpiarla ----
@@ -181,8 +202,10 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
                 editor.score(), viewport(), cursor.track(), cursor.measure(), cursor.beat());
     }
 
+    /** La pista activa la manda el cursor, asi que se lee recien al dibujar. */
     private ScoreViewport viewport() {
-        return ScoreViewport.of(viewMode, zoom, viewportWidth());
+        return new ScoreViewport(
+                viewMode, zoom, viewportWidth(), visibleTracks.withActiveTrack(editor.cursor().track()));
     }
 
     private int viewportWidth() {
