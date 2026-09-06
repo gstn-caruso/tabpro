@@ -26,6 +26,6 @@ public record RelativeTempo(double factor) {
     }
 
     public Timeline applyTo(Timeline timeline) {
-        return new Timeline(apply(timeline.tempoBpm()), timeline.ticksPerQuarter(), timeline.tracks());
+        return new Timeline(timeline.tempo().scaledBy(factor), timeline.ticksPerQuarter(), timeline.tracks());
     }
 }
