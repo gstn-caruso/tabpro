@@ -117,7 +117,8 @@ public final class ScoreLayout {
         int x = LEFT_MARGIN;
         for (int measure = 0; measure < measureCount; measure++) {
             boolean alreadyAtLineStart = x == LEFT_MARGIN;
-            boolean startsASystem = alreadyAtLineStart || breaksBefore(score, measure, x, columnWidth[measure], usableWidth);
+            boolean startsASystem = alreadyAtLineStart
+                    || breaksBefore(score, visibleTracks, measure, x, columnWidth[measure], usableWidth);
             if (!alreadyAtLineStart && startsASystem) {
                 currentSystem++;
                 x = LEFT_MARGIN;
@@ -164,8 +165,9 @@ public final class ScoreLayout {
      * pedia el sistema actual se estira y el corte se corre al compas siguiente que si pueda
      * arrancar uno; automatico es el comportamiento de siempre, por ancho disponible.
      */
-    private static boolean breaksBefore(Score score, int measure, int x, int width, int usableWidth) {
-        LineBreak lineBreak = score.attributesOf(measure).lineBreak();
+    private static boolean breaksBefore(
+            Score score, VisibleTracks visibleTracks, int measure, int x, int width, int usableWidth) {
+        LineBreak lineBreak = lineBreakAt(score, visibleTracks, measure);
         if (lineBreak == LineBreak.FORCED) {
             return true;
         }
@@ -173,6 +175,21 @@ public final class ScoreLayout {
             return false;
         }
         return x + width > LEFT_MARGIN + usableWidth;
+    }
+
+    /**
+     * De donde sale el salto de linea de un compas: fuera de la vista multipista vale solo para
+     * la pista activa, que puede tener su propia organizacion de sistemas; en la vista
+     * multipista todas comparten la misma, la que arrastra la primera pista (igual que el resto
+     * de los atributos del compas, que siempre son los mismos en todas las pistas).
+     */
+    private static LineBreak lineBreakAt(Score score, VisibleTracks visibleTracks, int measure) {
+        if (visibleTracks.multitrack()) {
+            return score.attributesOf(measure).lineBreak();
+        }
+        Track track = score.track(visibleTracks.activeTrack());
+        int clamped = Math.clamp(measure, 0, track.measureCount() - 1);
+        return track.attributesOf(clamped).lineBreak();
     }
 
     /** Si la armadura o el compas de este comienzo difieren de los del compas anterior. */

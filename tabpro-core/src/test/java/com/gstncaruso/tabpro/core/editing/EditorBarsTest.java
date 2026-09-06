@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
+import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
@@ -28,6 +29,47 @@ class EditorBarsTest {
 
         assertTrue(editor.score().track(0).measure(0).attributes().repeatOpen());
         assertTrue(editor.score().track(1).measure(0).attributes().repeatOpen());
+    }
+
+    /**
+     * El manual dice que el salto de linea, a diferencia del resto de los atributos del compas,
+     * vale solo para la pista activa -salvo que se este en la vista multipista, donde vale para
+     * esa vista compartida por todas las pistas.
+     */
+    @Test
+    void aLineBreakOutsideTheMultitrackViewOnlyReachesTheActiveTrack() {
+        editor.setLineBreak(LineBreak.FORCED, false);
+
+        assertEquals(LineBreak.FORCED, editor.score().track(0).measure(0).attributes().lineBreak());
+        assertEquals(LineBreak.AUTOMATIC, editor.score().track(1).measure(0).attributes().lineBreak());
+    }
+
+    @Test
+    void aLineBreakOutsideTheMultitrackViewFollowsTheCursorToWhicheverTrackIsActive() {
+        editor.selectTrack(1);
+
+        editor.setLineBreak(LineBreak.FORCED, false);
+
+        assertEquals(LineBreak.AUTOMATIC, editor.score().track(0).measure(0).attributes().lineBreak());
+        assertEquals(LineBreak.FORCED, editor.score().track(1).measure(0).attributes().lineBreak());
+    }
+
+    @Test
+    void aLineBreakInTheMultitrackViewReachesEveryTrack() {
+        editor.setLineBreak(LineBreak.FORCED, true);
+
+        assertEquals(LineBreak.FORCED, editor.score().track(0).measure(0).attributes().lineBreak());
+        assertEquals(LineBreak.FORCED, editor.score().track(1).measure(0).attributes().lineBreak());
+    }
+
+    @Test
+    void resettingTheLineBreakOnTheActiveTrackDoesNotTouchTheOthers() {
+        editor.setLineBreak(LineBreak.FORCED, true);
+
+        editor.setLineBreak(LineBreak.PREVENTED, false);
+
+        assertEquals(LineBreak.PREVENTED, editor.score().track(0).measure(0).attributes().lineBreak());
+        assertEquals(LineBreak.FORCED, editor.score().track(1).measure(0).attributes().lineBreak());
     }
 
     @Test

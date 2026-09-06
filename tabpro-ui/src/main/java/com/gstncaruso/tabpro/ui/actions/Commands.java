@@ -141,9 +141,12 @@ public final class Commands {
         define("bar.alternateEndings", "Finales alternativos…", dialogs::alternateEndings)
                 .withIcon(Icons.alternateEndings());
         define("bar.directions", "Direcciones musicales…", dialogs::musicalDirections);
-        define("bar.forceLineBreak", "Forzar salto de línea", () -> editor.setLineBreak(LineBreak.FORCED));
-        define("bar.preventLineBreak", "Impedir salto de línea", () -> editor.setLineBreak(LineBreak.PREVENTED));
-        define("bar.resetLineBreak", "Reiniciar la organización", () -> editor.setLineBreak(LineBreak.AUTOMATIC));
+        define("bar.forceLineBreak", "Forzar salto de línea",
+                () -> editor.setLineBreak(LineBreak.FORCED, view.isMultitrack()));
+        define("bar.preventLineBreak", "Impedir salto de línea",
+                () -> editor.setLineBreak(LineBreak.PREVENTED, view.isMultitrack()));
+        define("bar.resetLineBreak", "Reiniciar la organización",
+                () -> editor.setLineBreak(LineBreak.AUTOMATIC, view.isMultitrack()));
     }
 
     // ---- pistas -----------------------------------------------------------

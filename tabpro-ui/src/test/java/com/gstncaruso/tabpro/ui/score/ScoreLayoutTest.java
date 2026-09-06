@@ -190,6 +190,37 @@ class ScoreLayoutTest {
         assertTrue(layout.startsASystem(4));
     }
 
+    /**
+     * El manual dice que el salto de linea vale solo para la pista activa, o para la vista
+     * multipista: fuera de la vista multipista, el corte de una pista no puede aparecer en el
+     * layout de otra pista.
+     */
+    @Test
+    void outsideTheMultitrackViewOnlyTheActiveTracksOwnLineBreakApplies() {
+        Score score = withLineBreakOnTrack(twoTrackScoreWithMeasures(5), 1, 2, LineBreak.FORCED);
+        VisibleTracks secondTrackActive = VisibleTracks.all().withMultitrack(false).withActiveTrack(1);
+        VisibleTracks firstTrackActive = VisibleTracks.all().withMultitrack(false).withActiveTrack(0);
+
+        ScoreLayout onSecondTrack = ScoreLayout.of(score, WIDE, secondTrackActive);
+        ScoreLayout onFirstTrack = ScoreLayout.of(score, WIDE, firstTrackActive);
+
+        assertTrue(onSecondTrack.startsASystem(2),
+                "el corte forzado en la pista activa tiene que arrancar un sistema nuevo");
+        assertFalse(onFirstTrack.startsASystem(2),
+                "el corte de la otra pista no tiene que verse mientras esa pista no es la activa");
+    }
+
+    @Test
+    void theMultitrackViewUsesItsOwnSharedLineBreaksRegardlessOfTheActiveTrack() {
+        Score score = withLineBreakOnTrack(twoTrackScoreWithMeasures(5), 0, 2, LineBreak.FORCED);
+        VisibleTracks multitrackWithSecondActive = VisibleTracks.all().withActiveTrack(1);
+
+        ScoreLayout layout = ScoreLayout.of(score, WIDE, multitrackWithSecondActive);
+
+        assertTrue(layout.startsASystem(2),
+                "en la vista multipista el corte compartido vale sin importar cual pista este activa");
+    }
+
     @Test
     void resettingTheLineBreakGoesBackToTheAutomaticLayout() {
         Score automatic = scoreWithMeasures(12);
@@ -406,17 +437,33 @@ class ScoreLayoutTest {
     }
 
     private static Score withLineBreakAt(Score score, int measureIndex, LineBreak lineBreak) {
-        return score.mappingTrack(0, track -> track.mappingMeasure(measureIndex,
+        return withLineBreakOnTrack(score, 0, measureIndex, lineBreak);
+    }
+
+    private static Score withLineBreakOnTrack(Score score, int trackIndex, int measureIndex, LineBreak lineBreak) {
+        return score.mappingTrack(trackIndex, track -> track.mappingMeasure(measureIndex,
                 measure -> measure.mappingAttributes(attributes -> attributes.withLineBreak(lineBreak))));
     }
 
     private static Score scoreWithMeasures(int count) {
+        Track guitar = Track.standardGuitar("Guitarra");
+        return new Score("", 120, List.of(new Track("Guitarra", guitar.tuning(), guitar.channel(), measuresOf(count))));
+    }
+
+    private static Score twoTrackScoreWithMeasures(int count) {
+        Track guitar = Track.standardGuitar("Guitarra");
+        Track bass = Track.standardBass("Bajo");
+        return new Score("", 120, List.of(
+                new Track("Guitarra", guitar.tuning(), guitar.channel(), measuresOf(count)),
+                new Track("Bajo", bass.tuning(), bass.channel(), measuresOf(count))));
+    }
+
+    private static List<Measure> measuresOf(int count) {
         List<Measure> measures = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             measures.add(quarters(4));
         }
-        Track guitar = Track.standardGuitar("Guitarra");
-        return new Score("", 120, List.of(new Track("Guitarra", guitar.tuning(), guitar.channel(), measures)));
+        return measures;
     }
 
     private static Track trackWith(Measure... measures) {

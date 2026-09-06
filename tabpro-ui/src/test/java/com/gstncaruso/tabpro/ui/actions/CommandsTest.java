@@ -116,6 +116,18 @@ class CommandsTest {
     }
 
     /**
+     * El manual dice que el salto de linea vale solo para la pista activa o para la vista
+     * multipista, asi que el comando tiene que consultarle a la vista en cual de las dos esta
+     * antes de aplicarlo (el alcance en si lo prueba EditorBarsTest, en tabpro-core).
+     */
+    @Test
+    void theLineBreakCommandsAskTheViewWhetherTheMultitrackViewIsOn() {
+        commands.get("bar.forceLineBreak").actionPerformed(event());
+
+        assertTrue(asked.contains("isMultitrack"));
+    }
+
+    /**
      * El manual agrupa cualquier n-tuplet igual que el tresillo (Managing the Triplets and
      * n-Tuplets): quintillo, seisillo, septillo y los que sigan tienen que estar en el menu Nota.
      */
@@ -166,7 +178,7 @@ class CommandsTest {
     private <T> T record(Class<T> port) {
         InvocationHandler handler = (proxy, method, args) -> {
             asked.add(method.getName());
-            return null;
+            return method.getReturnType() == boolean.class ? Boolean.FALSE : null;
         };
         return (T) Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[] {port}, handler);
     }

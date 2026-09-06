@@ -395,8 +395,17 @@ public final class Editor {
         changeAttributes(attributes -> attributes.withMarker(marker));
     }
 
-    public void setLineBreak(LineBreak lineBreak) {
-        changeAttributes(attributes -> attributes.withLineBreak(lineBreak));
+    /**
+     * A diferencia del resto de los atributos del compas, el salto de linea no rige para toda
+     * la partitura: el manual dice que vale solo para la pista activa, salvo que se este en la
+     * vista multipista, donde vale para esa vista, compartida por todas las pistas.
+     */
+    public void setLineBreak(LineBreak lineBreak, boolean everyTrack) {
+        if (everyTrack) {
+            changeAttributes(attributes -> attributes.withLineBreak(lineBreak));
+        } else {
+            change(score.withLineBreakInTrackAt(cursor.track(), cursor.measure(), lineBreak), cursor);
+        }
     }
 
     // ---- pistas -----------------------------------------------------------
