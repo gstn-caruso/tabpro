@@ -60,6 +60,7 @@ public final class Editor {
     private final EditorHistory history = new EditorHistory();
     private final Clipboard clipboard = new Clipboard();
     private final List<EditorListener> listeners = new ArrayList<>();
+    private boolean undoEnabled = true;
 
     public Editor(Score initial) {
         this.score = initial;
@@ -805,6 +806,22 @@ public final class Editor {
 
     // ---- historia ---------------------------------------------------------
 
+    public boolean isUndoEnabled() {
+        return undoEnabled;
+    }
+
+    /**
+     * Deshacer y rehacer se pueden apagar para no cargar memoria en una
+     * computadora vieja, tal como ofrece Preferencias. Al apagarla se olvida
+     * lo que ya se podia deshacer.
+     */
+    public void setUndoEnabled(boolean undoEnabled) {
+        this.undoEnabled = undoEnabled;
+        if (!undoEnabled) {
+            history.forget();
+        }
+    }
+
     public boolean canUndo() {
         return history.canUndo();
     }
@@ -836,7 +853,9 @@ public final class Editor {
             moveCursor(nextCursor);
             return;
         }
-        history.remember(currentSnapshot());
+        if (undoEnabled) {
+            history.remember(currentSnapshot());
+        }
         score = next;
         cursor = nextCursor;
         notifyListeners();

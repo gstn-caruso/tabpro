@@ -91,6 +91,7 @@ public final class MainFrame extends JFrame {
     private final Editor editor;
     private final ScoreFiles files;
     private final ScoreExchange exchange;
+    private final Preferences preferences = new Preferences();
     private final ScoreDocument document;
     private final ScoreCanvas canvas;
     private Commands commands;
@@ -130,7 +131,8 @@ public final class MainFrame extends JFrame {
         this.player = player;
         this.editor = editor;
         this.files = files;
-        this.document = new ScoreDocument(editor, files);
+        this.document = new ScoreDocument(editor, files, preferences);
+        editor.setUndoEnabled(preferences.undoEnabled());
         setSize(windowSize());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
@@ -816,8 +818,15 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void preferences() {
-            PreferencesDialog.ask(MainFrame.this, editingPreferences)
-                    .ifPresent(updated -> editingPreferences = updated);
+            var current = editingPreferences
+                    .withUndoEnabled(preferences.undoEnabled())
+                    .withAutosaveEvery(preferences.autosaveEvery());
+            PreferencesDialog.ask(MainFrame.this, current).ifPresent(updated -> {
+                editingPreferences = updated;
+                preferences.setUndoEnabled(updated.undoEnabled());
+                preferences.setAutosaveEvery(updated.autosaveEvery());
+                editor.setUndoEnabled(updated.undoEnabled());
+            });
             backToTheScore();
         }
 

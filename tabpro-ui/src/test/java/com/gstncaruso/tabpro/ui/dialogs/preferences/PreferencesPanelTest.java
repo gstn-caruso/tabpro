@@ -33,4 +33,13 @@ class PreferencesPanelTest {
         assertEquals(Preferences.defaults(), panel.toPreferences());
         assertTrue(Preferences.defaults().showBassInChordName());
     }
+
+    @Test
+    void offersToDisableUndoAndToConfigureTheAutosaveInterval() {
+        Preferences preferences = Preferences.defaults().withUndoEnabled(false).withAutosaveEvery(5);
+
+        PreferencesPanel panel = new PreferencesPanel(preferences);
+
+        assertEquals(preferences, panel.toPreferences());
+    }
 }
