@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.midi;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiSystem;
@@ -73,6 +75,40 @@ class MidiScoreExporterTest {
         }
     }
 
+    /**
+     * Las perillas de chorus, reverb, phaser y tremolo de la mesa de mezcla se editaban y se
+     * guardaban, pero nunca llegaban al sintetizador: el .mid no llevaba sus controladores.
+     */
+    @Test
+    void theMixingConsoleEffectsReachTheSynthOnBothChannelsOfTheTrack() {
+        Channel channel = Channel.playing(30).withChorus(10).withReverb(40).withPhaser(70).withTremolo(100);
+        Track track = Track.standardGuitar("Guitarra").withChannel(channel);
+        Score score = new Score("Prueba", 120, List.of(track));
+
+        Sequence sequence = exporter.toSequence(score);
+
+        javax.sound.midi.Track midiTrack = sequence.getTracks()[1];
+        for (int midiChannel : List.of(0, 1)) {
+            assertEquals(10, controlChangeOn(midiTrack, midiChannel, 93), "chorus");
+            assertEquals(40, controlChangeOn(midiTrack, midiChannel, 91), "reverb");
+            assertEquals(70, controlChangeOn(midiTrack, midiChannel, 95), "phaser");
+            assertEquals(100, controlChangeOn(midiTrack, midiChannel, 92), "tremolo");
+        }
+    }
+
+    /** Dos pistas con efectos distintos no pueden terminar sonando con el mismo valor. */
+    @Test
+    void twoTracksWithDifferentReverbSoundDifferentInTheGeneratedMidi() {
+        Track wetTrack = Track.standardGuitar("Con reverb").withChannel(Channel.playing(25).withReverb(100));
+        Track dryTrack = Track.standardBass("Sin reverb").withChannel(Channel.playing(33).withReverb(0));
+        Score score = new Score("Prueba", 120, List.of(wetTrack, dryTrack));
+
+        Sequence sequence = exporter.toSequence(score);
+
+        assertEquals(100, controlChangeOf(sequence.getTracks()[1], 91));
+        assertEquals(0, controlChangeOf(sequence.getTracks()[2], 91));
+    }
+
     @Test
     void sendsTheBentNoteToTheEffectsChannelSoItDoesNotDragTheRest() {
         Note bent = new Note(6, 0).withBend(Bend.of(BendType.BEND, 4));
@@ -82,6 +118,105 @@ class MidiScoreExporterTest {
 
         assertEquals(1, noteOnOf(midiTrack, 40).getChannel(), "la nota con bend va al canal de efectos");
         assertEquals(0, noteOnOf(midiTrack, 64).getChannel(), "la limpia se queda en el canal de la pista");
+    }
+
+    /**
+     * Ch y Ch2 de la mesa de mezcla se editaban y se guardaban, pero MidiSequences calculaba sus
+     * propios canales a partir del orden de la pista e ignoraba lo configurado: poner una pista
+     * en el canal 5 no la ponia en el canal 5.
+     */
+    @Test
+    void aTrackPlaysOnTheChannelTheMixingConsoleConfiguredInsteadOfAnAutomaticOne() {
+        Channel onChannelFive = Channel.playing(25).withNumber(5).withEffectChannel(6);
+        Track track = Track.standardGuitar("Guitarra").withChannel(onChannelFive)
+                .withMeasure(0, new Measure(TimeSignature.fourFour(),
+                        List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 0)))));
+        Score score = new Score("Prueba", 120, List.of(track));
+
+        javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
+
+        // el canal 5 de la mesa de mezcla es el indice 4: MIDI numera sus canales desde 0
+        assertEquals(4, onlyShortMessageOf(midiTrack, ShortMessage.NOTE_ON).getChannel());
+    }
+
+    @Test
+    void aBentNoteGoesToTheConfiguredEffectsChannelNotAnAutomaticOne() {
+        Channel onChannelFive = Channel.playing(25).withNumber(5).withEffectChannel(6);
+        Note bent = new Note(6, 0).withBend(Bend.of(BendType.BEND, 4));
+        Measure measure = new Measure(TimeSignature.fourFour(),
+                List.of(Beat.of(Duration.of(NoteValue.WHOLE), bent, new Note(1, 0))));
+        Track track = Track.standardGuitar("Guitarra").withChannel(onChannelFive).withMeasure(0, measure);
+        Score score = new Score("Prueba", 120, List.of(track));
+
+        javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
+
+        assertEquals(5, noteOnOf(midiTrack, 40).getChannel(), "el bend viaja por el canal de efectos configurado (Ch2)");
+        assertEquals(4, noteOnOf(midiTrack, 64).getChannel(), "la limpia se queda en el canal configurado (Ch)");
+    }
+
+    /**
+     * La percusion vive siempre en el canal 10 de MIDI por convencion del estandar, sin importar
+     * que numero haya quedado cargado en su Channel.
+     */
+    @Test
+    void aPercussionTrackAlwaysUsesChannelTenEvenIfItsChannelIsConfiguredOtherwise() {
+        Channel misconfigured = Channel.percussion().withNumber(3).withEffectChannel(4);
+        Track drums = Track.percussion("Bateria").withChannel(misconfigured)
+                .withMeasure(0, new Measure(TimeSignature.fourFour(),
+                        List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 38)))));
+        Score score = new Score("Prueba", 120, List.of(drums));
+
+        javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
+
+        assertEquals(9, onlyShortMessageOf(midiTrack, ShortMessage.NOTE_ON).getChannel());
+    }
+
+    /**
+     * Guitar Pro deja compartir un canal entre pistas -una partitura puede tener mas pistas que
+     * canales libres- y el archivo tiene que respetarlo tal cual llega, no reacomodarlo por su
+     * cuenta: que se pisen es una decision del usuario, no un bug de la exportacion.
+     */
+    @Test
+    void twoTracksConfiguredOnTheSameChannelBothSoundOnIt() {
+        Channel sharedChannel = Channel.playing(25).withNumber(5).withEffectChannel(6);
+        Measure measure = new Measure(TimeSignature.fourFour(),
+                List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 0))));
+        Track first = Track.standardGuitar("Uno").withChannel(sharedChannel).withMeasure(0, measure);
+        Track second = Track.standardBass("Dos").withChannel(sharedChannel.withProgram(33)).withMeasure(0, measure);
+        Score score = new Score("Prueba", 120, List.of(first, second));
+
+        Sequence sequence = exporter.toSequence(score);
+
+        assertEquals(4, onlyShortMessageOf(sequence.getTracks()[1], ShortMessage.NOTE_ON).getChannel());
+        assertEquals(4, onlyShortMessageOf(sequence.getTracks()[2], ShortMessage.NOTE_ON).getChannel());
+    }
+
+    /**
+     * Antes, una pista nueva entraba siempre en el canal 1 -no importaba porque MidiSequences
+     * ignoraba ese valor-. Ahora que el canal configurado llega a sonar, una partitura armada
+     * agregando pistas desde cero, sin tocar la mesa de mezcla, tiene que sonar igual que
+     * siempre: tres pistas, cada una con su instrumento, no las tres pisandose en una sola.
+     */
+    @Test
+    void aFreshScoreWithThreeTracksSoundsAsThreeDistinctTracksWithoutTouchingTheMixer() {
+        Editor editor = new Editor(Score.blank());
+        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardGuitar("Guitarra 2"));
+
+        Sequence sequence = exporter.toSequence(editor.score());
+
+        ShortMessage first = firstProgramChangeOf(sequence.getTracks()[1]);
+        ShortMessage second = firstProgramChangeOf(sequence.getTracks()[2]);
+        ShortMessage third = firstProgramChangeOf(sequence.getTracks()[3]);
+        assertEquals(3, Set.of(first.getChannel(), second.getChannel(), third.getChannel()).size(),
+                "las tres pistas tienen que sonar en canales distintos");
+        assertEquals(25, first.getData1(), "la primera guitarra");
+        assertEquals(33, second.getData1(), "el bajo");
+        assertEquals(25, third.getData1(), "la segunda guitarra");
+    }
+
+    private ShortMessage firstProgramChangeOf(javax.sound.midi.Track track) {
+        return (ShortMessage) track.get(0).getMessage();
     }
 
     @Test
@@ -293,6 +428,15 @@ class MidiScoreExporterTest {
     private static int controlChangeOn(javax.sound.midi.Track track, int channel, int controller) {
         return shortMessagesOf(track, ShortMessage.CONTROL_CHANGE).stream()
                 .filter(message -> message.getChannel() == channel && message.getData1() == controller)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("no se encontro el controlador " + controller))
+                .getData2();
+    }
+
+    /** El valor de un controlador sin importar en que canal haya quedado la pista. */
+    private static int controlChangeOf(javax.sound.midi.Track track, int controller) {
+        return shortMessagesOf(track, ShortMessage.CONTROL_CHANGE).stream()
+                .filter(message -> message.getData1() == controller)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("no se encontro el controlador " + controller))
                 .getData2();

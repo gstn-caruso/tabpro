@@ -160,6 +160,45 @@ class JsonScoreFilesTest {
         assertEquals(6, channel.effectChannel());
     }
 
+    /**
+     * TrackDto siempre escribia el numero de canal, incluso el 1 por defecto, y hasta este
+     * cambio MidiSequences lo ignoraba y repartia sus propios canales por orden de pista. Todo
+     * archivo guardado hasta ahora con varias pistas las tiene, entonces, todas en el canal 1 --
+     * la firma inconfundible de un valor que nunca sono. La firma es fuerte: nadie configura a
+     * mano varias pistas en el mismo canal. Se reconstruye con el mismo calculo que hacia
+     * MidiSequences (2n/2n+1, salteando la percusion), asi que suena identico a como sonaba.
+     */
+    @Test
+    void aFileWhereEveryTrackSharesTheSameChannelGetsTheChannelsItUsedToSound() throws URISyntaxException {
+        Path path = Path.of(getClass().getResource("/v4-three-tracks-all-on-channel-one.tabpro").toURI());
+
+        Score loaded = scoreFiles.load(path);
+
+        assertEquals(1, loaded.track(0).channel().number());
+        assertEquals(2, loaded.track(0).channel().effectChannel());
+        assertEquals(3, loaded.track(1).channel().number());
+        assertEquals(4, loaded.track(1).channel().effectChannel());
+        assertEquals(5, loaded.track(2).channel().number());
+        assertEquals(6, loaded.track(2).channel().effectChannel());
+    }
+
+    /**
+     * Si los canales ya difieren entre si -por ejemplo porque el archivo viene de importar un
+     * Guitar Pro real con canales propios- el usuario (o el importador) los eligio a proposito,
+     * y no hay que reacomodarlos.
+     */
+    @Test
+    void aFileWhereTracksAlreadyHaveDifferentChannelsIsLeftUntouched() throws URISyntaxException {
+        Path path = Path.of(getClass().getResource("/v4-two-tracks-with-different-channels.tabpro").toURI());
+
+        Score loaded = scoreFiles.load(path);
+
+        assertEquals(1, loaded.track(0).channel().number());
+        assertEquals(2, loaded.track(0).channel().effectChannel());
+        assertEquals(3, loaded.track(1).channel().number());
+        assertEquals(4, loaded.track(1).channel().effectChannel());
+    }
+
     @Test
     void keepsTheTwoChannelsOfATrackAcrossASave(@TempDir Path tempDir) {
         Score score = Score.blank().mappingTrack(0, track ->
