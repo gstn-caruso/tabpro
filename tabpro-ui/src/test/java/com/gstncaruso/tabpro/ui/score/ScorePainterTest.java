@@ -136,6 +136,123 @@ class ScorePainterTest {
         assertDoesNotThrow(() -> paint(scoreWith(crowded), new Cursor(0, 0, 0, 1), Playhead.silent()));
     }
 
+    @Test
+    void survivesEverySymbolTheManualListsForTheTablature() {
+        Note ghost = new Note(1, 5).toggling(
+                com.gstncaruso.tabpro.core.model.effects.Ornament.GHOST);
+        Note dead = new Note(2, 0).toggling(com.gstncaruso.tabpro.core.model.effects.Ornament.DEAD);
+        Note tied = new Note(3, 3).toggling(com.gstncaruso.tabpro.core.model.effects.Ornament.HAMMER_ON_PULL_OFF);
+        Note tiedTo = Note.tiedOn(3).withFret(5);
+        Note bent = new Note(4, 7).withBend(
+                com.gstncaruso.tabpro.core.model.effects.Bend.of(
+                        com.gstncaruso.tabpro.core.model.effects.BendType.BEND, 4));
+        Note slid = new Note(5, 2).withSlide(com.gstncaruso.tabpro.core.model.effects.SlideType.OUT_UPWARDS);
+        Note harmonic = new Note(6, 12).withHarmonic(com.gstncaruso.tabpro.core.model.effects.HarmonicType.NATURAL);
+
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), ghost, dead)
+                        .withEffects(com.gstncaruso.tabpro.core.model.effects.BeatEffects.none()
+                                .withTapping(true)
+                                .withStroke(com.gstncaruso.tabpro.core.model.effects.Stroke.of(
+                                        com.gstncaruso.tabpro.core.model.effects.StrokeDirection.DOWN))
+                                .withText("rit.")),
+                Beat.of(Duration.quarter(), tied),
+                Beat.of(Duration.quarter(), tiedTo, bent),
+                Beat.of(Duration.quarter(), slid, harmonic)));
+
+        assertDoesNotThrow(() -> paint(scoreWith(measure), new Cursor(0, 0, 0, 1), Playhead.silent()));
+    }
+
+    @Test
+    void survivesTwoVoicesAKeySignatureAndATuplet() {
+        Measure leadOnly = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 5)),
+                Beat.of(Duration.quarter(), new Note(1, 7)),
+                Beat.of(Duration.quarter(), new Note(1, 8)),
+                Beat.of(Duration.quarter(), new Note(1, 5))));
+        Measure withBass = leadOnly.withVoice(
+                com.gstncaruso.tabpro.core.model.VoicePart.BASS,
+                new com.gstncaruso.tabpro.core.model.Voice(List.of(
+                        Beat.of(Duration.quarter(), new Note(6, 0)),
+                        Beat.of(Duration.quarter(), new Note(6, 0)),
+                        Beat.of(Duration.quarter(), new Note(6, 3)),
+                        Beat.of(Duration.quarter(), new Note(6, 0)))));
+        Duration eighthTriplet = new Duration(NoteValue.EIGHTH, false)
+                .in(com.gstncaruso.tabpro.core.model.Tuplet.of(3));
+        Measure withTuplet = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(eighthTriplet, new Note(1, 0)),
+                Beat.of(eighthTriplet, new Note(1, 2)),
+                Beat.of(eighthTriplet, new Note(1, 4)),
+                Beat.of(Duration.quarter(), new Note(1, 0))))
+                .mappingAttributes(attrs -> attrs.withKeySignature(
+                        new com.gstncaruso.tabpro.core.model.bars.KeySignature(
+                                2, com.gstncaruso.tabpro.core.model.bars.Mode.MAJOR)));
+
+        Score score = scoreWith(withBass, withTuplet);
+
+        assertDoesNotThrow(() -> paint(score, new Cursor(0, 0, 0, 1), Playhead.silent()));
+    }
+
+    @Test
+    void survivesRepeatsAlternateEndingsDirectionsAndMarkers() {
+        Measure opens = measureOf(Beat.of(Duration.quarter(), new Note(1, 0)))
+                .mappingAttributes(attrs -> attrs.withRepeatOpen(true)
+                        .withMarker(com.gstncaruso.tabpro.core.model.bars.Marker.named("Intro")));
+        Measure firstEnding = measureOf(Beat.of(Duration.quarter(), new Note(1, 1)))
+                .mappingAttributes(attrs -> attrs.withAlternateEndings(List.of(1)));
+        Measure closes = measureOf(Beat.of(Duration.quarter(), new Note(1, 2)))
+                .mappingAttributes(attrs -> attrs.withRepeatCount(1).withDoubleBar(true)
+                        .withSymbol(com.gstncaruso.tabpro.core.model.bars.DirectionSymbol.CODA)
+                        .withJump(com.gstncaruso.tabpro.core.model.bars.DirectionJump.DA_CAPO_AL_CODA));
+
+        Score score = scoreWith(opens, firstEnding, closes);
+
+        assertDoesNotThrow(() -> paint(score, new Cursor(0, 0, 0, 1), Playhead.silent()));
+    }
+
+    @Test
+    void survivesLyricsAndAChordDiagram() {
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)).withEffects(
+                        com.gstncaruso.tabpro.core.model.effects.BeatEffects.none().withChord(
+                                com.gstncaruso.tabpro.core.model.chords.ChordDiagram.named(
+                                        "Do", List.of(-1, 3, 2, 0, 1, 0)))),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Score score = scoreWith(measure).withLyrics(
+                com.gstncaruso.tabpro.core.model.Lyrics.none().onTrack(0)
+                        .withLine(0, com.gstncaruso.tabpro.core.model.LyricLine.empty()
+                                .startingAt(1).saying("La vi-da es un sue-no")));
+
+        assertDoesNotThrow(() -> paint(score, new Cursor(0, 0, 0, 1), Playhead.silent()));
+    }
+
+    @Test
+    void survivesAPercussionTrackAndAMultiBeatSelection() {
+        Track kit = Track.percussion("Bateria").withMeasures(List.of(
+                new Measure(TimeSignature.fourFour(), List.of(
+                        Beat.of(Duration.quarter(), new Note(1, 42)),
+                        Beat.of(Duration.quarter(), new Note(2, 38)),
+                        Beat.of(Duration.quarter(), new Note(6, 36)),
+                        Beat.of(Duration.quarter(), new Note(3, 56))))));
+        Score score = new Score("", 120, List.of(kit));
+        com.gstncaruso.tabpro.core.editing.Selection selection =
+                com.gstncaruso.tabpro.core.editing.Selection.ofMeasures(0, 0, 0);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH);
+        BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        assertDoesNotThrow(() -> ScorePainter.paint(
+                g, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent(), java.util.Optional.of(selection)));
+        g.dispose();
+    }
+
+    private static Score scoreWith(Measure... measures) {
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measures));
+        return new Score("", 120, List.of(track));
+    }
+
     private static Measure measureOf(Beat... beats) {
         return new Measure(TimeSignature.fourFour(), List.of(beats));
     }
