@@ -54,6 +54,9 @@ class GuitarProBeatReaderTest {
     private static final int NO_SLAP = 0;
     private static final int SLAPPING = 2;
 
+    /** El bit del cambio de parametros que dice que usa el RSE, no que va a todas las pistas. */
+    private static final int USES_RSE = 0x40;
+
     /** Guitar Pro escribe en -1 el parametro que el cambio no toca. */
     private static final int UNCHANGED = -1;
     private static final int NO_STRINGS = 0x00;
@@ -267,6 +270,26 @@ class GuitarProBeatReaderTest {
                 .writeUnsignedByte(NO_STRINGS), GuitarProVersion.GP4);
 
         assertTrue(beat.effects().parameterChange().everyTrack());
+    }
+
+    /**
+     * De ese byte, "para todas las pistas" son solo los seis bits de las perillas. Los
+     * dos de arriba son otra cosa -- que el cambio use el RSE y que el wah se muestre en
+     * la partitura -- y estan puestos en casi todo .gp5.
+     */
+    @Test
+    void theTopBitsOfTheMaskAreNotAboutEveryTrack() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(WITH_MIX_TABLE)
+                .writeSignedByte(QUARTER)
+                .writeSignedByte(30)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeInt(UNCHANGED)
+                .writeUnsignedByte(USES_RSE)
+                .writeUnsignedByte(NO_STRINGS), GuitarProVersion.GP4);
+
+        assertFalse(beat.effects().parameterChange().everyTrack());
     }
 
     // ---- el wah del cambio de parametros, que existe recien en GP5 -----------

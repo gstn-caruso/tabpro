@@ -52,6 +52,9 @@ final class GuitarProBeatReader {
     /** La cuerda 1 del archivo es la mas aguda y ocupa el bit mas alto de la mascara. */
     private static final int HIGHEST_STRING_BIT = 0x40;
 
+    /** Los seis bits de la mascara del cambio de parametros que hablan de las demas pistas. */
+    private static final int EVERY_TRACK_KNOBS = 0x3F;
+
     /** El wah del cambio de parametros: -1 no lo toca, -2 lo apaga, 0 a 100 es cerrado a abierto. */
     private static final int WAH_UNCHANGED = -1;
     private static final int WAH_OFF = -2;
@@ -368,8 +371,13 @@ final class GuitarProBeatReader {
     }
 
     /** Desde GP4 una mascara dice que parametros valen para todas las pistas y no solo para esta. */
+    /**
+     * De esa mascara, "para todas las pistas" son solo los seis bits de las perillas: los
+     * dos de arriba dicen que el cambio usa el RSE y que el wah se muestra en la
+     * partitura, y en un .gp5 estan puestos casi siempre.
+     */
     private static boolean readEveryTrackMask(GuitarProByteReader reader, GuitarProVersion version) {
-        return version.hasSecondFlagsByte() && reader.readUnsignedByte() != 0;
+        return version.hasSecondFlagsByte() && (reader.readUnsignedByte() & EVERY_TRACK_KNOBS) != 0;
     }
 
     private static void skipGp5BeatExtras(GuitarProByteReader reader, GuitarProVersion version) {
