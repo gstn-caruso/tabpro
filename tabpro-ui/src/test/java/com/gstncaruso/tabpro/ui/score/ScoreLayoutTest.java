@@ -285,6 +285,43 @@ class ScoreLayoutTest {
                 VisibleTracks.all().withActiveTrack(1).withTrackShown(0, false)).firstShownTrack());
     }
 
+    @Test
+    void hidingTheStaffLiftsTheTablatureIntoItsPlace() {
+        Score score = Score.blank();
+
+        ScoreLayout both = ScoreLayout.of(score, WIDE);
+        ScoreLayout onlyTablature = ScoreLayout.of(score, WIDE, VisibleTracks.all(),
+                VisibleNotations.both().withStandardNotation(false));
+
+        assertTrue(onlyTablature.totalHeight() < both.totalHeight());
+        assertEquals(both.staffTop(0, 0), onlyTablature.tabTop(0, 0),
+                "la tablatura sube al lugar donde arrancaba el pentagrama");
+    }
+
+    @Test
+    void hidingTheTablatureLeavesTheStaffWhereItWas() {
+        Score score = Score.blank();
+
+        ScoreLayout both = ScoreLayout.of(score, WIDE);
+        ScoreLayout onlyStaff = ScoreLayout.of(score, WIDE, VisibleTracks.all(),
+                VisibleNotations.both().withTablature(false));
+
+        assertEquals(both.staffTop(0, 0), onlyStaff.staffTop(0, 0));
+        assertEquals(both.staffBottom(0, 0), onlyStaff.staffBottom(0, 0));
+        assertTrue(onlyStaff.totalHeight() < both.totalHeight());
+        assertEquals(onlyStaff.tabTop(0, 0), onlyStaff.tabBottom(0, 0),
+                "sin tablatura, la franja de la tablatura no mide nada");
+    }
+
+    @Test
+    void theLayoutAnswersWhichNotationsEachTrackDraws() {
+        ScoreLayout onlyTablature = ScoreLayout.of(Score.blank(), WIDE, VisibleTracks.all(),
+                VisibleNotations.both().withStandardNotation(false));
+
+        assertFalse(onlyTablature.showsStandardNotation(0));
+        assertTrue(onlyTablature.showsTablature(0));
+    }
+
     private int firstMeasureOfSystem(ScoreLayout layout, int system, int measureCount) {
         for (int measure = 0; measure < measureCount; measure++) {
             if (layout.systemOf(measure) == system) {

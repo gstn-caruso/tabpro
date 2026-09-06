@@ -52,6 +52,7 @@ public final class ScoreLayout {
 
     private final Score score;
     private final VisibleTracks visibleTracks;
+    private final VisibleNotations visibleNotations;
     private final int[] columnWidth;
     private final int[] headWidth;
     private final int[] columnX;
@@ -66,6 +67,7 @@ public final class ScoreLayout {
     private ScoreLayout(
             Score score,
             VisibleTracks visibleTracks,
+            VisibleNotations visibleNotations,
             int[] columnWidth,
             int[] headWidth,
             int[] columnX,
@@ -78,6 +80,7 @@ public final class ScoreLayout {
             List<List<List<Rectangle>>> beatBounds) {
         this.score = score;
         this.visibleTracks = visibleTracks;
+        this.visibleNotations = visibleNotations;
         this.columnWidth = columnWidth;
         this.headWidth = headWidth;
         this.columnX = columnX;
@@ -95,6 +98,11 @@ public final class ScoreLayout {
     }
 
     public static ScoreLayout of(Score score, int availableWidth, VisibleTracks visibleTracks) {
+        return of(score, availableWidth, visibleTracks, VisibleNotations.both());
+    }
+
+    public static ScoreLayout of(
+            Score score, int availableWidth, VisibleTracks visibleTracks, VisibleNotations visibleNotations) {
         int measureCount = score.measureCount();
         int[] columnWidth = columnWidths(score, measureCount);
         int usableWidth = Math.max(MIN_MEASURE_WIDTH, availableWidth - LEFT_MARGIN - RIGHT_MARGIN);
@@ -127,7 +135,7 @@ public final class ScoreLayout {
         for (int track = 0; track < score.trackCount(); track++) {
             blockTop[track] = stacked;
             if (visibleTracks.shows(track)) {
-                stacked += blockHeight(score.track(track)) + TRACK_GAP;
+                stacked += blockHeight(score.track(track), visibleNotations) + TRACK_GAP;
             }
         }
         int blockHeightTotal = Math.max(0, stacked - TRACK_GAP);
@@ -135,6 +143,7 @@ public final class ScoreLayout {
         return new ScoreLayout(
                 score,
                 visibleTracks,
+                visibleNotations,
                 columnWidth,
                 headWidth,
                 columnX,
@@ -189,9 +198,15 @@ public final class ScoreLayout {
         return duration.dotted() ? base + 6 : base;
     }
 
-    private static int blockHeight(Track track) {
-        return TRACK_LABEL_HEIGHT + STAFF_HEADROOM + STAFF_HEIGHT + STAFF_TO_TAB_GAP
-                + tabHeightOf(track) + TAB_BOTTOM_PADDING;
+    /**
+     * El alto de una pista, con la franja de la notacion que no se dibuja encogida a cero. Sin
+     * pentagrama la tablatura sube a su lugar; sin tablatura el aire que la separaba queda
+     * abajo del pentagrama, que es donde van la digitacion y la letra.
+     */
+    private static int blockHeight(Track track, VisibleNotations notations) {
+        int staff = notations.showsStandardNotationOf(track) ? STAFF_HEIGHT + STAFF_TO_TAB_GAP : 0;
+        int tab = notations.showsTablatureOf(track) ? tabHeightOf(track) + TAB_BOTTOM_PADDING : 0;
+        return TRACK_LABEL_HEIGHT + STAFF_HEADROOM + staff + tab;
     }
 
     private static int tabHeightOf(Track track) {
@@ -292,7 +307,15 @@ public final class ScoreLayout {
     }
 
     public int trackHeight(int track) {
-        return shows(track) ? blockHeight(score.track(track)) : 0;
+        return shows(track) ? blockHeight(score.track(track), visibleNotations) : 0;
+    }
+
+    public boolean showsStandardNotation(int track) {
+        return visibleNotations.showsStandardNotationOf(score.track(track));
+    }
+
+    public boolean showsTablature(int track) {
+        return visibleNotations.showsTablatureOf(score.track(track));
     }
 
     /** Si esta pista se dibuja: la vista multipista y la mesa de mezcla deciden cuales se ven. */
@@ -318,7 +341,7 @@ public final class ScoreLayout {
     }
 
     public int staffBottom(int track, int measure) {
-        return staffTop(track, measure) + STAFF_HEIGHT;
+        return staffTop(track, measure) + (showsStandardNotation(track) ? STAFF_HEIGHT : 0);
     }
 
     public int staffLineY(int track, int measure, int line) {
@@ -331,11 +354,11 @@ public final class ScoreLayout {
     }
 
     public int tabTop(int track, int measure) {
-        return staffBottom(track, measure) + STAFF_TO_TAB_GAP;
+        return staffBottom(track, measure) + (showsStandardNotation(track) ? STAFF_TO_TAB_GAP : 0);
     }
 
     public int tabBottom(int track, int measure) {
-        return tabTop(track, measure) + tabHeightOf(score.track(track));
+        return tabTop(track, measure) + (showsTablature(track) ? tabHeightOf(score.track(track)) : 0);
     }
 
     public int stringY(int track, int measure, int string) {
