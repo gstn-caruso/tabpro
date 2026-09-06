@@ -54,6 +54,7 @@ import com.gstncaruso.tabpro.ui.sound.StringAssignment;
 import com.gstncaruso.tabpro.ui.sound.RelativeTempoDialog;
 import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
+import com.gstncaruso.tabpro.ui.score.HorizontalMultitrack;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.percussion.PercussionAssistant;
 import com.gstncaruso.tabpro.ui.print.ImageExportException;
@@ -796,6 +797,7 @@ public final class MainFrame extends JFrame {
 
         private void applyViewMode(ViewMode mode) {
             canvas.setViewMode(mode);
+            HorizontalMultitrack.applyTo(visibleTracks, mode, preferences.forceMultitrackInHorizontalMode());
             backToTheScore();
         }
 
