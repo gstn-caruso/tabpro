@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationHandler;
@@ -113,6 +114,21 @@ class CommandsTest {
 
         commands.get("bar.resetLineBreak").actionPerformed(event());
         assertEquals(LineBreak.AUTOMATIC, editor.currentMeasure().attributes().lineBreak());
+
+        commands.get("bar.octave8va").actionPerformed(event());
+        assertEquals(OctaveMark.OTTAVA_ALTA, editor.currentMeasure().attributes().octaveMark());
+
+        commands.get("bar.octave8vb").actionPerformed(event());
+        assertEquals(OctaveMark.OTTAVA_BASSA, editor.currentMeasure().attributes().octaveMark());
+
+        commands.get("bar.octave15ma").actionPerformed(event());
+        assertEquals(OctaveMark.QUINDICESIMA_ALTA, editor.currentMeasure().attributes().octaveMark());
+
+        commands.get("bar.octave15mb").actionPerformed(event());
+        assertEquals(OctaveMark.QUINDICESIMA_BASSA, editor.currentMeasure().attributes().octaveMark());
+
+        commands.get("bar.octaveNone").actionPerformed(event());
+        assertEquals(OctaveMark.NONE, editor.currentMeasure().attributes().octaveMark());
     }
 
     /**

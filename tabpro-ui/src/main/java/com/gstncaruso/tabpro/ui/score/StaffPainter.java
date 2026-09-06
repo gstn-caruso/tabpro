@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Voice;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.notation.AccidentalGlyph;
 import com.gstncaruso.tabpro.core.notation.BeamGroup;
@@ -56,6 +57,11 @@ final class StaffPainter {
     private static final BasicStroke THIN = new BasicStroke(1f);
     private static final BasicStroke STEM = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private static final BasicStroke CLEF = new BasicStroke(1.7f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private static final BasicStroke DOTTED = new BasicStroke(
+            1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] {1.5f, 2.5f}, 0f);
+    private static final Font OCTAVE_MARK_FONT = new Font(Font.SERIF, Font.ITALIC, (int) Math.round(SPACE * 1.7));
+    /** El aire entre el pentagrama y la marca de octava (rotulo + linea de puntos). */
+    private static final double OCTAVE_MARK_GAP = SPACE * 0.8;
 
     private StaffPainter() {
     }
@@ -138,15 +144,19 @@ final class StaffPainter {
         // la que arma ScoreLayout: funciona sin fisuras cuando comparten subdivision ritmica, que
         // es el caso comun de una melodia con su linea de bajo debajo (limitacion documentada).
         int laneCount = Math.max(1, measure.lead().beatCount());
+        OctaveMark octaveMark = measure.attributes().octaveMark();
+        int octaveShift = octaveMark.staffStepShift();
 
         paintVoice(g, layout, track, clef, trackIndex, measureIndex, VoicePart.LEAD, measure.lead(),
                 accidentals, twoVoices, dims(highlightedVoice, VoicePart.LEAD) && twoVoices,
-                laneCount, measure.timeSignature());
+                laneCount, measure.timeSignature(), octaveShift);
         if (twoVoices) {
             paintVoice(g, layout, track, clef, trackIndex, measureIndex, VoicePart.BASS, measure.voice(VoicePart.BASS),
-                    accidentals, true, dims(highlightedVoice, VoicePart.BASS), laneCount, measure.timeSignature());
+                    accidentals, true, dims(highlightedVoice, VoicePart.BASS), laneCount, measure.timeSignature(),
+                    octaveShift);
         }
         paintTupletBrackets(g, layout, track, clef, trackIndex, measureIndex, measure);
+        paintOctaveMark(g, layout, octaveMark, trackIndex, measureIndex);
     }
 
     /** Se atenua toda voz que no sea la destacada; si no hay destacada, no se atenua ninguna. */
@@ -157,7 +167,7 @@ final class StaffPainter {
     private static void paintVoice(
             Graphics2D g, ScoreLayout layout, Track track, Clef clef, int trackIndex, int measureIndex,
             VoicePart part, Voice voice, KeySignatureAccidentals accidentals, boolean twoVoices, boolean dimmed,
-            int laneCount, TimeSignature timeSignature) {
+            int laneCount, TimeSignature timeSignature, int octaveShift) {
         Color ink = dimmed ? ScoreColors.VOICE_INACTIVE : ScoreColors.INK;
         List<Beat> beats = voice.beats();
 
@@ -167,16 +177,19 @@ final class StaffPainter {
             if (beat.isRest()) {
                 paintRest(g, layout, trackIndex, measureIndex, lane, beat, ink);
             } else {
-                paintNoteheads(g, layout, track, clef, trackIndex, measureIndex, lane, beat, accidentals, ink, dimmed);
+                paintNoteheads(g, layout, track, clef, trackIndex, measureIndex, lane, beat, accidentals, ink, dimmed,
+                        octaveShift);
             }
         }
-        paintTies(g, layout, track, clef, trackIndex, measureIndex, beats, laneCount, ink);
+        paintTies(g, layout, track, clef, trackIndex, measureIndex, beats, laneCount, ink, octaveShift);
 
         List<BeamGroup> groups = groupsFor(timeSignature, beats);
         for (BeamGroup group : groups) {
-            paintBeamGroup(g, layout, track, clef, trackIndex, measureIndex, beats, group, laneCount, part, twoVoices, ink);
+            paintBeamGroup(g, layout, track, clef, trackIndex, measureIndex, beats, group, laneCount, part, twoVoices,
+                    ink, octaveShift);
         }
-        paintUnbeamedStems(g, layout, track, clef, trackIndex, measureIndex, beats, groups, laneCount, part, twoVoices, ink);
+        paintUnbeamedStems(g, layout, track, clef, trackIndex, measureIndex, beats, groups, laneCount, part, twoVoices,
+                ink, octaveShift);
     }
 
     /** Reusa el agrupamiento por barra de {@link Beaming} armando un compas de una sola voz con
@@ -196,7 +209,8 @@ final class StaffPainter {
             Beat beat,
             KeySignatureAccidentals accidentals,
             Color ink,
-            boolean dimmed) {
+            boolean dimmed,
+            int octaveShift) {
         double centerX = noteCenterX(layout, trackIndex, measureIndex, beatIndex);
         boolean hollow = beat.duration().value() == NoteValue.WHOLE
                 || beat.duration().value() == NoteValue.HALF;
@@ -206,7 +220,7 @@ final class StaffPainter {
         boolean colorsByDynamic = layout.showsDynamicNotes() && !dimmed;
 
         for (Note note : beat.notes()) {
-            StaffPosition position = positionOf(track, clef, note);
+            StaffPosition position = positionOf(track, clef, note, octaveShift);
             double y = layout.stepY(trackIndex, measureIndex, position.step());
             paintLedgerLines(g, layout, trackIndex, measureIndex, position, centerX, ink);
             AccidentalGlyph glyph = accidentals.glyphFor(position);
@@ -354,7 +368,7 @@ final class StaffPainter {
     /** Los arcos de ligadura de prolongacion, entre golpes consecutivos de la misma cuerda. */
     private static void paintTies(
             Graphics2D g, ScoreLayout layout, Track track, Clef clef, int trackIndex, int measureIndex,
-            List<Beat> beats, int laneCount, Color ink) {
+            List<Beat> beats, int laneCount, Color ink, int octaveShift) {
         for (int i = 0; i + 1 < beats.size(); i++) {
             Beat from = beats.get(i);
             Beat to = beats.get(i + 1);
@@ -371,7 +385,7 @@ final class StaffPainter {
                 if (laneFrom == laneTo) {
                     continue;
                 }
-                StaffPosition position = positionOf(track, clef, origin.get());
+                StaffPosition position = positionOf(track, clef, origin.get(), octaveShift);
                 double y = layout.stepY(trackIndex, measureIndex, position.step())
                         - (position.step() < MIDDLE_LINE_STEP ? -SPACE * 0.9 : SPACE * 0.9);
                 double fromX = noteCenterX(layout, trackIndex, measureIndex, laneFrom) + NOTE_WIDTH * 0.4;
@@ -392,8 +406,9 @@ final class StaffPainter {
     /** Los corchetes de los grupos irregulares, con su numero en el medio. */
     private static void paintTupletBrackets(
             Graphics2D g, ScoreLayout layout, Track track, Clef clef, int trackIndex, int measureIndex, Measure measure) {
+        int octaveShift = measure.attributes().octaveMark().staffStepShift();
         for (TupletGroup group : Tuplets.groupsOf(measure)) {
-            int highestStep = highestStepIn(track, clef, measure, group);
+            int highestStep = highestStepIn(track, clef, measure, group, octaveShift);
             double y = layout.stepY(trackIndex, measureIndex, highestStep) - SPACE * 2.0;
             double xStart = noteCenterX(layout, trackIndex, measureIndex, group.firstBeat());
             double xEnd = noteCenterX(layout, trackIndex, measureIndex, group.lastBeat());
@@ -413,12 +428,12 @@ final class StaffPainter {
         }
     }
 
-    private static int highestStepIn(Track track, Clef clef, Measure measure, TupletGroup group) {
+    private static int highestStepIn(Track track, Clef clef, Measure measure, TupletGroup group, int octaveShift) {
         int highest = MIDDLE_LINE_STEP;
         boolean any = false;
         for (int beatIndex = group.firstBeat(); beatIndex <= group.lastBeat(); beatIndex++) {
             for (Note note : measure.beat(beatIndex).notes()) {
-                int step = positionOf(track, clef, note).step();
+                int step = positionOf(track, clef, note, octaveShift).step();
                 if (!any || step > highest) {
                     highest = step;
                     any = true;
@@ -440,14 +455,15 @@ final class StaffPainter {
             int laneCount,
             VoicePart part,
             boolean twoVoices,
-            Color ink) {
+            Color ink,
+            int octaveShift) {
         for (int beatIndex = 0; beatIndex < beats.size(); beatIndex++) {
             Beat beat = beats.get(beatIndex);
             if (beat.isRest() || beat.duration().value() == NoteValue.WHOLE || inABeam(groups, beatIndex)) {
                 continue;
             }
             int lane = Math.min(beatIndex, laneCount - 1);
-            Stem stem = stemOf(layout, track, clef, trackIndex, measureIndex, lane, beat, part, twoVoices);
+            Stem stem = stemOf(layout, track, clef, trackIndex, measureIndex, lane, beat, part, twoVoices, octaveShift);
             g.setColor(ink);
             g.setStroke(STEM);
             g.draw(new Line2D.Double(stem.x(), stem.rootY(), stem.x(), stem.endY()));
@@ -490,15 +506,16 @@ final class StaffPainter {
             int laneCount,
             VoicePart part,
             boolean twoVoices,
-            Color ink) {
+            Color ink,
+            int octaveShift) {
         if (group.isSingle()) {
             return;
         }
         List<Stem> stems = new ArrayList<>();
-        boolean up = groupPointsUp(track, clef, beats, group, part, twoVoices);
+        boolean up = groupPointsUp(track, clef, beats, group, part, twoVoices, octaveShift);
         for (int beatIndex = group.firstBeat(); beatIndex <= group.lastBeat(); beatIndex++) {
             int lane = Math.min(beatIndex, laneCount - 1);
-            stems.add(stemOf(layout, track, clef, trackIndex, measureIndex, lane, beats.get(beatIndex), up));
+            stems.add(stemOf(layout, track, clef, trackIndex, measureIndex, lane, beats.get(beatIndex), up, octaveShift));
         }
 
         double beamY = up
@@ -558,12 +575,13 @@ final class StaffPainter {
     }
 
     private static boolean groupPointsUp(
-            Track track, Clef clef, List<Beat> beats, BeamGroup group, VoicePart part, boolean twoVoices) {
+            Track track, Clef clef, List<Beat> beats, BeamGroup group, VoicePart part, boolean twoVoices,
+            int octaveShift) {
         double total = 0;
         int count = 0;
         for (int beatIndex = group.firstBeat(); beatIndex <= group.lastBeat(); beatIndex++) {
             for (Note note : beats.get(beatIndex).notes()) {
-                total += positionOf(track, clef, note).step();
+                total += positionOf(track, clef, note, octaveShift).step();
                 count++;
             }
         }
@@ -580,13 +598,14 @@ final class StaffPainter {
             int beatIndex,
             Beat beat,
             VoicePart part,
-            boolean twoVoices) {
+            boolean twoVoices,
+            int octaveShift) {
         double average = beat.notes().stream()
-                .mapToInt(note -> positionOf(track, clef, note).step())
+                .mapToInt(note -> positionOf(track, clef, note, octaveShift).step())
                 .average()
                 .orElse(MIDDLE_LINE_STEP);
         boolean up = StemDirection.pointsUp(part, twoVoices, average, MIDDLE_LINE_STEP);
-        return stemOf(layout, track, clef, trackIndex, measureIndex, beatIndex, beat, up);
+        return stemOf(layout, track, clef, trackIndex, measureIndex, beatIndex, beat, up, octaveShift);
     }
 
     private static Stem stemOf(
@@ -597,18 +616,53 @@ final class StaffPainter {
             int measureIndex,
             int beatIndex,
             Beat beat,
-            boolean up) {
+            boolean up,
+            int octaveShift) {
         double centerX = noteCenterX(layout, trackIndex, measureIndex, beatIndex);
-        int highest = beat.notes().stream().mapToInt(note -> positionOf(track, clef, note).step()).max().orElse(4);
-        int lowest = beat.notes().stream().mapToInt(note -> positionOf(track, clef, note).step()).min().orElse(4);
+        int highest = beat.notes().stream().mapToInt(note -> positionOf(track, clef, note, octaveShift).step()).max().orElse(4);
+        int lowest = beat.notes().stream().mapToInt(note -> positionOf(track, clef, note, octaveShift).step()).min().orElse(4);
         double rootY = layout.stepY(trackIndex, measureIndex, up ? highest : lowest);
         double x = up ? centerX + NOTE_WIDTH / 2 - 0.8 : centerX - NOTE_WIDTH / 2 + 0.8;
         double span = STEM_LENGTH + Math.abs(highest - lowest) * HALF_SPACE;
         return new Stem(x, rootY, up ? rootY - span : rootY + span, up);
     }
 
-    private static StaffPosition positionOf(Track track, Clef clef, Note note) {
-        return StaffPosition.of(track.tuning().pitchOf(note), clef);
+    /**
+     * Donde se escribe una nota, con el corrimiento de {@code octaveShift} aplicado -8va/8vb/
+     * 15ma/15mb del manual, ver {@link OctaveMark}. Nunca toca {@code track.tuning().pitchOf},
+     * que es la altura real: la marca de octava es pura notacion.
+     */
+    private static StaffPosition positionOf(Track track, Clef clef, Note note, int octaveShift) {
+        return StaffPosition.of(track.tuning().pitchOf(note), clef).shiftedBySteps(octaveShift);
+    }
+
+    /**
+     * "8va"/"8vb"/"15ma"/"15mb" del manual: el rotulo y su linea de puntos hasta donde alcanza,
+     * arriba del pentagrama para lo agudo (8va/15ma, que se escribe mas abajo) y abajo para lo
+     * grave (8vb/15mb, que se escribe mas arriba). Puro dibujo: no cambia una sola nota.
+     */
+    private static void paintOctaveMark(
+            Graphics2D g, ScoreLayout layout, OctaveMark octaveMark, int trackIndex, int measureIndex) {
+        if (octaveMark == OctaveMark.NONE) {
+            return;
+        }
+        int left = layout.measureX(measureIndex);
+        int right = left + layout.measureWidth(measureIndex);
+
+        g.setColor(ScoreColors.INK);
+        g.setFont(OCTAVE_MARK_FONT);
+        FontMetrics metrics = g.getFontMetrics();
+        double baseline = octaveMark.aboveTheStaff()
+                ? layout.staffTop(trackIndex, measureIndex) - OCTAVE_MARK_GAP
+                : layout.staffBottom(trackIndex, measureIndex) + OCTAVE_MARK_GAP + metrics.getAscent();
+        g.drawString(octaveMark.label(), left, (float) baseline);
+
+        double lineY = baseline - metrics.getAscent() * 0.35;
+        double lineStart = left + metrics.stringWidth(octaveMark.label()) + SPACE * 0.4;
+        if (lineStart < right) {
+            g.setStroke(DOTTED);
+            g.draw(new Line2D.Double(lineStart, lineY, right, lineY));
+        }
     }
 
     private static double noteCenterX(ScoreLayout layout, int trackIndex, int measureIndex, int beatIndex) {

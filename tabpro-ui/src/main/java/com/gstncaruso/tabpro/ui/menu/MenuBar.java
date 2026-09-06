@@ -91,6 +91,9 @@ public final class MenuBar {
         JMenu lineBreaks = new JMenu("Salto de línea");
         add(lineBreaks, "bar.forceLineBreak", "bar.preventLineBreak", "bar.resetLineBreak");
         menu.add(lineBreaks);
+        JMenu octave = new JMenu("Octava");
+        add(octave, "bar.octave8va", "bar.octave8vb", "bar.octave15ma", "bar.octave15mb", "bar.octaveNone");
+        menu.add(octave);
         return menu;
     }
 
