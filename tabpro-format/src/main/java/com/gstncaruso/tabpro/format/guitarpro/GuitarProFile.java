@@ -80,7 +80,7 @@ public final class GuitarProFile {
             GuitarProByteReader reader, GuitarProVersion version, int trackCount) {
         List<GuitarProTrackHeader> headers = new ArrayList<>(trackCount);
         for (int index = 0; index < trackCount; index++) {
-            headers.add(trackReader.read(reader, version));
+            headers.add(trackReader.read(reader, version, index + 1));
         }
         return headers;
     }
