@@ -21,11 +21,18 @@ public final class MidiCapture implements AutoCloseable {
 
     private final MidiDevice device;
     private final CapturedNotes notes;
+    private final int sensitivityMillis;
     private Transmitter transmitter;
 
     public MidiCapture(MidiDevice.Info info, CapturedNotes notes) throws MidiUnavailableException {
+        this(info, notes, DEFAULT_SENSITIVITY_MILLIS);
+    }
+
+    /** La sensibilidad configurable desde Options > MIDI Setup, en milisegundos. */
+    public MidiCapture(MidiDevice.Info info, CapturedNotes notes, int sensitivityMillis) throws MidiUnavailableException {
         this.device = MidiSystem.getMidiDevice(info);
         this.notes = notes;
+        this.sensitivityMillis = sensitivityMillis;
     }
 
     /** Que hacer con lo que llega: una nota nueva, o una nota del mismo acorde. */
@@ -39,7 +46,7 @@ public final class MidiCapture implements AutoCloseable {
     public void start() throws MidiUnavailableException {
         device.open();
         transmitter = device.getTransmitter();
-        transmitter.setReceiver(new NoteReceiver(DEFAULT_SENSITIVITY_MILLIS));
+        transmitter.setReceiver(new NoteReceiver(sensitivityMillis));
     }
 
     @Override
@@ -53,11 +60,10 @@ public final class MidiCapture implements AutoCloseable {
     /** Junta en un acorde las notas que llegan casi juntas, y abre un beat nuevo con las demas. */
     private final class NoteReceiver implements Receiver {
 
-        private final int sensitivityMillis;
-        private long lastNoteAt;
+        private final ChordSensitivity sensitivity;
 
         private NoteReceiver(int sensitivityMillis) {
-            this.sensitivityMillis = sensitivityMillis;
+            this.sensitivity = new ChordSensitivity(sensitivityMillis);
         }
 
         @Override
@@ -68,11 +74,9 @@ public final class MidiCapture implements AutoCloseable {
             if (note.getData2() == 0) {
                 return;
             }
-            long now = System.currentTimeMillis();
-            IntConsumer destination = now - lastNoteAt <= sensitivityMillis
+            IntConsumer destination = sensitivity.sameChordAt(System.currentTimeMillis())
                     ? midiNumber -> notes.noteInTheSameChord(midiNumber, note.getChannel())
                     : midiNumber -> notes.noteInANewBeat(midiNumber, note.getChannel());
-            lastNoteAt = now;
             destination.accept(note.getData1());
         }
 
