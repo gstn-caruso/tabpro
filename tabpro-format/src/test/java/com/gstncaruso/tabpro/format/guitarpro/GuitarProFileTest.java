@@ -173,8 +173,8 @@ class GuitarProFileTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"gp4", "gp5"})
-    void readsTheChordDiagramWithTheStringsOfItsTrack() {
-        Measure last = readFeatures("gp5").track(0).measure(3);
+    void readsTheChordDiagramWithTheStringsOfItsTrack(String extension) {
+        Measure last = readFeatures(extension).track(0).measure(3);
 
         var chord = last.beat(0).effects().chord().orElseThrow();
         assertEquals("Cadd9", chord.name());
