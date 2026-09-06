@@ -1,10 +1,13 @@
 package com.gstncaruso.tabpro.midi;
 
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.MetronomeClick;
 import com.gstncaruso.tabpro.core.playback.PitchTrajectory;
 import com.gstncaruso.tabpro.core.playback.ScheduledBeat;
 import com.gstncaruso.tabpro.core.playback.ScheduledNote;
+import com.gstncaruso.tabpro.core.playback.ScheduledParameter;
+import com.gstncaruso.tabpro.core.playback.TempoChange;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.core.playback.TrackTimeline;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +27,10 @@ public final class MidiSequences {
     private static final int VOLUME_CONTROLLER = 7;
     private static final int PAN_CONTROLLER = 10;
     private static final int EXPRESSION_CONTROLLER = 11;
+    private static final int REVERB_CONTROLLER = 91;
+    private static final int TREMOLO_CONTROLLER = 92;
+    private static final int CHORUS_CONTROLLER = 93;
+    private static final int PHASER_CONTROLLER = 95;
     private static final int RPN_MSB_CONTROLLER = 101;
     private static final int RPN_LSB_CONTROLLER = 100;
     private static final int DATA_ENTRY_MSB_CONTROLLER = 6;
@@ -49,7 +56,10 @@ public final class MidiSequences {
     public static Sequence fromTimeline(Timeline timeline) {
         try {
             Sequence sequence = new Sequence(Sequence.PPQ, timeline.ticksPerQuarter());
-            sequence.createTrack().add(tempoEvent(timeline.tempoBpm()));
+            Track conductor = sequence.createTrack();
+            for (TempoChange stretch : timeline.tempo().changes()) {
+                conductor.add(tempoEvent(stretch));
+            }
 
             int nonPercussionOrdinal = 0;
             for (int index = 0; index < timeline.tracks().size(); index++) {
@@ -116,6 +126,32 @@ public final class MidiSequences {
         for (ScheduledBeat beat : trackTimeline.beats()) {
             track.add(markerEvent(trackIndex, beat));
         }
+        for (ScheduledParameter parameter : trackTimeline.parameters()) {
+            track.add(parameterEvent(channel, parameter));
+        }
+    }
+
+    /** Lo que deja un cambio de parametro: el instrumento viaja como program change y el resto como controlador. */
+    private static MidiEvent parameterEvent(int channel, ScheduledParameter parameter)
+            throws InvalidMidiDataException {
+        if (parameter.parameter() == SoundParameter.PROGRAM) {
+            ShortMessage message = new ShortMessage(ShortMessage.PROGRAM_CHANGE, channel, parameter.value(), 0);
+            return new MidiEvent(message, parameter.tick());
+        }
+        return controlChangeEvent(channel, controllerOf(parameter.parameter()), parameter.value(), parameter.tick());
+    }
+
+    private static int controllerOf(SoundParameter parameter) {
+        return switch (parameter) {
+            case VOLUME -> VOLUME_CONTROLLER;
+            case PAN -> PAN_CONTROLLER;
+            case REVERB -> REVERB_CONTROLLER;
+            case TREMOLO -> TREMOLO_CONTROLLER;
+            case CHORUS -> CHORUS_CONTROLLER;
+            case PHASER -> PHASER_CONTROLLER;
+            case PROGRAM, TEMPO -> throw new IllegalArgumentException(
+                    parameter.label() + " no viaja como controlador MIDI");
+        };
     }
 
     private static void writeNote(Track track, int channel, ScheduledNote note) throws InvalidMidiDataException {
@@ -160,14 +196,14 @@ public final class MidiSequences {
         return new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, controller, value), tick);
     }
 
-    private static MidiEvent tempoEvent(int tempoBpm) throws InvalidMidiDataException {
-        int microsecondsPerQuarter = 60_000_000 / tempoBpm;
+    private static MidiEvent tempoEvent(TempoChange stretch) throws InvalidMidiDataException {
+        int microsecondsPerQuarter = 60_000_000 / stretch.bpm();
         byte[] data = {
             (byte) (microsecondsPerQuarter >> 16),
             (byte) (microsecondsPerQuarter >> 8),
             (byte) microsecondsPerQuarter
         };
-        return new MidiEvent(new MetaMessage(TEMPO_META_TYPE, data, data.length), 0);
+        return new MidiEvent(new MetaMessage(TEMPO_META_TYPE, data, data.length), stretch.tick());
     }
 
     private static MidiEvent programChangeEvent(int channel, int program) throws InvalidMidiDataException {

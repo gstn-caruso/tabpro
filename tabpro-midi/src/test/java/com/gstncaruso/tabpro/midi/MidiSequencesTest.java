@@ -5,12 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Pitch;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.Velocity;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.MetronomeClick;
 import com.gstncaruso.tabpro.core.playback.PitchTrajectory;
 import com.gstncaruso.tabpro.core.playback.ScheduledBeat;
 import com.gstncaruso.tabpro.core.playback.ScheduledNote;
+import com.gstncaruso.tabpro.core.playback.ScheduledParameter;
+import com.gstncaruso.tabpro.core.playback.TempoMap;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.core.playback.TrackTimeline;
 import java.util.List;
@@ -44,9 +47,7 @@ class MidiSequencesTest {
         Track tempoTrack = sequence.getTracks()[0];
         MetaMessage tempoEvent = (MetaMessage) firstEventOfType(tempoTrack, 0x51).getMessage();
         assertEquals(0, firstEventOfType(tempoTrack, 0x51).getTick());
-        byte[] data = tempoEvent.getData();
-        int microsecondsPerQuarter = ((data[0] & 0xFF) << 16) | ((data[1] & 0xFF) << 8) | (data[2] & 0xFF);
-        assertEquals(60_000_000 / 120, microsecondsPerQuarter);
+        assertEquals(60_000_000 / 120, microsecondsPerQuarterOf(tempoEvent));
     }
 
     @Test
@@ -220,6 +221,85 @@ class MidiSequencesTest {
                 .filter(event -> event.getMessage() instanceof ShortMessage sm && sm.getCommand() == command)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("no se encontro un mensaje de comando " + command));
+    }
+
+    @Test
+    void everySoundParameterTravelsOnItsOwnController() {
+        List<ScheduledParameter> parameters = List.of(
+                new ScheduledParameter(480, SoundParameter.VOLUME, 40),
+                new ScheduledParameter(480, SoundParameter.PAN, 20),
+                new ScheduledParameter(480, SoundParameter.CHORUS, 30),
+                new ScheduledParameter(480, SoundParameter.REVERB, 50),
+                new ScheduledParameter(480, SoundParameter.PHASER, 60),
+                new ScheduledParameter(480, SoundParameter.TREMOLO, 70));
+        Timeline timeline = new Timeline(120, 960,
+                List.of(new TrackTimeline(25, 100, 64, false, List.of(), List.of(), parameters)));
+
+        Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
+
+        assertEquals(40, controllerValueAt(track, 7, 480));
+        assertEquals(20, controllerValueAt(track, 10, 480));
+        assertEquals(30, controllerValueAt(track, 93, 480));
+        assertEquals(50, controllerValueAt(track, 91, 480));
+        assertEquals(60, controllerValueAt(track, 95, 480));
+        assertEquals(70, controllerValueAt(track, 92, 480));
+    }
+
+    @Test
+    void changingTheInstrumentMidWayIsAProgramChangeAtThatTick() {
+        Timeline timeline = new Timeline(120, 960, List.of(new TrackTimeline(25, 100, 64, false,
+                List.of(), List.of(), List.of(new ScheduledParameter(960, SoundParameter.PROGRAM, 30)))));
+
+        Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
+
+        MidiEvent programChange = lastEventOfCommand(track, ShortMessage.PROGRAM_CHANGE);
+        assertEquals(960, programChange.getTick());
+        assertEquals(30, ((ShortMessage) programChange.getMessage()).getData1());
+    }
+
+    @Test
+    void everyTempoStretchIsItsOwnMetaEvent() {
+        Timeline timeline = new Timeline(TempoMap.steady(120).changingTo(1920, 60), 960, List.of());
+
+        Track conductor = MidiSequences.fromTimeline(timeline).getTracks()[0];
+
+        List<MidiEvent> tempos = metaEventsOfType(conductor, 0x51);
+        assertEquals(2, tempos.size());
+        assertEquals(1920, tempos.get(1).getTick());
+        assertEquals(60_000_000 / 60, microsecondsPerQuarterOf((MetaMessage) tempos.get(1).getMessage()));
+    }
+
+    private int controllerValueAt(Track track, int controller, long tick) {
+        return java.util.stream.IntStream.range(0, track.size())
+                .mapToObj(track::get)
+                .filter(event -> event.getTick() == tick)
+                .filter(event -> event.getMessage() instanceof ShortMessage sm
+                        && sm.getCommand() == ShortMessage.CONTROL_CHANGE
+                        && sm.getData1() == controller)
+                .map(event -> ((ShortMessage) event.getMessage()).getData2())
+                .findFirst()
+                .orElseThrow(() -> new AssertionError(
+                        "no se encontro el controlador " + controller + " en el tick " + tick));
+    }
+
+    private MidiEvent lastEventOfCommand(Track track, int command) {
+        return java.util.stream.IntStream.range(0, track.size())
+                .mapToObj(track::get)
+                .filter(event -> event.getMessage() instanceof ShortMessage sm && sm.getCommand() == command)
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new AssertionError("no se encontro un mensaje de comando " + command));
+    }
+
+    private List<MidiEvent> metaEventsOfType(Track track, int type) {
+        return java.util.stream.IntStream.range(0, track.size())
+                .mapToObj(track::get)
+                .filter(event -> event.getMessage() instanceof MetaMessage meta && meta.getType() == type)
+                .toList();
+    }
+
+    private int microsecondsPerQuarterOf(MetaMessage message) {
+        byte[] data = message.getData();
+        return ((data[0] & 0xFF) << 16) | ((data[1] & 0xFF) << 8) | (data[2] & 0xFF);
     }
 
     private int controllerValue(Track track, int controller) {
