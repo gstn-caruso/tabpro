@@ -886,7 +886,7 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void chordDiagram() {
-            ChordDialog.show(MainFrame.this, editor, player);
+            ChordDialog.show(MainFrame.this, editor, player, editingPreferences.showBassInChordName());
             backToTheScore();
         }
 

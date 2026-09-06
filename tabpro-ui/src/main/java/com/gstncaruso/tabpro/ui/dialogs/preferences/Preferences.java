@@ -7,9 +7,10 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
  * donde vivan de forma permanente: esta ventana solo construye y entrega el
  * valor para que quien la abra decida donde guardarlo.
  */
-public record Preferences(NoteValue defaultNoteValue, boolean countIn, boolean autoScrollDuringPlayback) {
+public record Preferences(
+        NoteValue defaultNoteValue, boolean countIn, boolean autoScrollDuringPlayback, boolean showBassInChordName) {
 
     public static Preferences defaults() {
-        return new Preferences(NoteValue.QUARTER, false, true);
+        return new Preferences(NoteValue.QUARTER, false, true, true);
     }
 }
