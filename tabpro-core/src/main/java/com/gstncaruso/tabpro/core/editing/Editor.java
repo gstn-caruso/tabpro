@@ -578,7 +578,7 @@ public final class Editor {
         if (string < 1 || string > track.stringCount()) {
             throw new IllegalArgumentException("string fuera de rango: " + string);
         }
-        moveCursor(new Cursor(cursor.track(), measure, cursor.voice(), beat, string));
+        moveCursor(new Cursor(cursor.track(), measure, cursor.voice(), beat, string, cursor.notation()));
     }
 
     public void moveDown() {
@@ -1030,7 +1030,7 @@ public final class Editor {
         VoicePart voice = track.measure(measure).voice(cursor.voice()).isUnused() ? VoicePart.LEAD : cursor.voice();
         int beat = Math.min(cursor.beat(), track.measure(measure).voice(voice).beatCount() - 1);
         int string = Math.min(cursor.string(), track.stringCount());
-        return new Cursor(trackIndex, measure, voice, beat, string);
+        return new Cursor(trackIndex, measure, voice, beat, string, cursor.notation());
     }
 
     private Score withCurrentMeasure(Measure measure) {
