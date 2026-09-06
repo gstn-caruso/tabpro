@@ -1,36 +1,52 @@
 # tabpro
 
-Clon libre de Guitar Pro 5: editor de tablaturas para guitarra, minimal, en Java 25 con Swing.
+Clon libre de Guitar Pro 5: editor de tablaturas y partituras para guitarra, en
+Java 25 con Swing.
 
 ## Estado
 
-**v0.5.0 — Escribir tocando.** Editor de tablatura con edición por teclado al estilo
-Guitar Pro 5, guardado y apertura en formato propio `.tabpro`, y reproducción MIDI
-con cursor que sigue la música.
+**v0.6.0 — El clon.** tabpro hace lo que describe el manual de Guitar Pro 5, con
+la misma forma de pantalla pero con una estética moderna y plana en vez de la de
+Windows XP.
 
-La partitura se ve como en Guitar Pro: cada pista con su **pentagrama** arriba y su
-tablatura abajo, todas apiladas y alineadas compás a compás, con clave, figuras,
-plicas, barras de unión, silencios, puntillos y alteraciones.
+La partitura se ve como un cancionero publicado: en **modo página** hay una hoja
+con márgenes, encabezado con título, artista, álbum y créditos, y pie con el
+copyright. También están el modo pergamino y las dos pantallas, con zoom del 30%
+al 200%.
 
-Arriba, el **diapasón** y el **teclado** marcan las notas del beat en el que estás
-parado y, mientras suena, las del beat que está sonando. El diapasón se adapta a la
-afinación de la pista, así que un bajo muestra cuatro cuerdas.
+Cada pista lleva su **pentagrama** arriba y su **tablatura** abajo, con clave,
+armadura, figuras, plicas, barras de unión, silencios, puntillos, alteraciones,
+ligaduras, grupos irregulares y **dos voces**. Sobre eso van todos los símbolos
+del capítulo *Add Symbols*: palm mute, let ring, tapping, slap y pop, armónicos,
+vibrato y vibrato amplio, trino, trémolo de púa, rasgueos, púa, notas fantasma y
+muertas, acentos, staccato, ligados, slides, bends con su curva, notas de adorno,
+digitación de las dos manos, texto libre y diagramas de acordes. Y la estructura
+del compás: repeticiones con su conteo, finales alternativos, doble barra,
+direcciones musicales (Coda, Segno, Fine y los catorce saltos) y marcadores.
 
-Los dos se tocan: **un clic en un traste o en una tecla escribe esa nota** en el beat
-del cursor y la hace sonar. En el diapasón el clic elige la cuerda, y el cursor se muda
-ahí; las notas se van sumando, así que se arma un acorde pisando cuerda por cuerda. En
-el teclado la nota se escribe en la cuerda donde está el cursor, y si esa cuerda no
-llega a esa altura el clic no hace nada. Mientras la partitura suena las dos vistas
-muestran lo que está sonando, no lo que se edita, así que ahí el clic no escribe.
+Arriba, el **diapasón** y el **teclado** marcan las notas del beat y escriben al
+clic, con los modos de visualización del manual, nombres de notas, tipos de
+diapasón, zurdo o diestro y la nota que está bajo el mouse. Abajo, la **mesa de
+mezcla** al estilo de Guitar Pro (puerto, canal, instrumento General MIDI,
+volumen, paneo, chorus, reverb, phaser, trémolo, silenciar y solo) y la **vista
+global** con la zona de marcadores y un cuadradito por compás.
 
-Abajo, el **panel de pistas** las lista todas con su instrumento General MIDI (con un
-ícono por familia), volumen, paneo, silenciar y solo, y al costado una grilla con un
-cuadradito por compás: pintado con el color de esa pista si toca algo ahí, apagado si
-la pista está silenciada, y con la columna del compás que suena recuadrada en rojo. Un clic en una fila o en un cuadradito lleva el cursor a
-esa pista y a ese compás.
+Suena en MIDI respetando el orden real de los compases —repeticiones, finales
+alternativos y saltos— y los efectos: bends y palanca con pitch bend, slides,
+ligados, trinos, trémolos, armónicos, rasgueos demorados, notas de adorno, fade
+in y swing. Con metrónomo, cuenta regresiva, loop con entrenador de velocidad,
+tempo relativo de x0.25 a x2 y modo paso a paso.
 
-Fuera de alcance por ahora: efectos (bends, slides, ligados), dos voces por compás,
-tresillos e importación o exportación de archivos `.gp5`.
+Trae además las dos herramientas del guitarrista: la **ventana de acordes**, que
+genera los diagramas para cualquier afinación, los nombra y los digita, y la
+**ventana de escalas**, con su biblioteca y el buscador de la escala que usa un
+rango de compases. Más el afinador, el asistente de percusión y los seis
+asistentes del menú Herramientas.
+
+**Lo que todavía no está:** importar y exportar MusicXML, exportar a PDF, y los
+cambios de parámetros en medio de la partitura (la mesa de mezcla con F10). El
+lector de archivos de Guitar Pro está hecho y probado contra archivos armados
+byte a byte, pero falta contrastarlo con archivos reales.
 
 ## Instalación
 
@@ -38,108 +54,72 @@ tresillos e importación o exportación de archivos `.gp5`.
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.5.0_all.deb
+sudo apt install ./tabpro_0.6.0_all.deb
 tabpro
 ```
 
-Queda también en el menú de aplicaciones. Necesita una JRE 25 con entorno gráfico
-(`openjdk-25-jre`); la variante *headless* no alcanza.
+Queda en el menú de aplicaciones y se asocia a los archivos `.tabpro` y a los de
+Guitar Pro. Necesita una JRE 25 con entorno gráfico (`openjdk-25-jre`); la
+variante *headless* no alcanza.
 
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.5.0.jar
+java -jar tabpro-app-0.6.0.jar [archivo]
 ```
 
 ## Uso
 
-El cursor marca una celda (compás, beat, cuerda). Se escribe desde el teclado de la
-computadora, o clickeando el diapasón y el teclado de arriba:
+El cursor marca una celda (pista, compás, voz, beat, cuerda). Se escribe con el
+teclado de la computadora, clickeando el diapasón o el teclado de arriba, o
+tocando un instrumento MIDI conectado.
 
-| Tecla | Acción |
-|---|---|
-| `0`–`9` | Escribir el traste en la cuerda del cursor. Dos dígitos seguidos (menos de 700 ms) forman trastes del 10 al 24. |
-| `←` `→` | Beat anterior / siguiente. Al final de un compás incompleto agrega un silencio; al final de la partitura agrega un compás. |
-| `↑` `↓` | Cuerda anterior / siguiente. |
-| `Inicio` `Fin` | Primer / último beat del compás. |
-| `+` `-` | Alargar / acortar la figura del beat (redonda … semifusa). |
-| `.` | Puntillo. |
-| `R` | Convertir el beat en silencio. |
-| `Retroceso` | Borrar la nota bajo el cursor. |
-| `Insert` `Supr` | Insertar un silencio antes del cursor / borrar el beat. |
-| `Ctrl+Insert` `Ctrl+Supr` | Insertar un compás vacío antes del actual / borrar el compás. |
-| `Ctrl+Z` `Ctrl+Y` | Deshacer / rehacer. |
-| `Espacio` | Reproducir / detener. El tempo se cambia desde la barra de herramientas. |
-| `Ctrl+N` `Ctrl+O` `Ctrl+S` | Nueva partitura / abrir / guardar. |
-| `Ctrl+Shift+G` `Ctrl+Shift+B` | Agregar una pista de guitarra / de bajo. |
-| `Ctrl+1` `Ctrl+2` | Mostrar u ocultar el diapasón / el teclado. |
+Los atajos son los del manual: los dígitos escriben el traste, las flechas mueven
+el cursor, `+` y `-` cambian la figura, `R` pone un silencio, `L` liga, `/` hace
+un tresillo, `H` un ligado, `S` un slide, `B` un bend, `V` vibrato, `P` palm
+mute, `I` let ring, `X` nota muerta, `O` nota fantasma, `G` nota de adorno, `T`
+texto, `A` acorde, `F` fade in, `Espacio` reproduce. `F5` abre la información de
+la partitura, `F6` las propiedades de la pista, `F7` el instrumento, `F8` la
+configuración de página, `F9` el loop, `F12` las preferencias.
 
-Un clic sobre cualquier pista mueve el cursor a esa celda y, si hace falta, cambia de
-pista. El número de compás se pinta en naranja cuando la suma de figuras no coincide
-con el compás.
-
-La clave de cada pista sale de su afinación: clave de fa para un bajo, de sol para una
-guitarra. Como corresponde, ambas se escriben una octava arriba de lo que suenan.
+Los doce menús —Archivo, Editar, Compás, Pista, Nota, Efectos, Marcadores,
+Herramientas, Sonido, Ver, Opciones y Ayuda— llevan todo lo demás.
 
 ## Formato `.tabpro`
 
-JSON legible y versionado. Las afinaciones son números MIDI (cuerda 1 = la más aguda),
-`value` es el denominador de la figura (4 = negra, 8 = corchea, …) y un beat sin notas
-es un silencio. `volume` y `pan` van de 0 a 127 (paneo centrado en 64); los archivos de
-la versión 1 se siguen abriendo y toman los valores por defecto:
+JSON legible y versionado, en su versión 3. Guarda efectos, ligaduras, grupos
+irregulares, las dos voces, los atributos de cada compás, las propiedades de
+pista, los diez datos del encabezado y la letra. Sigue abriendo los archivos de
+las versiones 1 y 2.
 
-```json
-{
-  "format": 2,
-  "title": "Prueba",
-  "tempo": 120,
-  "tracks": [
-    {
-      "name": "Guitarra",
-      "midiProgram": 25,
-      "volume": 100,
-      "pan": 64,
-      "muted": false,
-      "solo": false,
-      "tuning": [64, 59, 55, 50, 45, 40],
-      "measures": [
-        {
-          "timeSignature": { "beats": 4, "beatUnit": 4 },
-          "beats": [
-            { "value": 4, "dotted": false, "notes": [ { "string": 6, "fret": 0 } ] },
-            { "value": 8, "dotted": true, "notes": [] }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
+También importa y exporta MIDI y tablatura ASCII, exporta la partitura como
+imagen, la imprime, y abre archivos `.gp3`, `.gp4`, `.gp5` y `.gtp`.
 
 ## Stack
 
 - Java 25
 - Maven (multi-módulo)
-- Swing + FlatLaf (look Darcula)
+- Swing + FlatLaf (tema propio, claro y oscuro)
 - Gson para el formato propio
-- `javax.sound.midi` para la reproducción
+- `javax.sound.midi` para la reproducción y la captura
 
 ## Módulos
 
-Las dependencias van en una sola dirección hacia `tabpro-core`; la interfaz habla con
-el formato y con MIDI solo a través de los puertos `ScoreFiles` y `Player` definidos en core.
+Las dependencias van en una sola dirección hacia `tabpro-core`; la interfaz habla
+con el formato y con MIDI sólo a través de los puertos `ScoreFiles`,
+`ScoreExchange` y `Player`, definidos en core.
 
-- `tabpro-core` — modelo de dominio de la partitura (inmutable), sesión de edición con
-  undo/redo, notación (clave, grados del pentagrama, barras de unión), timeline de
-  reproducción y puertos; sin dependencias de framework.
-- `tabpro-format` — persistencia en el formato propio `.tabpro` (JSON con Gson).
-- `tabpro-midi` — reproducción con `javax.sound.midi`, con un marcador por beat para
-  mover el cursor sin polling, y una nota suelta para escuchar la que se acaba de escribir.
-- `tabpro-ui` — interfaz Swing: ventana, canvas de la partitura (layout en sistemas,
-  pentagrama y tablatura), diapasón y teclado del beat actual —que además escriben al
-  clic—, panel de pistas con el mixer y la grilla de compases, teclado, documento y
-  transporte (sin FlatLaf).
-- `tabpro-app` — `main`, FlatLaf, cableado de módulos y empaquetado (jar ejecutable + `.deb`).
+- `tabpro-core` — el modelo de la partitura (inmutable), la sesión de edición con
+  deshacer y rehacer, la notación, la armonía (acordes y escalas), los asistentes
+  y la reproducción.
+- `tabpro-format` — el formato propio `.tabpro`, los formatos de intercambio
+  (MIDI, ASCII) y el lector de archivos de Guitar Pro.
+- `tabpro-midi` — reproducción y captura con `javax.sound.midi`.
+- `tabpro-ui` — la interfaz Swing: partitura, diapasón, teclado, percusión, mesa
+  de mezcla, vista global, barra de estado, menús, barras de herramientas y las
+  ventanas de diálogo.
+- `tabpro-app` — `main`, el tema, el cableado de módulos y el empaquetado (jar
+  ejecutable + `.deb`).
 
 ## Build
 
@@ -150,16 +130,12 @@ mvn verify
 Genera `tabpro-app/target/tabpro-app-<versión>.jar` (ejecutable) y
 `tabpro-app/target/tabpro_<versión>_all.deb`.
 
-```sh
-java -jar tabpro-app/target/tabpro-app-0.5.0.jar
-```
-
 ## Desarrollo
 
-Todo comportamiento entra por un test que falla primero (TDD). Cada cambio va en una
-branch, se abre un PR contra `main` y el CI (`mvn -B verify`, headless) es el gate para
-mergear. Un tag `vX.Y.Z` en `main` dispara el workflow de release, que construye el `.deb`
-y lo publica en GitHub Releases.
+Todo comportamiento entra por un test que falla primero (TDD). Cada cambio va en
+una branch, se abre un PR contra `main` y el CI (`mvn -B verify`, headless) es el
+gate para mergear. Un tag `vX.Y.Z` en `main` dispara el workflow de release, que
+construye el `.deb` y lo publica en GitHub Releases.
 
 ## Licencia
 
