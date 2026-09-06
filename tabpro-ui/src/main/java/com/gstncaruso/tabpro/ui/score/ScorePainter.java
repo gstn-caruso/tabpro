@@ -54,7 +54,9 @@ public final class ScorePainter {
         }
 
         for (int trackIndex = 0; trackIndex < score.trackCount(); trackIndex++) {
-            paintTrack(g, layout, score, trackIndex, cursor, playhead);
+            if (layout.shows(trackIndex)) {
+                paintTrack(g, layout, score, trackIndex, cursor, playhead);
+            }
         }
         selection.ifPresent(sel -> paintSelection(g, layout, score, sel));
         if (showsTheEditingCursor(score, cursor)) {
@@ -128,7 +130,7 @@ public final class ScorePainter {
             }
             ChordDiagramPainter.paintMeasure(g, layout, track, trackIndex, measureIndex);
             BarStructurePainter.paintPerTrack(g, layout, track, clef, trackIndex, measureIndex);
-            if (trackIndex == 0) {
+            if (trackIndex == layout.firstShownTrack()) {
                 BarStructurePainter.paintScoreWide(g, layout, track, trackIndex, measureIndex);
             }
         }
