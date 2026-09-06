@@ -201,4 +201,97 @@ la mesa de mezcla que no lleva al primer beat del compás; y sin `PAGE_UP` /
 
 ---
 
-_(las otras dos secciones se completan a medida que llegan los informes)_
+## Notación y escritura
+
+Cobertura declarada por el auditor: 44 de 58 ítems presentes. Lo mejor cubierto:
+el auto-avance de compás al mover el cursor, la reubicación de notas al cambiar
+la afinación, las catorce direcciones musicales, la captura MIDI y la clave
+automática según la afinación.
+
+### Grupos irregulares más allá del tresillo — PARCIAL · chico
+`Tuplet.AVAILABLE` (`:14`) ya lista 1,3,5,6,7,9,10,11,12,13 y `Editor.setTuplet`
+(`:170`) es genérico, pero la UI sólo cablea `note.triplet`
+(`Commands.java:171`), que alterna 1↔3. El motor está; falta la puerta.
+
+### 12 cuerdas y banjo de 5ta son casilleros sin efecto — PARCIAL · mediano
+Se editan, se persisten y viajan por el formato GP, pero ninguna clase de
+diapasón, pintor ni cálculo de traste los lee. Compará con `capo`, que sí se usa
+de verdad en `Track.java:90`.
+
+### Salto de línea con alcance equivocado — PARCIAL · mediano
+El manual: afecta sólo a la pista activa o a la vista multipista, así cada pista
+puede tener su propia distribución de compases. Hoy `Editor.setLineBreak`
+(`:391-393`) va por `withAttributesInEveryTrackAt(...)` y `Score.attributesOf`
+(`:55-58`) siempre lee de `track(0)`.
+
+### Ctrl+arrastre para compases enteros — PARCIAL · chico
+`Selection.wholeMeasures` y `Editor.clippingOf` (`:761`) ya distinguen el caso,
+pero `ScoreCanvas.java:69,248-256` siempre pasa `false` y no hay un solo
+`isControlDown()` en toda la UI.
+
+### Archivo > Nuevo no abre la ventana de Información — PARCIAL · chico
+Las dos piezas existen, no están encadenadas (`MainFrame.java:294-301`).
+
+### Preferencias: autoguardado fijo y deshabilitar undo sin efecto — PARCIAL · chico
+`Preferences.java:59-71` define `autosaveEvery()` y `undoEnabled()`; el panel F12
+no expone ninguno de los dos, y `undoEnabled()` **no se consulta en ningún lado**.
+
+### Información de la partitura sin pestaña "Default Properties" — AUSENTE · mediano
+`ScoreInfoDialog.java:21-23` sólo arma "General" y "Letra".
+
+### Sin override manual de barrado ni de plicas — AUSENTE · mediano
+`StemDirection.pointsUp(...)` calcula siempre por el promedio de alturas; el menú
+Nota no tiene ninguna entrada.
+
+### Barras de herramientas fijas y sin submenú de visibilidad — AUSENTE · mediano
+`ToolBars.java:127-132` fuerza `setFloatable(false)`; Ver tiene un único toggle.
+
+### Sin menú contextual con clic derecho en la tablatura — AUSENTE · chico
+Cero `JPopupMenu` en toda la interfaz.
+
+### Fuera de alcance por decisión
+Los skins GP3-like y GP4-like (`Theme.java` documenta la decisión: tema claro y
+oscuro propios, sin la estética de Windows XP) y el selector MIDI/RSE del
+instrumento, que desaparece porque el RSE no existe.
+
+---
+
+## Herramientas del guitarrista y atajos
+
+Cobertura declarada por el auditor: 69 de 78 ítems presentes. La ventana de
+acordes, la de escalas, el diapasón, el teclado, el afinador y el metrónomo están
+muy alineados con el manual.
+
+### Enter no agrega una nota en notación estándar — AUSENTE · grande
+El manual lo pone en la tabla Edition. En tabpro `Commands.java:308` liga `ENTER`
+a "nota siguiente". Implica un modo de entrada por pentagrama que no existe: la
+escritura hoy es 100% por dígitos de traste.
+
+### Sin botón "Escalas" en el diapasón y el teclado — AUSENTE · chico
+El manual lo pone arriba a la derecha de ambos. La única puerta es el menú
+Herramientas. Además el selector inline sólo ofrece 5 escalas de `ScaleType`, no
+las 47 de `ScaleLibrary`.
+
+### El diapasón y el teclado no son barras flotantes — AUSENTE · mediano
+El manual dice que son toolbars adosables arriba o abajo, o flotantes.
+`MainFrame.java:170` los mete en un panel fijo.
+
+### La ventana de escalas no muestra los semitonos entre notas — PARCIAL · chico
+Muestra nombre, grado e intervalo desde la tónica, pero no el patrón de
+distancias entre notas consecutivas.
+
+### La zona A del acorde no indica el modo "Custom" — PARCIAL · chico
+El nombre se borra y el modelo lo sabe (`ChordEditorModel:275-282`), pero
+`ChordDialog` nunca lee `isCustom()`.
+
+### Combos que muestran nombres crudos de enum — PARCIAL · chico
+`COMPLEX`, `ANY`, `FORCE`, `FORBID` sin `label()` ni renderer.
+
+### `*` como tecla alternativa del puntillo — PARCIAL · chico
+`Commands.java:169` sólo ata `PERIOD`.
+
+_Las tablas Effects, Navigation, Sound y Misc. quedaron fuera de este informe por
+un error del recorte del manual; se auditan aparte._
+
+---
+
