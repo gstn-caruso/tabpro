@@ -332,6 +332,8 @@ public final class Ports {
 
         void importGuitarPro();
 
+        void importTabEdit();
+
         void exportMidi();
 
         void exportWave();
