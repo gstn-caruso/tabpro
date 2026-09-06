@@ -1,12 +1,14 @@
 package com.gstncaruso.tabpro.midi;
 
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
+import com.gstncaruso.tabpro.core.model.effects.Wah;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.MetronomeClick;
 import com.gstncaruso.tabpro.core.playback.PitchTrajectory;
 import com.gstncaruso.tabpro.core.playback.ScheduledBeat;
 import com.gstncaruso.tabpro.core.playback.ScheduledNote;
 import com.gstncaruso.tabpro.core.playback.ScheduledParameter;
+import com.gstncaruso.tabpro.core.playback.ScheduledWah;
 import com.gstncaruso.tabpro.core.playback.TempoChange;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.core.playback.TrackTimeline;
@@ -29,6 +31,7 @@ public final class MidiSequences {
 
     private static final int TEMPO_META_TYPE = 0x51;
     private static final int MARKER_META_TYPE = 0x06;
+    private static final int WAH_CONTROLLER = 4;
     private static final int VOLUME_CONTROLLER = 7;
     private static final int PAN_CONTROLLER = 10;
     private static final int EXPRESSION_CONTROLLER = 11;
@@ -50,6 +53,10 @@ public final class MidiSequences {
 
     /** Cada cuantos ticks se manda un nuevo valor de pitch bend, para que la curva se escuche suave. */
     private static final long PITCH_BEND_STEP_TICKS = 60;
+
+    /** El pedal de wah abierto del todo; cerrado y apagado lo dejan en su reposo. */
+    private static final int WAH_WIDE_OPEN = 127;
+    private static final int WAH_AT_REST = 0;
 
     private static final int FADE_IN_STEPS = 6;
     private static final int FADE_IN_START_EXPRESSION = 20;
@@ -212,6 +219,23 @@ public final class MidiSequences {
                 track.add(parameterEvent(channel, parameter));
             }
         }
+        for (ScheduledWah pedal : trackTimeline.wah()) {
+            for (int channel : channels.toPrepare()) {
+                track.add(controlChangeEvent(channel, WAH_CONTROLLER, pedalPositionOf(pedal.wah()), pedal.tick()));
+            }
+        }
+    }
+
+    /**
+     * Donde queda el pedal de wah. El wah viaja por el controlador de pedal, que
+     * el sintetizador barre de cerrado a abierto; MIDI no tiene un bypass aparte,
+     * asi que apagar el pedal es devolverlo a su reposo, igual que cerrarlo.
+     */
+    private static int pedalPositionOf(Wah wah) {
+        return switch (wah) {
+            case OPEN -> WAH_WIDE_OPEN;
+            case CLOSED, OFF -> WAH_AT_REST;
+        };
     }
 
     /** Lo que deja un cambio de parametro: el instrumento viaja como program change y el resto como controlador. */

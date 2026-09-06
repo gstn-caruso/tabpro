@@ -11,9 +11,11 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
+import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
+import com.gstncaruso.tabpro.core.model.effects.Wah;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.Velocity;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
@@ -37,6 +39,9 @@ import javax.sound.midi.Track;
 import org.junit.jupiter.api.Test;
 
 class MidiSequencesTest {
+
+    /** El controlador de pedal, por donde viaja el wah-wah. */
+    private static final int WAH_CONTROLLER = 4;
 
     @Test
     void usesTheTimelineResolution() {
@@ -621,6 +626,71 @@ class MidiSequencesTest {
         Track track = MidiSequences.fromTimeline(Timeline.of(score)).getTracks()[1];
 
         return pitchBendEvents(track).stream().map(this::pitchBendValue).toList();
+    }
+
+    /**
+     * El pedal de wah-wah del manual no tenia por donde salir: se editaba y no
+     * llegaba a sonar. Viaja como el controlador de pedal (el 4), que es el que
+     * los sintetizadores barren para abrir y cerrar el filtro.
+     */
+    @Test
+    void elPedalDeWahWahViajaComoControladorEnLaSecuencia() {
+        List<MidiEvent> abierto = wahEventsOf(beatWith(Wah.OPEN));
+        List<MidiEvent> cerrado = wahEventsOf(beatWith(Wah.CLOSED));
+        List<MidiEvent> sinPedal = wahEventsOf(plainBeat());
+
+        assertTrue(sinPedal.isEmpty(), "sin pedal no hay nada que mandar");
+        assertFalse(abierto.isEmpty(), "el wah abierto tiene que llegar a la secuencia");
+        assertTrue(
+                controllerValueOf(abierto.get(0)) > controllerValueOf(cerrado.get(0)),
+                "el pedal abierto tiene que abrir mas que el cerrado");
+    }
+
+    @Test
+    void elPedalDeWahWahSeMandaEnElTickDelBeatQueLoLleva() {
+        List<MidiEvent> eventos = wahEventsOf(plainBeat(), beatWith(Wah.OPEN));
+
+        assertFalse(eventos.isEmpty());
+        assertEquals(Duration.quarter().ticks(), eventos.get(0).getTick());
+    }
+
+    @Test
+    void apagarElWahWahDevuelveElPedalAlReposo() {
+        List<MidiEvent> eventos = wahEventsOf(beatWith(Wah.OPEN), beatWith(Wah.OFF));
+
+        assertEquals(2, eventos.size());
+        assertTrue(
+                controllerValueOf(eventos.get(1)) < controllerValueOf(eventos.get(0)),
+                "apagar el pedal tiene que soltar lo que dejo abierto el beat anterior");
+    }
+
+    private static Beat beatWith(Wah wah) {
+        return plainBeat().withEffects(BeatEffects.none().withWah(wah));
+    }
+
+    private static Beat plainBeat() {
+        return Beat.of(Duration.quarter(), new Note(1, 0));
+    }
+
+    /** Los mensajes del controlador de pedal que deja una pista con esos beats. */
+    private List<MidiEvent> wahEventsOf(Beat... beats) {
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
+        Score score = Score.blank().withTrack(0,
+                com.gstncaruso.tabpro.core.model.Track.standardGuitar("Guitarra").withMeasure(0, measure));
+
+        Track track = MidiSequences.fromTimeline(Timeline.of(score)).getTracks()[1];
+
+        return java.util.stream.IntStream.range(0, track.size())
+                .mapToObj(track::get)
+                .filter(event -> event.getMessage() instanceof ShortMessage sm
+                        && sm.getCommand() == ShortMessage.CONTROL_CHANGE
+                        && sm.getData1() == WAH_CONTROLLER
+                        && sm.getChannel() == 0)
+                .toList();
+    }
+
+    private int controllerValueOf(MidiEvent event) {
+        return ((ShortMessage) event.getMessage()).getData2();
     }
 
     private List<ShortMessage> pitchBendEvents(Track track) {

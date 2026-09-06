@@ -28,8 +28,8 @@ import java.util.function.IntFunction;
 /**
  * Convierte una pista en su linea de tiempo: recorre el orden real de los
  * compases y hace sonar las dos voces, resolviendo ligaduras, ligados,
- * slides, armonicos, trino, tremolo picking, rasgueo, notas de adorno y el
- * triplet feel del compas.
+ * slides, armonicos, trino, tremolo picking, rasgueo, notas de adorno, el
+ * pedal de wah-wah y el triplet feel del compas.
  */
 final class TrackRenderer {
 
@@ -49,6 +49,7 @@ final class TrackRenderer {
 
     private final List<ScheduledNote> notes = new ArrayList<>();
     private final List<ScheduledBeat> beats = new ArrayList<>();
+    private final List<ScheduledWah> wah = new ArrayList<>();
     private final VoiceCursor lead = new VoiceCursor();
     private final VoiceCursor bass = new VoiceCursor();
 
@@ -63,12 +64,15 @@ final class TrackRenderer {
             if (timed.voice() == VoicePart.LEAD) {
                 beats.add(new ScheduledBeat(timed.tick(), timed.measureIndex(), timed.beatIndex()));
             }
+            timed.beat().effects().wah().ifPresent(pedal -> wah.add(new ScheduledWah(timed.tick(), pedal)));
             renderBeat(timed.beat(), timed.tick(), timed.durationTicks(), cursorOf(timed.voice()));
         }
+        wah.sort(Comparator.comparingLong(ScheduledWah::tick));
         Channel channel = track.channel();
         int volume = audible ? channel.volume() : 0;
         return new TrackTimeline(
-                channel.program(), volume, channel.pan(), track.isPercussion(), channel.port(), notes, beats, List.of());
+                channel.program(), volume, channel.pan(), track.isPercussion(), channel.port(),
+                notes, beats, wah, List.of());
     }
 
     private VoiceCursor cursorOf(VoicePart part) {
