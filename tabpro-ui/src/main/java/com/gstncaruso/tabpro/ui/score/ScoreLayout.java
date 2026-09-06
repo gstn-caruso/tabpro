@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import java.awt.Rectangle;
@@ -115,11 +116,11 @@ public final class ScoreLayout {
         int currentSystem = 0;
         int x = LEFT_MARGIN;
         for (int measure = 0; measure < measureCount; measure++) {
-            boolean startsASystem = x == LEFT_MARGIN;
-            if (!startsASystem && x + columnWidth[measure] > LEFT_MARGIN + usableWidth) {
+            boolean alreadyAtLineStart = x == LEFT_MARGIN;
+            boolean startsASystem = alreadyAtLineStart || breaksBefore(score, measure, x, columnWidth[measure], usableWidth);
+            if (!alreadyAtLineStart && startsASystem) {
                 currentSystem++;
                 x = LEFT_MARGIN;
-                startsASystem = true;
             }
             boolean changesSignature = !startsASystem && measure > 0 && signatureChangedAt(score, measure);
             headWidth[measure] = startsASystem ? SYSTEM_HEAD_WIDTH : (changesSignature ? SIGNATURE_CHANGE_WIDTH : 0);
@@ -154,6 +155,24 @@ public final class ScoreLayout {
                 blockHeightTotal,
                 measureCount == 0 ? 1 : currentSystem + 1,
                 beatBoundsOf(score, columnX, headWidth, columnWidth));
+    }
+
+    /**
+     * Si este compas tiene que arrancar un sistema nuevo, dado que todavia no arranco uno solo
+     * por estar al principio de la linea. "Compas > Salto de linea" deja elegir por compas:
+     * forzado siempre corta ahi aunque sobre ancho; impedido nunca corta ahi, y si el ancho lo
+     * pedia el sistema actual se estira y el corte se corre al compas siguiente que si pueda
+     * arrancar uno; automatico es el comportamiento de siempre, por ancho disponible.
+     */
+    private static boolean breaksBefore(Score score, int measure, int x, int width, int usableWidth) {
+        LineBreak lineBreak = score.attributesOf(measure).lineBreak();
+        if (lineBreak == LineBreak.FORCED) {
+            return true;
+        }
+        if (lineBreak == LineBreak.PREVENTED) {
+            return false;
+        }
+        return x + width > LEFT_MARGIN + usableWidth;
     }
 
     /** Si la armadura o el compas de este comienzo difieren de los del compas anterior. */

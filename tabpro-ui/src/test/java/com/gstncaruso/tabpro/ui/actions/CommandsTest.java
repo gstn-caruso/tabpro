@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationHandler;
@@ -103,6 +104,15 @@ class CommandsTest {
 
         commands.get("edit.bassVoice").actionPerformed(event());
         assertEquals(VoicePart.BASS, editor.cursor().voice());
+
+        commands.get("bar.forceLineBreak").actionPerformed(event());
+        assertEquals(LineBreak.FORCED, editor.currentMeasure().attributes().lineBreak());
+
+        commands.get("bar.preventLineBreak").actionPerformed(event());
+        assertEquals(LineBreak.PREVENTED, editor.currentMeasure().attributes().lineBreak());
+
+        commands.get("bar.resetLineBreak").actionPerformed(event());
+        assertEquals(LineBreak.AUTOMATIC, editor.currentMeasure().attributes().lineBreak());
     }
 
     @Test
