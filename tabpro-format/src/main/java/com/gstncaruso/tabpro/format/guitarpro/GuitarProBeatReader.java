@@ -8,7 +8,9 @@ import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
+import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import java.util.ArrayList;
@@ -67,7 +69,7 @@ final class GuitarProBeatReader {
             effects = readEffects(reader, version, effects, effectFlags, secondFlags);
         }
         if ((flags & HAS_MIX_TABLE_CHANGE) != 0) {
-            skipMixTableChange(reader, version);
+            effects = effects.withParameterChange(readMixTableChange(reader, version));
         }
         List<Note> played = rest ? List.of() : readNotes(reader, version, stringCount);
         skipGp5BeatExtras(reader, version);
@@ -211,9 +213,12 @@ final class GuitarProBeatReader {
         return played;
     }
 
-    /** El cambio de parametros todavia no tiene lugar en el modelo: se saltea entero. */
-    private static void skipMixTableChange(GuitarProByteReader reader, GuitarProVersion version) {
-        reader.readSignedByte();
+    /**
+     * El cambio de parametros que la mesa de mezcla inserta desde este beat. Lo
+     * que el cambio no toca viene escrito en -1 y no se lista.
+     */
+    private static ParameterChange readMixTableChange(GuitarProByteReader reader, GuitarProVersion version) {
+        int program = reader.readSignedByte();
         if (version.hasGp5ChordFormat()) {
             reader.skip(16);
         }
@@ -227,22 +232,48 @@ final class GuitarProBeatReader {
             reader.readLengthPrefixedString();
         }
         int tempo = reader.readInt();
-        skipTransitionDurations(reader, volume, pan, chorus, reverb, phaser, tremolo, tempo);
-        if (version.hasSecondFlagsByte()) {
-            reader.readUnsignedByte();
-        }
+
+        ParameterChange change = ParameterChange.nothing();
+        change = changing(change, SoundParameter.PROGRAM, program);
+        change = changing(change, SoundParameter.VOLUME, volume);
+        change = changing(change, SoundParameter.PAN, pan);
+        change = changing(change, SoundParameter.CHORUS, chorus);
+        change = changing(change, SoundParameter.REVERB, reverb);
+        change = changing(change, SoundParameter.PHASER, phaser);
+        change = changing(change, SoundParameter.TREMOLO, tremolo);
+        change = changing(change, SoundParameter.TEMPO, tempo);
+
+        change = change.over(readTransitionDurations(
+                reader, volume, pan, chorus, reverb, phaser, tremolo, tempo));
+        change = change.onEveryTrack(readEveryTrackMask(reader, version));
         if (version.hasGp5ChordFormat()) {
             reader.readUnsignedByte();
             reader.skip(2);
         }
+        return change;
     }
 
-    private static void skipTransitionDurations(GuitarProByteReader reader, int... changedValues) {
+    private static ParameterChange changing(ParameterChange change, SoundParameter parameter, int value) {
+        return value < 0 ? change : change.changing(parameter, value);
+    }
+
+    /**
+     * Cada valor que cambia trae cuantos beats tarda en llegar. El modelo maneja
+     * una sola transicion por cambio, asi que se queda con la mas larga.
+     */
+    private static int readTransitionDurations(GuitarProByteReader reader, int... changedValues) {
+        int longest = 0;
         for (int value : changedValues) {
             if (value >= 0) {
-                reader.readSignedByte();
+                longest = Math.max(longest, reader.readSignedByte());
             }
         }
+        return longest;
+    }
+
+    /** Desde GP4 una mascara dice que parametros valen para todas las pistas y no solo para esta. */
+    private static boolean readEveryTrackMask(GuitarProByteReader reader, GuitarProVersion version) {
+        return version.hasSecondFlagsByte() && reader.readUnsignedByte() != 0;
     }
 
     private static void skipGp5BeatExtras(GuitarProByteReader reader, GuitarProVersion version) {
