@@ -42,7 +42,7 @@ public final class MenuBar {
         add(importMenu, "file.importGuitarPro", "file.importMidi", "file.importAscii", "file.importMusicXml");
         menu.add(importMenu);
         JMenu exportMenu = new JMenu("Exportar");
-        add(exportMenu, "file.exportMidi", "file.exportAscii", "file.exportMusicXml",
+        add(exportMenu, "file.exportMidi", "file.exportWave", "file.exportAscii", "file.exportMusicXml",
                 "file.exportImage", "file.exportPdf");
         menu.add(exportMenu);
         menu.addSeparator();

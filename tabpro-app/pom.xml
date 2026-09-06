@@ -66,6 +66,15 @@
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>com.gstncaruso.tabpro.app.App</mainClass>
+                  <manifestEntries>
+                    <!--
+                      WaveRenderer (tabpro-midi) usa com.sun.media.sound.AudioSynthesizer para
+                      exportar WAVE fuera de tiempo real. El atributo Add-Exports del manifest
+                      hace que el lanzador de "java -jar" le de acceso, sin pedirle flags al
+                      usuario.
+                    -->
+                    <Add-Exports>java.desktop/com.sun.media.sound</Add-Exports>
+                  </manifestEntries>
                 </transformer>
               </transformers>
               <filters>

@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format.exchange;
 
+import com.gstncaruso.tabpro.core.files.AudioQuality;
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -17,6 +18,7 @@ import com.gstncaruso.tabpro.format.exchange.midi.MidiTrackSummary;
 import com.gstncaruso.tabpro.format.exchange.musicxml.MusicXmlScoreExporter;
 import com.gstncaruso.tabpro.format.exchange.musicxml.MusicXmlScoreImporter;
 import com.gstncaruso.tabpro.format.guitarpro.GuitarProFile;
+import com.gstncaruso.tabpro.midi.WaveRenderer;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +33,15 @@ public final class FileExchange implements ScoreExchange {
     private final GuitarProFile guitarPro = new GuitarProFile();
     private final MusicXmlScoreImporter musicXmlImporter = new MusicXmlScoreImporter();
     private final MusicXmlScoreExporter musicXmlExporter = new MusicXmlScoreExporter();
+    private final WaveRenderer waveRenderer;
+
+    /**
+     * El renderer recibe el sintetizador de afuera (ver {@link WaveRenderer}): quien arma el
+     * FileExchange decide con que sintetizador y banco de sonidos suena el WAVE.
+     */
+    public FileExchange(WaveRenderer waveRenderer) {
+        this.waveRenderer = waveRenderer;
+    }
 
     @Override
     public Score importMidi(Path path) {
@@ -40,6 +51,11 @@ public final class FileExchange implements ScoreExchange {
     @Override
     public void exportMidi(Score score, Path path) {
         midiExporter.export(score, path);
+    }
+
+    @Override
+    public void exportWave(Score score, Path path, AudioQuality quality) {
+        waveRenderer.render(midiExporter.toSequence(score), path, quality);
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.format.JsonScoreFiles;
 import com.gstncaruso.tabpro.format.exchange.FileExchange;
 import com.gstncaruso.tabpro.midi.MidiPlayer;
+import com.gstncaruso.tabpro.midi.WaveRenderer;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -16,6 +17,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Synthesizer;
 import javax.swing.SwingUtilities;
 
 public class App {
@@ -31,7 +33,8 @@ public class App {
         Optional<Path> fileToOpen = fileFrom(args);
 
         SwingUtilities.invokeLater(() -> {
-            MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player, theme, devices, new FileExchange(), new Microphone());
+            FileExchange exchange = new FileExchange(new WaveRenderer(App::synthesizerForWaveExport));
+            MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player, theme, devices, exchange, new Microphone());
             frame.setIconImages(AppIcon.sizes());
             midiPlayer.ifPresent(midi -> frame.addWindowListener(closeOnDispose(midi)));
             frame.setVisible(true);
@@ -50,6 +53,19 @@ public class App {
         } catch (MidiUnavailableException e) {
             System.err.println("MIDI no disponible, la reproducción quedará silenciada: " + e.getMessage());
             return Optional.empty();
+        }
+    }
+
+    /**
+     * El sintetizador que renderiza el WAVE: hoy es el del sistema (Gervill), sin ningun banco
+     * de sonidos propio. WaveRenderer nunca lo crea el mismo, asi que el dia que haya que
+     * inyectarle un banco de sonidos cargado, el cambio entero es esta linea.
+     */
+    private static Synthesizer synthesizerForWaveExport() {
+        try {
+            return MidiSystem.getSynthesizer();
+        } catch (MidiUnavailableException e) {
+            throw new IllegalStateException("No hay sintetizador disponible para exportar WAVE.", e);
         }
     }
 
