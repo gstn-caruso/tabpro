@@ -1,8 +1,12 @@
 package com.gstncaruso.tabpro.core.model;
 
+import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
+import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /** La partitura entera: sus datos, su tempo, sus pistas y su letra. */
@@ -128,17 +132,42 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
 
     /** Un cambio de compas rige desde ese compas hasta el proximo cambio. */
     public Score withTimeSignatureFrom(int index, TimeSignature timeSignature) {
-        return mapTracks(track -> {
-            Track changed = track;
-            TimeSignature previous = track.measure(Math.min(index, track.measureCount() - 1)).timeSignature();
-            for (int measure = index; measure < track.measureCount(); measure++) {
-                if (measure > index && !changed.measure(measure).timeSignature().equals(previous)) {
-                    break;
-                }
-                changed = changed.mappingMeasure(measure, it -> it.withTimeSignature(timeSignature));
+        return mapTracks(track -> propagatingFrom(track, index,
+                Measure::timeSignature, Measure::withTimeSignature, timeSignature));
+    }
+
+    /** La armadura vale desde el compas donde se fija hasta el proximo cambio, como en el manual. */
+    public Score withKeySignatureFrom(int index, KeySignature keySignature) {
+        return mapTracks(track -> propagatingFrom(track, index,
+                measure -> measure.attributes().keySignature(),
+                (measure, value) -> measure.mappingAttributes(attrs -> attrs.withKeySignature(value)),
+                keySignature));
+    }
+
+    /** El triplet feel vale desde el compas donde se fija hasta el proximo cambio, como en el manual. */
+    public Score withTripletFeelFrom(int index, TripletFeel tripletFeel) {
+        return mapTracks(track -> propagatingFrom(track, index,
+                measure -> measure.attributes().tripletFeel(),
+                (measure, value) -> measure.mappingAttributes(attrs -> attrs.withTripletFeel(value)),
+                tripletFeel));
+    }
+
+    /**
+     * Aplica un valor desde el compas index en adelante, deteniendose apenas encuentra
+     * un compas que ya tenia, antes del cambio, un valor distinto del que regia en index
+     * (ahi empieza otro tramo, fijado por un cambio posterior).
+     */
+    private static <V> Track propagatingFrom(
+            Track track, int index, Function<Measure, V> valueOf, BiFunction<Measure, V, Measure> withValue, V value) {
+        Track changed = track;
+        V previous = valueOf.apply(track.measure(Math.min(index, track.measureCount() - 1)));
+        for (int measure = index; measure < track.measureCount(); measure++) {
+            if (measure > index && !valueOf.apply(changed.measure(measure)).equals(previous)) {
+                break;
             }
-            return changed;
-        });
+            changed = changed.mappingMeasure(measure, it -> withValue.apply(it, value));
+        }
+        return changed;
     }
 
     private static TimeSignature timeSignatureAround(Track track, int index) {

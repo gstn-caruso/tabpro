@@ -344,12 +344,14 @@ public final class Editor {
         change(score.withTimeSignatureFrom(cursor.measure(), timeSignature), cursor.onBeat(0));
     }
 
+    /** La armadura rige desde este compas hasta el proximo cambio, como pide el manual. */
     public void setKeySignature(KeySignature keySignature) {
-        changeAttributes(attributes -> attributes.withKeySignature(keySignature));
+        change(score.withKeySignatureFrom(cursor.measure(), keySignature), cursor);
     }
 
+    /** El triplet feel rige desde este compas hasta el proximo cambio, como pide el manual. */
     public void setTripletFeel(TripletFeel tripletFeel) {
-        changeAttributes(attributes -> attributes.withTripletFeel(tripletFeel));
+        change(score.withTripletFeelFrom(cursor.measure(), tripletFeel), cursor);
     }
 
     public void toggleDoubleBar() {
