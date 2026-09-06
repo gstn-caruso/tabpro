@@ -13,9 +13,13 @@ import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.effects.Velocity;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
+import com.gstncaruso.tabpro.core.playback.PitchTrajectory;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
+import com.gstncaruso.tabpro.core.playback.ScheduledNote;
 import com.gstncaruso.tabpro.core.playback.Timeline;
+import com.gstncaruso.tabpro.core.playback.TrackTimeline;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -160,6 +164,65 @@ class MidiPlayerTest {
 
         assertTrue(firstBeatLatch.await(5, TimeUnit.SECONDS));
         assertEquals(new BeatPosition(0, 0, 0), firstBeat.get());
+    }
+
+    @Test
+    void aPortThatLimitsPitchVariationSilencesABendBeyondOneTone() {
+        player.useLimitPitchVariation(1, true);
+
+        player.play(timelineWithABigBendOnPort(1), noOpListener());
+
+        assertTrue(pitchBendEvents(player.sequenceInPlay().getTracks()[1]).isEmpty());
+    }
+
+    @Test
+    void withoutLimitingPitchVariationTheSamePortStillBends() {
+        player.play(timelineWithABigBendOnPort(1), noOpListener());
+
+        assertFalse(pitchBendEvents(player.sequenceInPlay().getTracks()[1]).isEmpty());
+    }
+
+    @Test
+    void tracksOfAnotherPortDoNotReachTheMainSequence() {
+        TrackTimeline enElPuertoUno = new TrackTimeline(25, 100, 64, false, 1, List.of(), List.of(), List.of());
+        TrackTimeline enElPuertoDos = new TrackTimeline(30, 100, 64, false, 2, List.of(), List.of(), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(enElPuertoUno, enElPuertoDos));
+
+        player.play(timeline, noOpListener());
+
+        javax.sound.midi.Sequence mainSequence = player.sequenceInPlay();
+        assertEquals(2, mainSequence.getTracks().length, "solo el conductor y la pista del puerto 1");
+        assertEquals(25, programOf(mainSequence.getTracks()[1]));
+    }
+
+    @Test
+    void aScoreWithoutTracksOnTheFirstPortStillPlaysWithoutFailing() {
+        TrackTimeline enElPuertoDos = new TrackTimeline(25, 100, 64, false, 2, List.of(), List.of(), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(enElPuertoDos));
+
+        player.play(timeline, noOpListener());
+
+        assertTrue(player.isPlaying());
+    }
+
+    private Timeline timelineWithABigBendOnPort(int port) {
+        PitchTrajectory bigBend = PitchTrajectory.ramp(0, 0.0, 960, 3.0);
+        ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100), bigBend, false);
+        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, false, port, List.of(note), List.of(), List.of());
+        return new Timeline(120, 960, List.of(trackTimeline));
+    }
+
+    private List<ShortMessage> pitchBendEvents(javax.sound.midi.Track track) {
+        return java.util.stream.IntStream.range(0, track.size())
+                .mapToObj(track::get)
+                .map(javax.sound.midi.MidiEvent::getMessage)
+                .filter(message -> message instanceof ShortMessage sm && sm.getCommand() == ShortMessage.PITCH_BEND)
+                .map(message -> (ShortMessage) message)
+                .toList();
+    }
+
+    private int programOf(javax.sound.midi.Track track) {
+        return ((ShortMessage) track.get(0).getMessage()).getData1();
     }
 
     private static Receiver receiverInto(List<ShortMessage> received) {
