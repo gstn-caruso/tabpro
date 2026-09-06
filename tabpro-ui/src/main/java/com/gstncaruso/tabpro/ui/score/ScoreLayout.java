@@ -51,6 +51,7 @@ public final class ScoreLayout {
     public static final int SIGNATURE_CHANGE_WIDTH = 30;
 
     private final Score score;
+    private final VisibleTracks visibleTracks;
     private final int[] columnWidth;
     private final int[] headWidth;
     private final int[] columnX;
@@ -64,6 +65,7 @@ public final class ScoreLayout {
 
     private ScoreLayout(
             Score score,
+            VisibleTracks visibleTracks,
             int[] columnWidth,
             int[] headWidth,
             int[] columnX,
@@ -75,6 +77,7 @@ public final class ScoreLayout {
             int systemCount,
             List<List<List<Rectangle>>> beatBounds) {
         this.score = score;
+        this.visibleTracks = visibleTracks;
         this.columnWidth = columnWidth;
         this.headWidth = headWidth;
         this.columnX = columnX;
@@ -88,6 +91,10 @@ public final class ScoreLayout {
     }
 
     public static ScoreLayout of(Score score, int availableWidth) {
+        return of(score, availableWidth, VisibleTracks.all());
+    }
+
+    public static ScoreLayout of(Score score, int availableWidth, VisibleTracks visibleTracks) {
         int measureCount = score.measureCount();
         int[] columnWidth = columnWidths(score, measureCount);
         int usableWidth = Math.max(MIN_MEASURE_WIDTH, availableWidth - LEFT_MARGIN - RIGHT_MARGIN);
@@ -119,12 +126,15 @@ public final class ScoreLayout {
         int stacked = 0;
         for (int track = 0; track < score.trackCount(); track++) {
             blockTop[track] = stacked;
-            stacked += blockHeight(score.track(track)) + TRACK_GAP;
+            if (visibleTracks.shows(track)) {
+                stacked += blockHeight(score.track(track)) + TRACK_GAP;
+            }
         }
         int blockHeightTotal = Math.max(0, stacked - TRACK_GAP);
 
         return new ScoreLayout(
                 score,
+                visibleTracks,
                 columnWidth,
                 headWidth,
                 columnX,
@@ -282,7 +292,25 @@ public final class ScoreLayout {
     }
 
     public int trackHeight(int track) {
-        return blockHeight(score.track(track));
+        return shows(track) ? blockHeight(score.track(track)) : 0;
+    }
+
+    /** Si esta pista se dibuja: la vista multipista y la mesa de mezcla deciden cuales se ven. */
+    public boolean shows(int track) {
+        return visibleTracks.shows(track);
+    }
+
+    /**
+     * La primera pista que se ve. Lo que vale para el compas entero y no para una pista
+     * —repeticiones, direcciones, marcadores— se dibuja una sola vez, sobre esa.
+     */
+    public int firstShownTrack() {
+        for (int track = 0; track < score.trackCount(); track++) {
+            if (shows(track)) {
+                return track;
+            }
+        }
+        return 0;
     }
 
     public int staffTop(int track, int measure) {
@@ -333,6 +361,9 @@ public final class ScoreLayout {
 
     public Optional<Hit> hitTest(int x, int y) {
         for (int track = 0; track < score.trackCount(); track++) {
+            if (!shows(track)) {
+                continue;
+            }
             for (int measure = 0; measure < score.track(track).measureCount(); measure++) {
                 if (!withinBlock(track, measure, x, y)) {
                     continue;
