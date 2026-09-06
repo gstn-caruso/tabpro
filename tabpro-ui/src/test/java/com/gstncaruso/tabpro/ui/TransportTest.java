@@ -213,6 +213,185 @@ class TransportTest {
                 "arrancar en el medio recupera el tempo que dejó el cambio anterior");
     }
 
+    /**
+     * El manual: "durante la reproduccion, el tempo actual se muestra en la barra de titulo".
+     * Importa porque el tempo puede cambiar a mitad de partitura -hay un mapa de tempo- y porque
+     * el tempo relativo lo escala.
+     */
+    @Test
+    void hasNoTempoBeforePlaying() {
+        assertEquals(java.util.OptionalInt.empty(), transport.currentTempoBpm());
+    }
+
+    @Test
+    void showsTheTempoOfTheFirstBeat() {
+        transport.toggle();
+
+        player.emitBeat(new BeatPosition(0, 0, 0));
+
+        assertEquals(java.util.OptionalInt.of(120), transport.currentTempoBpm());
+    }
+
+    @Test
+    void showsTheNewTempoAfterAMidScoreChange() {
+        Editor editorConCambioDeTempo = new Editor(scoreThatSlowsDownOnItsSecondBeat());
+        Transport transportConCambioDeTempo = new Transport(editorConCambioDeTempo, player, Runnable::run);
+        transportConCambioDeTempo.toggle();
+
+        player.emitBeat(new BeatPosition(0, 0, 0));
+        assertEquals(java.util.OptionalInt.of(120), transportConCambioDeTempo.currentTempoBpm());
+
+        player.emitBeat(new BeatPosition(0, 0, 1));
+        assertEquals(java.util.OptionalInt.of(90), transportConCambioDeTempo.currentTempoBpm());
+    }
+
+    @Test
+    void theRelativeTempoScalesWhatTheTitleShows() {
+        transport.setRelativeTempo(new RelativeTempo(0.5));
+        transport.toggle();
+
+        player.emitBeat(new BeatPosition(0, 0, 0));
+
+        assertEquals(java.util.OptionalInt.of(60), transport.currentTempoBpm());
+    }
+
+    @Test
+    void hidesTheTempoWhenPlaybackStops() {
+        transport.toggle();
+        player.emitBeat(new BeatPosition(0, 0, 0));
+
+        transport.toggle();
+
+        assertEquals(java.util.OptionalInt.empty(), transport.currentTempoBpm());
+    }
+
+    @Test
+    void hidesTheTempoWhenPlaybackFinishes() {
+        transport.toggle();
+        player.emitBeat(new BeatPosition(0, 0, 0));
+
+        player.emitFinished();
+
+        assertEquals(java.util.OptionalInt.empty(), transport.currentTempoBpm());
+    }
+
+    private static Score scoreThatSlowsDownOnItsSecondBeat() {
+        Beat first = Beat.of(Duration.quarter(), new Note(1, 0));
+        Beat slowsDown = Beat.of(Duration.quarter(), new Note(1, 1)).withEffects(
+                BeatEffects.none().withParameterChange(
+                        ParameterChange.nothing().changing(SoundParameter.TEMPO, 90)));
+        Measure measure = new Measure(TimeSignature.fourFour(), java.util.List.of(first, slowsDown));
+        return new Score("", 120, java.util.List.of(Track.standardGuitar("Guitarra").withMeasure(0, measure)));
+    }
+
+    /**
+     * El manual: durante la reproduccion se puede hacer clic en la partitura para volver a
+     * arrancar desde ahi sin frenar. Sin reproduccion no hay nada que saltar.
+     */
+    @Test
+    void seekToDoesNothingWhenNotPlaying() {
+        transport.seekTo(0, 0);
+
+        assertEquals(null, player.lastSeekTick);
+    }
+
+    @Test
+    void clickingDuringPlaybackAsksThePlayerToJumpToThatTick() {
+        Editor editorDeDosCompases = new Editor(twoMeasureScore());
+        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
+        transportDeDosCompases.toggle();
+
+        transportDeDosCompases.seekTo(1, 0);
+
+        assertEquals(Long.valueOf(Duration.quarter().ticks() * 4), player.lastSeekTick);
+    }
+
+    @Test
+    void seekingToABeatThatDoesNotExistDoesNothing() {
+        transport.toggle();
+
+        transport.seekTo(99, 0);
+
+        assertEquals(null, player.lastSeekTick);
+    }
+
+    /**
+     * El manual: "los botones permiten reproducir la partitura nota por nota. Durante la
+     * reproducción, estos botones cambian a ◀◀ ▶▶ y permiten ir al compás anterior o al
+     * siguiente sin frenar." Sin reproducción, stepForward/stepBack siguen navegando nota a nota
+     * y no le piden nada al player.
+     */
+    @Test
+    void withoutPlaybackStepForwardMovesNoteByNoteAndDoesNotSeek() {
+        transport.stepForward();
+
+        assertEquals(null, player.lastSeekTick);
+    }
+
+    @Test
+    void duringPlaybackStepForwardGoesToTheNextMeasureWithoutStopping() {
+        Editor editorDeDosCompases = new Editor(twoMeasureScore());
+        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
+        transportDeDosCompases.toggle();
+
+        transportDeDosCompases.stepForward();
+
+        assertEquals(1, editorDeDosCompases.cursor().measure(), "tiene que saltar al compas siguiente");
+        assertEquals(Long.valueOf(Duration.quarter().ticks() * 4), player.lastSeekTick);
+        assertTrue(transportDeDosCompases.isPlaying(), "no se tiene que frenar");
+    }
+
+    @Test
+    void duringPlaybackStepBackGoesToThePreviousMeasureWithoutStopping() {
+        Editor editorDeDosCompases = new Editor(twoMeasureScore());
+        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
+        transportDeDosCompases.toggle();
+        transportDeDosCompases.stepForward();
+
+        transportDeDosCompases.stepBack();
+
+        assertEquals(0, editorDeDosCompases.cursor().measure(), "tiene que saltar al compas anterior");
+        assertEquals(Long.valueOf(0), player.lastSeekTick);
+        assertTrue(transportDeDosCompases.isPlaying(), "no se tiene que frenar");
+    }
+
+    @Test
+    void duringPlaybackStepBackAtTheFirstMeasureStaysThereAndStillSeeks() {
+        Editor editorDeDosCompases = new Editor(twoMeasureScore());
+        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
+        transportDeDosCompases.toggle();
+
+        transportDeDosCompases.stepBack();
+
+        assertEquals(0, editorDeDosCompases.cursor().measure());
+        assertEquals(Long.valueOf(0), player.lastSeekTick);
+    }
+
+    @Test
+    void duringPlaybackStepForwardAtTheLastMeasureStaysThereAndStillSeeks() {
+        Editor editorDeDosCompases = new Editor(twoMeasureScore());
+        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
+        transportDeDosCompases.toggle();
+        transportDeDosCompases.stepForward();
+
+        transportDeDosCompases.stepForward();
+
+        assertEquals(1, editorDeDosCompases.cursor().measure());
+        assertEquals(Long.valueOf(Duration.quarter().ticks() * 4), player.lastSeekTick);
+    }
+
+    private static Score twoMeasureScore() {
+        Measure first = new Measure(TimeSignature.fourFour(), java.util.List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Measure second = new Measure(TimeSignature.fourFour(), java.util.List.of(
+                Beat.of(Duration.quarter(), new Note(1, 4))));
+        return new Score("", 120, java.util.List.of(
+                Track.standardGuitar("Guitarra").withMeasures(java.util.List.of(first, second))));
+    }
+
     private static Score scoreSlowingDownInTheFirstMeasure() {
         Beat slowsDown = Beat.of(Duration.quarter(), new Note(1, 0)).withEffects(
                 BeatEffects.none().withParameterChange(
@@ -228,6 +407,7 @@ class TransportTest {
         private Timeline lastTimeline;
         private PlaybackListener listener;
         private boolean playing;
+        private Long lastSeekTick;
 
         @Override
         public void play(Timeline timeline, PlaybackListener listener) {
@@ -238,6 +418,11 @@ class TransportTest {
 
         @Override
         public void playNote(Pitch pitch, int program) {
+        }
+
+        @Override
+        public void seekTo(long tick) {
+            lastSeekTick = tick;
         }
 
         @Override

@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Score;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalLong;
 
 public record Timeline(TempoMap tempo, int ticksPerQuarter, List<TrackTimeline> tracks) {
 
@@ -46,5 +47,20 @@ public record Timeline(TempoMap tempo, int ticksPerQuarter, List<TrackTimeline> 
     public Timeline shiftedBy(long ticks) {
         return new Timeline(tempo.shiftedBy(ticks), ticksPerQuarter,
                 tracks.stream().map(track -> track.shiftedBy(ticks)).toList());
+    }
+
+    /**
+     * El tick en que arranca ese compas y ese beat, para saltar la reproduccion ahi: el manual
+     * deja moverse por la partitura durante la reproduccion y volver a arrancar desde donde se
+     * hizo clic, sin frenar. Busca en todas las pistas porque no todas parten el compas igual
+     * -una nota redonda en el bajo puede no tener un beat propio donde la guitarra si lo tiene-
+     * asi que alcanza con que una sola pista llegue a ese subcompas.
+     */
+    public OptionalLong tickOf(int measure, int beat) {
+        return tracks.stream()
+                .flatMap(track -> track.beats().stream())
+                .filter(scheduled -> scheduled.measure() == measure && scheduled.beat() == beat)
+                .mapToLong(ScheduledBeat::tick)
+                .min();
     }
 }

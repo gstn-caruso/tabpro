@@ -196,6 +196,21 @@ class PageScorePainterTest {
     }
 
     /**
+     * La linea de reproduccion es un color propio -no un gris de pantalla- asi que no le toca la
+     * inversion del Modo Pagina: tiene que llegar a la hoja del mismo verde con que se ve en
+     * pantalla, no invertida ni apagada.
+     */
+    @Test
+    void thePlayingLineIsTheSameGreenOnPaperAsOnScreen() {
+        BufferedImage music = musicOf(render(
+                scoreWithAParameterChange(), PageSetup.defaults(),
+                com.gstncaruso.tabpro.core.playback.Playhead.silent().advancedTo(
+                        new com.gstncaruso.tabpro.core.playback.BeatPosition(0, 0, 0))));
+
+        assertTrue(paints(music, ScoreColors.PLAYING), "la linea de reproduccion tiene que verse verde en la hoja");
+    }
+
+    /**
      * Lo que en la pantalla oscura es tinta clara, sobre la hoja tiene que ser tinta oscura: si
      * llegara al papel del color con el que se dibuja en pantalla, no se veria nada.
      */
@@ -249,13 +264,17 @@ class PageScorePainterTest {
     }
 
     private static BufferedImage render(Score score, PageSetup setup) {
+        return render(score, setup, Playhead.silent());
+    }
+
+    private static BufferedImage render(Score score, PageSetup setup, Playhead playhead) {
         ScoreViewport viewport = pageViewport(setup);
         Dimension size = PageScorePainter.canvasSize(score, viewport);
         BufferedImage image = new BufferedImage(
                 Math.max(1, size.width), Math.max(1, size.height), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
         PageScorePainter.paint(
-                g, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
+                g, score, new Cursor(0, 0, 0, 1), playhead, Optional.empty(), viewport);
         g.dispose();
         return image;
     }

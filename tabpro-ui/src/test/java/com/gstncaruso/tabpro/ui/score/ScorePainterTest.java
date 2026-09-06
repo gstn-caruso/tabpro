@@ -34,6 +34,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -108,17 +109,40 @@ class ScorePainterTest {
     }
 
     @Test
-    void tintsTheBeatThatIsSounding() {
+    void drawsAThinLineAtTheBeatThatIsSoundingInsteadOfAFilledBlock() {
+        Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
+        Painted silent = paint(score, new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted playing = paint(
+                score, new Cursor(0, 0, 0, 1), Playhead.silent().advancedTo(new BeatPosition(1, 0, 0)));
+
+        Rectangle beat = playing.layout().beatBounds(1, 0, 0);
+        int lineX = beat.x;
+        int elsewhereX = beat.x + beat.width - 2;
+        int y = playing.layout().tabTop(1, 0) + 3;
+
+        assertNotEquals(
+                silent.image().getRGB(lineX, y), playing.image().getRGB(lineX, y),
+                "la linea de reproduccion tiene que marcar donde arranca el beat que suena");
+        assertEquals(
+                silent.image().getRGB(elsewhereX, y), playing.image().getRGB(elsewhereX, y),
+                "el resto del beat no puede quedar tapado por un bloque relleno como antes");
+    }
+
+    @Test
+    void thePlayingLineCrossesTheWholeSystemNotJustTheTrackThatIsSounding() {
         Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
         Playhead playhead = Playhead.silent().advancedTo(new BeatPosition(1, 0, 0));
         Painted painted = paint(score, new Cursor(0, 0, 0, 1), playhead);
 
         Rectangle beat = painted.layout().beatBounds(1, 0, 0);
-        int y = painted.layout().staffTop(1, 0) + 2;
+        int nearSystemTop = painted.layout().trackTop(0, 0) + 5;
 
-        assertFalse(
-                painted.image().getRGB(beat.x + beat.width / 2, y) == ScoreColors.BACKGROUND.getRGB(),
-                "el beat que suena tiene que quedar resaltado");
+        assertTrue(
+                nearSystemTop < painted.layout().staffTop(1, 0),
+                "el punto de control tiene que estar arriba de la pista que suena, no adentro");
+        assertTrue(
+                painted.hasInkNear(beat.x, nearSystemTop, 0),
+                "la linea tiene que cruzar tambien la pista de arriba, no solo la que suena");
     }
 
     @Test
@@ -414,6 +438,47 @@ class ScorePainterTest {
         return new Score("", 120, List.of(track));
     }
 
+
+    /**
+     * Todas las pistas suenan a la vez, asi que la reproduccion esta en UN solo lugar: una sola
+     * linea. Como cada pista parte el compas distinto -la guitarra en negras, el bajo en una
+     * redonda- el arranque del beat que suena cae en una x distinta por pista, y dibujar una
+     * linea por pista llenaria el sistema de lineas paralelas. La que vale es la del beat que
+     * arranco mas tarde: es la que esta mas cerca del instante que se esta oyendo.
+     */
+    @Test
+    void thereIsOnlyOnePlayingLineNoMatterHowManyTracksAreSounding() {
+        Score score = twoTracksSplittingTheBarDifferently();
+        BeatPosition inTheGuitar = new BeatPosition(0, 0, 2);
+        Playhead playhead = Playhead.silent()
+                .advancedTo(inTheGuitar)
+                .advancedTo(new BeatPosition(1, 0, 0));
+        Painted painted = paint(score, new Cursor(0, 0, 0, 1), playhead);
+
+        int acrossTheBass = painted.layout().tabTop(1, 0) + 3;
+        List<Integer> lines = painted.playingColumnsAt(acrossTheBass);
+
+        assertEquals(1, lines.size(), "una sola linea de reproduccion, no una por pista");
+        assertEquals(
+                painted.layout().beatBounds(0, 0, 2).x, lines.get(0),
+                "la linea va donde arranco el beat que suena mas tarde");
+    }
+
+    private static Score twoTracksSplittingTheBarDifferently() {
+        Track guitar = Track.standardGuitar("Guitarra");
+        Track bass = Track.standardBass("Bajo");
+        Measure inQuarters = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(6, 0)),
+                Beat.of(Duration.quarter(), new Note(6, 2)),
+                Beat.of(Duration.quarter(), new Note(6, 3)),
+                Beat.of(Duration.quarter(), new Note(6, 5))));
+        Measure inOneWhole = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(new Duration(NoteValue.WHOLE, false), new Note(4, 0))));
+        return new Score("", 120, List.of(
+                new Track("Guitarra", guitar.tuning(), guitar.channel(), List.of(inQuarters)),
+                new Track("Bajo", bass.tuning(), bass.channel(), List.of(inOneWhole))));
+    }
+
     private static Painted paint(Score score, Cursor cursor, Playhead playhead) {
         return paint(score, cursor, playhead, VisibleTracks.all());
     }
@@ -430,6 +495,17 @@ class ScorePainterTest {
     }
 
     private record Painted(BufferedImage image, ScoreLayout layout) {
+
+        /** Las columnas pintadas con el color de la reproduccion a esa altura. */
+        List<Integer> playingColumnsAt(int y) {
+            List<Integer> columns = new ArrayList<>();
+            for (int x = 0; x < image.getWidth(); x++) {
+                if (isInside(x, y) && image.getRGB(x, y) == ScoreColors.PLAYING.getRGB()) {
+                    columns.add(x);
+                }
+            }
+            return columns;
+        }
 
         boolean hasInkNear(int x, int y, int radius) {
             for (int dx = -radius; dx <= radius; dx++) {

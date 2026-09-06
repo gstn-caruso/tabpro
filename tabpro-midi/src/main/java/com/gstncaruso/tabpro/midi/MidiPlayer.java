@@ -32,14 +32,20 @@ public final class MidiPlayer implements Player, AutoCloseable {
     private javax.sound.midi.MidiDevice chosenOutput;
     private final Set<Integer> limitedPitchVariationPorts = new HashSet<>();
     private final Map<Integer, PortOutput> secondaryPorts = new HashMap<>();
+    private final Supplier<Sequencer> portSequencers;
 
     public MidiPlayer(Sequencer sequencer) {
         this(sequencer, MidiPlayer::defaultSynthesizer);
     }
 
     MidiPlayer(Sequencer sequencer, Supplier<Receiver> synthesizers) {
+        this(sequencer, synthesizers, PortOutput::connectedSequencer);
+    }
+
+    MidiPlayer(Sequencer sequencer, Supplier<Receiver> synthesizers, Supplier<Sequencer> portSequencers) {
         this.sequencer = sequencer;
         this.synthesizers = synthesizers;
+        this.portSequencers = portSequencers;
         sequencer.addMetaEventListener(this::notifyListenerOf);
     }
 
@@ -91,9 +97,32 @@ public final class MidiPlayer implements Player, AutoCloseable {
         return sequencer.getSequence();
     }
 
+    /** Para tests: en que tick quedo el secuenciador de ese puerto, o -1 si no tiene ninguno. */
+    long tickPositionOfPort(int port) {
+        if (port == PRIMARY_PORT) {
+            return sequencer.getTickPosition();
+        }
+        PortOutput output = secondaryPorts.get(port);
+        return output == null ? -1 : output.tickPosition();
+    }
+
     @Override
     public void playNote(Pitch pitch, int program) {
         preview().play(pitch, program);
+    }
+
+    /**
+     * Salta la reproduccion en curso a ese tick sin frenarla. La reproduccion arma una secuencia
+     * por puerto MIDI, con un secuenciador por puerto, asi que el salto tiene que alcanzarlos a
+     * todos -no solo al principal- o el sonido de un puerto secundario se queda donde estaba.
+     */
+    @Override
+    public void seekTo(long tick) {
+        long safeTick = Math.max(0, tick);
+        if (sequencer.isRunning()) {
+            sequencer.setTickPosition(safeTick);
+        }
+        secondaryPorts.values().forEach(port -> port.seekTo(safeTick));
     }
 
     @Override
@@ -169,7 +198,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
     }
 
     private PortOutput secondaryPortOutput(int port) {
-        return secondaryPorts.computeIfAbsent(port, ignored -> new PortOutput());
+        return secondaryPorts.computeIfAbsent(port, ignored -> new PortOutput(portSequencers.get()));
     }
 
     private void stopSecondaryPorts() {
@@ -252,8 +281,8 @@ public final class MidiPlayer implements Player, AutoCloseable {
         private final Sequencer sequencer;
         private javax.sound.midi.MidiDevice device;
 
-        PortOutput() {
-            this.sequencer = newSequencer();
+        PortOutput(Sequencer sequencer) {
+            this.sequencer = sequencer;
         }
 
         private boolean isSilent() {
@@ -300,6 +329,16 @@ public final class MidiPlayer implements Player, AutoCloseable {
             }
         }
 
+        void seekTo(long tick) {
+            if (!isSilent() && sequencer.isRunning()) {
+                sequencer.setTickPosition(tick);
+            }
+        }
+
+        long tickPosition() {
+            return isSilent() ? -1 : sequencer.getTickPosition();
+        }
+
         @Override
         public void close() {
             stop();
@@ -328,8 +367,11 @@ public final class MidiPlayer implements Player, AutoCloseable {
             }
         }
 
-        /** Conectado al sintetizador del sistema por defecto, igual que el puerto principal. */
-        private static Sequencer newSequencer() {
+        /**
+         * Conectado al sintetizador del sistema por defecto. En una maquina sin placa de sonido
+         * no hay ninguno: el puerto se queda sin secuenciador y toca en silencio.
+         */
+        static Sequencer connectedSequencer() {
             try {
                 return MidiSystem.getSequencer();
             } catch (MidiUnavailableException e) {

@@ -166,7 +166,12 @@ public final class MainFrame extends JFrame {
             canvas.showPlayhead(transport.playhead());
             trackPanel.showPlayingMeasure(transport.playhead().measure());
             beatViews.showPlayhead(transport.playhead());
+            updateTitle();
+            updateStepCommandLabels();
         });
+        // El manual: moverse por la partitura durante la reproduccion vuelve a arrancar el
+        // audio desde la posicion senalada, sin frenar.
+        canvas.onClickReposition(hit -> transport.seekTo(hit.measure(), hit.beat()));
         editor.addListener(this::updateTitle);
 
         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, trackPanel);
@@ -320,8 +325,28 @@ public final class MainFrame extends JFrame {
         midiSetupPreferences.setStringAssignment(setup.strings());
     }
 
+    /**
+     * El manual: "durante la reproduccion, el tempo actual se muestra en la barra de titulo de
+     * Guitar Pro". Importa porque el tempo puede cambiar a mitad de partitura y porque el tempo
+     * relativo lo escala; Transport ya devuelve el que de verdad esta sonando.
+     */
     private void updateTitle() {
-        setTitle(document.windowTitle());
+        String title = document.windowTitle();
+        setTitle(transport.currentTempoBpm().isPresent()
+                ? title + " — " + transport.currentTempoBpm().getAsInt() + " BPM"
+                : title);
+    }
+
+    /**
+     * El manual: "los botones ◀ ▶ permiten reproducir la partitura nota por nota. Durante la
+     * reproducción, estos botones cambian a ◀◀ ▶▶ y permiten ir al compás anterior o al
+     * siguiente sin frenar." Sin un icono propio para ese cambio, el nombre del comando -que ya
+     * se ve en el menu Sonido- dice lo mismo.
+     */
+    private void updateStepCommandLabels() {
+        boolean playing = transport.isPlaying();
+        commands.get("sound.stepBack").renameTo(playing ? "Compás anterior" : "Nota anterior");
+        commands.get("sound.stepForward").renameTo(playing ? "Compás siguiente" : "Nota siguiente");
     }
 
     private void showError(ScoreFileException e) {

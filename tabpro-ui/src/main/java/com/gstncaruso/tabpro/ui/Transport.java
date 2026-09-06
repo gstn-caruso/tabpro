@@ -19,6 +19,7 @@ import com.gstncaruso.tabpro.core.playback.Timeline;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.function.Consumer;
 
 /**
@@ -34,6 +35,8 @@ public final class Transport {
     private final List<Runnable> listeners = new ArrayList<>();
 
     private Playhead playhead = Playhead.silent();
+    private Timeline currentTimeline;
+    private OptionalInt currentTempo = OptionalInt.empty();
     private Metronome metronome = Metronome.off();
     private CountIn countIn = CountIn.off();
     private RelativeTempo relativeTempo = RelativeTempo.normal();
@@ -65,6 +68,7 @@ public final class Transport {
     public void stop() {
         player.stop();
         playhead = Playhead.silent();
+        currentTempo = OptionalInt.empty();
         notifyListeners();
     }
 
@@ -72,8 +76,30 @@ public final class Transport {
         return player.isPlaying();
     }
 
+    /**
+     * El manual: moverse por la partitura durante la reproduccion vuelve a arrancar el audio
+     * desde la posicion senalada, sin frenar. Sin reproduccion no hay nada que saltar, y si esa
+     * posicion no existe en lo que esta sonando -un compas que no se llego a tocar- tampoco.
+     */
+    public void seekTo(int measure, int beat) {
+        if (!player.isPlaying() || currentTimeline == null) {
+            return;
+        }
+        currentTimeline.tickOf(measure, beat).ifPresent(player::seekTo);
+    }
+
     public Playhead playhead() {
         return playhead;
+    }
+
+    /**
+     * El manual: "durante la reproduccion, el tempo actual se muestra en la barra de titulo".
+     * Importa porque el tempo puede cambiar a mitad de partitura -hay un mapa de tempo- y porque
+     * el tempo relativo lo escala: el que se devuelve aca ya viene con esa escala aplicada,
+     * porque es el timeline que de verdad esta sonando.
+     */
+    public OptionalInt currentTempoBpm() {
+        return currentTempo;
     }
 
     public Optional<BeatPosition> playingOn(int track) {
@@ -142,13 +168,28 @@ public final class Transport {
         notifyListeners();
     }
 
-    /** El modo paso a paso del manual: mover el cursor y escuchar lo que hay ahi. */
+    /**
+     * El modo paso a paso del manual: sin reproduccion, mover el cursor nota a nota y escuchar
+     * lo que hay ahi. Durante la reproduccion los mismos botones cambian de sentido -el manual:
+     * "permiten ir al compas anterior o al siguiente sin frenar"- asi que saltan de compas en
+     * compas y reposicionan el audio en vez de tocar una nota suelta.
+     */
     public void stepForward() {
+        if (player.isPlaying()) {
+            editor.moveToNextMeasure();
+            seekTo(editor.cursor().measure(), 0);
+            return;
+        }
         editor.moveRight();
         playCurrentBeat();
     }
 
     public void stepBack() {
+        if (player.isPlaying()) {
+            editor.moveToPreviousMeasure();
+            seekTo(editor.cursor().measure(), 0);
+            return;
+        }
         editor.moveLeft();
         playCurrentBeat();
     }
@@ -186,7 +227,8 @@ public final class Transport {
         Timeline timeline = relativeTempo.applyTo(atTheTempoOfThisLap(Timeline.of(score, order)));
         List<MetronomeClick> clicks = metronome.clicksFor(score, order);
         long leadIn = countIn.leadInTicks(score.timeSignatureOf(order.measureAt(0)));
-        player.play(timeline.shiftedBy(leadIn), shifted(clicks, leadIn), new InternalListener());
+        currentTimeline = timeline.shiftedBy(leadIn);
+        player.play(currentTimeline, shifted(clicks, leadIn), new InternalListener());
         notifyListeners();
     }
 
@@ -235,14 +277,26 @@ public final class Transport {
         public void beatStarted(BeatPosition position) {
             uiThread.accept(() -> {
                 playhead = playhead.advancedTo(position);
+                currentTempo = tempoAt(position);
                 notifyListeners();
             });
+        }
+
+        private OptionalInt tempoAt(BeatPosition position) {
+            if (currentTimeline == null) {
+                return currentTempo;
+            }
+            java.util.OptionalLong tick = currentTimeline.tickOf(position.measure(), position.beat());
+            return tick.isPresent()
+                    ? OptionalInt.of(currentTimeline.tempo().bpmAt(tick.getAsLong()))
+                    : currentTempo;
         }
 
         @Override
         public void playbackFinished() {
             uiThread.accept(() -> {
                 playhead = Playhead.silent();
+                currentTempo = OptionalInt.empty();
                 if (loop.isPresent()) {
                     lap++;
                     playFrom(loop.get().fromMeasure());
