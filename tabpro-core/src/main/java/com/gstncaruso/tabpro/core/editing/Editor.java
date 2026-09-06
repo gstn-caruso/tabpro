@@ -172,8 +172,14 @@ public final class Editor {
     }
 
     public void toggleTriplet() {
+        toggleTuplet(3);
+    }
+
+    /** El manual: cualquier n-tuplet (quintillo, seisillo...) se pone y se saca igual que el
+     * tresillo, nomas que con otro numero. */
+    public void toggleTuplet(int enters) {
         Tuplet current = currentBeat().duration().tuplet();
-        setTuplet(current.enters() == 3 ? 1 : 3);
+        setTuplet(current.enters() == enters ? 1 : enters);
     }
 
     // ---- efectos de nota --------------------------------------------------
