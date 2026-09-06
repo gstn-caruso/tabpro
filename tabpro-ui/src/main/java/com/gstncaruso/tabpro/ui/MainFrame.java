@@ -167,6 +167,7 @@ public final class MainFrame extends JFrame {
             trackPanel.showPlayingMeasure(transport.playhead().measure());
             beatViews.showPlayhead(transport.playhead());
             updateTitle();
+            updateStepCommandLabels();
         });
         // El manual: moverse por la partitura durante la reproduccion vuelve a arrancar el
         // audio desde la posicion senalada, sin frenar.
@@ -334,6 +335,18 @@ public final class MainFrame extends JFrame {
         setTitle(transport.currentTempoBpm().isPresent()
                 ? title + " — " + transport.currentTempoBpm().getAsInt() + " BPM"
                 : title);
+    }
+
+    /**
+     * El manual: "los botones ◀ ▶ permiten reproducir la partitura nota por nota. Durante la
+     * reproducción, estos botones cambian a ◀◀ ▶▶ y permiten ir al compás anterior o al
+     * siguiente sin frenar." Sin un icono propio para ese cambio, el nombre del comando -que ya
+     * se ve en el menu Sonido- dice lo mismo.
+     */
+    private void updateStepCommandLabels() {
+        boolean playing = transport.isPlaying();
+        commands.get("sound.stepBack").renameTo(playing ? "Compás anterior" : "Nota anterior");
+        commands.get("sound.stepForward").renameTo(playing ? "Compás siguiente" : "Nota siguiente");
     }
 
     private void showError(ScoreFileException e) {

@@ -168,13 +168,28 @@ public final class Transport {
         notifyListeners();
     }
 
-    /** El modo paso a paso del manual: mover el cursor y escuchar lo que hay ahi. */
+    /**
+     * El modo paso a paso del manual: sin reproduccion, mover el cursor nota a nota y escuchar
+     * lo que hay ahi. Durante la reproduccion los mismos botones cambian de sentido -el manual:
+     * "permiten ir al compas anterior o al siguiente sin frenar"- asi que saltan de compas en
+     * compas y reposicionan el audio en vez de tocar una nota suelta.
+     */
     public void stepForward() {
+        if (player.isPlaying()) {
+            editor.moveToNextMeasure();
+            seekTo(editor.cursor().measure(), 0);
+            return;
+        }
         editor.moveRight();
         playCurrentBeat();
     }
 
     public void stepBack() {
+        if (player.isPlaying()) {
+            editor.moveToPreviousMeasure();
+            seekTo(editor.cursor().measure(), 0);
+            return;
+        }
         editor.moveLeft();
         playCurrentBeat();
     }

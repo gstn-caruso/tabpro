@@ -35,6 +35,17 @@ public final class Command extends AbstractAction {
         return this;
     }
 
+    /**
+     * Cambia el nombre de un comando ya armado, como el paso a paso del manual que dice "Nota
+     * siguiente" parado y "Compás siguiente" durante la reproducción. Al extender
+     * AbstractAction, esto dispara el PropertyChangeEvent que ya actualiza solo cualquier
+     * JMenuItem o JButton armado con este comando.
+     */
+    public Command renameTo(String label) {
+        putValue(NAME, label);
+        return this;
+    }
+
     public String label() {
         return (String) getValue(NAME);
     }

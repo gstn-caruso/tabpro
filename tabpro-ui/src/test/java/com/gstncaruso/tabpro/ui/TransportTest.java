@@ -315,6 +315,71 @@ class TransportTest {
         assertEquals(null, player.lastSeekTick);
     }
 
+    /**
+     * El manual: "los botones permiten reproducir la partitura nota por nota. Durante la
+     * reproducción, estos botones cambian a ◀◀ ▶▶ y permiten ir al compás anterior o al
+     * siguiente sin frenar." Sin reproducción, stepForward/stepBack siguen navegando nota a nota
+     * y no le piden nada al player.
+     */
+    @Test
+    void withoutPlaybackStepForwardMovesNoteByNoteAndDoesNotSeek() {
+        transport.stepForward();
+
+        assertEquals(null, player.lastSeekTick);
+    }
+
+    @Test
+    void duringPlaybackStepForwardGoesToTheNextMeasureWithoutStopping() {
+        Editor editorDeDosCompases = new Editor(twoMeasureScore());
+        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
+        transportDeDosCompases.toggle();
+
+        transportDeDosCompases.stepForward();
+
+        assertEquals(1, editorDeDosCompases.cursor().measure(), "tiene que saltar al compas siguiente");
+        assertEquals(Long.valueOf(Duration.quarter().ticks() * 4), player.lastSeekTick);
+        assertTrue(transportDeDosCompases.isPlaying(), "no se tiene que frenar");
+    }
+
+    @Test
+    void duringPlaybackStepBackGoesToThePreviousMeasureWithoutStopping() {
+        Editor editorDeDosCompases = new Editor(twoMeasureScore());
+        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
+        transportDeDosCompases.toggle();
+        transportDeDosCompases.stepForward();
+
+        transportDeDosCompases.stepBack();
+
+        assertEquals(0, editorDeDosCompases.cursor().measure(), "tiene que saltar al compas anterior");
+        assertEquals(Long.valueOf(0), player.lastSeekTick);
+        assertTrue(transportDeDosCompases.isPlaying(), "no se tiene que frenar");
+    }
+
+    @Test
+    void duringPlaybackStepBackAtTheFirstMeasureStaysThereAndStillSeeks() {
+        Editor editorDeDosCompases = new Editor(twoMeasureScore());
+        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
+        transportDeDosCompases.toggle();
+
+        transportDeDosCompases.stepBack();
+
+        assertEquals(0, editorDeDosCompases.cursor().measure());
+        assertEquals(Long.valueOf(0), player.lastSeekTick);
+    }
+
+    @Test
+    void duringPlaybackStepForwardAtTheLastMeasureStaysThereAndStillSeeks() {
+        Editor editorDeDosCompases = new Editor(twoMeasureScore());
+        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
+        transportDeDosCompases.toggle();
+        transportDeDosCompases.stepForward();
+
+        transportDeDosCompases.stepForward();
+
+        assertEquals(1, editorDeDosCompases.cursor().measure());
+        assertEquals(Long.valueOf(Duration.quarter().ticks() * 4), player.lastSeekTick);
+    }
+
     private static Score twoMeasureScore() {
         Measure first = new Measure(TimeSignature.fourFour(), java.util.List.of(
                 Beat.of(Duration.quarter(), new Note(1, 0)),
