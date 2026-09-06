@@ -102,6 +102,15 @@ class TabEditByteReaderTest {
     }
 
     @Test
+    void informaCuantosBytesQuedanPorLeer() {
+        TabEditByteReader reader = new TabEditByteReader(new TabEditFileWriter().writeInt(1).writeInt(2).bytes());
+
+        assertEquals(8, reader.remaining());
+        reader.readInt();
+        assertEquals(4, reader.remaining());
+    }
+
+    @Test
     void unArchivoTruncadoFallaConMensajeClaro() {
         TabEditByteReader reader = new TabEditByteReader(new byte[] {1, 2});
 

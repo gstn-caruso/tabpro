@@ -26,6 +26,10 @@ final class TabEditByteReader {
         return position < data.length;
     }
 
+    int remaining() {
+        return data.length - position;
+    }
+
     void skip(int byteCount) {
         require(byteCount);
         position += byteCount;
