@@ -28,7 +28,7 @@ class PageScorePainterTest {
 
     @Test
     void pageModeIsAsWideAsAPage() {
-        Dimension size = PageScorePainter.canvasSize(Score.blank(), ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
+        Dimension size = PageScorePainter.canvasSize(Score.blank(), ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
 
         assertEquals(PageLayout.PAGE_WIDTH, size.width);
     }
@@ -36,15 +36,15 @@ class PageScorePainterTest {
     @Test
     void screenVerticalModeFillsTheViewport() {
         Dimension size = PageScorePainter.canvasSize(
-                Score.blank(), ViewMode.SCREEN_VERTICAL, Zoom.whole(), VIEWPORT_WIDTH);
+                Score.blank(), ScoreViewport.of(ViewMode.SCREEN_VERTICAL, Zoom.whole(), VIEWPORT_WIDTH));
 
         assertEquals(VIEWPORT_WIDTH, size.width);
     }
 
     @Test
     void zoomScalesTheCanvas() {
-        Dimension whole = PageScorePainter.canvasSize(Score.blank(), ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
-        Dimension half = PageScorePainter.canvasSize(Score.blank(), ViewMode.PAGE, new Zoom(50), VIEWPORT_WIDTH);
+        Dimension whole = PageScorePainter.canvasSize(Score.blank(), ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
+        Dimension half = PageScorePainter.canvasSize(Score.blank(), ScoreViewport.of(ViewMode.PAGE, new Zoom(50), VIEWPORT_WIDTH));
 
         assertEquals(whole.width / 2, half.width);
         assertEquals(whole.height / 2, half.height);
@@ -54,8 +54,8 @@ class PageScorePainterTest {
     void aTallScoreNeedsMoreThanOnePageInPageMode() {
         Score score = scoreWithMeasures(60);
 
-        Dimension onePage = PageScorePainter.canvasSize(Score.blank(), ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
-        Dimension manyPages = PageScorePainter.canvasSize(score, ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
+        Dimension onePage = PageScorePainter.canvasSize(Score.blank(), ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
+        Dimension manyPages = PageScorePainter.canvasSize(score, ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
 
         assertTrue(manyPages.height > onePage.height * 2, "una partitura larga ocupa varias hojas");
     }
@@ -64,8 +64,8 @@ class PageScorePainterTest {
     void parchmentNeverGrowsInDiscretePageSteps() {
         Score score = scoreWithMeasures(60);
 
-        Dimension parchment = PageScorePainter.canvasSize(score, ViewMode.PARCHMENT, Zoom.whole(), VIEWPORT_WIDTH);
-        Dimension paged = PageScorePainter.canvasSize(score, ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
+        Dimension parchment = PageScorePainter.canvasSize(score, ScoreViewport.of(ViewMode.PARCHMENT, Zoom.whole(), VIEWPORT_WIDTH));
+        Dimension paged = PageScorePainter.canvasSize(score, ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
 
         assertTrue(parchment.height < paged.height, "el pergamino no reserva aire de mas de una hoja completa");
     }
@@ -81,12 +81,12 @@ class PageScorePainterTest {
     @Test
     void hitTestInPageModeFindsTheSameBeatAsAPlainClick() {
         Score score = Score.blank();
-        Dimension size = PageScorePainter.canvasSize(score, ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
+        Dimension size = PageScorePainter.canvasSize(score, ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
         paint(score, ViewMode.PAGE, Zoom.whole());
         int headerAndMargin = PageLayout.PAGE_MARGIN + PageLayout.HEADER_HEIGHT;
 
         Optional<ScoreLayout.Hit> hit = PageScorePainter.hitTest(
-                score, ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH, 60, headerAndMargin + 20);
+                score, ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH), 60, headerAndMargin + 20);
 
         assertTrue(hit.isPresent(), "un clic dentro del area de la hoja tiene que encontrar algo");
         assertEquals(0, hit.get().measure());
@@ -99,18 +99,19 @@ class PageScorePainterTest {
         paint(score, ViewMode.PAGE, Zoom.whole());
 
         Optional<ScoreLayout.Hit> hit = PageScorePainter.hitTest(
-                score, ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH, 60, 5);
+                score, ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH), 60, 5);
 
         assertTrue(hit.isEmpty(), "el encabezado no tiene compases");
     }
 
     private static void paint(Score score, ViewMode mode, Zoom zoom) {
-        Dimension size = PageScorePainter.canvasSize(score, mode, zoom, VIEWPORT_WIDTH);
+        Dimension size = PageScorePainter.canvasSize(score, ScoreViewport.of(mode, zoom, VIEWPORT_WIDTH));
         BufferedImage image = new BufferedImage(
                 Math.max(1, size.width), Math.max(1, size.height), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
         PageScorePainter.paint(
-                g, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), mode, zoom, VIEWPORT_WIDTH);
+                g, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(),
+                ScoreViewport.of(mode, zoom, VIEWPORT_WIDTH));
         g.dispose();
     }
 
