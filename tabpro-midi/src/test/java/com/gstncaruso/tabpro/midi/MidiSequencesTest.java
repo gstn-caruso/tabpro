@@ -269,6 +269,28 @@ class MidiSequencesTest {
         assertEquals(60_000_000 / 60, microsecondsPerQuarterOf((MetaMessage) tempos.get(1).getMessage()));
     }
 
+    @Test
+    void aValueRecoveredAtTickZeroWinsOverTheOneTheTrackStartsWith() {
+        Timeline timeline = new Timeline(120, 960, List.of(new TrackTimeline(25, 100, 64, false,
+                List.of(), List.of(), List.of(new ScheduledParameter(0, SoundParameter.VOLUME, 40)))));
+
+        Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
+
+        assertEquals(40, lastControllerValue(track, 7),
+                "arrancar en el medio recupera el volumen que dejo el cambio anterior");
+    }
+
+    private int lastControllerValue(Track track, int controller) {
+        return java.util.stream.IntStream.range(0, track.size())
+                .mapToObj(track::get)
+                .filter(event -> event.getMessage() instanceof ShortMessage sm
+                        && sm.getCommand() == ShortMessage.CONTROL_CHANGE
+                        && sm.getData1() == controller)
+                .map(event -> ((ShortMessage) event.getMessage()).getData2())
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new AssertionError("no se encontro el controlador " + controller));
+    }
+
     private int controllerValueAt(Track track, int controller, long tick) {
         return java.util.stream.IntStream.range(0, track.size())
                 .mapToObj(track::get)

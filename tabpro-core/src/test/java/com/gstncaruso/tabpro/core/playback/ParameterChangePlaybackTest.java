@@ -111,6 +111,19 @@ class ParameterChangePlaybackTest {
     }
 
     @Test
+    void theValuesComeOutInTheOrderTheyAreSent() {
+        ParameterChange both = volume(40).changing(SoundParameter.PAN, 20).over(2);
+        Score score = scoreOf(guitarWith(measureChangingAt(0, both)));
+
+        List<ScheduledParameter> scheduled = Timeline.of(score).tracks().get(0).parameters();
+
+        for (int index = 1; index < scheduled.size(); index++) {
+            assertTrue(scheduled.get(index - 1).tick() <= scheduled.get(index).tick(),
+                    "los valores salen en el orden en que suenan");
+        }
+    }
+
+    @Test
     void aChangeForEveryTrackReachesEveryTrack() {
         Score score = scoreOf(
                 guitarWith(measureChangingAt(1, volume(40).onEveryTrack(true))),

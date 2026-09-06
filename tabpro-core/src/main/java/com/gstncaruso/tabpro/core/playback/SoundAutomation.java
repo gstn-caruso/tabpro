@@ -136,6 +136,9 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
         }
 
         SoundAutomation automation() {
+            for (List<ScheduledParameter> ofOneTrack : scheduled) {
+                ofOneTrack.sort(Comparator.comparingLong(ScheduledParameter::tick));
+            }
             return new SoundAutomation(tempo, scheduled);
         }
 
