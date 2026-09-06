@@ -98,10 +98,12 @@ Guarda en `.tabpro`, un JSON legible y versionado que conserva todo: efectos,
 ligaduras, grupos irregulares, las dos voces, los atributos de cada compás, las
 propiedades de pista, los datos del encabezado y la letra.
 
-Abre archivos `.gp3`, `.gp4`, `.gp5` y `.gtp`. Importa y exporta MIDI, tablatura
-ASCII y MusicXML, con sus ventanas: la de MIDI lista las pistas del archivo y deja
-importarlas de una o fusionar varias sobre una pista existente; la de ASCII deja
-pegar y corregir la tablatura antes de importarla sobre la pista activa.
+Abre archivos `.gp3`, `.gp4`, `.gp5` y `.gtp`, y exporta al formato de Guitar
+Pro 4 (avisando antes qué se pierde, si la partitura usa algo que ese formato no
+soporta). Importa y exporta MIDI, tablatura ASCII y MusicXML, con sus ventanas:
+la de MIDI lista las pistas del archivo y deja importarlas de una o fusionar
+varias sobre una pista existente; la de ASCII deja pegar y corregir la
+tablatura antes de importarla sobre la pista activa.
 
 Exporta también la partitura como imagen y como PDF, y la imprime eligiendo el
 rango de páginas y la escala.
@@ -146,8 +148,9 @@ Herramientas, Sonido, Ver, Opciones y Ayuda— llevan todo lo demás.
 ## Lo que todavía no está
 
 Un motor de sonido con samples reales de instrumento, y con él la exportación a
-WAVE. La exportación a `.gp5` —por ahora esos archivos sólo se leen—. La
-importación de PowerTab y de TablEdit.
+WAVE. La exportación a `.gp5` —tabpro exporta a `.gp4`, que es lo que pide el
+manual; los archivos `.gp5` por ahora sólo se leen—. La importación de
+PowerTab y de TablEdit.
 
 ## Cómo está hecho
 

@@ -16,6 +16,7 @@ import com.gstncaruso.tabpro.format.exchange.midi.MidiScoreImporter;
 import com.gstncaruso.tabpro.format.exchange.midi.MidiTrackSummary;
 import com.gstncaruso.tabpro.format.exchange.musicxml.MusicXmlScoreExporter;
 import com.gstncaruso.tabpro.format.exchange.musicxml.MusicXmlScoreImporter;
+import com.gstncaruso.tabpro.format.guitarpro.GuitarProExporter;
 import com.gstncaruso.tabpro.format.guitarpro.GuitarProFile;
 import com.gstncaruso.tabpro.format.tabledit.TabEditFile;
 import java.nio.file.Path;
@@ -33,7 +34,11 @@ public final class NotationExchange implements ScoreExchange {
     private final AsciiTabImporter asciiImporter = new AsciiTabImporter();
     private final AsciiTabExporter asciiExporter = new AsciiTabExporter();
     private final GuitarProFile guitarPro = new GuitarProFile();
+<<<<<<< HEAD:tabpro-format/src/main/java/com/gstncaruso/tabpro/format/exchange/NotationExchange.java
     private final TabEditFile tabEdit = new TabEditFile();
+=======
+    private final GuitarProExporter guitarProExporter = new GuitarProExporter();
+>>>>>>> worktree-agent-a47193336004b3f22:tabpro-format/src/main/java/com/gstncaruso/tabpro/format/exchange/FileExchange.java
     private final MusicXmlScoreImporter musicXmlImporter = new MusicXmlScoreImporter();
     private final MusicXmlScoreExporter musicXmlExporter = new MusicXmlScoreExporter();
 
@@ -92,8 +97,18 @@ public final class NotationExchange implements ScoreExchange {
     }
 
     @Override
+<<<<<<< HEAD:tabpro-format/src/main/java/com/gstncaruso/tabpro/format/exchange/NotationExchange.java
     public Score importTabEdit(Path path) {
         return tabEdit.read(path);
+=======
+    public void exportGuitarPro(Score score, Path path) {
+        guitarProExporter.write(score, path);
+    }
+
+    @Override
+    public List<String> guitarProExportWarnings(Score score) {
+        return guitarProExporter.warningsFor(score);
+>>>>>>> worktree-agent-a47193336004b3f22:tabpro-format/src/main/java/com/gstncaruso/tabpro/format/exchange/FileExchange.java
     }
 
     @Override
