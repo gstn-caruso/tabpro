@@ -28,6 +28,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     private final Editor editor;
     private final TrackVisibility visibleTracks;
     private VisibleNotations visibleNotations = VisibleNotations.both();
+    private boolean graysTheInactiveVoice = true;
     private Playhead playhead = Playhead.silent();
     private ViewMode viewMode = ViewMode.SCREEN_VERTICAL;
     private Zoom zoom = Zoom.whole();
@@ -127,6 +128,15 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
 
     public void setTablatureShown(boolean shown) {
         showing(visibleNotations.withTablature(shown));
+    }
+
+    public boolean graysTheInactiveVoice() {
+        return graysTheInactiveVoice;
+    }
+
+    public void setGrayingTheInactiveVoice(boolean graying) {
+        this.graysTheInactiveVoice = graying;
+        repaint();
     }
 
     private void showing(VisibleNotations visibleNotations) {
@@ -233,7 +243,8 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
         return new ScoreViewport(
                 viewMode, zoom, viewportWidth(),
                 visibleTracks.tracks().withActiveTrack(editor.cursor().track()),
-                visibleNotations);
+                visibleNotations,
+                graysTheInactiveVoice);
     }
 
     private int viewportWidth() {

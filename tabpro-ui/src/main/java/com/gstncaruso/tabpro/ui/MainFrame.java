@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.ui.harmony.ChordDialog;
 import com.gstncaruso.tabpro.ui.harmony.ChosenScale;
 import com.gstncaruso.tabpro.ui.harmony.ScalesDialog;
 import com.gstncaruso.tabpro.ui.dialogs.effects.NoteEffectsDialog;
+import com.gstncaruso.tabpro.ui.dialogs.help.HelpDialog;
 import com.gstncaruso.tabpro.ui.dialogs.info.ScoreInfoDialog;
 import com.gstncaruso.tabpro.ui.dialogs.instrument.InstrumentDialog;
 import com.gstncaruso.tabpro.ui.dialogs.markers.MarkersDialog;
@@ -83,6 +84,7 @@ public final class MainFrame extends JFrame {
     private final ScoreExchange exchange;
     private final ScoreDocument document;
     private final ScoreCanvas canvas;
+    private Commands commands;
     private final TrackVisibility visibleTracks = new TrackVisibility();
     private final Transport transport;
     private final BeatViews beatViews;
@@ -134,7 +136,7 @@ public final class MainFrame extends JFrame {
         beatViews = new BeatViews(editor, player);
 
         JSpinner tempoSpinner = tempoSpinner();
-        Commands commands = new Commands(
+        commands = new Commands(
                 editor, new Document(), new Windows(), new Playback(), new View(), themes.names());
         toolBars = new ToolBars(commands);
         toolBars.addToSoundRow(new JLabel("Tempo "));
@@ -629,6 +631,11 @@ public final class MainFrame extends JFrame {
         }
 
         @Override
+        public void toggleGrayInactiveVoice() {
+            canvas.setGrayingTheInactiveVoice(!canvas.graysTheInactiveVoice());
+        }
+
+        @Override
         public void toggleStandardNotation() {
             canvas.setStandardNotationShown(!canvas.showsStandardNotation());
         }
@@ -964,6 +971,11 @@ public final class MainFrame extends JFrame {
         public void pasteOptions() {
             PasteDialog.show(MainFrame.this, editor);
             backToTheScore();
+        }
+
+        @Override
+        public void help() {
+            HelpDialog.show(MainFrame.this, commands);
         }
 
         @Override

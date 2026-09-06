@@ -261,6 +261,10 @@ public final class Commands {
         define("marker.insert", "Insertar un marcador…", dialogs::insertMarker)
                 .withAccelerator("shift INSERT").withIcon(Icons.marker());
         define("marker.list", "Lista de marcadores…", dialogs::markerList);
+        define("marker.previous", "Marcador anterior", editor::moveToPreviousMarker)
+                .withAccelerator("shift TAB");
+        define("marker.next", "Marcador siguiente", editor::moveToNextMarker)
+                .withAccelerator("ctrl TAB");
     }
 
     // ---- herramientas -----------------------------------------------------
@@ -301,6 +305,7 @@ public final class Commands {
                 .withAccelerator("ctrl LEFT").withIcon(Icons.previousBar());
         define("nav.nextBar", "Compás siguiente", editor::moveToNextMeasure)
                 .withAccelerator("ctrl RIGHT").withIcon(Icons.nextBar());
+        define("nav.nextNote", "Nota siguiente", editor::moveRight).withAccelerator("ENTER");
         define("nav.lastBar", "Último compás", editor::moveToLastMeasure)
                 .withAccelerator("ctrl END").withIcon(Icons.lastBar());
     }
@@ -318,6 +323,8 @@ public final class Commands {
         define("view.zoomOut", "Alejar", view::zoomOut).withAccelerator("ctrl MINUS").withIcon(Icons.zoomOut());
         define("view.resetZoom", "Zoom al 100%", view::resetZoom).withAccelerator("ctrl 0").withIcon(Icons.zoomReset());
         define("view.multitrack", "Vista multipista", view::toggleMultitrack).withIcon(Icons.multitrack());
+        define("view.grayInactiveVoice", "Atenuar la voz inactiva", view::toggleGrayInactiveVoice)
+                .withAccelerator("ctrl G");
         define("view.hideStandardNotation", "Ocultar el pentagrama", view::toggleStandardNotation);
         define("view.hideTablature", "Ocultar la tablatura", view::toggleTablature);
         define("view.fretboard", "Diapasón", view::toggleFretboard).withAccelerator("ctrl 3")
@@ -335,6 +342,7 @@ public final class Commands {
     }
 
     private void defineHelpCommands() {
+        define("help.contents", "Ayuda de tabpro", dialogs::help).withAccelerator("F1");
         define("help.about", "Acerca de tabpro", dialogs::about);
     }
 
