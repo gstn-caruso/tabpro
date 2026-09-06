@@ -317,10 +317,11 @@ class GuitarProFileTest {
 
         // slot 0 = Coda (el primer simbolo de destino); slot 10 = Da Segno al Coda
         // (el sexto salto), segun el orden documentado del bloque de direcciones de GP5.
+        // Cada casillero guarda el numero del compas, que empieza en uno.
         GuitarProFileWriter block = new GuitarProFileWriter();
         for (int slot = 0; slot < 19; slot++) {
-            int measureIndex = slot == 0 ? 1 : slot == 10 ? 0 : -1;
-            block.writeShort(measureIndex);
+            int measureNumber = slot == 0 ? 2 : slot == 10 ? 1 : -1;
+            block.writeShort(measureNumber);
         }
         block.writeInt(0);
         byte[] directions = block.bytes();

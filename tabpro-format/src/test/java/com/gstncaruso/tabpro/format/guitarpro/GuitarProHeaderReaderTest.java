@@ -28,14 +28,28 @@ class GuitarProHeaderReaderTest {
         assertTrue(directions.jumps().isEmpty());
     }
 
+    /**
+     * El casillero guarda el numero del compas, no su posicion: un 3 es el tercer compas,
+     * que en la lista es el indice 2. Tomarlo como indice corre todas las direcciones del
+     * archivo un compas hacia adelante y tira la ultima fuera de la partitura.
+     */
     @Test
     void unSimboloDeDestinoSeAtaAlCompasQueIndicaSuSlot() {
         GuitarProByteReader byteReader = new GuitarProByteReader(directionsBlock(Map.of(0, 3)));
 
         GuitarProDirections directions = reader.readDirections(byteReader, GuitarProVersion.GP5_00);
 
-        assertEquals(Map.of(3, DirectionSymbol.CODA), directions.symbols());
+        assertEquals(Map.of(2, DirectionSymbol.CODA), directions.symbols());
         assertTrue(directions.jumps().isEmpty());
+    }
+
+    @Test
+    void elCompasUnoEsElPrimeroDeLaPartitura() {
+        GuitarProByteReader byteReader = new GuitarProByteReader(directionsBlock(Map.of(0, 1)));
+
+        GuitarProDirections directions = reader.readDirections(byteReader, GuitarProVersion.GP5_00);
+
+        assertEquals(Map.of(0, DirectionSymbol.CODA), directions.symbols());
     }
 
     @Test
@@ -46,7 +60,17 @@ class GuitarProHeaderReaderTest {
 
         GuitarProDirections directions = reader.readDirections(byteReader, GuitarProVersion.GP5_00);
 
-        assertEquals(Map.of(5, DirectionJump.DA_CAPO_AL_CODA), directions.jumps());
+        assertEquals(Map.of(4, DirectionJump.DA_CAPO_AL_CODA), directions.jumps());
+        assertTrue(directions.symbols().isEmpty());
+    }
+
+    /** No hay compas cero: ese casillero tampoco ata nada. */
+    @Test
+    void unSlotEnCeroNoAtaNada() {
+        GuitarProByteReader byteReader = new GuitarProByteReader(directionsBlock(Map.of(0, 0)));
+
+        GuitarProDirections directions = reader.readDirections(byteReader, GuitarProVersion.GP5_00);
+
         assertTrue(directions.symbols().isEmpty());
     }
 
