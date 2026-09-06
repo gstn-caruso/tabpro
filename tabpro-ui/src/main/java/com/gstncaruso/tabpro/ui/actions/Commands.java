@@ -369,7 +369,7 @@ public final class Commands {
                 .withAccelerator("ctrl LEFT").withIcon(Icons.previousBar());
         define("nav.nextBar", "Compás siguiente", editor::moveToNextMeasure)
                 .withAccelerator("ctrl RIGHT").withIcon(Icons.nextBar());
-        define("nav.nextNote", "Nota siguiente", editor::moveRight).withAccelerator("ENTER");
+        define("nav.nextNote", "Nota siguiente", editor::enter).withAccelerator("ENTER");
         define("nav.lastBar", "Último compás", editor::moveToLastMeasure)
                 .withAccelerator("ctrl END").withIcon(Icons.lastBar());
     }

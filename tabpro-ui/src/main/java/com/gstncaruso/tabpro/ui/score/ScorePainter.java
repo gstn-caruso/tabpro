@@ -1,9 +1,11 @@
 package com.gstncaruso.tabpro.ui.score;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
+import com.gstncaruso.tabpro.core.editing.Notation;
 import com.gstncaruso.tabpro.core.editing.Selection;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.TrackDisplay;
@@ -60,8 +62,8 @@ public final class ScorePainter {
         paintPlayingLines(g, layout, score, playhead);
         selection.ifPresent(sel -> paintSelection(g, layout, score, sel));
         if (showsTheEditingCursor(score, cursor)) {
-            paintCursor(g, layout, cursor);
-            paintCorrespondingNote(g, layout, score, cursor);
+            paintCursor(g, layout, score, cursor);
+            paintCorrespondingMark(g, layout, score, cursor);
         }
     }
 
@@ -250,8 +252,13 @@ public final class ScorePainter {
      * cruza el pentagrama y la tablatura de la pista que se esta editando. A diferencia de la
      * linea de reproduccion -que cruza el sistema entero porque todas las pistas suenan juntas-
      * esta es de una sola pista, porque solo se edita una a la vez.
+     *
+     * <p>El cuadradito que marca donde esta parado el cursor va en la notacion activa -manual,
+     * linea 769: la tablatura si se edita ahi, la cabeza de la nota en el pentagrama si se edita
+     * en el pentagrama-; ver {@link #paintCorrespondingMark} para la marca gris, que va siempre
+     * en la otra.
      */
-    private static void paintCursor(Graphics2D g, ScoreLayout layout, Cursor cursor) {
+    private static void paintCursor(Graphics2D g, ScoreLayout layout, Score score, Cursor cursor) {
         int x = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat()).x;
         int top = layout.staffTop(cursor.track(), cursor.measure());
         int bottom = layout.tabBottom(cursor.track(), cursor.measure());
@@ -259,13 +266,46 @@ public final class ScorePainter {
         // fillRect en vez de drawLine: la misma razon que en paintPlaying, para que el
         // antialiasing no reparta la linea entre dos columnas y la deje desteñida.
         g.fillRect(x, top, 1, bottom - top);
-        paintCursorString(g, layout, cursor, x);
+        if (cursor.notation() == Notation.STANDARD) {
+            paintCursorNote(g, layout, score, cursor);
+        } else {
+            paintCursorString(g, layout, cursor, x);
+        }
     }
 
     /** La linea sola no dice en que cuerda esta parado el cursor: a esa altura se la ensancha. */
     private static void paintCursorString(Graphics2D g, ScoreLayout layout, Cursor cursor, int x) {
         int y = layout.stringY(cursor.track(), cursor.measure(), cursor.string());
         g.fillRect(x - 2, y - 2, 5, 5);
+    }
+
+    /**
+     * El cursor sobre la cabeza de la nota, cuando se edita en el pentagrama: la misma altura que
+     * agregaria Enter -la de la nota que ya suena en la cuerda del cursor, o la de la cuerda al
+     * aire si esta en silencio-, para que el cuadradito muestre de verdad donde va a caer la
+     * proxima nota.
+     */
+    private static void paintCursorNote(Graphics2D g, ScoreLayout layout, Score score, Cursor cursor) {
+        Track track = score.track(cursor.track());
+        Measure measure = track.measure(cursor.measure());
+        Beat beat = measure.voice(cursor.voice()).beats().get(cursor.beat());
+        Note pointer = beat.noteOn(cursor.string()).orElseGet(() -> new Note(cursor.string(), 0));
+        Clef clef = Clef.forTuning(track.tuning());
+        int octaveShift = measure.attributes().octaveMark().staffStepShift();
+        StaffPosition position = StaffPainter.positionOf(track, clef, pointer, octaveShift);
+        int y = layout.stepY(cursor.track(), cursor.measure(), position.step());
+        Rectangle bounds = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat());
+        g.fillRect(bounds.x + 1, y - 5, bounds.width - 2, 10);
+    }
+
+    /** La marca del cursor en la OTRA notacion (manual, linea 769-770): gris, y solo si hay una
+     * nota real que marcar -a diferencia del cuadradito del cursor, que siempre se ve. */
+    private static void paintCorrespondingMark(Graphics2D g, ScoreLayout layout, Score score, Cursor cursor) {
+        if (cursor.notation() == Notation.STANDARD) {
+            paintCorrespondingString(g, layout, score, cursor);
+        } else {
+            paintCorrespondingNote(g, layout, score, cursor);
+        }
     }
 
     /** La nota que corresponde al cursor en la otra notacion, marcada con un rectangulo gris. */
@@ -290,6 +330,28 @@ public final class ScorePainter {
             Rectangle bounds = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat());
             g.setColor(ScoreColors.CORRESPONDING_NOTE);
             g.fillRect(bounds.x + 1, y - 5, bounds.width - 2, 10);
+        });
+    }
+
+    /** La cuerda que corresponde al cursor cuando se edita en el pentagrama: el numero de traste
+     * que ya se ve siempre en la tablatura, pero marcado de gris en vez de en el color del cursor
+     * -la marca cambio de lado, como pide el manual-. Solo si hay una nota real en esa cuerda. */
+    private static void paintCorrespondingString(Graphics2D g, ScoreLayout layout, Score score, Cursor cursor) {
+        Track track = score.track(cursor.track());
+        if (cursor.measure() >= track.measureCount()) {
+            return;
+        }
+        Measure measure = track.measure(cursor.measure());
+        var beats = measure.voice(cursor.voice()).beats();
+        if (cursor.beat() >= beats.size()) {
+            return;
+        }
+        Beat beat = beats.get(cursor.beat());
+        beat.noteOn(cursor.string()).ifPresent(note -> {
+            int x = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat()).x;
+            int y = layout.stringY(cursor.track(), cursor.measure(), cursor.string());
+            g.setColor(ScoreColors.CORRESPONDING_NOTE);
+            g.fillRect(x - 2, y - 2, 5, 5);
         });
     }
 }

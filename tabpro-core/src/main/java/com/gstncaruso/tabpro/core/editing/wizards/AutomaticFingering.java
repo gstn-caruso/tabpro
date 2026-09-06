@@ -2,10 +2,12 @@ package com.gstncaruso.tabpro.core.editing.wizards;
 
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,24 +50,37 @@ public final class AutomaticFingering {
 
     /** La misma altura, en la cuerda libre cuyo traste quede mas cerca de la mano. */
     private static Note closestTo(Tuning tuning, Note note, int hand, List<Integer> used) {
-        Note best = note;
+        Note best = bestFingeringFor(tuning, tuning.pitchOf(note), hand, used)
+                .map(found -> found.withEffects(note.effects()).tied(note.tied()))
+                .orElse(note);
+        used.add(best.string());
+        return best;
+    }
+
+    /**
+     * La nota que produce esa altura en la cuerda libre (fuera de {@code excludedStrings}) cuyo
+     * traste quede mas cerca de la mano, si alguna cuerda la alcanza. La reutilizan tanto la
+     * redigitacion de un track entero como cualquier alta puntual de una nota nueva a esa altura.
+     */
+    public static Optional<Note> bestFingeringFor(
+            Tuning tuning, Pitch pitch, int hand, Collection<Integer> excludedStrings) {
+        Note best = null;
         int bestDistance = Integer.MAX_VALUE;
         for (int string = 1; string <= tuning.stringCount(); string++) {
-            if (used.contains(string)) {
+            if (excludedStrings.contains(string)) {
                 continue;
             }
-            Optional<Note> candidate = tuning.noteFor(tuning.pitchOf(note), string);
+            Optional<Note> candidate = tuning.noteFor(pitch, string);
             if (candidate.isEmpty()) {
                 continue;
             }
             int distance = distanceFrom(hand, candidate.get().fret());
             if (distance < bestDistance) {
                 bestDistance = distance;
-                best = candidate.get().withEffects(note.effects()).tied(note.tied());
+                best = candidate.get();
             }
         }
-        used.add(best.string());
-        return best;
+        return Optional.ofNullable(best);
     }
 
     private static int distanceFrom(int hand, int fret) {

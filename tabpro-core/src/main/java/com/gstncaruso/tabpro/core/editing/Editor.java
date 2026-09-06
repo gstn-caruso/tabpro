@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.core.editing;
 
+import com.gstncaruso.tabpro.core.editing.wizards.AutomaticFingering;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.ChordFretting;
@@ -44,6 +45,8 @@ import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.TremoloPicking;
 import com.gstncaruso.tabpro.core.model.effects.Trill;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
+import com.gstncaruso.tabpro.core.notation.Clef;
+import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -566,6 +569,25 @@ public final class Editor {
 
     // ---- navegacion -------------------------------------------------------
 
+    /** El TAB del manual (linea 780): alterna entre editar en la tablatura y en el pentagrama,
+     * sin mover el cursor de donde esta. */
+    public void toggleNotation() {
+        moveCursor(cursor.onNotation(cursor.notation().other()));
+    }
+
+    /**
+     * El Enter de la tabla de atajos (Reference, pp. 79-80): en la tablatura es "Next Note" -va
+     * a la nota siguiente-; en el pentagrama es "Add a Note" -agrega la nota en la altura donde
+     * esta el cursor, sin avanzar-.
+     */
+    public void enter() {
+        if (cursor.notation() == Notation.STANDARD) {
+            addNoteAtCursorPitch();
+            return;
+        }
+        moveRight();
+    }
+
     public void moveTo(int measure, int beat, int string) {
         Track track = currentTrack();
         if (measure < 0 || measure >= track.measureCount()) {
@@ -578,15 +600,45 @@ public final class Editor {
         if (string < 1 || string > track.stringCount()) {
             throw new IllegalArgumentException("string fuera de rango: " + string);
         }
-        moveCursor(new Cursor(cursor.track(), measure, cursor.voice(), beat, string));
+        moveCursor(new Cursor(cursor.track(), measure, cursor.voice(), beat, string, cursor.notation(), Optional.empty()));
     }
 
     public void moveDown() {
+        if (cursor.notation() == Notation.STANDARD) {
+            moveByStaffDegree(-1);
+            return;
+        }
         moveCursor(cursor.onString(Math.min(currentTrack().stringCount(), cursor.string() + 1)));
     }
 
     public void moveUp() {
+        if (cursor.notation() == Notation.STANDARD) {
+            moveByStaffDegree(1);
+            return;
+        }
         moveCursor(cursor.onString(Math.max(1, cursor.string() - 1)));
+    }
+
+    /**
+     * Arriba/abajo en el pentagrama (Reference p. 80): un grado del pentagrama, no una cuerda.
+     * Busca, con la misma heuristica de AutomaticFingering, la cuerda mas cercana a la mano que
+     * toque la nota natural de ese grado; si ninguna cuerda la alcanza, el cursor se queda
+     * quieto -la misma decision que toma Enter cuando ninguna cuerda alcanza su altura-.
+     */
+    private void moveByStaffDegree(int steps) {
+        Track track = currentTrack();
+        Clef clef = Clef.forTuning(track.tuning());
+        int step = StaffPosition.of(pitchAtCursor(), clef).step() + steps;
+        Optional<Pitch> target = clef.pitchAtStep(step);
+        if (target.isEmpty()) {
+            return;
+        }
+        Pitch pitch = target.get();
+        // El puntero guarda la altura exacta (pitch), no la cuerda: la cuerda es solo la mejor
+        // digitacion PARA esa altura, y volver a derivarla de la cuerda al aire en la proxima
+        // flecha perderia los grados ya andados.
+        AutomaticFingering.bestFingeringFor(track.tuning(), pitch, handPosition(), List.of())
+                .ifPresent(found -> moveCursor(cursor.onString(found.string()).withPointer(pitch)));
     }
 
     public void moveLeft() {
@@ -906,6 +958,39 @@ public final class Editor {
         changeCurrentBeat(beat -> beat.mappingNoteOn(cursor.string(), howToChange));
     }
 
+    /**
+     * Agrega, en el pentagrama, la nota a la altura donde esta el cursor: reutiliza la misma
+     * heuristica de AutomaticFingering (la cuerda libre mas cercana a la mano) para elegir cuerda
+     * y traste, excluyendo las cuerdas que ya suenan en el beat para no pisar otra nota del
+     * acorde. Si ninguna cuerda alcanza esa altura -por ejemplo, una nota tipeada mas alla del
+     * limite de trastes de la afinacion- no hace nada, igual que AutomaticFingering deja una nota
+     * asi como estaba.
+     */
+    private void addNoteAtCursorPitch() {
+        Track track = currentTrack();
+        List<Integer> otherStrings = currentBeat().notes().stream()
+                .map(Note::string)
+                .filter(string -> string != cursor.string())
+                .toList();
+        AutomaticFingering.bestFingeringFor(track.tuning(), pitchAtCursor(), handPosition(), otherStrings)
+                .ifPresent(found -> changeBeatAndCursor(beat -> beat.withNote(found), cursor.onString(found.string())));
+    }
+
+    /** La altura donde esta el cursor: la de la nota que ya suena en su cuerda, o la de la
+     * cuerda al aire si el beat esta en silencio ahi. */
+    private Pitch pitchAtCursor() {
+        if (cursor.pointer().isPresent()) {
+            return cursor.pointer().get();
+        }
+        Tuning tuning = currentTrack().tuning();
+        return currentNote().map(tuning::pitchOf).orElseGet(() -> tuning.pitchOfString(cursor.string()));
+    }
+
+    /** Donde esta la mano: el traste de la nota actual, o el primer traste si no hay ninguna. */
+    private int handPosition() {
+        return currentNote().map(Note::fret).orElse(0);
+    }
+
     private void changeNoteEffects(UnaryOperator<NoteEffects> howToChange) {
         changeCurrentNote(note -> note.withEffects(howToChange.apply(note.effects())));
     }
@@ -1030,7 +1115,7 @@ public final class Editor {
         VoicePart voice = track.measure(measure).voice(cursor.voice()).isUnused() ? VoicePart.LEAD : cursor.voice();
         int beat = Math.min(cursor.beat(), track.measure(measure).voice(voice).beatCount() - 1);
         int string = Math.min(cursor.string(), track.stringCount());
-        return new Cursor(trackIndex, measure, voice, beat, string);
+        return new Cursor(trackIndex, measure, voice, beat, string, cursor.notation(), Optional.empty());
     }
 
     private Score withCurrentMeasure(Measure measure) {

@@ -14,10 +14,8 @@ import com.gstncaruso.tabpro.core.model.Pitch;
  */
 public record StaffPosition(int step, boolean sharp) {
 
-    private static final int SOUNDING_TO_WRITTEN_SEMITONES = 12;
-
     public static StaffPosition of(Pitch soundingPitch, Clef clef) {
-        PitchName written = PitchName.of(soundingPitch.transposed(SOUNDING_TO_WRITTEN_SEMITONES));
+        PitchName written = PitchName.of(soundingPitch.transposed(Clef.WRITTEN_ABOVE_SOUNDING_SEMITONES));
         return new StaffPosition(
                 written.diatonicIndex() - clef.bottomLineDiatonicIndex(), written.sharp());
     }

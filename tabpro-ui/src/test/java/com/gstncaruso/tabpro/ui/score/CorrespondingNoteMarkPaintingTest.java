@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
+import com.gstncaruso.tabpro.core.editing.Notation;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -208,6 +209,47 @@ class CorrespondingNoteMarkPaintingTest {
         assertEquals(
                 bare.pixelAt(x, yWhereTheHeadWouldBeWithoutTheMark), onNote.pixelAt(x, yWhereTheHeadWouldBeWithoutTheMark),
                 "sin el corrimiento la marca queda senalando pentagrama vacio");
+    }
+
+    /**
+     * Manual, linea 769-770: la marca gris va en la OTRA notacion. Editando en el pentagrama
+     * -TAB apretado- las dos marcas tienen que invertirse: el cuadradito del cursor (que en la
+     * tablatura marca la cuerda) pasa a marcar la cabeza de la nota, y el rectangulo gris (que en
+     * la tablatura marca la cabeza) pasa a marcar el numero de traste.
+     */
+    @Test
+    void theCursorMarksInvertWhenEditingInStandardNotation() {
+        Note note = new Note(3, 5);
+        Score score = scoreWith(completeMeasureOf(note));
+        StaffPosition position = StaffPosition.of(score.track(0).tuning().pitchOf(note), Clef.TREBLE);
+
+        Painted bare = paint(score, new Cursor(-1, 0, 0, 3));
+        Painted onTablature = paint(score, new Cursor(0, 0, 0, 3));
+        Painted onStaff = paint(score, new Cursor(0, 0, 0, 3).onNotation(Notation.STANDARD));
+
+        // El cuadradito de la tablatura es angosto y arranca en el borde izquierdo del beat
+        // (ScorePainter.paintCursorString); la marca del pentagrama es ancha y cruza su centro
+        // (ScorePainter.paintCorrespondingNote): cada una necesita su propia x para no pintar
+        // afuera de donde realmente cae la marca.
+        int xEdge = bare.layout.beatBounds(0, 0, 0).x;
+        int xCenter = bare.noteX();
+        int yStaff = bare.layout.stepY(0, 0, position.step());
+        int yString = bare.layout.stringY(0, 0, 3);
+
+        assertNotEquals(bare.pixelAt(xEdge, yString), onTablature.pixelAt(xEdge, yString),
+                "en tablatura, el cuadradito del cursor tiene que estar sobre la cuerda");
+        assertNotEquals(bare.pixelAt(xCenter, yStaff), onTablature.pixelAt(xCenter, yStaff),
+                "en tablatura, la marca gris tiene que estar sobre la cabeza de la nota");
+
+        assertNotEquals(bare.pixelAt(xCenter, yStaff), onStaff.pixelAt(xCenter, yStaff),
+                "en el pentagrama, el cuadradito del cursor tiene que pasar a la cabeza de la nota");
+        assertNotEquals(bare.pixelAt(xEdge, yString), onStaff.pixelAt(xEdge, yString),
+                "en el pentagrama, la marca gris tiene que pasar a la cuerda");
+
+        assertNotEquals(onTablature.pixelAt(xEdge, yString), onStaff.pixelAt(xEdge, yString),
+                "donde antes iba el cuadradito del cursor ahora va la marca gris: tiene que cambiar de color");
+        assertNotEquals(onTablature.pixelAt(xCenter, yStaff), onStaff.pixelAt(xCenter, yStaff),
+                "donde antes iba la marca gris ahora va el cuadradito del cursor: tiene que cambiar de color");
     }
 
     private static int stepYOf(Score score, Note note) {
