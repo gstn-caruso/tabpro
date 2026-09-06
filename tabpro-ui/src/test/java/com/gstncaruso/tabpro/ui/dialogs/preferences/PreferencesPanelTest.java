@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import java.awt.Component;
+import java.util.Locale;
 import javax.swing.JCheckBox;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ class PreferencesPanelTest {
 
     @Test
     void startsWithTheGivenPreferences() {
-        Preferences preferences = new Preferences(NoteValue.EIGHTH, false, false, true, 20);
+        Preferences preferences = new Preferences(NoteValue.EIGHTH, false, false, true, 20, false);
 
         PreferencesPanel panel = new PreferencesPanel(preferences);
 
@@ -24,9 +25,9 @@ class PreferencesPanelTest {
     void reflectsWhateverIsLoadedAfterwards() {
         PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
 
-        panel.apply(new Preferences(NoteValue.SIXTEENTH, true, false, true, 20));
+        panel.apply(new Preferences(NoteValue.SIXTEENTH, true, false, true, 20, true));
 
-        assertEquals(new Preferences(NoteValue.SIXTEENTH, true, false, true, 20), panel.toPreferences());
+        assertEquals(new Preferences(NoteValue.SIXTEENTH, true, false, true, 20, true), panel.toPreferences());
     }
 
     @Test
@@ -68,5 +69,28 @@ class PreferencesPanelTest {
             }
         }
         return false;
+    }
+
+    /**
+     * El manual, linea 1916: "You can force the multitrack view when using the Horizontal Screen
+     * Mode in the Options > Preferences [F12]". La preferencia y su efecto ya existian; lo que
+     * faltaba era el lugar donde el manual dice que se elige.
+     */
+    @Test
+    void offersToForceTheMultitrackViewOnTheHorizontalScreen() {
+        PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
+
+        checkBoxSaying(panel, "multipista").setSelected(true);
+
+        assertTrue(panel.toPreferences().forceMultitrackInHorizontalMode());
+    }
+
+    private static JCheckBox checkBoxSaying(PreferencesPanel panel, String words) {
+        for (Component child : panel.getComponents()) {
+            if (child instanceof JCheckBox box && box.getText().toLowerCase(Locale.ROOT).contains(words)) {
+                return box;
+            }
+        }
+        throw new AssertionError("no hay ninguna casilla que hable de \"" + words + "\"");
     }
 }

@@ -1003,7 +1003,8 @@ public final class MainFrame extends JFrame {
                     .withDefaultNoteValue(preferences.defaultNoteValue())
                     .withAutoScrollDuringPlayback(preferences.autoScrollDuringPlayback())
                     .withUndoEnabled(preferences.undoEnabled())
-                    .withAutosaveEvery(preferences.autosaveEvery());
+                    .withAutosaveEvery(preferences.autosaveEvery())
+                    .withForceMultitrackInHorizontalMode(preferences.forceMultitrackInHorizontalMode());
             PreferencesDialog.ask(MainFrame.this, current).ifPresent(updated -> {
                 editingPreferences = updated;
                 preferences.setDefaultNoteValue(updated.defaultNoteValue());
@@ -1013,6 +1014,11 @@ public final class MainFrame extends JFrame {
                 editor.setDefaultNoteValue(updated.defaultNoteValue());
                 editor.setUndoEnabled(updated.undoEnabled());
                 canvas.setAutoScrollDuringPlayback(updated.autoScrollDuringPlayback());
+                preferences.setForceMultitrackInHorizontalMode(updated.forceMultitrackInHorizontalMode());
+                // Se aplica en el acto: si ya se esta en pantalla horizontal, tildar la casilla
+                // tiene que prender la vista multipista sin esperar al proximo cambio de modo.
+                HorizontalMultitrack.applyTo(
+                        visibleTracks, canvas.viewMode(), updated.forceMultitrackInHorizontalMode());
             });
             backToTheScore();
         }
