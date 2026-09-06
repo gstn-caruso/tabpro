@@ -8,13 +8,19 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.editing.Selection;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.Tuning;
 import java.awt.Rectangle;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Optional;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import org.junit.jupiter.api.Test;
 
 class ScoreCanvasTest {
@@ -128,6 +134,54 @@ class ScoreCanvasTest {
 
         Selection selection = canvasWithTwoMeasures.selection().orElseThrow();
         assertFalse(selection.wholeMeasures());
+    }
+
+    /**
+     * El manual, en Using the Mouse: "Note > 0 to 30 (clic derecho sobre la tablatura)". El
+     * menu tiene que ofrecer los trastes de la cuerda donde cayo el clic.
+     */
+    @Test
+    void rightClickingAStringOffersTheFretsOfItsTrack() {
+        ScoreLayout layout = ScoreLayout.of(editor.score(), 900);
+        Rectangle firstBeat = layout.beatBounds(0, 0, 0);
+        int x = centerX(firstBeat);
+        int y = layout.stringY(0, 0, 1);
+
+        JPopupMenu menu = canvas.contextMenuAt(x, y).orElseThrow();
+
+        assertEquals(Tuning.MAX_FRET + 1, menu.getComponentCount());
+    }
+
+    @Test
+    void choosingAFretFromTheContextMenuWritesItOnTheClickedString() {
+        ScoreLayout layout = ScoreLayout.of(editor.score(), 900);
+        Rectangle firstBeat = layout.beatBounds(0, 0, 0);
+        int x = centerX(firstBeat);
+        int y = layout.stringY(0, 0, 2);
+
+        JPopupMenu menu = canvas.contextMenuAt(x, y).orElseThrow();
+        ((JMenuItem) menu.getComponent(7)).doClick();
+
+        assertEquals(Optional.of(new Note(2, 7)), editor.currentBeat().noteOn(2));
+    }
+
+    @Test
+    void rightClickingAPercussionTrackOffersItsSoundsInsteadOfFrets() {
+        Editor percussionEditor = new Editor(new Score("Prueba", 120, List.of(Track.percussion("Bateria"))));
+        ScoreCanvas percussionCanvas = new ScoreCanvas(percussionEditor);
+        ScoreLayout layout = ScoreLayout.of(percussionEditor.score(), 900);
+        Rectangle firstBeat = layout.beatBounds(0, 0, 0);
+        int x = centerX(firstBeat);
+        int y = layout.stringY(0, 0, 1);
+
+        JPopupMenu menu = percussionCanvas.contextMenuAt(x, y).orElseThrow();
+
+        assertEquals(PercussionKit.sounds().size(), menu.getComponentCount());
+    }
+
+    @Test
+    void rightClickingOutsideTheScoreOffersNoMenu() {
+        assertTrue(canvas.contextMenuAt(-100, -100).isEmpty());
     }
 
     private static Editor editorWithTwoMeasures() {
