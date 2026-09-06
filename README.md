@@ -37,6 +37,12 @@ marcando dónde va; hacer clic en cualquier compás salta ahí sin frenar el son
 los botones de paso a paso pasan a moverse de compás en compás, y el título de la
 ventana muestra el tempo real de ese momento.
 
+**Con samples reales, si querés.** `F2` prende el banco de sonidos: tabpro busca
+los SoundFont (`.sf2`, `.dls`) instalados en la máquina y los toca con Gervill, el
+sintetizador que ya trae Java. Sin banco suena el sintetizador del sistema, como
+siempre. Y exporta la partitura a WAVE, que se renderiza sin abrir ninguna línea
+de audio: se puede exportar en una máquina sin placa de sonido.
+
 Los cambios de parámetro que se insertan a mitad de partitura suenan de verdad:
 bajar el volumen de todas las pistas sobre el final, cambiar de instrumento en el
 estribillo o acelerar el tempo, con su transición medida en beats.
@@ -163,7 +169,7 @@ ligado, `S` un slide, `B` un bend, `V` vibrato, `P` palm mute, `I` let ring, `X`
 nota muerta, `O` nota fantasma, `G` nota de adorno, `T` texto, `A` acorde, `F`
 fade in, `Espacio` reproduce.
 
-`F5` abre la información de la partitura, `F6` las propiedades de la pista, `F7`
+`F2` prende y apaga el banco de sonidos, `F5` abre la información de la partitura, `F6` las propiedades de la pista, `F7`
 el instrumento, `F8` la configuración de página, `F9` el loop, `F10` los cambios
 de parámetro, `F11` las notas con dinámica, `F12` las preferencias. `Ctrl+Tab` y `Shift+Tab` saltan entre
 marcadores. `F1` abre la lista completa.
@@ -173,9 +179,8 @@ Herramientas, Sonido, Ver, Opciones y Ayuda— llevan todo lo demás.
 
 ## Lo que todavía no está
 
-Un motor de sonido con samples reales de instrumento, y con él la exportación a
-WAVE. La exportación a `.gp5` —tabpro exporta a `.gp4`, que es lo que pide el
-manual; los archivos `.gp5` por ahora sólo se leen—. La importación de PowerTab.
+La exportación a `.gp5` —tabpro exporta a `.gp4`, que es lo que pide el manual;
+los archivos `.gp5` por ahora sólo se leen—. La importación de PowerTab.
 
 ## Cómo está hecho
 
