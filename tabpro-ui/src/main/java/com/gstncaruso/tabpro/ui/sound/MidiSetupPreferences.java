@@ -8,9 +8,10 @@ import java.util.prefs.Preferences;
 
 /**
  * Lo que Options > MIDI Setup recuerda entre sesiones, guardado con
- * java.util.prefs igual que ChordLibrary: el dispositivo y el patch de
- * instrumentos de cada puerto, si limita la variacion de altura, la entrada
- * de captura, su sensibilidad y la asignacion de cuerdas.
+ * java.util.prefs igual que ChordLibrary: el banco de sonido (global, no por
+ * puerto), el dispositivo y el patch de instrumentos de cada puerto, si
+ * limita la variacion de altura, la entrada de captura, su sensibilidad y la
+ * asignacion de cuerdas.
  */
 public final class MidiSetupPreferences {
 
@@ -25,6 +26,24 @@ public final class MidiSetupPreferences {
 
     public static MidiSetupPreferences userPreferences() {
         return new MidiSetupPreferences(Preferences.userNodeForPackage(MidiSetupPreferences.class).node("midiSetup"));
+    }
+
+    /** El archivo de banco SoundFont elegido a mano, vacio si se deja que tabpro busque el del sistema. */
+    public String soundFontFile() {
+        return store.get("soundFontFile", "");
+    }
+
+    public void setSoundFontFile(String path) {
+        store.put("soundFontFile", path);
+    }
+
+    /** Si el banco de sonido queda activo la proxima vez que arranque tabpro. F2 no toca esto: es una accion en vivo. */
+    public boolean soundFontActive() {
+        return store.getBoolean("soundFontActive", true);
+    }
+
+    public void setSoundFontActive(boolean active) {
+        store.putBoolean("soundFontActive", active);
     }
 
     public String outputDevice(int port) {

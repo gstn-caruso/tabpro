@@ -285,7 +285,9 @@ public final class MainFrame extends JFrame {
             ports.add(new MidiSetupDialog.PortSetup(
                     devices.output(port), midiSetupPreferences.patchPath(port), devices.limitsPitchVariation(port)));
         }
-        return new MidiSetupDialog.Setup(ports, devices.input(), devices.sensitivityMillis(), stringAssignment);
+        return new MidiSetupDialog.Setup(
+                devices.soundFontFile().orElse(""), devices.soundFontActive(),
+                ports, devices.input(), devices.sensitivityMillis(), stringAssignment);
     }
 
     /** Lo que quedo guardado la ultima vez que se cerro Options > MIDI Setup con Aceptar. */
@@ -297,12 +299,20 @@ public final class MainFrame extends JFrame {
                     midiSetupPreferences.limitPitchVariation(port)));
         }
         return new MidiSetupDialog.Setup(
+                midiSetupPreferences.soundFontFile(), midiSetupPreferences.soundFontActive(),
                 ports, midiSetupPreferences.inputDevice(), midiSetupPreferences.sensitivityMillis(),
                 midiSetupPreferences.stringAssignment());
     }
 
     /** Aplica lo que se eligio en la ventana a los dispositivos de verdad, y lo deja guardado para la proxima vez. */
     private void useMidiSetup(MidiSetupDialog.Setup setup) {
+        devices.chooseSoundFontFile(
+                setup.soundFontFile().isBlank() ? java.util.Optional.empty() : java.util.Optional.of(setup.soundFontFile()));
+        if (setup.soundFontActive() != devices.soundFontActive()) {
+            devices.toggleSoundFont();
+        }
+        midiSetupPreferences.setSoundFontFile(setup.soundFontFile());
+        midiSetupPreferences.setSoundFontActive(setup.soundFontActive());
         for (int index = 0; index < setup.ports().size(); index++) {
             int port = index + 1;
             MidiSetupDialog.PortSetup portSetup = setup.ports().get(index);
@@ -689,6 +699,11 @@ public final class MainFrame extends JFrame {
                 return;
             }
             devices.startCapture(new CapturedNotes());
+        }
+
+        @Override
+        public void toggleSoundFont() {
+            devices.toggleSoundFont();
         }
 
         @Override
