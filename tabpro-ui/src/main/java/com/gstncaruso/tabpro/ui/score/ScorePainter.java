@@ -282,7 +282,10 @@ public final class ScorePainter {
         Beat beat = beats.get(cursor.beat());
         beat.noteOn(cursor.string()).ifPresent(note -> {
             Clef clef = Clef.forTuning(track.tuning());
-            StaffPosition position = StaffPosition.of(track.tuning().pitchOf(note), clef);
+            // La misma cuenta que StaffPainter para ubicar la cabeza -8va/8vb/15ma/15mb
+            // incluido-, no una copia: si la formula vive en dos lados, vuelven a separarse.
+            int octaveShift = measure.attributes().octaveMark().staffStepShift();
+            StaffPosition position = StaffPainter.positionOf(track, clef, note, octaveShift);
             int y = layout.stepY(cursor.track(), cursor.measure(), position.step());
             Rectangle bounds = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat());
             g.setColor(ScoreColors.CORRESPONDING_NOTE);

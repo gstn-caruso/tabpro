@@ -15,6 +15,9 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.Voice;
+import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
@@ -167,6 +170,44 @@ class CorrespondingNoteMarkPaintingTest {
                 "en la hoja tiene que quedar el gris invertido de ON_PAPER");
         assertNotEquals(blended(base, ScoreColors.CORRESPONDING_NOTE), actual,
                 "el gris crudo de pantalla, sin invertir, se leeria mal sobre el papel claro");
+    }
+
+    /**
+     * El bug de verdad: bajo 8va/8vb/15ma/15mb, StaffPainter escribe la cabeza siete (o catorce)
+     * grados corrida -{@link StaffPainter#positionOf} aplica {@code octaveMark.staffStepShift()}-
+     * pero paintCorrespondingNote calculaba la posicion sin ese corrimiento. La marca quedaba
+     * senalando pentagrama vacio (o la linea de otra nota) mientras la cabeza real estaba siete
+     * grados mas arriba: una marca que apunta a la nota equivocada es peor que no tener marca.
+     */
+    @Test
+    void theCorrespondingNoteMarkFollowsTheNoteWhenAnOctaveMarkMovesItsHead() {
+        Note note = new Note(1, 0);
+        Measure measure = new Measure(
+                TimeSignature.fourFour(),
+                MeasureAttributes.plain().withOctaveMark(OctaveMark.OTTAVA_ALTA),
+                List.of(new Voice(List.of(
+                        Beat.of(Duration.quarter(), note),
+                        Beat.rest(Duration.quarter()), Beat.rest(Duration.quarter()), Beat.rest(Duration.quarter()))),
+                        Voice.unused()));
+        Score score = scoreWith(measure);
+
+        StaffPosition unshiftedPosition = StaffPosition.of(score.track(0).tuning().pitchOf(note), Clef.TREBLE);
+        int unshiftedStep = unshiftedPosition.step();
+        int shiftedStep = unshiftedPosition.shiftedBySteps(OctaveMark.OTTAVA_ALTA.staffStepShift()).step();
+        assertNotEquals(unshiftedStep, shiftedStep, "el fixture no sirve si 8va no mueve la cabeza");
+
+        Painted bare = paint(score, new Cursor(-1, 0, 0, 1));
+        Painted onNote = paint(score, new Cursor(0, 0, 0, 1));
+        int x = bare.noteX();
+        int yWhereTheHeadActuallyIs = bare.layout.stepY(0, 0, shiftedStep);
+        int yWhereTheHeadWouldBeWithoutTheMark = bare.layout.stepY(0, 0, unshiftedStep);
+
+        assertNotEquals(
+                bare.pixelAt(x, yWhereTheHeadActuallyIs), onNote.pixelAt(x, yWhereTheHeadActuallyIs),
+                "8va corre la cabeza siete grados: la marca tiene que seguirla hasta ahi");
+        assertEquals(
+                bare.pixelAt(x, yWhereTheHeadWouldBeWithoutTheMark), onNote.pixelAt(x, yWhereTheHeadWouldBeWithoutTheMark),
+                "sin el corrimiento la marca queda senalando pentagrama vacio");
     }
 
     private static int stepYOf(Score score, Note note) {
