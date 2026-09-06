@@ -9,6 +9,10 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TimeSignature;
+import com.gstncaruso.tabpro.core.model.bars.KeySignature;
+import com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties;
+import com.gstncaruso.tabpro.ui.dialogs.info.NewScoreDefaults;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -93,19 +97,27 @@ class ScoreDocumentTest {
         assertEquals(Score.blank(), editor.score());
     }
 
-    /** Archivo > Nuevo con "Propiedades por defecto" cargadas: la que llega es esa, no Score.blank(). */
+    /**
+     * Archivo > Nuevo tiene que usar lo que este guardado en "Propiedades por defecto". Este
+     * test ata esa lectura a newScore(): si algun dia alguien vuelve a llamar Score::blank a
+     * secas en vez del supplier, la partitura nueva no tiene tempo 90 ni compas 3/4 y el test
+     * se cae, aunque DefaultScorePropertiesTest siga verde.
+     */
     @Test
-    void newScoreConUnaPlantillaUsaEsaPlantillaEnVezDeLaPartituraEnBlanco() {
-        FakeScoreFiles files = new FakeScoreFiles();
+    void newScoreUsaLoQueHayGuardadoEnPropiedadesPorDefecto() {
+        java.util.prefs.Preferences scratch = java.util.prefs.Preferences.userRoot()
+                .node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
+        DefaultScoreProperties defaultProperties = new DefaultScoreProperties(scratch);
+        defaultProperties.save(new NewScoreDefaults(
+                90, new TimeSignature(3, 4), KeySignature.cMajor(), "", ""));
         Editor editor = new Editor(Score.blank());
-        ScoreDocument document = new ScoreDocument(editor, files);
-        document.saveAs(Path.of("cancion.tabpro"));
-        Score plantilla = Score.blank().withTempo(90);
+        ScoreDocument document = new ScoreDocument(
+                editor, new FakeScoreFiles(), new Preferences(), () -> defaultProperties.get().newScore());
 
-        document.newScore(plantilla);
+        document.newScore();
 
-        assertTrue(document.path().isEmpty());
-        assertEquals(plantilla, editor.score());
+        assertEquals(90, editor.score().tempo());
+        assertEquals(new TimeSignature(3, 4), editor.score().timeSignatureOf(0));
     }
 
     @Test

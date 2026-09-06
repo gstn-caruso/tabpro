@@ -134,7 +134,8 @@ public final class MainFrame extends JFrame {
         this.player = player;
         this.editor = editor;
         this.files = files;
-        this.document = new ScoreDocument(editor, files, preferences);
+        this.document = new ScoreDocument(
+                editor, files, preferences, () -> defaultScoreProperties.get().newScore());
         editor.setUndoEnabled(preferences.undoEnabled());
         useMidiSetup(midiSetupFromPreferences());
         setSize(windowSize());
@@ -376,7 +377,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void newScore() {
             if (askToDiscardChanges()) {
-                document.newScore(defaultScoreProperties.get().newScore());
+                document.newScore();
                 usePageSetup(DefaultPageSetup.userSetup().get());
                 updateTitle();
                 ScoreInfoDialog.show(MainFrame.this, editor, defaultScoreProperties);
