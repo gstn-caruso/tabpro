@@ -1,6 +1,8 @@
 package com.gstncaruso.tabpro.format.exchange.musicxml;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
@@ -45,5 +47,18 @@ class MusicXmlForeignFixtureImportTest {
         assertEquals(67, track.pitchOf(beats.get(1).notes().get(0)).midiNumber(), "Sol4");
         assertEquals(69, track.pitchOf(beats.get(2).notes().get(0)).midiNumber(), "La4");
         assertEquals(70, track.pitchOf(beats.get(3).notes().get(0)).midiNumber(), "Si b4, con su alteracion explicita");
+    }
+
+    @Test
+    void unSilencioDeCompasEnteroSinTypeOcupaTodoElCompas() {
+        Score score = importFixture("silencio-de-compas-completo");
+
+        Measure measure = score.track(0).measure(0);
+        Beat beat = measure.beat(0);
+
+        assertTrue(beat.isRest(), "el unico note del compas es <rest measure=\"yes\"/>");
+        assertTrue(measure.isComplete(),
+                "un silencio de compas entero en 3/4 tiene que ocupar los 3 tiempos, no 1 negra por defecto");
+        assertFalse(measure.isTooShort());
     }
 }
