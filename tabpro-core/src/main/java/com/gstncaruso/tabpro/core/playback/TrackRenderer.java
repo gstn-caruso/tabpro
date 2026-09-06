@@ -3,14 +3,11 @@ package com.gstncaruso.tabpro.core.playback;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
-import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Track;
-import com.gstncaruso.tabpro.core.model.Voice;
 import com.gstncaruso.tabpro.core.model.VoicePart;
-import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
@@ -62,38 +59,19 @@ final class TrackRenderer {
     }
 
     TrackTimeline render() {
-        long tick = 0;
-        for (int step = 0; step < order.size(); step++) {
-            int measureIndex = order.measureAt(step);
-            if (measureIndex >= track.measureCount()) {
-                continue;
+        for (TimedBeat timed : TrackClock.of(track, order)) {
+            if (timed.voice() == VoicePart.LEAD) {
+                beats.add(new ScheduledBeat(timed.tick(), timed.measureIndex(), timed.beatIndex()));
             }
-            Measure measure = track.measure(measureIndex);
-            TripletFeel feel = measure.attributes().tripletFeel();
-            renderVoice(measure.voice(VoicePart.LEAD), tick, feel, measureIndex, lead, true);
-            renderVoice(measure.voice(VoicePart.BASS), tick, feel, measureIndex, bass, false);
-            tick += measure.durationTicks();
+            renderBeat(timed.beat(), timed.tick(), timed.durationTicks(), cursorOf(timed.voice()));
         }
         Channel channel = track.channel();
         int volume = audible ? channel.volume() : 0;
         return new TrackTimeline(channel.program(), volume, channel.pan(), track.isPercussion(), notes, beats);
     }
 
-    private void renderVoice(
-            Voice voice, long measureStartTick, TripletFeel feel,
-            int measureIndex, VoiceCursor cursor, boolean collectBeatMarkers) {
-        List<Beat> voiceBeats = voice.beats();
-        long[] durations = SwingTiming.durationsFor(voiceBeats, feel);
-        long tick = measureStartTick;
-        for (int b = 0; b < voiceBeats.size(); b++) {
-            Beat beat = voiceBeats.get(b);
-            long beatTicks = durations[b];
-            if (collectBeatMarkers) {
-                beats.add(new ScheduledBeat(tick, measureIndex, b));
-            }
-            renderBeat(beat, tick, beatTicks, cursor);
-            tick += beatTicks;
-        }
+    private VoiceCursor cursorOf(VoicePart part) {
+        return part == VoicePart.LEAD ? lead : bass;
     }
 
     private void renderBeat(Beat beat, long tick, long beatTicks, VoiceCursor cursor) {
