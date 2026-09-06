@@ -114,6 +114,19 @@ public interface ScoreExchange {
         throw notSupported("la apertura de archivos de TablEdit");
     }
 
+    /** "File &gt; Export &gt; Guitar Pro 4 Format" del manual. */
+    default void exportGuitarPro(Score score, Path path) {
+        throw notSupported("la exportación a Guitar Pro");
+    }
+
+    /**
+     * Que se pierde si esta partitura en particular se exporta a Guitar Pro 4 (letra vieja,
+     * segunda voz, autor de la música, etc.), para avisarle al usuario antes de exportar.
+     */
+    default List<String> guitarProExportWarnings(Score score) {
+        throw notSupported("la exportación a Guitar Pro");
+    }
+
     private static ScoreFileException notSupported(String what) {
         return new ScoreFileException(what + " todavía no está disponible.");
     }
