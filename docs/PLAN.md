@@ -92,7 +92,9 @@ Dos cosas que conviene no volver a aprender:
    preset incompatible que el dry-run nunca llegó a ejercitar. Para probar de
    verdad hay que correrlo sacando los plugins que piden credenciales.
 
-## Los huecos de esta sesión, en orden
+## Los huecos de esta sesión
+
+Todos cerrados salvo el último.
 
 | Hueco | Estado |
 |---|---|
@@ -103,47 +105,68 @@ Dos cosas que conviene no volver a aprender:
 | `MidiScoreExporter` escribía un solo tempo | ✅ #52 |
 | El lector declara el orden de los casilleros de direcciones | ✅ #54 |
 | Diálogos de importación (escuchar pistas, precisión, espaciado ASCII) | ✅ #57 |
-| El exportador de sonido se muda a `tabpro-midi` (`format` ya no depende de `midi`) | ✅ #58 |
+| El exportador de sonido se muda a `tabpro-midi` | ✅ #58 |
 | Importar TablEdit | ✅ #62 |
-| El `.mid` exportado suena como la partitura | 🔜 rebasándose |
-| Banco de sonidos SoundFont (+ F2) | 🔜 rebasándose |
-| Los seis bugs del formato Guitar Pro | 🔜 en curso |
-| Exportar al formato Guitar Pro | ⏸ retenido hasta que la verificación dé verde |
-| Importar PowerTab | 🔜 en curso |
-| Import MIDI: casilla "2 canales por pista" | ⏳ pendiente |
-| `File > Open` que abra también los `.gp*` | ⏳ pendiente |
+| La importación de TablEdit vuelve a llegar al importador | ✅ #64 |
+| **Cuatro bugs del lector de Guitar Pro** | ✅ #69 |
+| El puerto de intercambio sin `default` que tiran | ✅ #70 |
+| El `.mid` exportado suena como la partitura | ✅ #60 |
+| Exportar al formato de Guitar Pro | ✅ #74 |
+| El cursor de edición como línea roja | ✅ #76 |
+| Importar PowerTab | ✅ #77 |
+| Banco de sonidos SoundFont (+ F2) | ✅ #71 |
+| Import MIDI: casilla "2 canales por pista" | ✅ hecho, esperando el arreglo de `effectChannelNextTo` |
+| El lector de GP descarta el byte de wah | 🔜 en curso |
 
 ## Lo más importante que se aprendió
 
-**El oráculo estaba adentro del sistema que queríamos verificar.** Aparece cuatro
-veces el mismo día, en cuatro disfraces:
+**El oráculo estaba adentro del sistema que queríamos verificar.** El mismo error
+apareció cinco veces en un día, en cinco disfraces:
 
-1. **El lector de Guitar Pro lee mal los archivos reales.** El escritor nuevo de
-   `.gp4` pasaba todos sus tests de ida y vuelta contra nuestro propio lector.
-   Verificado contra **PyGuitarPro** —otra implementación— y contra `.gp4`
-   auténticos: **siete de siete archivos generados con uso normal no abren**, y
-   aparecieron seis bugs. Pasaba porque el lector y el escritor comparten las
-   mismas suposiciones equivocadas: se entienden entre ellos y con nadie más.
-   Peor: los fixtures del repo los generamos nosotros usando ese mismo lector
-   como referencia, así que tampoco eran fuente independiente.
-   Uno de los seis está confirmado como bug viejo del lector:
-   `UNITS_PER_QUARTER_TONE = 50` cuando el formato usa 25, o sea que **todos los
-   bends de todos los archivos de Guitar Pro que tabpro abrió alguna vez entraron
-   a la mitad de profundidad**. Y como el `.tabpro` no guarda de dónde vino la
-   partitura, **no hay migración segura**: duplicar todo arreglaría las
-   importadas y rompería las escritas a mano. Va nota en el release.
+1. **El lector de Guitar Pro leía mal los archivos reales.** El escritor nuevo de
+   `.gp4` pasaba todos sus round-trips contra nuestro propio lector. Contra
+   **PyGuitarPro** y `.gp4` auténticos: **siete de siete archivos generados no
+   abrían**, y de seis bugs, **cuatro eran del lector que ya estaba en
+   producción**. Tres de dieciséis archivos auténticos ni siquiera abrían en
+   tabpro. Pasaba porque lector y escritor comparten las mismas suposiciones — y
+   los fixtures del repo los generábamos nosotros con ese mismo lector.
 2. **El dry-run de semantic-release** verificaba que la configuración cargara, no
    que las notas se pudieran generar: sin token se frena antes de ese paso.
 3. **El CI sin placa de sonido es el usuario real.** Un puerto MIDI que no abría
-   se llevaba puesta la reproducción entera, y no se veía en la máquina de
-   desarrollo porque ahí había línea libre.
-4. **Probar el banco de sonidos en una máquina que lo tiene instalado** es el
-   mismo error, y por eso el camino sin banco se prueba explícitamente.
+   se llevaba puesta la reproducción entera. Y exportar a WAVE reventaba con una
+   excepción sin manejar en cualquier máquina sin audio — el render pedía una
+   línea que un render *offline* no necesita.
+4. **Probar el banco de sonidos en una máquina que lo tiene instalado.** Saltear
+   un camino con `Assumptions` no es probarlo.
+5. **Los tests probaban la pieza, no el camino del usuario.** `importTabEdit`
+   estaba implementado, testeado y era **inalcanzable**: nadie había escrito la
+   línea que lo delega, y el usuario elegía su archivo para recibir "no
+   disponible".
 
-**Regla que queda para el proyecto:** un round-trip contra nuestro propio lector
-prueba consistencia interna, no compatibilidad. La única verificación que
-significa algo es contra un archivo auténtico o contra otra implementación.
+### Las reglas que quedan
 
-**Lección de diseño que dejó el caso de los bends:** la procedencia de un dato es
-barata de guardar y cara de no tener. Si el `.tabpro` recordara de qué archivo
-salió, la migración sería posible.
+- **Un round-trip contra nuestro propio lector prueba consistencia interna, no
+  compatibilidad.** La única verificación que significa algo para un formato
+  binario es contra un archivo auténtico o contra otra implementación.
+- **La diferencia de entorno no dice de qué lado está el error.** Dice que hay
+  una suposición sobre la máquina metida en algún lado. La pregunta que los
+  separa: *¿qué querría que pasara en la máquina del usuario?*
+- **Un `default` que tira convierte un error de compilación en uno de runtime**, y
+  hace que "no lo soporto" y "me lo olvidé" se vean iguales en el código.
+- **Cuando dos features distintas se tuercen en el mismo punto, el punto está mal
+  puesto.**
+- **Un test que no puede fallar es basura**; uno que tapa un agujero que el
+  diseño podría cerrar es una curita.
+
+### Cuando el bug ya salió del programa
+
+Dos bugs llegaron a los archivos de la gente, y **piden cosas distintas**. La
+pregunta no es "¿el bug llegó a los archivos?" sino **"¿el dato correcto todavía
+es derivable de lo que quedó guardado?"**
+
+- **Los bends destruyeron el dato.** Un bend leído a la mitad es indistinguible
+  de uno legítimo de esa profundidad. No hay migración posible: va nota en el
+  release pidiendo reimportar el original.
+- **Los canales no perdieron nada.** El canal real era una función determinística
+  del orden de las pistas, así que el programa lo recalcula al abrir y el usuario
+  no se entera. No va en la nota del release.
