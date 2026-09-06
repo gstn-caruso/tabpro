@@ -51,6 +51,7 @@ import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.percussion.PercussionAssistant;
+import com.gstncaruso.tabpro.ui.print.ImageExportException;
 import com.gstncaruso.tabpro.ui.print.PrintSettings;
 import com.gstncaruso.tabpro.ui.print.ScorePrinting;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
@@ -427,15 +428,17 @@ public final class MainFrame extends JFrame {
         @Override
         public void exportImage() {
             JFileChooser chooser = new JFileChooser();
-            chooser.setFileFilter(new FileNameExtensionFilter("Imagen (*.png, *.jpg)", "png", "jpg", "jpeg"));
+            chooser.setFileFilter(
+                    new FileNameExtensionFilter("Imagen (*.png, *.jpg, *.bmp)", "png", "jpg", "jpeg", "bmp"));
             if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
                 return;
             }
             try {
                 ScorePrinting.exportImage(
-                        editor.score(), pageSetup, ScorePrinting.withImageExtension(chooser.getSelectedFile()));
+                        editor.score(), pageSetup, ScorePrinting.withImageExtension(chooser.getSelectedFile()),
+                        canvas.viewMode());
                 backToTheScore();
-            } catch (java.io.UncheckedIOException e) {
+            } catch (java.io.UncheckedIOException | ImageExportException e) {
                 JOptionPane.showMessageDialog(
                         MainFrame.this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
             }

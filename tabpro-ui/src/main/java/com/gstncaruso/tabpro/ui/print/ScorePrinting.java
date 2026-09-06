@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.print;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.page.PageMetrics;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
+import com.gstncaruso.tabpro.ui.score.ViewMode;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -43,9 +44,13 @@ public final class ScorePrinting {
         return ScoreSheets.pageCount(score, setup);
     }
 
-    public static void exportImage(Score score, PageSetup setup, Path path) {
+    public static void exportImage(Score score, PageSetup setup, Path path, ViewMode viewMode) {
+        String format = formatOf(path);
+        if (format.equals("bmp") && viewMode != ViewMode.PAGE) {
+            throw new ImageExportException("La exportación a BMP sólo está disponible en modo Página.");
+        }
         try {
-            ImageIO.write(ScoreSheets.render(score, Zoom.whole(), setup), formatOf(path), path.toFile());
+            ImageIO.write(ScoreSheets.render(score, Zoom.whole(), setup), format, path.toFile());
         } catch (IOException e) {
             throw new UncheckedIOException("no se pudo escribir " + path, e);
         }
@@ -72,7 +77,10 @@ public final class ScorePrinting {
 
     private static String formatOf(Path path) {
         String name = path.getFileName().toString().toLowerCase(java.util.Locale.ROOT);
-        return name.endsWith(".jpg") || name.endsWith(".jpeg") ? "jpg" : "png";
+        if (name.endsWith(".jpg") || name.endsWith(".jpeg")) {
+            return "jpg";
+        }
+        return name.endsWith(".bmp") ? "bmp" : "png";
     }
 
     /** Cada hoja de la partitura, una por hoja de papel de la impresora. */
@@ -100,7 +108,7 @@ public final class ScorePrinting {
     public static Path withImageExtension(File file) {
         String name = file.getName();
         String lower = name.toLowerCase(java.util.Locale.ROOT);
-        return lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg")
+        return lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".bmp")
                 ? file.toPath()
                 : file.toPath().resolveSibling(name + ".png");
     }
