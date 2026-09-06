@@ -33,6 +33,13 @@ public final class ScoreLayout {
     public static final int STAFF_TO_TAB_GAP = 42;
     public static final int STRING_SPACING = 12;
     public static final int TRACK_GAP = 20;
+
+    /**
+     * Los numeros de la tablatura se dibujan centrados sobre su cuerda, asi que
+     * la mitad de un digito cae por debajo de la ultima linea y la pista tiene
+     * que reservar ese lugar o el numero queda cortado al pie de la hoja.
+     */
+    public static final int TAB_BOTTOM_PADDING = STRING_SPACING;
     public static final int SYSTEM_GAP = 26;
 
     public static final int MEASURE_LEFT_PADDING = 26;
@@ -173,7 +180,8 @@ public final class ScoreLayout {
     }
 
     private static int blockHeight(Track track) {
-        return TRACK_LABEL_HEIGHT + STAFF_HEADROOM + STAFF_HEIGHT + STAFF_TO_TAB_GAP + tabHeightOf(track);
+        return TRACK_LABEL_HEIGHT + STAFF_HEADROOM + STAFF_HEIGHT + STAFF_TO_TAB_GAP
+                + tabHeightOf(track) + TAB_BOTTOM_PADDING;
     }
 
     private static int tabHeightOf(Track track) {

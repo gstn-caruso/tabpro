@@ -57,8 +57,18 @@ public final class ScorePainter {
             paintTrack(g, layout, score, trackIndex, cursor, playhead);
         }
         selection.ifPresent(sel -> paintSelection(g, layout, score, sel));
-        paintCursor(g, layout, cursor);
-        paintCorrespondingNote(g, layout, score, cursor);
+        if (showsTheEditingCursor(score, cursor)) {
+            paintCursor(g, layout, cursor);
+            paintCorrespondingNote(g, layout, score, cursor);
+        }
+    }
+
+    /**
+     * La hoja impresa o exportada no lleva cursor de edicion: se lo pide con un
+     * cursor que apunta fuera de la partitura.
+     */
+    private static boolean showsTheEditingCursor(Score score, Cursor cursor) {
+        return cursor.track() >= 0 && cursor.track() < score.trackCount();
     }
 
     private static void paintBackground(Graphics2D g) {
