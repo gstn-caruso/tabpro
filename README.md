@@ -157,17 +157,21 @@ captura.
 
 Las dependencias van en una sola dirección hacia `tabpro-core`; la interfaz habla
 con el formato y con MIDI sólo a través de los puertos `ScoreFiles`,
-`ScoreExchange` y `Player`, definidos en core.
+`ScoreExchange` y `Player`, definidos en core. `tabpro-format` y `tabpro-midi` no
+se conocen entre sí: `ScoreExchange` lo implementan los dos por mitades —la
+notación uno, el sonido el otro— y `tabpro-app` las compone.
 
 - `tabpro-core` — el modelo de la partitura (inmutable), la sesión de edición con
   deshacer y rehacer, la notación, la armonía, los asistentes y la reproducción.
-- `tabpro-format` — el formato propio, los de intercambio y el lector de
-  `.gp3/.gp4/.gp5/.gtp`.
-- `tabpro-midi` — reproducción y captura.
+- `tabpro-format` — el formato propio, la notación ajena que se lee y se escribe
+  (importar MIDI, ASCII y MusicXML) y el lector de `.gp3/.gp4/.gp5/.gtp`.
+- `tabpro-midi` — reproducción, captura y el sonido a archivo: exportar `.mid` y
+  `.wav`.
 - `tabpro-ui` — la interfaz: partitura, diapasón, teclado, percusión, mesa de
   mezcla, vista global, barra de estado, menús, barras de herramientas y las
   ventanas de diálogo.
-- `tabpro-app` — `main`, el tema, el cableado y el empaquetado.
+- `tabpro-app` — `main`, el tema, el cableado —incluida la composición del
+  intercambio— y el empaquetado.
 
 ```sh
 mvn verify

@@ -1,14 +1,16 @@
 package com.gstncaruso.tabpro.app;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.format.JsonScoreFiles;
-import com.gstncaruso.tabpro.format.exchange.FileExchange;
+import com.gstncaruso.tabpro.format.exchange.NotationExchange;
 import com.gstncaruso.tabpro.midi.MidiPlayer;
+import com.gstncaruso.tabpro.midi.SoundExchange;
 import com.gstncaruso.tabpro.midi.WaveRenderer;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import java.awt.event.WindowAdapter;
@@ -33,7 +35,8 @@ public class App {
         Optional<Path> fileToOpen = fileFrom(args);
 
         SwingUtilities.invokeLater(() -> {
-            FileExchange exchange = new FileExchange(new WaveRenderer(App::synthesizerForWaveExport));
+            ScoreExchange exchange = new CombinedExchange(
+                    new NotationExchange(), new SoundExchange(new WaveRenderer(App::synthesizerForWaveExport)));
             MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player, theme, devices, exchange, new Microphone());
             frame.setIconImages(AppIcon.sizes());
             midiPlayer.ifPresent(midi -> frame.addWindowListener(closeOnDispose(midi)));

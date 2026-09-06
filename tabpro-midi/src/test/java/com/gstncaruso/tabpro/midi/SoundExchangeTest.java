@@ -1,4 +1,4 @@
-package com.gstncaruso.tabpro.format.exchange;
+package com.gstncaruso.tabpro.midi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,8 +14,6 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
-import com.gstncaruso.tabpro.format.exchange.midi.MidiScoreExporter;
-import com.gstncaruso.tabpro.midi.WaveRenderer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -28,13 +26,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * FileExchange junta MidiScoreExporter (Score -&gt; Sequence) con WaveRenderer (Sequence -&gt;
+ * SoundExchange junta MidiScoreExporter (Score -&gt; Sequence) con WaveRenderer (Sequence -&gt;
  * WAVE): esto prueba que la union funciona de punta a punta, con el sintetizador real del JDK
  * (Gervill), que no necesita hardware de audio y corre headless.
  */
-class FileExchangeTest {
+class SoundExchangeTest {
 
-    private final FileExchange exchange = new FileExchange(new WaveRenderer(FileExchangeTest::systemSynthesizer));
+    private final SoundExchange exchange = new SoundExchange(new WaveRenderer(SoundExchangeTest::systemSynthesizer));
 
     @Test
     void exportsAWaveFileThatMatchesTheScoresDurationAndQuality(@TempDir Path tempDir) throws Exception {

@@ -1,4 +1,4 @@
-package com.gstncaruso.tabpro.format.exchange.midi;
+package com.gstncaruso.tabpro.midi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

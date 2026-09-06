@@ -25,7 +25,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 class MidiScoreImporterTest {
 
-    private final MidiScoreExporter exporter = new MidiScoreExporter();
     private final MidiScoreImporter importer = new MidiScoreImporter();
 
     @Test
@@ -90,7 +89,7 @@ class MidiScoreImporterTest {
     @Test
     void quickImportFallsBackToTheFileNameWhenThereIsNoTrackName() throws Exception {
         Path path = newTempDir().resolve("sin-nombre.mid");
-        javax.sound.midi.Sequence sequence = exporter.toSequence(Score.blank());
+        javax.sound.midi.Sequence sequence = PlainMidiWriter.sequenceOf(Score.blank());
         removeTrackNameEvents(sequence);
         javax.sound.midi.MidiSystem.write(sequence, 1, path.toFile());
 
@@ -233,7 +232,7 @@ class MidiScoreImporterTest {
     @Test
     void importingTitleAndTimeSignaturesFallsBackToTheFileNameWhenThereIsNoTrackName() throws Exception {
         Path path = newTempDir().resolve("sin-nombre-2.mid");
-        javax.sound.midi.Sequence sequence = exporter.toSequence(Score.blank());
+        javax.sound.midi.Sequence sequence = PlainMidiWriter.sequenceOf(Score.blank());
         removeTrackNameEvents(sequence);
         javax.sound.midi.MidiSystem.write(sequence, 1, path.toFile());
         Score target = new Score("Original", 120, List.of(Track.standardGuitar("Pista")));
@@ -328,9 +327,9 @@ class MidiScoreImporterTest {
         assertThrows(ScoreFileException.class, () -> importer.importTitleAndTimeSignatures(target, Path.of("no-existe.mid")));
     }
 
-    private Path export(Score score, Path dir) {
+    private static Path export(Score score, Path dir) {
         Path path = dir.resolve("prueba.mid");
-        exporter.export(score, path);
+        PlainMidiWriter.write(score, path);
         return path;
     }
 

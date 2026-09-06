@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.format.exchange;
 
-import com.gstncaruso.tabpro.core.files.AudioQuality;
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -13,36 +12,28 @@ import com.gstncaruso.tabpro.format.exchange.ascii.AsciiTabExporter;
 import com.gstncaruso.tabpro.format.exchange.ascii.AsciiTabImportOptions;
 import com.gstncaruso.tabpro.format.exchange.ascii.AsciiTabImporter;
 import com.gstncaruso.tabpro.format.exchange.ascii.RhythmStrategy;
-import com.gstncaruso.tabpro.format.exchange.midi.MidiScoreExporter;
 import com.gstncaruso.tabpro.format.exchange.midi.MidiScoreImporter;
 import com.gstncaruso.tabpro.format.exchange.midi.MidiTrackSummary;
 import com.gstncaruso.tabpro.format.exchange.musicxml.MusicXmlScoreExporter;
 import com.gstncaruso.tabpro.format.exchange.musicxml.MusicXmlScoreImporter;
 import com.gstncaruso.tabpro.format.guitarpro.GuitarProFile;
-import com.gstncaruso.tabpro.midi.WaveRenderer;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-/** Los formatos de intercambio que ya sabe manejar tabpro, en un solo lugar. */
-public final class FileExchange implements ScoreExchange {
+/**
+ * El lado notacional del intercambio: los formatos que guardan como esta escrita la partitura.
+ * Leer un MIDI ajeno es traducir una notacion que no es la nuestra, asi que el importador de
+ * MIDI vive aca; exportar sonido es rendir la partitura, y de eso se ocupa tabpro-midi.
+ */
+public final class NotationExchange implements ScoreExchange {
 
     private final MidiScoreImporter midiImporter = new MidiScoreImporter();
-    private final MidiScoreExporter midiExporter = new MidiScoreExporter();
     private final AsciiTabImporter asciiImporter = new AsciiTabImporter();
     private final AsciiTabExporter asciiExporter = new AsciiTabExporter();
     private final GuitarProFile guitarPro = new GuitarProFile();
     private final MusicXmlScoreImporter musicXmlImporter = new MusicXmlScoreImporter();
     private final MusicXmlScoreExporter musicXmlExporter = new MusicXmlScoreExporter();
-    private final WaveRenderer waveRenderer;
-
-    /**
-     * El renderer recibe el sintetizador de afuera (ver {@link WaveRenderer}): quien arma el
-     * FileExchange decide con que sintetizador y banco de sonidos suena el WAVE.
-     */
-    public FileExchange(WaveRenderer waveRenderer) {
-        this.waveRenderer = waveRenderer;
-    }
 
     @Override
     public Score importMidi(Path path) {
@@ -50,18 +41,8 @@ public final class FileExchange implements ScoreExchange {
     }
 
     @Override
-    public void exportMidi(Score score, Path path) {
-        midiExporter.export(score, path);
-    }
-
-    @Override
-    public void exportWave(Score score, Path path, AudioQuality quality) {
-        waveRenderer.render(midiExporter.toSequence(score), path, quality);
-    }
-
-    @Override
     public List<MidiTrackInfo> midiTracksIn(Path path) {
-        return midiImporter.tracksIn(path).stream().map(FileExchange::toMidiTrackInfo).toList();
+        return midiImporter.tracksIn(path).stream().map(NotationExchange::toMidiTrackInfo).toList();
     }
 
     @Override
