@@ -173,17 +173,31 @@ public final class MusicXmlScoreExporter {
             xml.append("<alter>").append(spelling.alter()).append("</alter>");
         }
         xml.append("<octave>").append(spelling.octave()).append("</octave></pitch>\n");
-        appendDurationAndType(xml, beat.duration());
+        appendDuration(xml, beat.duration());
         if (tied || note.tied()) {
             xml.append("        <tie type=\"").append(note.tied() ? "stop" : "start").append("\"/>\n");
         }
+        appendTypeAndModifiers(xml, beat.duration());
         appendNotations(xml, note, tied, tuplet);
         xml.append("      </note>\n");
     }
 
+    /**
+     * El content model de {@code <note>} del DTD de MusicXML pone {@code duration, (tie, tie?)?}
+     * antes de {@code type, dot*, time-modification}: por eso {@code <tie>} no puede salir junto
+     * con el resto de {@link #appendTypeAndModifiers}.
+     */
     private static void appendDurationAndType(StringBuilder xml, Duration duration) {
+        appendDuration(xml, duration);
+        appendTypeAndModifiers(xml, duration);
+    }
+
+    private static void appendDuration(StringBuilder xml, Duration duration) {
         long divisions = duration.ticks() * DIVISIONS / Duration.TICKS_PER_QUARTER;
         xml.append("        <duration>").append(Math.max(1, divisions)).append("</duration>\n");
+    }
+
+    private static void appendTypeAndModifiers(StringBuilder xml, Duration duration) {
         xml.append("        <type>").append(NoteTypeNames.toXml(duration.value())).append("</type>\n");
         if (duration.dotted()) {
             xml.append("        <dot/>\n");
