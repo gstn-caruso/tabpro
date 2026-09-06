@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
@@ -26,7 +27,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
     private static final int PRIMARY_PORT = 1;
 
     private final Sequencer sequencer;
-    private final Supplier<Receiver> synthesizers;
+    private final IntFunction<Receiver> receiversByPort;
     private volatile PlaybackListener listener;
     private NotePreview preview;
     private javax.sound.midi.MidiDevice chosenOutput;
@@ -36,16 +37,26 @@ public final class MidiPlayer implements Player, AutoCloseable {
     private Receiver defaultReceiver;
 
     public MidiPlayer(Sequencer sequencer) {
-        this(sequencer, MidiPlayer::defaultSynthesizer);
+        this(sequencer, port -> defaultSynthesizer());
     }
 
-    MidiPlayer(Sequencer sequencer, Supplier<Receiver> synthesizers) {
-        this(sequencer, synthesizers, PortOutput::connectedSequencer);
+    /**
+     * Con un receiver por puerto elegido de afuera, como el de un {@link SoundFontBank}: quien
+     * arma la aplicacion decide de donde sale el sonido de cada puerto en vez de que este
+     * reproductor lo adivine. El puerto 1 es el que usa la preview de una nota.
+     */
+    public MidiPlayer(Sequencer sequencer, IntFunction<Receiver> receiversByPort) {
+        this(sequencer, receiversByPort, PortOutput::connectedSequencer);
     }
 
-    MidiPlayer(Sequencer sequencer, Supplier<Receiver> synthesizers, Supplier<Sequencer> portSequencers) {
+    /**
+     * Con el secuenciador de cada puerto secundario tambien elegido de afuera, para poder
+     * probar el salto (seekTo) o el tick de un puerto sin depender de si la maquina de pruebas
+     * tiene placa de sonido.
+     */
+    MidiPlayer(Sequencer sequencer, IntFunction<Receiver> receiversByPort, Supplier<Sequencer> portSequencers) {
         this.sequencer = sequencer;
-        this.synthesizers = synthesizers;
+        this.receiversByPort = receiversByPort;
         this.portSequencers = portSequencers;
         sequencer.addMetaEventListener(this::notifyListenerOf);
     }
@@ -201,7 +212,8 @@ public final class MidiPlayer implements Player, AutoCloseable {
     }
 
     private PortOutput secondaryPortOutput(int port) {
-        return secondaryPorts.computeIfAbsent(port, ignored -> new PortOutput(portSequencers.get()));
+        return secondaryPorts.computeIfAbsent(
+                port, key -> new PortOutput(portSequencers.get(), () -> receiversByPort.apply(key)));
     }
 
     private void stopSecondaryPorts() {
@@ -256,10 +268,10 @@ public final class MidiPlayer implements Player, AutoCloseable {
         sequencer.getTransmitter().setReceiver(defaultReceiver());
     }
 
-    /** El receiver del banco de sonido, uno solo, compartido entre la preview y la partitura entera. */
+    /** El receiver del puerto principal, uno solo, compartido entre la preview y la partitura entera. */
     private Receiver defaultReceiver() {
         if (defaultReceiver == null) {
-            defaultReceiver = synthesizers.get();
+            defaultReceiver = receiversByPort.apply(PRIMARY_PORT);
         }
         return defaultReceiver;
     }
@@ -302,15 +314,21 @@ public final class MidiPlayer implements Player, AutoCloseable {
      * <p>Si la maquina no puede darle un secuenciador -no hay mas lineas de
      * audio libres, o directamente no hay placa- el puerto se queda callado en
      * vez de romper la reproduccion entera. Es el caso de cualquiera que no
-     * tenga un segundo dispositivo MIDI conectado, que son casi todos.
+     * tenga un segundo dispositivo MIDI conectado, que son casi todos. Lo mismo
+     * si el receiver por defecto (con su banco SoundFont) no se puede conseguir:
+     * ese puerto se queda sin conectar, pero eso no tira abajo la reproduccion
+     * ni a los demas puertos, que abren su propio sintetizador cada uno.
      */
     private static final class PortOutput implements AutoCloseable {
 
         private final Sequencer sequencer;
+        private final Supplier<Receiver> defaultReceiver;
         private javax.sound.midi.MidiDevice device;
+        private boolean wiredToDefault;
 
-        PortOutput(Sequencer sequencer) {
+        PortOutput(Sequencer sequencer, Supplier<Receiver> defaultReceiver) {
             this.sequencer = sequencer;
+            this.defaultReceiver = defaultReceiver;
         }
 
         private boolean isSilent() {
@@ -333,12 +351,14 @@ public final class MidiPlayer implements Player, AutoCloseable {
             sequencer.getTransmitter().setReceiver(chosen.getReceiver());
             closeDevice();
             device = chosen;
+            wiredToDefault = true;
         }
 
         void play(Sequence sequence) {
             if (isSilent() || !openIfNeeded()) {
                 return;
             }
+            wireDefaultIfNeeded();
             try {
                 sequencer.setSequence(sequence);
             } catch (InvalidMidiDataException e) {
@@ -346,6 +366,27 @@ public final class MidiPlayer implements Player, AutoCloseable {
             }
             sequencer.setTickPosition(0);
             sequencer.start();
+        }
+
+        /**
+         * Si nadie eligio un dispositivo externo para este puerto, lo conecta al sintetizador
+         * interno (con el banco SoundFont puesto si se pudo) en vez de dejarlo con la conexion
+         * implicita de JDK a un sintetizador que no podemos alcanzar. Si ni eso se puede -no hay
+         * transmisor disponible-, el puerto sigue abierto pero mudo: no rompe la reproduccion.
+         */
+        private void wireDefaultIfNeeded() {
+            if (wiredToDefault) {
+                return;
+            }
+            try {
+                for (javax.sound.midi.Transmitter transmitter : sequencer.getTransmitters()) {
+                    transmitter.close();
+                }
+                sequencer.getTransmitter().setReceiver(defaultReceiver.get());
+                wiredToDefault = true;
+            } catch (MidiUnavailableException e) {
+                System.err.println("Un puerto se queda mudo, sin poder conectar su sintetizador: " + e.getMessage());
+            }
         }
 
         void stop() {

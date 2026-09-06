@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.midi;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,6 +23,7 @@ import com.gstncaruso.tabpro.core.playback.ScheduledNote;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.core.playback.TrackTimeline;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +65,7 @@ class MidiPlayerTest {
     @Test
     void soundsASingleNoteThroughItsReceiver() {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
-        MidiPlayer withFakeSynth = new MidiPlayer(sequencer, () -> receiverInto(received));
+        MidiPlayer withFakeSynth = new MidiPlayer(sequencer, port -> receiverInto(received));
 
         withFakeSynth.playNote(new Pitch(60), 25);
 
@@ -81,7 +83,7 @@ class MidiPlayerTest {
     @Test
     void playingTheTimelineReachesTheSameReceiverAsThePreview() throws InterruptedException {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
-        MidiPlayer withFakeSynth = new MidiPlayer(sequencer, () -> receiverInto(received));
+        MidiPlayer withFakeSynth = new MidiPlayer(sequencer, port -> receiverInto(received));
         CountDownLatch latch = new CountDownLatch(1);
 
         withFakeSynth.play(shortTimeline(), new PlaybackListener() {
@@ -248,7 +250,7 @@ class MidiPlayerTest {
      */
     @Test
     void seekingReachesEverySequencerNotJustThePrimaryPort() {
-        player = new MidiPlayer(sequencer, MidiPlayerTest::silentReceiver, MidiPlayerTest::unconnectedSequencer);
+        player = new MidiPlayer(sequencer, port -> silentReceiver(), MidiPlayerTest::unconnectedSequencer);
         TrackTimeline enElPuertoUno = new TrackTimeline(25, 100, 64, false, 1,
                 List.of(new ScheduledNote(0, 4L * Duration.TICKS_PER_QUARTER, new Pitch(60))),
                 List.of(new ScheduledBeat(0, 0, 0)), List.of());
@@ -303,6 +305,27 @@ class MidiPlayerTest {
         player.play(timeline, noOpListener());
 
         assertTrue(player.isPlaying());
+    }
+
+    /**
+     * El camino sin ningun banco de sonido, con dos puertos usando cada uno su propio
+     * sintetizador interno: el que mas importa probar de verdad, porque es el de casi todos los
+     * usuarios (y el del CI, que no tiene ningun SoundFont instalado). Corre siempre, sin
+     * Assumptions: apunta el banco directamente a "ningun archivo".
+     */
+    @Test
+    void withoutAnySoundFontBothPortsStillPlayThroughTheirOwnInternalSynth() {
+        SoundFontBank bank = new SoundFontBank(Optional.empty());
+        MidiPlayer withBank = new MidiPlayer(sequencer, bank::receiverForPort);
+        TrackTimeline enElPuertoUno = new TrackTimeline(25, 100, 64, false, 1, List.of(), List.of(), List.of());
+        TrackTimeline enElPuertoDos = new TrackTimeline(30, 100, 64, false, 2, List.of(), List.of(), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(enElPuertoUno, enElPuertoDos));
+
+        assertDoesNotThrow(() -> withBank.play(timeline, noOpListener()));
+
+        assertTrue(withBank.isPlaying());
+        withBank.close();
+        bank.close();
     }
 
     private Timeline timelineWithABigBendOnPort(int port) {
