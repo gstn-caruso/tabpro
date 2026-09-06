@@ -1,8 +1,5 @@
-package com.gstncaruso.tabpro.format.exchange;
+package com.gstncaruso.tabpro.core.model;
 
-import com.gstncaruso.tabpro.core.model.Note;
-import com.gstncaruso.tabpro.core.model.Pitch;
-import com.gstncaruso.tabpro.core.model.Tuning;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;

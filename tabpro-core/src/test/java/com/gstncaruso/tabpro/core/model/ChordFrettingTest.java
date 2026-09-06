@@ -1,11 +1,8 @@
-package com.gstncaruso.tabpro.format.exchange;
+package com.gstncaruso.tabpro.core.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.gstncaruso.tabpro.core.model.Note;
-import com.gstncaruso.tabpro.core.model.Pitch;
-import com.gstncaruso.tabpro.core.model.Tuning;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
