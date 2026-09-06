@@ -94,6 +94,7 @@ public final class Commands {
         define("file.exportMidi", "MIDI…", document::exportMidi);
         define("file.exportAscii", "Tablatura ASCII…", document::exportAscii);
         define("file.exportMusicXml", "MusicXML…", document::exportMusicXml);
+        define("file.exportGuitarPro", "Guitar Pro 4…", document::exportGuitarPro);
         define("file.exportImage", "Imagen…", document::exportImage);
         define("file.exportPdf", "PDF…", document::exportPdf);
         define("file.information", "Información de la partitura…", dialogs::scoreInformation)

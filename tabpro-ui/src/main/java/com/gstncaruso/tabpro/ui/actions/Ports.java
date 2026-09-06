@@ -299,6 +299,8 @@ public final class Ports {
 
         void exportMusicXml();
 
+        void exportGuitarPro();
+
         void exportImage();
 
         void exportPdf();
