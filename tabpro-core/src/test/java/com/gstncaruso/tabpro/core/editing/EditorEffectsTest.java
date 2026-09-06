@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Tuplet;
+import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
@@ -14,6 +15,7 @@ import com.gstncaruso.tabpro.core.model.effects.Finger;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
+import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.Trill;
@@ -23,6 +25,25 @@ import org.junit.jupiter.api.Test;
 class EditorEffectsTest {
 
     private final Editor editor = new Editor(Score.blank());
+
+    /**
+     * El manual (linea 923): "es posible cambiar a mano las barras... usando el menu Nota".
+     * Vale para el beat bajo el cursor, igual que el resto de {@code BeatEffects} (stroke, wah):
+     * no hace falta una nota, el corte se pide sobre el beat entero.
+     */
+    @Test
+    void aBeamBreakGoesOnTheBeatUnderTheCursorWithoutNeedingANote() {
+        editor.setBeamBreak(BeamBreak.FORCED);
+
+        assertEquals(BeamBreak.FORCED, editor.currentBeat().effects().beamBreak());
+    }
+
+    @Test
+    void aStemOverrideGoesOnTheBeatUnderTheCursorWithoutNeedingANote() {
+        editor.setStemOverride(StemOverride.UP);
+
+        assertEquals(StemOverride.UP, editor.currentBeat().effects().stemOverride());
+    }
 
     @Test
     void anOrnamentGoesOnTheNoteUnderTheCursor() {
