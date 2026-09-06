@@ -42,16 +42,45 @@ final class GuitarProHeaderReader {
      * declara el enum), cada uno con el compas al que apunta o -1 si no se
      * usa. Cuatro bytes reservados cierran el bloque.
      */
+    /**
+     * El orden en que el archivo guarda los cinco simbolos de destino. Lo fija el
+     * formato de Guitar Pro, no tabpro: por eso se declara aca, donde se lee el
+     * archivo, y no se deduce del orden de declaracion del enum.
+     */
+    static final List<DirectionSymbol> SYMBOL_SLOTS = List.of(
+            DirectionSymbol.CODA,
+            DirectionSymbol.DOUBLE_CODA,
+            DirectionSymbol.SEGNO,
+            DirectionSymbol.SEGNO_SEGNO,
+            DirectionSymbol.FINE);
+
+    /** El orden en que el archivo guarda los catorce saltos. Lo fija el formato. */
+    static final List<DirectionJump> JUMP_SLOTS = List.of(
+            DirectionJump.DA_CAPO,
+            DirectionJump.DA_CAPO_AL_CODA,
+            DirectionJump.DA_CAPO_AL_DOUBLE_CODA,
+            DirectionJump.DA_CAPO_AL_FINE,
+            DirectionJump.DA_SEGNO,
+            DirectionJump.DA_SEGNO_AL_CODA,
+            DirectionJump.DA_SEGNO_AL_DOUBLE_CODA,
+            DirectionJump.DA_SEGNO_AL_FINE,
+            DirectionJump.DA_SEGNO_SEGNO,
+            DirectionJump.DA_SEGNO_SEGNO_AL_CODA,
+            DirectionJump.DA_SEGNO_SEGNO_AL_DOUBLE_CODA,
+            DirectionJump.DA_SEGNO_SEGNO_AL_FINE,
+            DirectionJump.DA_CODA,
+            DirectionJump.DA_DOUBLE_CODA);
+
     GuitarProDirections readDirections(GuitarProByteReader reader, GuitarProVersion version) {
         if (!version.hasDirections()) {
             return GuitarProDirections.none();
         }
         Map<Integer, DirectionSymbol> symbols = new LinkedHashMap<>();
-        for (DirectionSymbol symbol : DirectionSymbol.values()) {
+        for (DirectionSymbol symbol : SYMBOL_SLOTS) {
             readSlot(reader).ifPresent(measureIndex -> symbols.put(measureIndex, symbol));
         }
         Map<Integer, DirectionJump> jumps = new LinkedHashMap<>();
-        for (DirectionJump jump : DirectionJump.values()) {
+        for (DirectionJump jump : JUMP_SLOTS) {
             readSlot(reader).ifPresent(measureIndex -> jumps.put(measureIndex, jump));
         }
         reader.skip(4);
