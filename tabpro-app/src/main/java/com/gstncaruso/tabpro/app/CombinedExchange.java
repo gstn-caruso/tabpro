@@ -127,4 +127,9 @@ public final class CombinedExchange implements ScoreExchange {
     public List<String> guitarProExportWarnings(Score score) {
         return notation.guitarProExportWarnings(score);
     }
+
+    @Override
+    public Score importPowerTab(Path path) {
+        return notation.importPowerTab(path);
+    }
 }

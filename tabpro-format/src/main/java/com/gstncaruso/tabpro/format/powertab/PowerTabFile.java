@@ -18,6 +18,7 @@ import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.Voice;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -251,6 +252,11 @@ public final class PowerTabFile {
         return stringCount > 0 && tuning.stringCount() != stringCount ? tuning.withStringCount(stringCount) : tuning;
     }
 
+    /**
+     * PowerTab no distingue un canal de efectos aparte del canal principal (a
+     * diferencia de Guitar Pro): se usa el mismo numero para los dos, que es
+     * como tabpro modela "un solo canal por pista".
+     */
     private static Channel channelOf(PowerTabGuitar guitar, int staffIndex) {
         int number = Math.clamp(staffIndex + 1, 1, Channel.CHANNELS_PER_PORT);
         return new Channel(
@@ -262,6 +268,7 @@ public final class PowerTabFile {
                 Math.clamp(guitar.phaser(), 0, Channel.MAX),
                 Math.clamp(guitar.tremolo(), 0, Channel.MAX),
                 1,
+                number,
                 number,
                 false,
                 false);
@@ -314,7 +321,7 @@ public final class PowerTabFile {
                     closingType == PowerTabBarline.REPEAT_END ? closingRepeatCount : 0,
                     numbers,
                     Optional.empty(), Optional.empty(), Optional.empty(),
-                    LineBreak.AUTOMATIC);
+                    LineBreak.AUTOMATIC, OctaveMark.NONE);
 
             slices.add(new MeasureSlice(start, end, opener.timeSignature(), attributes));
         }

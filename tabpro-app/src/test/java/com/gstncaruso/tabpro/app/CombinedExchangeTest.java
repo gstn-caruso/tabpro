@@ -144,6 +144,11 @@ class CombinedExchangeTest {
             public List<String> guitarProExportWarnings(Score score) {
                 throw irrelevantForThisTest();
             }
+
+            @Override
+            public Score importPowerTab(Path path) {
+                throw irrelevantForThisTest();
+            }
         };
     }
 
@@ -246,6 +251,11 @@ class CombinedExchangeTest {
 
             @Override
             public List<String> guitarProExportWarnings(Score score) {
+                throw irrelevantForThisTest();
+            }
+
+            @Override
+            public Score importPowerTab(Path path) {
                 throw irrelevantForThisTest();
             }
         };

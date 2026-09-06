@@ -131,4 +131,10 @@ public final class SoundExchange implements ScoreExchange {
     public List<String> guitarProExportWarnings(Score score) {
         throw ScoreExchange.notSupported("la exportación a Guitar Pro");
     }
+
+    /** El lado notacional del intercambio, {@code tabpro-format}, es quien importa PowerTab. */
+    @Override
+    public Score importPowerTab(Path path) {
+        throw ScoreExchange.notSupported("la importación de archivos de PowerTab");
+    }
 }
