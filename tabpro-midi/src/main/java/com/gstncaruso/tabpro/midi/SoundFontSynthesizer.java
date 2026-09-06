@@ -57,9 +57,9 @@ public final class SoundFontSynthesizer implements AutoCloseable {
         }
     }
 
-    /** El archivo elegido, solo si esta cargado y sonando. */
+    /** El archivo que quedo cargado, este sonando o no (F2 lo prende y lo apaga sin descargarlo). */
     public Optional<Path> file() {
-        return active ? file : Optional.empty();
+        return loadedBank != null ? file : Optional.empty();
     }
 
     /** Si el banco elegido esta sonando en vez del sintetizador interno del JDK. */
