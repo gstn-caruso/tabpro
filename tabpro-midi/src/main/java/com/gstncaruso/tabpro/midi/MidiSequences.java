@@ -11,9 +11,13 @@ import com.gstncaruso.tabpro.core.playback.TempoChange;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.core.playback.TrackTimeline;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
@@ -67,6 +71,39 @@ public final class MidiSequences {
      * mueve mas de un tono, tal como pide el manual.
      */
     public static Sequence fromTimeline(Timeline timeline, Set<Integer> limitedPitchVariationPorts) {
+        return buildSequence(timeline, indexedTracksOf(timeline, limitedPitchVariationPorts));
+    }
+
+    /**
+     * Una secuencia por cada puerto de salida que use la partitura, cada una
+     * con sus propios canales locales (del 0 al 15), para poder reproducir
+     * los cuatro puertos del manual en dispositivos distintos a la vez.
+     */
+    public static Map<Integer, Sequence> sequencesByPort(Timeline timeline, Set<Integer> limitedPitchVariationPorts) {
+        Map<Integer, List<IndexedTrack>> tracksByPort = new TreeMap<>();
+        for (IndexedTrack indexed : indexedTracksOf(timeline, limitedPitchVariationPorts)) {
+            tracksByPort.computeIfAbsent(indexed.track().port(), port -> new ArrayList<>()).add(indexed);
+        }
+        Map<Integer, Sequence> sequencesByPort = new LinkedHashMap<>();
+        tracksByPort.forEach((port, tracks) -> sequencesByPort.put(port, buildSequence(timeline, tracks)));
+        return sequencesByPort;
+    }
+
+    private static List<IndexedTrack> indexedTracksOf(Timeline timeline, Set<Integer> limitedPitchVariationPorts) {
+        List<IndexedTrack> indexed = new ArrayList<>();
+        for (int index = 0; index < timeline.tracks().size(); index++) {
+            TrackTimeline trackTimeline = timeline.tracks().get(index);
+            boolean limitPitchVariation = limitedPitchVariationPorts.contains(trackTimeline.port());
+            indexed.add(new IndexedTrack(index, trackTimeline, limitPitchVariation));
+        }
+        return indexed;
+    }
+
+    /** Una pista con su indice original, para que el marcador de beat siga nombrando la pista real. */
+    private record IndexedTrack(int originalIndex, TrackTimeline track, boolean limitPitchVariation) {
+    }
+
+    private static Sequence buildSequence(Timeline timeline, List<IndexedTrack> tracks) {
         try {
             Sequence sequence = new Sequence(Sequence.PPQ, timeline.ticksPerQuarter());
             Track conductor = sequence.createTrack();
@@ -75,11 +112,11 @@ public final class MidiSequences {
             }
 
             int nonPercussionOrdinal = 0;
-            for (int index = 0; index < timeline.tracks().size(); index++) {
-                TrackTimeline trackTimeline = timeline.tracks().get(index);
+            for (IndexedTrack indexed : tracks) {
+                TrackTimeline trackTimeline = indexed.track();
                 int channel = trackTimeline.percussion() ? PERCUSSION_CHANNEL : channelFor(nonPercussionOrdinal++);
-                boolean limitPitchVariation = limitedPitchVariationPorts.contains(trackTimeline.port());
-                writeTrack(sequence.createTrack(), index, channel, trackTimeline, limitPitchVariation);
+                writeTrack(sequence.createTrack(), indexed.originalIndex(), channel, trackTimeline,
+                        indexed.limitPitchVariation());
             }
             return sequence;
         } catch (InvalidMidiDataException e) {
