@@ -119,7 +119,7 @@ final class BarStructurePainter {
 
     /** El cartelito de la barra de repeticion, arriba a la derecha del compas que cierra. */
     static String repeatLabel(int times) {
-        return "x" + (times + 1);
+        return "x" + times;
     }
 
     private static void paintDoubleBar(Graphics2D g, int x, int top, int bottom) {
