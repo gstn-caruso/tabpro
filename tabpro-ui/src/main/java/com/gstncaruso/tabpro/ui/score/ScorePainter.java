@@ -131,6 +131,7 @@ public final class ScorePainter {
                 }
             }
             ChordDiagramPainter.paintMeasure(g, layout, track, trackIndex, measureIndex);
+            ParameterChangePainter.paintMeasure(g, layout, track, trackIndex, measureIndex);
             BarStructurePainter.paintPerTrack(g, layout, track, clef, trackIndex, measureIndex);
             if (trackIndex == layout.firstShownTrack()) {
                 BarStructurePainter.paintScoreWide(g, layout, track, trackIndex, measureIndex);
