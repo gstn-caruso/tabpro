@@ -19,6 +19,7 @@ import com.gstncaruso.tabpro.core.playback.ScheduledNote;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -240,6 +241,38 @@ class MidiScoreImporterTest {
         Score result = importer.importTitleAndTimeSignatures(target, path);
 
         assertEquals("sin-nombre-2", result.title());
+    }
+
+    @Test
+    void aCoarserPrecisionQuantizesTheSameMidiFileToADifferentScore() {
+        // una corchea con puntillo (360 tics: 1.5 semicorcheas) es una figura exacta sin
+        // restringir la grilla; pidiendo que no sea mas fina que la corchea, esa figura no entra
+        // y la nota se redondea a la corchea simple -- la misma entrada MIDI da otra partitura.
+        Beat beat = Beat.of(new Duration(NoteValue.SIXTEENTH, true), new Note(1, 0));
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
+        Path path = export(new Score("Prueba", 120, List.of(track)), newTempDir());
+        List<Integer> indices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
+
+        Score sinRestringir = importer.importQuick(path, indices, false);
+        Score conPrecisionDeCorchea = importer.importQuick(path, indices, false, Optional.of(NoteValue.EIGHTH));
+
+        assertEquals(new Duration(NoteValue.SIXTEENTH, true), sinRestringir.track(0).measure(0).beat(0).duration());
+        assertEquals(Duration.of(NoteValue.EIGHTH), conPrecisionDeCorchea.track(0).measure(0).beat(0).duration());
+    }
+
+    @Test
+    void theStepByStepImportAlsoRespectsTheChosenPrecision() {
+        Beat beat = Beat.of(new Duration(NoteValue.SIXTEENTH, true), new Note(1, 0));
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
+        Track source = new Track("Solo", Tuning.standard(), Channel.playing(30), List.of(measure));
+        Path path = export(new Score("Prueba", 120, List.of(source)), newTempDir());
+        Track existing = Track.standardGuitar("Guitarra");
+        int midiTrackIndex = importer.tracksIn(path).get(0).index();
+
+        Track merged = importer.importInto(existing, path, List.of(midiTrackIndex), false, Optional.of(NoteValue.EIGHTH));
+
+        assertEquals(Duration.of(NoteValue.EIGHTH), merged.measure(0).beat(0).duration());
     }
 
     @Test

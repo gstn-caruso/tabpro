@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.midi;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
@@ -13,6 +14,7 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import javax.swing.JButton;
@@ -97,7 +99,8 @@ public final class MidiImportDialog {
                 return;
             }
             try {
-                Score imported = exchange.importMidiQuick(currentPath[0], selected, panel.transposeDownOneOctave());
+                Score imported = exchange.importMidiQuick(
+                        currentPath[0], selected, panel.transposeDownOneOctave(), Optional.of(panel.precision()));
                 adopt.accept(imported);
                 afterChange.run();
             } catch (ScoreFileException e) {
@@ -120,8 +123,9 @@ public final class MidiImportDialog {
             try {
                 int trackIndex = editor.cursor().track();
                 boolean transpose = panel.transposeDownOneOctave();
+                Optional<NoteValue> precision = Optional.of(panel.precision());
                 editor.apply(score -> score.mappingTrack(
-                        trackIndex, track -> exchange.importMidiInto(track, currentPath[0], selected, transpose)));
+                        trackIndex, track -> exchange.importMidiInto(track, currentPath[0], selected, transpose, precision)));
                 afterChange.run();
             } catch (ScoreFileException e) {
                 showError(parent, e);

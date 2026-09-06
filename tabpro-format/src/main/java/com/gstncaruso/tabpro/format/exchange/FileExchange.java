@@ -65,13 +65,16 @@ public final class FileExchange implements ScoreExchange {
     }
 
     @Override
-    public Score importMidiQuick(Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave) {
-        return midiImporter.importQuick(path, selectedMidiTrackIndices, transposeDownOneOctave);
+    public Score importMidiQuick(
+            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision) {
+        return midiImporter.importQuick(path, selectedMidiTrackIndices, transposeDownOneOctave, precision);
     }
 
     @Override
-    public Track importMidiInto(Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave) {
-        return midiImporter.importInto(target, path, midiTrackIndices, transposeDownOneOctave);
+    public Track importMidiInto(
+            Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
+            Optional<NoteValue> precision) {
+        return midiImporter.importInto(target, path, midiTrackIndices, transposeDownOneOctave, precision);
     }
 
     @Override

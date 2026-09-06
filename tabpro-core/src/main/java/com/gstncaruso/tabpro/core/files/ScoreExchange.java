@@ -32,13 +32,20 @@ public interface ScoreExchange {
         throw notSupported("la importación de MIDI");
     }
 
-    /** El "import rápido" del manual, pero solo con las pistas elegidas en la ventana. */
-    default Score importMidiQuick(Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave) {
+    /**
+     * El "import rápido" del manual, pero solo con las pistas elegidas en la ventana. precision
+     * vacio es sin restringir la cuantización de la posición y la duración de las notas; presente
+     * es la figura más fina admitida, como deja elegir el manual.
+     */
+    default Score importMidiQuick(
+            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision) {
         throw notSupported("la importación de MIDI");
     }
 
     /** El "import paso a paso": la o las pistas MIDI elegidas reemplazan los compases de target. */
-    default Track importMidiInto(Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave) {
+    default Track importMidiInto(
+            Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
+            Optional<NoteValue> precision) {
         throw notSupported("la importación de MIDI");
     }
 
