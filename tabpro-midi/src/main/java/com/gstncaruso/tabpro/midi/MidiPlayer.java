@@ -32,6 +32,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
     private javax.sound.midi.MidiDevice chosenOutput;
     private final Set<Integer> limitedPitchVariationPorts = new HashSet<>();
     private final Map<Integer, PortOutput> secondaryPorts = new HashMap<>();
+    private Receiver defaultReceiver;
 
     public MidiPlayer(Sequencer sequencer) {
         this(sequencer, MidiPlayer::defaultSynthesizer);
@@ -111,10 +112,12 @@ public final class MidiPlayer implements Player, AutoCloseable {
 
     @Override
     public void close() {
+        // Primero el secuenciador, para que su hilo termine de mandar los "notes off" antes de
+        // que se cierre el receiver por el que los manda.
+        sequencer.close();
         if (preview != null) {
             preview.close();
         }
-        sequencer.close();
         closeChosenOutput();
         secondaryPorts.values().forEach(PortOutput::close);
     }
@@ -191,7 +194,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
 
     private NotePreview preview() {
         if (preview == null) {
-            preview = new NotePreview(synthesizers.get());
+            preview = new NotePreview(defaultReceiver());
         }
         return preview;
     }
@@ -202,9 +205,34 @@ public final class MidiPlayer implements Player, AutoCloseable {
         }
         try {
             sequencer.open();
+            wireDefaultOutput();
         } catch (MidiUnavailableException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    /**
+     * Conecta el secuenciador al mismo receiver que usa la preview de una nota, en vez de
+     * dejarlo con la conexion implicita de JDK a un sintetizador que no podemos alcanzar (y que
+     * por lo tanto no puede sonar con un banco SoundFont cargado). Si ya eligieron una salida a
+     * mano no hay que tocar nada: useOutput ya dejo el secuenciador enchufado ahi.
+     */
+    private void wireDefaultOutput() throws MidiUnavailableException {
+        if (chosenOutput != null) {
+            return;
+        }
+        for (javax.sound.midi.Transmitter transmitter : sequencer.getTransmitters()) {
+            transmitter.close();
+        }
+        sequencer.getTransmitter().setReceiver(defaultReceiver());
+    }
+
+    /** El receiver del banco de sonido, uno solo, compartido entre la preview y la partitura entera. */
+    private Receiver defaultReceiver() {
+        if (defaultReceiver == null) {
+            defaultReceiver = synthesizers.get();
+        }
+        return defaultReceiver;
     }
 
     /** El sintetizador del sistema, o uno mudo si la maquina no tiene ninguno. */

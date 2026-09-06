@@ -73,6 +73,34 @@ class MidiPlayerTest {
         withFakeSynth.close();
     }
 
+    /**
+     * El secuenciador tiene que sonar por el mismo receiver que la preview, para que un banco
+     * SoundFont cargado ahi se escuche en la partitura entera y no solo al escribir una nota.
+     */
+    @Test
+    void playingTheTimelineReachesTheSameReceiverAsThePreview() throws InterruptedException {
+        List<ShortMessage> received = new CopyOnWriteArrayList<>();
+        MidiPlayer withFakeSynth = new MidiPlayer(sequencer, () -> receiverInto(received));
+        CountDownLatch latch = new CountDownLatch(1);
+
+        withFakeSynth.play(shortTimeline(), new PlaybackListener() {
+            @Override
+            public void beatStarted(BeatPosition position) {
+            }
+
+            @Override
+            public void playbackFinished() {
+                latch.countDown();
+            }
+        });
+
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(
+                received.stream().anyMatch(message -> message.getCommand() == ShortMessage.NOTE_ON),
+                "la partitura no sono por el receiver del banco de sonido");
+        withFakeSynth.close();
+    }
+
     @Test
     void isNotPlayingBeforeStart() {
         assertFalse(player.isPlaying());
