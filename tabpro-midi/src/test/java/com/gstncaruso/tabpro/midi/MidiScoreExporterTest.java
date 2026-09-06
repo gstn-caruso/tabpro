@@ -15,11 +15,14 @@ import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
+import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
+import com.gstncaruso.tabpro.core.model.effects.StemOverride;
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -360,6 +363,46 @@ class MidiScoreExporterTest {
 
         assertEquals(2, countShortMessagesOf(sequence.getTracks()[1], ShortMessage.NOTE_ON),
                 "el compas se repite, asi que su nota suena dos veces");
+    }
+
+    /**
+     * Barras de union y plicas son notacion pura (manual, linea 923): cambian como se ve la
+     * partitura, nunca como suena. Forzar un corte de barra o una direccion de plica no puede
+     * mover un solo evento MIDI -si lo hiciera, seria un bug, no una feature de notacion.
+     */
+    @Test
+    void forcingBeamBreaksAndStemOverridesNeverChangesTheGeneratedMidi() throws Exception {
+        Duration eighth = new Duration(NoteValue.EIGHTH, false);
+        Beat plainBeat = Beat.of(eighth, new Note(6, 0));
+        Measure plainMeasure = new Measure(TimeSignature.fourFour(), List.of(
+                plainBeat, plainBeat, plainBeat, plainBeat, plainBeat, plainBeat, plainBeat, plainBeat));
+        Score plain = scoreOfOneMeasure(plainMeasure);
+
+        Beat forcedBreak = plainBeat.withEffects(BeatEffects.none().withBeamBreak(BeamBreak.FORCED));
+        Beat preventedBreak = plainBeat.withEffects(BeatEffects.none().withBeamBreak(BeamBreak.PREVENTED));
+        Beat stemUp = plainBeat.withEffects(BeatEffects.none().withStemOverride(StemOverride.UP));
+        Beat stemDown = plainBeat.withEffects(BeatEffects.none().withStemOverride(StemOverride.DOWN));
+        Measure overriddenMeasure = new Measure(TimeSignature.fourFour(), List.of(
+                plainBeat, forcedBreak, preventedBreak, stemUp, stemDown, plainBeat, plainBeat, plainBeat));
+        Score overridden = scoreOfOneMeasure(overriddenMeasure);
+
+        assertEquals(bytesOf(exporter.toSequence(plain)), bytesOf(exporter.toSequence(overridden)),
+                "el mismo compas, con o sin overrides de notacion, tiene que sonar exactamente igual");
+    }
+
+    private static java.util.List<Byte> bytesOf(Sequence sequence) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MidiSystem.write(sequence, 1, out);
+        java.util.List<Byte> bytes = new ArrayList<>();
+        for (byte value : out.toByteArray()) {
+            bytes.add(value);
+        }
+        return bytes;
+    }
+
+    private static Score scoreOfOneMeasure(Measure measure) {
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Prueba", 120, List.of(track));
     }
 
     private static Score scoreOfOneMeasure(Beat... beats) {
