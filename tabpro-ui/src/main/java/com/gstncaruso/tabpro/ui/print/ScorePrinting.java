@@ -110,8 +110,15 @@ public final class ScorePrinting {
         return name.endsWith(".bmp") ? "bmp" : "png";
     }
 
-    /** Cada hoja de la partitura, una por hoja de papel de la impresora. */
-    private record ScorePages(Score score, PageSetup setup, PrintSettings settings) implements Printable {
+    /**
+     * Cada hoja de la partitura, una por hoja de papel de la impresora.
+     *
+     * <p>Visible para el paquete -y no privada- a proposito: es el {@link Printable} que la
+     * impresora de verdad invoca, y es lo unico de esta clase que un test sin impresora necesita
+     * construir a mano para ejercitarlo directamente con un {@link Graphics2D} y un
+     * {@link PageFormat} armados en el test.
+     */
+    record ScorePages(Score score, PageSetup setup, PrintSettings settings) implements Printable {
 
         @Override
         public int print(Graphics graphics, PageFormat format, int pageIndex) {
