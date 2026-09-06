@@ -1,3 +1,9 @@
+## [0.23.3](https://github.com/gstn-caruso/tabpro/compare/v0.23.2...v0.23.3) (2026-09-06)
+
+### Bug Fixes
+
+* la nota espejo señalaba mal bajo una octava, y no la cubría ningún test ([#90](https://github.com/gstn-caruso/tabpro/issues/90)) ([7a10895](https://github.com/gstn-caruso/tabpro/commit/7a108956ba320613375c6cbaef45db1bc494cdb1)), closes [#68](https://github.com/gstn-caruso/tabpro/issues/68)
+
 ## [0.23.2](https://github.com/gstn-caruso/tabpro/compare/v0.23.1...v0.23.2) (2026-09-06)
 
 ### Bug Fixes
