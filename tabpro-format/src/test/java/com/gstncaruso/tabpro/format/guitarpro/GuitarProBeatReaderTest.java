@@ -10,9 +10,12 @@ import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
+import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
 import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class GuitarProBeatReaderTest {
 
@@ -34,6 +37,10 @@ class GuitarProBeatReaderTest {
 
     /** El unico dato que trae una nota normal es su tipo y su traste. */
     private static final int NOTE_WITH_FRET = 0x20;
+
+    /** El bit del beat que anuncia el rasgueo, y la velocidad que dice que no hay ninguno. */
+    private static final int HAS_STROKE = 0x40;
+    private static final int NO_STROKE = 0;
 
     /** El bit del beat que en GP3 comparten la palanca y el golpe, y los valores de ese byte. */
     private static final int TREMOLO_BAR_OR_SLAP = 0x20;
@@ -328,6 +335,83 @@ class GuitarProBeatReaderTest {
 
         assertEquals(Wah.OPEN, wahBeat.effects().wah().orElseThrow());
         assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+    }
+
+    // ---- el rasgueo: su velocidad y, en GP5, su direccion -------------------
+
+    /**
+     * La velocidad del rasgueo se escribe como un numero de figura que empieza en la
+     * semifusa doble: 1 es 1/128, 2 es 1/64, 3 es 1/32, y asi hasta 6, que es la negra.
+     * Tabpro no llega a 1/128 y la aproxima con la semifusa, que es lo mas rapido que tiene.
+     */
+    @ParameterizedTest
+    @CsvSource({"1, SIXTY_FOURTH", "2, SIXTY_FOURTH", "3, THIRTY_SECOND",
+            "4, SIXTEENTH", "5, EIGHTH", "6, QUARTER"})
+    void theStrokeSpeedIsAFigureNumber(int written, NoteValue expected) {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(HAS_STROKE).writeUnsignedByte(NO_FLAGS)
+                .writeUnsignedByte(written)
+                .writeUnsignedByte(NO_STROKE)
+                .writeUnsignedByte(NO_STRINGS), GuitarProVersion.GP4);
+
+        assertEquals(expected, beat.effects().stroke().orElseThrow().speed());
+    }
+
+    @Test
+    void gp4WritesFirstTheStrokeGoingDown() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(HAS_STROKE).writeUnsignedByte(NO_FLAGS)
+                .writeUnsignedByte(3)
+                .writeUnsignedByte(NO_STROKE)
+                .writeUnsignedByte(NO_STRINGS), GuitarProVersion.GP4);
+
+        assertEquals(StrokeDirection.DOWN, beat.effects().stroke().orElseThrow().direction());
+    }
+
+    /** En GP5 el orden de las dos velocidades se invierte: primero la de arriba. */
+    @Test
+    void gp5WritesFirstTheStrokeGoingUp() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(HAS_STROKE).writeUnsignedByte(NO_FLAGS)
+                .writeUnsignedByte(3)
+                .writeUnsignedByte(NO_STROKE)
+                .writeUnsignedByte(NO_STRINGS)
+                .writeShort(0), GuitarProVersion.GP5_10);
+
+        assertEquals(StrokeDirection.UP, beat.effects().stroke().orElseThrow().direction());
+    }
+
+    @Test
+    void gp5ReadsTheStrokeGoingDownFromTheSecondSpeed() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(HAS_STROKE).writeUnsignedByte(NO_FLAGS)
+                .writeUnsignedByte(NO_STROKE)
+                .writeUnsignedByte(3)
+                .writeUnsignedByte(NO_STRINGS)
+                .writeShort(0), GuitarProVersion.GP5_10);
+
+        assertEquals(StrokeDirection.DOWN, beat.effects().stroke().orElseThrow().direction());
+    }
+
+    @Test
+    void aBeatWithBothSpeedsInZeroHasNoStroke() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(HAS_STROKE).writeUnsignedByte(NO_FLAGS)
+                .writeUnsignedByte(NO_STROKE)
+                .writeUnsignedByte(NO_STROKE)
+                .writeUnsignedByte(NO_STRINGS), GuitarProVersion.GP4);
+
+        assertTrue(beat.effects().stroke().isEmpty());
     }
 
     // ---- la palanca y el golpe de GP3, que comparten un mismo bit -----------

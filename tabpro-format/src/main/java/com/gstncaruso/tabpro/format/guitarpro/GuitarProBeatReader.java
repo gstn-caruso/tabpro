@@ -136,7 +136,7 @@ final class GuitarProBeatReader {
             read = read.withTremoloBar(bends.read(reader));
         }
         if ((first & HAS_STROKE) != 0) {
-            read = readStroke(reader, read);
+            read = readStroke(reader, version, read);
         }
         if ((second & 0x02) != 0) {
             read = read.withPickstroke(
@@ -206,24 +206,36 @@ final class GuitarProBeatReader {
         };
     }
 
-    private static BeatEffects readStroke(GuitarProByteReader reader, BeatEffects effects) {
-        int down = reader.readUnsignedByte();
-        int up = reader.readUnsignedByte();
-        if (down > 0) {
-            return effects.withStroke(new Stroke(StrokeDirection.DOWN, strokeSpeed(down), false));
-        }
+    /**
+     * El rasgueo trae las dos velocidades, la de arriba y la de abajo, y suena en la
+     * direccion de la que no este en cero. GP5 invierte el orden en que las escribe.
+     */
+    private static BeatEffects readStroke(
+            GuitarProByteReader reader, GuitarProVersion version, BeatEffects effects) {
+        int first = reader.readUnsignedByte();
+        int second = reader.readUnsignedByte();
+        int up = version.strokeUpFirst() ? first : second;
+        int down = version.strokeUpFirst() ? second : first;
         if (up > 0) {
             return effects.withStroke(new Stroke(StrokeDirection.UP, strokeSpeed(up), false));
+        }
+        if (down > 0) {
+            return effects.withStroke(new Stroke(StrokeDirection.DOWN, strokeSpeed(down), false));
         }
         return effects;
     }
 
+    /**
+     * La velocidad es un numero de figura que empieza en la semifusa doble: 1 es 1/128,
+     * 2 es 1/64, y asi hasta 6, que es la negra. Tabpro no llega a 1/128 y la aproxima
+     * con la semifusa, que es lo mas rapido que tiene.
+     */
     private static NoteValue strokeSpeed(int encoded) {
         return switch (encoded) {
-            case 1 -> NoteValue.SIXTY_FOURTH;
-            case 2 -> NoteValue.THIRTY_SECOND;
-            case 3 -> NoteValue.SIXTEENTH;
-            case 4 -> NoteValue.EIGHTH;
+            case 1, 2 -> NoteValue.SIXTY_FOURTH;
+            case 3 -> NoteValue.THIRTY_SECOND;
+            case 4 -> NoteValue.SIXTEENTH;
+            case 5 -> NoteValue.EIGHTH;
             default -> NoteValue.QUARTER;
         };
     }
