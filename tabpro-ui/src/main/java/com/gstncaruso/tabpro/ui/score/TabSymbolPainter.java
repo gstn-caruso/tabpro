@@ -81,6 +81,9 @@ final class TabSymbolPainter {
         if (effects.popping()) {
             labels.add("P");
         }
+        if (effects.fadeIn()) {
+            labels.add("fade in");
+        }
         if (has(beat, Ornament.PALM_MUTE)) {
             labels.add("P.M.");
         }

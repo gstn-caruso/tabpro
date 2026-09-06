@@ -17,6 +17,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
@@ -314,6 +315,24 @@ class ScorePainterTest {
         assertTrue(painted.hasInkNear(x, y, 3), "falta la barra de repeticion de la pista que si se ve");
     }
 
+    @Test
+    void unFadeInSeAnunciaSobreLaTablatura() {
+        Beat conFade = Beat.of(Duration.quarter(), new Note(1, 5))
+                .withEffects(BeatEffects.none().withFadeIn(true));
+        Beat sinFade = Beat.of(Duration.quarter(), new Note(1, 5));
+
+        assertTrue(
+                inkAboveTheTablature(conFade) > inkAboveTheTablature(sinFade),
+                "el fade in tiene que dejar su etiqueta arriba de la tablatura");
+    }
+
+    private static int inkAboveTheTablature(Beat beat) {
+        Painted painted = paint(scoreWith(measureOf(beat)), new Cursor(0, 0, 0, 3), Playhead.silent());
+        Rectangle bounds = painted.layout().beatBounds(0, 0, 0);
+        int tabTop = painted.layout().tabTop(0, 0);
+        return painted.inkIn(new Rectangle(bounds.x, tabTop - 34, bounds.width, 32));
+    }
+
     private static Score scoreWith(Measure... measures) {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measures));
         return new Score("", 120, List.of(track));
@@ -355,6 +374,19 @@ class ScorePainterTest {
                 }
             }
             return false;
+        }
+
+        /** Cuanta tinta hay en un rectangulo: sirve para comparar la misma hoja con y sin un efecto. */
+        int inkIn(Rectangle area) {
+            int ink = 0;
+            for (int x = area.x; x < area.x + area.width; x++) {
+                for (int y = area.y; y < area.y + area.height; y++) {
+                    if (isInside(x, y) && image.getRGB(x, y) != ScoreColors.BACKGROUND.getRGB()) {
+                        ink++;
+                    }
+                }
+            }
+            return ink;
         }
 
         boolean looksLike(Painted other) {
