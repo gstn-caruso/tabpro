@@ -40,11 +40,12 @@ final class PowerTabNoteReader {
     private static final int SLIDE_OUT_DOWNWARDS = 3;
     private static final int SLIDE_OUT_UPWARDS = 4;
 
-    Note read(PowerTabByteReader reader, int string0Based) {
+    Note read(PowerTabByteReader reader) {
         int stringData = reader.readUnsignedByte();
         int simpleData = reader.readUnsignedShort();
         int[] symbols = reader.readSmallFixedArrayOfInts(MAX_COMPLEX_SYMBOLS);
 
+        int string0Based = (stringData >>> 5) & 0x07;
         int fret = stringData & 0x1f;
         boolean tied = (simpleData & FLAG_TIED) != 0;
 

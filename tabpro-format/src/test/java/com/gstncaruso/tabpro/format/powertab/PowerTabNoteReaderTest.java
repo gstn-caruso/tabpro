@@ -18,10 +18,10 @@ class PowerTabNoteReaderTest {
 
     @Test
     void readsTheStringAndFret() {
-        // cuerda 2 (0-based) = cuerda 4 en el modelo (1-based); traste 5.
+        // cuerda 2 (0-based) = cuerda 3 en el modelo (1-based); traste 5.
         Note note = readNote(stringData(2, 5), 0);
 
-        assertEquals(4, note.string());
+        assertEquals(3, note.string());
         assertEquals(5, note.fret());
         assertTrue(note.effects().isEmpty());
     }
@@ -105,7 +105,7 @@ class PowerTabNoteReaderTest {
 
     private Note readNote(int stringData, int simpleData, int... symbols) {
         byte[] data = bytesFor(stringData, simpleData, symbols);
-        return reader.read(new PowerTabByteReader(data), 3);
+        return reader.read(new PowerTabByteReader(data));
     }
 
     private static int stringData(int string0Based, int fret) {
