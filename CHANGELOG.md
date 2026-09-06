@@ -1,3 +1,9 @@
+## [0.12.0](https://github.com/gstn-caruso/tabpro/compare/v0.11.0...v0.12.0) (2026-09-06)
+
+### Features
+
+* los gestos de edición que el manual describe y faltaban ([#53](https://github.com/gstn-caruso/tabpro/issues/53)) ([aa6a125](https://github.com/gstn-caruso/tabpro/commit/aa6a12551f2ef15d4f096c10381e8d3bb0116d5f))
+
 ## [0.11.0](https://github.com/gstn-caruso/tabpro/compare/v0.10.0...v0.11.0) (2026-09-06)
 
 ### Features
