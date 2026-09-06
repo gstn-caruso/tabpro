@@ -39,7 +39,10 @@ import com.gstncaruso.tabpro.ui.sound.RelativeTempoDialog;
 import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
+import com.gstncaruso.tabpro.ui.percussion.PercussionAssistant;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.score.ViewMode;
+import com.gstncaruso.tabpro.ui.score.Zoom;
 import com.gstncaruso.tabpro.ui.status.StatusBar;
 import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.theme.ThemeSwitch;
@@ -523,37 +526,44 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void pageMode() {
-            PendingFeature.announce(MainFrame.this, "El modo página");
+            canvas.setViewMode(ViewMode.PAGE);
+            backToTheScore();
         }
 
         @Override
         public void parchmentMode() {
-            PendingFeature.announce(MainFrame.this, "El modo pergamino");
+            canvas.setViewMode(ViewMode.PARCHMENT);
+            backToTheScore();
         }
 
         @Override
         public void verticalScreenMode() {
-            PendingFeature.announce(MainFrame.this, "El modo de pantalla vertical");
+            canvas.setViewMode(ViewMode.SCREEN_VERTICAL);
+            backToTheScore();
         }
 
         @Override
         public void horizontalScreenMode() {
-            PendingFeature.announce(MainFrame.this, "El modo de pantalla horizontal");
+            canvas.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+            backToTheScore();
         }
 
         @Override
         public void zoomIn() {
-            PendingFeature.announce(MainFrame.this, "El zoom");
+            canvas.zoomIn();
+            backToTheScore();
         }
 
         @Override
         public void zoomOut() {
-            zoomIn();
+            canvas.zoomOut();
+            backToTheScore();
         }
 
         @Override
         public void resetZoom() {
-            zoomIn();
+            canvas.setZoom(Zoom.whole());
+            backToTheScore();
         }
 
         @Override
@@ -585,7 +595,20 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void togglePercussionAssistant() {
-            PendingFeature.announce(MainFrame.this, "El asistente de percusión");
+            if (!PercussionAssistant.appliesTo(editor.currentTrack())) {
+                JOptionPane.showMessageDialog(
+                        MainFrame.this,
+                        "El asistente de percusión sólo sirve en una pista de percusión.",
+                        "tabpro",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            JOptionPane.showMessageDialog(
+                    MainFrame.this,
+                    new PercussionAssistant(editor, player),
+                    "Asistente de percusión",
+                    JOptionPane.PLAIN_MESSAGE);
+            backToTheScore();
         }
 
         @Override
