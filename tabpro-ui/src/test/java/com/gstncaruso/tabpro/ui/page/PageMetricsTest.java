@@ -92,6 +92,14 @@ class PageMetricsTest {
         assertTrue(big.layoutWidth() < small.layoutWidth(), "agrandar la partitura deja entrar menos musica");
     }
 
+    @Test
+    void aLetterSheetMeasuresSixHundredAndTwelveBySevenHundredAndNinetyTwoPoints() {
+        PageMetrics sheet = PageMetrics.of(setupOn(PaperFormat.LETTER, Orientation.PORTRAIT));
+
+        assertEquals(612.0, sheet.pageWidthPoints(), 0.01);
+        assertEquals(792.0, sheet.pageHeightPoints(), 0.01);
+    }
+
     private static PageSetup setupOn(PaperFormat format, Orientation orientation) {
         return new PageSetup(format, orientation, 20, 20, 20, 20, 100, PageBanner.header(), PageBanner.footer());
     }

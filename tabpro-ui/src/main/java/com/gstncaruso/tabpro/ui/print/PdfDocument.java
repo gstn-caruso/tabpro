@@ -12,8 +12,8 @@ import java.util.zip.DeflaterOutputStream;
 
 /**
  * Un escritor de PDF mínimo: una página por imagen, cada una comprimida y
- * estirada para llenar la hoja. Alcanza para exportar la partitura sin traer
- * una biblioteca entera.
+ * estirada para llenar la hoja del tamaño que pida la configuración de página.
+ * Alcanza para exportar la partitura sin traer una biblioteca entera.
  */
 final class PdfDocument {
 
@@ -22,6 +22,17 @@ final class PdfDocument {
     private static final double A4_HEIGHT = 841.89;
 
     private final List<BufferedImage> pages = new ArrayList<>();
+    private final double sheetWidth;
+    private final double sheetHeight;
+
+    PdfDocument() {
+        this(A4_WIDTH, A4_HEIGHT);
+    }
+
+    PdfDocument(double sheetWidth, double sheetHeight) {
+        this.sheetWidth = sheetWidth;
+        this.sheetHeight = sheetHeight;
+    }
 
     void addPage(BufferedImage page) {
         pages.add(page);
@@ -59,7 +70,7 @@ final class PdfDocument {
 
             offsets.add(body.size());
             append(body, pageObject + " 0 obj\n<< /Type /Page /Parent " + pagesObject + " 0 R"
-                    + " /MediaBox [ 0 0 " + round(A4_WIDTH) + " " + round(A4_HEIGHT) + " ]"
+                    + " /MediaBox [ 0 0 " + round(sheetWidth) + " " + round(sheetHeight) + " ]"
                     + " /Resources << /XObject << /Im0 " + imageObject + " 0 R >> >>"
                     + " /Contents " + contentObject + " 0 R >>\nendobj\n");
 
@@ -93,12 +104,12 @@ final class PdfDocument {
     }
 
     /** La imagen se escala para entrar entera en la hoja, centrada. */
-    private static String contentFor(BufferedImage image) {
-        double scale = Math.min(A4_WIDTH / image.getWidth(), A4_HEIGHT / image.getHeight());
+    private String contentFor(BufferedImage image) {
+        double scale = Math.min(sheetWidth / image.getWidth(), sheetHeight / image.getHeight());
         double width = image.getWidth() * scale;
         double height = image.getHeight() * scale;
-        double x = (A4_WIDTH - width) / 2;
-        double y = (A4_HEIGHT - height) / 2;
+        double x = (sheetWidth - width) / 2;
+        double y = (sheetHeight - height) / 2;
         return "q " + round(width) + " 0 0 " + round(height) + " " + round(x) + " " + round(y) + " cm /Im0 Do Q";
     }
 

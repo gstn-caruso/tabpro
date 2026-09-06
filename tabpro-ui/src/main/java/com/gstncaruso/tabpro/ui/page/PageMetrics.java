@@ -28,6 +28,9 @@ public record PageMetrics(
     private static final double PIXELS_PER_INCH = 100;
     private static final double MILLIMETRES_PER_INCH = 25.4;
 
+    /** El PDF mide en puntos, que son 72 por pulgada. */
+    private static final double POINTS_PER_INCH = 72;
+
     /** Ni el mas apretado de los margenes puede dejar la hoja sin nada de contenido. */
     private static final int MINIMUM_CONTENT = 1;
 
@@ -45,6 +48,15 @@ public record PageMetrics(
 
     public static int pixelsOf(double millimetres) {
         return (int) Math.round(millimetres / MILLIMETRES_PER_INCH * PIXELS_PER_INCH);
+    }
+
+    /** Lo que mide la hoja en puntos, la unidad en la que se escribe un PDF. */
+    public double pageWidthPoints() {
+        return pageWidth * POINTS_PER_INCH / PIXELS_PER_INCH;
+    }
+
+    public double pageHeightPoints() {
+        return pageHeight * POINTS_PER_INCH / PIXELS_PER_INCH;
     }
 
     public int contentLeft() {

@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.print;
 
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.page.PageMetrics;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.Dimension;
@@ -22,14 +23,24 @@ public final class ScorePrinting {
     private ScorePrinting() {
     }
 
-    /** Abre el diálogo de impresión del sistema y manda la partitura. */
-    public static void print(Score score, PageSetup setup, String jobName) throws PrinterException {
+    /**
+     * Manda a la impresora las hojas que se pidieron, con el tamano que se pidio. Que hojas y de
+     * que tamano ya lo decidio la ventana de Imprimir; el dialogo del sistema queda solo para
+     * elegir la impresora y su papel.
+     */
+    public static void print(Score score, PageSetup setup, PrintSettings settings, String jobName)
+            throws PrinterException {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setJobName(jobName);
-        job.setPrintable(new ScorePages(score, setup));
+        job.setPrintable(new ScorePages(score, setup, settings));
         if (job.printDialog()) {
             job.print();
         }
+    }
+
+    /** En cuantas hojas se reparte la partitura, que es lo que la ventana de Imprimir necesita saber. */
+    public static int pageCount(Score score, PageSetup setup) {
+        return ScoreSheets.pageCount(score, setup);
     }
 
     public static void exportImage(Score score, PageSetup setup, Path path) {
@@ -42,7 +53,8 @@ public final class ScorePrinting {
 
     /** Exporta la partitura a PDF, una hoja por pagina. */
     public static void exportPdf(Score score, PageSetup setup, Path path) {
-        PdfDocument pdf = new PdfDocument();
+        PageMetrics sheet = PageMetrics.of(setup);
+        PdfDocument pdf = new PdfDocument(sheet.pageWidthPoints(), sheet.pageHeightPoints());
         ScoreSheets.renderPages(score, Zoom.whole(), setup).forEach(pdf::addPage);
         try (java.io.OutputStream out = java.nio.file.Files.newOutputStream(path)) {
             pdf.writeTo(out);
@@ -63,24 +75,22 @@ public final class ScorePrinting {
         return name.endsWith(".jpg") || name.endsWith(".jpeg") ? "jpg" : "png";
     }
 
-    /** Reparte la partitura en las hojas que le entren al papel de la impresora. */
-    private record ScorePages(Score score, PageSetup setup) implements Printable {
+    /** Cada hoja de la partitura, una por hoja de papel de la impresora. */
+    private record ScorePages(Score score, PageSetup setup, PrintSettings settings) implements Printable {
 
         @Override
         public int print(Graphics graphics, PageFormat format, int pageIndex) {
-            Dimension sheet = ScoreSheets.sizeOf(score, Zoom.whole(), setup);
-            double scale = format.getImageableWidth() / sheet.width;
-            int pageHeight = (int) Math.max(1, format.getImageableHeight() / scale);
-            int pages = (int) Math.ceil(sheet.height / (double) pageHeight);
-            if (pageIndex >= pages) {
+            if (pageIndex >= settings.sheetsToPrint()) {
                 return NO_SUCH_PAGE;
             }
+            Dimension sheet = ScoreSheets.pageSize(Zoom.whole(), setup);
+            double scale = settings.scaleFor(
+                    sheet.width, sheet.height, format.getImageableWidth(), format.getImageableHeight());
             Graphics2D canvas = (Graphics2D) graphics.create();
             canvas.translate(format.getImageableX(), format.getImageableY());
+            canvas.clipRect(0, 0, (int) format.getImageableWidth(), (int) format.getImageableHeight());
             canvas.scale(scale, scale);
-            canvas.translate(0, -pageIndex * (double) pageHeight);
-            canvas.clipRect(0, pageIndex * pageHeight, sheet.width, pageHeight);
-            ScoreSheets.paintOn(canvas, score, Zoom.whole(), setup);
+            ScoreSheets.paintPageOn(canvas, score, Zoom.whole(), setup, settings.sheetAt(pageIndex) - 1);
             canvas.dispose();
             return PAGE_EXISTS;
         }

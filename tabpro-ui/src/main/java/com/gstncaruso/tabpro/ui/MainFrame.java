@@ -31,6 +31,7 @@ import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetupDialog;
 import com.gstncaruso.tabpro.ui.dialogs.paste.PasteDialog;
 import com.gstncaruso.tabpro.ui.dialogs.preferences.PreferencesDialog;
+import com.gstncaruso.tabpro.ui.dialogs.print.PrintDialog;
 import com.gstncaruso.tabpro.ui.dialogs.track.AddTrackDialog;
 import com.gstncaruso.tabpro.ui.dialogs.track.TrackPropertiesDialog;
 import com.gstncaruso.tabpro.ui.dialogs.tuner.TunerDialog;
@@ -50,6 +51,7 @@ import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.percussion.PercussionAssistant;
+import com.gstncaruso.tabpro.ui.print.PrintSettings;
 import com.gstncaruso.tabpro.ui.print.ScorePrinting;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
@@ -441,7 +443,11 @@ public final class MainFrame extends JFrame {
         @Override
         public void print() {
             try {
-                ScorePrinting.print(editor.score(), pageSetup, document.displayName());
+                java.util.Optional<PrintSettings> chosen =
+                        PrintDialog.ask(MainFrame.this, ScorePrinting.pageCount(editor.score(), pageSetup));
+                if (chosen.isPresent()) {
+                    ScorePrinting.print(editor.score(), pageSetup, chosen.get(), document.displayName());
+                }
                 backToTheScore();
             } catch (java.awt.print.PrinterException e) {
                 JOptionPane.showMessageDialog(

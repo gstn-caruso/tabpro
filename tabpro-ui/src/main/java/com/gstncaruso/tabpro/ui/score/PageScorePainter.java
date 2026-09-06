@@ -62,6 +62,26 @@ public final class PageScorePainter {
         }
     }
 
+    /** En cuantas hojas se reparte la partitura con este papel. */
+    public static int pageCount(Score score, ScoreViewport viewport) {
+        return placementsFor(layoutFor(score, viewport), viewport).size();
+    }
+
+    /**
+     * Una sola hoja dibujada en el origen, como la necesitan la impresora y el PDF: la misma hoja
+     * que se ve en pantalla, pero sola y sin el hueco que la separa de la siguiente.
+     */
+    public static void paintPage(
+            Graphics2D g, Score score, Cursor cursor, Playhead playhead, Optional<Selection> selection,
+            ScoreViewport viewport, int page) {
+        ScoreLayout layout = layoutFor(score, viewport);
+        List<PagePlacement> pages = placementsFor(layout, viewport);
+        g.scale(viewport.factor(), viewport.factor());
+        paintSheet(
+                g, score, layout, cursor, playhead, selection, viewport, pages.get(page).alone(),
+                new PageFields(score.info(), page + 1, pages.size()));
+    }
+
     /** Traduce un clic de pantalla (ya sin el factor de zoom) a compas/beat/cuerda. */
     public static Optional<ScoreLayout.Hit> hitTest(
             Score score, ScoreViewport viewport, int screenX, int screenY) {
@@ -198,6 +218,11 @@ public final class PageScorePainter {
 
         int bottom() {
             return screenTop + pageHeight;
+        }
+
+        /** La misma hoja pero puesta en el origen, sin las que venian antes. */
+        PagePlacement alone() {
+            return new PagePlacement(0, pageHeight, paintedHeight, shiftUp, firstSystem, lastSystem, isFirst);
         }
     }
 }
