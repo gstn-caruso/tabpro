@@ -5,7 +5,10 @@ import com.gstncaruso.tabpro.midi.MidiCapture;
 import com.gstncaruso.tabpro.midi.MidiDevices;
 import com.gstncaruso.tabpro.midi.MidiPlayer;
 import com.gstncaruso.tabpro.midi.MidiTestTone;
+import com.gstncaruso.tabpro.midi.SoundFontBank;
+import com.gstncaruso.tabpro.midi.SoundFonts;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -15,20 +18,23 @@ import javax.sound.midi.MidiUnavailableException;
 
 /**
  * Los dispositivos MIDI de la maquina, tal como los ofrece la ventana de
- * configuracion: hasta cuatro puertos de salida, la entrada de captura y su
+ * configuracion: hasta cuatro puertos de salida (cada uno con su banco
+ * SoundFont si usa el sintetizador interno), la entrada de captura y su
  * sensibilidad.
  */
 final class MidiDeviceSetup implements Ports.Devices {
 
     private final Optional<MidiPlayer> player;
+    private final SoundFontBank soundBank;
     private final String[] outputByPort = new String[Channel.PORT_COUNT];
     private final boolean[] limitPitchVariationByPort = new boolean[Channel.PORT_COUNT];
     private String input = "";
     private int sensitivityMillis = MidiCapture.DEFAULT_SENSITIVITY_MILLIS;
     private MidiCapture capture;
 
-    MidiDeviceSetup(Optional<MidiPlayer> player) {
+    MidiDeviceSetup(Optional<MidiPlayer> player, SoundFontBank soundBank) {
         this.player = player;
+        this.soundBank = soundBank;
         Arrays.fill(outputByPort, "");
     }
 
@@ -127,6 +133,36 @@ final class MidiDeviceSetup implements Ports.Devices {
     public void useLimitPitchVariation(int port, boolean limit) {
         limitPitchVariationByPort[port - 1] = limit;
         player.ifPresent(midi -> midi.useLimitPitchVariation(port, limit));
+    }
+
+    @Override
+    public Optional<String> soundFontFile() {
+        return soundBank.file().map(Path::toString);
+    }
+
+    /**
+     * El banco es global (ver SoundFontBank): un archivo vacio no apaga el sonido, vuelve a
+     * dejar que tabpro busque el que tenga instalado el sistema.
+     */
+    @Override
+    public void chooseSoundFontFile(Optional<String> path) {
+        Optional<Path> resolved = path.map(Path::of).or(() -> SoundFonts.installed().stream().findFirst());
+        soundBank.choose(resolved);
+    }
+
+    @Override
+    public boolean soundFontActive() {
+        return soundBank.active();
+    }
+
+    @Override
+    public void toggleSoundFont() {
+        soundBank.toggle();
+    }
+
+    @Override
+    public String soundFontStatus() {
+        return soundBank.status();
     }
 
     private static MidiCapture.CapturedNotes asCapturedNotes(Ports.CapturedNote listener) {
