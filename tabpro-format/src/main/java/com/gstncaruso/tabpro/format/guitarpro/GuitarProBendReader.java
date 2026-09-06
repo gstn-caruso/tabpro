@@ -30,13 +30,30 @@ final class GuitarProBendReader {
         return new Bend(bendTypeOf(rawType), points);
     }
 
+    /**
+     * La palanca de GP3 no tiene curva: es un solo entero con cuanto se hunde la cuerda.
+     * Se le da la forma con que la dibuja Guitar Pro -- baja hasta la mitad de la nota y
+     * vuelve a su altura.
+     */
+    Bend readOldTremoloBar(GuitarProByteReader reader) {
+        int depth = quarterTonesOf(-reader.readInt());
+        return new Bend(BendType.BEND_RELEASE, List.of(
+                BendPoint.at(0, 0),
+                BendPoint.at(BendPoint.LAST_POSITION / 2, depth),
+                BendPoint.at(BendPoint.LAST_POSITION, 0)));
+    }
+
     private BendPoint readPoint(GuitarProByteReader reader) {
         int position = Math.clamp(reader.readInt(), 0, BendPoint.LAST_POSITION);
-        int quarterTones = Math.clamp(
-                Math.round(reader.readInt() / (float) UNITS_PER_QUARTER_TONE),
-                -BendPoint.MAX_QUARTER_TONES, BendPoint.MAX_QUARTER_TONES);
+        int quarterTones = quarterTonesOf(reader.readInt());
         int vibrato = Math.clamp(reader.readUnsignedByte(), 0, BendPoint.MAX_VIBRATO);
         return new BendPoint(position, quarterTones, vibrato);
+    }
+
+    private static int quarterTonesOf(int units) {
+        return Math.clamp(
+                Math.round(units / (float) UNITS_PER_QUARTER_TONE),
+                -BendPoint.MAX_QUARTER_TONES, BendPoint.MAX_QUARTER_TONES);
     }
 
     /**

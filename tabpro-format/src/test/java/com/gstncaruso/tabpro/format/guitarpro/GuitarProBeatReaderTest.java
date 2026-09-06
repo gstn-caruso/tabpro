@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuplet;
+import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
@@ -17,6 +18,7 @@ class GuitarProBeatReaderTest {
 
     private static final int NO_FLAGS = 0x00;
     private static final int DOTTED = 0x01;
+    private static final int HAS_EFFECTS = 0x08;
     private static final int WITH_TUPLET = 0x20;
     private static final int WITH_MIX_TABLE = 0x10;
     private static final int WITH_STATUS = 0x40;
@@ -32,6 +34,11 @@ class GuitarProBeatReaderTest {
 
     /** El unico dato que trae una nota normal es su tipo y su traste. */
     private static final int NOTE_WITH_FRET = 0x20;
+
+    /** El bit del beat que en GP3 comparten la palanca y el golpe, y los valores de ese byte. */
+    private static final int TREMOLO_BAR_OR_SLAP = 0x20;
+    private static final int NO_SLAP = 0;
+    private static final int SLAPPING = 2;
 
     /** Guitar Pro escribe en -1 el parametro que el cambio no toca. */
     private static final int UNCHANGED = -1;
@@ -320,6 +327,96 @@ class GuitarProBeatReaderTest {
         Beat siguiente = reader.read(bytes, GuitarProVersion.GP5_10, 6);
 
         assertEquals(Wah.OPEN, wahBeat.effects().wah().orElseThrow());
+        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+    }
+
+    // ---- la palanca y el golpe de GP3, que comparten un mismo bit -----------
+
+    /**
+     * En GP3 la palanca y el golpe entran por el mismo bit del beat: detras va un byte
+     * que dice cual de los dos es -- 0 es la palanca -- y despues un entero con cuanto se
+     * hunde la cuerda. No hay curva de puntos: esa forma llega recien con GP4.
+     */
+    @Test
+    void gp3ReadsTheTremoloBarAsASingleDepth() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(TREMOLO_BAR_OR_SLAP)
+                .writeUnsignedByte(NO_SLAP)
+                .writeInt(100)
+                .writeUnsignedByte(NO_STRINGS));
+
+        Bend palanca = beat.effects().tremoloBar().orElseThrow();
+        assertEquals(-4, palanca.points().get(1).quarterTones(), "un tono entero hacia abajo");
+        assertEquals(0, palanca.points().getFirst().quarterTones());
+        assertEquals(0, palanca.points().getLast().quarterTones());
+    }
+
+    @Test
+    void gp3KeepsTheAlignmentAfterATremoloBar() {
+        GuitarProByteReader bytes = new GuitarProByteReader(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(TREMOLO_BAR_OR_SLAP)
+                .writeUnsignedByte(NO_SLAP)
+                .writeInt(100)
+                .writeUnsignedByte(NO_STRINGS)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(ONLY_FIRST_STRING)
+                .writeUnsignedByte(NOTE_WITH_FRET).writeUnsignedByte(NORMAL_NOTE).writeSignedByte(9)
+                .bytes());
+
+        reader.read(bytes, GuitarProVersion.GP3, 6);
+        Beat siguiente = reader.read(bytes, GuitarProVersion.GP3, 6);
+
+        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+    }
+
+    /** Con golpe en vez de palanca, esos cuatro bytes siguen ahi y hay que consumirlos. */
+    @Test
+    void gp3KeepsTheAlignmentAfterASlap() {
+        GuitarProByteReader bytes = new GuitarProByteReader(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(TREMOLO_BAR_OR_SLAP)
+                .writeUnsignedByte(SLAPPING)
+                .writeInt(0)
+                .writeUnsignedByte(NO_STRINGS)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(ONLY_FIRST_STRING)
+                .writeUnsignedByte(NOTE_WITH_FRET).writeUnsignedByte(NORMAL_NOTE).writeSignedByte(9)
+                .bytes());
+
+        Beat golpe = reader.read(bytes, GuitarProVersion.GP3, 6);
+        Beat siguiente = reader.read(bytes, GuitarProVersion.GP3, 6);
+
+        assertTrue(golpe.effects().slapping());
+        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+    }
+
+    /** De GP4 en adelante ese bit es solo el golpe, sin el entero que traia GP3. */
+    @Test
+    void gp4KeepsTheAlignmentAfterASlap() {
+        GuitarProByteReader bytes = new GuitarProByteReader(new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_EFFECTS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(TREMOLO_BAR_OR_SLAP)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeUnsignedByte(SLAPPING)
+                .writeUnsignedByte(NO_STRINGS)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(ONLY_FIRST_STRING)
+                .writeUnsignedByte(NOTE_WITH_FRET).writeUnsignedByte(NORMAL_NOTE).writeSignedByte(9)
+                .bytes());
+
+        Beat golpe = reader.read(bytes, GuitarProVersion.GP4, 6);
+        Beat siguiente = reader.read(bytes, GuitarProVersion.GP4, 6);
+
+        assertTrue(golpe.effects().slapping());
         assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
     }
 

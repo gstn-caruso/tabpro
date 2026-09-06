@@ -35,6 +35,10 @@ final class GuitarProBeatReader {
     private static final int STROKE_UP = 0x40;
     private static final int STROKE_DOWN = 0x02;
     private static final int HAS_TREMOLO_BAR_OR_SLAP = 0x20;
+
+    /** El byte que en GP3 elige entre la palanca (0) y el golpe. */
+    private static final int NO_SLAP = 0;
+
     private static final int HAS_STROKE = 0x40;
     private static final int FADE_IN = 0x10;
 
@@ -174,13 +178,27 @@ final class GuitarProBeatReader {
         }
     }
 
+    /**
+     * En GP3 la palanca y el golpe entran por el mismo bit: un byte dice cual de los dos
+     * es -- 0 es la palanca -- y detras van cuatro bytes, la profundidad de la palanca o
+     * un entero que el golpe no usa. De GP4 en adelante ese byte es solo el golpe, y la
+     * palanca pasa a tener bit propio y curva de puntos.
+     */
     private BeatEffects readSlapOrTremoloBar(
             GuitarProByteReader reader, GuitarProVersion version, BeatEffects effects) {
-        if (!version.hasSecondFlagsByte()) {
-            bends.read(reader);
-            return effects;
+        int slap = reader.readUnsignedByte();
+        if (version.hasSecondFlagsByte()) {
+            return slapping(effects, slap);
         }
-        return switch (reader.readUnsignedByte()) {
+        if (slap == NO_SLAP) {
+            return effects.withTremoloBar(bends.readOldTremoloBar(reader));
+        }
+        reader.skip(version.slapEffectPaddingBytes());
+        return slapping(effects, slap);
+    }
+
+    private static BeatEffects slapping(BeatEffects effects, int slap) {
+        return switch (slap) {
             case 1 -> effects.withTapping(true);
             case 2 -> effects.withSlapping(true);
             case 3 -> effects.withPopping(true);
