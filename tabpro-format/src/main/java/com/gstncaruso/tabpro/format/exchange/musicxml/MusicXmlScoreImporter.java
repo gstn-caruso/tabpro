@@ -14,6 +14,8 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.Tuplet;
+import com.gstncaruso.tabpro.core.model.bars.KeySignature;
+import com.gstncaruso.tabpro.core.model.bars.Mode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -99,11 +101,13 @@ public final class MusicXmlScoreImporter {
         Tuning tuning = tuningOf(part);
         List<Measure> measures = new ArrayList<>();
         TimeSignature timeSignature = TimeSignature.fourFour();
+        KeySignature keySignature = KeySignature.cMajor();
         int divisions = Duration.TICKS_PER_QUARTER / 4;
         for (Element measure : elementsNamed(part, "measure")) {
             divisions = intOf(measure, "divisions").orElse(divisions);
             timeSignature = timeSignatureOf(measure).orElse(timeSignature);
-            measures.add(measureOf(measure, timeSignature, tuning));
+            keySignature = keySignatureOf(measure).orElse(keySignature);
+            measures.add(measureOf(measure, timeSignature, tuning, keySignature));
         }
         if (measures.isEmpty()) {
             measures.add(Measure.empty(TimeSignature.fourFour(), Duration.quarter()));
@@ -139,7 +143,17 @@ public final class MusicXmlScoreImporter {
                 : Optional.empty();
     }
 
-    private static Measure measureOf(Element measure, TimeSignature timeSignature, Tuning tuning) {
+    /** La armadura vale hasta el proximo &lt;key&gt;, tal como en el resto de MusicXML. */
+    private static Optional<KeySignature> keySignatureOf(Element measure) {
+        return intOf(measure, "fifths").map(fifths -> new KeySignature(fifths, modeOf(measure)));
+    }
+
+    private static Mode modeOf(Element measure) {
+        return "minor".equals(textOf(measure, "mode").orElse("major")) ? Mode.MINOR : Mode.MAJOR;
+    }
+
+    private static Measure measureOf(
+            Element measure, TimeSignature timeSignature, Tuning tuning, KeySignature keySignature) {
         List<Beat> beats = new ArrayList<>();
         for (Element note : elementsNamed(measure, "note")) {
             if (hasChild(note, "chord") && !beats.isEmpty()) {
@@ -159,7 +173,7 @@ public final class MusicXmlScoreImporter {
         if (beats.isEmpty()) {
             beats.add(Beat.rest(Duration.quarter()));
         }
-        return new Measure(timeSignature, beats);
+        return new Measure(timeSignature, beats).mappingAttributes(attrs -> attrs.withKeySignature(keySignature));
     }
 
     private static Duration durationOf(Element note) {
