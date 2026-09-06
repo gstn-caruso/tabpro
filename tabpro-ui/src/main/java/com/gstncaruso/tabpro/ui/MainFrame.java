@@ -45,6 +45,7 @@ import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.sound.LoopDialog;
 import com.gstncaruso.tabpro.ui.sound.MidiSetupDialog;
+import com.gstncaruso.tabpro.ui.sound.MidiSetupPreferences;
 import com.gstncaruso.tabpro.ui.sound.StringAssignment;
 import com.gstncaruso.tabpro.ui.sound.RelativeTempoDialog;
 import com.gstncaruso.tabpro.ui.instruments.BeatViews;
@@ -101,7 +102,8 @@ public final class MainFrame extends JFrame {
     private final Ports.Devices devices;
     private final Ports.Microphone microphone;
     private final Player player;
-    private StringAssignment stringAssignment = StringAssignment.NO_CHANNEL_DETECTION;
+    private final MidiSetupPreferences midiSetupPreferences = MidiSetupPreferences.userPreferences();
+    private StringAssignment stringAssignment = midiSetupPreferences.stringAssignment();
     private PageSetup pageSetup = DefaultPageSetup.userSetup().get();
     private com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences editingPreferences =
             com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences.defaults();
@@ -130,6 +132,7 @@ public final class MainFrame extends JFrame {
         this.editor = editor;
         this.files = files;
         this.document = new ScoreDocument(editor, files);
+        useMidiSetup(midiSetupFromPreferences());
         setSize(windowSize());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
@@ -262,6 +265,48 @@ public final class MainFrame extends JFrame {
     private void usePageSetup(PageSetup setup) {
         pageSetup = setup;
         canvas.setPageSetup(setup);
+    }
+
+    /** Lo que la ventana de MIDI Setup necesita para arrancar: lo que ya esta cableado en devices, y las cuerdas. */
+    private MidiSetupDialog.Setup currentMidiSetup() {
+        java.util.List<MidiSetupDialog.PortSetup> ports = new java.util.ArrayList<>();
+        for (int port = 1; port <= Ports.PORT_COUNT; port++) {
+            ports.add(new MidiSetupDialog.PortSetup(
+                    devices.output(port), midiSetupPreferences.patchPath(port), devices.limitsPitchVariation(port)));
+        }
+        return new MidiSetupDialog.Setup(ports, devices.input(), devices.sensitivityMillis(), stringAssignment);
+    }
+
+    /** Lo que quedo guardado la ultima vez que se cerro Options > MIDI Setup con Aceptar. */
+    private MidiSetupDialog.Setup midiSetupFromPreferences() {
+        java.util.List<MidiSetupDialog.PortSetup> ports = new java.util.ArrayList<>();
+        for (int port = 1; port <= Ports.PORT_COUNT; port++) {
+            ports.add(new MidiSetupDialog.PortSetup(
+                    midiSetupPreferences.outputDevice(port), midiSetupPreferences.patchPath(port),
+                    midiSetupPreferences.limitPitchVariation(port)));
+        }
+        return new MidiSetupDialog.Setup(
+                ports, midiSetupPreferences.inputDevice(), midiSetupPreferences.sensitivityMillis(),
+                midiSetupPreferences.stringAssignment());
+    }
+
+    /** Aplica lo que se eligio en la ventana a los dispositivos de verdad, y lo deja guardado para la proxima vez. */
+    private void useMidiSetup(MidiSetupDialog.Setup setup) {
+        for (int index = 0; index < setup.ports().size(); index++) {
+            int port = index + 1;
+            MidiSetupDialog.PortSetup portSetup = setup.ports().get(index);
+            devices.useOutput(port, portSetup.device());
+            devices.useLimitPitchVariation(port, portSetup.limitPitchVariation());
+            midiSetupPreferences.setOutputDevice(port, portSetup.device());
+            midiSetupPreferences.setPatchPath(port, portSetup.patchPath());
+            midiSetupPreferences.setLimitPitchVariation(port, portSetup.limitPitchVariation());
+        }
+        devices.useInput(setup.input());
+        devices.useSensitivityMillis(setup.sensitivityMillis());
+        midiSetupPreferences.setInputDevice(setup.input());
+        midiSetupPreferences.setSensitivityMillis(setup.sensitivityMillis());
+        stringAssignment = setup.strings();
+        midiSetupPreferences.setStringAssignment(setup.strings());
     }
 
     private void updateTitle() {
@@ -793,11 +838,7 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void midiSetup() {
-            MidiSetupDialog.ask(MainFrame.this, devices, stringAssignment).ifPresent(setup -> {
-                devices.useOutput(setup.output());
-                devices.useInput(setup.input());
-                stringAssignment = setup.strings();
-            });
+            MidiSetupDialog.ask(MainFrame.this, devices, currentMidiSetup()).ifPresent(MainFrame.this::useMidiSetup);
             backToTheScore();
         }
 

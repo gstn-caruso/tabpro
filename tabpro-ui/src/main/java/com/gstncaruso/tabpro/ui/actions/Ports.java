@@ -6,6 +6,9 @@ package com.gstncaruso.tabpro.ui.actions;
  */
 public final class Ports {
 
+    /** Cuantos puertos MIDI de salida se pueden usar a la vez, como permite el manual. */
+    public static final int PORT_COUNT = 4;
+
     private Ports() {
     }
 
@@ -161,8 +164,9 @@ public final class Ports {
     }
 
     /**
-     * Los dispositivos MIDI de la maquina: por donde sale el sonido y por donde
-     * entran las notas de un instrumento externo.
+     * Los dispositivos MIDI de la maquina: por donde sale el sonido -hasta
+     * cuatro puertos a la vez, como permite el manual- y por donde entran las
+     * notas de un instrumento externo.
      */
     public interface Devices {
 
@@ -175,12 +179,16 @@ public final class Ports {
             }
 
             @Override
-            public String output() {
+            public String output(int port) {
                 return "";
             }
 
             @Override
-            public void useOutput(String name) {
+            public void useOutput(int port, String name) {
+            }
+
+            @Override
+            public void playTestNote(String deviceName) {
             }
 
             @Override
@@ -209,13 +217,34 @@ public final class Ports {
             @Override
             public void stopCapture() {
             }
+
+            @Override
+            public int sensitivityMillis() {
+                return 0;
+            }
+
+            @Override
+            public void useSensitivityMillis(int millis) {
+            }
+
+            @Override
+            public boolean limitsPitchVariation(int port) {
+                return false;
+            }
+
+            @Override
+            public void useLimitPitchVariation(int port, boolean limit) {
+            }
         };
 
         java.util.List<String> outputs();
 
-        String output();
+        String output(int port);
 
-        void useOutput(String name);
+        void useOutput(int port, String name);
+
+        /** El boton de altavoz: toca una nota de prueba en el dispositivo elegido, sea cual sea su puerto. */
+        void playTestNote(String deviceName);
 
         java.util.List<String> inputs();
 
@@ -228,6 +257,16 @@ public final class Ports {
         void startCapture(CapturedNote listener);
 
         void stopCapture();
+
+        /** La sensibilidad de captura, en milisegundos: ver MidiCapture. */
+        int sensitivityMillis();
+
+        void useSensitivityMillis(int millis);
+
+        /** Si ese puerto tilda Limit Pitch Variation: los bends de mas de un tono no suenan. */
+        boolean limitsPitchVariation(int port);
+
+        void useLimitPitchVariation(int port, boolean limit);
     }
 
     /** La entrada de audio que escucha el afinador digital. */
