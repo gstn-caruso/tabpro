@@ -88,6 +88,7 @@ class SoundFontSynthesizerTest {
 
         bank.toggle();
         assertFalse(bank.active());
+        assertTrue(bank.file().isPresent(), "apagarlo no lo descarga, solo deja de sonar");
         int loadedWithoutBank = bank.synthesizer().getLoadedInstruments().length;
         assertNotEquals(loadedWithBank, loadedWithoutBank, "apagar el banco tiene que cambiar los instrumentos cargados");
 
