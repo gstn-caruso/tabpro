@@ -19,6 +19,7 @@ import com.gstncaruso.tabpro.core.playback.Timeline;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.function.Consumer;
 
 /**
@@ -35,6 +36,7 @@ public final class Transport {
 
     private Playhead playhead = Playhead.silent();
     private Timeline currentTimeline;
+    private OptionalInt currentTempo = OptionalInt.empty();
     private Metronome metronome = Metronome.off();
     private CountIn countIn = CountIn.off();
     private RelativeTempo relativeTempo = RelativeTempo.normal();
@@ -66,6 +68,7 @@ public final class Transport {
     public void stop() {
         player.stop();
         playhead = Playhead.silent();
+        currentTempo = OptionalInt.empty();
         notifyListeners();
     }
 
@@ -87,6 +90,16 @@ public final class Transport {
 
     public Playhead playhead() {
         return playhead;
+    }
+
+    /**
+     * El manual: "durante la reproduccion, el tempo actual se muestra en la barra de titulo".
+     * Importa porque el tempo puede cambiar a mitad de partitura -hay un mapa de tempo- y porque
+     * el tempo relativo lo escala: el que se devuelve aca ya viene con esa escala aplicada,
+     * porque es el timeline que de verdad esta sonando.
+     */
+    public OptionalInt currentTempoBpm() {
+        return currentTempo;
     }
 
     public Optional<BeatPosition> playingOn(int track) {
@@ -249,14 +262,26 @@ public final class Transport {
         public void beatStarted(BeatPosition position) {
             uiThread.accept(() -> {
                 playhead = playhead.advancedTo(position);
+                currentTempo = tempoAt(position);
                 notifyListeners();
             });
+        }
+
+        private OptionalInt tempoAt(BeatPosition position) {
+            if (currentTimeline == null) {
+                return currentTempo;
+            }
+            java.util.OptionalLong tick = currentTimeline.tickOf(position.measure(), position.beat());
+            return tick.isPresent()
+                    ? OptionalInt.of(currentTimeline.tempo().bpmAt(tick.getAsLong()))
+                    : currentTempo;
         }
 
         @Override
         public void playbackFinished() {
             uiThread.accept(() -> {
                 playhead = Playhead.silent();
+                currentTempo = OptionalInt.empty();
                 if (loop.isPresent()) {
                     lap++;
                     playFrom(loop.get().fromMeasure());

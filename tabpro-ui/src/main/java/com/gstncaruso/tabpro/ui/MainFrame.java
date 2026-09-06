@@ -166,6 +166,7 @@ public final class MainFrame extends JFrame {
             canvas.showPlayhead(transport.playhead());
             trackPanel.showPlayingMeasure(transport.playhead().measure());
             beatViews.showPlayhead(transport.playhead());
+            updateTitle();
         });
         // El manual: moverse por la partitura durante la reproduccion vuelve a arrancar el
         // audio desde la posicion senalada, sin frenar.
@@ -323,8 +324,16 @@ public final class MainFrame extends JFrame {
         midiSetupPreferences.setStringAssignment(setup.strings());
     }
 
+    /**
+     * El manual: "durante la reproduccion, el tempo actual se muestra en la barra de titulo de
+     * Guitar Pro". Importa porque el tempo puede cambiar a mitad de partitura y porque el tempo
+     * relativo lo escala; Transport ya devuelve el que de verdad esta sonando.
+     */
     private void updateTitle() {
-        setTitle(document.windowTitle());
+        String title = document.windowTitle();
+        setTitle(transport.currentTempoBpm().isPresent()
+                ? title + " — " + transport.currentTempoBpm().getAsInt() + " BPM"
+                : title);
     }
 
     private void showError(ScoreFileException e) {

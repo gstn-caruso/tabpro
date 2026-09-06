@@ -214,6 +214,77 @@ class TransportTest {
     }
 
     /**
+     * El manual: "durante la reproduccion, el tempo actual se muestra en la barra de titulo".
+     * Importa porque el tempo puede cambiar a mitad de partitura -hay un mapa de tempo- y porque
+     * el tempo relativo lo escala.
+     */
+    @Test
+    void hasNoTempoBeforePlaying() {
+        assertEquals(java.util.OptionalInt.empty(), transport.currentTempoBpm());
+    }
+
+    @Test
+    void showsTheTempoOfTheFirstBeat() {
+        transport.toggle();
+
+        player.emitBeat(new BeatPosition(0, 0, 0));
+
+        assertEquals(java.util.OptionalInt.of(120), transport.currentTempoBpm());
+    }
+
+    @Test
+    void showsTheNewTempoAfterAMidScoreChange() {
+        Editor editorConCambioDeTempo = new Editor(scoreThatSlowsDownOnItsSecondBeat());
+        Transport transportConCambioDeTempo = new Transport(editorConCambioDeTempo, player, Runnable::run);
+        transportConCambioDeTempo.toggle();
+
+        player.emitBeat(new BeatPosition(0, 0, 0));
+        assertEquals(java.util.OptionalInt.of(120), transportConCambioDeTempo.currentTempoBpm());
+
+        player.emitBeat(new BeatPosition(0, 0, 1));
+        assertEquals(java.util.OptionalInt.of(90), transportConCambioDeTempo.currentTempoBpm());
+    }
+
+    @Test
+    void theRelativeTempoScalesWhatTheTitleShows() {
+        transport.setRelativeTempo(new RelativeTempo(0.5));
+        transport.toggle();
+
+        player.emitBeat(new BeatPosition(0, 0, 0));
+
+        assertEquals(java.util.OptionalInt.of(60), transport.currentTempoBpm());
+    }
+
+    @Test
+    void hidesTheTempoWhenPlaybackStops() {
+        transport.toggle();
+        player.emitBeat(new BeatPosition(0, 0, 0));
+
+        transport.toggle();
+
+        assertEquals(java.util.OptionalInt.empty(), transport.currentTempoBpm());
+    }
+
+    @Test
+    void hidesTheTempoWhenPlaybackFinishes() {
+        transport.toggle();
+        player.emitBeat(new BeatPosition(0, 0, 0));
+
+        player.emitFinished();
+
+        assertEquals(java.util.OptionalInt.empty(), transport.currentTempoBpm());
+    }
+
+    private static Score scoreThatSlowsDownOnItsSecondBeat() {
+        Beat first = Beat.of(Duration.quarter(), new Note(1, 0));
+        Beat slowsDown = Beat.of(Duration.quarter(), new Note(1, 1)).withEffects(
+                BeatEffects.none().withParameterChange(
+                        ParameterChange.nothing().changing(SoundParameter.TEMPO, 90)));
+        Measure measure = new Measure(TimeSignature.fourFour(), java.util.List.of(first, slowsDown));
+        return new Score("", 120, java.util.List.of(Track.standardGuitar("Guitarra").withMeasure(0, measure)));
+    }
+
+    /**
      * El manual: durante la reproduccion se puede hacer clic en la partitura para volver a
      * arrancar desde ahi sin frenar. Sin reproduccion no hay nada que saltar.
      */
