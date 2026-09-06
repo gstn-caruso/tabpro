@@ -23,6 +23,11 @@ public final class MidiTestTone {
 
     /** Manda el programa y la nota de prueba ya, y la corta sola pasado ese tiempo. */
     public static void play(Receiver receiver, int program, long durationMillis) {
+        play(receiver, program, durationMillis, () -> { });
+    }
+
+    /** Lo mismo, pero avisando cuando termina -por ejemplo, para cerrar el dispositivo de prueba. */
+    public static void play(Receiver receiver, int program, long durationMillis, Runnable afterward) {
         send(receiver, ShortMessage.PROGRAM_CHANGE, program, 0);
         send(receiver, ShortMessage.NOTE_ON, TEST_PITCH, TEST_VELOCITY);
         Thread noteOff = new Thread(() -> {
@@ -33,6 +38,7 @@ public final class MidiTestTone {
                 return;
             }
             send(receiver, ShortMessage.NOTE_OFF, TEST_PITCH, 0);
+            afterward.run();
         });
         noteOff.setDaemon(true);
         noteOff.start();

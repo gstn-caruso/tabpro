@@ -58,6 +58,16 @@ class MidiTestToneTest {
         assertTrue(received.stream().anyMatch(message -> message.getCommand() == ShortMessage.NOTE_OFF));
     }
 
+    @Test
+    void runsTheGivenCallbackOnceTheNoteTurnsOff() throws InterruptedException {
+        java.util.concurrent.atomic.AtomicBoolean ranAfterward = new java.util.concurrent.atomic.AtomicBoolean(false);
+
+        MidiTestTone.play(receiverInto(new CopyOnWriteArrayList<>()), 0, 20, () -> ranAfterward.set(true));
+        Thread.sleep(300);
+
+        assertTrue(ranAfterward.get());
+    }
+
     private static Receiver receiverInto(List<ShortMessage> received) {
         return new Receiver() {
             @Override
