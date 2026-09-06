@@ -334,6 +334,8 @@ public final class Ports {
 
         void exportMidi();
 
+        void exportWave();
+
         void exportAscii();
 
         void exportMusicXml();

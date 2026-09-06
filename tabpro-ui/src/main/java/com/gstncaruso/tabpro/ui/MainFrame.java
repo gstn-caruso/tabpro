@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.files.AudioQuality;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
@@ -29,6 +30,7 @@ import com.gstncaruso.tabpro.ui.dialogs.note.FingeringDialog;
 import com.gstncaruso.tabpro.ui.page.DefaultPageSetup;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetupDialog;
+import com.gstncaruso.tabpro.ui.dialogs.wave.WaveExportDialog;
 import com.gstncaruso.tabpro.ui.dialogs.paste.PasteDialog;
 import com.gstncaruso.tabpro.ui.dialogs.preferences.PreferencesDialog;
 import com.gstncaruso.tabpro.ui.dialogs.print.PrintDialog;
@@ -90,6 +92,7 @@ public final class MainFrame extends JFrame {
     private final Editor editor;
     private final ScoreFiles files;
     private final ScoreExchange exchange;
+    private final Preferences preferences = new Preferences();
     private final ScoreDocument document;
     private final ScoreCanvas canvas;
     private Commands commands;
@@ -107,7 +110,6 @@ public final class MainFrame extends JFrame {
     private PageSetup pageSetup = DefaultPageSetup.userSetup().get();
     private com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences editingPreferences =
             com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences.defaults();
-    private MetronomeSettings metronomeSettings = MetronomeSettings.off();
     private final ChosenScale chosenScale = new ChosenScale();
     private final JSplitPane split;
 
@@ -131,7 +133,8 @@ public final class MainFrame extends JFrame {
         this.player = player;
         this.editor = editor;
         this.files = files;
-        this.document = new ScoreDocument(editor, files);
+        this.document = new ScoreDocument(editor, files, preferences);
+        editor.setUndoEnabled(preferences.undoEnabled());
         useMidiSetup(midiSetupFromPreferences());
         setSize(windowSize());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -146,12 +149,13 @@ public final class MainFrame extends JFrame {
         beatViews = new BeatViews(editor, player);
 
         JSpinner tempoSpinner = tempoSpinner();
+        Document documentActions = new Document();
         commands = new Commands(
-                editor, new Document(), new Windows(), new Playback(), new View(), themes.names());
+                editor, documentActions, new Windows(), new Playback(), new View(), themes.names());
         toolBars = new ToolBars(commands);
         toolBars.addToSoundRow(new JLabel("Tempo "));
         toolBars.addToSoundRow(tempoSpinner);
-        setJMenuBar(new MenuBar(commands).build());
+        setJMenuBar(new MenuBar(commands, document::recentFiles, documentActions::openRecent).build());
 
         StatusBar status = new StatusBar(editor, canvas::pagination);
         canvas.onPaginationChange(status::refresh);
@@ -358,8 +362,19 @@ public final class MainFrame extends JFrame {
             if (chooser.showOpenDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
                 return;
             }
+            openChosen(chooser.getSelectedFile().toPath());
+        }
+
+        /** Lo que pide el menu Archivo al elegir un archivo reciente: abrirlo, con la misma confirmacion que "Abrir". */
+        private void openRecent(Path path) {
+            if (askToDiscardChanges()) {
+                openChosen(path);
+            }
+        }
+
+        private void openChosen(Path path) {
             try {
-                document.open(chooser.getSelectedFile().toPath());
+                document.open(path);
                 updateTitle();
                 backToTheScore();
             } catch (ScoreFileException e) {
@@ -441,6 +456,23 @@ public final class MainFrame extends JFrame {
         @Override
         public void exportMidi() {
             exportWith(exchange::exportMidi, new FileNameExtensionFilter("Archivos MIDI (*.mid)", "mid"), ".mid");
+        }
+
+        @Override
+        public void exportWave() {
+            WaveExportDialog.ask(MainFrame.this, AudioQuality.standard()).ifPresent(quality -> {
+                JFileChooser chooser = new JFileChooser();
+                chooser.setFileFilter(new FileNameExtensionFilter("Audio WAVE (*.wav)", "wav"));
+                if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
+                    return;
+                }
+                try {
+                    exchange.exportWave(editor.score(), withExtension(chooser.getSelectedFile(), ".wav"), quality);
+                    backToTheScore();
+                } catch (ScoreFileException e) {
+                    showError(e);
+                }
+            });
         }
 
         @Override
@@ -831,8 +863,15 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void preferences() {
-            PreferencesDialog.ask(MainFrame.this, editingPreferences)
-                    .ifPresent(updated -> editingPreferences = updated);
+            var current = editingPreferences
+                    .withUndoEnabled(preferences.undoEnabled())
+                    .withAutosaveEvery(preferences.autosaveEvery());
+            PreferencesDialog.ask(MainFrame.this, current).ifPresent(updated -> {
+                editingPreferences = updated;
+                preferences.setUndoEnabled(updated.undoEnabled());
+                preferences.setAutosaveEvery(updated.autosaveEvery());
+                editor.setUndoEnabled(updated.undoEnabled());
+            });
             backToTheScore();
         }
 
@@ -984,8 +1023,11 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void metronomeSettings() {
-            MetronomeDialog.ask(MainFrame.this, editor, metronomeSettings)
-                    .ifPresent(settings -> metronomeSettings = settings);
+            MetronomeSettings current = new MetronomeSettings(transport.isMetronomeOn(), transport.metronomeVolume());
+            MetronomeDialog.ask(MainFrame.this, editor, current).ifPresent(settings -> {
+                transport.setMetronomeEnabled(settings.active());
+                transport.setMetronomeVolume(settings.volume());
+            });
             backToTheScore();
         }
 

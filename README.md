@@ -67,11 +67,12 @@ de diapasón, zurdo o diestro, y la nota que está bajo el mouse.
 
 ![La mesa de mezcla y la vista global](docs/capturas/mesa-de-mezcla.png)
 
-Puerto, canal, instrumento General MIDI —o kit de batería, si la pista es de
-percusión—, volumen, paneo, chorus, reverb, phaser, trémolo, silenciar y solo.
-Todo editable mientras suena. Al lado, la vista global: una fila de color por
-pista, un cuadradito por compás y la zona de marcadores, para saltar a cualquier
-parte de un clic.
+Puerto, los dos canales de la pista —el suyo y el de sus efectos, para que un bend
+no le corra la afinación a las notas limpias—, instrumento General MIDI —o kit de
+batería, si la pista es de percusión—, volumen, paneo, chorus, reverb, phaser,
+trémolo, silenciar y solo. Todo editable mientras suena. Al lado, la vista global:
+una fila de color por pista, un cuadradito por compás y la zona de marcadores,
+para saltar a cualquier parte de un clic.
 
 ## Las herramientas
 
@@ -111,7 +112,7 @@ rango de páginas y la escala.
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.8.0_all.deb
+sudo apt install ./tabpro_0.12.1_all.deb
 tabpro
 ```
 
@@ -123,7 +124,7 @@ partitura. Necesita una JRE 25 con entorno gráfico (`openjdk-25-jre`); la varia
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.8.0.jar [archivo]
+java -jar tabpro-app-0.12.1.jar [archivo]
 ```
 
 ## Atajos

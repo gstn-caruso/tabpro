@@ -145,4 +145,28 @@ class JsonScoreFilesTest {
         assertTrue(thrown.getMessage().contains("beats"));
         assertFalse(thrown.getMessage().contains("vacio"));
     }
+
+    @Test
+    void aFileSavedBeforeTheSecondChannelPlaysItsEffectsNextToItsChannel() throws URISyntaxException {
+        Path path = Path.of(getClass().getResource("/v3-channel-without-its-effect-channel.tabpro").toURI());
+
+        Score loaded = scoreFiles.load(path);
+
+        Channel channel = loaded.track(0).channel();
+        assertEquals(5, channel.number());
+        assertEquals(6, channel.effectChannel());
+    }
+
+    @Test
+    void keepsTheTwoChannelsOfATrackAcrossASave(@TempDir Path tempDir) {
+        Score score = Score.blank().mappingTrack(0, track ->
+                track.withChannel(track.channel().withNumber(3).withEffectChannel(11)));
+        Path path = tempDir.resolve("score.tabpro");
+
+        scoreFiles.save(score, path);
+        Channel loaded = scoreFiles.load(path).track(0).channel();
+
+        assertEquals(3, loaded.number());
+        assertEquals(11, loaded.effectChannel());
+    }
 }

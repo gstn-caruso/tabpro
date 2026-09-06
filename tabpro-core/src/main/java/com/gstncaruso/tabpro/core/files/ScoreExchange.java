@@ -46,6 +46,14 @@ public interface ScoreExchange {
         throw notSupported("la importación de MIDI");
     }
 
+    /**
+     * El "File &gt; Export &gt; Wave" del manual: renderiza el audio de la partitura entera,
+     * fuera de tiempo real, con la calidad elegida.
+     */
+    default void exportWave(Score score, Path path, AudioQuality quality) {
+        throw notSupported("la exportación a WAVE");
+    }
+
     default Score importAscii(Path path) {
         throw notSupported("la importación de tablatura ASCII");
     }

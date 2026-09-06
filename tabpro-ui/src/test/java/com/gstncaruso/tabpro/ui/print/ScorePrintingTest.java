@@ -71,6 +71,43 @@ class ScorePrintingTest {
         assertTrue(Files.exists(path), "la restriccion es solo para bmp");
     }
 
+    @Test
+    void unaImagenQueImageIoNoPuedeCodificarEnBmpAvisaEnVezDeQuedarseCallada(@TempDir Path tempDir) {
+        Path path = tempDir.resolve("no-se-puede.bmp");
+        BufferedImage imagenConAlfaReal = imagenConTransparenciaReal();
+
+        ImageExportException error = assertThrows(ImageExportException.class,
+                () -> ScorePrinting.writeImage(imagenConAlfaReal, "bmp", path));
+
+        assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("bmp"),
+                "el mensaje tiene que decir en que formato fallo");
+        assertFalse(Files.exists(path), "si ImageIO no pudo escribir nada, no puede quedar un archivo");
+    }
+
+    @Test
+    void unaImagenQueImageIoNoPuedeCodificarEnJpgAvisaEnVezDeQuedarseCallada(@TempDir Path tempDir) {
+        Path path = tempDir.resolve("no-se-puede.jpg");
+        BufferedImage imagenConAlfaReal = imagenConTransparenciaReal();
+
+        ImageExportException error = assertThrows(ImageExportException.class,
+                () -> ScorePrinting.writeImage(imagenConAlfaReal, "jpg", path));
+
+        assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("jpg"),
+                "el mensaje tiene que decir en que formato fallo");
+        assertFalse(Files.exists(path), "si ImageIO no pudo escribir nada, no puede quedar un archivo");
+    }
+
+    /**
+     * TYPE_INT_ARGB con un pixel realmente translucido: ImageIO.write devuelve false para BMP y
+     * JPG porque ninguno de los dos soporta canal alfa, y no escribe nada. No hace falta pasar por
+     * el render de la partitura para reproducir el modo de falla silencioso.
+     */
+    private static BufferedImage imagenConTransparenciaReal() {
+        BufferedImage imagen = new BufferedImage(4, 4, BufferedImage.TYPE_INT_ARGB);
+        imagen.setRGB(0, 0, 0x80FF0000);
+        return imagen;
+    }
+
     private static java.util.Set<Integer> distinctColorsOf(BufferedImage image) {
         java.util.Set<Integer> colors = new java.util.HashSet<>();
         for (int y = 0; y < image.getHeight(); y++) {

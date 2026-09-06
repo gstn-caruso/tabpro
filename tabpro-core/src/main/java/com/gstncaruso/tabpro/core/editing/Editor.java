@@ -60,6 +60,7 @@ public final class Editor {
     private final EditorHistory history = new EditorHistory();
     private final Clipboard clipboard = new Clipboard();
     private final List<EditorListener> listeners = new ArrayList<>();
+    private boolean undoEnabled = true;
 
     public Editor(Score initial) {
         this.score = initial;
@@ -172,8 +173,14 @@ public final class Editor {
     }
 
     public void toggleTriplet() {
+        toggleTuplet(3);
+    }
+
+    /** El manual: cualquier n-tuplet (quintillo, seisillo...) se pone y se saca igual que el
+     * tresillo, nomas que con otro numero. */
+    public void toggleTuplet(int enters) {
         Tuplet current = currentBeat().duration().tuplet();
-        setTuplet(current.enters() == 3 ? 1 : 3);
+        setTuplet(current.enters() == enters ? 1 : enters);
     }
 
     // ---- efectos de nota --------------------------------------------------
@@ -473,6 +480,10 @@ public final class Editor {
 
     public void setChannelNumber(int index, int number) {
         changeChannel(index, channel -> channel.withNumber(number));
+    }
+
+    public void setEffectChannel(int index, int number) {
+        changeChannel(index, channel -> channel.withEffectChannel(number));
     }
 
     public void toggleMute(int index) {
@@ -795,6 +806,22 @@ public final class Editor {
 
     // ---- historia ---------------------------------------------------------
 
+    public boolean isUndoEnabled() {
+        return undoEnabled;
+    }
+
+    /**
+     * Deshacer y rehacer se pueden apagar para no cargar memoria en una
+     * computadora vieja, tal como ofrece Preferencias. Al apagarla se olvida
+     * lo que ya se podia deshacer.
+     */
+    public void setUndoEnabled(boolean undoEnabled) {
+        this.undoEnabled = undoEnabled;
+        if (!undoEnabled) {
+            history.forget();
+        }
+    }
+
     public boolean canUndo() {
         return history.canUndo();
     }
@@ -826,7 +853,9 @@ public final class Editor {
             moveCursor(nextCursor);
             return;
         }
-        history.remember(currentSnapshot());
+        if (undoEnabled) {
+            history.remember(currentSnapshot());
+        }
         score = next;
         cursor = nextCursor;
         notifyListeners();

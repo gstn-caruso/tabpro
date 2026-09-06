@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.tab;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
@@ -113,6 +114,39 @@ class KeyboardEditingTest {
         keyboard.keyTyped('1');
         now[0] += 100;
         keyboard.keyTyped('+');
+        now[0] += 100;
+        keyboard.keyTyped('2');
+
+        assertEquals(Optional.of(new Note(1, 2)), editor.currentBeat().noteOn(1));
+    }
+
+    /**
+     * El manual lista el atajo del puntillo como "* or .". El "." ya es el acelerador de
+     * note.dot; el "*" es una tecla alternativa que no puede duplicar ese atajo, asi que se
+     * resuelve aca, como una tecla mas del lienzo, en vez de como un segundo comando.
+     */
+    @Test
+    void typingAnAsteriskTogglesTheDotJustLikeThePeriodDoes() {
+        Editor editor = new Editor(Score.blank());
+        KeyboardEditing keyboard = keyboardEditing(editor);
+
+        keyboard.keyTyped('*');
+
+        assertTrue(editor.currentBeat().duration().dotted());
+
+        keyboard.keyTyped('*');
+
+        assertFalse(editor.currentBeat().duration().dotted());
+    }
+
+    @Test
+    void typingAnAsteriskAlsoResetsTheDigitBuffer() {
+        Editor editor = new Editor(Score.blank());
+        KeyboardEditing keyboard = keyboardEditing(editor);
+
+        keyboard.keyTyped('1');
+        now[0] += 100;
+        keyboard.keyTyped('*');
         now[0] += 100;
         keyboard.keyTyped('2');
 

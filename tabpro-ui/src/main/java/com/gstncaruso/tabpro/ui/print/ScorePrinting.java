@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
@@ -49,10 +50,26 @@ public final class ScorePrinting {
         if (format.equals("bmp") && viewMode != ViewMode.PAGE) {
             throw new ImageExportException("La exportación a BMP sólo está disponible en modo Página.");
         }
+        writeImage(ScoreSheets.render(score, Zoom.whole(), setup), format, path);
+    }
+
+    /**
+     * Escribe la imagen con ImageIO y no se conforma con que el metodo vuelva sin tirar
+     * excepcion: {@code ImageIO.write} devuelve {@code false} (sin escribir nada) cuando ningun
+     * escritor instalado puede codificar esa imagen en ese formato, y eso no puede pasar
+     * desapercibido.
+     */
+    static void writeImage(BufferedImage image, String format, Path path) {
+        boolean escrita;
         try {
-            ImageIO.write(ScoreSheets.render(score, Zoom.whole(), setup), format, path.toFile());
+            escrita = ImageIO.write(image, format, path.toFile());
         } catch (IOException e) {
             throw new UncheckedIOException("no se pudo escribir " + path, e);
+        }
+        if (!escrita) {
+            throw new ImageExportException(
+                    "No se pudo exportar la imagen en formato " + format.toUpperCase(java.util.Locale.ROOT)
+                            + ": ningún códec de imagen instalado sabe codificarla en ese formato.");
         }
     }
 

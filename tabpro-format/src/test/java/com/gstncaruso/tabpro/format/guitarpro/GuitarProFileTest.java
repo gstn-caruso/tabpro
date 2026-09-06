@@ -10,6 +10,8 @@ import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
+import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -19,6 +21,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -117,6 +120,17 @@ class GuitarProFileTest {
         assertEquals(6, score.track(0).stringCount());
         assertEquals("Bass", score.track(1).name());
         assertEquals(4, score.track(1).stringCount());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"gp3", "gp4", "gp5"})
+    void readsTheTwoChannelsOfEveryTrack(String extension) {
+        Score score = readFeatures(extension);
+
+        assertEquals(1, score.track(0).channel().number());
+        assertEquals(2, score.track(0).channel().effectChannel());
+        assertEquals(Channel.PERCUSSION_CHANNEL, score.track(2).channel().number());
+        assertEquals(Channel.PERCUSSION_CHANNEL, score.track(2).channel().effectChannel());
     }
 
     @ParameterizedTest
@@ -257,6 +271,46 @@ class GuitarProFileTest {
         assertEquals("Bass", score.track(1).name());
         assertTrue(score.track(2).isPercussion());
         assertEquals(List.of(3, 5, 7, 8), fretsOf(score.track(0).measure(0)));
+    }
+
+    // ---- las direcciones musicales (Coda, Segno, Da Capo, etc.) --------------
+
+    /**
+     * El fixture sintetico no trae direcciones, asi que este test parchea una copia
+     * suya: ubica el offset real del bloque (leyendo cabecera y canales con los
+     * mismos lectores que usa {@link GuitarProFile}) y le escribe un Da Segno al
+     * Coda en el primer compas y un Coda en el segundo, dejando el resto del
+     * archivo intacto.
+     */
+    @Test
+    void readsTheDirectionSymbolsAndJumpsOfAGp5() throws Exception {
+        Score score = files.read(fixtureWithDirections());
+
+        assertEquals(Optional.of(DirectionJump.DA_SEGNO_AL_CODA), score.track(0).measure(0).attributes().jump());
+        assertEquals(Optional.of(DirectionSymbol.CODA), score.track(0).measure(1).attributes().symbol());
+    }
+
+    private static byte[] fixtureWithDirections() throws Exception {
+        byte[] original = Files.readAllBytes(fixture("gp5"));
+        GuitarProByteReader probe = new GuitarProByteReader(original);
+        GuitarProVersion version = GuitarProVersion.parse(probe.readFixedString(30));
+        new GuitarProHeaderReader().read(probe, version);
+        new GuitarProChannelReader().read(probe);
+        int offset = probe.position();
+
+        // slot 0 = Coda (el primer simbolo de destino); slot 10 = Da Segno al Coda
+        // (el sexto salto), segun el orden documentado del bloque de direcciones de GP5.
+        GuitarProFileWriter block = new GuitarProFileWriter();
+        for (int slot = 0; slot < 19; slot++) {
+            int measureIndex = slot == 0 ? 1 : slot == 10 ? 0 : -1;
+            block.writeShort(measureIndex);
+        }
+        block.writeInt(0);
+        byte[] directions = block.bytes();
+
+        byte[] patched = original.clone();
+        System.arraycopy(directions, 0, patched, offset, directions.length);
+        return patched;
     }
 
     private Score readFeatures(String extension) {

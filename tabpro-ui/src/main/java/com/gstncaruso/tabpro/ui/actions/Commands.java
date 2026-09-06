@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.editing.PasteOptions;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
@@ -92,6 +93,7 @@ public final class Commands {
         define("file.importMusicXml", "MusicXML…", document::importMusicXml);
         define("file.importGuitarPro", "Guitar Pro…", document::importGuitarPro);
         define("file.exportMidi", "MIDI…", document::exportMidi);
+        define("file.exportWave", "WAVE…", document::exportWave);
         define("file.exportAscii", "Tablatura ASCII…", document::exportAscii);
         define("file.exportMusicXml", "MusicXML…", document::exportMusicXml);
         define("file.exportImage", "Imagen…", document::exportImage);
@@ -168,7 +170,8 @@ public final class Commands {
         define("note.longer", "Alargar la figura", editor::lengthenDuration).withAccelerator("MINUS");
         define("note.dot", "Puntillo", editor::toggleDot).withAccelerator("PERIOD").withIcon(Icons.dottedNote());
         define("note.rest", "Silencio", editor::clearBeat).withAccelerator("R").withIcon(Icons.rest());
-        define("note.triplet", "Tresillo", editor::toggleTriplet).withAccelerator("SLASH").withIcon(Icons.tuplet());
+        define("note.triplet", "Tresillo", editor::toggleTriplet).withAccelerator("SLASH").withIcon(Icons.tuplet(3));
+        defineTupletCommands();
         define("note.tie", "Ligar la nota", editor::toggleTie).withAccelerator("L").withIcon(Icons.tie());
         define("note.tieBeat", "Ligar el beat", editor::tieWholeBeat).withAccelerator("ctrl L");
         define("note.insertBeat", "Insertar un beat", editor::insertBeat).withAccelerator("INSERT");
@@ -203,6 +206,29 @@ public final class Commands {
             case SIXTEENTH -> "Semicorchea";
             case THIRTY_SECOND -> "Fusa";
             case SIXTY_FOURTH -> "Semifusa";
+        };
+    }
+
+    /**
+     * El tresillo (3) ya tiene su propio comando con atajo; el resto de los grupos que ofrece
+     * Guitar Pro ({@link Tuplet#AVAILABLE}) se agregan al menu Nota sin atajo de teclado.
+     */
+    private void defineTupletCommands() {
+        for (int enters : Tuplet.AVAILABLE) {
+            if (enters == 1 || enters == 3) {
+                continue;
+            }
+            define("note.tuplet." + enters, tupletName(enters), () -> editor.toggleTuplet(enters))
+                    .withIcon(Icons.tuplet(enters));
+        }
+    }
+
+    private static String tupletName(int enters) {
+        return switch (enters) {
+            case 5 -> "Quintillo";
+            case 6 -> "Seisillo";
+            case 7 -> "Septillo";
+            default -> "Grupo de " + enters;
         };
     }
 

@@ -61,9 +61,10 @@ class MidiSequencesByPortTest {
 
         Map<Integer, Sequence> byPort = MidiSequences.sequencesByPort(timeline, Set.of());
 
+        // cada pista se lleva un par de canales consecutivos: uno limpio y uno para sus efectos.
         Track[] puerto1 = byPort.get(1).getTracks();
         assertEquals(0, channelOf(puerto1[1]));
-        assertEquals(1, channelOf(puerto1[2]));
+        assertEquals(2, channelOf(puerto1[2]));
         Track[] puerto2 = byPort.get(2).getTracks();
         assertEquals(0, channelOf(puerto2[1]));
     }

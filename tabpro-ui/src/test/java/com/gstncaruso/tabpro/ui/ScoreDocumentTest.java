@@ -174,6 +174,20 @@ class ScoreDocumentTest {
     }
 
     @Test
+    void exposesTheRecentFilesToOfferThemInTheFileMenu() {
+        Preferences preferences = testPreferences();
+        Editor editor = new Editor(Score.blank());
+        FakeScoreFiles files = new FakeScoreFiles();
+        Path path = Path.of("/tmp/prueba.tabpro");
+        files.scores.put(path, Score.blank());
+        ScoreDocument document = new ScoreDocument(editor, files, preferences);
+
+        document.open(path);
+
+        assertEquals(java.util.List.of(path), document.recentFiles());
+    }
+
+    @Test
     void anImportedScoreHasNoFileOfItsOwn() {
         Editor editor = new Editor(Score.blank());
         ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());

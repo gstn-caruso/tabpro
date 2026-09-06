@@ -204,12 +204,15 @@ public final class Icons {
         return icon((graphics, size) -> Glyphs.quarterRest(graphics, size * 0.5, size * 0.5, size / 13.0));
     }
 
-    public static Icon tuplet() {
+    /** El corchete de un n-tuplet con su numero: 3 para el tresillo, 5 para el quintillo, etc. */
+    public static Icon tuplet(int enters) {
+        String label = String.valueOf(enters);
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
             graphics.draw(Glyphs.arc(size * 0.16, size * 0.84, size * 0.66, size * 0.3));
             graphics.setFont(small(size));
-            graphics.drawString("3", (float) (size * 0.42), (float) (size * 0.34));
+            double width = graphics.getFontMetrics().stringWidth(label);
+            graphics.drawString(label, (float) (size * 0.5 - width / 2), (float) (size * 0.34));
         });
     }
 

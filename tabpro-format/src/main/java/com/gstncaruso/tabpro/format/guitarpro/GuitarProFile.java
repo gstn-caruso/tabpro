@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.format.guitarpro;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
-import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Pitch;
@@ -14,11 +13,13 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.Voice;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * Abre una partitura de Guitar Pro. El archivo guarda primero la cabecera, los
@@ -50,14 +51,15 @@ public final class GuitarProFile {
         GuitarProVersion version = GuitarProVersion.parse(reader.readFixedString(VERSION_BLOCK));
         GuitarProHeader header = headerReader.read(reader, version);
         List<GuitarProChannel> channels = channelReader.read(reader);
-        headerReader.skipDirections(reader, version);
+        GuitarProDirections directions = headerReader.readDirections(reader, version);
         int measureCount = reader.readInt();
         int trackCount = reader.readInt();
         GuitarProMeasureAttributesReader measureReader = new GuitarProMeasureAttributesReader(
                 com.gstncaruso.tabpro.core.model.TimeSignature.fourFour(),
                 header.keySignature(),
                 header.globalTripletFeel().orElse(com.gstncaruso.tabpro.core.model.bars.TripletFeel.NONE));
-        List<GuitarProMasterBar> bars = readMasterBars(measureReader, reader, version, measureCount);
+        List<GuitarProMasterBar> bars = withDirections(
+                readMasterBars(measureReader, reader, version, measureCount), directions);
         List<GuitarProTrackHeader> trackHeaders = readTrackHeaders(reader, version, trackCount);
         skipGp5Padding(reader, version);
         List<List<Measure>> measuresByTrack = readMeasures(reader, version, bars, trackHeaders);
@@ -74,6 +76,26 @@ public final class GuitarProFile {
             bars.add(measureReader.read(reader, version, index == 0));
         }
         return bars;
+    }
+
+    /** Le pega a cada master bar el simbolo de destino o el salto que le apunta desde las direcciones. */
+    private static List<GuitarProMasterBar> withDirections(
+            List<GuitarProMasterBar> bars, GuitarProDirections directions) {
+        List<GuitarProMasterBar> updated = new ArrayList<>(bars);
+        directions.symbols().forEach((index, symbol) ->
+                replaceAttributes(updated, index, attributes -> attributes.withSymbol(symbol)));
+        directions.jumps().forEach((index, jump) ->
+                replaceAttributes(updated, index, attributes -> attributes.withJump(jump)));
+        return updated;
+    }
+
+    private static void replaceAttributes(
+            List<GuitarProMasterBar> bars, int index, UnaryOperator<MeasureAttributes> update) {
+        if (index < 0 || index >= bars.size()) {
+            return;
+        }
+        GuitarProMasterBar bar = bars.get(index);
+        bars.set(index, new GuitarProMasterBar(bar.timeSignature(), update.apply(bar.attributes())));
     }
 
     private List<GuitarProTrackHeader> readTrackHeaders(
@@ -161,7 +183,7 @@ public final class GuitarProFile {
                 header.twelveString(),
                 header.banjoFifthString(),
                 header.display());
-        return new Track(header.name(), tuning, channelOf(header, channels), settings, usable(measures));
+        return new Track(header.name(), tuning, header.channelIn(channels), settings, usable(measures));
     }
 
     private static Tuning tuningOf(GuitarProTrackHeader header) {
@@ -173,26 +195,6 @@ public final class GuitarProFile {
                 .map(midiNumber -> new Pitch(Math.clamp(midiNumber, 0, 127)))
                 .toList();
         return strings.isEmpty() ? Tuning.standard() : TuningLibrary.identify(strings);
-    }
-
-    private static Channel channelOf(GuitarProTrackHeader header, List<GuitarProChannel> channels) {
-        int slot = header.channelIndex1Based() - 1;
-        if (slot < 0 || slot >= channels.size()) {
-            return header.percussion() ? Channel.percussion() : Channel.playing(Track.GUITAR_PROGRAM);
-        }
-        GuitarProChannel sound = channels.get(slot);
-        return new Channel(
-                Math.clamp(sound.program(), 0, Channel.MAX),
-                sound.volume(),
-                sound.pan(),
-                sound.chorus(),
-                sound.reverb(),
-                sound.phaser(),
-                sound.tremolo(),
-                1,
-                Math.clamp(header.channelIndex1Based(), 1, Channel.CHANNELS_PER_PORT),
-                false,
-                false);
     }
 
     /** Una pista necesita al menos un compas, aunque el archivo no traiga ninguno. */

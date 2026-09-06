@@ -114,8 +114,10 @@ public final class MidiSequences {
             int nonPercussionOrdinal = 0;
             for (IndexedTrack indexed : tracks) {
                 TrackTimeline trackTimeline = indexed.track();
-                int channel = trackTimeline.percussion() ? PERCUSSION_CHANNEL : channelFor(nonPercussionOrdinal++);
-                writeTrack(sequence.createTrack(), indexed.originalIndex(), channel, trackTimeline,
+                TrackChannels channels = trackTimeline.percussion()
+                        ? TrackChannels.percussion()
+                        : TrackChannels.ofTheTrackNumber(nonPercussionOrdinal++);
+                writeTrack(sequence.createTrack(), indexed.originalIndex(), channels, trackTimeline,
                         indexed.limitPitchVariation());
             }
             return sequence;
@@ -124,8 +126,7 @@ public final class MidiSequences {
         }
     }
 
-    /** La velocidad y la duracion con que suena cada click del metronomo. */
-    private static final int METRONOME_VELOCITY = 100;
+    /** Cuanto dura cada click del metronomo. */
     private static final long METRONOME_CLICK_TICKS = 60;
 
     /** Agrega el metronomo como una pista mas de percusion, si es que tiene algun click para tocar. */
@@ -138,7 +139,7 @@ public final class MidiSequences {
             track.add(programChangeEvent(PERCUSSION_CHANNEL, 0));
             for (MetronomeClick click : clicks) {
                 ShortMessage on = new ShortMessage(
-                        ShortMessage.NOTE_ON, PERCUSSION_CHANNEL, click.sound(), METRONOME_VELOCITY);
+                        ShortMessage.NOTE_ON, PERCUSSION_CHANNEL, click.sound(), click.velocity());
                 ShortMessage off = new ShortMessage(ShortMessage.NOTE_OFF, PERCUSSION_CHANNEL, click.sound(), 0);
                 track.add(new MidiEvent(on, click.tick()));
                 track.add(new MidiEvent(off, click.tick() + METRONOME_CLICK_TICKS));
@@ -159,27 +160,57 @@ public final class MidiSequences {
                 Integer.parseInt(parts[2])));
     }
 
-    /** El canal MIDI que le toca al enesimo instrumento no percusivo, salteando siempre el 9 (percusion). */
-    static int channelFor(int nonPercussionOrdinal) {
-        int slot = nonPercussionOrdinal % (CHANNEL_COUNT - 1);
+    /** El canal MIDI que le toca a la enesima ranura, salteando siempre el 9 (percusion). */
+    static int channelFor(int slotNumber) {
+        int slot = slotNumber % (CHANNEL_COUNT - 1);
         return slot < PERCUSSION_CHANNEL ? slot : slot + 1;
     }
 
+    /**
+     * Los dos canales de una pista, como los reparte Guitar Pro: uno para las
+     * notas limpias y el siguiente para las que llevan efecto, asi correrle la
+     * altura a una no arrastra a las demas. La percusion toca todo en el suyo.
+     */
+    private record TrackChannels(int clean, int effects) {
+
+        static TrackChannels percussion() {
+            return new TrackChannels(PERCUSSION_CHANNEL, PERCUSSION_CHANNEL);
+        }
+
+        static TrackChannels ofTheTrackNumber(int nonPercussionOrdinal) {
+            return new TrackChannels(channelFor(2 * nonPercussionOrdinal), channelFor(2 * nonPercussionOrdinal + 1));
+        }
+
+        int of(ScheduledNote note) {
+            return note.carriesAnEffect() ? effects : clean;
+        }
+
+        /** Los canales que hay que preparar: uno solo cuando la pista usa el mismo para todo. */
+        List<Integer> toPrepare() {
+            return clean == effects ? List.of(clean) : List.of(clean, effects);
+        }
+    }
+
     private static void writeTrack(
-            Track track, int trackIndex, int channel, TrackTimeline trackTimeline, boolean limitPitchVariation)
+            Track track, int trackIndex, TrackChannels channels, TrackTimeline trackTimeline,
+            boolean limitPitchVariation)
             throws InvalidMidiDataException {
-        track.add(programChangeEvent(channel, trackTimeline.program()));
-        writePitchBendRange(track, channel);
-        track.add(controlChangeEvent(channel, VOLUME_CONTROLLER, trackTimeline.volume(), 0));
-        track.add(controlChangeEvent(channel, PAN_CONTROLLER, trackTimeline.pan(), 0));
+        for (int channel : channels.toPrepare()) {
+            track.add(programChangeEvent(channel, trackTimeline.program()));
+            writePitchBendRange(track, channel);
+            track.add(controlChangeEvent(channel, VOLUME_CONTROLLER, trackTimeline.volume(), 0));
+            track.add(controlChangeEvent(channel, PAN_CONTROLLER, trackTimeline.pan(), 0));
+        }
         for (ScheduledNote note : trackTimeline.notes()) {
-            writeNote(track, channel, note, limitPitchVariation);
+            writeNote(track, channels.of(note), note, limitPitchVariation);
         }
         for (ScheduledBeat beat : trackTimeline.beats()) {
             track.add(markerEvent(trackIndex, beat));
         }
         for (ScheduledParameter parameter : trackTimeline.parameters()) {
-            track.add(parameterEvent(channel, parameter));
+            for (int channel : channels.toPrepare()) {
+                track.add(parameterEvent(channel, parameter));
+            }
         }
     }
 

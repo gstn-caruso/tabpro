@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.gstncaruso.tabpro</groupId>
     <artifactId>tabpro-parent</artifactId>
-    <version>0.8.0</version>
+    <version>0.12.1</version>
   </parent>
 
   <artifactId>tabpro-midi</artifactId>
@@ -29,4 +29,29 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <!--
+            WaveRenderer usa com.sun.media.sound.AudioSynthesizer para renderizar WAVE fuera
+            de tiempo real: es el unico camino que expone Gervill (el sintetizador del JDK)
+            para eso. No es API publica del modulo java.desktop, asi que hay que pedir
+            explicitamente el acceso. javac no permite combinar add-exports con release,
+            asi que este modulo compila con source/target en vez de heredar release.
+          -->
+          <release combine.self="override"></release>
+          <source>${maven.compiler.release}</source>
+          <target>${maven.compiler.release}</target>
+          <compilerArgs>
+            <arg>--add-exports</arg>
+            <arg>java.desktop/com.sun.media.sound=ALL-UNNAMED</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

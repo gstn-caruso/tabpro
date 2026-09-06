@@ -3,11 +3,15 @@ package com.gstncaruso.tabpro.format.guitarpro;
 import com.gstncaruso.tabpro.core.model.Lyrics;
 import com.gstncaruso.tabpro.core.model.LyricLine;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
+import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
+import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -30,12 +34,63 @@ final class GuitarProHeaderReader {
         return new GuitarProHeader(info, lyrics, tempo, keySignature, globalTripletFeel);
     }
 
-    /** Los canales suenan justo despues de la cabecera; las direcciones, justo despues de ellos. */
-    void skipDirections(GuitarProByteReader reader, GuitarProVersion version) {
+    /**
+     * Los canales suenan justo despues de la cabecera; las direcciones, justo
+     * despues de ellos: 19 slots de dos bytes, uno por simbolo de destino
+     * (Coda, Doble Coda, Segno, Segno Segno, Fine, en ese orden) y uno por
+     * salto (los catorce de {@link DirectionJump}, en el orden en que los
+     * declara el enum), cada uno con el compas al que apunta o -1 si no se
+     * usa. Cuatro bytes reservados cierran el bloque.
+     */
+    /**
+     * El orden en que el archivo guarda los cinco simbolos de destino. Lo fija el
+     * formato de Guitar Pro, no tabpro: por eso se declara aca, donde se lee el
+     * archivo, y no se deduce del orden de declaracion del enum.
+     */
+    static final List<DirectionSymbol> SYMBOL_SLOTS = List.of(
+            DirectionSymbol.CODA,
+            DirectionSymbol.DOUBLE_CODA,
+            DirectionSymbol.SEGNO,
+            DirectionSymbol.SEGNO_SEGNO,
+            DirectionSymbol.FINE);
+
+    /** El orden en que el archivo guarda los catorce saltos. Lo fija el formato. */
+    static final List<DirectionJump> JUMP_SLOTS = List.of(
+            DirectionJump.DA_CAPO,
+            DirectionJump.DA_CAPO_AL_CODA,
+            DirectionJump.DA_CAPO_AL_DOUBLE_CODA,
+            DirectionJump.DA_CAPO_AL_FINE,
+            DirectionJump.DA_SEGNO,
+            DirectionJump.DA_SEGNO_AL_CODA,
+            DirectionJump.DA_SEGNO_AL_DOUBLE_CODA,
+            DirectionJump.DA_SEGNO_AL_FINE,
+            DirectionJump.DA_SEGNO_SEGNO,
+            DirectionJump.DA_SEGNO_SEGNO_AL_CODA,
+            DirectionJump.DA_SEGNO_SEGNO_AL_DOUBLE_CODA,
+            DirectionJump.DA_SEGNO_SEGNO_AL_FINE,
+            DirectionJump.DA_CODA,
+            DirectionJump.DA_DOUBLE_CODA);
+
+    GuitarProDirections readDirections(GuitarProByteReader reader, GuitarProVersion version) {
         if (!version.hasDirections()) {
-            return;
+            return GuitarProDirections.none();
         }
-        reader.skip(19 * 2 + 4);
+        Map<Integer, DirectionSymbol> symbols = new LinkedHashMap<>();
+        for (DirectionSymbol symbol : SYMBOL_SLOTS) {
+            readSlot(reader).ifPresent(measureIndex -> symbols.put(measureIndex, symbol));
+        }
+        Map<Integer, DirectionJump> jumps = new LinkedHashMap<>();
+        for (DirectionJump jump : JUMP_SLOTS) {
+            readSlot(reader).ifPresent(measureIndex -> jumps.put(measureIndex, jump));
+        }
+        reader.skip(4);
+        return new GuitarProDirections(symbols, jumps);
+    }
+
+    /** Un slot de destino: el compas al que apunta, o vacio si el valor es -1 (no se usa). */
+    private Optional<Integer> readSlot(GuitarProByteReader reader) {
+        int measureIndex = reader.readShort();
+        return measureIndex >= 0 ? Optional.of(measureIndex) : Optional.empty();
     }
 
     private ScoreInfo readScoreInfo(GuitarProByteReader reader, GuitarProVersion version) {

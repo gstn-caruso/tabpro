@@ -181,6 +181,14 @@ public final class ScorePainter {
         g.setColor(ScoreColors.SELECTION);
         for (int measure = selection.fromMeasure();
                 measure <= selection.toMeasure() && measure < track.measureCount(); measure++) {
+            // Un compas entero se pinta de punta a punta, no solo donde caen los beats de la voz
+            // principal: el manual dice que las acciones valen para las dos voces, y el compas
+            // siempre deja un margen (cabecera, padding) que ningun beat pisa.
+            if (selection.wholeMeasures()) {
+                Rectangle bounds = layout.measureBounds(selection.track(), measure);
+                g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+                continue;
+            }
             int beatCount = track.measure(measure).beats().size();
             for (int beat = 0; beat < beatCount; beat++) {
                 if (!selection.covers(measure, beat)) {

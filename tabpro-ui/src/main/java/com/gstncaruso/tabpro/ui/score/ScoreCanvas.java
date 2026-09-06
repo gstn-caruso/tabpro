@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.editing.Selection;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
+import com.gstncaruso.tabpro.ui.tab.FretContextMenu;
 import com.gstncaruso.tabpro.ui.tab.FretDigits;
 import com.gstncaruso.tabpro.ui.tab.KeyboardEditing;
 import java.awt.Dimension;
@@ -15,6 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
 import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
 import javax.swing.Scrollable;
 
 /**
@@ -37,6 +39,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     private PageSetup pageSetup = PageSetup.defaults();
     private Cursor selectionAnchor;
     private Selection selection;
+    private boolean selectingWholeMeasures;
 
     public ScoreCanvas(Editor editor) {
         this(editor, new TrackVisibility());
@@ -58,10 +61,29 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
         MouseAdapter mouse = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showContextMenu(e);
+                    return;
+                }
                 requestFocusInWindow();
                 clearSelection();
                 moveCursorTo(e.getX(), e.getY());
                 selectionAnchor = editor.cursor();
+                // El manual: "para seleccionar compases completos, apreta Ctrl mientras haces la
+                // seleccion". Un clic sin arrastrar ya alcanza para seleccionar el compas entero.
+                selectingWholeMeasures = e.isControlDown();
+                if (selectingWholeMeasures) {
+                    setSelection(Selection.of(selectionAnchor, selectionAnchor, true));
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                // El disparador del menu contextual es distinto por plataforma: en algunas
+                // llega en mousePressed, en otras (Windows) recien en mouseReleased.
+                if (e.isPopupTrigger()) {
+                    showContextMenu(e);
+                }
             }
 
             @Override
@@ -236,13 +258,28 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
         return false;
     }
 
-    private void moveCursorTo(int x, int y) {
-        PageScorePainter.hitTest(editor.score(), viewport(), x, y).ifPresent(hit -> {
-            if (hit.track() != editor.cursor().track()) {
-                editor.selectTrack(hit.track());
+    private Optional<ScoreLayout.Hit> moveCursorTo(int x, int y) {
+        Optional<ScoreLayout.Hit> hit = PageScorePainter.hitTest(editor.score(), viewport(), x, y);
+        hit.ifPresent(h -> {
+            if (h.track() != editor.cursor().track()) {
+                editor.selectTrack(h.track());
             }
-            editor.moveTo(hit.measure(), hit.beat(), hit.string());
+            editor.moveTo(h.measure(), h.beat(), h.string());
         });
+        return hit;
+    }
+
+    /**
+     * El manual: clic derecho sobre la tablatura ofrece "Note > 0 to 30" para escribir el
+     * traste de la cuerda donde cayo el clic sin pasar por el teclado. Antes de armar el menu,
+     * el clic mueve el cursor ahi mismo, igual que un clic izquierdo.
+     */
+    Optional<JPopupMenu> contextMenuAt(int x, int y) {
+        return moveCursorTo(x, y).map(hit -> FretContextMenu.forTrack(editor.currentTrack(), editor::setFret));
+    }
+
+    private void showContextMenu(MouseEvent e) {
+        contextMenuAt(e.getX(), e.getY()).ifPresent(menu -> menu.show(this, e.getX(), e.getY()));
     }
 
     private void extendSelectionTo(int x, int y) {
@@ -253,7 +290,8 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
             if (hit.track() != selectionAnchor.track()) {
                 return;
             }
-            setSelection(Selection.of(selectionAnchor, selectionAnchor.at(hit.measure(), hit.beat()), false));
+            setSelection(Selection.of(
+                    selectionAnchor, selectionAnchor.at(hit.measure(), hit.beat()), selectingWholeMeasures));
         });
     }
 
