@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
+import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.core.notation.AccidentalGlyph;
 import com.gstncaruso.tabpro.core.notation.BeamGroup;
 import com.gstncaruso.tabpro.core.notation.Beaming;
@@ -574,6 +575,12 @@ final class StaffPainter {
         }
     }
 
+    /**
+     * El manual, linea 923: la direccion de la plica es automatica, pero se puede forzar a mano
+     * desde el menu Nota. Una barra de union comparte una sola plica para todo el grupo, asi que
+     * el primer override que aparezca entre sus beats -{@link StemOverride#AUTOMATIC} no cuenta-
+     * decide por el grupo entero; si ninguno lo pide, sigue la regla automatica de siempre.
+     */
     private static boolean groupPointsUp(
             Track track, Clef clef, List<Beat> beats, BeamGroup group, VoicePart part, boolean twoVoices,
             int octaveShift) {
@@ -586,7 +593,18 @@ final class StaffPainter {
             }
         }
         double average = count == 0 ? MIDDLE_LINE_STEP : total / count;
-        return StemDirection.pointsUp(part, twoVoices, average, MIDDLE_LINE_STEP);
+        boolean automatic = StemDirection.pointsUp(part, twoVoices, average, MIDDLE_LINE_STEP);
+        return overrideIn(beats, group).pointsUp(automatic);
+    }
+
+    private static StemOverride overrideIn(List<Beat> beats, BeamGroup group) {
+        for (int beatIndex = group.firstBeat(); beatIndex <= group.lastBeat(); beatIndex++) {
+            StemOverride override = beats.get(beatIndex).effects().stemOverride();
+            if (override != StemOverride.AUTOMATIC) {
+                return override;
+            }
+        }
+        return StemOverride.AUTOMATIC;
     }
 
     private static Stem stemOf(
@@ -604,7 +622,8 @@ final class StaffPainter {
                 .mapToInt(note -> positionOf(track, clef, note, octaveShift).step())
                 .average()
                 .orElse(MIDDLE_LINE_STEP);
-        boolean up = StemDirection.pointsUp(part, twoVoices, average, MIDDLE_LINE_STEP);
+        boolean automatic = StemDirection.pointsUp(part, twoVoices, average, MIDDLE_LINE_STEP);
+        boolean up = beat.effects().stemOverride().pointsUp(automatic);
         return stemOf(layout, track, clef, trackIndex, measureIndex, beatIndex, beat, up, octaveShift);
     }
 

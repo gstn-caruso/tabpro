@@ -7,11 +7,13 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
+import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.model.effects.Finger;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
+import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
@@ -35,7 +37,9 @@ public record BeatDto(
         String wah,
         String text,
         ChordDto chord,
-        ParameterChangeDto parameterChange) {
+        ParameterChangeDto parameterChange,
+        String beamBreak,
+        String stemOverride) {
 
     public static BeatDto from(Beat beat) {
         BeatEffects effects = beat.effects();
@@ -56,7 +60,9 @@ public record BeatDto(
                 effects.wah().map(Enum::name).orElse(null),
                 effects.text().orElse(null),
                 effects.chord().map(ChordDto::from).orElse(null),
-                effects.parameterChange().isEmpty() ? null : ParameterChangeDto.from(effects.parameterChange()));
+                effects.parameterChange().isEmpty() ? null : ParameterChangeDto.from(effects.parameterChange()),
+                effects.beamBreak() == BeamBreak.AUTOMATIC ? null : effects.beamBreak().name(),
+                effects.stemOverride() == StemOverride.AUTOMATIC ? null : effects.stemOverride().name());
     }
 
     public Beat toBeat() {
@@ -85,7 +91,9 @@ public record BeatDto(
                 Optional.ofNullable(Enums.read(Wah.class, wah, null)),
                 Optional.ofNullable(text),
                 Optional.ofNullable(chord).map(ChordDto::toChord),
-                parameterChange == null ? ParameterChange.nothing() : parameterChange.toParameterChange());
+                parameterChange == null ? ParameterChange.nothing() : parameterChange.toParameterChange(),
+                Enums.read(BeamBreak.class, beamBreak, BeamBreak.AUTOMATIC),
+                Enums.read(StemOverride.class, stemOverride, StemOverride.AUTOMATIC));
     }
 
     private static Boolean flag(boolean value) {

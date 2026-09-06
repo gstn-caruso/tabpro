@@ -27,6 +27,7 @@ import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
+import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
@@ -38,6 +39,7 @@ import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
+import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.TremoloPicking;
 import com.gstncaruso.tabpro.core.model.effects.Trill;
@@ -278,6 +280,20 @@ public final class Editor {
 
     public void setText(String text) {
         changeBeatEffects(effects -> effects.withText(text));
+    }
+
+    /**
+     * El manual (linea 923): el agrupamiento por barra de union es automatico, pero "es posible
+     * cambiar a mano las barras... usando el menu Nota". Misma forma que {@link #setLineBreak}:
+     * automatico por default, forzado a lo que pida el usuario sobre el beat del cursor.
+     */
+    public void setBeamBreak(BeamBreak beamBreak) {
+        changeBeatEffects(effects -> effects.withBeamBreak(beamBreak));
+    }
+
+    /** El manual (linea 923): "...y la direccion de la plica", con la misma forma de arriba. */
+    public void setStemOverride(StemOverride stemOverride) {
+        changeBeatEffects(effects -> effects.withStemOverride(stemOverride));
     }
 
     public void setParameterChange(ParameterChange change) {

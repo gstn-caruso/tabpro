@@ -8,9 +8,11 @@ import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
+import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
+import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
@@ -207,6 +209,7 @@ public final class Commands {
         define("note.chord", "Acorde…", dialogs::chordDiagram).withAccelerator("A").withIcon(Icons.chordDiagram());
         define("note.mixTableChange", "Cambio de parámetros…", dialogs::mixTableChange)
                 .withAccelerator("F10").withIcon(Icons.mixTable());
+        defineBeamAndStemCommands();
         for (NoteValue value : NoteValue.values()) {
             define("note.value." + value.name(), nameOf(value), () -> editor.setNoteValue(value))
                     .withIcon(Icons.note(value));
@@ -246,6 +249,20 @@ public final class Commands {
             case 7 -> "Septillo";
             default -> "Grupo de " + enters;
         };
+    }
+
+    /**
+     * El manual, linea 923: el agrupamiento por barra de union y la direccion de la plica son
+     * automaticos, "pero es posible cambiar[los] a mano... usando el menu Nota". Misma forma que
+     * "Bar > Break Line" (forzar/impedir/reiniciar): fuerzan, impiden o vuelven al automatismo.
+     */
+    private void defineBeamAndStemCommands() {
+        define("note.forceBeamBreak", "Forzar corte de barra", () -> editor.setBeamBreak(BeamBreak.FORCED));
+        define("note.preventBeamBreak", "Impedir corte de barra", () -> editor.setBeamBreak(BeamBreak.PREVENTED));
+        define("note.resetBeamBreak", "Barra automática", () -> editor.setBeamBreak(BeamBreak.AUTOMATIC));
+        define("note.stemUp", "Plica hacia arriba", () -> editor.setStemOverride(StemOverride.UP));
+        define("note.stemDown", "Plica hacia abajo", () -> editor.setStemOverride(StemOverride.DOWN));
+        define("note.stemAutomatic", "Plica automática", () -> editor.setStemOverride(StemOverride.AUTOMATIC));
     }
 
     // ---- efectos ----------------------------------------------------------

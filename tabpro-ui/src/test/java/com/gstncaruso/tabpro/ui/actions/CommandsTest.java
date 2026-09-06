@@ -12,8 +12,10 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
+import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
+import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -131,6 +133,24 @@ class CommandsTest {
 
         commands.get("bar.octaveNone").actionPerformed(event());
         assertEquals(OctaveMark.NONE, editor.currentMeasure().attributes().octaveMark());
+
+        commands.get("note.forceBeamBreak").actionPerformed(event());
+        assertEquals(BeamBreak.FORCED, editor.currentBeat().effects().beamBreak());
+
+        commands.get("note.preventBeamBreak").actionPerformed(event());
+        assertEquals(BeamBreak.PREVENTED, editor.currentBeat().effects().beamBreak());
+
+        commands.get("note.resetBeamBreak").actionPerformed(event());
+        assertEquals(BeamBreak.AUTOMATIC, editor.currentBeat().effects().beamBreak());
+
+        commands.get("note.stemUp").actionPerformed(event());
+        assertEquals(StemOverride.UP, editor.currentBeat().effects().stemOverride());
+
+        commands.get("note.stemDown").actionPerformed(event());
+        assertEquals(StemOverride.DOWN, editor.currentBeat().effects().stemOverride());
+
+        commands.get("note.stemAutomatic").actionPerformed(event());
+        assertEquals(StemOverride.AUTOMATIC, editor.currentBeat().effects().stemOverride());
     }
 
     /**
