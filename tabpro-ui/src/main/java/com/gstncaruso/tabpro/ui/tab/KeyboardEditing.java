@@ -57,6 +57,11 @@ public final class KeyboardEditing {
             editor.setFret(digits.fretFor(c, editor.currentTrack()::acceptsTypedNumber));
             return;
         }
+        // El manual lista el puntillo como "* or .": el "." ya es el acelerador de note.dot,
+        // asi que el "*" se resuelve aca para no repetir un atajo entre dos comandos.
+        if (c == '*') {
+            editor.toggleDot();
+        }
         digits.reset();
     }
 
