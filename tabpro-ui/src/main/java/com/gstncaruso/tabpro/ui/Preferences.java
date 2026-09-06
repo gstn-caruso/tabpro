@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui;
 
+import com.gstncaruso.tabpro.core.model.NoteValue;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,8 @@ public final class Preferences {
     private static final String UNDO_ENABLED = "undoEnabled";
     private static final String METRONOME_ENABLED = "metronomeEnabled";
     private static final String COUNT_DOWN_ENABLED = "countDownEnabled";
+    private static final String DEFAULT_NOTE_VALUE = "defaultNoteValue";
+    private static final String AUTO_SCROLL_DURING_PLAYBACK = "autoScrollDuringPlayback";
     private static final String VIEW_MODE = "viewMode";
     private static final String ZOOM = "zoom";
     private static final String FORCE_MULTITRACK_IN_HORIZONTAL_MODE = "forceMultitrackInHorizontalMode";
@@ -87,6 +90,24 @@ public final class Preferences {
 
     public void setCountDownEnabled(boolean enabled) {
         stored.putBoolean(COUNT_DOWN_ENABLED, enabled);
+    }
+
+    /** Preferencias [F12], "Figura por defecto al insertar": la usa {@code Editor.insertBeat}. */
+    public NoteValue defaultNoteValue() {
+        return NoteValue.valueOf(stored.get(DEFAULT_NOTE_VALUE, NoteValue.QUARTER.name()));
+    }
+
+    public void setDefaultNoteValue(NoteValue defaultNoteValue) {
+        stored.put(DEFAULT_NOTE_VALUE, defaultNoteValue.name());
+    }
+
+    /** Preferencias [F12], "Desplazar la pantalla durante la reproduccion": la usa ScoreCanvas. */
+    public boolean autoScrollDuringPlayback() {
+        return stored.getBoolean(AUTO_SCROLL_DURING_PLAYBACK, true);
+    }
+
+    public void setAutoScrollDuringPlayback(boolean autoScrollDuringPlayback) {
+        stored.putBoolean(AUTO_SCROLL_DURING_PLAYBACK, autoScrollDuringPlayback);
     }
 
     public String viewMode() {

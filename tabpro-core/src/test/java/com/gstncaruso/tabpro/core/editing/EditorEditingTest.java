@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
@@ -103,14 +104,29 @@ class EditorEditingTest {
         assertFalse(editor.currentBeat().duration().dotted());
     }
 
+    /**
+     * Preferencias [F12], "Figura por defecto al insertar": el beat que se inserta tiene que
+     * salir con esa figura, no con la del beat que ya estaba en el cursor -que es lo que hacia
+     * antes, ignorando la preferencia por completo-.
+     */
     @Test
-    void insertsARestBeforeTheCursorWithTheSameDuration() {
-        Beat first = Beat.of(Duration.quarter().shorter(), new Note(1, 3));
+    void insertsARestUsingTheDefaultNoteValueNotTheCurrentBeatsDuration() {
+        Beat first = Beat.of(Duration.of(NoteValue.HALF), new Note(1, 3));
         Editor editor = editorWithMeasure(new Measure(TimeSignature.fourFour(), List.of(first)));
+        editor.setDefaultNoteValue(NoteValue.EIGHTH);
+
         editor.insertBeat();
+
         assertTrue(editor.currentBeat().isRest());
-        assertEquals(Duration.quarter().shorter(), editor.currentBeat().duration());
+        assertEquals(Duration.of(NoteValue.EIGHTH), editor.currentBeat().duration(),
+                "el beat insertado tiene que usar la figura por defecto, no copiar la del beat actual");
         assertEquals(first, editor.score().track(0).measure(0).beat(1));
+    }
+
+    @Test
+    void theDefaultNoteValueStartsAtAQuarter() {
+        Editor editor = new Editor(Score.blank());
+        assertEquals(NoteValue.QUARTER, editor.defaultNoteValue());
     }
 
     @Test

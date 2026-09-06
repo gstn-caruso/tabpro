@@ -14,6 +14,8 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.playback.BeatPosition;
+import com.gstncaruso.tabpro.core.playback.Playhead;
 import java.awt.Rectangle;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import org.junit.jupiter.api.Test;
 
 class ScoreCanvasTest {
@@ -211,6 +214,58 @@ class ScoreCanvasTest {
         press(canvas, -100, -100, false);
 
         assertTrue(notified.isEmpty());
+    }
+
+    /**
+     * Preferencias [F12], "Desplazar la pantalla durante la reproduccion": destildarla no hacia
+     * nada, porque {@code showPlayhead} pedia el scroll sin preguntar. La prueba mete el lienzo
+     * en un JScrollPane de verdad y mira si la vista se mueve -el efecto en la pantalla-, no si
+     * la preferencia "quedo guardada", que es justo lo que no alcanzaba antes.
+     */
+    @Test
+    void showPlayheadScrollsToKeepItVisibleByDefault() {
+        ScoreCanvas horizontal = canvasWithManyMeasuresScrolledHorizontally();
+        JScrollPane pane = paneShowing(horizontal);
+
+        horizontal.showPlayhead(Playhead.silent().advancedTo(new BeatPosition(0, 29, 0)));
+
+        assertTrue(pane.getViewport().getViewPosition().x > 0,
+                "con el auto-scroll prendido (el default) un playhead lejano tiene que traer la vista hasta el");
+    }
+
+    @Test
+    void turningAutoScrollOffLeavesThePlayheadOffScreen() {
+        ScoreCanvas horizontal = canvasWithManyMeasuresScrolledHorizontally();
+        horizontal.setAutoScrollDuringPlayback(false);
+        JScrollPane pane = paneShowing(horizontal);
+
+        horizontal.showPlayhead(Playhead.silent().advancedTo(new BeatPosition(0, 29, 0)));
+
+        assertEquals(0, pane.getViewport().getViewPosition().x,
+                "con el auto-scroll destildado la vista no se tiene que mover aunque el playhead quede afuera");
+    }
+
+    /** Treinta compases en Pantalla Horizontal -que nunca envuelve- para que el ultimo quede
+     * bien lejos del origen y un scroll de verdad haga falta para llegar a el. */
+    private static ScoreCanvas canvasWithManyMeasuresScrolledHorizontally() {
+        List<Measure> measures = new java.util.ArrayList<>();
+        for (int i = 0; i < 30; i++) {
+            measures.add(Measure.empty(TimeSignature.fourFour(), Duration.quarter()));
+        }
+        Track guitar = Track.standardGuitar("Guitarra").withMeasures(measures);
+        ScoreCanvas manyMeasures = new ScoreCanvas(new Editor(new Score("Prueba", 120, List.of(guitar))));
+        manyMeasures.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+        return manyMeasures;
+    }
+
+    /** Un JScrollPane real, medido y layouteado sin necesidad de mostrar ninguna ventana. */
+    private static JScrollPane paneShowing(ScoreCanvas canvas) {
+        canvas.setSize(canvas.getPreferredSize());
+        JScrollPane pane = new JScrollPane(canvas);
+        pane.setSize(200, 200);
+        pane.doLayout();
+        pane.getViewport().doLayout();
+        return pane;
     }
 
     private static Editor editorWithTwoMeasures() {

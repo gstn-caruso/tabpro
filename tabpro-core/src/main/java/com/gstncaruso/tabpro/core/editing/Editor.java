@@ -69,6 +69,8 @@ public final class Editor {
     private final Clipboard clipboard = new Clipboard();
     private final List<EditorListener> listeners = new ArrayList<>();
     private boolean undoEnabled = true;
+    /** Preferencias [F12], "Figura por defecto al insertar": la usa {@link #insertBeat()}. */
+    private NoteValue defaultNoteValue = NoteValue.QUARTER;
 
     public Editor(Score initial) {
         this.score = initial;
@@ -310,8 +312,16 @@ public final class Editor {
     // ---- beats ------------------------------------------------------------
 
     public void insertBeat() {
-        Beat rest = Beat.rest(currentBeat().duration());
+        Beat rest = Beat.rest(Duration.of(defaultNoteValue));
         changeVoiceAndCursor(voice -> voice.withBeatInsertedAt(cursor.beat(), rest), cursor);
+    }
+
+    public NoteValue defaultNoteValue() {
+        return defaultNoteValue;
+    }
+
+    public void setDefaultNoteValue(NoteValue defaultNoteValue) {
+        this.defaultNoteValue = defaultNoteValue;
     }
 
     public void deleteBeat() {

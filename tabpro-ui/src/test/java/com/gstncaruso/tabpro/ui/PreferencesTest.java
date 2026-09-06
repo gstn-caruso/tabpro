@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.model.NoteValue;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
@@ -82,5 +83,26 @@ class PreferencesTest {
         preferences.setForceMultitrackInHorizontalMode(true);
 
         assertTrue(preferences.forceMultitrackInHorizontalMode());
+    }
+
+    /**
+     * Preferencias [F12]: "Figura por defecto al insertar" y "Desplazar la pantalla durante la
+     * reproduccion" se quedaban solo en memoria -{@code editingPreferences} en MainFrame- y se
+     * olvidaban al cerrar el programa. Tienen que persistir aca, igual que undoEnabled y
+     * autosaveEvery.
+     */
+    @Test
+    void remembersTheDefaultNoteValueAndTheAutoScrollPreference() {
+        preferences.setDefaultNoteValue(NoteValue.EIGHTH);
+        preferences.setAutoScrollDuringPlayback(false);
+
+        assertEquals(NoteValue.EIGHTH, preferences.defaultNoteValue());
+        assertFalse(preferences.autoScrollDuringPlayback());
+    }
+
+    @Test
+    void defaultNoteValueAndAutoScrollStartAtAQuarterAndOn() {
+        assertEquals(NoteValue.QUARTER, preferences.defaultNoteValue());
+        assertTrue(preferences.autoScrollDuringPlayback());
     }
 }
