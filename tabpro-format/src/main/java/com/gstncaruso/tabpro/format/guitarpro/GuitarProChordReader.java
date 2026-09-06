@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.format.guitarpro;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.model.effects.Finger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,14 +27,16 @@ final class GuitarProChordReader {
         return onlyTheStringsOfTheTrack(diagram, stringCount);
     }
 
-    /** El formato viejo: solo nombre, cejilla base y trastes. */
+    /**
+     * El formato viejo: nombre, cejilla base y trastes. La cejilla base en cero dice que
+     * el acorde es solo un nombre, sin diagrama: ahi no viene ni un traste detras.
+     */
     private ChordDiagram readOldFormat(GuitarProByteReader reader) {
-        String name = reader.readFixedString(20);
+        String name = reader.readLengthPrefixedString();
         int baseFret = reader.readInt();
-        List<Integer> frets = new ArrayList<>(GP3_STRING_SLOTS);
-        for (int slot = 0; slot < GP3_STRING_SLOTS; slot++) {
-            frets.add(reader.readInt());
-        }
+        List<Integer> frets = baseFret == 0
+                ? Collections.nCopies(GP3_STRING_SLOTS, ChordDiagram.MUTED)
+                : readFrets(reader, GP3_STRING_SLOTS);
         return chordOf(name, baseFret, frets, List.of());
     }
 
