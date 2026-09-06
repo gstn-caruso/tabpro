@@ -3,8 +3,11 @@ package com.gstncaruso.tabpro.core.playback;
 import java.util.List;
 
 public record TrackTimeline(
-        int program, int volume, int pan, boolean percussion,
+        int program, int volume, int pan, boolean percussion, int port,
         List<ScheduledNote> notes, List<ScheduledBeat> beats, List<ScheduledParameter> parameters) {
+
+    /** El puerto de salida de una pista que todavia no eligio uno: el primero, tal como usa una pista nueva. */
+    private static final int DEFAULT_PORT = 1;
 
     public TrackTimeline {
         notes = List.copyOf(notes);
@@ -14,17 +17,23 @@ public record TrackTimeline(
 
     public TrackTimeline(
             int program, int volume, int pan, boolean percussion,
+            List<ScheduledNote> notes, List<ScheduledBeat> beats, List<ScheduledParameter> parameters) {
+        this(program, volume, pan, percussion, DEFAULT_PORT, notes, beats, parameters);
+    }
+
+    public TrackTimeline(
+            int program, int volume, int pan, boolean percussion,
             List<ScheduledNote> notes, List<ScheduledBeat> beats) {
-        this(program, volume, pan, percussion, notes, beats, List.of());
+        this(program, volume, pan, percussion, DEFAULT_PORT, notes, beats, List.of());
     }
 
     public TrackTimeline(int program, int volume, int pan, List<ScheduledNote> notes, List<ScheduledBeat> beats) {
-        this(program, volume, pan, false, notes, beats, List.of());
+        this(program, volume, pan, false, DEFAULT_PORT, notes, beats, List.of());
     }
 
     /** La misma pista con los cambios de parametro que le tocan. */
     TrackTimeline with(List<ScheduledParameter> parameters) {
-        return new TrackTimeline(program, volume, pan, percussion, notes, beats, parameters);
+        return new TrackTimeline(program, volume, pan, percussion, port, notes, beats, parameters);
     }
 
     long endTick() {
@@ -34,7 +43,7 @@ public record TrackTimeline(
     }
 
     TrackTimeline shiftedBy(long ticks) {
-        return new TrackTimeline(program, volume, pan, percussion,
+        return new TrackTimeline(program, volume, pan, percussion, port,
                 notes.stream().map(note -> note.withStartTick(note.startTick() + ticks)).toList(),
                 beats.stream().map(beat -> beat.shiftedBy(ticks)).toList(),
                 parameters.stream().map(parameter -> parameter.shiftedBy(ticks)).toList());

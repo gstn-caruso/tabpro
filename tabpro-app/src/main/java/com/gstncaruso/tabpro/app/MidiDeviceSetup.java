@@ -1,27 +1,35 @@
 package com.gstncaruso.tabpro.app;
 
+import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.midi.MidiCapture;
 import com.gstncaruso.tabpro.midi.MidiDevices;
 import com.gstncaruso.tabpro.midi.MidiPlayer;
+import com.gstncaruso.tabpro.midi.MidiTestTone;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 
 /**
  * Los dispositivos MIDI de la maquina, tal como los ofrece la ventana de
- * configuracion: por donde sale el sonido y por donde entran las notas.
+ * configuracion: hasta cuatro puertos de salida, la entrada de captura y su
+ * sensibilidad.
  */
 final class MidiDeviceSetup implements Ports.Devices {
 
     private final Optional<MidiPlayer> player;
-    private String output = "";
+    private final String[] outputByPort = new String[Channel.PORT_COUNT];
+    private final boolean[] limitPitchVariationByPort = new boolean[Channel.PORT_COUNT];
     private String input = "";
+    private int sensitivityMillis = MidiCapture.DEFAULT_SENSITIVITY_MILLIS;
     private MidiCapture capture;
 
     MidiDeviceSetup(Optional<MidiPlayer> player) {
         this.player = player;
+        Arrays.fill(outputByPort, "");
     }
 
     @Override
@@ -30,14 +38,29 @@ final class MidiDeviceSetup implements Ports.Devices {
     }
 
     @Override
-    public String output() {
-        return output;
+    public String output(int port) {
+        return outputByPort[port - 1];
     }
 
     @Override
-    public void useOutput(String name) {
-        output = name;
-        MidiDevices.named(name).ifPresent(info -> player.ifPresent(midi -> midi.useOutput(info)));
+    public void useOutput(int port, String name) {
+        outputByPort[port - 1] = name;
+        MidiDevices.named(name).ifPresent(info -> player.ifPresent(midi -> midi.useOutputForPort(port, info)));
+    }
+
+    @Override
+    public void playTestNote(String deviceName) {
+        MidiDevices.named(deviceName).ifPresent(this::playTestNoteOn);
+    }
+
+    private void playTestNoteOn(MidiDevice.Info info) {
+        try {
+            MidiDevice device = MidiSystem.getMidiDevice(info);
+            device.open();
+            MidiTestTone.play(device.getReceiver(), 0, MidiTestTone.DEFAULT_DURATION_MILLIS, device::close);
+        } catch (MidiUnavailableException e) {
+            System.err.println("No se pudo probar la salida MIDI " + info.getName() + ": " + e.getMessage());
+        }
     }
 
     @Override
@@ -69,7 +92,7 @@ final class MidiDeviceSetup implements Ports.Devices {
             return;
         }
         try {
-            capture = new MidiCapture(chosen.get(), asCapturedNotes(listener));
+            capture = new MidiCapture(chosen.get(), asCapturedNotes(listener), sensitivityMillis);
             capture.start();
         } catch (MidiUnavailableException e) {
             capture = null;
@@ -83,6 +106,27 @@ final class MidiDeviceSetup implements Ports.Devices {
             capture.close();
             capture = null;
         }
+    }
+
+    @Override
+    public int sensitivityMillis() {
+        return sensitivityMillis;
+    }
+
+    @Override
+    public void useSensitivityMillis(int millis) {
+        sensitivityMillis = millis;
+    }
+
+    @Override
+    public boolean limitsPitchVariation(int port) {
+        return limitPitchVariationByPort[port - 1];
+    }
+
+    @Override
+    public void useLimitPitchVariation(int port, boolean limit) {
+        limitPitchVariationByPort[port - 1] = limit;
+        player.ifPresent(midi -> midi.useLimitPitchVariation(port, limit));
     }
 
     private static MidiCapture.CapturedNotes asCapturedNotes(Ports.CapturedNote listener) {

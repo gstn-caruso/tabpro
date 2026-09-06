@@ -67,7 +67,8 @@ final class TrackRenderer {
         }
         Channel channel = track.channel();
         int volume = audible ? channel.volume() : 0;
-        return new TrackTimeline(channel.program(), volume, channel.pan(), track.isPercussion(), notes, beats);
+        return new TrackTimeline(
+                channel.program(), volume, channel.pan(), track.isPercussion(), channel.port(), notes, beats, List.of());
     }
 
     private VoiceCursor cursorOf(VoicePart part) {

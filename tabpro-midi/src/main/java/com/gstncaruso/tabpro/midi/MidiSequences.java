@@ -11,8 +11,13 @@ import com.gstncaruso.tabpro.core.playback.TempoChange;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.core.playback.TrackTimeline;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
@@ -50,10 +55,55 @@ public final class MidiSequences {
     private static final int FADE_IN_START_EXPRESSION = 20;
     private static final int FULL_EXPRESSION = 127;
 
+    /** Cuanto es "mas de un tono", el limite de Limit Pitch Variation del manual. */
+    static final double LIMITED_PITCH_VARIATION_SEMITONES = 2.0;
+
     private MidiSequences() {
     }
 
     public static Sequence fromTimeline(Timeline timeline) {
+        return fromTimeline(timeline, Set.of());
+    }
+
+    /**
+     * La misma secuencia, pero silenciando la curva de altura de las notas de
+     * los puertos que tildaron Limit Pitch Variation cuando esa curva se
+     * mueve mas de un tono, tal como pide el manual.
+     */
+    public static Sequence fromTimeline(Timeline timeline, Set<Integer> limitedPitchVariationPorts) {
+        return buildSequence(timeline, indexedTracksOf(timeline, limitedPitchVariationPorts));
+    }
+
+    /**
+     * Una secuencia por cada puerto de salida que use la partitura, cada una
+     * con sus propios canales locales (del 0 al 15), para poder reproducir
+     * los cuatro puertos del manual en dispositivos distintos a la vez.
+     */
+    public static Map<Integer, Sequence> sequencesByPort(Timeline timeline, Set<Integer> limitedPitchVariationPorts) {
+        Map<Integer, List<IndexedTrack>> tracksByPort = new TreeMap<>();
+        for (IndexedTrack indexed : indexedTracksOf(timeline, limitedPitchVariationPorts)) {
+            tracksByPort.computeIfAbsent(indexed.track().port(), port -> new ArrayList<>()).add(indexed);
+        }
+        Map<Integer, Sequence> sequencesByPort = new LinkedHashMap<>();
+        tracksByPort.forEach((port, tracks) -> sequencesByPort.put(port, buildSequence(timeline, tracks)));
+        return sequencesByPort;
+    }
+
+    private static List<IndexedTrack> indexedTracksOf(Timeline timeline, Set<Integer> limitedPitchVariationPorts) {
+        List<IndexedTrack> indexed = new ArrayList<>();
+        for (int index = 0; index < timeline.tracks().size(); index++) {
+            TrackTimeline trackTimeline = timeline.tracks().get(index);
+            boolean limitPitchVariation = limitedPitchVariationPorts.contains(trackTimeline.port());
+            indexed.add(new IndexedTrack(index, trackTimeline, limitPitchVariation));
+        }
+        return indexed;
+    }
+
+    /** Una pista con su indice original, para que el marcador de beat siga nombrando la pista real. */
+    private record IndexedTrack(int originalIndex, TrackTimeline track, boolean limitPitchVariation) {
+    }
+
+    private static Sequence buildSequence(Timeline timeline, List<IndexedTrack> tracks) {
         try {
             Sequence sequence = new Sequence(Sequence.PPQ, timeline.ticksPerQuarter());
             Track conductor = sequence.createTrack();
@@ -62,12 +112,13 @@ public final class MidiSequences {
             }
 
             int nonPercussionOrdinal = 0;
-            for (int index = 0; index < timeline.tracks().size(); index++) {
-                TrackTimeline trackTimeline = timeline.tracks().get(index);
+            for (IndexedTrack indexed : tracks) {
+                TrackTimeline trackTimeline = indexed.track();
                 TrackChannels channels = trackTimeline.percussion()
                         ? TrackChannels.percussion()
                         : TrackChannels.ofTheTrackNumber(nonPercussionOrdinal++);
-                writeTrack(sequence.createTrack(), index, channels, trackTimeline);
+                writeTrack(sequence.createTrack(), indexed.originalIndex(), channels, trackTimeline,
+                        indexed.limitPitchVariation());
             }
             return sequence;
         } catch (InvalidMidiDataException e) {
@@ -140,7 +191,9 @@ public final class MidiSequences {
         }
     }
 
-    private static void writeTrack(Track track, int trackIndex, TrackChannels channels, TrackTimeline trackTimeline)
+    private static void writeTrack(
+            Track track, int trackIndex, TrackChannels channels, TrackTimeline trackTimeline,
+            boolean limitPitchVariation)
             throws InvalidMidiDataException {
         for (int channel : channels.toPrepare()) {
             track.add(programChangeEvent(channel, trackTimeline.program()));
@@ -149,7 +202,7 @@ public final class MidiSequences {
             track.add(controlChangeEvent(channel, PAN_CONTROLLER, trackTimeline.pan(), 0));
         }
         for (ScheduledNote note : trackTimeline.notes()) {
-            writeNote(track, channels.of(note), note);
+            writeNote(track, channels.of(note), note, limitPitchVariation);
         }
         for (ScheduledBeat beat : trackTimeline.beats()) {
             track.add(markerEvent(trackIndex, beat));
@@ -184,9 +237,12 @@ public final class MidiSequences {
         };
     }
 
-    private static void writeNote(Track track, int channel, ScheduledNote note) throws InvalidMidiDataException {
+    private static void writeNote(Track track, int channel, ScheduledNote note, boolean limitPitchVariation)
+            throws InvalidMidiDataException {
         track.add(noteOnEvent(channel, note));
-        if (!note.bend().isFlat()) {
+        boolean playsTheBend = !note.bend().isFlat()
+                && (!limitPitchVariation || note.bend().staysWithin(LIMITED_PITCH_VARIATION_SEMITONES));
+        if (playsTheBend) {
             writePitchBendCurve(track, channel, note);
         }
         if (note.fadeIn()) {
