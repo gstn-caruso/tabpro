@@ -58,7 +58,7 @@ public final class GuitarProExporter {
         writer.writeInt(measureCount);
         writer.writeInt(score.trackCount());
 
-        writeMasterBars(writer, score, measureCount, keySignature);
+        writeMasterBars(writer, score, measureCount);
         for (Track track : score.tracks()) {
             trackWriter.write(writer, track);
         }
@@ -67,10 +67,8 @@ public final class GuitarProExporter {
         return writer.bytes();
     }
 
-    private void writeMasterBars(
-            GuitarProByteWriter writer, Score score, int measureCount, KeySignature initialKeySignature) {
-        GuitarProMeasureAttributesWriter barsWriter =
-                new GuitarProMeasureAttributesWriter(TimeSignature.fourFour(), initialKeySignature);
+    private void writeMasterBars(GuitarProByteWriter writer, Score score, int measureCount) {
+        GuitarProMeasureAttributesWriter barsWriter = new GuitarProMeasureAttributesWriter();
         for (int index = 0; index < measureCount; index++) {
             barsWriter.write(writer, score.timeSignatureOf(index), score.attributesOf(index));
         }

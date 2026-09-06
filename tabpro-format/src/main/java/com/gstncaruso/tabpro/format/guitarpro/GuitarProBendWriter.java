@@ -11,7 +11,7 @@ import com.gstncaruso.tabpro.core.model.effects.BendType;
  */
 final class GuitarProBendWriter {
 
-    private static final int UNITS_PER_QUARTER_TONE = 50;
+    private static final int UNITS_PER_QUARTER_TONE = 25;
 
     void write(GuitarProByteWriter writer, Bend bend) {
         writer.writeSignedByte(codeOf(bend.type()));

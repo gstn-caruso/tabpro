@@ -25,8 +25,9 @@ final class GuitarProBeatWriter {
     private static final int HAS_TUPLET = 0x20;
     private static final int HAS_STATUS = 0x40;
 
+    /** El estado del beat: 0 es un compas vacio, 1 una figura normal y 2 un silencio. */
+    private static final int STATUS_NORMAL = 0x01;
     private static final int STATUS_REST = 0x02;
-    private static final int STATUS_NORMAL = 0x00;
 
     private static final int FADE_IN = 0x10;
     private static final int HAS_TREMOLO_BAR_OR_SLAP = 0x20;
@@ -78,9 +79,7 @@ final class GuitarProBeatWriter {
         if (!effects.parameterChange().isEmpty()) {
             writeParameterChange(writer, effects.parameterChange());
         }
-        if (!beat.isRest()) {
-            writeNotes(writer, beat);
-        }
+        writeNotes(writer, beat);
     }
 
     private void writeDuration(GuitarProByteWriter writer, Duration duration) {
@@ -184,6 +183,10 @@ final class GuitarProBeatWriter {
         return change.changes(parameter) ? change.valueOf(parameter).orElseThrow() : -1;
     }
 
+    /**
+     * La mascara de cuerdas va en todo beat, tambien en el silencio, donde queda en cero:
+     * quien lee la espera siempre, y saltearla le corre un byte a todo lo que sigue.
+     */
     private void writeNotes(GuitarProByteWriter writer, Beat beat) {
         int mask = 0;
         for (Note note : beat.notes()) {

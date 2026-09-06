@@ -9,6 +9,10 @@ import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
  * Escribe un "master bar": los atributos de un compas que Guitar Pro guarda una sola vez
  * por compas. El espejo de {@link GuitarProMeasureAttributesReader}, pero solo para GP4:
  * la medida y la armadura solo se escriben cuando cambian respecto del compas anterior.
+ *
+ * <p>El primer compas es la excepcion, porque no tiene anterior: ahi las escribe siempre.
+ * Quien lee hace "si la bandera esta, leo el valor; si no, arrastro el del compas de
+ * antes", y en el primero no hay ninguno del que arrastrar.
  */
 final class GuitarProMeasureAttributesWriter {
 
@@ -24,24 +28,20 @@ final class GuitarProMeasureAttributesWriter {
     /** GP3 escribe la cuenta de repeticion ya restada en uno, igual que GP4. */
     private static final int REPEAT_COUNT_OFFSET = 1;
 
+    /** Nulos hasta que se escribe el primer compas, que es el que no tiene anterior. */
     private TimeSignature previousTimeSignature;
     private KeySignature previousKeySignature;
 
-    GuitarProMeasureAttributesWriter(TimeSignature initialTimeSignature, KeySignature initialKeySignature) {
-        this.previousTimeSignature = initialTimeSignature;
-        this.previousKeySignature = initialKeySignature;
-    }
-
     void write(GuitarProByteWriter writer, TimeSignature timeSignature, MeasureAttributes attributes) {
-        boolean numeratorChanged = timeSignature.beats() != previousTimeSignature.beats();
-        boolean denominatorChanged = timeSignature.beatUnit() != previousTimeSignature.beatUnit();
-        boolean keySignatureChanged = !attributes.keySignature().equals(previousKeySignature);
+        boolean writesNumerator = isFirstMeasure() || timeSignature.beats() != previousTimeSignature.beats();
+        boolean writesDenominator = isFirstMeasure() || timeSignature.beatUnit() != previousTimeSignature.beatUnit();
+        boolean writesKeySignature = isFirstMeasure() || !attributes.keySignature().equals(previousKeySignature);
 
         int flags = 0;
-        if (numeratorChanged) {
+        if (writesNumerator) {
             flags |= FLAG_NUMERATOR;
         }
-        if (denominatorChanged) {
+        if (writesDenominator) {
             flags |= FLAG_DENOMINATOR;
         }
         if (attributes.repeatOpen()) {
@@ -56,7 +56,7 @@ final class GuitarProMeasureAttributesWriter {
         if (attributes.marker().isPresent()) {
             flags |= FLAG_MARKER;
         }
-        if (keySignatureChanged) {
+        if (writesKeySignature) {
             flags |= FLAG_KEY_SIGNATURE;
         }
         if (attributes.doubleBar()) {
@@ -64,10 +64,10 @@ final class GuitarProMeasureAttributesWriter {
         }
 
         writer.writeUnsignedByte(flags);
-        if (numeratorChanged) {
+        if (writesNumerator) {
             writer.writeUnsignedByte(timeSignature.beats());
         }
-        if (denominatorChanged) {
+        if (writesDenominator) {
             writer.writeUnsignedByte(timeSignature.beatUnit());
         }
         if (attributes.repeatCloses()) {
@@ -81,12 +81,16 @@ final class GuitarProMeasureAttributesWriter {
             writer.writeLengthPrefixedString(marker.name());
             writer.writeColor(marker.color());
         }
-        if (keySignatureChanged) {
+        if (writesKeySignature) {
             writer.writeKeySignature(attributes.keySignature());
         }
 
         previousTimeSignature = timeSignature;
         previousKeySignature = attributes.keySignature();
+    }
+
+    private boolean isFirstMeasure() {
+        return previousTimeSignature == null;
     }
 
     private static int endingsToMask(java.util.List<Integer> alternateEndings) {

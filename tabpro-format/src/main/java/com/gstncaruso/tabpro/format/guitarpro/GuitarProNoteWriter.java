@@ -152,11 +152,12 @@ final class GuitarProNoteWriter {
         }
     }
 
+    /** En GP4 la duracion va antes que la transicion; recien GP5 invierte los dos campos. */
     private void writeGraceNote(GuitarProByteWriter writer, GraceNote grace) {
         writer.writeUnsignedByte(grace.fret());
         writer.writeSignedByte(dynamicCode(grace.dynamic()));
-        writer.writeUnsignedByte(graceTransitionCode(grace.transition()));
         writer.writeUnsignedByte(graceDurationCode(grace.duration()));
+        writer.writeUnsignedByte(graceTransitionCode(grace.transition()));
         // GP4 no trae un byte de banderas propio para la nota de gracia: "en el tiempo" y
         // "muerta" solo existen desde GP5, y se pierden aca.
     }
