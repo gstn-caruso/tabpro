@@ -5,11 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.Duration;
+import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TimeSignature;
+import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
+import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.Player;
+import com.gstncaruso.tabpro.core.playback.RelativeTempo;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -141,6 +151,37 @@ class TransportTest {
         transport.stopLooping();
 
         assertTrue(transport.loop().isEmpty());
+    }
+
+    @Test
+    void theRelativeTempoReachesWhatActuallySounds() {
+        transport.setRelativeTempo(new RelativeTempo(0.5));
+
+        transport.toggle();
+
+        assertEquals(60, player.lastTimeline.tempoBpm(), "la mitad de 120");
+    }
+
+    @Test
+    void startingInTheMiddleKeepsTheTempoThatTheEarlierChangesLeft() {
+        Editor slowing = new Editor(scoreSlowingDownInTheFirstMeasure());
+        slowing.moveTo(1, 0, 1);
+        Transport slowingTransport = new Transport(slowing, player, Runnable::run);
+
+        slowingTransport.toggle();
+
+        assertEquals(90, player.lastTimeline.tempoBpm(),
+                "arrancar en el medio recupera el tempo que dejó el cambio anterior");
+    }
+
+    private static Score scoreSlowingDownInTheFirstMeasure() {
+        Beat slowsDown = Beat.of(Duration.quarter(), new Note(1, 0)).withEffects(
+                BeatEffects.none().withParameterChange(
+                        ParameterChange.nothing().changing(SoundParameter.TEMPO, 90)));
+        Measure first = new Measure(TimeSignature.fourFour(), java.util.List.of(slowsDown));
+        Measure second = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
+        return new Score("", 120, java.util.List.of(
+                Track.standardGuitar("Guitarra").withMeasures(java.util.List.of(first, second))));
     }
 
     private static final class FakePlayer implements Player {
