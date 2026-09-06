@@ -1,3 +1,10 @@
+## [0.15.2](https://github.com/gstn-caruso/tabpro/compare/v0.15.1...v0.15.2) (2026-09-06)
+
+### Bug Fixes
+
+* **app:** la importación de TablEdit vuelve a llegar al importador ([#64](https://github.com/gstn-caruso/tabpro/issues/64)) ([5edfa0c](https://github.com/gstn-caruso/tabpro/commit/5edfa0c233d73d818b542b52f4dd2559fdce9e62)), closes [#58](https://github.com/gstn-caruso/tabpro/issues/58) [#62](https://github.com/gstn-caruso/tabpro/issues/62)
+* cinco efectos que se editaban y no tenían efecto ([#65](https://github.com/gstn-caruso/tabpro/issues/65)) ([30e2f31](https://github.com/gstn-caruso/tabpro/commit/30e2f316ec7c554f73e93be635b3ecea5521106f))
+
 ## [0.15.1](https://github.com/gstn-caruso/tabpro/compare/v0.15.0...v0.15.1) (2026-09-06)
 
 ### Bug Fixes
