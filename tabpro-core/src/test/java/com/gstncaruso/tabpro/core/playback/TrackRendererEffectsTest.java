@@ -41,6 +41,9 @@ class TrackRendererEffectsTest {
 
     private static final Duration QUARTER = Duration.quarter();
 
+    /** Lo que dura la nota de adorno de estas pruebas: una fusa. */
+    private static final long GRACE_TICKS = new Duration(NoteValue.THIRTY_SECOND, false).ticks();
+
     @Test
     void unBendCurvaLaAlturaSegunSuFormaEnTodaLaNota() {
         Bend bend = Bend.of(BendType.BEND, 4); // sube un tono
@@ -186,6 +189,79 @@ class TrackRendererEffectsTest {
         ScheduledNote main = notes.get(1);
         assertTrue(grace.startTick() < 0, "el adorno le pide prestado tiempo al compas anterior");
         assertEquals(0, main.startTick());
+    }
+
+    /**
+     * La transicion de la nota de adorno decide como se llega desde el adorno
+     * hasta la nota: sin transicion son dos ataques sueltos, y con cualquiera de
+     * las otras tres es un solo ataque que se estira hasta la nota principal.
+     */
+    @Test
+    void unaNotaDeAdornoSinTransicionSonDosAtaquesSueltos() {
+        Score score = scoreWithLeadBeats(Beat.of(QUARTER, gracedNote(GraceTransition.NONE)));
+
+        List<ScheduledNote> notes = notesOf(score);
+
+        assertEquals(2, notes.size());
+        assertTrue(
+                notes.stream().allMatch(note -> note.bend().isFlat()),
+                "sin transicion no hay nada que conecte el adorno con la nota");
+    }
+
+    @Test
+    void unaNotaDeAdornoConSlideNoVuelveAAtacarYSeDeslizaHastaLaNota() {
+        Score score = scoreWithLeadBeats(Beat.of(QUARTER, gracedNote(GraceTransition.SLIDE)));
+
+        List<ScheduledNote> notes = notesOf(score);
+
+        assertEquals(1, notes.size(), "el adorno y la nota tienen que ser un solo ataque");
+        ScheduledNote sonando = notes.get(0);
+        assertEquals(GRACE_TICKS + QUARTER.ticks() - GRACE_TICKS, sonando.durationTicks());
+        assertEquals(0.0, sonando.bend().semitonesAt(0), "arranca en la altura del adorno");
+        assertEquals(1.0, sonando.bend().semitonesAt(GRACE_TICKS / 2), "y se desliza hasta la nota");
+        assertEquals(2.0, sonando.bend().semitonesAt(GRACE_TICKS));
+    }
+
+    @Test
+    void unaNotaDeAdornoConBendTambienSeEstiraHastaLaNota() {
+        Score score = scoreWithLeadBeats(Beat.of(QUARTER, gracedNote(GraceTransition.BEND)));
+
+        List<ScheduledNote> notes = notesOf(score);
+
+        assertEquals(1, notes.size());
+        assertEquals(2.0, notes.get(0).bend().semitonesAt(GRACE_TICKS));
+    }
+
+    @Test
+    void unaNotaDeAdornoConLigadoSaltaDeAlturaEnLugarDeDeslizarse() {
+        Score score = scoreWithLeadBeats(Beat.of(QUARTER, gracedNote(GraceTransition.HAMMER)));
+
+        List<ScheduledNote> notes = notesOf(score);
+
+        assertEquals(1, notes.size());
+        ScheduledNote sonando = notes.get(0);
+        assertEquals(0.0, sonando.bend().semitonesAt(GRACE_TICKS / 2), "el ligado no se desliza: se queda en el adorno");
+        assertEquals(2.0, sonando.bend().semitonesAt(GRACE_TICKS));
+    }
+
+    @Test
+    void unaNotaDeAdornoFueraDelBeatConTransicionTambienEsUnSoloAtaque() {
+        Note note = new Note(1, 5).withEffects(NoteEffects.none()
+                .withGrace(new GraceNote(3, NoteValue.THIRTY_SECOND,
+                        Dynamic.defaultDynamic(), GraceTransition.SLIDE, false, false)));
+        Score score = scoreWithLeadBeats(Beat.of(QUARTER, note));
+
+        List<ScheduledNote> notes = notesOf(score);
+
+        assertEquals(1, notes.size());
+        assertTrue(notes.get(0).startTick() < 0, "el adorno le sigue pidiendo prestado tiempo al compas anterior");
+        assertEquals(2.0, notes.get(0).bend().semitonesAt(GRACE_TICKS));
+    }
+
+    private static Note gracedNote(GraceTransition transition) {
+        return new Note(1, 5).withEffects(NoteEffects.none()
+                .withGrace(new GraceNote(3, NoteValue.THIRTY_SECOND,
+                        Dynamic.defaultDynamic(), transition, true, false)));
     }
 
     @Test

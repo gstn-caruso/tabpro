@@ -18,12 +18,13 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
  * Los simbolos que el manual agrupa en "Add Symbols" y que se dibujan arriba de la tablatura:
- * PM, let ring, tapping, slap, pop, armonicos, vibrato, trino, tremolo de pua, rasgueo, pua y
- * texto libre. Se apilan con {@link VerticalStack} para no pisarse cuando coinciden varios en el
+ * PM, let ring, tapping, slap, pop, fade in, armonicos, vibrato, trino, tremolo de pua, rasgueo,
+ * pua, el pedal de wah-wah y texto libre. Se apilan con {@link VerticalStack} para no pisarse cuando coinciden varios en el
  * mismo beat.
  */
 final class TabSymbolPainter {
@@ -81,6 +82,9 @@ final class TabSymbolPainter {
         if (effects.popping()) {
             labels.add("P");
         }
+        if (effects.fadeIn()) {
+            labels.add("fade in");
+        }
         if (has(beat, Ornament.PALM_MUTE)) {
             labels.add("P.M.");
         }
@@ -97,6 +101,7 @@ final class TabSymbolPainter {
         if (effects.wideVibrato() || has(beat, Ornament.VIBRATO)) {
             labels.add(effects.wideVibrato() ? "⌇⌇" : "⌇");
         }
+        effects.wah().ifPresent(wah -> labels.add("wah " + wah.label().toLowerCase(Locale.ROOT)));
         return labels;
     }
 

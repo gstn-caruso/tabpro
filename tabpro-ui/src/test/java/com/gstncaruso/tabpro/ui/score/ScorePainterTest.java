@@ -17,6 +17,15 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
+import com.gstncaruso.tabpro.core.model.effects.Bend;
+import com.gstncaruso.tabpro.core.model.effects.BendPoint;
+import com.gstncaruso.tabpro.core.model.effects.BendType;
+import com.gstncaruso.tabpro.core.model.effects.Dynamic;
+import com.gstncaruso.tabpro.core.model.effects.GraceNote;
+import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
+import com.gstncaruso.tabpro.core.model.effects.NoteEffects;
+import com.gstncaruso.tabpro.core.model.effects.Wah;
 import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
@@ -314,6 +323,83 @@ class ScorePainterTest {
         assertTrue(painted.hasInkNear(x, y, 3), "falta la barra de repeticion de la pista que si se ve");
     }
 
+    @Test
+    void unFadeInSeAnunciaSobreLaTablatura() {
+        Beat conFade = Beat.of(Duration.quarter(), new Note(1, 5))
+                .withEffects(BeatEffects.none().withFadeIn(true));
+        Beat sinFade = Beat.of(Duration.quarter(), new Note(1, 5));
+
+        assertTrue(
+                inkAboveTheTablature(conFade) > inkAboveTheTablature(sinFade),
+                "el fade in tiene que dejar su etiqueta arriba de la tablatura");
+    }
+
+    @Test
+    void laPalancaSeDibujaBajoLaTablatura() {
+        Bend dive = new Bend(BendType.BEND_RELEASE, List.of(
+                BendPoint.at(0, 0), BendPoint.at(30, -4), BendPoint.at(BendPoint.LAST_POSITION, 0)));
+        Beat conPalanca = Beat.of(Duration.quarter(), new Note(1, 5))
+                .withEffects(BeatEffects.none().withTremoloBar(dive));
+        Beat sinPalanca = Beat.of(Duration.quarter(), new Note(1, 5));
+
+        assertTrue(
+                inkUnderTheTablature(conPalanca) > inkUnderTheTablature(sinPalanca),
+                "la palanca suena pero no se ve: falta su curva bajo la tablatura");
+    }
+
+    @Test
+    void elWahWahSeAnunciaSobreLaTablatura() {
+        Beat conWah = Beat.of(Duration.quarter(), new Note(1, 5))
+                .withEffects(BeatEffects.none().withWah(Wah.OPEN));
+        Beat sinWah = Beat.of(Duration.quarter(), new Note(1, 5));
+
+        assertTrue(
+                inkAboveTheTablature(conWah) > inkAboveTheTablature(sinWah),
+                "el pedal de wah-wah tiene que quedar anotado arriba de la tablatura");
+    }
+
+    /**
+     * La transicion de la nota de adorno se elige en el dialogo y se guarda, pero
+     * la hoja quedaba igual con cualquiera de las cuatro: una notita suelta y
+     * desconectada. Cada una tiene que dejar su propia marca hasta la nota.
+     */
+    @Test
+    void laTransicionDeLaNotaDeAdornoSeDibujaHastaLaNota() {
+        int sinTransicion = inkBetweenTheGraceNoteAndTheNote(GraceTransition.NONE);
+
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.SLIDE) > sinTransicion, "falta el slide");
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.BEND) > sinTransicion, "falta el bend");
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.HAMMER) > sinTransicion, "falta el ligado");
+    }
+
+    private static int inkBetweenTheGraceNoteAndTheNote(GraceTransition transition) {
+        Note note = new Note(3, 5).withEffects(NoteEffects.none().withGrace(new GraceNote(
+                3, NoteValue.THIRTY_SECOND, Dynamic.defaultDynamic(), transition, false, false)));
+        Painted painted = paint(
+                scoreWith(measureOf(Beat.of(Duration.quarter(), note))),
+                new Cursor(0, 0, 0, 6), Playhead.silent());
+
+        Rectangle bounds = painted.layout().beatBounds(0, 0, 0);
+        int y = painted.layout().stringY(0, 0, 3);
+        int from = bounds.x + 2;
+        int to = bounds.x + bounds.width / 2 - 8;
+        return painted.inkIn(new Rectangle(from, y - 10, to - from, 9));
+    }
+
+    private static int inkUnderTheTablature(Beat beat) {
+        Painted painted = paint(scoreWith(measureOf(beat)), new Cursor(0, 0, 0, 3), Playhead.silent());
+        Rectangle bounds = painted.layout().beatBounds(0, 0, 0);
+        int tabBottom = painted.layout().tabBottom(0, 0);
+        return painted.inkIn(new Rectangle(bounds.x, tabBottom + 1, bounds.width, 22));
+    }
+
+    private static int inkAboveTheTablature(Beat beat) {
+        Painted painted = paint(scoreWith(measureOf(beat)), new Cursor(0, 0, 0, 3), Playhead.silent());
+        Rectangle bounds = painted.layout().beatBounds(0, 0, 0);
+        int tabTop = painted.layout().tabTop(0, 0);
+        return painted.inkIn(new Rectangle(bounds.x, tabTop - 34, bounds.width, 32));
+    }
+
     private static Score scoreWith(Measure... measures) {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measures));
         return new Score("", 120, List.of(track));
@@ -355,6 +441,19 @@ class ScorePainterTest {
                 }
             }
             return false;
+        }
+
+        /** Cuanta tinta hay en un rectangulo: sirve para comparar la misma hoja con y sin un efecto. */
+        int inkIn(Rectangle area) {
+            int ink = 0;
+            for (int x = area.x; x < area.x + area.width; x++) {
+                for (int y = area.y; y < area.y + area.height; y++) {
+                    if (isInside(x, y) && image.getRGB(x, y) != ScoreColors.BACKGROUND.getRGB()) {
+                        ink++;
+                    }
+                }
+            }
+            return ink;
         }
 
         boolean looksLike(Painted other) {
