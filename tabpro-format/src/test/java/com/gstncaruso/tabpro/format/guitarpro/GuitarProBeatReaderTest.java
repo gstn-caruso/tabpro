@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
+import com.gstncaruso.tabpro.core.model.effects.Wah;
 import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
 
@@ -221,6 +222,137 @@ class GuitarProBeatReaderTest {
                 .writeUnsignedByte(NO_STRINGS), GuitarProVersion.GP4);
 
         assertTrue(beat.effects().parameterChange().everyTrack());
+    }
+
+    // ---- el wah del cambio de parametros, que existe recien en GP5 -----------
+
+    @Test
+    void gp3AndGp4NeverBringAWah() {
+        Beat beat = read(new GuitarProFileWriter()
+                .writeUnsignedByte(WITH_MIX_TABLE)
+                .writeSignedByte(QUARTER)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED).writeSignedByte(UNCHANGED)
+                .writeInt(UNCHANGED)
+                .writeUnsignedByte(0x00)
+                .writeUnsignedByte(NO_STRINGS), GuitarProVersion.GP4);
+
+        assertTrue(beat.effects().wah().isEmpty());
+    }
+
+    @Test
+    void minusTwoTurnsTheWahOff() {
+        Beat beat = read(gp5Beat(-2, true), GuitarProVersion.GP5_10);
+
+        assertEquals(Wah.OFF, beat.effects().wah().orElseThrow());
+    }
+
+    @Test
+    void zeroIsAClosedWah() {
+        Beat beat = read(gp5Beat(0, true), GuitarProVersion.GP5_10);
+
+        assertEquals(Wah.CLOSED, beat.effects().wah().orElseThrow());
+    }
+
+    @Test
+    void oneHundredIsAnOpenWah() {
+        Beat beat = read(gp5Beat(100, true), GuitarProVersion.GP5_10);
+
+        assertEquals(Wah.OPEN, beat.effects().wah().orElseThrow());
+    }
+
+    /** El pedal a mitad de camino redondea al mas cercano de los dos extremos que tabpro distingue. */
+    @Test
+    void justBelowHalfwayIsStillClosed() {
+        Beat beat = read(gp5Beat(49, true), GuitarProVersion.GP5_10);
+
+        assertEquals(Wah.CLOSED, beat.effects().wah().orElseThrow());
+    }
+
+    @Test
+    void halfwayIsAlreadyOpen() {
+        Beat beat = read(gp5Beat(50, true), GuitarProVersion.GP5_10);
+
+        assertEquals(Wah.OPEN, beat.effects().wah().orElseThrow());
+    }
+
+    /** -1 es que este cambio de parametros no toca el wah, como el resto de los parametros. */
+    @Test
+    void unchangedWahIsNotBroughtAtAll() {
+        Beat beat = read(gp5Beat(UNCHANGED, true), GuitarProVersion.GP5_10);
+
+        assertTrue(beat.effects().wah().isEmpty());
+    }
+
+    /** En 5.00 el cambio de parametros no trae nombre ni categoria del efecto de RSE. */
+    @Test
+    void gp500HasNoRseInstrumentEffectAfterTheWah() {
+        GuitarProByteReader bytes = new GuitarProByteReader(gp5Beat(100, false)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(ONLY_FIRST_STRING)
+                .writeUnsignedByte(NOTE_WITH_FRET).writeUnsignedByte(NORMAL_NOTE).writeSignedByte(9)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeShort(0)
+                .bytes());
+
+        Beat wahBeat = reader.read(bytes, GuitarProVersion.GP5_00, 6);
+        Beat siguiente = reader.read(bytes, GuitarProVersion.GP5_00, 6);
+
+        assertEquals(Wah.OPEN, wahBeat.effects().wah().orElseThrow());
+        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+    }
+
+    /** En 5.10 el cambio de parametros agrega nombre y categoria del efecto de RSE tras el wah. */
+    @Test
+    void gp510KeepsTheAlignmentAfterTheRseInstrumentEffect() {
+        GuitarProByteReader bytes = new GuitarProByteReader(gp5Beat(100, true)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(ONLY_FIRST_STRING)
+                .writeUnsignedByte(NOTE_WITH_FRET).writeUnsignedByte(NORMAL_NOTE).writeSignedByte(9)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeShort(0)
+                .bytes());
+
+        Beat wahBeat = reader.read(bytes, GuitarProVersion.GP5_10, 6);
+        Beat siguiente = reader.read(bytes, GuitarProVersion.GP5_10, 6);
+
+        assertEquals(Wah.OPEN, wahBeat.effects().wah().orElseThrow());
+        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+    }
+
+    /**
+     * Un beat completo de GP5, sin notas, con un cambio de parametros que no toca nada salvo
+     * el wah pedido: instrumento, volumen, pan, chorus, reverb, phaser, tremolo y tempo en -1
+     * (sin bytes de transicion), la mascara de "para todas las pistas" en cero. Si el archivo
+     * es 5.10, agrega nombre y categoria de efecto de RSE vacios, que solo esa version trae,
+     * y siempre cierra con la mascara de cuerdas (sin notas) y el final de beat que GP5 agrega
+     * a todos (la segunda voz).
+     */
+    private static GuitarProFileWriter gp5Beat(int wah, boolean withRseInstrumentEffect) {
+        GuitarProFileWriter writer = new GuitarProFileWriter()
+                .writeUnsignedByte(WITH_MIX_TABLE)
+                .writeSignedByte(QUARTER)
+                .writeSignedByte(UNCHANGED);
+        for (int i = 0; i < 16; i++) {
+            writer.writeUnsignedByte(0);
+        }
+        writer.writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED)
+                .writeLengthPrefixedString("")
+                .writeInt(UNCHANGED)
+                .writeUnsignedByte(0x00)
+                .writeSignedByte(wah);
+        if (withRseInstrumentEffect) {
+            writer.writeLengthPrefixedString("").writeLengthPrefixedString("");
+        }
+        return writer.writeUnsignedByte(NO_STRINGS).writeShort(0);
     }
 
     private Beat read(GuitarProFileWriter written) {
