@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.TrackDisplay;
+import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
@@ -37,7 +38,7 @@ public final class ScorePainter {
     public static void paint(
             Graphics2D g, ScoreLayout layout, Score score, Cursor cursor, Playhead playhead,
             Optional<Selection> selection) {
-        paint(g, layout, score, cursor, playhead, selection, true);
+        paint(g, layout, score, cursor, playhead, selection, Optional.of(cursor.voice()), true);
     }
 
     /** Igual que {@link #paint}, pero puede saltear el fondo oscuro: lo usa el Modo Pagina para
@@ -45,7 +46,7 @@ public final class ScorePainter {
      * la hoja clara (ver {@link PaperRenderer}). */
     static void paint(
             Graphics2D g, ScoreLayout layout, Score score, Cursor cursor, Playhead playhead,
-            Optional<Selection> selection, boolean paintBackground) {
+            Optional<Selection> selection, Optional<VoicePart> highlightedVoice, boolean paintBackground) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
@@ -55,7 +56,7 @@ public final class ScorePainter {
 
         for (int trackIndex = 0; trackIndex < score.trackCount(); trackIndex++) {
             if (layout.shows(trackIndex)) {
-                paintTrack(g, layout, score, trackIndex, cursor, playhead);
+                paintTrack(g, layout, score, trackIndex, cursor, playhead, highlightedVoice);
             }
         }
         selection.ifPresent(sel -> paintSelection(g, layout, score, sel));
@@ -80,7 +81,8 @@ public final class ScorePainter {
     }
 
     private static void paintTrack(
-            Graphics2D g, ScoreLayout layout, Score score, int trackIndex, Cursor cursor, Playhead playhead) {
+            Graphics2D g, ScoreLayout layout, Score score, int trackIndex, Cursor cursor, Playhead playhead,
+            Optional<VoicePart> highlightedVoice) {
         Track track = score.track(trackIndex);
         Clef clef = Clef.forTuning(track.tuning());
         TrackDisplay display = track.settings().display();
@@ -116,7 +118,7 @@ public final class ScorePainter {
             }
             TabPainter.paintMeasureNumber(g, layout, track, trackIndex, measureIndex);
             if (standardNotation) {
-                StaffPainter.paintMeasure(g, layout, track, clef, trackIndex, measureIndex, cursor.voice());
+                StaffPainter.paintMeasure(g, layout, track, clef, trackIndex, measureIndex, highlightedVoice);
             }
             if (tablature) {
                 if (track.isPercussion()) {

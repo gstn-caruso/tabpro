@@ -136,6 +136,8 @@ public final class MenuBar {
     private JMenu markersMenu() {
         JMenu menu = new JMenu("Marcadores");
         add(menu, "marker.insert", "marker.list");
+        menu.addSeparator();
+        add(menu, "marker.previous", "marker.next");
         return menu;
     }
 
@@ -159,7 +161,7 @@ public final class MenuBar {
         menu.addSeparator();
         add(menu, "sound.stepBack", "sound.stepForward", "sound.midiInput");
         menu.addSeparator();
-        add(menu, "nav.firstBar", "nav.previousBar", "nav.nextBar", "nav.lastBar");
+        add(menu, "nav.firstBar", "nav.previousBar", "nav.nextBar", "nav.lastBar", "nav.nextNote");
         return menu;
     }
 
@@ -169,7 +171,8 @@ public final class MenuBar {
         menu.addSeparator();
         add(menu, "view.zoomIn", "view.zoomOut", "view.resetZoom");
         menu.addSeparator();
-        add(menu, "view.multitrack", "view.hideStandardNotation", "view.hideTablature");
+        add(menu, "view.multitrack", "view.hideStandardNotation", "view.hideTablature",
+                "view.grayInactiveVoice");
         menu.addSeparator();
         add(menu, "view.fretboard", "view.keyboard", "view.percussion", "view.mixTable", "view.toolBars");
         return menu;
@@ -198,7 +201,7 @@ public final class MenuBar {
 
     private JMenu helpMenu() {
         JMenu menu = new JMenu("Ayuda");
-        add(menu, "help.about");
+        add(menu, "help.contents", "help.about");
         return menu;
     }
 

@@ -130,7 +130,7 @@ final class StaffPainter {
 
     static void paintMeasure(
             Graphics2D g, ScoreLayout layout, Track track, Clef clef, int trackIndex, int measureIndex,
-            VoicePart activeVoice) {
+            Optional<VoicePart> highlightedVoice) {
         Measure measure = track.measure(measureIndex);
         boolean twoVoices = measure.usesTwoVoices();
         KeySignatureAccidentals accidentals = new KeySignatureAccidentals(clef, measure.attributes().keySignature());
@@ -140,12 +140,18 @@ final class StaffPainter {
         int laneCount = Math.max(1, measure.lead().beatCount());
 
         paintVoice(g, layout, track, clef, trackIndex, measureIndex, VoicePart.LEAD, measure.lead(),
-                accidentals, twoVoices, twoVoices && activeVoice != VoicePart.LEAD, laneCount, measure.timeSignature());
+                accidentals, twoVoices, dims(highlightedVoice, VoicePart.LEAD) && twoVoices,
+                laneCount, measure.timeSignature());
         if (twoVoices) {
             paintVoice(g, layout, track, clef, trackIndex, measureIndex, VoicePart.BASS, measure.voice(VoicePart.BASS),
-                    accidentals, true, activeVoice != VoicePart.BASS, laneCount, measure.timeSignature());
+                    accidentals, true, dims(highlightedVoice, VoicePart.BASS), laneCount, measure.timeSignature());
         }
         paintTupletBrackets(g, layout, track, clef, trackIndex, measureIndex, measure);
+    }
+
+    /** Se atenua toda voz que no sea la destacada; si no hay destacada, no se atenua ninguna. */
+    private static boolean dims(Optional<VoicePart> highlightedVoice, VoicePart part) {
+        return highlightedVoice.isPresent() && highlightedVoice.get() != part;
     }
 
     private static void paintVoice(

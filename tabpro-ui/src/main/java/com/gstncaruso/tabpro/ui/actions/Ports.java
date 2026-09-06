@@ -92,6 +92,9 @@ public final class Ports {
         void pasteOptions();
 
         void about();
+
+        /** La ayuda del programa, que el manual pone en F1. */
+        void help();
     }
 
     /** El transporte, tal como lo describe "Play the Score". */
@@ -135,6 +138,9 @@ public final class Ports {
         void resetZoom();
 
         void toggleMultitrack();
+
+        /** Alterna el atenuado de la voz que no se esta editando, como el Ctrl+G del manual. */
+        void toggleGrayInactiveVoice();
 
         void toggleStandardNotation();
 

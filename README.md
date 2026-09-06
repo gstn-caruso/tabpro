@@ -5,7 +5,7 @@ Java 25 con Swing.
 
 ## Estado
 
-**v0.7.0 — El clon.** tabpro hace lo que describe el manual de Guitar Pro 5, con
+**v0.7.1 — El clon.** tabpro hace lo que describe el manual de Guitar Pro 5, con
 la misma forma de pantalla pero con una estética moderna y plana en vez de la de
 Windows XP.
 
@@ -58,7 +58,7 @@ Pro; y la importación de PowerTab y de TablEdit.
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.7.0_all.deb
+sudo apt install ./tabpro_0.7.1_all.deb
 tabpro
 ```
 
@@ -70,7 +70,7 @@ variante *headless* no alcanza.
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.7.0.jar [archivo]
+java -jar tabpro-app-0.7.1.jar [archivo]
 ```
 
 ## Uso
@@ -80,12 +80,13 @@ teclado de la computadora, clickeando el diapasón o el teclado de arriba, o
 tocando un instrumento MIDI conectado.
 
 Los atajos son los del manual: los dígitos escriben el traste, las flechas mueven
-el cursor, `+` y `-` cambian la figura, `R` pone un silencio, `L` liga, `/` hace
+el cursor, `+` acorta la figura y `-` la alarga, `R` pone un silencio, `L` liga, `/` hace
 un tresillo, `H` un ligado, `S` un slide, `B` un bend, `V` vibrato, `P` palm
 mute, `I` let ring, `X` nota muerta, `O` nota fantasma, `G` nota de adorno, `T`
 texto, `A` acorde, `F` fade in, `Espacio` reproduce. `F5` abre la información de
 la partitura, `F6` las propiedades de la pista, `F7` el instrumento, `F8` la
-configuración de página, `F9` el loop, `F12` las preferencias.
+configuración de página, `F9` el loop, `F12` las preferencias. `Ctrl+Tab` y
+`Shift+Tab` saltan entre marcadores y `F1` abre la lista completa de atajos.
 
 Los doce menús —Archivo, Editar, Compás, Pista, Nota, Efectos, Marcadores,
 Herramientas, Sonido, Ver, Opciones y Ayuda— llevan todo lo demás.

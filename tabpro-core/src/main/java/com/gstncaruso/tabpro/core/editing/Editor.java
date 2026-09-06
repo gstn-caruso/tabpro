@@ -586,6 +586,28 @@ public final class Editor {
         moveCursor(clampedCursorIn(score, Math.min(score.trackCount() - 1, cursor.track() + 1)));
     }
 
+    /**
+     * Los marcadores son la forma rapida de moverse entre las partes de la partitura. Si no hay
+     * ninguno hacia donde se pide, el cursor se queda donde esta.
+     */
+    public void moveToNextMarker() {
+        for (int measure = cursor.measure() + 1; measure < currentTrack().measureCount(); measure++) {
+            if (score.attributesOf(measure).marker().isPresent()) {
+                moveCursor(cursor.at(measure, 0));
+                return;
+            }
+        }
+    }
+
+    public void moveToPreviousMarker() {
+        for (int measure = cursor.measure() - 1; measure >= 0; measure--) {
+            if (score.attributesOf(measure).marker().isPresent()) {
+                moveCursor(cursor.at(measure, 0));
+                return;
+            }
+        }
+    }
+
     public void moveToMeasureStart() {
         moveCursor(cursor.onBeat(0));
     }

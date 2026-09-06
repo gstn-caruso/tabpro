@@ -47,7 +47,8 @@ public final class PageScorePainter {
         g.scale(viewport.factor(), viewport.factor());
 
         if (!mode.showsPaper()) {
-            ScorePainter.paint(g, layout, score, cursor, playhead, selection);
+            ScorePainter.paint(
+                    g, layout, score, cursor, playhead, selection, viewport.highlighted(cursor.voice()), true);
             return;
         }
 
@@ -60,7 +61,9 @@ public final class PageScorePainter {
 
             BufferedImage ink = PaperRenderer.renderAsInk(PageLayout.PAGE_WIDTH, page.contentHeight(), inkGraphics -> {
                 inkGraphics.translate(0, -page.shiftUp());
-                ScorePainter.paint(inkGraphics, layout, score, cursor, playhead, selection, false);
+                ScorePainter.paint(
+                        inkGraphics, layout, score, cursor, playhead, selection,
+                        viewport.highlighted(cursor.voice()), false);
             });
             g.drawImage(ink, 0, page.contentTop(), null);
         }
