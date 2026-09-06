@@ -105,4 +105,30 @@ class PitchTrajectoryTest {
         }
         assertTrue(tieneAlgunPuntoPositivo && tieneAlgunPuntoNegativo);
     }
+
+    @Test
+    void unaCurvaPlanaSiempreEntraEnCualquierLimite() {
+        assertTrue(PitchTrajectory.flat().staysWithin(0.0));
+    }
+
+    @Test
+    void unaCurvaJustoEnElLimiteEntra() {
+        PitchTrajectory trajectory = PitchTrajectory.ramp(0, 0.0, 100, 2.0);
+
+        assertTrue(trajectory.staysWithin(2.0));
+    }
+
+    @Test
+    void unaCurvaQuePasaElLimiteNoEntra() {
+        PitchTrajectory trajectory = PitchTrajectory.ramp(0, 0.0, 100, 2.5);
+
+        assertTrue(!trajectory.staysWithin(2.0));
+    }
+
+    @Test
+    void elLimiteMiraElValorAbsolutoDeLaVariacion() {
+        PitchTrajectory trajectory = PitchTrajectory.ramp(0, 0.0, 100, -3.0);
+
+        assertTrue(!trajectory.staysWithin(2.0));
+    }
 }

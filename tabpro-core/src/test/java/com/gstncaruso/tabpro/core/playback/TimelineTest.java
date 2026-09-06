@@ -119,6 +119,16 @@ class TimelineTest {
     }
 
     @Test
+    void carriesThePortOfTheTracksChannelForTheMidiSetupToRouteItsOutput() {
+        Score score = Score.blank();
+        Track enElTercerPuerto = score.track(0).withChannel(score.track(0).channel().withPort(3));
+
+        TrackTimeline track = Timeline.of(score.withTrack(0, enElTercerPuerto)).tracks().get(0);
+
+        assertEquals(3, track.port());
+    }
+
+    @Test
     void aMutedTrackKeepsItsNotesButIsScheduledSilent() {
         Score score = Score.blank().withTrack(0,
                 Track.standardGuitar("Guitarra").withMeasure(0,

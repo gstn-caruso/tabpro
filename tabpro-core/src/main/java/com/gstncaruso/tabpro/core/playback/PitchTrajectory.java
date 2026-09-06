@@ -64,6 +64,11 @@ public record PitchTrajectory(List<Point> points) {
         return new PitchTrajectory(wobble);
     }
 
+    /** Si ningun punto de la curva se aleja de cero mas que ese limite, en cualquier direccion. */
+    public boolean staysWithin(double maxAbsoluteSemitones) {
+        return points.stream().allMatch(point -> Math.abs(point.semitones()) <= maxAbsoluteSemitones);
+    }
+
     public double semitonesAt(long tick) {
         Point before = points.getFirst();
         for (Point point : points) {
