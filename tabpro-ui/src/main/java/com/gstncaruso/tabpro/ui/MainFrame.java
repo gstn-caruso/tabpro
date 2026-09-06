@@ -26,10 +26,12 @@ import com.gstncaruso.tabpro.ui.dialogs.note.DynamicsDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.ParameterChangeDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.SoundDurationDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.FingeringDialog;
-import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetup;
+import com.gstncaruso.tabpro.ui.page.DefaultPageSetup;
+import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetupDialog;
 import com.gstncaruso.tabpro.ui.dialogs.paste.PasteDialog;
 import com.gstncaruso.tabpro.ui.dialogs.preferences.PreferencesDialog;
+import com.gstncaruso.tabpro.ui.dialogs.print.PrintDialog;
 import com.gstncaruso.tabpro.ui.dialogs.track.AddTrackDialog;
 import com.gstncaruso.tabpro.ui.dialogs.track.TrackPropertiesDialog;
 import com.gstncaruso.tabpro.ui.dialogs.tuner.TunerDialog;
@@ -49,6 +51,7 @@ import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.percussion.PercussionAssistant;
+import com.gstncaruso.tabpro.ui.print.PrintSettings;
 import com.gstncaruso.tabpro.ui.print.ScorePrinting;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
@@ -98,7 +101,7 @@ public final class MainFrame extends JFrame {
     private final Ports.Microphone microphone;
     private final Player player;
     private StringAssignment stringAssignment = StringAssignment.NO_CHANNEL_DETECTION;
-    private PageSetup pageSetup = PageSetup.defaults();
+    private PageSetup pageSetup = DefaultPageSetup.userSetup().get();
     private com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences editingPreferences =
             com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences.defaults();
     private MetronomeSettings metronomeSettings = MetronomeSettings.off();
@@ -146,7 +149,8 @@ public final class MainFrame extends JFrame {
         toolBars.addToSoundRow(tempoSpinner);
         setJMenuBar(new MenuBar(commands).build());
 
-        StatusBar status = new StatusBar(editor);
+        StatusBar status = new StatusBar(editor, canvas::pagination);
+        canvas.onPaginationChange(status::refresh);
         status.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(1, 0, 0, 0, Palette.separator()),
                 BorderFactory.createEmptyBorder(4, 8, 4, 8)));
@@ -253,6 +257,12 @@ public final class MainFrame extends JFrame {
         canvas.requestFocusInWindow();
     }
 
+    /** El papel elegido manda sobre como se ve la partitura y sobre como sale impresa. */
+    private void usePageSetup(PageSetup setup) {
+        pageSetup = setup;
+        canvas.setPageSetup(setup);
+    }
+
     private void updateTitle() {
         setTitle(document.windowTitle());
     }
@@ -286,6 +296,7 @@ public final class MainFrame extends JFrame {
         public void newScore() {
             if (askToDiscardChanges()) {
                 document.newScore();
+                usePageSetup(DefaultPageSetup.userSetup().get());
                 updateTitle();
                 backToTheScore();
             }
@@ -404,7 +415,8 @@ public final class MainFrame extends JFrame {
                 return;
             }
             try {
-                ScorePrinting.exportPdf(editor.score(), ScorePrinting.withPdfExtension(chooser.getSelectedFile()));
+                ScorePrinting.exportPdf(
+                        editor.score(), pageSetup, ScorePrinting.withPdfExtension(chooser.getSelectedFile()));
                 backToTheScore();
             } catch (java.io.UncheckedIOException e) {
                 JOptionPane.showMessageDialog(
@@ -421,7 +433,7 @@ public final class MainFrame extends JFrame {
             }
             try {
                 ScorePrinting.exportImage(
-                        editor.score(), ScorePrinting.withImageExtension(chooser.getSelectedFile()));
+                        editor.score(), pageSetup, ScorePrinting.withImageExtension(chooser.getSelectedFile()));
                 backToTheScore();
             } catch (java.io.UncheckedIOException e) {
                 JOptionPane.showMessageDialog(
@@ -432,7 +444,11 @@ public final class MainFrame extends JFrame {
         @Override
         public void print() {
             try {
-                ScorePrinting.print(editor.score(), document.displayName());
+                java.util.Optional<PrintSettings> chosen =
+                        PrintDialog.ask(MainFrame.this, ScorePrinting.pageCount(editor.score(), pageSetup));
+                if (chosen.isPresent()) {
+                    ScorePrinting.print(editor.score(), pageSetup, chosen.get(), document.displayName());
+                }
                 backToTheScore();
             } catch (java.awt.print.PrinterException e) {
                 JOptionPane.showMessageDialog(
@@ -760,7 +776,8 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void pageSetup() {
-            PageSetupDialog.ask(MainFrame.this, pageSetup).ifPresent(setup -> pageSetup = setup);
+            PageSetupDialog.ask(MainFrame.this, pageSetup, MainFrame.this::usePageSetup)
+                    .ifPresent(MainFrame.this::usePageSetup);
             backToTheScore();
         }
 

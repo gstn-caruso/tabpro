@@ -1,9 +1,11 @@
 package com.gstncaruso.tabpro.ui.status;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.ui.score.Pagination;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.util.function.Supplier;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -17,6 +19,7 @@ import javax.swing.SwingConstants;
 public final class StatusBar extends JPanel {
 
     private final Editor editor;
+    private final Supplier<Pagination> pagination;
     private final JLabel page = new JLabel();
     private final JLabel position = new JLabel();
     private final JLabel completeness = new JLabel();
@@ -24,7 +27,13 @@ public final class StatusBar extends JPanel {
     private final JLabel credits = new JLabel();
 
     public StatusBar(Editor editor) {
+        this(editor, Pagination::single);
+    }
+
+    /** La reparticion en hojas la sabe el lienzo, y cambia con el papel y con el modo de vista. */
+    public StatusBar(Editor editor, Supplier<Pagination> pagination) {
         this.editor = editor;
+        this.pagination = pagination;
         setLayout(new BorderLayout());
         setBackground(ScoreColors.SURFACE);
         setBorder(BorderFactory.createCompoundBorder(
@@ -71,10 +80,11 @@ public final class StatusBar extends JPanel {
         return credits.getText();
     }
 
-    private void refresh() {
-        StatusInfo info = StatusInfo.of(editor);
-        page.setText("Pág. " + info.pageNumber());
-        position.setText("Compás " + info.measureNumber() + " · Pista " + info.trackNumber());
+    public void refresh() {
+        StatusInfo info = StatusInfo.of(editor, pagination.get());
+        page.setText("Pág. " + info.pageNumber() + "/" + info.pageCount());
+        position.setText(
+                "Compás " + info.measureNumber() + "/" + info.measureCount() + " · Pista " + info.trackNumber());
         completeness.setText(info.measureDurationText() + " (" + info.completeness().label() + ")");
         completeness.setForeground(
                 info.completeness() == MeasureCompleteness.COMPLETE ? ScoreColors.LABEL : ScoreColors.WARNING);

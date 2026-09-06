@@ -55,6 +55,17 @@ class PdfDocumentTest {
         assertTrue(pdf.contains("/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode"));
     }
 
+    @Test
+    void theSheetIsAsBigAsThePaperItWasAskedFor() throws IOException {
+        PdfDocument pdf = new PdfDocument(612, 792);
+        pdf.addPage(page(40, 60));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        pdf.writeTo(out);
+
+        assertTrue(out.toString(StandardCharsets.ISO_8859_1).contains("/MediaBox [ 0 0 612.00 792.00 ]"));
+    }
+
     private static BufferedImage page(int width, int height) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();

@@ -3,14 +3,18 @@ package com.gstncaruso.tabpro.ui.status;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
+import com.gstncaruso.tabpro.ui.score.Pagination;
 
 /**
- * Todo lo que la barra de estado tiene que mostrar, calculado a partir del editor. Quien decide
- * que mostrar no es quien lo dibuja: esta clase no sabe nada de Swing.
+ * Todo lo que la barra de estado tiene que mostrar, calculado a partir del editor y de como quedo
+ * repartida la partitura en hojas. Quien decide que mostrar no es quien lo dibuja: esta clase no
+ * sabe nada de Swing.
  */
 public record StatusInfo(
         int pageNumber,
+        int pageCount,
         int measureNumber,
+        int measureCount,
         int trackNumber,
         String trackName,
         MeasureCompleteness completeness,
@@ -18,15 +22,14 @@ public record StatusInfo(
         String title,
         String author) {
 
-    /** Tabpro todavia no pagina la partitura: por ahora todo entra en una sola pagina. */
-    private static final int ONLY_PAGE = 1;
-
-    public static StatusInfo of(Editor editor) {
+    public static StatusInfo of(Editor editor, Pagination pagination) {
         Measure measure = editor.currentMeasure();
         ScoreInfo info = editor.score().info();
         return new StatusInfo(
-                ONLY_PAGE,
+                pagination.pageOf(editor.cursor().measure()),
+                pagination.pageCount(),
                 editor.cursor().measure() + 1,
+                editor.score().measureCount(),
                 editor.cursor().track() + 1,
                 editor.currentTrack().name(),
                 MeasureCompleteness.of(measure),
