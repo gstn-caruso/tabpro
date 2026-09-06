@@ -37,6 +37,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     private PageSetup pageSetup = PageSetup.defaults();
     private Cursor selectionAnchor;
     private Selection selection;
+    private boolean selectingWholeMeasures;
 
     public ScoreCanvas(Editor editor) {
         this(editor, new TrackVisibility());
@@ -62,6 +63,12 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
                 clearSelection();
                 moveCursorTo(e.getX(), e.getY());
                 selectionAnchor = editor.cursor();
+                // El manual: "para seleccionar compases completos, apreta Ctrl mientras haces la
+                // seleccion". Un clic sin arrastrar ya alcanza para seleccionar el compas entero.
+                selectingWholeMeasures = e.isControlDown();
+                if (selectingWholeMeasures) {
+                    setSelection(Selection.of(selectionAnchor, selectionAnchor, true));
+                }
             }
 
             @Override
@@ -253,7 +260,8 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
             if (hit.track() != selectionAnchor.track()) {
                 return;
             }
-            setSelection(Selection.of(selectionAnchor, selectionAnchor.at(hit.measure(), hit.beat()), false));
+            setSelection(Selection.of(
+                    selectionAnchor, selectionAnchor.at(hit.measure(), hit.beat()), selectingWholeMeasures));
         });
     }
 
