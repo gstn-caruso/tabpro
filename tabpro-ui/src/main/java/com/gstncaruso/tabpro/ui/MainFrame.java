@@ -153,7 +153,7 @@ public final class MainFrame extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(ScoreColors.BACKGROUND);
 
-        transport = new Transport(editor, player, SwingUtilities::invokeLater);
+        transport = new Transport(editor, player, SwingUtilities::invokeLater, preferences.metronomeEnabled());
         trackPanel = new TrackPanel(editor, visibleTracks);
         beatViews = new BeatViews(editor, player);
 
@@ -725,6 +725,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void toggleMetronome() {
             transport.toggleMetronome();
+            preferences.setMetronomeEnabled(transport.isMetronomeOn());
         }
 
         @Override
@@ -1168,6 +1169,7 @@ public final class MainFrame extends JFrame {
             MetronomeDialog.ask(MainFrame.this, editor, current).ifPresent(settings -> {
                 transport.setMetronomeEnabled(settings.active());
                 transport.setMetronomeVolume(settings.volume());
+                preferences.setMetronomeEnabled(settings.active());
             });
             backToTheScore();
         }

@@ -89,4 +89,20 @@ class PreferencesTest {
         assertEquals(NoteValue.QUARTER, preferences.defaultNoteValue());
         assertTrue(preferences.autoScrollDuringPlayback());
     }
+
+    /**
+     * Manual, linea 2151: la pestaña General de Preferencias [F12] configura el metronomo.
+     * MainFrame siembra {@link Transport} con este valor al arrancar.
+     */
+    @Test
+    void remembersTheMetronomePreference() {
+        preferences.setMetronomeEnabled(true);
+
+        assertTrue(preferences.metronomeEnabled());
+    }
+
+    @Test
+    void metronomeStartsOffByDefault() {
+        assertFalse(preferences.metronomeEnabled());
+    }
 }
