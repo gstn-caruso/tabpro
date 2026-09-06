@@ -1,3 +1,9 @@
+## [0.24.1](https://github.com/gstn-caruso/tabpro/compare/v0.24.0...v0.24.1) (2026-09-06)
+
+### Bug Fixes
+
+* cuatro bugs de MusicXML que ocho tests en verde no veían ([#92](https://github.com/gstn-caruso/tabpro/issues/92)) ([77c152e](https://github.com/gstn-caruso/tabpro/commit/77c152e68b3b8cfc7d7cfbc644cb2ae55fbb672a))
+
 ## [0.24.0](https://github.com/gstn-caruso/tabpro/compare/v0.23.3...v0.24.0) (2026-09-06)
 
 ### Features
