@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.score;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
@@ -38,6 +39,25 @@ class ScoreCanvasTest {
         canvas.setTrackShown(1, false);
 
         assertEquals(onlyTheActiveOne, canvas.getPreferredSize().height);
+    }
+
+    @Test
+    void hidingANotationMakesTheScoreShorter() {
+        int both = canvas.getPreferredSize().height;
+
+        canvas.setStandardNotationShown(false);
+
+        assertFalse(canvas.showsStandardNotation());
+        assertTrue(canvas.showsTablature());
+        assertTrue(canvas.getPreferredSize().height < both);
+    }
+
+    @Test
+    void hidingBothNotationsBringsTheOtherOneBack() {
+        canvas.setTablatureShown(false);
+        canvas.setStandardNotationShown(false);
+
+        assertTrue(canvas.showsTablature(), "una pista sin ninguna notacion no se veria");
     }
 
     @Test

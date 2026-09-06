@@ -114,7 +114,7 @@ public final class PageScorePainter {
         int width = mode.showsPaper()
                 ? PageLayout.PAGE_WIDTH - 2 * PageLayout.PAGE_MARGIN
                 : (mode.scrollsHorizontally() ? UNWRAPPED_WIDTH : Math.max(200, viewport.width()));
-        return ScoreLayout.of(score, width, viewport.visibleTracks());
+        return ScoreLayout.of(score, width, viewport.visibleTracks(), viewport.visibleNotations());
     }
 
     private static int naturalWidthOf(ScoreLayout layout) {

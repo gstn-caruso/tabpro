@@ -27,6 +27,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
 
     private final Editor editor;
     private final TrackVisibility visibleTracks;
+    private VisibleNotations visibleNotations = VisibleNotations.both();
     private Playhead playhead = Playhead.silent();
     private ViewMode viewMode = ViewMode.SCREEN_VERTICAL;
     private Zoom zoom = Zoom.whole();
@@ -110,6 +111,28 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
 
     public void setTrackShown(int track, boolean shown) {
         visibleTracks.setTurnedOn(track, shown);
+    }
+
+    public boolean showsStandardNotation() {
+        return visibleNotations.standardNotation();
+    }
+
+    public boolean showsTablature() {
+        return visibleNotations.tablature();
+    }
+
+    public void setStandardNotationShown(boolean shown) {
+        showing(visibleNotations.withStandardNotation(shown));
+    }
+
+    public void setTablatureShown(boolean shown) {
+        showing(visibleNotations.withTablature(shown));
+    }
+
+    private void showing(VisibleNotations visibleNotations) {
+        this.visibleNotations = visibleNotations;
+        revalidate();
+        repaint();
     }
 
     // ---- Seleccion multiple: la ventana principal puede leerla, fijarla o limpiarla ----
@@ -208,7 +231,9 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     /** La pista activa la manda el cursor, asi que se lee recien al dibujar. */
     private ScoreViewport viewport() {
         return new ScoreViewport(
-                viewMode, zoom, viewportWidth(), visibleTracks.tracks().withActiveTrack(editor.cursor().track()));
+                viewMode, zoom, viewportWidth(),
+                visibleTracks.tracks().withActiveTrack(editor.cursor().track()),
+                visibleNotations);
     }
 
     private int viewportWidth() {

@@ -630,12 +630,12 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void toggleStandardNotation() {
-            PendingFeature.announce(MainFrame.this, "Ocultar el pentagrama");
+            canvas.setStandardNotationShown(!canvas.showsStandardNotation());
         }
 
         @Override
         public void toggleTablature() {
-            PendingFeature.announce(MainFrame.this, "Ocultar la tablatura");
+            canvas.setTablatureShown(!canvas.showsTablature());
         }
 
         @Override
