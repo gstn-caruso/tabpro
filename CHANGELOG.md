@@ -1,3 +1,9 @@
+## [0.23.1](https://github.com/gstn-caruso/tabpro/compare/v0.23.0...v0.23.1) (2026-09-06)
+
+### Bug Fixes
+
+* el cartel de la repetición prometía una vuelta de más ([#88](https://github.com/gstn-caruso/tabpro/issues/88)) ([a03f08b](https://github.com/gstn-caruso/tabpro/commit/a03f08b7537cb683663cd20b03eb5c2af074412a))
+
 ## [0.23.0](https://github.com/gstn-caruso/tabpro/compare/v0.22.0...v0.23.0) (2026-09-06)
 
 ### Features
