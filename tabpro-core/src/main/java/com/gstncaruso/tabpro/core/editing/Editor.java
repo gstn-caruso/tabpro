@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.core.editing;
 
+import com.gstncaruso.tabpro.core.editing.wizards.AutomaticFingering;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.ChordFretting;
@@ -44,6 +45,8 @@ import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.TremoloPicking;
 import com.gstncaruso.tabpro.core.model.effects.Trill;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
+import com.gstncaruso.tabpro.core.notation.Clef;
+import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -572,6 +575,19 @@ public final class Editor {
         moveCursor(cursor.onNotation(cursor.notation().other()));
     }
 
+    /**
+     * El Enter de la tabla de atajos (Reference, pp. 79-80): en la tablatura es "Next Note" -va
+     * a la nota siguiente-; en el pentagrama es "Add a Note" -agrega la nota en la altura donde
+     * esta el cursor, sin avanzar-.
+     */
+    public void enter() {
+        if (cursor.notation() == Notation.STANDARD) {
+            addNoteAtCursorPitch();
+            return;
+        }
+        moveRight();
+    }
+
     public void moveTo(int measure, int beat, int string) {
         Track track = currentTrack();
         if (measure < 0 || measure >= track.measureCount()) {
@@ -910,6 +926,36 @@ public final class Editor {
             return;
         }
         changeCurrentBeat(beat -> beat.mappingNoteOn(cursor.string(), howToChange));
+    }
+
+    /**
+     * Agrega, en el pentagrama, la nota a la altura donde esta el cursor: reutiliza la misma
+     * heuristica de AutomaticFingering (la cuerda libre mas cercana a la mano) para elegir cuerda
+     * y traste, excluyendo las cuerdas que ya suenan en el beat para no pisar otra nota del
+     * acorde. Si ninguna cuerda alcanza esa altura -por ejemplo, una nota tipeada mas alla del
+     * limite de trastes de la afinacion- no hace nada, igual que AutomaticFingering deja una nota
+     * asi como estaba.
+     */
+    private void addNoteAtCursorPitch() {
+        Track track = currentTrack();
+        List<Integer> otherStrings = currentBeat().notes().stream()
+                .map(Note::string)
+                .filter(string -> string != cursor.string())
+                .toList();
+        AutomaticFingering.bestFingeringFor(track.tuning(), pitchAtCursor(), handPosition(), otherStrings)
+                .ifPresent(found -> changeBeatAndCursor(beat -> beat.withNote(found), cursor.onString(found.string())));
+    }
+
+    /** La altura donde esta el cursor: la de la nota que ya suena en su cuerda, o la de la
+     * cuerda al aire si el beat esta en silencio ahi. */
+    private Pitch pitchAtCursor() {
+        Tuning tuning = currentTrack().tuning();
+        return currentNote().map(tuning::pitchOf).orElseGet(() -> tuning.pitchOfString(cursor.string()));
+    }
+
+    /** Donde esta la mano: el traste de la nota actual, o el primer traste si no hay ninguna. */
+    private int handPosition() {
+        return currentNote().map(Note::fret).orElse(0);
     }
 
     private void changeNoteEffects(UnaryOperator<NoteEffects> howToChange) {
