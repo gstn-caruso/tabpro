@@ -32,7 +32,10 @@ todo el espacio disponible. Con zoom del 30% al 200%.
 efectos: bends y palanca con su curva, slides, ligados, trinos, trémolos,
 armónicos, rasgueos demorados, notas de adorno, fade in y swing. Con metrónomo,
 cuenta regresiva, loop con entrenador de velocidad, tempo relativo de x0.25 a x2
-y modo paso a paso.
+y modo paso a paso. Mientras suena, una línea vertical fina recorre el sistema
+marcando dónde va; hacer clic en cualquier compás salta ahí sin frenar el sonido,
+los botones de paso a paso pasan a moverse de compás en compás, y el título de la
+ventana muestra el tempo real de ese momento.
 
 Los cambios de parámetro que se insertan a mitad de partitura suenan de verdad:
 bajar el volumen de todas las pistas sobre el final, cambiar de instrumento en el
@@ -51,7 +54,9 @@ adorno, digitación de las dos manos, texto libre y diagramas de acordes.
 
 Y la estructura del compás: repeticiones con su conteo, finales alternativos,
 doble barra, direcciones musicales (Coda, Segno, Fine y los catorce saltos),
-marcadores, y saltos de línea forzados o impedidos para maquetar la hoja.
+marcadores, octavas (8va, 8vb, 15ma y 15mb, que cambian dónde se escribe la nota
+sin tocar cómo suena), y saltos de línea forzados o impedidos para maquetar la
+hoja.
 
 ## El diapasón y el teclado
 
@@ -62,6 +67,10 @@ capo y a la cantidad de cuerdas de la pista activa. Muestran el beat solo, el
 compás, el próximo beat, el último diagrama de acorde o la escala elegida —y para
 las notas de la escala podés ver el nombre, el intervalo o el grado. Cuatro tipos
 de diapasón, zurdo o diestro, y la nota que está bajo el mouse.
+
+También podés colorear las cabezas de nota según su intensidad, para leer la
+dinámica de un vistazo, elegir qué barras de herramientas ves y cuáles no, e
+intercambiar de lugar la partitura y la mesa de mezcla.
 
 ## La mesa de mezcla y la vista global
 
@@ -94,16 +103,33 @@ de los compases.
 
 ## Archivos
 
+Cada partitura nueva arranca con el tempo, el compás, la armadura y los datos de
+encabezado que hayas dejado como propiedades por defecto.
+
 Guarda en `.tabpro`, un JSON legible y versionado que conserva todo: efectos,
 ligaduras, grupos irregulares, las dos voces, los atributos de cada compás, las
 propiedades de pista, los datos del encabezado y la letra.
 
 Abre archivos `.gp3`, `.gp4`, `.gp5` y `.gtp`, y exporta al formato de Guitar
 Pro 4 (avisando antes qué se pierde, si la partitura usa algo que ese formato no
-soporta). Importa y exporta MIDI, tablatura ASCII y MusicXML, con sus ventanas:
-la de MIDI lista las pistas del archivo y deja importarlas de una o fusionar
-varias sobre una pista existente; la de ASCII deja pegar y corregir la
-tablatura antes de importarla sobre la pista activa.
+soporta). El lector y el escritor están verificados contra PyGuitarPro y contra
+los archivos auténticos de su suite de pruebas, no contra archivos que hubiera
+escrito tabpro: un lector y un escritor que comparten la misma suposición
+equivocada se dan la razón entre ellos, así que el oráculo tiene que venir de
+afuera. De esos dieciséis archivos, tres ni siquiera abrían antes de que se
+hiciera esa comprobación.
+
+> Si importaste partituras de Guitar Pro con una versión anterior a la 0.17.1,
+> sus bends quedaron a la mitad de profundidad y algunos adornos con la
+> transición cambiada. No hay forma de arreglarlos desde el archivo ya
+> importado: volvé a importar el original.
+
+Importa archivos `.tef` de TablEdit.
+
+Importa y exporta MIDI, tablatura ASCII y MusicXML, con sus ventanas: la de MIDI
+lista las pistas del archivo y deja importarlas de una o fusionar varias sobre una
+pista existente; la de ASCII deja pegar y corregir la tablatura antes de
+importarla sobre la pista activa.
 
 Exporta también la partitura como imagen y como PDF, y la imprime eligiendo el
 rango de páginas y la escala.
@@ -139,7 +165,7 @@ fade in, `Espacio` reproduce.
 
 `F5` abre la información de la partitura, `F6` las propiedades de la pista, `F7`
 el instrumento, `F8` la configuración de página, `F9` el loop, `F10` los cambios
-de parámetro, `F12` las preferencias. `Ctrl+Tab` y `Shift+Tab` saltan entre
+de parámetro, `F11` las notas con dinámica, `F12` las preferencias. `Ctrl+Tab` y `Shift+Tab` saltan entre
 marcadores. `F1` abre la lista completa.
 
 Los doce menús —Archivo, Editar, Compás, Pista, Nota, Efectos, Marcadores,
@@ -149,8 +175,7 @@ Herramientas, Sonido, Ver, Opciones y Ayuda— llevan todo lo demás.
 
 Un motor de sonido con samples reales de instrumento, y con él la exportación a
 WAVE. La exportación a `.gp5` —tabpro exporta a `.gp4`, que es lo que pide el
-manual; los archivos `.gp5` por ahora sólo se leen—. La importación de
-PowerTab y de TablEdit.
+manual; los archivos `.gp5` por ahora sólo se leen—. La importación de PowerTab.
 
 ## Cómo está hecho
 
