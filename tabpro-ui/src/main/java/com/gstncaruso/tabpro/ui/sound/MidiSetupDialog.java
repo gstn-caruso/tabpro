@@ -19,16 +19,18 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- * La ventana de Options > MIDI Setup: los cuatro puertos de salida con su
- * patch de instrumentos y su Limit Pitch Variation, la entrada de notas con
- * su sensibilidad, y como se reparten las cuerdas al capturar.
+ * La ventana de Options > MIDI Setup: el banco SoundFont (global, el reemplazo libre del RSE),
+ * los cuatro puertos de salida con su patch de instrumentos y su Limit Pitch Variation, la
+ * entrada de notas con su sensibilidad, y como se reparten las cuerdas al capturar.
  */
 public final class MidiSetupDialog {
 
     private static final int PORT_COUNT = Ports.PORT_COUNT;
     private static final String GENERAL_MIDI_LABEL = "General MIDI";
+    private static final String NO_SOUND_FONT_LABEL = "Sintetizador interno del JDK";
 
     private MidiSetupDialog() {
     }
@@ -37,8 +39,17 @@ public final class MidiSetupDialog {
     public record PortSetup(String device, String patchPath, boolean limitPitchVariation) {
     }
 
-    /** Lo que la ventana devuelve: los cuatro puertos, la entrada y como asignar las cuerdas. */
-    public record Setup(List<PortSetup> ports, String input, int sensitivityMillis, StringAssignment strings) {
+    /**
+     * Lo que la ventana devuelve: el banco de sonido (uno solo, global: no es propiedad de
+     * ningun puerto), los cuatro puertos, la entrada y como asignar las cuerdas.
+     */
+    public record Setup(
+            String soundFontFile,
+            boolean soundFontActive,
+            List<PortSetup> ports,
+            String input,
+            int sensitivityMillis,
+            StringAssignment strings) {
 
         public Setup {
             if (ports.size() != PORT_COUNT) {
@@ -50,6 +61,10 @@ public final class MidiSetupDialog {
 
     public static Optional<Setup> ask(Component parent, Ports.Devices devices, Setup current) {
         FormPanel panel = new FormPanel();
+
+        SoundFontRow soundFont = new SoundFontRow(current.soundFontFile(), current.soundFontActive());
+        soundFont.addTo(panel);
+
         List<PortRow> rows = new ArrayList<>(PORT_COUNT);
         for (int index = 0; index < PORT_COUNT; index++) {
             int port = index + 1;
@@ -75,8 +90,70 @@ public final class MidiSetupDialog {
         }
         List<PortSetup> ports = rows.stream().map(PortRow::toSetup).toList();
         return Optional.of(new Setup(
-                ports, selectionOf(inputs), (Integer) sensitivity.getValue(),
-                (StringAssignment) assignment.getSelectedItem()));
+                soundFont.file(), soundFont.active(), ports, selectionOf(inputs),
+                (Integer) sensitivity.getValue(), (StringAssignment) assignment.getSelectedItem()));
+    }
+
+    /**
+     * El banco SoundFont: es global, no de un puerto -por eso su propia seccion, arriba de los
+     * cuatro-. Elegir un archivo nuevo (o quitarlo) se aplica recien al Aceptar, con la misma
+     * plantilla de label + "Cargar…"/"Quitar" que el patch de instrumentos. Prenderlo y apagarlo
+     * en caliente, sin pasar por esta ventana, es cosa del F2 (Ports.Playback.toggleSoundFont).
+     */
+    private static final class SoundFontRow {
+
+        private final JLabel fileLabel = new JLabel();
+        private final JCheckBox active;
+        private final JButton loadButton;
+        private final JButton clearButton;
+        private String file;
+
+        SoundFontRow(String currentFile, boolean currentlyActive) {
+            file = currentFile;
+            updateLabel();
+            active = new JCheckBox("Banco activo (F2)", currentlyActive);
+
+            loadButton = DialogStyle.flatButton("Cargar banco…");
+            loadButton.addActionListener(event -> choose(loadButton));
+
+            clearButton = DialogStyle.flatButton("Quitar");
+            clearButton.addActionListener(event -> {
+                file = "";
+                updateLabel();
+            });
+        }
+
+        void addTo(FormPanel panel) {
+            panel.addSection("Banco de sonido (SoundFont)");
+            JPanel buttons = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, DialogStyle.GAP_S, 0));
+            buttons.add(loadButton);
+            buttons.add(clearButton);
+            panel.addRow("Archivo", fileLabel, buttons);
+            panel.addRow("", active);
+        }
+
+        String file() {
+            return file;
+        }
+
+        boolean active() {
+            return active.isSelected();
+        }
+
+        private void choose(Component parent) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileFilter(new FileNameExtensionFilter("Bancos SoundFont (.sf2, .dls)", "sf2", "dls"));
+            if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            file = chooser.getSelectedFile().getAbsolutePath();
+            active.setSelected(true);
+            updateLabel();
+        }
+
+        private void updateLabel() {
+            fileLabel.setText(file.isBlank() ? NO_SOUND_FONT_LABEL : Path.of(file).getFileName().toString());
+        }
     }
 
     /** Los controles de un puerto: dispositivo con su prueba, patch de instrumentos y Limit Pitch Variation. */

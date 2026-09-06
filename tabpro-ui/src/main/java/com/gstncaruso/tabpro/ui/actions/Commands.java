@@ -344,6 +344,7 @@ public final class Commands {
         define("sound.countDown", "Cuenta regresiva", playback::toggleCountDown).withIcon(Icons.countDown());
         define("sound.stepBack", "Nota anterior", playback::stepBack);
         define("sound.midiInput", "Entrada MIDI activa", playback::toggleMidiInput);
+        define("sound.soundFont", "Banco de sonido", playback::toggleSoundFont).withAccelerator("F2");
         define("sound.stepForward", "Nota siguiente", playback::stepForward);
         define("nav.firstBar", "Primer compás", editor::moveToFirstMeasure)
                 .withAccelerator("ctrl HOME").withIcon(Icons.firstBar());

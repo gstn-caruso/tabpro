@@ -182,7 +182,7 @@ public final class MenuBar {
         menu.addSeparator();
         add(menu, "sound.tempo", "sound.relativeTempo", "sound.metronome", "sound.countDown");
         menu.addSeparator();
-        add(menu, "sound.stepBack", "sound.stepForward", "sound.midiInput");
+        add(menu, "sound.stepBack", "sound.stepForward", "sound.midiInput", "sound.soundFont");
         menu.addSeparator();
         add(menu, "nav.firstBar", "nav.previousBar", "nav.nextBar", "nav.lastBar", "nav.nextNote");
         return menu;

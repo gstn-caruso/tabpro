@@ -4,6 +4,11 @@ Section: sound
 Priority: optional
 Architecture: all
 Depends: openjdk-25-jre | java-runtime (>= 25)
+Recommends: fluid-soundfont-gm
 Maintainer: Gastón Caruso <gstn.caruso@gmail.com>
 Description: Editor de tablaturas de guitarra
  Clon libre de Guitar Pro 5.
+ .
+ Recomienda fluid-soundfont-gm (licencia MIT) para reemplazar el
+ sintetizador MIDI interno del JDK por un banco de sonido realista. Sin
+ el, tabpro sigue funcionando con el sonido interno.

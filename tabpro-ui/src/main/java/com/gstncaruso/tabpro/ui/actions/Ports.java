@@ -122,6 +122,9 @@ public final class Ports {
 
         /** Prende o apaga la captura de notas de un instrumento MIDI externo. */
         void toggleMidiInput();
+
+        /** El F2 del manual: "Active/Desactive RSE". Prende o apaga el banco SoundFont cargado. */
+        void toggleSoundFont();
     }
 
     /** Lo que el menu Ver decide sobre la pantalla. */
@@ -253,6 +256,29 @@ public final class Ports {
             @Override
             public void useLimitPitchVariation(int port, boolean limit) {
             }
+
+            @Override
+            public java.util.Optional<String> soundFontFile() {
+                return java.util.Optional.empty();
+            }
+
+            @Override
+            public void chooseSoundFontFile(java.util.Optional<String> path) {
+            }
+
+            @Override
+            public boolean soundFontActive() {
+                return false;
+            }
+
+            @Override
+            public void toggleSoundFont() {
+            }
+
+            @Override
+            public String soundFontStatus() {
+                return "MIDI no disponible";
+            }
         };
 
         java.util.List<String> outputs();
@@ -285,6 +311,21 @@ public final class Ports {
         boolean limitsPitchVariation(int port);
 
         void useLimitPitchVariation(int port, boolean limit);
+
+        /** El archivo de banco SoundFont elegido a mano, si eligieron alguno. Es global: no es por puerto. */
+        java.util.Optional<String> soundFontFile();
+
+        /** Lo deja elegido (o "ninguno" si vacio), lo persiste y lo intenta cargar ya mismo. */
+        void chooseSoundFontFile(java.util.Optional<String> path);
+
+        /** Si el banco elegido esta sonando en vez del sintetizador interno del JDK. */
+        boolean soundFontActive();
+
+        /** El F2 del manual: prende o apaga el banco cargado en todos los puertos, sin reiniciar nada. */
+        void toggleSoundFont();
+
+        /** Como esta el banco de sonido ahora, para mostrarselo al usuario. */
+        String soundFontStatus();
     }
 
     /** La entrada de audio que escucha el afinador digital. */
