@@ -19,7 +19,6 @@ public final class Preferences {
     private static final String AUTOSAVE_EVERY = "autosaveEvery";
     private static final String UNDO_ENABLED = "undoEnabled";
     private static final String METRONOME_ENABLED = "metronomeEnabled";
-    private static final String COUNT_DOWN_ENABLED = "countDownEnabled";
     private static final String DEFAULT_NOTE_VALUE = "defaultNoteValue";
     private static final String AUTO_SCROLL_DURING_PLAYBACK = "autoScrollDuringPlayback";
     private static final String VIEW_MODE = "viewMode";
@@ -82,14 +81,6 @@ public final class Preferences {
 
     public void setMetronomeEnabled(boolean enabled) {
         stored.putBoolean(METRONOME_ENABLED, enabled);
-    }
-
-    public boolean countDownEnabled() {
-        return stored.getBoolean(COUNT_DOWN_ENABLED, false);
-    }
-
-    public void setCountDownEnabled(boolean enabled) {
-        stored.putBoolean(COUNT_DOWN_ENABLED, enabled);
     }
 
     /** Preferencias [F12], "Figura por defecto al insertar": la usa {@code Editor.insertBeat}. */
