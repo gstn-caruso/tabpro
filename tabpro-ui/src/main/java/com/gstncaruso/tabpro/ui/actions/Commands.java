@@ -360,7 +360,14 @@ public final class Commands {
                 .withIcon(Icons.keyboard());
         define("view.percussion", "Asistente de percusión", view::togglePercussionAssistant);
         define("view.mixTable", "Mesa de mezcla", view::toggleMixTable).withIcon(Icons.mixTable());
+        define("view.toggleView", "Intercambiar vistas", view::toggleView);
         define("view.toolBars", "Barras de herramientas", view::toggleToolBars);
+        define("view.toolBars.document", "Documento y edición", view::toggleDocumentToolBar)
+                .checkedByDefault();
+        define("view.toolBars.structure", "Estructura y sonido", view::toggleStructureToolBar)
+                .checkedByDefault();
+        define("view.toolBars.notation", "Figuras y efectos", view::toggleNotationToolBar)
+                .checkedByDefault();
         for (String theme : themes) {
             define("view.theme." + theme, theme, () -> view.useTheme(theme));
         }
