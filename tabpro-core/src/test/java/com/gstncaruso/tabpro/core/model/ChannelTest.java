@@ -117,4 +117,14 @@ class ChannelTest {
     void theChannelNextToPercussionIsPercussionItself() {
         assertEquals(Channel.PERCUSSION_CHANNEL, Channel.effectChannelNextTo(Channel.PERCUSSION_CHANNEL));
     }
+
+    /**
+     * El canal que sigue al 9 es el 10, pero ese es el de percusion: una pista melodica en el
+     * canal 9 no puede terminar con sus efectos (un bend, por ejemplo) sonando como bateria.
+     */
+    @Test
+    void theChannelNextToTheOneBeforePercussionSkipsPercussion() {
+        assertEquals(Channel.PERCUSSION_CHANNEL - 1, Channel.effectChannelNextTo(Channel.PERCUSSION_CHANNEL - 2));
+        assertEquals(Channel.PERCUSSION_CHANNEL + 1, Channel.effectChannelNextTo(Channel.PERCUSSION_CHANNEL - 1));
+    }
 }

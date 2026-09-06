@@ -49,10 +49,22 @@ public record Channel(
 
     /**
      * El canal de efectos que le toca por defecto al que use ese numero: el que
-     * sigue, salvo en la percusion, que toca todo en el 10.
+     * sigue, salteando el de percusion si es que cae justo ahi -una pista
+     * melodica no puede terminar con sus efectos sonando como bateria-, salvo
+     * en la propia percusion, que toca todo en el 10. Al que ya esta en el
+     * ultimo canal del puerto no le queda a donde ir: se queda en el suyo,
+     * degradando a un solo canal para la pista, algo que el propio modelo
+     * permite a proposito.
      */
     public static int effectChannelNextTo(int number) {
-        return number == PERCUSSION_CHANNEL ? PERCUSSION_CHANNEL : Math.min(number + 1, CHANNELS_PER_PORT);
+        if (number == PERCUSSION_CHANNEL) {
+            return PERCUSSION_CHANNEL;
+        }
+        int next = number + 1;
+        if (next == PERCUSSION_CHANNEL) {
+            next++;
+        }
+        return Math.min(next, CHANNELS_PER_PORT);
     }
 
     public boolean isPercussionChannel() {
