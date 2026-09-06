@@ -26,6 +26,7 @@ import com.gstncaruso.tabpro.ui.dialogs.note.DynamicsDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.ParameterChangeDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.SoundDurationDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.FingeringDialog;
+import com.gstncaruso.tabpro.ui.page.DefaultPageSetup;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetupDialog;
 import com.gstncaruso.tabpro.ui.dialogs.paste.PasteDialog;
@@ -98,7 +99,7 @@ public final class MainFrame extends JFrame {
     private final Ports.Microphone microphone;
     private final Player player;
     private StringAssignment stringAssignment = StringAssignment.NO_CHANNEL_DETECTION;
-    private PageSetup pageSetup = PageSetup.defaults();
+    private PageSetup pageSetup = DefaultPageSetup.userSetup().get();
     private com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences editingPreferences =
             com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences.defaults();
     private MetronomeSettings metronomeSettings = MetronomeSettings.off();
@@ -253,6 +254,12 @@ public final class MainFrame extends JFrame {
         canvas.requestFocusInWindow();
     }
 
+    /** El papel elegido manda sobre como se ve la partitura y sobre como sale impresa. */
+    private void usePageSetup(PageSetup setup) {
+        pageSetup = setup;
+        canvas.setPageSetup(setup);
+    }
+
     private void updateTitle() {
         setTitle(document.windowTitle());
     }
@@ -286,6 +293,7 @@ public final class MainFrame extends JFrame {
         public void newScore() {
             if (askToDiscardChanges()) {
                 document.newScore();
+                usePageSetup(DefaultPageSetup.userSetup().get());
                 updateTitle();
                 backToTheScore();
             }
@@ -761,14 +769,9 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void pageSetup() {
-            PageSetupDialog.ask(MainFrame.this, pageSetup).ifPresent(this::useSetup);
+            PageSetupDialog.ask(MainFrame.this, pageSetup, MainFrame.this::usePageSetup)
+                    .ifPresent(MainFrame.this::usePageSetup);
             backToTheScore();
-        }
-
-        /** El papel elegido manda sobre como se ve la partitura y sobre como sale impresa. */
-        private void useSetup(PageSetup setup) {
-            pageSetup = setup;
-            canvas.setPageSetup(setup);
         }
 
         @Override
