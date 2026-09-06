@@ -18,11 +18,9 @@ import com.gstncaruso.tabpro.core.model.effects.Trill;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.IntFunction;
 
 /**
@@ -91,11 +89,11 @@ final class TrackRenderer {
             if (grace.isPresent()) {
                 long graceTicks = new Duration(grace.get().duration(), false).ticks();
                 if (grace.get().onBeat()) {
-                    scheduleGrace(note, grace.get(), noteTick, graceTicks);
+                    scheduleGrace(note, grace.get(), noteTick, graceTicks, cursor);
                     noteTick += graceTicks;
                     noteBeatTicks = Math.max(1, noteBeatTicks - graceTicks);
                 } else {
-                    scheduleGrace(note, grace.get(), noteTick - graceTicks, graceTicks);
+                    scheduleGrace(note, grace.get(), noteTick - graceTicks, graceTicks, cursor);
                 }
             }
 
@@ -124,16 +122,19 @@ final class TrackRenderer {
             return;
         }
 
-        boolean pendingLegato = cursor.hasPendingLegato(note.string());
+        Optional<Legato> pending = cursor.pendingLegatoOn(note.string());
         cursor.clearPendingLegato(note.string());
         boolean isHammer = note.has(Ornament.HAMMER_ON_PULL_OFF);
-        boolean continuesPrevious = (note.tied() || isHammer || pendingLegato) && cursor.hasOpenNote(note.string());
+        boolean continuesPrevious = (note.tied() || isHammer || pending.isPresent())
+                && cursor.hasOpenNote(note.string());
 
         Pitch pitch = pitchOf(note);
         long soundTicks = Math.round(beatTicks * note.soundLength());
 
         if (continuesPrevious) {
-            extendOpenNote(cursor, note.string(), soundTicks, pitch, isHammer, pendingLegato && !isHammer && !note.tied());
+            boolean jumps = isHammer || pending.filter(Legato.JUMPING::equals).isPresent();
+            boolean glides = !jumps && !note.tied() && pending.isPresent();
+            extendOpenNote(cursor, note.string(), soundTicks, pitch, jumps, glides);
         } else {
             PitchTrajectory bend = bendOf(note, soundTicks)
                     .plus(slideShapeOf(note, soundTicks))
@@ -148,7 +149,7 @@ final class TrackRenderer {
         }
 
         if (targetsNextNoteWithoutRepicking(note)) {
-            cursor.markPendingLegato(note.string());
+            cursor.markPendingLegato(note.string(), Legato.GLIDING);
         }
     }
 
@@ -158,17 +159,18 @@ final class TrackRenderer {
                 .orElse(false);
     }
 
+    /** Estira la nota que quedo abierta en la cuerda en lugar de volver a atacarla. */
     private void extendOpenNote(
-            VoiceCursor cursor, int string, long extraTicks, Pitch newPitch, boolean isHammer, boolean isLegato) {
+            VoiceCursor cursor, int string, long extraTicks, Pitch newPitch, boolean jumps, boolean glides) {
         int index = cursor.openIndexOf(string);
         ScheduledNote open = notes.get(index);
         long boundary = open.durationTicks();
         long newDuration = boundary + extraTicks;
         PitchTrajectory bend = open.bend();
-        if (isHammer) {
+        if (jumps) {
             double delta = newPitch.midiNumber() - open.pitch().midiNumber();
             bend = bend.withJumpAt(boundary, delta);
-        } else if (isLegato) {
+        } else if (glides) {
             double delta = newPitch.midiNumber() - open.pitch().midiNumber();
             bend = bend.rampingTo(boundary, delta, SLIDE_RAMP_TICKS);
         }
@@ -202,10 +204,31 @@ final class TrackRenderer {
         }
     }
 
-    private void scheduleGrace(Note note, GraceNote grace, long tick, long graceTicks) {
+    private void scheduleGrace(Note note, GraceNote grace, long tick, long graceTicks, VoiceCursor cursor) {
         Pitch pitch = track.isPercussion() ? new Pitch(grace.fret()) : track.pitchOf(new Note(note.string(), grace.fret()));
         long duration = grace.dead() ? Math.max(1, Math.round(graceTicks * 0.1)) : graceTicks;
         notes.add(new ScheduledNote(tick, duration, pitch, grace.dynamic().intensity(), PitchTrajectory.flat(), false));
+        legatoOf(grace).ifPresent(legato -> {
+            cursor.open(note.string(), notes.size() - 1);
+            cursor.markPendingLegato(note.string(), legato);
+        });
+    }
+
+    /**
+     * Como se llega desde el adorno hasta la nota. Cualquier transicion se toca
+     * de un solo ataque: el ligado salta de altura y el slide y el bend se
+     * deslizan. Sin transicion son dos ataques sueltos, y de una nota muerta no
+     * hay de donde deslizarse.
+     */
+    private static Optional<Legato> legatoOf(GraceNote grace) {
+        if (grace.dead()) {
+            return Optional.empty();
+        }
+        return switch (grace.transition()) {
+            case NONE -> Optional.empty();
+            case HAMMER -> Optional.of(Legato.JUMPING);
+            case SLIDE, BEND -> Optional.of(Legato.GLIDING);
+        };
     }
 
     private Pitch pitchOf(Note note) {
@@ -259,10 +282,18 @@ final class TrackRenderer {
                 : PitchTrajectory.flat();
     }
 
+    /** Como sigue una nota a la que ya venia sonando en su cuerda, sin volver a atacarla. */
+    private enum Legato {
+        /** La altura se desliza hasta la nueva, como en un slide o en un bend. */
+        GLIDING,
+        /** La altura salta de golpe, como en un ligado. */
+        JUMPING
+    }
+
     /** El estado de una voz mientras se la recorre: que nota sigue abierta en cada cuerda. */
     private static final class VoiceCursor {
         private final Map<Integer, Integer> openIndexByString = new HashMap<>();
-        private final Set<Integer> pendingLegatoStrings = new HashSet<>();
+        private final Map<Integer, Legato> pendingLegatoByString = new HashMap<>();
 
         boolean hasOpenNote(int string) {
             return openIndexByString.containsKey(string);
@@ -276,16 +307,16 @@ final class TrackRenderer {
             openIndexByString.put(string, index);
         }
 
-        boolean hasPendingLegato(int string) {
-            return pendingLegatoStrings.contains(string);
+        Optional<Legato> pendingLegatoOn(int string) {
+            return Optional.ofNullable(pendingLegatoByString.get(string));
         }
 
-        void markPendingLegato(int string) {
-            pendingLegatoStrings.add(string);
+        void markPendingLegato(int string, Legato legato) {
+            pendingLegatoByString.put(string, legato);
         }
 
         void clearPendingLegato(int string) {
-            pendingLegatoStrings.remove(string);
+            pendingLegatoByString.remove(string);
         }
     }
 }
