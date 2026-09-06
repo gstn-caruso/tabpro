@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
@@ -14,6 +15,8 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.Tuplet;
+import com.gstncaruso.tabpro.core.model.bars.KeySignature;
+import com.gstncaruso.tabpro.core.model.bars.Mode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -99,11 +102,13 @@ public final class MusicXmlScoreImporter {
         Tuning tuning = tuningOf(part);
         List<Measure> measures = new ArrayList<>();
         TimeSignature timeSignature = TimeSignature.fourFour();
+        KeySignature keySignature = KeySignature.cMajor();
         int divisions = Duration.TICKS_PER_QUARTER / 4;
         for (Element measure : elementsNamed(part, "measure")) {
             divisions = intOf(measure, "divisions").orElse(divisions);
             timeSignature = timeSignatureOf(measure).orElse(timeSignature);
-            measures.add(measureOf(measure, timeSignature, tuning));
+            keySignature = keySignatureOf(measure).orElse(keySignature);
+            measures.add(measureOf(measure, timeSignature, tuning, keySignature, divisions));
         }
         if (measures.isEmpty()) {
             measures.add(Measure.empty(TimeSignature.fourFour(), Duration.quarter()));
@@ -139,7 +144,17 @@ public final class MusicXmlScoreImporter {
                 : Optional.empty();
     }
 
-    private static Measure measureOf(Element measure, TimeSignature timeSignature, Tuning tuning) {
+    /** La armadura vale hasta el proximo &lt;key&gt;, tal como en el resto de MusicXML. */
+    private static Optional<KeySignature> keySignatureOf(Element measure) {
+        return intOf(measure, "fifths").map(fifths -> new KeySignature(fifths, modeOf(measure)));
+    }
+
+    private static Mode modeOf(Element measure) {
+        return "minor".equals(textOf(measure, "mode").orElse("major")) ? Mode.MINOR : Mode.MAJOR;
+    }
+
+    private static Measure measureOf(
+            Element measure, TimeSignature timeSignature, Tuning tuning, KeySignature keySignature, int divisions) {
         List<Beat> beats = new ArrayList<>();
         for (Element note : elementsNamed(measure, "note")) {
             if (hasChild(note, "chord") && !beats.isEmpty()) {
@@ -147,7 +162,7 @@ public final class MusicXmlScoreImporter {
                 noteOf(note, tuning).ifPresent(played -> beats.set(last, beats.get(last).withNote(played)));
                 continue;
             }
-            Duration duration = durationOf(note);
+            Duration duration = durationOf(note, divisions);
             if (hasChild(note, "rest")) {
                 beats.add(Beat.rest(duration));
                 continue;
@@ -159,17 +174,46 @@ public final class MusicXmlScoreImporter {
         if (beats.isEmpty()) {
             beats.add(Beat.rest(Duration.quarter()));
         }
-        return new Measure(timeSignature, beats);
+        return new Measure(timeSignature, beats).mappingAttributes(attrs -> attrs.withKeySignature(keySignature));
     }
 
-    private static Duration durationOf(Element note) {
-        var value = textOf(note, "type").map(NoteTypeNames::fromXml)
-                .orElse(com.gstncaruso.tabpro.core.model.NoteValue.QUARTER);
+    private static Duration durationOf(Element note, int divisions) {
         Tuplet tuplet = intOf(note, "actual-notes")
                 .filter(Tuplet.AVAILABLE::contains)
                 .map(Tuplet::of)
                 .orElse(Tuplet.none());
-        return new Duration(value, hasChild(note, "dot"), tuplet);
+        return textOf(note, "type")
+                .map(type -> new Duration(NoteTypeNames.fromXml(type), hasChild(note, "dot"), tuplet))
+                .orElseGet(() -> durationFromTicksOf(note, divisions, tuplet));
+    }
+
+    /**
+     * Sin &lt;type&gt; -tipico del silencio de compas entero, {@code <rest measure="yes"/>}-
+     * la unica pista de cuanto dura la nota es su &lt;duration&gt; en divisions.
+     */
+    private static Duration durationFromTicksOf(Element note, int divisions, Tuplet tuplet) {
+        return intOf(note, "duration")
+                .map(units -> ticksOf(units, divisions))
+                .flatMap(MusicXmlScoreImporter::closestPlainDuration)
+                .map(duration -> duration.in(tuplet))
+                .orElse(new Duration(NoteValue.QUARTER, false, tuplet));
+    }
+
+    private static long ticksOf(int units, int divisions) {
+        return (long) units * Duration.TICKS_PER_QUARTER / Math.max(1, divisions);
+    }
+
+    /** La figura simple (sin grupo irregular) cuyos ticks coinciden exactamente con esa duracion. */
+    private static Optional<Duration> closestPlainDuration(long ticks) {
+        for (NoteValue value : NoteValue.values()) {
+            for (boolean dotted : new boolean[] {false, true}) {
+                Duration candidate = new Duration(value, dotted);
+                if (candidate.ticks() == ticks) {
+                    return Optional.of(candidate);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     private static Optional<Note> noteOf(Element note, Tuning tuning) {

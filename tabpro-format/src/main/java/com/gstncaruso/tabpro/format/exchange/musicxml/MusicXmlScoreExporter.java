@@ -93,6 +93,8 @@ public final class MusicXmlScoreExporter {
         xml.append("    <measure number=\"").append(measureIndex + 1).append("\">\n");
         if (measureIndex == 0) {
             appendAttributes(xml, track, measure);
+        } else {
+            appendChangedAttributes(xml, track.measure(measureIndex - 1), measure);
         }
         List<Beat> beats = measure.beats();
         Map<Integer, Set<Integer>> ties = TieStarts.of(beats);
@@ -107,17 +109,49 @@ public final class MusicXmlScoreExporter {
     private static void appendAttributes(StringBuilder xml, Track track, Measure measure) {
         xml.append("      <attributes>\n");
         xml.append("        <divisions>").append(DIVISIONS).append("</divisions>\n");
-        xml.append("        <key><fifths>")
-                .append(measure.attributes().keySignature().accidentals()).append("</fifths></key>\n");
-        xml.append("        <time><beats>").append(measure.timeSignature().beats())
-                .append("</beats><beat-type>").append(measure.timeSignature().beatUnit())
-                .append("</beat-type></time>\n");
+        appendKey(xml, measure);
+        appendTime(xml, measure);
         xml.append("        <staves>2</staves>\n");
         xml.append("        <clef number=\"1\"><sign>G</sign><line>2</line>")
                 .append("<clef-octave-change>-1</clef-octave-change></clef>\n");
         xml.append("        <clef number=\"2\"><sign>TAB</sign><line>5</line></clef>\n");
         appendStaffDetails(xml, track);
         xml.append("      </attributes>\n");
+    }
+
+    /**
+     * Del segundo compas en adelante solo hace falta repetir lo que cambio desde el anterior:
+     * el estandar dice que, ante la ausencia de un elemento de {@code <attributes>}, sigue
+     * vigente el valor de la ultima vez que se declaro. Repetir la tanda completa en cada
+     * compas no es invalido, pero tampoco hace falta -y, sin esto, un cambio de armadura o de
+     * compas a mitad de la pieza se perdia en silencio, porque nunca se escribia en ningun
+     * lado.
+     */
+    private static void appendChangedAttributes(StringBuilder xml, Measure previous, Measure measure) {
+        boolean keyChanged = !measure.attributes().keySignature().equals(previous.attributes().keySignature());
+        boolean timeChanged = !measure.timeSignature().equals(previous.timeSignature());
+        if (!keyChanged && !timeChanged) {
+            return;
+        }
+        xml.append("      <attributes>\n");
+        if (keyChanged) {
+            appendKey(xml, measure);
+        }
+        if (timeChanged) {
+            appendTime(xml, measure);
+        }
+        xml.append("      </attributes>\n");
+    }
+
+    private static void appendKey(StringBuilder xml, Measure measure) {
+        xml.append("        <key><fifths>")
+                .append(measure.attributes().keySignature().accidentals()).append("</fifths></key>\n");
+    }
+
+    private static void appendTime(StringBuilder xml, Measure measure) {
+        xml.append("        <time><beats>").append(measure.timeSignature().beats())
+                .append("</beats><beat-type>").append(measure.timeSignature().beatUnit())
+                .append("</beat-type></time>\n");
     }
 
     /** La afinacion de la tablatura, cuerda por cuerda. */
@@ -173,17 +207,31 @@ public final class MusicXmlScoreExporter {
             xml.append("<alter>").append(spelling.alter()).append("</alter>");
         }
         xml.append("<octave>").append(spelling.octave()).append("</octave></pitch>\n");
-        appendDurationAndType(xml, beat.duration());
+        appendDuration(xml, beat.duration());
         if (tied || note.tied()) {
             xml.append("        <tie type=\"").append(note.tied() ? "stop" : "start").append("\"/>\n");
         }
+        appendTypeAndModifiers(xml, beat.duration());
         appendNotations(xml, note, tied, tuplet);
         xml.append("      </note>\n");
     }
 
+    /**
+     * El content model de {@code <note>} del DTD de MusicXML pone {@code duration, (tie, tie?)?}
+     * antes de {@code type, dot*, time-modification}: por eso {@code <tie>} no puede salir junto
+     * con el resto de {@link #appendTypeAndModifiers}.
+     */
     private static void appendDurationAndType(StringBuilder xml, Duration duration) {
+        appendDuration(xml, duration);
+        appendTypeAndModifiers(xml, duration);
+    }
+
+    private static void appendDuration(StringBuilder xml, Duration duration) {
         long divisions = duration.ticks() * DIVISIONS / Duration.TICKS_PER_QUARTER;
         xml.append("        <duration>").append(Math.max(1, divisions)).append("</duration>\n");
+    }
+
+    private static void appendTypeAndModifiers(StringBuilder xml, Duration duration) {
         xml.append("        <type>").append(NoteTypeNames.toXml(duration.value())).append("</type>\n");
         if (duration.dotted()) {
             xml.append("        <dot/>\n");
