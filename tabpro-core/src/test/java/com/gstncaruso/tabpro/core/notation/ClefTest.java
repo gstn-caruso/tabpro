@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class ClefTest {
@@ -34,5 +35,20 @@ class ClefTest {
     void stepOfDelegatesToStaffPosition() {
         // MI grave al aire de la guitarra (E2, MIDI 40) en clave de sol: step -7 (ver StaffPositionTest).
         assertEquals(-7, Clef.TREBLE.stepOf(new Pitch(40)));
+    }
+
+    /**
+     * La inversa de stepOf: el grado -7 de la clave de sol es, otra vez, mi grave (E2, MIDI 40)
+     * -ver StaffPositionTest.openLowEOnGuitarNeedsThreeLedgerLinesBelowTreble.
+     */
+    @Test
+    void pitchAtStepIsTheInverseOfStepOf() {
+        assertEquals(Optional.of(new Pitch(40)), Clef.TREBLE.pitchAtStep(-7));
+        assertEquals(Optional.of(new Pitch(41)), Clef.TREBLE.pitchAtStep(-6));
+    }
+
+    @Test
+    void pitchAtStepIsEmptyWhenTheResultingMidiIsOutOfRange() {
+        assertEquals(Optional.empty(), Clef.TREBLE.pitchAtStep(-1000));
     }
 }

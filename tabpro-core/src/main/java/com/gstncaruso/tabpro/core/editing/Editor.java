@@ -604,11 +604,34 @@ public final class Editor {
     }
 
     public void moveDown() {
+        if (cursor.notation() == Notation.STANDARD) {
+            moveByStaffDegree(-1);
+            return;
+        }
         moveCursor(cursor.onString(Math.min(currentTrack().stringCount(), cursor.string() + 1)));
     }
 
     public void moveUp() {
+        if (cursor.notation() == Notation.STANDARD) {
+            moveByStaffDegree(1);
+            return;
+        }
         moveCursor(cursor.onString(Math.max(1, cursor.string() - 1)));
+    }
+
+    /**
+     * Arriba/abajo en el pentagrama (Reference p. 80): un grado del pentagrama, no una cuerda.
+     * Busca, con la misma heuristica de AutomaticFingering, la cuerda mas cercana a la mano que
+     * toque la nota natural de ese grado; si ninguna cuerda la alcanza, el cursor se queda
+     * quieto -la misma decision que toma Enter cuando ninguna cuerda alcanza su altura-.
+     */
+    private void moveByStaffDegree(int steps) {
+        Track track = currentTrack();
+        Clef clef = Clef.forTuning(track.tuning());
+        int step = StaffPosition.of(pitchAtCursor(), clef).step() + steps;
+        clef.pitchAtStep(step)
+                .flatMap(pitch -> AutomaticFingering.bestFingeringFor(track.tuning(), pitch, handPosition(), List.of()))
+                .ifPresent(found -> moveCursor(cursor.onString(found.string())));
     }
 
     public void moveLeft() {

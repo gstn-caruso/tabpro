@@ -47,4 +47,33 @@ class PitchNameTest {
         assertEquals(PitchName.of(new Pitch(60)).text(), PitchName.of(new Pitch(72)).text());
         assertEquals(7, PitchName.of(new Pitch(72)).diatonicIndex() - PitchName.of(new Pitch(60)).diatonicIndex());
     }
+
+    @Test
+    void midiNumberIsTheInverseOfOfForNaturalNotes() {
+        assertEquals(64, PitchName.of(new Pitch(64)).midiNumber());
+        assertEquals(40, PitchName.of(new Pitch(40)).midiNumber());
+    }
+
+    @Test
+    void midiNumberAddsTheSemitoneMarkedBySharp() {
+        assertEquals(61, PitchName.of(new Pitch(61)).midiNumber());
+    }
+
+    @Test
+    void naturalBuildsTheNoteThatSitsOnThatDiatonicIndex() {
+        PitchName g4 = PitchName.of(new Pitch(67));
+        assertEquals(g4, PitchName.natural(g4.diatonicIndex()));
+    }
+
+    /** Un sostenido comparte grado con su natural (ver placesEachNoteOnItsDiatonicRung): pedir
+     * ese grado siempre devuelve la natural, nunca el sostenido. */
+    @Test
+    void naturalNeverMarksASharpEvenAtASharpsDiatonicIndex() {
+        int indexSharedWithCSharp = PitchName.of(new Pitch(61)).diatonicIndex();
+
+        PitchName natural = PitchName.natural(indexSharedWithCSharp);
+
+        assertFalse(natural.sharp());
+        assertEquals("C", natural.text());
+    }
 }
