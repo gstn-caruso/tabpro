@@ -1,3 +1,9 @@
+## [0.25.1](https://github.com/gstn-caruso/tabpro/compare/v0.25.0...v0.25.1) (2026-09-06)
+
+### Bug Fixes
+
+* lo que se elige en un diálogo y no pasa nada ([#96](https://github.com/gstn-caruso/tabpro/issues/96)) ([03ea4bb](https://github.com/gstn-caruso/tabpro/commit/03ea4bb63589adba71dd0ce9a6c93cb9e6f89b43))
+
 ## [0.25.0](https://github.com/gstn-caruso/tabpro/compare/v0.24.1...v0.25.0) (2026-09-06)
 
 ### Features
