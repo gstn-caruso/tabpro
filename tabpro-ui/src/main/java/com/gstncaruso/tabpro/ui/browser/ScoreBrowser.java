@@ -1,12 +1,12 @@
 package com.gstncaruso.tabpro.ui.browser;
 
-import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
-import com.gstncaruso.tabpro.core.model.Score;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -21,26 +21,37 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
-/** El explorador de partituras: buscar en una carpeta, escuchar y abrir. */
+/**
+ * El explorador de partituras: buscar en una carpeta, escuchar y abrir. El manual: "it is
+ * possible to set the number of bars to play before jumping to the next file" -escuchar no
+ * suena la partitura entera, sino esa cantidad de compases y sigue solo con la siguiente de la
+ * lista, hasta que alguien para o se acaba la lista-.
+ */
 public final class ScoreBrowser extends JDialog {
 
-    private final ScoreFiles files;
+    private static final int DEFAULT_BARS_BEFORE_JUMPING = 8;
+
     private final Consumer<Path> onOpen;
-    private final Consumer<Score> onListen;
+    private final BrowserPlayback playback;
     private final DefaultListModel<Path> found = new DefaultListModel<>();
     private final JList<Path> results = new JList<>(found);
     private final JCheckBox includeSubfolders = new JCheckBox("Incluir subcarpetas", true);
+    private final JSpinner barsBeforeJumping =
+            new JSpinner(new SpinnerNumberModel(DEFAULT_BARS_BEFORE_JUMPING, 1, 999, 1));
+    private final JButton listen = new JButton("Escuchar");
     private final JLabel summary = new JLabel(" ");
     private Path folder;
+    private boolean listening;
 
-    public ScoreBrowser(Component parent, ScoreFiles files, Consumer<Path> onOpen, Consumer<Score> onListen) {
+    public ScoreBrowser(Component parent, ScoreFiles files, Consumer<Path> onOpen, BrowserPlayback.Sound sound) {
         super(SwingUtilities.getWindowAncestor(parent), "Explorar partituras", ModalityType.APPLICATION_MODAL);
-        this.files = files;
         this.onOpen = onOpen;
-        this.onListen = onListen;
+        this.playback = new BrowserPlayback(files, sound, new ChainListener());
 
         results.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         results.setCellRenderer(new PathRenderer());
@@ -53,6 +64,12 @@ public final class ScoreBrowser extends JDialog {
         ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setSize(new Dimension(620, 460));
         setLocationRelativeTo(parent);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                stopListening();
+            }
+        });
     }
 
     public void searchIn(Path folder) {
@@ -74,15 +91,20 @@ public final class ScoreBrowser extends JDialog {
         JPanel bar = new JPanel(new BorderLayout(8, 0));
         bar.add(summary, BorderLayout.CENTER);
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
-        JButton listen = new JButton("Escuchar");
-        listen.addActionListener(event -> selected().ifPresent(this::listenTo));
+        buttons.add(new JLabel("Compases antes de saltar:"));
+        buttons.add(barsBeforeJumping);
+        listen.addActionListener(event -> toggleListening());
         JButton open = new JButton("Abrir");
         open.addActionListener(event -> selected().ifPresent(path -> {
+            stopListening();
             onOpen.accept(path);
             dispose();
         }));
         JButton close = new JButton("Cerrar");
-        close.addActionListener(event -> dispose());
+        close.addActionListener(event -> {
+            stopListening();
+            dispose();
+        });
         buttons.add(listen);
         buttons.add(open);
         buttons.add(close);
@@ -114,16 +136,57 @@ public final class ScoreBrowser extends JDialog {
         selected().ifPresent(path -> summary.setText(path.toString()));
     }
 
-    private void listenTo(Path path) {
-        try {
-            onListen.accept(files.load(path));
-        } catch (ScoreFileException e) {
-            summary.setText("No se pudo abrir: " + e.getMessage());
+    /** El botón hace de interruptor: escucha encadenada si estaba parado, para si ya sonaba. */
+    private void toggleListening() {
+        if (listening) {
+            stopListening();
+            return;
         }
+        selected().ifPresent(this::startListening);
+    }
+
+    private void startListening(Path path) {
+        listening = true;
+        listen.setText("Parar");
+        playback.play(allResults(), path, (Integer) barsBeforeJumping.getValue());
+    }
+
+    private void stopListening() {
+        if (!listening) {
+            return;
+        }
+        listening = false;
+        listen.setText("Escuchar");
+        playback.stop();
+    }
+
+    private List<Path> allResults() {
+        return java.util.Collections.list(found.elements());
     }
 
     private Optional<Path> selected() {
         return Optional.ofNullable(results.getSelectedValue());
+    }
+
+    /** Lo que la escucha encadenada le avisa al explorador para que la lista lo refleje. */
+    private final class ChainListener implements BrowserPlayback.Listener {
+
+        @Override
+        public void advancedTo(Path path) {
+            results.setSelectedValue(path, true);
+            summary.setText(path.toString());
+        }
+
+        @Override
+        public void loadFailed(Path path) {
+            summary.setText("No se pudo abrir: " + path);
+        }
+
+        @Override
+        public void chainEnded() {
+            listening = false;
+            listen.setText("Escuchar");
+        }
     }
 
     /** En la lista se lee el nombre del archivo; la ruta completa va abajo. */
