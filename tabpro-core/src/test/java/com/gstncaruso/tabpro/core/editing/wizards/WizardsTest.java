@@ -195,6 +195,11 @@ class WizardsTest {
         assertEquals(2, result.track(0).measure(0).beats().size());
     }
 
+    /**
+     * El manual (Bar Arranger) dice que reacomoda los compases para que su posicion sea
+     * musicalmente correcta; el tip de captura MIDI (linea 846 del manual) describe justo
+     * este caso: cambiar el ritmo al final corre los compases de lugar y hay que recomponerlos.
+     */
     @Test
     void theBarArrangerPushesTheSpareBeatsToTheNextBar() {
         Measure crowded = new Measure(TimeSignature.fourFour(), List.of(
@@ -211,6 +216,37 @@ class WizardsTest {
         assertEquals(2, arranged.track(0).measureCount());
         assertEquals(4, arranged.track(0).measure(0).beats().size());
         assertEquals(5, arranged.track(0).measure(1).beat(0).noteOn(1).orElseThrow().fret());
+    }
+
+    @Test
+    void theBarArrangerBorrowsFromTheNextBarWhenOneIsTooShort() {
+        Measure crowded = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 1)), Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3)), Beat.of(Duration.quarter(), new Note(1, 4)),
+                Beat.of(Duration.quarter(), new Note(1, 5))));
+        Measure sparse = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 6)), Beat.of(Duration.quarter(), new Note(1, 7)),
+                Beat.of(Duration.quarter(), new Note(1, 8))));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(crowded, sparse));
+        Score score = new Score("Prueba", 120, List.of(track));
+
+        Score arranged = BarArranger.run(score);
+
+        assertEquals(2, arranged.track(0).measureCount());
+        assertTrue(arranged.track(0).measure(0).isComplete());
+        assertTrue(arranged.track(0).measure(1).isComplete());
+        assertEquals(5, arranged.track(0).measure(1).beat(0).noteOn(1).orElseThrow().fret());
+    }
+
+    @Test
+    void theBarArrangerLeavesAlreadyCorrectBarsUntouched() {
+        Score score = scoreWith(
+                Beat.of(Duration.quarter(), new Note(1, 0)), Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)), Beat.of(Duration.quarter(), new Note(1, 3)));
+
+        Score arranged = BarArranger.run(score);
+
+        assertEquals(score, arranged);
     }
 
     @Test
