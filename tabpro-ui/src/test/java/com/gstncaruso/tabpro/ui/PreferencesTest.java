@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -65,5 +66,26 @@ class PreferencesTest {
         preferences.setZoomPercent(500);
 
         assertTrue(preferences.zoomPercent() <= 200);
+    }
+
+    @Test
+    void startsWithoutASoundFontFile() {
+        assertEquals(Optional.empty(), preferences.soundFontFile());
+    }
+
+    @Test
+    void remembersTheSoundFontFileChosen() {
+        preferences.setSoundFontFile(Optional.of(Path.of("/tmp/FluidR3_GM.sf2")));
+
+        assertEquals(Optional.of(Path.of("/tmp/FluidR3_GM.sf2")), preferences.soundFontFile());
+    }
+
+    @Test
+    void forgettingTheSoundFontFileGoesBackToNone() {
+        preferences.setSoundFontFile(Optional.of(Path.of("/tmp/FluidR3_GM.sf2")));
+
+        preferences.setSoundFontFile(Optional.empty());
+
+        assertEquals(Optional.empty(), preferences.soundFontFile());
     }
 }
