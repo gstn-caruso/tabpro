@@ -14,7 +14,7 @@ final class PowerTabAlternateEndingReader {
     private static final int MAX_NUMBER = 8;
 
     PowerTabAlternateEnding read(PowerTabByteReader reader) {
-        reader.readUnsignedShort(); // sistema: el ensamblado ya sabe en que sistema esta.
+        int system = reader.readUnsignedShort();
         int position = reader.readUnsignedByte();
         int data = reader.readInt();
 
@@ -25,6 +25,6 @@ final class PowerTabAlternateEndingReader {
                 numbers.add(number);
             }
         }
-        return new PowerTabAlternateEnding(position, numbers);
+        return new PowerTabAlternateEnding(system, position, numbers);
     }
 }

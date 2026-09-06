@@ -24,18 +24,8 @@ final class PowerTabStaffReader {
 
         List<List<PowerTabPosition>> voices = new ArrayList<>(VOICE_COUNT);
         for (int voice = 0; voice < VOICE_COUNT; voice++) {
-            voices.add(readVoice(reader));
+            voices.add(reader.readVector(positionReader::read));
         }
         return new PowerTabStaff(stringCount, voices);
-    }
-
-    private List<PowerTabPosition> readVoice(PowerTabByteReader reader) {
-        int count = reader.readCount();
-        List<PowerTabPosition> positions = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
-            reader.readClassInformation();
-            positions.add(positionReader.read(reader));
-        }
-        return positions;
     }
 }

@@ -1,9 +1,6 @@
 package com.gstncaruso.tabpro.format.powertab;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Lee un sistema: su barra de arranque completa, las barras internas, el tipo
@@ -30,32 +27,13 @@ final class PowerTabSystemReader {
 
         PowerTabBarline startBar = barlineReader.read(reader);
 
-        skipVector(reader, PowerTabAuxiliaryReader::skipDirection);
-        skipVector(reader, PowerTabAuxiliaryReader::skipChordText);
-        int rhythmSlashCount = skipVector(reader, PowerTabAuxiliaryReader::skipRhythmSlash);
+        reader.skipVector(PowerTabAuxiliaryReader::skipDirection);
+        reader.skipVector(PowerTabAuxiliaryReader::skipChordText);
+        int rhythmSlashCount = reader.skipVector(PowerTabAuxiliaryReader::skipRhythmSlash);
 
-        List<PowerTabStaff> staves = readVector(reader, staffReader::read);
-        List<PowerTabBarline> internalBarlines = readVector(reader, barlineReader::read);
+        List<PowerTabStaff> staves = reader.readVector(staffReader::read);
+        List<PowerTabBarline> internalBarlines = reader.readVector(barlineReader::read);
 
         return new PowerTabSystem(startBar, internalBarlines, endBarType, endBarRepeatCount, staves, rhythmSlashCount);
-    }
-
-    private static int skipVector(PowerTabByteReader reader, Consumer<PowerTabByteReader> skipOne) {
-        int count = reader.readCount();
-        for (int i = 0; i < count; i++) {
-            reader.readClassInformation();
-            skipOne.accept(reader);
-        }
-        return count;
-    }
-
-    private static <T> List<T> readVector(PowerTabByteReader reader, Function<PowerTabByteReader, T> readOne) {
-        int count = reader.readCount();
-        List<T> items = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
-            reader.readClassInformation();
-            items.add(readOne.apply(reader));
-        }
-        return items;
     }
 }

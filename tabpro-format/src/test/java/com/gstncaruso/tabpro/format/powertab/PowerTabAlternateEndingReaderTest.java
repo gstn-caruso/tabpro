@@ -26,6 +26,7 @@ class PowerTabAlternateEndingReaderTest {
 
         PowerTabAlternateEnding ending = reader.read(new PowerTabByteReader(out.toByteArray()));
 
+        assertEquals(0, ending.system());
         assertEquals(5, ending.position());
         assertEquals(List.of(2, 3), ending.numbers());
     }

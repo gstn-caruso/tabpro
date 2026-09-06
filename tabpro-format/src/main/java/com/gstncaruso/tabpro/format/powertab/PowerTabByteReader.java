@@ -2,6 +2,10 @@ package com.gstncaruso.tabpro.format.powertab;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Lee los tipos primitivos del formato binario de PowerTab sobre un arreglo de
@@ -140,6 +144,34 @@ final class PowerTabByteReader {
             int nameLength = readUnsignedShort();
             skip(nameLength);
         }
+    }
+
+    /**
+     * Un vector al estilo MFC de objetos completos: el conteo, y por cada
+     * elemento su etiqueta de clase seguida del objeto en si.
+     */
+    <T> List<T> readVector(Function<PowerTabByteReader, T> readOne) {
+        int count = readCount();
+        List<T> items = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            readClassInformation();
+            items.add(readOne.apply(this));
+        }
+        return items;
+    }
+
+    /**
+     * Un vector al estilo MFC que se descarta: igual que {@link #readVector},
+     * pero sin quedarse con nada. Devuelve el conteo, para que quien pregunte
+     * pueda decidir si un vector no vacio alcanza para rechazar el archivo.
+     */
+    int skipVector(Consumer<PowerTabByteReader> skipOne) {
+        int count = readCount();
+        for (int i = 0; i < count; i++) {
+            readClassInformation();
+            skipOne.accept(this);
+        }
+        return count;
     }
 
     /**
