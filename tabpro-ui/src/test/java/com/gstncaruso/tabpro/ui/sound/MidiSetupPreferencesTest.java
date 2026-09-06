@@ -29,6 +29,30 @@ class MidiSetupPreferencesTest {
     }
 
     @Test
+    void startsWithoutASoundFontFileChosen() {
+        assertEquals("", preferences.soundFontFile());
+    }
+
+    @Test
+    void remembersTheSoundFontFileChosen() {
+        preferences.setSoundFontFile("/usr/share/sounds/sf2/FluidR3_GM.sf2");
+
+        assertEquals("/usr/share/sounds/sf2/FluidR3_GM.sf2", preferences.soundFontFile());
+    }
+
+    @Test
+    void theSoundFontStartsActive() {
+        assertTrue(preferences.soundFontActive());
+    }
+
+    @Test
+    void remembersThatTheSoundFontWasTurnedOff() {
+        preferences.setSoundFontActive(false);
+
+        assertFalse(preferences.soundFontActive());
+    }
+
+    @Test
     void everyPortStartsWithoutADeviceChosen() {
         for (int port = 1; port <= 4; port++) {
             assertEquals("", preferences.outputDevice(port));
