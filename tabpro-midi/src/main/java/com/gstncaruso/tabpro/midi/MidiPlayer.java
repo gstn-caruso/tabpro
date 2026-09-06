@@ -32,14 +32,20 @@ public final class MidiPlayer implements Player, AutoCloseable {
     private javax.sound.midi.MidiDevice chosenOutput;
     private final Set<Integer> limitedPitchVariationPorts = new HashSet<>();
     private final Map<Integer, PortOutput> secondaryPorts = new HashMap<>();
+    private final Supplier<Sequencer> portSequencers;
 
     public MidiPlayer(Sequencer sequencer) {
         this(sequencer, MidiPlayer::defaultSynthesizer);
     }
 
     MidiPlayer(Sequencer sequencer, Supplier<Receiver> synthesizers) {
+        this(sequencer, synthesizers, PortOutput::connectedSequencer);
+    }
+
+    MidiPlayer(Sequencer sequencer, Supplier<Receiver> synthesizers, Supplier<Sequencer> portSequencers) {
         this.sequencer = sequencer;
         this.synthesizers = synthesizers;
+        this.portSequencers = portSequencers;
         sequencer.addMetaEventListener(this::notifyListenerOf);
     }
 
@@ -192,7 +198,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
     }
 
     private PortOutput secondaryPortOutput(int port) {
-        return secondaryPorts.computeIfAbsent(port, ignored -> new PortOutput());
+        return secondaryPorts.computeIfAbsent(port, ignored -> new PortOutput(portSequencers.get()));
     }
 
     private void stopSecondaryPorts() {
@@ -275,8 +281,8 @@ public final class MidiPlayer implements Player, AutoCloseable {
         private final Sequencer sequencer;
         private javax.sound.midi.MidiDevice device;
 
-        PortOutput() {
-            this.sequencer = newSequencer();
+        PortOutput(Sequencer sequencer) {
+            this.sequencer = sequencer;
         }
 
         private boolean isSilent() {
@@ -361,8 +367,11 @@ public final class MidiPlayer implements Player, AutoCloseable {
             }
         }
 
-        /** Conectado al sintetizador del sistema por defecto, igual que el puerto principal. */
-        private static Sequencer newSequencer() {
+        /**
+         * Conectado al sintetizador del sistema por defecto. En una maquina sin placa de sonido
+         * no hay ninguno: el puerto se queda sin secuenciador y toca en silencio.
+         */
+        static Sequencer connectedSequencer() {
             try {
                 return MidiSystem.getSequencer();
             } catch (MidiUnavailableException e) {

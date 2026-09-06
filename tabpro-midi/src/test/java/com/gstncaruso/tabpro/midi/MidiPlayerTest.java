@@ -212,8 +212,15 @@ class MidiPlayerTest {
      * salto tiene que alcanzarlos a todos, no solo al principal, o el puerto secundario se queda
      * sonando donde estaba antes de saltar.
      */
+    /**
+     * El puerto secundario arma su propio secuenciador conectado al sintetizador del sistema, y
+     * en una maquina sin placa de sonido -la CI, por ejemplo- ese secuenciador no existe y el
+     * puerto queda mudo. Para que el test hable del salto y no de si la maquina tiene sonido, se
+     * le inyecta la misma clase de secuenciador suelto que ya usa el puerto principal.
+     */
     @Test
     void seekingReachesEverySequencerNotJustThePrimaryPort() {
+        player = new MidiPlayer(sequencer, MidiPlayerTest::silentReceiver, MidiPlayerTest::unconnectedSequencer);
         TrackTimeline enElPuertoUno = new TrackTimeline(25, 100, 64, false, 1,
                 List.of(new ScheduledNote(0, 4L * Duration.TICKS_PER_QUARTER, new Pitch(60))),
                 List.of(new ScheduledBeat(0, 0, 0)), List.of());
@@ -313,6 +320,27 @@ class MidiPlayerTest {
         Track track = Track.standardGuitar("Guitarra").withMeasure(0, measure);
         Score score = Score.blank().withTempo(600).withTrack(0, track);
         return Timeline.of(score);
+    }
+
+    /** Un secuenciador que no pide sintetizador: el unico que una maquina sin sonido puede dar. */
+    private static Sequencer unconnectedSequencer() {
+        try {
+            return MidiSystem.getSequencer(false);
+        } catch (MidiUnavailableException e) {
+            return null;
+        }
+    }
+
+    private static Receiver silentReceiver() {
+        return new Receiver() {
+            @Override
+            public void send(MidiMessage message, long timeStamp) {
+            }
+
+            @Override
+            public void close() {
+            }
+        };
     }
 
     private PlaybackListener noOpListener() {
