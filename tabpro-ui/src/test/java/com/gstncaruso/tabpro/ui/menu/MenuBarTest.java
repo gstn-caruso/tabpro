@@ -6,13 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -54,6 +57,40 @@ class MenuBarTest {
         recentFilesMenuOf(bar).getItem(0).doClick();
 
         assertEquals(List.of(path), opened);
+    }
+
+    /**
+     * Que un comando tenga un acelerador declarado no prueba que la ventana lo escuche: si
+     * nadie lo cuelga de un menu, el atajo queda muerto sin que nada lo avise. Este test recorre
+     * la barra de menus entera y confirma que todo comando con atajo aparece en algun item.
+     */
+    @Test
+    void todoComandoConAceleradorCuelgaDeAlgunMenu() {
+        JMenuBar bar = new MenuBar(commands).build();
+        Set<Command> enElMenu = new HashSet<>();
+        for (int i = 0; i < bar.getMenuCount(); i++) {
+            recolectar(bar.getMenu(i), enElMenu);
+        }
+
+        commands.all().forEach((nombre, comando) -> {
+            if (comando.accelerator() != null) {
+                assertTrue(enElMenu.contains(comando), "el atajo de " + nombre + " no cuelga de ningun menu");
+            }
+        });
+    }
+
+    private void recolectar(JMenu menu, Set<Command> encontrados) {
+        for (int i = 0; i < menu.getItemCount(); i++) {
+            JMenuItem item = menu.getItem(i);
+            if (item == null) {
+                continue;
+            }
+            if (item instanceof JMenu submenu) {
+                recolectar(submenu, encontrados);
+            } else if (item.getAction() instanceof Command comando) {
+                encontrados.add(comando);
+            }
+        }
     }
 
     private JMenu recentFilesMenuOf(JMenuBar bar) {
