@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import java.awt.Component;
+import java.util.Locale;
 import javax.swing.JCheckBox;
 import org.junit.jupiter.api.Test;
 
@@ -86,7 +87,7 @@ class PreferencesPanelTest {
 
     private static JCheckBox checkBoxSaying(PreferencesPanel panel, String words) {
         for (Component child : panel.getComponents()) {
-            if (child instanceof JCheckBox box && box.getText().toLowerCase().contains(words)) {
+            if (child instanceof JCheckBox box && box.getText().toLowerCase(Locale.ROOT).contains(words)) {
                 return box;
             }
         }
