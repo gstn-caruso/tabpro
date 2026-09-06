@@ -23,10 +23,6 @@ public final class PageSetupDialog {
     private PageSetupDialog() {
     }
 
-    public static Optional<PageSetup> ask(Component parent, PageSetup current) {
-        return ask(parent, current, setup -> { }, DefaultPageSetup.userSetup());
-    }
-
     public static Optional<PageSetup> ask(Component parent, PageSetup current, Consumer<PageSetup> refresh) {
         return ask(parent, current, refresh, DefaultPageSetup.userSetup());
     }

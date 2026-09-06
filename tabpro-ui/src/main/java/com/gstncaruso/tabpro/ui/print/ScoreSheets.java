@@ -27,7 +27,7 @@ public final class ScoreSheets {
     private ScoreSheets() {
     }
 
-    public static Dimension sizeOf(Score score, Zoom zoom, PageSetup setup) {
+    private static Dimension sizeOf(Score score, Zoom zoom, PageSetup setup) {
         return PageScorePainter.canvasSize(score, sheetViewport(zoom, setup));
     }
 
