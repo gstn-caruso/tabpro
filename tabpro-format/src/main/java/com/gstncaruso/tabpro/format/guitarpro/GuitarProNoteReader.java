@@ -33,23 +33,36 @@ final class GuitarProNoteReader {
     Note read(GuitarProByteReader reader, GuitarProVersion version, int string) {
         int flags = reader.readUnsignedByte();
 
+        // El tipo y el traste los dispara la misma bandera pero no son consecutivos:
+        // la dinamica se mete en el medio. Lo unico que cambia entre generaciones es
+        // donde va la duracion propia de la nota, y de que tamano es.
+        boolean isGp5 = version.hasNoteDurationPercent();
         int type = 1;
-        int fret = 0;
         if ((flags & FLAG_TYPE_AND_FRET) != 0) {
             type = reader.readUnsignedByte();
-            fret = reader.readSignedByte();
         }
-        skipDurationOverride(reader, version, flags);
+        if (!isGp5) {
+            skipDurationOverride(reader, version, flags);
+        }
 
         NoteEffects effects = NoteEffects.none();
         if ((flags & FLAG_DYNAMIC) != 0) {
             effects = effects.withDynamic(dynamicOf(reader.readSignedByte()));
+        }
+        int fret = 0;
+        if ((flags & FLAG_TYPE_AND_FRET) != 0) {
+            fret = reader.readSignedByte();
         }
         Finger leftHand = null;
         Finger rightHand = null;
         if ((flags & FLAG_FINGERING) != 0) {
             leftHand = fingerOf(reader.readSignedByte());
             rightHand = fingerOf(reader.readSignedByte());
+        }
+        if (isGp5) {
+            skipDurationOverride(reader, version, flags);
+            // En gp5 toda nota cierra con un byte de banderas propio.
+            reader.readUnsignedByte();
         }
         if (leftHand != null) {
             effects = effects.withLeftHand(leftHand);
@@ -84,7 +97,6 @@ final class GuitarProNoteReader {
         }
         if (version.hasNoteDurationPercent()) {
             reader.readDoubleBigEndian();
-            reader.readUnsignedByte(); // flags2_gp5: solo se usa para alterar accidentes al dibujar.
         } else {
             reader.readSignedByte();
             reader.readSignedByte();
