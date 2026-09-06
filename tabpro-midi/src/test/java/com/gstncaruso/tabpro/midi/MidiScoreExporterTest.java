@@ -13,7 +13,10 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
+import com.gstncaruso.tabpro.core.model.effects.Bend;
+import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import java.nio.file.Files;
@@ -54,19 +57,57 @@ class MidiScoreExporterTest {
     }
 
     @Test
-    void writesTheProgramVolumeAndPan() {
+    void preparesTheProgramVolumeAndPanOnBothChannelsOfTheTrack() {
         Channel channel = Channel.playing(30).withVolume(90).withPan(20);
         Track track = Track.standardGuitar("Guitarra").withChannel(channel);
         Score score = new Score("Prueba", 120, List.of(track));
 
         Sequence sequence = exporter.toSequence(score);
 
+        // una pista ocupa dos canales: el limpio y el de efectos, donde suenan las notas con bend
         javax.sound.midi.Track midiTrack = sequence.getTracks()[1];
-        assertEquals(30, onlyShortMessageOf(midiTrack, ShortMessage.PROGRAM_CHANGE).getData1());
-        ShortMessage volume = onlyControlChange(midiTrack, 7);
-        ShortMessage pan = onlyControlChange(midiTrack, 10);
-        assertEquals(90, volume.getData2());
-        assertEquals(20, pan.getData2());
+        for (int midiChannel : List.of(0, 1)) {
+            assertEquals(30, programChangeOn(midiTrack, midiChannel));
+            assertEquals(90, controlChangeOn(midiTrack, midiChannel, 7));
+            assertEquals(20, controlChangeOn(midiTrack, midiChannel, 10));
+        }
+    }
+
+    @Test
+    void sendsTheBentNoteToTheEffectsChannelSoItDoesNotDragTheRest() {
+        Note bent = new Note(6, 0).withBend(Bend.of(BendType.BEND, 4));
+        Score score = scoreOfOneMeasure(Beat.of(Duration.of(NoteValue.WHOLE), bent, new Note(1, 0)));
+
+        javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
+
+        assertEquals(1, noteOnOf(midiTrack, 40).getChannel(), "la nota con bend va al canal de efectos");
+        assertEquals(0, noteOnOf(midiTrack, 64).getChannel(), "la limpia se queda en el canal de la pista");
+    }
+
+    @Test
+    void namesTheScoreAndEachTrack() {
+        Score score = new Score("Cancion", 120,
+                List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
+
+        Sequence sequence = exporter.toSequence(score);
+
+        assertEquals("Cancion", textOf(onlyMetaOfType(sequence.getTracks()[0], 0x03)));
+        assertEquals("Guitarra", textOf(onlyMetaOfType(sequence.getTracks()[1], 0x03)));
+        assertEquals("Bajo", textOf(onlyMetaOfType(sequence.getTracks()[2], 0x03)));
+    }
+
+    @Test
+    void announcesTheTimeSignatureAgainOnEachPassOfARepeat() {
+        Measure fourFour = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
+        Measure threeFour = Measure.empty(new TimeSignature(3, 4), Duration.quarter())
+                .withAttributes(MeasureAttributes.plain().withRepeatCount(2));
+        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(fourFour, threeFour));
+        Score score = new Score("Prueba", 120, List.of(track));
+
+        Sequence sequence = exporter.toSequence(score);
+
+        // se tocan 4/4, 3/4, 4/4, 3/4: el archivo lo anuncia las cuatro veces
+        assertEquals(4, metaEventsOfType(sequence.getTracks()[0], 0x58).size());
     }
 
     @Test
@@ -164,6 +205,35 @@ class MidiScoreExporterTest {
     }
 
     @Test
+    void writesThePitchBendOfABentNote() {
+        Note bent = new Note(6, 0).withBend(Bend.of(BendType.BEND, 4));
+        Score score = scoreOfOneMeasure(Beat.of(Duration.of(NoteValue.WHOLE), bent));
+
+        Sequence sequence = exporter.toSequence(score);
+
+        assertTrue(countShortMessagesOf(sequence.getTracks()[1], ShortMessage.PITCH_BEND) > 0,
+                "el .mid tiene que llevar el bend que se escucha");
+    }
+
+    @Test
+    void repeatsTheMeasuresThatTheScoreRepeats() {
+        Score score = scoreOfOneMeasure(Beat.of(Duration.of(NoteValue.WHOLE), new Note(6, 0)));
+        Score repeated = score.withTrack(0, score.track(0).withMeasure(0, score.track(0).measure(0)
+                .withAttributes(MeasureAttributes.plain().withRepeatOpen(true).withRepeatCount(2))));
+
+        Sequence sequence = exporter.toSequence(repeated);
+
+        assertEquals(2, countShortMessagesOf(sequence.getTracks()[1], ShortMessage.NOTE_ON),
+                "el compas se repite, asi que su nota suena dos veces");
+    }
+
+    private static Score scoreOfOneMeasure(Beat... beats) {
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Prueba", 120, List.of(track));
+    }
+
+    @Test
     void writesAndReadsBackAFile(@TempDir Path tempDir) throws Exception {
         Score score = Score.blank();
         Path path = tempDir.resolve("prueba.mid");
@@ -205,15 +275,31 @@ class MidiScoreExporterTest {
         return found;
     }
 
-    private static ShortMessage onlyControlChange(javax.sound.midi.Track track, int controller) {
-        for (int i = 0; i < track.size(); i++) {
-            if (track.get(i).getMessage() instanceof ShortMessage message
-                    && message.getCommand() == ShortMessage.CONTROL_CHANGE
-                    && message.getData1() == controller) {
-                return message;
-            }
-        }
-        throw new AssertionError("no se encontro el control change " + controller);
+    private static ShortMessage noteOnOf(javax.sound.midi.Track track, int pitch) {
+        return shortMessagesOf(track, ShortMessage.NOTE_ON).stream()
+                .filter(message -> message.getData1() == pitch)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("no se encontro la nota " + pitch));
+    }
+
+    private static int programChangeOn(javax.sound.midi.Track track, int channel) {
+        return shortMessagesOf(track, ShortMessage.PROGRAM_CHANGE).stream()
+                .filter(message -> message.getChannel() == channel)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("no se encontro el instrumento del canal " + channel))
+                .getData1();
+    }
+
+    private static int controlChangeOn(javax.sound.midi.Track track, int channel, int controller) {
+        return shortMessagesOf(track, ShortMessage.CONTROL_CHANGE).stream()
+                .filter(message -> message.getChannel() == channel && message.getData1() == controller)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("no se encontro el controlador " + controller))
+                .getData2();
+    }
+
+    private static String textOf(MetaMessage message) {
+        return new String(message.getData(), java.nio.charset.StandardCharsets.UTF_8);
     }
 
     private static MetaMessage onlyMetaOfType(javax.sound.midi.Track track, int type) {
