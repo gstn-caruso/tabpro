@@ -600,7 +600,7 @@ public final class Editor {
         if (string < 1 || string > track.stringCount()) {
             throw new IllegalArgumentException("string fuera de rango: " + string);
         }
-        moveCursor(new Cursor(cursor.track(), measure, cursor.voice(), beat, string, cursor.notation()));
+        moveCursor(new Cursor(cursor.track(), measure, cursor.voice(), beat, string, cursor.notation(), Optional.empty()));
     }
 
     public void moveDown() {
@@ -629,9 +629,16 @@ public final class Editor {
         Track track = currentTrack();
         Clef clef = Clef.forTuning(track.tuning());
         int step = StaffPosition.of(pitchAtCursor(), clef).step() + steps;
-        clef.pitchAtStep(step)
-                .flatMap(pitch -> AutomaticFingering.bestFingeringFor(track.tuning(), pitch, handPosition(), List.of()))
-                .ifPresent(found -> moveCursor(cursor.onString(found.string())));
+        Optional<Pitch> target = clef.pitchAtStep(step);
+        if (target.isEmpty()) {
+            return;
+        }
+        Pitch pitch = target.get();
+        // El puntero guarda la altura exacta (pitch), no la cuerda: la cuerda es solo la mejor
+        // digitacion PARA esa altura, y volver a derivarla de la cuerda al aire en la proxima
+        // flecha perderia los grados ya andados.
+        AutomaticFingering.bestFingeringFor(track.tuning(), pitch, handPosition(), List.of())
+                .ifPresent(found -> moveCursor(cursor.onString(found.string()).withPointer(pitch)));
     }
 
     public void moveLeft() {
@@ -972,6 +979,9 @@ public final class Editor {
     /** La altura donde esta el cursor: la de la nota que ya suena en su cuerda, o la de la
      * cuerda al aire si el beat esta en silencio ahi. */
     private Pitch pitchAtCursor() {
+        if (cursor.pointer().isPresent()) {
+            return cursor.pointer().get();
+        }
         Tuning tuning = currentTrack().tuning();
         return currentNote().map(tuning::pitchOf).orElseGet(() -> tuning.pitchOfString(cursor.string()));
     }
@@ -1105,7 +1115,7 @@ public final class Editor {
         VoicePart voice = track.measure(measure).voice(cursor.voice()).isUnused() ? VoicePart.LEAD : cursor.voice();
         int beat = Math.min(cursor.beat(), track.measure(measure).voice(voice).beatCount() - 1);
         int string = Math.min(cursor.string(), track.stringCount());
-        return new Cursor(trackIndex, measure, voice, beat, string, cursor.notation());
+        return new Cursor(trackIndex, measure, voice, beat, string, cursor.notation(), Optional.empty());
     }
 
     private Score withCurrentMeasure(Measure measure) {
