@@ -73,6 +73,10 @@ enum GuitarProVersion {
         return generation >= 5;
     }
 
+    /**
+     * Solo 5.10 escribe si el tempo se muestra o no en la partitura: una vez en la cabecera
+     * y una vez por cada cambio de parametros que toque el tempo, detras de su transicion.
+     */
     boolean hasHideTempo() {
         return this == GP5_10;
     }

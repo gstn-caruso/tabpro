@@ -323,6 +323,52 @@ class GuitarProBeatReaderTest {
         assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
     }
 
+    // ---- el tempo del cambio de parametros y su bandera de 5.10 -------------
+
+    /**
+     * Solo 5.10 escribe, detras de la transicion del tempo, si el cambio se muestra o no
+     * en la partitura. Ese byte existe unicamente cuando el tempo cambia; si el lector no
+     * lo consume, todo lo que sigue en el archivo queda corrido en uno.
+     */
+    @Test
+    void gp510KeepsTheAlignmentAfterTheHiddenTempoFlag() {
+        GuitarProByteReader bytes = new GuitarProByteReader(gp5BeatChangingTempo(140, GuitarProVersion.GP5_10)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(ONLY_FIRST_STRING)
+                .writeUnsignedByte(NOTE_WITH_FRET).writeUnsignedByte(NORMAL_NOTE).writeSignedByte(9)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeShort(0)
+                .bytes());
+
+        Beat tempoBeat = reader.read(bytes, GuitarProVersion.GP5_10, 6);
+        Beat siguiente = reader.read(bytes, GuitarProVersion.GP5_10, 6);
+
+        assertEquals(OptionalInt.of(140),
+                tempoBeat.effects().parameterChange().valueOf(SoundParameter.TEMPO));
+        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+    }
+
+    /** En 5.00 ese byte no existe: leerlo tambien correria todo lo que sigue. */
+    @Test
+    void gp500HasNoHiddenTempoFlagAfterTheTempo() {
+        GuitarProByteReader bytes = new GuitarProByteReader(gp5BeatChangingTempo(140, GuitarProVersion.GP5_00)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeSignedByte(QUARTER)
+                .writeUnsignedByte(ONLY_FIRST_STRING)
+                .writeUnsignedByte(NOTE_WITH_FRET).writeUnsignedByte(NORMAL_NOTE).writeSignedByte(9)
+                .writeUnsignedByte(NO_FLAGS)
+                .writeShort(0)
+                .bytes());
+
+        Beat tempoBeat = reader.read(bytes, GuitarProVersion.GP5_00, 6);
+        Beat siguiente = reader.read(bytes, GuitarProVersion.GP5_00, 6);
+
+        assertEquals(OptionalInt.of(140),
+                tempoBeat.effects().parameterChange().valueOf(SoundParameter.TEMPO));
+        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+    }
+
     /**
      * Un beat completo de GP5, sin notas, con un cambio de parametros que no toca nada salvo
      * el wah pedido: instrumento, volumen, pan, chorus, reverb, phaser, tremolo y tempo en -1
@@ -350,6 +396,39 @@ class GuitarProBeatReaderTest {
                 .writeUnsignedByte(0x00)
                 .writeSignedByte(wah);
         if (withRseInstrumentEffect) {
+            writer.writeLengthPrefixedString("").writeLengthPrefixedString("");
+        }
+        return writer.writeUnsignedByte(NO_STRINGS).writeShort(0);
+    }
+
+    /**
+     * El mismo beat de GP5 pero con el tempo cambiado, que es lo que le agrega bytes al
+     * cambio de parametros: el de la transicion y, desde 5.10, el de "no muestres el
+     * cambio de tempo en la partitura".
+     */
+    private static GuitarProFileWriter gp5BeatChangingTempo(int tempo, GuitarProVersion version) {
+        boolean isGp510 = version == GuitarProVersion.GP5_10;
+        GuitarProFileWriter writer = new GuitarProFileWriter()
+                .writeUnsignedByte(WITH_MIX_TABLE)
+                .writeSignedByte(QUARTER)
+                .writeSignedByte(UNCHANGED);
+        for (int i = 0; i < 16; i++) {
+            writer.writeUnsignedByte(0);
+        }
+        writer.writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED)
+                .writeSignedByte(UNCHANGED)
+                .writeLengthPrefixedString("")
+                .writeInt(tempo)
+                .writeSignedByte(0);
+        if (isGp510) {
+            writer.writeBoolean(false);
+        }
+        writer.writeUnsignedByte(0x00).writeSignedByte(UNCHANGED);
+        if (isGp510) {
             writer.writeLengthPrefixedString("").writeLengthPrefixedString("");
         }
         return writer.writeUnsignedByte(NO_STRINGS).writeShort(0);

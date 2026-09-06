@@ -252,8 +252,8 @@ final class GuitarProBeatReader {
         change = changing(change, SoundParameter.TREMOLO, tremolo);
         change = changing(change, SoundParameter.TEMPO, tempo);
 
-        change = change.over(readTransitionDurations(
-                reader, volume, pan, chorus, reverb, phaser, tremolo, tempo));
+        int transition = readTransitionDurations(reader, volume, pan, chorus, reverb, phaser, tremolo);
+        change = change.over(Math.max(transition, readTempoTransition(reader, version, tempo)));
         change = change.onEveryTrack(readEveryTrackMask(reader, version));
         effects = effects.withParameterChange(change);
 
@@ -283,6 +283,22 @@ final class GuitarProBeatReader {
             return Optional.of(Wah.OFF);
         }
         return Optional.of(value >= WAH_HALFWAY ? Wah.OPEN : Wah.CLOSED);
+    }
+
+    /**
+     * El tempo trae su transicion como cualquier otro parametro, pero desde GP5.10 la
+     * sigue una bandera que dice si el cambio se muestra en la partitura. Sin consumirla,
+     * todo lo que viene despues en el archivo queda corrido en un byte.
+     */
+    private static int readTempoTransition(GuitarProByteReader reader, GuitarProVersion version, int tempo) {
+        if (tempo < 0) {
+            return 0;
+        }
+        int transition = reader.readSignedByte();
+        if (version.hasHideTempo()) {
+            reader.readBoolean();
+        }
+        return transition;
     }
 
     /**
