@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.format.guitarpro;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
-import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Pitch;
@@ -161,7 +160,7 @@ public final class GuitarProFile {
                 header.twelveString(),
                 header.banjoFifthString(),
                 header.display());
-        return new Track(header.name(), tuning, channelOf(header, channels), settings, usable(measures));
+        return new Track(header.name(), tuning, header.channelIn(channels), settings, usable(measures));
     }
 
     private static Tuning tuningOf(GuitarProTrackHeader header) {
@@ -173,27 +172,6 @@ public final class GuitarProFile {
                 .map(midiNumber -> new Pitch(Math.clamp(midiNumber, 0, 127)))
                 .toList();
         return strings.isEmpty() ? Tuning.standard() : TuningLibrary.identify(strings);
-    }
-
-    private static Channel channelOf(GuitarProTrackHeader header, List<GuitarProChannel> channels) {
-        int slot = header.channelIndex1Based() - 1;
-        if (slot < 0 || slot >= channels.size()) {
-            return header.percussion() ? Channel.percussion() : Channel.playing(Track.GUITAR_PROGRAM);
-        }
-        GuitarProChannel sound = channels.get(slot);
-        return new Channel(
-                Math.clamp(sound.program(), 0, Channel.MAX),
-                sound.volume(),
-                sound.pan(),
-                sound.chorus(),
-                sound.reverb(),
-                sound.phaser(),
-                sound.tremolo(),
-                1,
-                Math.clamp(header.channelIndex1Based(), 1, Channel.CHANNELS_PER_PORT),
-                Channel.effectChannelNextTo(Math.clamp(header.channelIndex1Based(), 1, Channel.CHANNELS_PER_PORT)),
-                false,
-                false);
     }
 
     /** Una pista necesita al menos un compas, aunque el archivo no traiga ninguno. */
