@@ -191,6 +191,12 @@ public final class MainFrame extends JFrame {
         });
     }
 
+    /** La escala elegida se dibuja tambien sobre el diapason y el teclado. */
+    private void showChosenScaleOnTheInstruments() {
+        chosenScale.tonic().ifPresent(tonic ->
+                beatViews.showScale(tonic.semitone(), chosenScale.semitonesFromTheTonic()));
+    }
+
     /** La mesa de mezcla ocupa lo suyo abajo; el resto es partitura. */
     private void showMixTable() {
         split.setDividerLocation(Math.max(0, split.getHeight() - trackPanel.preferredPanelHeight()));
@@ -857,6 +863,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void scales() {
             ScalesDialog.show(MainFrame.this, editor, player, chosenScale);
+            showChosenScaleOnTheInstruments();
             backToTheScore();
         }
 
