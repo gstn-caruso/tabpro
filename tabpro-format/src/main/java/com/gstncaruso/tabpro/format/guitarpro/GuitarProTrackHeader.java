@@ -22,9 +22,9 @@ record GuitarProTrackHeader(
 
     /**
      * El canal del dominio que le toca a esta pista: el sonido que la tabla del
-     * archivo guarda en su ranura, sonando en el canal que la pista eligio. Una
-     * pista que apunta a una ranura que no existe arranca con el canal por
-     * defecto de su instrumento.
+     * archivo guarda en su ranura, sonando en los dos canales que la pista
+     * eligio. Una pista que apunta a una ranura que no existe arranca con el
+     * canal por defecto de su instrumento.
      */
     Channel channelIn(List<GuitarProChannel> channels) {
         int slot = channelIndex1Based - 1;
@@ -32,7 +32,6 @@ record GuitarProTrackHeader(
             return percussion ? Channel.percussion() : Channel.playing(Track.GUITAR_PROGRAM);
         }
         GuitarProChannel sound = channels.get(slot);
-        int number = channelOfThePort(channelIndex1Based);
         return new Channel(
                 Math.clamp(sound.program(), 0, Channel.MAX),
                 sound.volume(),
@@ -42,8 +41,8 @@ record GuitarProTrackHeader(
                 sound.phaser(),
                 sound.tremolo(),
                 1,
-                number,
-                Channel.effectChannelNextTo(number),
+                channelOfThePort(channelIndex1Based),
+                channelOfThePort(effectChannelIndex1Based),
                 false,
                 false);
     }
