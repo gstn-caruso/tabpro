@@ -50,7 +50,12 @@ adivinarse — ver el javadoc de `PowerTabFile`. En particular:
 ## Licencia
 
 Estos archivos siguen bajo la licencia del proyecto de origen (GPLv3), no
-bajo la licencia MIT de tabpro. Se versionan igual porque son datos de
-prueba, no código que se distribuya como parte del programa — la misma
-lógica con la que cualquier suite de tests versiona fixtures de terceros
-para probar un lector de formato ajeno.
+bajo la licencia MIT de tabpro — y **eso es a propósito, no un descuido**:
+la decisión de dejarlos así, en vez de reemplazarlos por sintéticos, se
+tomó y quedó documentada acá para que quede clara la próxima vez que
+alguien la lea. Son datos de prueba, no código que se distribuya como
+parte del programa: la misma lógica con la que cualquier suite de tests
+versiona fixtures de terceros para probar un lector de formato ajeno. El
+código del lector en sí (`tabpro-format/.../powertab/`) es de tabpro, MIT
+como el resto del proyecto; ver su javadoc para la procedencia de la
+especificación que sí usa.

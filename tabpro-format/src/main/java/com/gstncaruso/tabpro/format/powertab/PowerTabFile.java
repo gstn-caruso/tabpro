@@ -28,7 +28,24 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Abre una partitura de PowerTab (.ptb). El archivo guarda la cabecera y
+ * Procedencia del formato: PowerTab no publica una especificacion aparte, asi
+ * que el layout binario de este lector sale de leer el codigo fuente de
+ * powertabeditor (github.com/powertab/powertabeditor, GPLv3), puntualmente
+ * los {@code Deserialize()} de {@code source/formats/powertab_old/powertabdocument/}
+ * (powertabfileheader, score, guitar, tuning, system, staff, barline,
+ * timesignature, keysignature, position, note, alternateending,
+ * tempomarker, guitarin) y {@code powertaboldimporter.cpp}, que convierte
+ * ese modelo viejo al modelo moderno y aclaro semantica que el layout solo
+ * no explica (por ejemplo, que una barra abre el compas que empieza en su
+ * posicion y cierra el anterior). De ahi no se copio ni una linea de
+ * codigo: se leyo el orden y el tamano de los campos (un hecho del formato,
+ * no una expresion con derecho de autor) y se escribio esta implementacion
+ * entera de cero, en Java, con el diseno y los nombres del resto de tabpro.
+ * Los fixtures reales de test que usan estas clases son harina de otro
+ * costal: esos si son archivos de terceros, y su procedencia y licencia
+ * (GPLv3) estan aparte en el LEEME.md de {@code src/test/resources/powertab/}.
+ *
+ * <p>Abre una partitura de PowerTab (.ptb). El archivo guarda la cabecera y
  * despues dos "score" completas, siempre en el mismo orden: la de guitarra y
  * la de bajo (aunque la cancion solo use una). Cada sistema es un tramo de la
  * partitura que puede tener varios compases adentro, delimitados por sus
