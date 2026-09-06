@@ -69,26 +69,43 @@ checkout compartido; `docs/` lo maneja esta sesión; y quien vaya a tocar
 |---|---|
 | 0. Limpieza del árbol (PR #41 y #42 mergeados, worktrees y branches podadas) | ✅ hecho |
 | 1. Auditoría del manual contra el código | ✅ hecho — ver [auditoria-manual.md](auditoria-manual.md) |
-| 1b. Auditoría de las tablas de atajos que quedaron fuera del recorte | 🔜 en curso |
-| 2. Versionado automático con semantic-release | 🔜 en curso |
+| 1b. Auditoría de las tablas de atajos que quedaron fuera del recorte | ✅ hecho — 37 de 41 atajos correctos |
+| 2. Versionado automático con semantic-release | ✅ hecho — publicó la v0.9.0 sola |
 | 3. Implementación de los huecos, un PR por hueco | 🔜 en curso |
 
-Punto de partida: `main` = `4702129`, versión 0.8.0.
+Punto de partida: `main` = `4702129`, versión 0.8.0. Al cerrar la etapa 2, `main`
+quedó en **v0.9.0**, publicada automáticamente por el pipeline.
+
+### Lo que enseñó poner en marcha el pipeline
+
+Dos cosas que conviene no volver a aprender:
+
+1. **`v0.8.0` no existía.** El último tag del repo era `v0.6.1`, aunque los poms
+   dijeran 0.8.0 y el README mandara a bajar un `.deb` de esa versión. Antes de
+   activar semantic-release hubo que taggear `v0.8.0`, o habría calculado una
+   versión **anterior** a la que el programa ya decía tener.
+2. **Un dry-run sin credenciales no prueba lo que parece.** semantic-release se
+   frena en `verifyConditions` del plugin de GitHub, que corre *antes* de
+   `generateNotes`, así que el dry-run verificaba que la configuración cargara,
+   no que las notas se pudieran generar. El primer release real falló por un
+   preset incompatible que el dry-run nunca llegó a ejercitar. Para probar de
+   verdad hay que correrlo sacando los plugins que piden credenciales.
 
 ## Los huecos de esta sesión, en orden
 
 | Hueco | Tamaño | Estado |
 |---|---|---|
-| Exportar imagen en BMP (+ restricción a modo Página) | chico | 🔜 en curso |
-| Banco de sonidos SoundFont en Gervill | mediano | 🔜 en curso |
+| Exportar imagen en BMP (+ restricción a modo Página) | chico | ✅ mergeado (#45) |
+| La exportación de imagen falla ruidosamente si `ImageIO` no escribe | chico | 🔜 en curso |
+| Banco de sonidos SoundFont en Gervill (+ F2 para prenderlo y apagarlo) | mediano | 🔜 en curso |
 | Exportar a WAVE | grande | 🔜 en curso |
-| Exportar al formato de Guitar Pro | grande | ⏳ pendiente |
-| Importar PowerTab | grande | ⏳ pendiente |
+| Exportar al formato de Guitar Pro | grande | 🔜 en curso |
+| Importar PowerTab | grande | 🔜 en curso |
 | Importar TablEdit (sin spec pública: el más incierto) | grande | ⏳ pendiente |
-| Import MIDI: escuchar las pistas antes de importar | chico | ⏳ pendiente |
-| Import MIDI: precisión de posición y duración | mediano | ⏳ pendiente |
+| Import MIDI: escuchar las pistas antes de importar | chico | 🔜 en curso |
+| Import MIDI: precisión de posición y duración | mediano | 🔜 en curso |
 | Import MIDI: casilla "2 canales por pista" | mediano | ⏳ bloqueado por `Ch2` de la otra sesión |
-| Import ASCII: intervalos por negra del ritmo `<variable>` | chico | ⏳ pendiente |
-| El lector de GP descarta las direcciones musicales (`skipDirections`) | chico | ⏳ pendiente |
-| `MidiScoreExporter` escribe un solo tempo, no el mapa | chico | ⏳ pendiente |
+| Import ASCII: intervalos por negra del ritmo `<variable>` | chico | 🔜 en curso |
+| El lector de GP descarta las direcciones musicales (`skipDirections`) | chico | 🔜 en curso |
+| `MidiScoreExporter` escribe un solo tempo, no el mapa | chico | 🔜 en curso |
 | `File > Open` partido en dos comandos: que abra también los `.gp*` | chico | ⏳ pendiente |
