@@ -35,7 +35,9 @@ public final class AsciiImportDialog {
             int trackIndex = editor.cursor().track();
             String text = panel.text();
             Optional<NoteValue> fixedRhythm = panel.fixedRhythm();
-            editor.apply(score -> score.mappingTrack(trackIndex, track -> exchange.importAsciiInto(track, text, fixedRhythm)));
+            int intervalsPerQuarterNote = panel.intervalsPerQuarterNote();
+            editor.apply(score -> score.mappingTrack(
+                    trackIndex, track -> exchange.importAsciiInto(track, text, fixedRhythm, intervalsPerQuarterNote)));
         } catch (ScoreFileException e) {
             showError(parent, e.getMessage());
         }

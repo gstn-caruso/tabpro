@@ -46,6 +46,15 @@ class TransportTest {
     }
 
     @Test
+    void previewTimelinePlaysItDirectlyWithoutGoingThroughTheEditorScore() {
+        Timeline timeline = new Timeline(90, Duration.TICKS_PER_QUARTER, java.util.List.of());
+
+        transport.previewTimeline(timeline);
+
+        assertEquals(timeline, player.lastTimeline);
+    }
+
+    @Test
     void toggleWhilePlayingStops() {
         transport.toggle();
 

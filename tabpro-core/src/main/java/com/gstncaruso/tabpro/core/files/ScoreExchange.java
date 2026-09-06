@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.core.files;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.playback.Timeline;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -31,13 +32,20 @@ public interface ScoreExchange {
         throw notSupported("la importación de MIDI");
     }
 
-    /** El "import rápido" del manual, pero solo con las pistas elegidas en la ventana. */
-    default Score importMidiQuick(Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave) {
+    /**
+     * El "import rápido" del manual, pero solo con las pistas elegidas en la ventana. precision
+     * vacio es sin restringir la cuantización de la posición y la duración de las notas; presente
+     * es la figura más fina admitida, como deja elegir el manual.
+     */
+    default Score importMidiQuick(
+            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision) {
         throw notSupported("la importación de MIDI");
     }
 
     /** El "import paso a paso": la o las pistas MIDI elegidas reemplazan los compases de target. */
-    default Track importMidiInto(Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave) {
+    default Track importMidiInto(
+            Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
+            Optional<NoteValue> precision) {
         throw notSupported("la importación de MIDI");
     }
 
@@ -54,6 +62,14 @@ public interface ScoreExchange {
         throw notSupported("la exportación a WAVE");
     }
 
+    /**
+     * Lo que hay que reproducir para escuchar la o las pistas elegidas antes de importarlas, como
+     * pide el manual: "it is possible to listen to them [the MIDI tracks] or to open another file".
+     */
+    default Timeline midiTrackTimeline(Path path, List<Integer> midiTrackIndices) {
+        throw notSupported("la importación de MIDI");
+    }
+
     default Score importAscii(Path path) {
         throw notSupported("la importación de tablatura ASCII");
     }
@@ -64,9 +80,11 @@ public interface ScoreExchange {
 
     /**
      * El import de la ventana de ASCII: cae sobre la pista activa. fixedRhythm vacio es el
-     * "&lt;variable&gt;" del manual (el ritmo se deduce del espaciado); presente es un ritmo fijo.
+     * "&lt;variable&gt;" del manual (el ritmo se deduce del espaciado, tomando en cuenta
+     * intervalsPerQuarterNote -- la "segunda lista" para el espaciado entre dos negras);
+     * presente es un ritmo fijo (e intervalsPerQuarterNote no se usa).
      */
-    default Track importAsciiInto(Track target, String text, Optional<NoteValue> fixedRhythm) {
+    default Track importAsciiInto(Track target, String text, Optional<NoteValue> fixedRhythm, int intervalsPerQuarterNote) {
         throw notSupported("la importación de tablatura ASCII");
     }
 

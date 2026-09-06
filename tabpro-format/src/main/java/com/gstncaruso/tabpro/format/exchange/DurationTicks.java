@@ -31,6 +31,20 @@ public final class DurationTicks {
     }
 
     /**
+     * Lo mismo, pero exigiendo que la figura elegida sea representable exactamente con esta
+     * grilla: la precision que el import de MIDI deja elegir para la posicion y la duracion de
+     * las notas de una interpretacion humana. Una corchea con puntillo, por ejemplo, necesita una
+     * grilla de semicorchea o mas fina -- pedir una grilla de corchea la descarta.
+     */
+    public static Duration nearestTo(long ticks, NoteValue finestGrid) {
+        long gridTicks = Duration.of(finestGrid).ticks();
+        return SIMPLE_DURATIONS.stream()
+                .filter(duration -> duration.ticks() % gridTicks == 0)
+                .min(Comparator.comparingLong(duration -> Math.abs(duration.ticks() - ticks)))
+                .orElseThrow();
+    }
+
+    /**
      * Parte una cantidad de tics en una secuencia de figuras simples que suman exactamente eso,
      * de mas larga a mas corta. Si la cantidad ya es una figura simple (con o sin puntillo), el
      * resultado es esa unica figura.

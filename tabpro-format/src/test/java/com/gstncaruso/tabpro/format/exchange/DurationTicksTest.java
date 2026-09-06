@@ -22,6 +22,16 @@ class DurationTicksTest {
     }
 
     @Test
+    void aFinestGridExcludesFiguresThatNeedAFinerSubdivision() {
+        // sin restriccion, 700 tics redondea a la corchea con puntillo (720, a 20): es 1.5
+        // corcheas, y hace falta una grilla de semicorchea para llegar justo a ella. Pidiendo que
+        // la grilla no sea mas fina que la corchea, esa figura queda afuera y gana la corchea
+        // simple (480, a 220), la mas cercana que la grilla permite.
+        assertEquals(new Duration(NoteValue.EIGHTH, true), DurationTicks.nearestTo(700));
+        assertEquals(Duration.of(NoteValue.EIGHTH), DurationTicks.nearestTo(700, NoteValue.EIGHTH));
+    }
+
+    @Test
     void decomposesAnExactValueIntoASingleDuration() {
         assertEquals(List.of(Duration.of(NoteValue.WHOLE)), DurationTicks.decompose(3840));
         assertEquals(List.of(new Duration(NoteValue.QUARTER, true)), DurationTicks.decompose(1440));

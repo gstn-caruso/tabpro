@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.format.exchange.ascii.AsciiTabExportOptions;
 import com.gstncaruso.tabpro.format.exchange.ascii.AsciiTabExporter;
 import com.gstncaruso.tabpro.format.exchange.ascii.AsciiTabImportOptions;
@@ -64,18 +65,26 @@ public final class FileExchange implements ScoreExchange {
     }
 
     @Override
-    public Score importMidiQuick(Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave) {
-        return midiImporter.importQuick(path, selectedMidiTrackIndices, transposeDownOneOctave);
+    public Score importMidiQuick(
+            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision) {
+        return midiImporter.importQuick(path, selectedMidiTrackIndices, transposeDownOneOctave, precision);
     }
 
     @Override
-    public Track importMidiInto(Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave) {
-        return midiImporter.importInto(target, path, midiTrackIndices, transposeDownOneOctave);
+    public Track importMidiInto(
+            Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
+            Optional<NoteValue> precision) {
+        return midiImporter.importInto(target, path, midiTrackIndices, transposeDownOneOctave, precision);
     }
 
     @Override
     public Score importMidiTitleAndTimeSignatures(Score target, Path path) {
         return midiImporter.importTitleAndTimeSignatures(target, path);
+    }
+
+    @Override
+    public Timeline midiTrackTimeline(Path path, List<Integer> midiTrackIndices) {
+        return midiImporter.timelineOf(path, midiTrackIndices);
     }
 
     private static MidiTrackInfo toMidiTrackInfo(MidiTrackSummary summary) {
@@ -110,8 +119,9 @@ public final class FileExchange implements ScoreExchange {
     }
 
     @Override
-    public Track importAsciiInto(Track target, String text, Optional<NoteValue> fixedRhythm) {
-        RhythmStrategy rhythm = fixedRhythm.map(value -> RhythmStrategy.fixed(Duration.of(value))).orElseGet(RhythmStrategy::fromSpacing);
+    public Track importAsciiInto(Track target, String text, Optional<NoteValue> fixedRhythm, int intervalsPerQuarterNote) {
+        RhythmStrategy rhythm = fixedRhythm.map(value -> RhythmStrategy.fixed(Duration.of(value)))
+                .orElseGet(() -> RhythmStrategy.fromSpacing(intervalsPerQuarterNote));
         AsciiTabImportOptions options = AsciiTabImportOptions.standard().withRhythm(rhythm);
         return asciiImporter.importInto(target, text, options);
     }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
+import com.gstncaruso.tabpro.core.model.NoteValue;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,22 @@ class MidiImportPanelTest {
         MidiImportPanel panel = new MidiImportPanel(List.of());
 
         assertFalse(panel.transposeDownOneOctave());
+    }
+
+    @Test
+    void defaultsToSixteenthNotePrecision() {
+        MidiImportPanel panel = new MidiImportPanel(List.of());
+
+        assertEquals(NoteValue.SIXTEENTH, panel.precision());
+    }
+
+    @Test
+    void choosingAnotherPrecisionChangesIt() {
+        MidiImportPanel panel = new MidiImportPanel(List.of());
+
+        panel.choosePrecision(NoteValue.THIRTY_SECOND);
+
+        assertEquals(NoteValue.THIRTY_SECOND, panel.precision());
     }
 
     @Test
