@@ -146,7 +146,7 @@ rango de páginas y la escala.
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.21.0_all.deb
+sudo apt install ./tabpro_0.21.1_all.deb
 tabpro
 ```
 
@@ -158,7 +158,7 @@ partitura. Necesita una JRE 25 con entorno gráfico (`openjdk-25-jre`); la varia
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.21.0.jar [archivo]
+java -jar tabpro-app-0.21.1.jar [archivo]
 ```
 
 ## Atajos

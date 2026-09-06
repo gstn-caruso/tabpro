@@ -1,3 +1,10 @@
+## [0.21.1](https://github.com/gstn-caruso/tabpro/compare/v0.21.0...v0.21.1) (2026-09-06)
+
+### Bug Fixes
+
+* Archivo > Abrir tambien abre los archivos de Guitar Pro ([#81](https://github.com/gstn-caruso/tabpro/issues/81)) ([e024930](https://github.com/gstn-caruso/tabpro/commit/e0249301c973950ae16acac4f58903a40fde0f40))
+* el lector de Guitar Pro recupera el wah-wah del cambio de parametros ([#82](https://github.com/gstn-caruso/tabpro/issues/82)) ([d1d41ef](https://github.com/gstn-caruso/tabpro/commit/d1d41ef096d7ac4a3a562334882d8f6d3e9a7863))
+
 ## [0.21.0](https://github.com/gstn-caruso/tabpro/compare/v0.20.0...v0.21.0) (2026-09-06)
 
 ### Features
