@@ -17,7 +17,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Abre una partitura de TablEdit (formato TEF3, la unica version que
+ * Procedencia del formato: TablEdit tampoco publica una especificacion
+ * aparte, asi que el layout binario de este lector sale de leer el codigo
+ * fuente de TuxGuitar (github.com/helge17/tuxguitar, LGPL), puntualmente su
+ * lector de TEF3 (desktop/TuxGuitar-tef/src/app/tuxguitar/io/tef3/:
+ * TEInputStream, TESongParser, TESongReader). De ahi no se copio ni una
+ * linea de codigo: se leyo el orden y el tamano de los campos (un hecho del
+ * formato, no una expresion con derecho de autor) y se escribio esta
+ * implementacion entera de cero, en Java, con el diseno y los nombres del
+ * resto de tabpro. A diferencia de PowerTab, los fixtures de test de este
+ * lector son sinteticos (armados a mano en {@code TabEditFileWriter}), no
+ * archivos de terceros.
+ *
+ * <p>Abre una partitura de TablEdit (formato TEF3, la unica version que
  * soportamos). El archivo trae, en este orden: el encabezado, los metadatos
  * de la cancion, los acordes (si hay), los compases, las pistas, los datos de
  * impresion, la lista de lectura (si hay) y, al final, la lista de
