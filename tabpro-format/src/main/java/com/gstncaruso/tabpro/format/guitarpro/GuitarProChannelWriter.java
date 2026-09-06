@@ -32,6 +32,11 @@ final class GuitarProChannelWriter {
         return List.of(table);
     }
 
+    /** El archivo guarda cada perilla de la mesa en sus dieciseis pasos, no en los 0 a 127 de MIDI. */
+    private static void writeKnob(GuitarProByteWriter writer, int midi) {
+        writer.writeUnsignedByte(GuitarProMixerLevel.ofMidi(midi).step());
+    }
+
     /** En que casillero del arreglo de 64 canales cae esta pista: el lector solo mira el numero, no el puerto. */
     static int slotFor(Channel channel) {
         return Math.clamp(channel.number(), 1, Channel.CHANNELS_PER_PORT) - 1;
@@ -39,12 +44,12 @@ final class GuitarProChannelWriter {
 
     private void writeOne(GuitarProByteWriter writer, Channel channel) {
         writer.writeInt(channel.program());
-        writer.writeUnsignedByte(channel.volume());
-        writer.writeUnsignedByte(channel.pan());
-        writer.writeUnsignedByte(channel.chorus());
-        writer.writeUnsignedByte(channel.reverb());
-        writer.writeUnsignedByte(channel.phaser());
-        writer.writeUnsignedByte(channel.tremolo());
+        writeKnob(writer, channel.volume());
+        writeKnob(writer, channel.pan());
+        writeKnob(writer, channel.chorus());
+        writeKnob(writer, channel.reverb());
+        writeKnob(writer, channel.phaser());
+        writeKnob(writer, channel.tremolo());
         writer.writeShort(0);
     }
 }

@@ -35,7 +35,8 @@ final class GuitarProChannelReader {
         return new GuitarProChannel(clampedProgram, volume, pan, chorus, reverb, phaser, tremolo);
     }
 
+    /** Cada perilla viene en sus dieciseis pasos, no en los 0 a 127 que maneja el modelo. */
     private int effectByte(int value, int whenUnset) {
-        return value == UNSET ? whenUnset : Math.clamp(value, 0, Channel.MAX);
+        return value == UNSET ? whenUnset : new GuitarProMixerLevel(value).midi();
     }
 }
