@@ -1,3 +1,9 @@
+## [0.23.2](https://github.com/gstn-caruso/tabpro/compare/v0.23.1...v0.23.2) (2026-09-06)
+
+### Bug Fixes
+
+* cinco atajos que el menú prometía y el teclado no daba ([#89](https://github.com/gstn-caruso/tabpro/issues/89)) ([895e786](https://github.com/gstn-caruso/tabpro/commit/895e7864b1a61f781a537acfed6b5c4b969080a2))
+
 ## [0.23.1](https://github.com/gstn-caruso/tabpro/compare/v0.23.0...v0.23.1) (2026-09-06)
 
 ### Bug Fixes
