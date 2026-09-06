@@ -87,10 +87,19 @@ class PercussionAssistantTest {
         throw new IllegalArgumentException("sonido no encontrado: " + sound);
     }
 
+    /**
+     * El alto de fila se fija a mano por la misma razon que en PercussionSoundPaletteTest: sin
+     * fijarlo lo deduce JList del renderer, que depende de la fuente de la maquina, y el punto
+     * que este test calcula termina cayendo en otra fila. Alla ya fallo en CI; aca era la misma
+     * mina sin detonar.
+     */
+    private static final int CELL_HEIGHT = 20;
+
     private static JList<Integer> sizedList(PercussionAssistant assistant) {
         PercussionSoundPalette palette = assistant.soundPalette();
         palette.setSize(220, 800);
         JList<Integer> list = palette.soundList();
+        list.setFixedCellHeight(CELL_HEIGHT);
         list.setSize(220, 800);
         list.doLayout();
         return list;
