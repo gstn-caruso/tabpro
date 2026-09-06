@@ -892,6 +892,7 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void scales() {
+            beatViews.prepareForScalesTool();
             ScalesDialog.show(MainFrame.this, editor, player, chosenScale);
             showChosenScaleOnTheInstruments();
             backToTheScore();

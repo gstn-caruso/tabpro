@@ -41,6 +41,7 @@ public final class FretboardView extends JComponent {
     private BeatLocation location = defaultLocation();
     private FretboardDisplayMode displayMode = FretboardDisplayMode.ONLY_BEAT;
     private NoteNameMode noteNameMode = NoteNameMode.BEAT_ONLY;
+    private ScaleLabelMode scaleLabelMode = ScaleLabelMode.NAME;
     private FretboardType fretboardType = FretboardType.ELECTRIC;
     private Handedness handedness = Handedness.RIGHT_HANDED;
     private Optional<Scale> scale = Optional.empty();
@@ -82,6 +83,16 @@ public final class FretboardView extends JComponent {
 
     public NoteNameMode noteNameMode() {
         return noteNameMode;
+    }
+
+    /** Que muestran las notas de la escala en modo "Beat y escala": nombre, intervalo o grado. */
+    public void setScaleLabelMode(ScaleLabelMode scaleLabelMode) {
+        this.scaleLabelMode = scaleLabelMode;
+        repaint();
+    }
+
+    public ScaleLabelMode scaleLabelMode() {
+        return scaleLabelMode;
     }
 
     public void setFretboardType(FretboardType fretboardType) {
@@ -188,6 +199,23 @@ public final class FretboardView extends JComponent {
     /** Como se llama la nota de esa posicion, ya con la cejilla de la pista sumada. */
     public String labelFor(FretPosition position) {
         return PitchName.of(location.track().pitchOf(new Note(position.string(), position.fret()))).text();
+    }
+
+    /**
+     * El texto que se dibuja para esa posicion. Las notas de contexto de "Beat y escala"
+     * respetan el modo de etiqueta elegido (nombre, intervalo o grado); todo lo demas -incluida
+     * la nota que se esta pisando ahora mismo- siempre se llama por su nombre.
+     */
+    public String labelFor(FretPosition position, MarkKind kind) {
+        String name = labelFor(position);
+        if (kind != MarkKind.SECONDARY || displayMode != FretboardDisplayMode.BEAT_AND_SCALE) {
+            return name;
+        }
+        return scale.map(chosen -> scaleLabelMode.textFor(name, midiOf(position), chosen)).orElse(name);
+    }
+
+    private int midiOf(FretPosition position) {
+        return location.track().pitchOf(new Note(position.string(), position.fret())).midiNumber();
     }
 
     // ---- el mouse -----------------------------------------------------------
@@ -333,7 +361,7 @@ public final class FretboardView extends JComponent {
             g.fillOval(x - radius, y - radius, radius * 2, radius * 2);
 
             if (noteNameMode.shows(kind)) {
-                String name = labelFor(position);
+                String name = labelFor(position, kind);
                 g.setColor(primary ? InstrumentColors.PRESSED_INK : InstrumentColors.CONTEXT_INK);
                 g.drawString(
                         name,

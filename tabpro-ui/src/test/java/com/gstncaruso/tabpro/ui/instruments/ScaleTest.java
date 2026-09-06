@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.instruments;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,5 +56,44 @@ class ScaleTest {
     void rejectsAPitchClassOutsideAnOctave() {
         org.junit.jupiter.api.Assertions.assertThrows(
                 IllegalArgumentException.class, () -> new Scale(12, ScaleType.MAJOR));
+    }
+
+    @Test
+    void namesTheIntervalOfEachChromaticStepFromTheRoot() {
+        Scale scale = Scale.cMajor();
+
+        assertEquals("1", scale.intervalLabelOf(60));
+        assertEquals("2", scale.intervalLabelOf(62));
+        assertEquals("3", scale.intervalLabelOf(64));
+        assertEquals("4", scale.intervalLabelOf(65));
+        assertEquals("5", scale.intervalLabelOf(67));
+        assertEquals("b3", scale.intervalLabelOf(63), "el intervalo se nombra aunque la nota no sea de la escala");
+    }
+
+    @Test
+    void theIntervalFollowsTheRootWhereverItIs() {
+        Scale dMajor = new Scale(2, ScaleType.MAJOR);
+
+        assertEquals("1", dMajor.intervalLabelOf(62));
+        assertEquals("3", dMajor.intervalLabelOf(66));
+    }
+
+    @Test
+    void theDegreeIsThePositionOfThatNoteWithinTheScale() {
+        Scale scale = Scale.cMajor();
+
+        assertEquals(1, scale.degreeOf(60));
+        assertEquals(2, scale.degreeOf(62));
+        assertEquals(3, scale.degreeOf(64));
+        assertEquals(7, scale.degreeOf(71));
+    }
+
+    @Test
+    void degreeAndIntervalCanDifferOnAScaleThatSkipsSteps() {
+        // La pentatonica menor no tiene segundo grado: su segunda nota es la tercera menor.
+        Scale minorPentatonic = new Scale(0, ScaleType.MINOR_PENTATONIC);
+
+        assertEquals("b3", minorPentatonic.intervalLabelOf(63));
+        assertEquals(2, minorPentatonic.degreeOf(63));
     }
 }

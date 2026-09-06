@@ -94,6 +94,61 @@ class FretboardViewTest {
     }
 
     @Test
+    void scaleNotesShowTheirNameByDefault() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        view.setDisplayMode(FretboardDisplayMode.BEAT_AND_SCALE);
+        view.setScale(Scale.cMajor());
+
+        // cuerda 1 al aire = Mi.
+        assertEquals("E", view.labelFor(new FretPosition(1, 0), MarkKind.SECONDARY));
+    }
+
+    @Test
+    void scaleNotesShowTheIntervalWhenAskedTo() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        view.setDisplayMode(FretboardDisplayMode.BEAT_AND_SCALE);
+        view.setScale(Scale.cMajor());
+        view.setScaleLabelMode(ScaleLabelMode.INTERVAL);
+
+        // Mi es la tercera de Do mayor.
+        assertEquals("3", view.labelFor(new FretPosition(1, 0), MarkKind.SECONDARY));
+    }
+
+    @Test
+    void scaleNotesShowTheDegreeWhenAskedTo() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        view.setDisplayMode(FretboardDisplayMode.BEAT_AND_SCALE);
+        view.setScale(Scale.cMajor());
+        view.setScaleLabelMode(ScaleLabelMode.DEGREE);
+
+        assertEquals("3", view.labelFor(new FretPosition(1, 0), MarkKind.SECONDARY));
+    }
+
+    @Test
+    void primaryMarksAlwaysShowTheirNameEvenInScaleMode() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        view.setDisplayMode(FretboardDisplayMode.BEAT_AND_SCALE);
+        view.setScale(Scale.cMajor());
+        view.setScaleLabelMode(ScaleLabelMode.DEGREE);
+
+        assertEquals("E", view.labelFor(new FretPosition(1, 0), MarkKind.PRIMARY));
+    }
+
+    @Test
+    void outsideScaleModeTheLabelIsAlwaysTheName() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        view.setScale(Scale.cMajor());
+        view.setScaleLabelMode(ScaleLabelMode.DEGREE);
+
+        assertEquals("E", view.labelFor(new FretPosition(1, 0), MarkKind.SECONDARY));
+    }
+
+    @Test
     void marksTheNotesOfTheBeatAndNothingElse() {
         FretboardView view = sized(new FretboardView());
         Beat chord = Beat.of(Duration.quarter(), new Note(6, 3), new Note(1, 0));

@@ -114,6 +114,30 @@ class BeatViewsTest {
     }
 
     @Test
+    void preparingForTheScalesToolShowsTheKeyboardAndSwitchesBothViewsToScaleMode() {
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        views.setKeyboardVisible(false);
+
+        views.prepareForScalesTool();
+
+        assertTrue(views.isKeyboardVisible(), "el manual dice que abrir la herramienta abre el teclado solo");
+        assertEquals(FretboardDisplayMode.BEAT_AND_SCALE, views.fretboard().displayMode());
+        assertEquals(KeyboardDisplayMode.BEAT_AND_SCALE, views.keyboard().displayMode());
+    }
+
+    @Test
+    void preparingForTheScalesToolDoesNotForceTheFretboardOpen() {
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        views.setFretboardVisible(false);
+
+        views.prepareForScalesTool();
+
+        assertFalse(
+                views.isFretboardVisible(),
+                "el manual pide usar View > Fretboard antes: la herramienta no lo fuerza");
+    }
+
+    @Test
     void followsTheEditorWithoutBlowingUp() {
         Editor editor = new Editor(Score.blank());
         BeatViews views = new BeatViews(editor, new RecordingPlayer());
