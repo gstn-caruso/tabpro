@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.instrument;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.model.InstrumentPatch;
 import org.junit.jupiter.api.Test;
 
 class InstrumentPanelTest {
@@ -40,5 +41,16 @@ class InstrumentPanelTest {
         panel.selectProgram(41);
 
         assertEquals(41, panel.selectedProgram());
+    }
+
+    @Test
+    void aPatchShowsItsOwnNamesInsteadOfTheGeneralMidiOnes() {
+        InstrumentPatch patch = InstrumentPatch.parse("Requinto criollo");
+        InstrumentPanel panel = new InstrumentPanel(0, patch);
+
+        panel.search("Requinto");
+
+        assertEquals(1, panel.visiblePrograms().size());
+        assertTrue(panel.visiblePrograms().contains(0));
     }
 }

@@ -850,7 +850,9 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void instrument() {
-            InstrumentDialog.show(MainFrame.this, editor, editor.cursor().track());
+            int trackIndex = editor.cursor().track();
+            int port = editor.score().track(trackIndex).channel().port();
+            InstrumentDialog.show(MainFrame.this, editor, trackIndex, midiSetupPreferences.patch(port));
             backToTheScore();
         }
 
