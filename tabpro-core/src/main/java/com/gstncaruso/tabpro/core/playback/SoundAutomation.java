@@ -102,6 +102,19 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
     }
 
     /**
+     * Las dos pasadas que hace la mesa de mezcla: la que recupera lo que ya sono
+     * antes de arrancar, que solo deja valores finales, y la que programa lo que
+     * va a sonar, que ademas los manda a su tick.
+     */
+    private enum Pass {
+        RECOVERING, SCHEDULING;
+
+        boolean schedules() {
+            return this == SCHEDULING;
+        }
+    }
+
+    /**
      * La mesa de mezcla mientras corre la partitura: se acuerda de en cuanto
      * quedo cada parametro, para que la transicion que venga arranque de ahi.
      */
@@ -124,14 +137,14 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
         /** Los cambios que ya pasaron: solo dejan su valor final, y se anuncia al arrancar. */
         void recover(List<AskedChange> asked) {
             for (AskedChange change : asked) {
-                apply(change, false);
+                apply(change, Pass.RECOVERING);
             }
             announceWhatChangedBeforeStarting();
         }
 
         void schedule(List<AskedChange> asked) {
             for (AskedChange change : asked) {
-                apply(change, true);
+                apply(change, Pass.SCHEDULING);
             }
         }
 
@@ -142,23 +155,23 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
             return new SoundAutomation(tempo, scheduled);
         }
 
-        private void apply(AskedChange asked, boolean scheduling) {
+        private void apply(AskedChange asked, Pass pass) {
             for (SoundParameter parameter : SoundParameter.values()) {
                 OptionalInt target = asked.change().valueOf(parameter);
                 if (target.isEmpty()) {
                     continue;
                 }
                 if (parameter.isGlobal()) {
-                    applyTempo(asked, target.getAsInt(), scheduling);
+                    applyTempo(asked, target.getAsInt(), pass);
                 } else {
-                    applyToTracks(asked, parameter, target.getAsInt(), scheduling);
+                    applyToTracks(asked, parameter, target.getAsInt(), pass);
                 }
             }
         }
 
         /** El tempo vale para toda la partitura, no importa a cuantas pistas apunte el cambio. */
-        private void applyTempo(AskedChange asked, int target, boolean scheduling) {
-            if (!scheduling) {
+        private void applyTempo(AskedChange asked, int target, Pass pass) {
+            if (!pass.schedules()) {
                 tempo = TempoMap.steady(target);
                 return;
             }
@@ -167,18 +180,20 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
             }
         }
 
-        private void applyToTracks(AskedChange asked, SoundParameter parameter, int target, boolean scheduling) {
+        private void applyToTracks(AskedChange asked, SoundParameter parameter, int target, Pass pass) {
             for (int track = 0; track < score.trackCount(); track++) {
                 if (asked.reaches(track)) {
-                    applyToTrack(track, asked, parameter, target, scheduling);
+                    applyToTrack(track, asked, parameter, target, pass);
                 }
             }
         }
 
         private void applyToTrack(
-                int track, AskedChange asked, SoundParameter parameter, int target, boolean scheduling) {
-            int from = values.get(track).put(parameter, target);
-            if (!scheduling || !score.isAudible(track)) {
+                int track, AskedChange asked, SoundParameter parameter, int target, Pass pass) {
+            Map<SoundParameter, Integer> mix = values.get(track);
+            int from = mix.get(parameter);
+            mix.put(parameter, target);
+            if (!pass.schedules() || !score.isAudible(track)) {
                 return;
             }
             for (Step step : stepsOf(asked, from, target)) {
