@@ -72,6 +72,7 @@ checkout compartido; `docs/` lo maneja esta sesión; y quien vaya a tocar
 | 1b. Auditoría de las tablas de atajos que quedaron fuera del recorte | ✅ hecho — 37 de 41 atajos correctos |
 | 2. Versionado automático con semantic-release | ✅ hecho — publicó la v0.9.0 sola |
 | 3. Implementación de los huecos, un PR por hueco | 🔜 en curso |
+| 4. Verificación independiente de los formatos binarios | 🔜 en curso — ver abajo |
 
 Punto de partida: `main` = `4702129`, versión 0.8.0. Al cerrar la etapa 2, `main`
 quedó en **v0.9.0**, publicada automáticamente por el pipeline.
@@ -93,19 +94,56 @@ Dos cosas que conviene no volver a aprender:
 
 ## Los huecos de esta sesión, en orden
 
-| Hueco | Tamaño | Estado |
-|---|---|---|
-| Exportar imagen en BMP (+ restricción a modo Página) | chico | ✅ mergeado (#45) |
-| La exportación de imagen falla ruidosamente si `ImageIO` no escribe | chico | 🔜 en curso |
-| Banco de sonidos SoundFont en Gervill (+ F2 para prenderlo y apagarlo) | mediano | 🔜 en curso |
-| Exportar a WAVE | grande | 🔜 en curso |
-| Exportar al formato de Guitar Pro | grande | 🔜 en curso |
-| Importar PowerTab | grande | 🔜 en curso |
-| Importar TablEdit (sin spec pública: el más incierto) | grande | ⏳ pendiente |
-| Import MIDI: escuchar las pistas antes de importar | chico | 🔜 en curso |
-| Import MIDI: precisión de posición y duración | mediano | 🔜 en curso |
-| Import MIDI: casilla "2 canales por pista" | mediano | ⏳ bloqueado por `Ch2` de la otra sesión |
-| Import ASCII: intervalos por negra del ritmo `<variable>` | chico | 🔜 en curso |
-| El lector de GP descarta las direcciones musicales (`skipDirections`) | chico | 🔜 en curso |
-| `MidiScoreExporter` escribe un solo tempo, no el mapa | chico | 🔜 en curso |
-| `File > Open` partido en dos comandos: que abra también los `.gp*` | chico | ⏳ pendiente |
+| Hueco | Estado |
+|---|---|
+| Exportar imagen en BMP (+ restricción a modo Página) | ✅ #45 |
+| La exportación de imagen falla ruidosamente si `ImageIO` no escribe | ✅ #49 |
+| El lector de GP descartaba las direcciones musicales | ✅ #50 |
+| Exportar a WAVE | ✅ #51 |
+| `MidiScoreExporter` escribía un solo tempo | ✅ #52 |
+| El lector declara el orden de los casilleros de direcciones | ✅ #54 |
+| Diálogos de importación (escuchar pistas, precisión, espaciado ASCII) | ✅ #57 |
+| El exportador de sonido se muda a `tabpro-midi` (`format` ya no depende de `midi`) | ✅ #58 |
+| Importar TablEdit | ✅ #62 |
+| El `.mid` exportado suena como la partitura | 🔜 rebasándose |
+| Banco de sonidos SoundFont (+ F2) | 🔜 rebasándose |
+| Los seis bugs del formato Guitar Pro | 🔜 en curso |
+| Exportar al formato Guitar Pro | ⏸ retenido hasta que la verificación dé verde |
+| Importar PowerTab | 🔜 en curso |
+| Import MIDI: casilla "2 canales por pista" | ⏳ pendiente |
+| `File > Open` que abra también los `.gp*` | ⏳ pendiente |
+
+## Lo más importante que se aprendió
+
+**El oráculo estaba adentro del sistema que queríamos verificar.** Aparece cuatro
+veces el mismo día, en cuatro disfraces:
+
+1. **El lector de Guitar Pro lee mal los archivos reales.** El escritor nuevo de
+   `.gp4` pasaba todos sus tests de ida y vuelta contra nuestro propio lector.
+   Verificado contra **PyGuitarPro** —otra implementación— y contra `.gp4`
+   auténticos: **siete de siete archivos generados con uso normal no abren**, y
+   aparecieron seis bugs. Pasaba porque el lector y el escritor comparten las
+   mismas suposiciones equivocadas: se entienden entre ellos y con nadie más.
+   Peor: los fixtures del repo los generamos nosotros usando ese mismo lector
+   como referencia, así que tampoco eran fuente independiente.
+   Uno de los seis está confirmado como bug viejo del lector:
+   `UNITS_PER_QUARTER_TONE = 50` cuando el formato usa 25, o sea que **todos los
+   bends de todos los archivos de Guitar Pro que tabpro abrió alguna vez entraron
+   a la mitad de profundidad**. Y como el `.tabpro` no guarda de dónde vino la
+   partitura, **no hay migración segura**: duplicar todo arreglaría las
+   importadas y rompería las escritas a mano. Va nota en el release.
+2. **El dry-run de semantic-release** verificaba que la configuración cargara, no
+   que las notas se pudieran generar: sin token se frena antes de ese paso.
+3. **El CI sin placa de sonido es el usuario real.** Un puerto MIDI que no abría
+   se llevaba puesta la reproducción entera, y no se veía en la máquina de
+   desarrollo porque ahí había línea libre.
+4. **Probar el banco de sonidos en una máquina que lo tiene instalado** es el
+   mismo error, y por eso el camino sin banco se prueba explícitamente.
+
+**Regla que queda para el proyecto:** un round-trip contra nuestro propio lector
+prueba consistencia interna, no compatibilidad. La única verificación que
+significa algo es contra un archivo auténtico o contra otra implementación.
+
+**Lección de diseño que dejó el caso de los bends:** la procedencia de un dato es
+barata de guardar y cara de no tener. Si el `.tabpro` recordara de qué archivo
+salió, la migración sería posible.
