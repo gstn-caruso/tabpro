@@ -1,10 +1,13 @@
 package com.gstncaruso.tabpro.app;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.files.AudioQuality;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.model.Score;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,35 @@ class CombinedExchangeTest {
 
         assertEquals(List.of("importMidi", "importGuitarPro", "exportMusicXml"), notationCalls);
         assertEquals(List.of(), soundCalls);
+    }
+
+    /**
+     * Si el puerto crece y el compuesto no lo acompaña, el metodo nuevo cae en el default de
+     * ScoreExchange, que avisa "todavia no esta disponible": la ventana pierde la funcion en
+     * silencio, con los tests de la implementacion en verde. Esto lo caza antes.
+     */
+    @Test
+    void delegatesEverySingleMethodOfThePort() {
+        List<String> forgotten = new ArrayList<>();
+        for (Method ofThePort : ScoreExchange.class.getDeclaredMethods()) {
+            if (!Modifier.isPublic(ofThePort.getModifiers()) || Modifier.isStatic(ofThePort.getModifiers())) {
+                continue;
+            }
+            if (!declaredIn(CombinedExchange.class, ofThePort)) {
+                forgotten.add(ofThePort.getName());
+            }
+        }
+
+        assertTrue(forgotten.isEmpty(), "CombinedExchange no delega: " + forgotten);
+    }
+
+    private static boolean declaredIn(Class<?> type, Method method) {
+        try {
+            type.getDeclaredMethod(method.getName(), method.getParameterTypes());
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
     }
 
     private ScoreExchange notation() {
