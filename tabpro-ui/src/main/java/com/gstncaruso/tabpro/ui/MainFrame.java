@@ -486,6 +486,31 @@ public final class MainFrame extends JFrame {
         }
 
         @Override
+        public void exportGuitarPro() {
+            if (!confirmGuitarProLosses()) {
+                return;
+            }
+            exportWith(exchange::exportGuitarPro, new FileNameExtensionFilter("Guitar Pro 4 (*.gp4)", "gp4"), ".gp4");
+        }
+
+        /** El manual avisa que "algunos elementos no se van a exportar": acá se dice cuáles, para esta partitura. */
+        private boolean confirmGuitarProLosses() {
+            java.util.List<String> warnings = exchange.guitarProExportWarnings(editor.score());
+            if (warnings.isEmpty()) {
+                return true;
+            }
+            String detail = warnings.stream().map(warning -> "- " + warning)
+                    .collect(java.util.stream.Collectors.joining("\n"));
+            int answer = JOptionPane.showConfirmDialog(
+                    MainFrame.this,
+                    "Al exportar a Guitar Pro 4 se va a perder:\n\n" + detail + "\n\n¿Exportar de todos modos?",
+                    "tabpro",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+            return answer == JOptionPane.OK_OPTION;
+        }
+
+        @Override
         public void exportPdf() {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileFilter(new FileNameExtensionFilter("PDF (*.pdf)", "pdf"));
