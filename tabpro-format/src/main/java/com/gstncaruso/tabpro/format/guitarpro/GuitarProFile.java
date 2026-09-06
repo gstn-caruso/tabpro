@@ -14,11 +14,13 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.Voice;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * Abre una partitura de Guitar Pro. El archivo guarda primero la cabecera, los
@@ -50,14 +52,15 @@ public final class GuitarProFile {
         GuitarProVersion version = GuitarProVersion.parse(reader.readFixedString(VERSION_BLOCK));
         GuitarProHeader header = headerReader.read(reader, version);
         List<GuitarProChannel> channels = channelReader.read(reader);
-        headerReader.skipDirections(reader, version);
+        GuitarProDirections directions = headerReader.readDirections(reader, version);
         int measureCount = reader.readInt();
         int trackCount = reader.readInt();
         GuitarProMeasureAttributesReader measureReader = new GuitarProMeasureAttributesReader(
                 com.gstncaruso.tabpro.core.model.TimeSignature.fourFour(),
                 header.keySignature(),
                 header.globalTripletFeel().orElse(com.gstncaruso.tabpro.core.model.bars.TripletFeel.NONE));
-        List<GuitarProMasterBar> bars = readMasterBars(measureReader, reader, version, measureCount);
+        List<GuitarProMasterBar> bars = withDirections(
+                readMasterBars(measureReader, reader, version, measureCount), directions);
         List<GuitarProTrackHeader> trackHeaders = readTrackHeaders(reader, version, trackCount);
         skipGp5Padding(reader, version);
         List<List<Measure>> measuresByTrack = readMeasures(reader, version, bars, trackHeaders);
@@ -74,6 +77,26 @@ public final class GuitarProFile {
             bars.add(measureReader.read(reader, version, index == 0));
         }
         return bars;
+    }
+
+    /** Le pega a cada master bar el simbolo de destino o el salto que le apunta desde las direcciones. */
+    private static List<GuitarProMasterBar> withDirections(
+            List<GuitarProMasterBar> bars, GuitarProDirections directions) {
+        List<GuitarProMasterBar> updated = new ArrayList<>(bars);
+        directions.symbols().forEach((index, symbol) ->
+                replaceAttributes(updated, index, attributes -> attributes.withSymbol(symbol)));
+        directions.jumps().forEach((index, jump) ->
+                replaceAttributes(updated, index, attributes -> attributes.withJump(jump)));
+        return updated;
+    }
+
+    private static void replaceAttributes(
+            List<GuitarProMasterBar> bars, int index, UnaryOperator<MeasureAttributes> update) {
+        if (index < 0 || index >= bars.size()) {
+            return;
+        }
+        GuitarProMasterBar bar = bars.get(index);
+        bars.set(index, new GuitarProMasterBar(bar.timeSignature(), update.apply(bar.attributes())));
     }
 
     private List<GuitarProTrackHeader> readTrackHeaders(
