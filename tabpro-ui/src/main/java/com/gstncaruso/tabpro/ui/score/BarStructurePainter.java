@@ -112,9 +112,14 @@ final class BarStructurePainter {
     private static void paintRepeatCount(Graphics2D g, int rightEdge, int top, int times) {
         g.setColor(ScoreColors.LABEL);
         g.setFont(REPEAT_COUNT_FONT);
-        String label = "x" + (times + 1);
+        String label = repeatLabel(times);
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(label, rightEdge - metrics.stringWidth(label) - 12, top - 4);
+    }
+
+    /** El cartelito de la barra de repeticion, arriba a la derecha del compas que cierra. */
+    static String repeatLabel(int times) {
+        return "x" + (times + 1);
     }
 
     private static void paintDoubleBar(Graphics2D g, int x, int top, int bottom) {
