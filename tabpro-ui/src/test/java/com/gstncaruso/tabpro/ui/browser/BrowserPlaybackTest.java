@@ -107,6 +107,16 @@ class BrowserPlaybackTest {
         assertTrue(listener.chainEnded);
     }
 
+    /** El explorador ya avisaba "No se pudo abrir" antes de este cambio; sigue avisando. */
+    @Test
+    void aFileThatFailsToLoadTellsTheListenerWhichPathFailed() {
+        Path roto = Path.of("/tmp/roto.tabpro");
+
+        playback.play(List.of(roto, segundo), roto, 4);
+
+        assertEquals(List.of(roto), listener.loadFailures);
+    }
+
     @Test
     void everyJumpTellsTheListenerWhichFileIsPlayingNow() {
         playback.play(List.of(primero, segundo), primero, 4);
@@ -160,10 +170,16 @@ class BrowserPlaybackTest {
     private static final class FakeListener implements BrowserPlayback.Listener {
         private boolean chainEnded;
         private final List<Path> advancedTo = new ArrayList<>();
+        private final List<Path> loadFailures = new ArrayList<>();
 
         @Override
         public void advancedTo(Path path) {
             advancedTo.add(path);
+        }
+
+        @Override
+        public void loadFailed(Path path) {
+            loadFailures.add(path);
         }
 
         @Override

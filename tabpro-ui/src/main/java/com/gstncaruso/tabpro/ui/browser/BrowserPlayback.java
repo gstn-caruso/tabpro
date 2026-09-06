@@ -29,6 +29,9 @@ public final class BrowserPlayback {
 
         void advancedTo(Path path);
 
+        /** Un archivo de la cadena no se pudo abrir; la cadena se corta ahi. */
+        void loadFailed(Path path);
+
         void chainEnded();
     }
 
@@ -71,6 +74,7 @@ public final class BrowserPlayback {
         try {
             score = files.load(path);
         } catch (ScoreFileException e) {
+            listener.loadFailed(path);
             endChain();
             return;
         }
