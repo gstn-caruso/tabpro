@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.gstncaruso.tabpro</groupId>
     <artifactId>tabpro-parent</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
   </parent>
 
   <artifactId>tabpro-app</artifactId>
@@ -124,6 +124,25 @@
                   <mapper>
                     <type>perm</type>
                     <prefix>/usr/share/applications</prefix>
+                    <filemode>644</filemode>
+                  </mapper>
+                </data>
+                <data>
+                  <src>${project.basedir}/src/deb/tabpro-mime.xml</src>
+                  <type>file</type>
+                  <dst>tabpro.xml</dst>
+                  <mapper>
+                    <type>perm</type>
+                    <prefix>/usr/share/mime/packages</prefix>
+                    <filemode>644</filemode>
+                  </mapper>
+                </data>
+                <data>
+                  <src>${project.basedir}/src/deb/icons/tabpro.svg</src>
+                  <type>file</type>
+                  <mapper>
+                    <type>perm</type>
+                    <prefix>/usr/share/icons/hicolor/scalable/apps</prefix>
                     <filemode>644</filemode>
                   </mapper>
                 </data>

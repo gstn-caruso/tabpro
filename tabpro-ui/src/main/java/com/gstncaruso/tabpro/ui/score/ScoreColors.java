@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.score;
 
+import com.gstncaruso.tabpro.core.model.ScoreColor;
 import java.awt.Color;
 
 /** Paleta unica de la partitura y del panel de pistas. */
@@ -22,6 +23,25 @@ public final class ScoreColors {
     public static final Color PLAYING_MEASURE = new Color(0xE5484D);
     public static final Color WARNING = new Color(0xE5A44A);
 
+    /** El compas que no suma lo que su medida pide, salvo el que se esta editando. */
+    public static final Color INCOMPLETE_MEASURE = new Color(0xE5484D);
+    /** El rectangulo que resalta una seleccion multiple. */
+    public static final Color SELECTION = new Color(0x35, 0x74, 0xF0, 0x50);
+    /** El rectangulo gris que marca, en la otra notacion, la nota que corresponde al cursor. */
+    public static final Color CORRESPONDING_NOTE = new Color(0x9D, 0xA1, 0xA8, 0x60);
+    /** La voz que no se esta editando, cuando se pide dibujarla atenuada. */
+    public static final Color VOICE_INACTIVE = new Color(0x6B6E74);
+
+    /** La hoja clara del Modo Pagina y del Modo Pergamino, sobre el fondo oscuro de la ventana. */
+    public static final Color PAGE_PAPER = new Color(0xF6F6F2);
+    public static final Color PAGE_INK = new Color(0x202124);
+    public static final Color PAGE_MUTED = new Color(0x6B6E74);
+    public static final Color PAGE_SHADOW = new Color(0, 0, 0, 90);
+
     private ScoreColors() {
+    }
+
+    public static Color of(ScoreColor color) {
+        return new Color(color.red(), color.green(), color.blue());
     }
 }

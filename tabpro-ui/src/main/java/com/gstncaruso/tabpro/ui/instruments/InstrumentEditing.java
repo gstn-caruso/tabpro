@@ -28,9 +28,45 @@ public final class InstrumentEditing {
         sound(note);
     }
 
+    /**
+     * Clic sobre un traste: si esa nota ya esta sonando en el beat, la borra; si no,
+     * la agrega. Asi el mismo clic sirve para escribir y para deshacer.
+     */
+    public void toggleFret(Note note) {
+        if (isAlreadyThere(note)) {
+            Cursor cursor = editor.cursor();
+            editor.moveTo(cursor.measure(), cursor.beat(), note.string());
+            editor.clearNote();
+            return;
+        }
+        pressFret(note);
+    }
+
+    /** Clic derecho: agrega la nota y avanza al beat siguiente, como aconseja el manual. */
+    public void pressFretAndAdvance(Note note) {
+        pressFret(note);
+        editor.moveRight();
+    }
+
+    private boolean isAlreadyThere(Note note) {
+        return editor.currentBeat().noteOn(note.string())
+                .map(existing -> existing.fret() == note.fret())
+                .orElse(false);
+    }
+
     /** Una tecla del teclado: se escribe en la cuerda del cursor, si esa cuerda llega. */
     public void pressKey(int midiNumber) {
         tuning().noteFor(new Pitch(midiNumber), editor.cursor().string()).ifPresent(this::pressFret);
+    }
+
+    /** Clic sobre una tecla: agrega o borra, igual que en el diapason. */
+    public void toggleKey(int midiNumber) {
+        tuning().noteFor(new Pitch(midiNumber), editor.cursor().string()).ifPresent(this::toggleFret);
+    }
+
+    /** Clic derecho sobre una tecla: agrega y avanza al beat siguiente. */
+    public void pressKeyAndAdvance(int midiNumber) {
+        tuning().noteFor(new Pitch(midiNumber), editor.cursor().string()).ifPresent(this::pressFretAndAdvance);
     }
 
     private void sound(Note note) {

@@ -1,0 +1,269 @@
+package com.gstncaruso.tabpro.ui.actions;
+
+/**
+ * Lo que las acciones necesitan de la ventana y que no sabe hacer el editor:
+ * abrir un dialogo, tocar la partitura, cambiar la vista o manejar el archivo.
+ */
+public final class Ports {
+
+    private Ports() {
+    }
+
+    /** Las ventanas que el manual abre para pedir datos. */
+    public interface Dialogs {
+        void scoreInformation();
+
+        void pageSetup();
+
+        void preferences();
+
+        void midiSetup();
+
+        void trackProperties();
+
+        void instrument();
+
+        void addTrack();
+
+        void timeSignature();
+
+        void keySignature();
+
+        void tripletFeel();
+
+        void repeatClose();
+
+        void alternateEndings();
+
+        void musicalDirections();
+
+        void mixTableChange();
+
+        void bend();
+
+        void tremoloBar();
+
+        void graceNote();
+
+        void stroke();
+
+        void trill();
+
+        void tremoloPicking();
+
+        void harmonics();
+
+        void text();
+
+        void dynamics();
+
+        void soundDuration();
+
+        void fingering();
+
+        void chordDiagram();
+
+        void scales();
+
+        void tuner();
+
+        void metronomeSettings();
+
+        void insertMarker();
+
+        void markerList();
+
+        void transpose();
+
+        void checkBarDurations();
+
+        void completeBarsWithRests();
+
+        void arrangeBars();
+
+        void automaticFingering();
+
+        void letRingOptions();
+
+        void palmMuteOptions();
+
+        void dynamicOptions();
+
+        void pasteOptions();
+
+        void about();
+    }
+
+    /** El transporte, tal como lo describe "Play the Score". */
+    public interface Playback {
+        void togglePlay();
+
+        void playFromTheBeginning();
+
+        void loopAndSpeedTrainer();
+
+        void toggleMetronome();
+
+        void toggleCountDown();
+
+        void stepForward();
+
+        void stepBack();
+
+        void tempo();
+
+        void relativeTempo();
+
+        /** Prende o apaga la captura de notas de un instrumento MIDI externo. */
+        void toggleMidiInput();
+    }
+
+    /** Lo que el menu Ver decide sobre la pantalla. */
+    public interface View {
+        void pageMode();
+
+        void parchmentMode();
+
+        void verticalScreenMode();
+
+        void horizontalScreenMode();
+
+        void zoomIn();
+
+        void zoomOut();
+
+        void resetZoom();
+
+        void toggleMultitrack();
+
+        void toggleStandardNotation();
+
+        void toggleTablature();
+
+        void toggleFretboard();
+
+        void toggleKeyboard();
+
+        void togglePercussionAssistant();
+
+        void toggleMixTable();
+
+        void toggleToolBars();
+
+        /** Cambia el aspecto de la ventana, como el menu Skin del manual. */
+        void useTheme(String name);
+    }
+
+    /**
+     * Los dispositivos MIDI de la maquina: por donde sale el sonido y por donde
+     * entran las notas de un instrumento externo.
+     */
+    public interface Devices {
+
+        /** Cuando no hay MIDI, no hay nada que elegir ni que capturar. */
+        Devices NONE = new Devices() {
+
+            @Override
+            public java.util.List<String> outputs() {
+                return java.util.List.of();
+            }
+
+            @Override
+            public String output() {
+                return "";
+            }
+
+            @Override
+            public void useOutput(String name) {
+            }
+
+            @Override
+            public java.util.List<String> inputs() {
+                return java.util.List.of();
+            }
+
+            @Override
+            public String input() {
+                return "";
+            }
+
+            @Override
+            public void useInput(String name) {
+            }
+
+            @Override
+            public boolean isCapturing() {
+                return false;
+            }
+
+            @Override
+            public void startCapture(CapturedNote listener) {
+            }
+
+            @Override
+            public void stopCapture() {
+            }
+        };
+
+        java.util.List<String> outputs();
+
+        String output();
+
+        void useOutput(String name);
+
+        java.util.List<String> inputs();
+
+        String input();
+
+        void useInput(String name);
+
+        boolean isCapturing();
+
+        void startCapture(CapturedNote listener);
+
+        void stopCapture();
+    }
+
+    /** Lo que llega de un instrumento MIDI mientras se escribe la partitura tocando. */
+    public interface CapturedNote {
+
+        void inTheSameChord(int midiNumber, int channel);
+
+        void inANewBeat(int midiNumber, int channel);
+    }
+
+    /** El archivo abierto: crear, abrir, guardar, importar, exportar e imprimir. */
+    public interface Document {
+        void newScore();
+
+        void open();
+
+        void browse();
+
+        void save();
+
+        void saveAs();
+
+        void importMidi();
+
+        void importAscii();
+
+        void importMusicXml();
+
+        void importGuitarPro();
+
+        void exportMidi();
+
+        void exportAscii();
+
+        void exportMusicXml();
+
+        void exportImage();
+
+        void exportPdf();
+
+        void print();
+
+        void quit();
+    }
+}

@@ -3,8 +3,11 @@ package com.gstncaruso.tabpro.ui.score;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.notation.Clef;
+import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,13 @@ public final class ScoreLayout {
     public static final int STAFF_TO_TAB_GAP = 42;
     public static final int STRING_SPACING = 12;
     public static final int TRACK_GAP = 20;
+
+    /**
+     * Los numeros de la tablatura se dibujan centrados sobre su cuerda, asi que
+     * la mitad de un digito cae por debajo de la ultima linea y la pista tiene
+     * que reservar ese lugar o el numero queda cortado al pie de la hoja.
+     */
+    public static final int TAB_BOTTOM_PADDING = STRING_SPACING;
     public static final int SYSTEM_GAP = 26;
 
     public static final int MEASURE_LEFT_PADDING = 26;
@@ -37,12 +47,16 @@ public final class ScoreLayout {
     public static final int MIN_MEASURE_WIDTH = 76;
     /** Lo que se reserva al arranque de cada sistema para la clave y la indicacion de compas. */
     public static final int SYSTEM_HEAD_WIDTH = 54;
+    /** Lo que se reserva en medio de un sistema cuando cambia la armadura o el compas. */
+    public static final int SIGNATURE_CHANGE_WIDTH = 30;
 
     private final Score score;
     private final int[] columnWidth;
     private final int[] headWidth;
     private final int[] columnX;
     private final int[] system;
+    private final boolean[] systemStart;
+    private final boolean[] signatureChange;
     private final int[] blockTop;
     private final int blockHeightTotal;
     private final int systemCount;
@@ -54,6 +68,8 @@ public final class ScoreLayout {
             int[] headWidth,
             int[] columnX,
             int[] system,
+            boolean[] systemStart,
+            boolean[] signatureChange,
             int[] blockTop,
             int blockHeightTotal,
             int systemCount,
@@ -63,6 +79,8 @@ public final class ScoreLayout {
         this.headWidth = headWidth;
         this.columnX = columnX;
         this.system = system;
+        this.systemStart = systemStart;
+        this.signatureChange = signatureChange;
         this.blockTop = blockTop;
         this.blockHeightTotal = blockHeightTotal;
         this.systemCount = systemCount;
@@ -77,6 +95,8 @@ public final class ScoreLayout {
         int[] columnX = new int[measureCount];
         int[] headWidth = new int[measureCount];
         int[] system = new int[measureCount];
+        boolean[] systemStart = new boolean[measureCount];
+        boolean[] signatureChange = new boolean[measureCount];
         int currentSystem = 0;
         int x = LEFT_MARGIN;
         for (int measure = 0; measure < measureCount; measure++) {
@@ -86,9 +106,12 @@ public final class ScoreLayout {
                 x = LEFT_MARGIN;
                 startsASystem = true;
             }
-            headWidth[measure] = startsASystem ? SYSTEM_HEAD_WIDTH : 0;
+            boolean changesSignature = !startsASystem && measure > 0 && signatureChangedAt(score, measure);
+            headWidth[measure] = startsASystem ? SYSTEM_HEAD_WIDTH : (changesSignature ? SIGNATURE_CHANGE_WIDTH : 0);
             columnX[measure] = x;
             system[measure] = currentSystem;
+            systemStart[measure] = startsASystem;
+            signatureChange[measure] = changesSignature;
             x += columnWidth[measure] + headWidth[measure];
         }
 
@@ -106,10 +129,19 @@ public final class ScoreLayout {
                 headWidth,
                 columnX,
                 system,
+                systemStart,
+                signatureChange,
                 blockTop,
                 blockHeightTotal,
                 measureCount == 0 ? 1 : currentSystem + 1,
                 beatBoundsOf(score, columnX, headWidth, columnWidth));
+    }
+
+    /** Si la armadura o el compas de este comienzo difieren de los del compas anterior. */
+    private static boolean signatureChangedAt(Score score, int measure) {
+        boolean timeChanged = !score.timeSignatureOf(measure).equals(score.timeSignatureOf(measure - 1));
+        boolean keyChanged = !score.attributesOf(measure).keySignature().equals(score.attributesOf(measure - 1).keySignature());
+        return timeChanged || keyChanged;
     }
 
     private static int[] columnWidths(Score score, int measureCount) {
@@ -148,7 +180,8 @@ public final class ScoreLayout {
     }
 
     private static int blockHeight(Track track) {
-        return TRACK_LABEL_HEIGHT + STAFF_HEADROOM + STAFF_HEIGHT + STAFF_TO_TAB_GAP + tabHeightOf(track);
+        return TRACK_LABEL_HEIGHT + STAFF_HEADROOM + STAFF_HEIGHT + STAFF_TO_TAB_GAP
+                + tabHeightOf(track) + TAB_BOTTOM_PADDING;
     }
 
     private static int tabHeightOf(Track track) {
@@ -221,11 +254,26 @@ public final class ScoreLayout {
     }
 
     public boolean startsASystem(int measure) {
-        return headWidth[measure] > 0;
+        return systemStart[measure];
+    }
+
+    /** Si en medio de un sistema cambia la armadura o el compas, y hay que volver a escribirlos. */
+    public boolean hasSignatureChange(int measure) {
+        return signatureChange[measure];
     }
 
     public int totalHeight() {
         return TOP_MARGIN + systemCount * (blockHeightTotal + SYSTEM_GAP) - SYSTEM_GAP + BOTTOM_MARGIN;
+    }
+
+    /** El techo de un sistema entero, con todas sus pistas apiladas adentro. */
+    public int systemTop(int system) {
+        return TOP_MARGIN + system * (blockHeightTotal + SYSTEM_GAP);
+    }
+
+    /** Cuanto mide de alto un sistema, con todas las pistas ya apiladas. */
+    public int systemHeight() {
+        return blockHeightTotal;
     }
 
     public int trackTop(int track, int measure) {
@@ -289,7 +337,7 @@ public final class ScoreLayout {
                 if (!withinBlock(track, measure, x, y)) {
                     continue;
                 }
-                return Optional.of(new Hit(track, measure, nearestBeat(track, measure, x), nearestString(track, measure, y)));
+                return Optional.of(new Hit(track, measure, nearestBeat(track, measure, x), nearestString(track, measure, x, y)));
             }
         }
         return Optional.empty();
@@ -314,7 +362,19 @@ public final class ScoreLayout {
         return beats.size() - 1;
     }
 
-    private int nearestString(int track, int measure, int y) {
+    /**
+     * La cuerda mas cercana al clic. Arriba de la tablatura se busca entre las notas del beat
+     * mas cercano cual queda mas cerca en el pentagrama; en la tablatura, la cuerda mas cercana
+     * por distancia vertical entre lineas.
+     */
+    private int nearestString(int track, int measure, int x, int y) {
+        if (y < tabTop(track, measure)) {
+            return nearestStringOnStaff(track, measure, x, y);
+        }
+        return nearestStringOnTab(track, measure, y);
+    }
+
+    private int nearestStringOnTab(int track, int measure, int y) {
         int stringCount = score.track(track).tuning().stringCount();
         int nearest = 1;
         int bestDistance = Integer.MAX_VALUE;
@@ -323,6 +383,26 @@ public final class ScoreLayout {
             if (distance < bestDistance) {
                 bestDistance = distance;
                 nearest = string;
+            }
+        }
+        return nearest;
+    }
+
+    private int nearestStringOnStaff(int track, int measure, int x, int y) {
+        Track trackModel = score.track(track);
+        Beat beat = trackModel.measure(measure).beat(nearestBeat(track, measure, x));
+        if (beat.notes().isEmpty()) {
+            return nearestStringOnTab(track, measure, y);
+        }
+        Clef clef = Clef.forTuning(trackModel.tuning());
+        int nearest = beat.notes().get(0).string();
+        int bestDistance = Integer.MAX_VALUE;
+        for (Note note : beat.notes()) {
+            StaffPosition position = StaffPosition.of(trackModel.pitchOf(note), clef);
+            int distance = Math.abs(y - stepY(track, measure, position.step()));
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                nearest = note.string();
             }
         }
         return nearest;

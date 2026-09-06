@@ -3,7 +3,11 @@ package com.gstncaruso.tabpro.ui.score;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.effects.Ornament;
+import com.gstncaruso.tabpro.core.notation.Beaming;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -51,7 +55,7 @@ final class TabPainter {
         Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, beatIndex);
         int centerX = bounds.x + bounds.width / 2;
         int y = layout.stringY(trackIndex, measureIndex, note.string());
-        String fret = String.valueOf(note.fret());
+        String fret = fretText(note);
 
         g.setFont(FRET_FONT);
         FontMetrics metrics = g.getFontMetrics();
@@ -61,6 +65,15 @@ final class TabPainter {
 
         g.setColor(ScoreColors.INK);
         g.drawString(fret, centerX - textWidth / 2, y + (metrics.getAscent() - metrics.getDescent()) / 2);
+    }
+
+    /** La nota muerta se escribe X y la fantasma entre parentesis, como pide el manual. */
+    private static String fretText(Note note) {
+        if (note.has(Ornament.DEAD)) {
+            return "X";
+        }
+        String digits = String.valueOf(note.fret());
+        return note.has(Ornament.GHOST) ? "(" + digits + ")" : digits;
     }
 
     private static void clearBehindTheDigits(Graphics2D g, int centerX, int y, int textWidth) {
@@ -85,6 +98,44 @@ final class TabPainter {
         for (int letter = 0; letter < letters.length; letter++) {
             int y = top + letterHeight * letter + (letterHeight + metrics.getAscent()) / 2 - 2;
             g.drawString(letters[letter], x, y);
+        }
+    }
+
+    /** La leyenda de afinacion: el nombre de cada cuerda al aire, de punta a punta de la tab. */
+    static void paintTuningLegend(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
+        int stringCount = track.tuning().stringCount();
+        g.setColor(ScoreColors.LABEL);
+        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9));
+        int x = layout.measureX(measureIndex) + 26;
+        for (int string = 1; string <= stringCount; string++) {
+            String name = com.gstncaruso.tabpro.core.notation.PitchName.of(track.tuning().pitchOfString(string)).text();
+            int y = layout.stringY(trackIndex, measureIndex, string) + 3;
+            g.drawString(name, x, y);
+        }
+    }
+
+    /** El ritmo de cada golpe dibujado como una plica suelta arriba de la tablatura, para las
+     * pistas que piden ver la figura sin abrir el pentagrama. */
+    static void paintRhythm(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
+        Measure measure = track.measure(measureIndex);
+        for (int beatIndex = 0; beatIndex < measure.beats().size(); beatIndex++) {
+            Beat beat = measure.beat(beatIndex);
+            if (beat.duration().value() == NoteValue.WHOLE) {
+                continue;
+            }
+            Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, beatIndex);
+            int centerX = bounds.x + bounds.width / 2;
+            int baseY = layout.tabTop(trackIndex, measureIndex) - 4;
+            int topY = baseY - 14;
+
+            g.setColor(ScoreColors.LABEL);
+            g.setStroke(new BasicStroke(1.2f));
+            g.drawLine(centerX, baseY, centerX, topY);
+            int flags = Beaming.beamCount(beat.duration().value());
+            for (int flag = 0; flag < flags; flag++) {
+                int y = topY + flag * 3;
+                g.drawLine(centerX, y, centerX + 5, y + 3);
+            }
         }
     }
 

@@ -52,13 +52,13 @@ class TuningTest {
     @Test
     void theLastFretIsStillWithinReach() {
         assertEquals(
-                Optional.of(new Note(1, Note.MAX_FRET)),
-                Tuning.standard().noteFor(new Pitch(64 + Note.MAX_FRET), 1));
+                Optional.of(new Note(1, Tuning.MAX_FRET)),
+                Tuning.standard().noteFor(new Pitch(64 + Tuning.MAX_FRET), 1));
     }
 
     @Test
     void aPitchPastTheLastFretIsOutOfReach() {
-        assertEquals(Optional.empty(), Tuning.standard().noteFor(new Pitch(64 + Note.MAX_FRET + 1), 1));
+        assertEquals(Optional.empty(), Tuning.standard().noteFor(new Pitch(64 + Tuning.MAX_FRET + 1), 1));
     }
 
     @Test

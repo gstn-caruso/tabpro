@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.score;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -155,6 +156,37 @@ class ScoreLayoutTest {
     }
 
     @Test
+    void aClickOnTheStaffFindsTheSameBeatAsAClickOnTheTablature() {
+        Score score = scoreWith(Beat.of(Duration.quarter(), new Note(6, 0)));
+        ScoreLayout layout = ScoreLayout.of(score, WIDE);
+        Rectangle target = layout.beatBounds(0, 0, 0);
+        int staffY = layout.staffTop(0, 0) + 2;
+
+        Optional<ScoreLayout.Hit> hit = layout.hitTest(target.x + target.width / 2, staffY);
+
+        assertTrue(hit.isPresent(), "un clic en el pentagrama tiene que encontrar el compas y el beat");
+        assertEquals(0, hit.get().measure());
+        assertEquals(0, hit.get().beat());
+    }
+
+    @Test
+    void aClickOnTheStaffFindsTheStringOfTheNearestNote() {
+        Score score = scoreWith(Beat.of(Duration.quarter(), new Note(6, 0)));
+        ScoreLayout layout = ScoreLayout.of(score, WIDE);
+        Rectangle target = layout.beatBounds(0, 0, 0);
+        int staffY = layout.staffTop(0, 0);
+
+        Optional<ScoreLayout.Hit> hit = layout.hitTest(target.x + target.width / 2, staffY);
+
+        assertEquals(6, hit.get().string());
+    }
+
+    private static Score scoreWith(Beat beat) {
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
+        return new Score("", 120, List.of(trackWith(measure)));
+    }
+
+    @Test
     void findsNothingBeyondTheScore() {
         ScoreLayout layout = ScoreLayout.of(Score.blank(), WIDE);
 
@@ -185,6 +217,26 @@ class ScoreLayoutTest {
 
         assertTrue(manySystems > oneSystem);
         assertNotEquals(0, oneSystem);
+    }
+
+    @Test
+    void aMidSystemTimeSignatureChangeReservesRoom() {
+        Measure fourFour = quarters(4);
+        Measure threeFour = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 0)))).withTimeSignature(new TimeSignature(3, 4));
+        Track guitar = Track.standardGuitar("Guitarra");
+        Score score = new Score("", 120, List.of(new Track(
+                "Guitarra", guitar.tuning(), guitar.channel(), List.of(fourFour, threeFour, threeFour))));
+
+        ScoreLayout layout = ScoreLayout.of(score, WIDE);
+
+        assertFalse(layout.startsASystem(1), "sigue siendo el mismo sistema");
+        assertTrue(layout.hasSignatureChange(1));
+        assertEquals(ScoreLayout.SIGNATURE_CHANGE_WIDTH, layout.headWidth(1));
+        assertFalse(layout.hasSignatureChange(2), "el compas 2 sigue en el mismo compas que el 1, no cambia nada");
+        assertFalse(layout.hasSignatureChange(0), "el primer compas de la partitura no cambia nada");
     }
 
     private int firstMeasureOfSystem(ScoreLayout layout, int system, int measureCount) {
