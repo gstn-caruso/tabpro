@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.actions.Commands;
@@ -69,6 +70,7 @@ public final class MainFrame extends JFrame {
 
     private final Editor editor;
     private final ScoreFiles files;
+    private final ScoreExchange exchange;
     private final ScoreDocument document;
     private final ScoreCanvas canvas;
     private final Transport transport;
@@ -86,12 +88,18 @@ public final class MainFrame extends JFrame {
     private final JSplitPane split;
 
     public MainFrame(Editor editor, ScoreFiles files, Player player) {
-        this(editor, files, player, ThemeSwitch.NONE, Ports.Devices.NONE);
+        this(editor, files, player, ThemeSwitch.NONE, Ports.Devices.NONE, ScoreExchange.NONE);
     }
 
     public MainFrame(
-            Editor editor, ScoreFiles files, Player player, ThemeSwitch themes, Ports.Devices devices) {
+            Editor editor,
+            ScoreFiles files,
+            Player player,
+            ThemeSwitch themes,
+            Ports.Devices devices,
+            ScoreExchange exchange) {
         super("tabpro");
+        this.exchange = exchange;
         this.themes = themes;
         this.devices = devices;
         this.player = player;
@@ -215,6 +223,13 @@ public final class MainFrame extends JFrame {
         JOptionPane.showMessageDialog(this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
     }
 
+    private static Path withExtension(File file, String extension) {
+        String name = file.getName();
+        return name.toLowerCase(java.util.Locale.ROOT).endsWith(extension)
+                ? file.toPath()
+                : file.toPath().resolveSibling(name + extension);
+    }
+
     private Path withTabproExtension(File file) {
         String name = file.getName();
         return name.endsWith(ScoreDocument.EXTENSION)
@@ -303,37 +318,37 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void importMidi() {
-            PendingFeature.announce(MainFrame.this, "La importación de MIDI");
+            importWith(exchange::importMidi, new FileNameExtensionFilter("Archivos MIDI (*.mid)", "mid", "midi"));
         }
 
         @Override
         public void importAscii() {
-            PendingFeature.announce(MainFrame.this, "La importación de tablatura ASCII");
+            importWith(exchange::importAscii, new FileNameExtensionFilter("Tablatura ASCII (*.tab, *.txt)", "tab", "txt"));
         }
 
         @Override
         public void importMusicXml() {
-            PendingFeature.announce(MainFrame.this, "La importación de MusicXML");
+            importWith(exchange::importMusicXml, new FileNameExtensionFilter("MusicXML (*.xml, *.musicxml)", "xml", "musicxml"));
         }
 
         @Override
         public void importGuitarPro() {
-            PendingFeature.announce(MainFrame.this, "La apertura de archivos de Guitar Pro");
+            importWith(exchange::importGuitarPro, new FileNameExtensionFilter("Partituras de Guitar Pro", "gp3", "gp4", "gp5", "gtp"));
         }
 
         @Override
         public void exportMidi() {
-            PendingFeature.announce(MainFrame.this, "La exportación a MIDI");
+            exportWith(exchange::exportMidi, new FileNameExtensionFilter("Archivos MIDI (*.mid)", "mid"), ".mid");
         }
 
         @Override
         public void exportAscii() {
-            PendingFeature.announce(MainFrame.this, "La exportación a tablatura ASCII");
+            exportWith(exchange::exportAscii, new FileNameExtensionFilter("Tablatura ASCII (*.tab)", "tab"), ".tab");
         }
 
         @Override
         public void exportMusicXml() {
-            PendingFeature.announce(MainFrame.this, "La exportación a MusicXML");
+            exportWith(exchange::exportMusicXml, new FileNameExtensionFilter("MusicXML (*.musicxml)", "musicxml"), ".musicxml");
         }
 
         @Override
@@ -355,6 +370,44 @@ public final class MainFrame extends JFrame {
         public void quit() {
             if (askToDiscardChanges()) {
                 dispose();
+            }
+        }
+
+        /** Abre un archivo de otro programa y lo adopta como partitura sin nombre. */
+        private void importWith(
+                java.util.function.Function<Path, com.gstncaruso.tabpro.core.model.Score> howToRead,
+                FileNameExtensionFilter filter) {
+            if (!askToDiscardChanges()) {
+                return;
+            }
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileFilter(filter);
+            if (chooser.showOpenDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            try {
+                document.adopt(howToRead.apply(chooser.getSelectedFile().toPath()));
+                updateTitle();
+                backToTheScore();
+            } catch (ScoreFileException e) {
+                showError(e);
+            }
+        }
+
+        private void exportWith(
+                java.util.function.BiConsumer<com.gstncaruso.tabpro.core.model.Score, Path> howToWrite,
+                FileNameExtensionFilter filter,
+                String extension) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileFilter(filter);
+            if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            try {
+                howToWrite.accept(editor.score(), withExtension(chooser.getSelectedFile(), extension));
+                backToTheScore();
+            } catch (ScoreFileException e) {
+                showError(e);
             }
         }
 

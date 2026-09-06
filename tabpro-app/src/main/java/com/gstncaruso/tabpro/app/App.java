@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.format.JsonScoreFiles;
+import com.gstncaruso.tabpro.format.exchange.FileExchange;
 import com.gstncaruso.tabpro.midi.MidiPlayer;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import java.awt.event.WindowAdapter;
@@ -30,7 +31,7 @@ public class App {
         Optional<Path> fileToOpen = fileFrom(args);
 
         SwingUtilities.invokeLater(() -> {
-            MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player, theme, devices);
+            MainFrame frame = new MainFrame(editor, new JsonScoreFiles(), player, theme, devices, new FileExchange());
             frame.setIconImages(AppIcon.sizes());
             midiPlayer.ifPresent(midi -> frame.addWindowListener(closeOnDispose(midi)));
             frame.setVisible(true);
