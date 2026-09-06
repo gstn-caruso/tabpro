@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.midi;
 
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.function.Supplier;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
@@ -36,11 +37,33 @@ public final class SoundFontSynthesizer implements AutoCloseable {
      * interno del JDK: nunca lanza por un SoundFont invalido.
      */
     public static SoundFontSynthesizer open(Optional<Path> file) throws MidiUnavailableException {
-        Synthesizer synthesizer = MidiSystem.getSynthesizer();
+        return open(file, SoundFontSynthesizer::systemSynthesizer);
+    }
+
+    /**
+     * Con el sintetizador del sistema elegido de afuera (null si no hay ninguno disponible), para
+     * poder probar que pasa en una maquina sin placa de sonido sin depender de si esta maquina de
+     * pruebas tiene una de verdad -la misma costura que ya usa MidiPlayer.PortOutput.
+     */
+    static SoundFontSynthesizer open(Optional<Path> file, Supplier<Synthesizer> synthesizers)
+            throws MidiUnavailableException {
+        Synthesizer synthesizer = synthesizers.get();
+        if (synthesizer == null) {
+            throw new MidiUnavailableException("no hay ningun sintetizador disponible en esta maquina");
+        }
         synthesizer.open();
         SoundFontSynthesizer result = new SoundFontSynthesizer(synthesizer);
         result.choose(file);
         return result;
+    }
+
+    /** El sintetizador del sistema, o null si la maquina no tiene ninguno disponible. */
+    static Synthesizer systemSynthesizer() {
+        try {
+            return MidiSystem.getSynthesizer();
+        } catch (MidiUnavailableException e) {
+            return null;
+        }
     }
 
     /** El sintetizador listo, para que lo use cualquier reproductor o renderizador. */

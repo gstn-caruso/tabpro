@@ -4,13 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.sun.media.sound.AudioSynthesizer;
 import java.io.IOException;
+import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Synthesizer;
@@ -119,6 +124,91 @@ class SoundFontBankTest {
             port2.send(new ShortMessage(ShortMessage.NOTE_ON, 1, 61, 100), -1);
         });
         assertTrue(bank.status().contains("invalido.sf2"));
+    }
+
+    // ---- sin ningun sintetizador disponible: distinto de "sin banco". Aca ni el sintetizador
+    // interno del JDK se puede abrir -una maquina sin placa de audio real ni virtual, como el CI.
+    // Se inyecta de donde sale el sintetizador (la misma costura que MidiPlayer.PortOutput ya usa
+    // con su Supplier<Sequencer>) para que estos tests corran siempre, en cualquier maquina.
+
+    @Test
+    void withoutAnySynthesizerAvailableEveryPortDegradesToSilenceWithoutBreakingAnything() {
+        bank = new SoundFontBank(Optional.empty(), () -> null);
+
+        Receiver port1 = bank.receiverForPort(1);
+        Receiver port2 = bank.receiverForPort(2);
+
+        assertFalse(bank.active());
+        assertDoesNotThrow(() -> {
+            port1.send(new ShortMessage(ShortMessage.NOTE_ON, 0, 60, 100), -1);
+            port2.send(new ShortMessage(ShortMessage.NOTE_ON, 1, 61, 100), -1);
+        });
+    }
+
+    @Test
+    void withoutAnySynthesizerAvailableAChosenFileCannotBeActiveEither() {
+        bank = new SoundFontBank(Optional.of(tempDir.resolve("cualquiera.sf2")), () -> null);
+
+        bank.receiverForPort(1);
+
+        assertFalse(bank.active(), "sin sintetizador no hay donde cargar nada, activo miente igual que con un archivo invalido");
+        assertTrue(bank.status().contains("No se pudo cargar"));
+    }
+
+    @Test
+    void withoutAnySynthesizerAvailableFreshSynthesizerFailsWithAClearException() {
+        bank = new SoundFontBank(Optional.empty(), () -> null);
+
+        MidiUnavailableException thrown = assertThrows(MidiUnavailableException.class, bank::freshSynthesizer);
+
+        assertNotNull(thrown.getMessage());
+    }
+
+    /**
+     * El render a WAVE es offline: nunca tiene que pedir una linea de audio real
+     * (Synthesizer.open()), porque eso es exactamente lo que revienta en una maquina sin placa de
+     * sonido aunque nadie vaya a escuchar nada en vivo. Se instrumenta el sintetizador para que
+     * abrir la linea real explote, y se confirma que freshSynthesizer jamas la toca. Corre
+     * siempre: no depende de si esta maquina tiene sonido de verdad.
+     */
+    @Test
+    void freshSynthesizerNeverOpensARealTimeLineSinceWaveExportIsOffline() throws Exception {
+        Synthesizer instrumented = synthesizerThatExplodesIfOpenedForRealTime();
+        bank = new SoundFontBank(Optional.empty(), () -> instrumented);
+
+        Synthesizer synth = assertDoesNotThrow(bank::freshSynthesizer);
+
+        assertNotNull(synth);
+    }
+
+    /** Lo mismo, pero con un banco de verdad puesto: tampoco ahi puede abrir una linea real. */
+    @Test
+    void freshSynthesizerNeverOpensARealTimeLineWhenLoadingARealBank() throws Exception {
+        Path real = firstInstalledOrSkip();
+        Synthesizer instrumented = synthesizerThatExplodesIfOpenedForRealTime();
+        bank = new SoundFontBank(Optional.of(real), () -> instrumented);
+
+        Synthesizer synth = assertDoesNotThrow(bank::freshSynthesizer);
+        AudioSynthesizer audioSynth = (AudioSynthesizer) synth;
+        javax.sound.sampled.AudioFormat format = new javax.sound.sampled.AudioFormat(44_100, 16, 2, true, false);
+        javax.sound.sampled.AudioInputStream stream = audioSynth.openStream(format, java.util.Map.of());
+
+        assertTrue(synth.getLoadedInstruments().length > 0, "el banco tendria que haber quedado cargado al abrir el stream offline");
+        synth.close();
+    }
+
+    private static Synthesizer synthesizerThatExplodesIfOpenedForRealTime() throws MidiUnavailableException {
+        Synthesizer real = MidiSystem.getSynthesizer();
+        return (Synthesizer) Proxy.newProxyInstance(
+                SoundFontBankTest.class.getClassLoader(),
+                new Class<?>[] {AudioSynthesizer.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("open") && method.getParameterCount() == 0) {
+                        throw new AssertionError(
+                                "freshSynthesizer no puede abrir una linea de audio real: el render es offline");
+                    }
+                    return method.invoke(real, args);
+                });
     }
 
     // ---- con un banco real instalado: se saltea sola si la maquina no tiene ninguno ----
