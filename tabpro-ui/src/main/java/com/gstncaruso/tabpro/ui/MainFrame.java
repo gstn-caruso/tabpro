@@ -8,6 +8,9 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import com.gstncaruso.tabpro.ui.browser.ScoreBrowser;
+import com.gstncaruso.tabpro.ui.harmony.ChordDialog;
+import com.gstncaruso.tabpro.ui.harmony.ChosenScale;
+import com.gstncaruso.tabpro.ui.harmony.ScalesDialog;
 import com.gstncaruso.tabpro.ui.dialogs.effects.NoteEffectsDialog;
 import com.gstncaruso.tabpro.ui.dialogs.info.ScoreInfoDialog;
 import com.gstncaruso.tabpro.ui.dialogs.instrument.InstrumentDialog;
@@ -88,6 +91,7 @@ public final class MainFrame extends JFrame {
     private com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences editingPreferences =
             com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences.defaults();
     private MetronomeSettings metronomeSettings = MetronomeSettings.off();
+    private final ChosenScale chosenScale = new ChosenScale();
     private final JSplitPane split;
 
     public MainFrame(Editor editor, ScoreFiles files, Player player) {
@@ -815,12 +819,14 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void chordDiagram() {
-            PendingFeature.announce(MainFrame.this, "La ventana de acordes");
+            ChordDialog.show(MainFrame.this, editor, player);
+            backToTheScore();
         }
 
         @Override
         public void scales() {
-            PendingFeature.announce(MainFrame.this, "La ventana de escalas");
+            ScalesDialog.show(MainFrame.this, editor, player, chosenScale);
+            backToTheScore();
         }
 
         @Override
