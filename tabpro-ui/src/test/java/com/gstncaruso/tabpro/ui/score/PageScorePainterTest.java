@@ -211,6 +211,18 @@ class PageScorePainterTest {
     }
 
     /**
+     * El cursor de edicion tambien es un color propio -no un gris de pantalla- asi que tampoco le
+     * toca la inversion del Modo Pagina: tiene que llegar a la hoja del mismo rojo con que se ve
+     * en pantalla, no invertido ni apagado.
+     */
+    @Test
+    void theEditingCursorIsTheSameRedOnPaperAsOnScreen() {
+        BufferedImage music = musicOf(render(scoreWithAParameterChange(), PageSetup.defaults()));
+
+        assertTrue(paints(music, ScoreColors.CURSOR), "el cursor de edicion tiene que verse rojo en la hoja");
+    }
+
+    /**
      * Lo que en la pantalla oscura es tinta clara, sobre la hoja tiene que ser tinta oscura: si
      * llegara al papel del color con el que se dibuja en pantalla, no se veria nada.
      */

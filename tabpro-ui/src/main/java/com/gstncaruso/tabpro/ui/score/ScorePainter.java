@@ -12,7 +12,6 @@ import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -246,13 +245,27 @@ public final class ScorePainter {
         }
     }
 
+    /**
+     * El cursor de edicion: una linea vertical fina y roja en el arranque del beat actual, que
+     * cruza el pentagrama y la tablatura de la pista que se esta editando. A diferencia de la
+     * linea de reproduccion -que cruza el sistema entero porque todas las pistas suenan juntas-
+     * esta es de una sola pista, porque solo se edita una a la vez.
+     */
     private static void paintCursor(Graphics2D g, ScoreLayout layout, Cursor cursor) {
-        Rectangle beat = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat());
-        int y = layout.stringY(cursor.track(), cursor.measure(), cursor.string())
-                - ScoreLayout.STRING_SPACING / 2 + 1;
-        g.setColor(cursorColor());
-        g.setStroke(new BasicStroke(2));
-        g.drawRect(beat.x + 1, y, beat.width - 2, ScoreLayout.STRING_SPACING - 2);
+        int x = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat()).x;
+        int top = layout.staffTop(cursor.track(), cursor.measure());
+        int bottom = layout.tabBottom(cursor.track(), cursor.measure());
+        g.setColor(ScoreColors.CURSOR);
+        // fillRect en vez de drawLine: la misma razon que en paintPlaying, para que el
+        // antialiasing no reparta la linea entre dos columnas y la deje desteñida.
+        g.fillRect(x, top, 1, bottom - top);
+        paintCursorString(g, layout, cursor, x);
+    }
+
+    /** La linea sola no dice en que cuerda esta parado el cursor: a esa altura se la ensancha. */
+    private static void paintCursorString(Graphics2D g, ScoreLayout layout, Cursor cursor, int x) {
+        int y = layout.stringY(cursor.track(), cursor.measure(), cursor.string());
+        g.fillRect(x - 2, y - 2, 5, 5);
     }
 
     /** La nota que corresponde al cursor en la otra notacion, marcada con un rectangulo gris. */
@@ -275,9 +288,5 @@ public final class ScorePainter {
             g.setColor(ScoreColors.CORRESPONDING_NOTE);
             g.fillRect(bounds.x + 1, y - 5, bounds.width - 2, 10);
         });
-    }
-
-    private static Color cursorColor() {
-        return ScoreColors.CURSOR;
     }
 }

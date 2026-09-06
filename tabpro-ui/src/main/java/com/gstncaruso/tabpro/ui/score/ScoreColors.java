@@ -21,7 +21,13 @@ public final class ScoreColors {
     public static final Color MUTED_INK = new Color(0x70747B);
 
     public static final Color ACCENT = new Color(0x3574F0);
-    public static final Color CURSOR = ACCENT;
+    /**
+     * La linea vertical fina y roja del cursor de edicion, como en Guitar Pro. Un rojo saturado y
+     * a pleno brillo para que no se confunda con los otros dos rojos de la partitura -el apagado
+     * del compas incompleto y el del cambio de parametro-, y para que se distinga bien del verde
+     * de la linea de reproduccion.
+     */
+    public static final Color CURSOR = new Color(0xFF, 0x3B, 0x30);
     /** La linea vertical fina que marca por donde va la reproduccion, como en Guitar Pro. */
     public static final Color PLAYING = new Color(0x27, 0xAE, 0x60);
     public static final Color PLAYING_MEASURE = new Color(0xE5484D);
@@ -49,7 +55,7 @@ public final class ScoreColors {
      * fondo oscuro de la pantalla. Los grises se espejan —la tinta clara que se lee sobre el fondo
      * oscuro se lee oscura sobre el papel— y lo que no esta en esta tabla se dibuja tal cual,
      * porque su color es justamente lo que dice: el rojo del cambio de parametro, el del compas
-     * incompleto, el azul del cursor o el que el usuario le puso a un marcador.
+     * incompleto, el del cursor de edicion o el que el usuario le puso a un marcador.
      */
     private static final Map<Color, Color> ON_PAPER = buildOnPaperMap();
 
