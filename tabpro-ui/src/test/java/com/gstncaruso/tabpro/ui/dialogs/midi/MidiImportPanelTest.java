@@ -44,6 +44,13 @@ class MidiImportPanelTest {
     }
 
     @Test
+    void defaultsToUsingTwoChannelsPerTrack() {
+        MidiImportPanel panel = new MidiImportPanel(List.of());
+
+        assertTrue(panel.useTwoChannelsPerTrack());
+    }
+
+    @Test
     void defaultsToSixteenthNotePrecision() {
         MidiImportPanel panel = new MidiImportPanel(List.of());
 

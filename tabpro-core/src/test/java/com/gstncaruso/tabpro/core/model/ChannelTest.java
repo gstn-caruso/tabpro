@@ -176,4 +176,18 @@ class ChannelTest {
 
         assertEquals(channel.number(), channel.effectChannel());
     }
+
+    @Test
+    void usingTwoChannelsPerTrackPutsTheEffectChannelNextToTheirs() {
+        assertEquals(2, Channel.effectChannelFor(1, true));
+        assertEquals(Channel.CHANNELS_PER_PORT, Channel.effectChannelFor(Channel.CHANNELS_PER_PORT, true));
+        assertEquals(Channel.PERCUSSION_CHANNEL, Channel.effectChannelFor(Channel.PERCUSSION_CHANNEL, true));
+    }
+
+    @Test
+    void usingOneChannelPerTrackPutsTheEffectChannelOnTheSameNumber() {
+        assertEquals(1, Channel.effectChannelFor(1, false));
+        assertEquals(5, Channel.effectChannelFor(5, false));
+        assertEquals(Channel.PERCUSSION_CHANNEL, Channel.effectChannelFor(Channel.PERCUSSION_CHANNEL, false));
+    }
 }

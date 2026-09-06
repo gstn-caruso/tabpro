@@ -51,7 +51,7 @@ public final class MidiScoreImporter {
     /** Una pista de tabpro por cada pista del MIDI que tenga notas. */
     public Score importQuick(Path path) {
         ParsedMidiFile file = parse(path);
-        return importQuick(path, file, file.tracks(), false, Optional.empty());
+        return importQuick(path, file, file.tracks(), false, Optional.empty(), true);
     }
 
     /** El import rapido, pero solo con las pistas MIDI elegidas y con transposicion opcional. */
@@ -62,19 +62,32 @@ public final class MidiScoreImporter {
     /** Lo mismo, pero cuantizando posicion y duracion con la precision elegida. */
     public Score importQuick(
             Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision) {
+        return importQuick(path, selectedMidiTrackIndices, transposeDownOneOctave, precision, true);
+    }
+
+    /**
+     * Lo mismo, pero con la casilla "Use 2 channels per track" del manual: con dos canales el
+     * de efectos es el que sigue al de la pista; con uno solo, los dos coinciden.
+     */
+    public Score importQuick(
+            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision,
+            boolean useTwoChannelsPerTrack) {
         ParsedMidiFile file = parse(path);
         List<RawMidiTrack> raws = file.tracks().stream()
                 .filter(raw -> selectedMidiTrackIndices.contains(raw.index()))
                 .toList();
-        return importQuick(path, file, raws, transposeDownOneOctave, precision);
+        return importQuick(path, file, raws, transposeDownOneOctave, precision, useTwoChannelsPerTrack);
     }
 
     private static Score importQuick(
-            Path path, ParsedMidiFile file, List<RawMidiTrack> raws, boolean transposeDownOneOctave, Optional<NoteValue> precision) {
+            Path path, ParsedMidiFile file, List<RawMidiTrack> raws, boolean transposeDownOneOctave, Optional<NoteValue> precision,
+            boolean useTwoChannelsPerTrack) {
         if (raws.isEmpty()) {
             throw new ScoreFileException("el archivo " + path + " no tiene pistas con notas para importar");
         }
-        List<Track> tracks = raws.stream().map(raw -> quickTrack(raw, file.grid(), transposeDownOneOctave, precision)).toList();
+        List<Track> tracks = raws.stream()
+                .map(raw -> quickTrack(raw, file.grid(), transposeDownOneOctave, precision, useTwoChannelsPerTrack))
+                .toList();
         String title = file.title().orElseGet(() -> titleFromFileName(path));
         return new Score(title, file.tempoBpm(), tracks);
     }
@@ -177,17 +190,19 @@ public final class MidiScoreImporter {
                 raws.getFirst().index(), "", 0, 1, 1, Channel.DEFAULT_VOLUME, Channel.CENTER_PAN, 0, 0, 0, 0, percussion, notesByTick);
     }
 
-    private static Track quickTrack(RawMidiTrack raw, MeasureGrid grid, boolean transposeDownOneOctave, Optional<NoteValue> precision) {
+    private static Track quickTrack(
+            RawMidiTrack raw, MeasureGrid grid, boolean transposeDownOneOctave, Optional<NoteValue> precision,
+            boolean useTwoChannelsPerTrack) {
         Tuning tuning = raw.percussion() ? PercussionKit.tuning() : TrackTuningGuess.forQuickImport(raw.name(), raw.program());
         List<Measure> measures =
                 measuresOf(raw, grid, tuning, TrackSettings.DEFAULT_FRET_COUNT, transposeDownOneOctave, precision);
         TrackSettings settings = raw.percussion()
                 ? TrackSettings.percussion(Track.colorFor(raw.index()))
                 : TrackSettings.standard(Track.colorFor(raw.index()));
-        return new Track(raw.name(), tuning, channelOf(raw), settings, measures);
+        return new Track(raw.name(), tuning, channelOf(raw, useTwoChannelsPerTrack), settings, measures);
     }
 
-    private static Channel channelOf(RawMidiTrack raw) {
+    private static Channel channelOf(RawMidiTrack raw, boolean useTwoChannelsPerTrack) {
         return Channel.playing(raw.program())
                 .withVolume(raw.volume())
                 .withPan(raw.pan())
@@ -196,7 +211,8 @@ public final class MidiScoreImporter {
                 .withChorus(raw.chorus())
                 .withPhaser(raw.phaser())
                 .withPort(raw.port())
-                .withNumber(raw.channelNumber());
+                .withNumber(raw.channelNumber())
+                .withEffectChannel(Channel.effectChannelFor(raw.channelNumber(), useTwoChannelsPerTrack));
     }
 
     private static List<Measure> measuresOf(
