@@ -6,13 +6,15 @@ import java.util.List;
  * Lee una "score" (la de guitarra o la de bajo): sus guitarras, y despues los
  * diagramas de acorde y el texto flotante, que se descartan; las asignaciones
  * de guitarra a pentagrama, que se guardan para validar mas adelante; los
- * marcadores de tempo y las dinamicas, que se descartan; los finales
- * alternativos, y por ultimo los sistemas.
+ * marcadores de tempo (de los que solo interesa el primero estandar: tabpro
+ * no admite cambios de tempo a mitad de partitura); las dinamicas, que se
+ * descartan; los finales alternativos, y por ultimo los sistemas.
  */
 final class PowerTabScoreReader {
 
     private final PowerTabGuitarReader guitarReader = new PowerTabGuitarReader();
     private final PowerTabGuitarInReader guitarInReader = new PowerTabGuitarInReader();
+    private final PowerTabTempoMarkerReader tempoMarkerReader = new PowerTabTempoMarkerReader();
     private final PowerTabAlternateEndingReader endingReader = new PowerTabAlternateEndingReader();
     private final PowerTabSystemReader systemReader = new PowerTabSystemReader();
 
@@ -21,11 +23,11 @@ final class PowerTabScoreReader {
         reader.skipVector(PowerTabAuxiliaryReader::skipChordDiagram);
         reader.skipVector(PowerTabAuxiliaryReader::skipFloatingText);
         List<PowerTabGuitarIn> guitarIns = reader.readVector(guitarInReader::read);
-        reader.skipVector(PowerTabAuxiliaryReader::skipTempoMarker);
+        List<PowerTabTempoMarker> tempoMarkers = reader.readVector(tempoMarkerReader::read);
         reader.skipVector(PowerTabAuxiliaryReader::skipDynamic);
         List<PowerTabAlternateEnding> alternateEndings = reader.readVector(endingReader::read);
         List<PowerTabSystem> systems = reader.readVector(systemReader::read);
 
-        return new PowerTabScore(guitars, guitarIns, alternateEndings, systems);
+        return new PowerTabScore(guitars, guitarIns, tempoMarkers, alternateEndings, systems);
     }
 }

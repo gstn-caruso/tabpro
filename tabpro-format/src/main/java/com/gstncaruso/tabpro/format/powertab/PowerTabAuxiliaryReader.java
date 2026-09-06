@@ -3,10 +3,10 @@ package com.gstncaruso.tabpro.format.powertab;
 /**
  * Deja atras, byte a byte, las secciones de PowerTab que todavia no tienen
  * destino en el modelo de tabpro: diagramas de acorde, texto flotante,
- * marcadores de tempo, dinamicas, direcciones, texto de acorde y las fuentes
- * del documento. Ninguna de ellas cambia el tono, la duracion o la cuerda de
- * una nota: son anotaciones y decoracion, asi que se leen para no perder la
- * sincronia del archivo y se descartan a proposito, no por descuido.
+ * dinamicas, direcciones, texto de acorde y las fuentes del documento.
+ * Ninguna de ellas cambia el tono, la duracion o la cuerda de una nota: son
+ * anotaciones y decoracion, asi que se leen para no perder la sincronia del
+ * archivo y se descartan a proposito, no por descuido.
  */
 final class PowerTabAuxiliaryReader {
 
@@ -45,12 +45,6 @@ final class PowerTabAuxiliaryReader {
     /** Una dinamica: sistema, pentagrama, posicion y volumen, todo fijo. */
     static void skipDynamic(PowerTabByteReader reader) {
         reader.skip(6);
-    }
-
-    /** Un marcador de tempo: los 7 bytes fijos de "system symbol" y una descripcion. */
-    static void skipTempoMarker(PowerTabByteReader reader) {
-        reader.skip(7);
-        reader.readMfcString();
     }
 
     /** Un texto flotante: el texto, un rectangulo fijo, una bandera y un "font setting". */

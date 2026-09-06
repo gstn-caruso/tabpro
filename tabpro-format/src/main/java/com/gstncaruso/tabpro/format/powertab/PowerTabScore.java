@@ -10,6 +10,7 @@ import java.util.List;
 record PowerTabScore(
         List<PowerTabGuitar> guitars,
         List<PowerTabGuitarIn> guitarIns,
+        List<PowerTabTempoMarker> tempoMarkers,
         List<PowerTabAlternateEnding> alternateEndings,
         List<PowerTabSystem> systems) {
 

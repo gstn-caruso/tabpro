@@ -56,14 +56,6 @@ class PowerTabAuxiliaryReaderTest {
     }
 
     @Test
-    void skipsATempoMarker() {
-        assertLeavesTheSentinel(body -> {
-            body.write(new byte[7], 0, 7); // system symbol.
-            writeMfcString(body, "Fast Rock");
-        }, PowerTabAuxiliaryReader::skipTempoMarker);
-    }
-
-    @Test
     void skipsFloatingText() {
         assertLeavesTheSentinel(body -> {
             writeMfcString(body, "foo\nbaz");
