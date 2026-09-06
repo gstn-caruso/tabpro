@@ -146,6 +146,11 @@ enum GuitarProVersion {
         return generation >= 5;
     }
 
+    /** GP5 pasa el slide de un numero a una mascara de bits, para poder traer varios por nota. */
+    boolean hasSlideMask() {
+        return generation >= 5;
+    }
+
     boolean hasStructuredHarmonic() {
         return generation >= 5;
     }
