@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.core.model;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 /** Una pista de la partitura: su instrumento, su afinacion y sus compases. */
@@ -85,9 +86,45 @@ public record Track(
         return measure(measureIndex).hasNotes();
     }
 
-    /** La altura que suena esa nota, contando la cejilla. */
+    /** La quinta cuerda del banjo, si esta opcion esta activa. */
+    private static final int BANJO_FIFTH_STRING = 5;
+
+    /**
+     * La quinta cuerda de un banjo no llega hasta la cejuela: arranca en el
+     * traste 6, asi que el primer traste que se puede pisar no es el 1 sino
+     * el 6, y de ahi para arriba.
+     */
+    private static final int BANJO_FIFTH_STRING_FRET_OFFSET = 5;
+
+    /** La altura que suena esa nota, contando la cejilla y la quinta cuerda del banjo. */
     public Pitch pitchOf(Note note) {
-        return tuning.pitchOf(note).transposed(settings.capo());
+        return tuning.pitchOf(effectiveNote(note)).transposed(settings.capo());
+    }
+
+    private Note effectiveNote(Note note) {
+        if (settings.banjoFifthString() && note.string() == BANJO_FIFTH_STRING && note.fret() > 0) {
+            return note.withFret(note.fret() + BANJO_FIFTH_STRING_FRET_OFFSET);
+        }
+        return note;
+    }
+
+    /** Cuantas cuerdas agudas de una guitarra de doce cuerdas se doblan al unisono; el resto, a la octava. */
+    private static final int TWELVE_STRING_UNISON_STRINGS = 2;
+    private static final int OCTAVE_SEMITONES = 12;
+    private static final int UNISON_SEMITONES = 0;
+
+    /**
+     * El intervalo con el que dobla esta cuerda una guitarra de doce cuerdas:
+     * al unisono las dos cuerdas mas agudas, a la octava el resto, tal como
+     * suenan los cursos de una doce cuerdas real. Vacio si la pista no tiene
+     * esta opcion activa, que es lo unico que cambia: la tablatura se sigue
+     * escribiendo con las mismas seis lineas.
+     */
+    public Optional<Integer> twelveStringDoublingInterval(int string) {
+        if (!settings.twelveString()) {
+            return Optional.empty();
+        }
+        return Optional.of(string <= TWELVE_STRING_UNISON_STRINGS ? UNISON_SEMITONES : OCTAVE_SEMITONES);
     }
 
     public Track withName(String name) {

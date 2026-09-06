@@ -110,6 +110,35 @@ class EditorHistoryTest {
     }
 
     @Test
+    void undoIsEnabledByDefault() {
+        Editor editor = new Editor(Score.blank());
+        assertTrue(editor.isUndoEnabled());
+    }
+
+    @Test
+    void disablingUndoForgetsThePastAndStopsRecordingNewChanges() {
+        Editor editor = new Editor(Score.blank());
+        editor.setFret(5);
+
+        editor.setUndoEnabled(false);
+
+        assertFalse(editor.canUndo());
+        editor.setFret(3);
+        assertFalse(editor.canUndo());
+    }
+
+    @Test
+    void reEnablingUndoRecordsChangesAgain() {
+        Editor editor = new Editor(Score.blank());
+        editor.setUndoEnabled(false);
+        editor.setUndoEnabled(true);
+
+        editor.setFret(5);
+
+        assertTrue(editor.canUndo());
+    }
+
+    @Test
     void replacingTheScoreResetsCursorAndHistory() {
         Editor editor = new Editor(Score.blank());
         editor.setFret(5);

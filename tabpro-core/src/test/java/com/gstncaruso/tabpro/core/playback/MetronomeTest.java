@@ -1,6 +1,8 @@
 package com.gstncaruso.tabpro.core.playback;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -57,6 +59,48 @@ class MetronomeTest {
         MetronomeClick plain = new MetronomeClick(0, false);
 
         assertTrue(accented.sound() != plain.sound());
+    }
+
+    @Test
+    void unClickSinVolumenPropioSuenaConLaFuerzaPorDefecto() {
+        MetronomeClick click = new MetronomeClick(0, true);
+
+        assertEquals(MetronomeClick.DEFAULT_VELOCITY, click.velocity());
+    }
+
+    @Test
+    void losClicksSuenanConElVolumenConfiguradoEnElMetronomo() {
+        Score score = Score.blank();
+
+        List<MetronomeClick> clicks = new Metronome(true, 42).clicksFor(score);
+
+        assertTrue(clicks.stream().allMatch(click -> click.velocity() == 42));
+    }
+
+    @Test
+    void rechazaUnVolumenNegativo() {
+        assertThrows(IllegalArgumentException.class, () -> new Metronome(true, -1));
+    }
+
+    @Test
+    void rechazaUnVolumenPorEncimaDelRangoMidi() {
+        assertThrows(IllegalArgumentException.class, () -> new Metronome(true, 128));
+    }
+
+    @Test
+    void withVolumePreservaSiEstaEncendido() {
+        Metronome metronome = Metronome.on().withVolume(30);
+
+        assertTrue(metronome.enabled());
+        assertEquals(30, metronome.volume());
+    }
+
+    @Test
+    void withEnabledPreservaElVolumen() {
+        Metronome metronome = Metronome.on().withVolume(30).withEnabled(false);
+
+        assertFalse(metronome.enabled());
+        assertEquals(30, metronome.volume());
     }
 
     @Test

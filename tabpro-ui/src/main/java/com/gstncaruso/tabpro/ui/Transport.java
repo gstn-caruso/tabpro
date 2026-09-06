@@ -87,7 +87,21 @@ public final class Transport {
     }
 
     public void toggleMetronome() {
-        metronome = metronome.enabled() ? Metronome.off() : Metronome.on();
+        metronome = metronome.withEnabled(!metronome.enabled());
+        notifyListeners();
+    }
+
+    public int metronomeVolume() {
+        return metronome.volume();
+    }
+
+    public void setMetronomeVolume(int volume) {
+        metronome = metronome.withVolume(volume);
+        notifyListeners();
+    }
+
+    public void setMetronomeEnabled(boolean enabled) {
+        metronome = metronome.withEnabled(enabled);
         notifyListeners();
     }
 

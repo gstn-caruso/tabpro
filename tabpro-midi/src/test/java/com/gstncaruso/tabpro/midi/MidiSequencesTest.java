@@ -584,6 +584,25 @@ class MidiSequencesTest {
     }
 
     @Test
+    void elVolumenDelClickSeUsaComoVelocityMidi() {
+        Timeline timeline = new Timeline(120, 960, List.of());
+        Sequence sequence = MidiSequences.fromTimeline(timeline);
+        List<MetronomeClick> clicks = List.of(new MetronomeClick(0, true, 42));
+
+        MidiSequences.addMetronomeTrack(sequence, clicks);
+
+        Track metronomeTrack = sequence.getTracks()[sequence.getTracks().length - 1];
+        ShortMessage noteOn = java.util.stream.IntStream.range(0, metronomeTrack.size())
+                .mapToObj(metronomeTrack::get)
+                .map(MidiEvent::getMessage)
+                .filter(message -> message instanceof ShortMessage sm && sm.getCommand() == ShortMessage.NOTE_ON)
+                .map(message -> (ShortMessage) message)
+                .findFirst()
+                .orElseThrow();
+        assertEquals(42, noteOn.getData2());
+    }
+
+    @Test
     void sinClicksNoAgregaNingunaPista() {
         Timeline timeline = new Timeline(120, 960, List.of());
         Sequence sequence = MidiSequences.fromTimeline(timeline);

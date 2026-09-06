@@ -75,8 +75,7 @@ public final class MidiSequences {
         }
     }
 
-    /** La velocidad y la duracion con que suena cada click del metronomo. */
-    private static final int METRONOME_VELOCITY = 100;
+    /** Cuanto dura cada click del metronomo. */
     private static final long METRONOME_CLICK_TICKS = 60;
 
     /** Agrega el metronomo como una pista mas de percusion, si es que tiene algun click para tocar. */
@@ -89,7 +88,7 @@ public final class MidiSequences {
             track.add(programChangeEvent(PERCUSSION_CHANNEL, 0));
             for (MetronomeClick click : clicks) {
                 ShortMessage on = new ShortMessage(
-                        ShortMessage.NOTE_ON, PERCUSSION_CHANNEL, click.sound(), METRONOME_VELOCITY);
+                        ShortMessage.NOTE_ON, PERCUSSION_CHANNEL, click.sound(), click.velocity());
                 ShortMessage off = new ShortMessage(ShortMessage.NOTE_OFF, PERCUSSION_CHANNEL, click.sound(), 0);
                 track.add(new MidiEvent(on, click.tick()));
                 track.add(new MidiEvent(off, click.tick() + METRONOME_CLICK_TICKS));
