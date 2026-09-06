@@ -50,7 +50,7 @@ final class GuitarProBeatReader {
         Duration duration = readDuration(reader, flags);
         BeatEffects effects = BeatEffects.none();
         if ((flags & HAS_CHORD) != 0) {
-            effects = effects.withChord(chords.read(reader, version));
+            effects = effects.withChord(chords.read(reader, version, stringCount));
         }
         if ((flags & HAS_TEXT) != 0) {
             effects = effects.withText(reader.readLengthPrefixedString());

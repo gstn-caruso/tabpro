@@ -165,6 +165,10 @@ public final class GuitarProFile {
     }
 
     private static Tuning tuningOf(GuitarProTrackHeader header) {
+        // Una pista de percusion no tiene alturas: sus lineas son sonidos, no cuerdas.
+        if (header.percussion()) {
+            return com.gstncaruso.tabpro.core.model.PercussionKit.tuning();
+        }
         List<Pitch> strings = header.tuningMidiNumbers().stream()
                 .map(midiNumber -> new Pitch(Math.clamp(midiNumber, 0, 127)))
                 .toList();

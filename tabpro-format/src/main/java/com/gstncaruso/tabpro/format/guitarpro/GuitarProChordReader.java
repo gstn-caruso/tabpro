@@ -15,8 +15,27 @@ final class GuitarProChordReader {
     private static final int STRING_SLOTS = 7;
     private static final int BARRE_SLOTS = 5;
 
-    ChordDiagram read(GuitarProByteReader reader, GuitarProVersion version) {
-        return version.hasGp5ChordFormat() ? readGp5(reader) : readLegacy(reader);
+    ChordDiagram read(GuitarProByteReader reader, GuitarProVersion version, int stringCount) {
+        ChordDiagram diagram = version.hasGp5ChordFormat() ? readGp5(reader) : readLegacy(reader, version);
+        return onlyTheStringsOfTheTrack(diagram, stringCount);
+    }
+
+    /**
+     * El archivo guarda siempre siete cuerdas; el diagrama se queda con las que
+     * el instrumento tiene de verdad.
+     */
+    private static ChordDiagram onlyTheStringsOfTheTrack(ChordDiagram diagram, int stringCount) {
+        if (diagram.stringCount() <= stringCount) {
+            return diagram;
+        }
+        return new ChordDiagram(
+                diagram.name(),
+                diagram.baseFret(),
+                diagram.frets().subList(0, stringCount),
+                diagram.fingering().size() > stringCount
+                        ? diagram.fingering().subList(0, stringCount)
+                        : diagram.fingering(),
+                diagram.shown());
     }
 
     private ChordDiagram readGp5(GuitarProByteReader reader) {
@@ -31,9 +50,9 @@ final class GuitarProChordReader {
         return chordOf(name, baseFret, frets, List.of());
     }
 
-    private ChordDiagram readLegacy(GuitarProByteReader reader) {
+    private ChordDiagram readLegacy(GuitarProByteReader reader, GuitarProVersion version) {
         int formatFlag = reader.readUnsignedByte();
-        return formatFlag == 0 ? readCompact(reader) : readExtended(reader);
+        return formatFlag == 0 ? readCompact(reader) : readExtended(reader, version);
     }
 
     /** El formato viejo de GP3: solo nombre, cejilla base y trastes. */
@@ -48,7 +67,7 @@ final class GuitarProChordReader {
         return chordOf(name, baseFret, frets, List.of());
     }
 
-    private ChordDiagram readExtended(GuitarProByteReader reader) {
+    private ChordDiagram readExtended(GuitarProByteReader reader, GuitarProVersion version) {
         reader.readBoolean(); // sharp: preferencia de notacion, no de digitado.
         reader.skip(3);
         reader.readSignedByte(); // nota fundamental
@@ -66,6 +85,10 @@ final class GuitarProChordReader {
         reader.skip(BARRE_SLOTS); // trastes de cejilla
         reader.skip(BARRE_SLOTS); // cuerda inicial de cada cejilla
         reader.skip(BARRE_SLOTS); // cuerda final de cada cejilla
+        // GP3 termina el diagrama en las cejillas; el digitado llego con GP4.
+        if (!version.hasSecondFlagsByte()) {
+            return chordOf(name, baseFret, frets, List.of());
+        }
         reader.skip(STRING_SLOTS); // que grados se omiten
         reader.skip(1);
         List<Finger> fingering = readFingering(reader);
