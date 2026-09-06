@@ -69,7 +69,10 @@ final class GuitarProTrackReader {
         reader.skip(12); // clefMode, unknownA, unknownB
         reader.skip(10); // relleno sin uso conocido
         reader.skip(2); // unknownC, unknownD
-        reader.skip(16); // instrumento de RSE (numero, banco, efecto)
+        // El instrumento de RSE: tres enteros y el numero de efecto, que en 5.00
+        // ocupa dos bytes mas uno de relleno y en 5.10 pasa a ser un entero.
+        reader.skip(12);
+        reader.skip(version.hasTrackEffectExtras() ? 4 : 3);
         if (version.hasTrackEffectExtras()) {
             reader.skip(4); // ecualizador de 3 bandas
             reader.readLengthPrefixedString(); // nombre del efecto de RSE

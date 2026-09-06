@@ -200,6 +200,65 @@ class GuitarProFileTest {
         assertFalse(readFeatures("gp4").track(0).measure(0).usesTwoVoices());
     }
 
+    // ---- los efectos que el formato ramifica por version ---------------------
+
+    @ParameterizedTest
+    @ValueSource(strings = {"gp3", "gp4", "gp5"})
+    void readsALigatureAsAPairOfNotes(String extension) {
+        Measure first = files.read(fixtureNamed("tabpro-effects2", extension)).track(0).measure(0);
+
+        assertTrue(first.beat(0).notes().getFirst().has(Ornament.HAMMER_ON_PULL_OFF));
+        assertTrue(first.beat(1).notes().getFirst().tied());
+    }
+
+    /** En GP3 el vibrato es del beat entero; el lector lo reparte a sus notas. */
+    @ParameterizedTest
+    @ValueSource(strings = {"gp3", "gp4", "gp5"})
+    void readsAVibrato(String extension) {
+        Measure first = files.read(fixtureNamed("tabpro-effects2", extension)).track(0).measure(0);
+
+        assertTrue(first.beat(2).notes().getFirst().has(Ornament.VIBRATO));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"gp3", "gp4", "gp5"})
+    void readsAnArtificialHarmonic(String extension) {
+        Measure second = files.read(fixtureNamed("tabpro-effects2", extension)).track(0).measure(1);
+
+        assertEquals(
+                java.util.Optional.of(com.gstncaruso.tabpro.core.model.effects.HarmonicType.ARTIFICIAL),
+                second.beat(0).notes().getFirst().effects().harmonic());
+    }
+
+    /** Los armonicos que no son natural ni artificial existen recien en GP4. */
+    @ParameterizedTest
+    @ValueSource(strings = {"gp4", "gp5"})
+    void readsTheHarmonicsThatOnlyExistFromGp4(String extension) {
+        Score score = files.read(fixtureNamed("tabpro-effects2", extension));
+
+        assertEquals(
+                java.util.Optional.of(com.gstncaruso.tabpro.core.model.effects.HarmonicType.TAPPED),
+                score.track(0).measure(1).beat(1).notes().getFirst().effects().harmonic());
+        assertEquals(
+                java.util.Optional.of(com.gstncaruso.tabpro.core.model.effects.HarmonicType.PINCH),
+                score.track(0).measure(1).beat(2).notes().getFirst().effects().harmonic());
+        assertEquals(
+                java.util.Optional.of(com.gstncaruso.tabpro.core.model.effects.HarmonicType.SEMI),
+                score.track(0).measure(2).beat(0).notes().getFirst().effects().harmonic());
+    }
+
+    /** En 5.00 el byte de banderas va delante de todas las pistas, no solo la primera. */
+    @Test
+    void readsAScoreSavedAsVersionFiveZero() {
+        Score score = files.read(fixtureNamed("tabpro-features-v5", "00.gp5"));
+
+        assertEquals(3, score.trackCount());
+        assertEquals("Lead Guitar", score.track(0).name());
+        assertEquals("Bass", score.track(1).name());
+        assertTrue(score.track(2).isPercussion());
+        assertEquals(List.of(3, 5, 7, 8), fretsOf(score.track(0).measure(0)));
+    }
+
     private Score readFeatures(String extension) {
         return files.read(fixtureNamed("tabpro-features", extension));
     }
