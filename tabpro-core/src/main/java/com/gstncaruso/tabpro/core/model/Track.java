@@ -57,6 +57,11 @@ public record Track(
         return settings.percussion();
     }
 
+    /** Si al combinar dos digitos tipeados forman un traste o un sonido valido para esta pista. */
+    public boolean acceptsTypedNumber(int number) {
+        return isPercussion() ? PercussionKit.isPlayable(number) : number <= Tuning.MAX_FRET;
+    }
+
     public Measure measure(int index) {
         return measures.get(index);
     }

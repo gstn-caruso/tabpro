@@ -51,4 +51,32 @@ class FretDigitsTest {
         now[0] += 100;
         assertEquals(2, digits.fretFor('2'));
     }
+
+    @Test
+    void aCombinationThatSatisfiesTheGivenRangeCombines() {
+        assertEquals(3, digits.fretFor('3', combined -> combined >= 35 && combined <= 81));
+        now[0] += 100;
+        assertEquals(35, digits.fretFor('5', combined -> combined >= 35 && combined <= 81));
+    }
+
+    @Test
+    void theHighestCombinationInAGivenRangeCombines() {
+        assertEquals(8, digits.fretFor('8', combined -> combined >= 35 && combined <= 81));
+        now[0] += 100;
+        assertEquals(81, digits.fretFor('1', combined -> combined >= 35 && combined <= 81));
+    }
+
+    @Test
+    void aCombinationBelowTheGivenRangeStartsANewValue() {
+        assertEquals(2, digits.fretFor('2', combined -> combined >= 35 && combined <= 81));
+        now[0] += 100;
+        assertEquals(0, digits.fretFor('0', combined -> combined >= 35 && combined <= 81));
+    }
+
+    @Test
+    void aCombinationAboveTheGivenRangeStartsANewValue() {
+        assertEquals(9, digits.fretFor('9', combined -> combined >= 35 && combined <= 81));
+        now[0] += 100;
+        assertEquals(9, digits.fretFor('9', combined -> combined >= 35 && combined <= 81));
+    }
 }
