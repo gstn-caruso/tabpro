@@ -10,31 +10,42 @@ import com.gstncaruso.tabpro.ui.page.PageSetup;
  */
 public record ScoreViewport(
         ViewMode mode, Zoom zoom, int width, VisibleTracks visibleTracks, VisibleNotations visibleNotations,
-        boolean graysTheInactiveVoice, PageSetup pageSetup) {
+        boolean graysTheInactiveVoice, PageSetup pageSetup, boolean showsDynamicNotes) {
 
     public static ScoreViewport of(ViewMode mode, Zoom zoom, int width) {
         return new ScoreViewport(
-                mode, zoom, width, VisibleTracks.all(), VisibleNotations.both(), true, PageSetup.defaults());
+                mode, zoom, width, VisibleTracks.all(), VisibleNotations.both(), true, PageSetup.defaults(), false);
     }
 
     public ScoreViewport withVisibleTracks(VisibleTracks visibleTracks) {
         return new ScoreViewport(
-                mode, zoom, width, visibleTracks, visibleNotations, graysTheInactiveVoice, pageSetup);
+                mode, zoom, width, visibleTracks, visibleNotations, graysTheInactiveVoice, pageSetup,
+                showsDynamicNotes);
     }
 
     public ScoreViewport withVisibleNotations(VisibleNotations visibleNotations) {
         return new ScoreViewport(
-                mode, zoom, width, visibleTracks, visibleNotations, graysTheInactiveVoice, pageSetup);
+                mode, zoom, width, visibleTracks, visibleNotations, graysTheInactiveVoice, pageSetup,
+                showsDynamicNotes);
     }
 
     public ScoreViewport withGrayingTheInactiveVoice(boolean graysTheInactiveVoice) {
         return new ScoreViewport(
-                mode, zoom, width, visibleTracks, visibleNotations, graysTheInactiveVoice, pageSetup);
+                mode, zoom, width, visibleTracks, visibleNotations, graysTheInactiveVoice, pageSetup,
+                showsDynamicNotes);
     }
 
     public ScoreViewport withPageSetup(PageSetup pageSetup) {
         return new ScoreViewport(
-                mode, zoom, width, visibleTracks, visibleNotations, graysTheInactiveVoice, pageSetup);
+                mode, zoom, width, visibleTracks, visibleNotations, graysTheInactiveVoice, pageSetup,
+                showsDynamicNotes);
+    }
+
+    /** Ver > Notas con dinamica [F11]: si la cabeza de la nota va con el gradiente de dinamica. */
+    public ScoreViewport withShowsDynamicNotes(boolean showsDynamicNotes) {
+        return new ScoreViewport(
+                mode, zoom, width, visibleTracks, visibleNotations, graysTheInactiveVoice, pageSetup,
+                showsDynamicNotes);
     }
 
     /** La voz que se dibuja entera; la otra queda atenuada. Sin atenuado, ninguna se destaca. */

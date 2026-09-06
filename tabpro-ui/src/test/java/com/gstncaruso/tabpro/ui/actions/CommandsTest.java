@@ -57,7 +57,7 @@ class CommandsTest {
     void theShortcutsOfTheManualAreThere() {
         Set<String> expected = new HashSet<>(List.of(
                 "ctrl N", "ctrl O", "ctrl S", "ctrl P", "ctrl Z", "ctrl X", "ctrl C", "ctrl V", "ctrl A",
-                "F1", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12", "SPACE",
+                "F1", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "SPACE",
                 "PLUS", "MINUS", "ctrl G", "ctrl TAB", "shift TAB", "ENTER"));
         commands.all().values().stream()
                 .map(Command::accelerator)
@@ -125,6 +125,14 @@ class CommandsTest {
         commands.get("bar.forceLineBreak").actionPerformed(event());
 
         assertTrue(asked.contains("isMultitrack"));
+    }
+
+    /** Ver > Notas con dinamica [F11] del manual: el comando le avisa a la vista. */
+    @Test
+    void theDynamicNotesCommandTogglesTheView() {
+        commands.get("view.dynamicNotes").actionPerformed(event());
+
+        assertEquals(List.of("toggleShowsDynamicNotes"), asked);
     }
 
     /**

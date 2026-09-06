@@ -355,6 +355,8 @@ public final class Commands {
         define("view.multitrack", "Vista multipista", view::toggleMultitrack).withIcon(Icons.multitrack());
         define("view.grayInactiveVoice", "Atenuar la voz inactiva", view::toggleGrayInactiveVoice)
                 .withAccelerator("ctrl G");
+        define("view.dynamicNotes", "Notas con dinámica", view::toggleShowsDynamicNotes)
+                .withAccelerator("F11");
         define("view.hideStandardNotation", "Ocultar el pentagrama", view::toggleStandardNotation);
         define("view.hideTablature", "Ocultar la tablatura", view::toggleTablature);
         define("view.fretboard", "Diapasón", view::toggleFretboard).withAccelerator("ctrl 3")

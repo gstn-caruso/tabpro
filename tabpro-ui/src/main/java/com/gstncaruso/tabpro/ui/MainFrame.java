@@ -789,6 +789,11 @@ public final class MainFrame extends JFrame {
         }
 
         @Override
+        public void toggleShowsDynamicNotes() {
+            canvas.setShowsDynamicNotes(!canvas.showsDynamicNotes());
+        }
+
+        @Override
         public void toggleStandardNotation() {
             canvas.setStandardNotationShown(!canvas.showsStandardNotation());
         }

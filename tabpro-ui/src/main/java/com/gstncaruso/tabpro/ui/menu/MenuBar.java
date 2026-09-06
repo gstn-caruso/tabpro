@@ -190,7 +190,7 @@ public final class MenuBar {
         add(menu, "view.zoomIn", "view.zoomOut", "view.resetZoom");
         menu.addSeparator();
         add(menu, "view.multitrack", "view.hideStandardNotation", "view.hideTablature",
-                "view.grayInactiveVoice");
+                "view.grayInactiveVoice", "view.dynamicNotes");
         menu.addSeparator();
         add(menu, "view.fretboard", "view.keyboard", "view.percussion", "view.mixTable", "view.toolBars");
         return menu;

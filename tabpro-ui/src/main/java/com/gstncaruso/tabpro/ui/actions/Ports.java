@@ -148,6 +148,9 @@ public final class Ports {
         /** Alterna el atenuado de la voz que no se esta editando, como el Ctrl+G del manual. */
         void toggleGrayInactiveVoice();
 
+        /** El F11 del manual: pinta la cabeza de cada nota con un gradiente segun su dinamica. */
+        void toggleShowsDynamicNotes();
+
         void toggleStandardNotation();
 
         void toggleTablature();

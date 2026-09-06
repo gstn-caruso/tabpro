@@ -427,6 +427,20 @@ class ScoreLayoutTest {
         assertTrue(onlyTablature.showsTablature(0));
     }
 
+    /** Ver > Notas con dinamica [F11]: por defecto no se muestran, para no recargar la hoja. */
+    @Test
+    void byDefaultTheLayoutDoesNotShowDynamicNotes() {
+        assertFalse(ScoreLayout.of(Score.blank(), WIDE).showsDynamicNotes());
+    }
+
+    @Test
+    void theLayoutCanBeAskedToShowDynamicNotes() {
+        ScoreLayout layout = ScoreLayout.of(
+                Score.blank(), WIDE, VisibleTracks.all(), VisibleNotations.both(), true);
+
+        assertTrue(layout.showsDynamicNotes());
+    }
+
     private int firstMeasureOfSystem(ScoreLayout layout, int system, int measureCount) {
         for (int measure = 0; measure < measureCount; measure++) {
             if (layout.systemOf(measure) == system) {

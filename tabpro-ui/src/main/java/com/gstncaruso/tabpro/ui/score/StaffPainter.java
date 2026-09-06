@@ -167,7 +167,7 @@ final class StaffPainter {
             if (beat.isRest()) {
                 paintRest(g, layout, trackIndex, measureIndex, lane, beat, ink);
             } else {
-                paintNoteheads(g, layout, track, clef, trackIndex, measureIndex, lane, beat, accidentals, ink);
+                paintNoteheads(g, layout, track, clef, trackIndex, measureIndex, lane, beat, accidentals, ink, dimmed);
             }
         }
         paintTies(g, layout, track, clef, trackIndex, measureIndex, beats, laneCount, ink);
@@ -195,10 +195,15 @@ final class StaffPainter {
             int beatIndex,
             Beat beat,
             KeySignatureAccidentals accidentals,
-            Color ink) {
+            Color ink,
+            boolean dimmed) {
         double centerX = noteCenterX(layout, trackIndex, measureIndex, beatIndex);
         boolean hollow = beat.duration().value() == NoteValue.WHOLE
                 || beat.duration().value() == NoteValue.HALF;
+        // "Ver > Notas con dinamica [F11]": solo la cabeza de la nota cambia de tinta, y solo
+        // cuando no esta atenuada -la voz que no se edita se sigue viendo pareja, sin importar
+        // cuan fuerte suena cada una de sus notas.
+        boolean colorsByDynamic = layout.showsDynamicNotes() && !dimmed;
 
         for (Note note : beat.notes()) {
             StaffPosition position = positionOf(track, clef, note);
@@ -208,7 +213,8 @@ final class StaffPainter {
             if (glyph != AccidentalGlyph.NONE) {
                 paintAccidental(g, glyph, centerX - NOTE_WIDTH * 0.75 - SPACE * 0.55, y, ink);
             }
-            paintNotehead(g, centerX, y, hollow, ink);
+            Color headInk = colorsByDynamic ? ScoreColors.forDynamic(note.effects().dynamic()) : ink;
+            paintNotehead(g, centerX, y, hollow, headInk);
             if (beat.duration().dotted()) {
                 paintDot(g, layout, trackIndex, measureIndex, position, centerX, ink);
             }
