@@ -1,3 +1,9 @@
+## [0.14.1](https://github.com/gstn-caruso/tabpro/compare/v0.14.0...v0.14.1) (2026-09-06)
+
+### Bug Fixes
+
+* el Modo Página deja de mentir el color de la tinta ([#61](https://github.com/gstn-caruso/tabpro/issues/61)) ([4b5f94b](https://github.com/gstn-caruso/tabpro/commit/4b5f94bca130cee0b68ea1b5b8f0883aa6904547))
+
 ## [0.14.0](https://github.com/gstn-caruso/tabpro/compare/v0.13.0...v0.14.0) (2026-09-06)
 
 ### Features
