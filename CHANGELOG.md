@@ -1,3 +1,14 @@
+## [0.20.0](https://github.com/gstn-caruso/tabpro/compare/v0.19.0...v0.20.0) (2026-09-06)
+
+### Features
+
+* el cursor de edicion es una linea vertical roja fina ([#76](https://github.com/gstn-caruso/tabpro/issues/76)) ([cc035f4](https://github.com/gstn-caruso/tabpro/commit/cc035f4a059abe5b13b1548894e4782bd702aa06))
+* importar archivos de PowerTab ([#77](https://github.com/gstn-caruso/tabpro/issues/77)) ([5b13969](https://github.com/gstn-caruso/tabpro/commit/5b1396986269edd945416d3e25727a286b5b7079)), closes [#70](https://github.com/gstn-caruso/tabpro/issues/70) [#74](https://github.com/gstn-caruso/tabpro/issues/74)
+
+### Bug Fixes
+
+* la imagen exportada sale como se ve, y los seis slides del manual ([#75](https://github.com/gstn-caruso/tabpro/issues/75)) ([2cbbe31](https://github.com/gstn-caruso/tabpro/commit/2cbbe312c29c579a414dabdc01cadccb85c3fe39))
+
 ## [0.19.0](https://github.com/gstn-caruso/tabpro/compare/v0.18.0...v0.19.0) (2026-09-06)
 
 ### Features
