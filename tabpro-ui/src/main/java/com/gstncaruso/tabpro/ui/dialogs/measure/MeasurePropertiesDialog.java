@@ -13,7 +13,19 @@ public final class MeasurePropertiesDialog {
     private MeasurePropertiesDialog() {
     }
 
+    /** Los nombres de las solapas, para que cada comando del menu abra la suya. */
+    public static final String TIME_SIGNATURE = "Medida";
+    public static final String KEY_SIGNATURE = "Armadura";
+    public static final String TRIPLET_FEEL = "Triplet feel";
+    public static final String REPEAT = "Repeticion";
+    public static final String ALTERNATE_ENDINGS = "Finales alternativos";
+    public static final String DIRECTIONS = "Direcciones";
+
     public static void show(Component parent, Editor editor) {
+        show(parent, editor, TIME_SIGNATURE);
+    }
+
+    public static void show(Component parent, Editor editor, String openOn) {
         Score score = editor.score();
         int measureIndex = editor.cursor().measure();
         MeasureAttributes attributes = score.attributesOf(measureIndex);
@@ -33,6 +45,7 @@ public final class MeasurePropertiesDialog {
         tabs.addTab("Finales alternativos", alternateEndingsPanel);
         tabs.addTab("Direcciones", directionsPanel);
 
+        selectTab(tabs, openOn);
         boolean accepted = DialogShell.ask(parent, "Propiedades del compas", tabs);
         if (!accepted) {
             return;
@@ -47,5 +60,13 @@ public final class MeasurePropertiesDialog {
         editor.setAlternateEndings(alternateEndingsPanel.toAlternateEndings());
         editor.setDirectionSymbol(directionsPanel.toSymbol());
         editor.setDirectionJump(directionsPanel.toJump());
+    }
+
+    /** Abre la ventana ya parada en la solapa que pidio el menu. */
+    private static void selectTab(JTabbedPane tabs, String title) {
+        int index = tabs.indexOfTab(title);
+        if (index >= 0) {
+            tabs.setSelectedIndex(index);
+        }
     }
 }

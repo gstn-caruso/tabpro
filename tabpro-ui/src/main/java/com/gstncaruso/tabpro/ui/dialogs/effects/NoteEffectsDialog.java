@@ -22,7 +22,20 @@ public final class NoteEffectsDialog {
     private NoteEffectsDialog() {
     }
 
+    /** Los nombres de las solapas, para que cada comando del menu abra la suya. */
+    public static final String BEND = "Bend";
+    public static final String TREMOLO_BAR = "Palanca";
+    public static final String GRACE_NOTE = "Nota de adorno";
+    public static final String STROKE = "Rasgueo";
+    public static final String TRILL = "Trino";
+    public static final String TREMOLO_PICKING = "Tremolo de pua";
+    public static final String HARMONICS = "Armonicos";
+
     public static void show(Component parent, Editor editor) {
+        show(parent, editor, BEND);
+    }
+
+    public static void show(Component parent, Editor editor, String openOn) {
         NoteEffects noteEffects = editor.currentNote().map(note -> note.effects()).orElse(NoteEffects.none());
         BeatEffects beatEffects = editor.currentBeat().effects();
 
@@ -51,6 +64,8 @@ public final class NoteEffectsDialog {
         tabs.addTab("Tremolo de pua", tremoloPickingTab);
         tabs.addTab("Armonicos", harmonicTab);
 
+        selectTab(tabs, openOn);
+
         boolean accepted = DialogShell.ask(parent, "Efectos de nota", tabs);
         if (!accepted) {
             return;
@@ -66,5 +81,13 @@ public final class NoteEffectsDialog {
 
     private static Bend defaultBend() {
         return Bend.of(BendType.BEND, 4);
+    }
+
+    /** Abre la ventana ya parada en la solapa que pidio el menu. */
+    private static void selectTab(JTabbedPane tabs, String title) {
+        int index = tabs.indexOfTab(title);
+        if (index >= 0) {
+            tabs.setSelectedIndex(index);
+        }
     }
 }

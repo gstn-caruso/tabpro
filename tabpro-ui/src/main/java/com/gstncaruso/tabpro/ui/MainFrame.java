@@ -7,6 +7,28 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import com.gstncaruso.tabpro.ui.browser.ScoreBrowser;
+import com.gstncaruso.tabpro.ui.dialogs.effects.NoteEffectsDialog;
+import com.gstncaruso.tabpro.ui.dialogs.info.ScoreInfoDialog;
+import com.gstncaruso.tabpro.ui.dialogs.instrument.InstrumentDialog;
+import com.gstncaruso.tabpro.ui.dialogs.markers.MarkersDialog;
+import com.gstncaruso.tabpro.ui.dialogs.measure.MeasurePropertiesDialog;
+import com.gstncaruso.tabpro.ui.dialogs.metronome.MetronomeDialog;
+import com.gstncaruso.tabpro.ui.dialogs.metronome.MetronomeSettings;
+import com.gstncaruso.tabpro.ui.dialogs.note.DynamicsDialog;
+import com.gstncaruso.tabpro.ui.dialogs.note.FingeringDialog;
+import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetup;
+import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetupDialog;
+import com.gstncaruso.tabpro.ui.dialogs.paste.PasteDialog;
+import com.gstncaruso.tabpro.ui.dialogs.preferences.PreferencesDialog;
+import com.gstncaruso.tabpro.ui.dialogs.track.AddTrackDialog;
+import com.gstncaruso.tabpro.ui.dialogs.track.TrackPropertiesDialog;
+import com.gstncaruso.tabpro.ui.dialogs.tuner.TunerDialog;
+import com.gstncaruso.tabpro.ui.dialogs.wizards.AutomaticFingeringDialog;
+import com.gstncaruso.tabpro.ui.dialogs.wizards.BarArrangerDialog;
+import com.gstncaruso.tabpro.ui.dialogs.wizards.BarDurationCheckDialog;
+import com.gstncaruso.tabpro.ui.dialogs.wizards.RestFillerDialog;
+import com.gstncaruso.tabpro.ui.dialogs.wizards.StringOptionsDialog;
+import com.gstncaruso.tabpro.ui.dialogs.wizards.TranspositionDialog;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.sound.LoopDialog;
@@ -55,7 +77,12 @@ public final class MainFrame extends JFrame {
     private final ToolBars toolBars;
     private final ThemeSwitch themes;
     private final Ports.Devices devices;
+    private final Player player;
     private StringAssignment stringAssignment = StringAssignment.NO_CHANNEL_DETECTION;
+    private PageSetup pageSetup = PageSetup.defaults();
+    private com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences editingPreferences =
+            com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences.defaults();
+    private MetronomeSettings metronomeSettings = MetronomeSettings.off();
     private final JSplitPane split;
 
     public MainFrame(Editor editor, ScoreFiles files, Player player) {
@@ -67,6 +94,7 @@ public final class MainFrame extends JFrame {
         super("tabpro");
         this.themes = themes;
         this.devices = devices;
+        this.player = player;
         this.editor = editor;
         this.files = files;
         this.document = new ScoreDocument(editor, files);
@@ -84,7 +112,7 @@ public final class MainFrame extends JFrame {
 
         JSpinner tempoSpinner = tempoSpinner();
         Commands commands = new Commands(
-                editor, new Document(), new NotYet(), new Playback(), new View(), themes.names());
+                editor, new Document(), new Windows(), new Playback(), new View(), themes.names());
         toolBars = new ToolBars(commands);
         toolBars.addToSoundRow(new JLabel("Tempo "));
         toolBars.addToSoundRow(tempoSpinner);
@@ -566,22 +594,26 @@ public final class MainFrame extends JFrame {
         }
     }
 
-    /** Las ventanas que todavia no estan construidas. */
-    private final class NotYet implements Ports.Dialogs {
+    /** Las ventanas del manual, cada una con lo que el editor necesita. */
+    private final class Windows implements Ports.Dialogs {
 
         @Override
         public void scoreInformation() {
-            announce("La información de la partitura");
+            ScoreInfoDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void pageSetup() {
-            announce("La configuración de página");
+            PageSetupDialog.ask(MainFrame.this, pageSetup).ifPresent(setup -> pageSetup = setup);
+            backToTheScore();
         }
 
         @Override
         public void preferences() {
-            announce("Las preferencias");
+            PreferencesDialog.ask(MainFrame.this, editingPreferences)
+                    .ifPresent(updated -> editingPreferences = updated);
+            backToTheScore();
         }
 
         @Override
@@ -591,181 +623,204 @@ public final class MainFrame extends JFrame {
                 devices.useInput(setup.input());
                 stringAssignment = setup.strings();
             });
+            backToTheScore();
         }
 
         @Override
         public void trackProperties() {
-            announce("Las propiedades de la pista");
+            TrackPropertiesDialog.show(MainFrame.this, editor, editor.cursor().track(), player);
+            backToTheScore();
         }
 
         @Override
         public void instrument() {
-            announce("La ventana de instrumento");
+            InstrumentDialog.show(MainFrame.this, editor, editor.cursor().track());
+            backToTheScore();
         }
 
         @Override
         public void addTrack() {
-            announce("La ventana de agregar pista");
+            AddTrackDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void timeSignature() {
-            announce("La ventana de medida del compás");
+            measureProperties(MeasurePropertiesDialog.TIME_SIGNATURE);
         }
 
         @Override
         public void keySignature() {
-            announce("La ventana de armadura");
+            measureProperties(MeasurePropertiesDialog.KEY_SIGNATURE);
         }
 
         @Override
         public void tripletFeel() {
-            announce("La ventana de triplet feel");
+            measureProperties(MeasurePropertiesDialog.TRIPLET_FEEL);
         }
 
         @Override
         public void repeatClose() {
-            announce("La ventana de repeticiones");
+            measureProperties(MeasurePropertiesDialog.REPEAT);
         }
 
         @Override
         public void alternateEndings() {
-            announce("La ventana de finales alternativos");
+            measureProperties(MeasurePropertiesDialog.ALTERNATE_ENDINGS);
         }
 
         @Override
         public void musicalDirections() {
-            announce("La ventana de direcciones musicales");
+            measureProperties(MeasurePropertiesDialog.DIRECTIONS);
         }
 
         @Override
         public void mixTableChange() {
-            announce("El cambio de parámetros");
+            PendingFeature.announce(MainFrame.this, "El cambio de parámetros en medio de la partitura");
         }
 
         @Override
         public void bend() {
-            announce("La ventana de bend");
+            noteEffects(NoteEffectsDialog.BEND);
         }
 
         @Override
         public void tremoloBar() {
-            announce("La ventana de palanca");
+            noteEffects(NoteEffectsDialog.TREMOLO_BAR);
         }
 
         @Override
         public void graceNote() {
-            announce("La ventana de nota de adorno");
+            noteEffects(NoteEffectsDialog.GRACE_NOTE);
         }
 
         @Override
         public void stroke() {
-            announce("La ventana de rasgueo");
+            noteEffects(NoteEffectsDialog.STROKE);
         }
 
         @Override
         public void trill() {
-            announce("La ventana de trino");
+            noteEffects(NoteEffectsDialog.TRILL);
         }
 
         @Override
         public void tremoloPicking() {
-            announce("La ventana de trémolo de púa");
+            noteEffects(NoteEffectsDialog.TREMOLO_PICKING);
         }
 
         @Override
         public void harmonics() {
-            announce("La ventana de armónicos");
+            noteEffects(NoteEffectsDialog.HARMONICS);
         }
 
         @Override
         public void text() {
-            announce("La ventana de texto");
+            String written = JOptionPane.showInputDialog(
+                    MainFrame.this, "Texto sobre la tablatura",
+                    editor.currentBeat().effects().text().orElse(""));
+            if (written != null) {
+                editor.setText(written);
+            }
+            backToTheScore();
         }
 
         @Override
         public void dynamics() {
-            announce("La ventana de dinámica");
+            DynamicsDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void fingering() {
-            announce("La ventana de digitación");
+            FingeringDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void chordDiagram() {
-            announce("La ventana de acordes");
+            PendingFeature.announce(MainFrame.this, "La ventana de acordes");
         }
 
         @Override
         public void scales() {
-            announce("La ventana de escalas");
+            PendingFeature.announce(MainFrame.this, "La ventana de escalas");
         }
 
         @Override
         public void tuner() {
-            announce("El afinador");
+            TunerDialog.show(MainFrame.this, editor, player);
+            backToTheScore();
         }
 
         @Override
         public void metronomeSettings() {
-            announce("La configuración del metrónomo");
+            MetronomeDialog.ask(MainFrame.this, editor, metronomeSettings)
+                    .ifPresent(settings -> metronomeSettings = settings);
+            backToTheScore();
         }
 
         @Override
         public void insertMarker() {
-            announce("La ventana de marcadores");
+            MarkersDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void markerList() {
-            announce("La lista de marcadores");
+            insertMarker();
         }
 
         @Override
         public void transpose() {
-            announce("El asistente de transposición");
+            TranspositionDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void checkBarDurations() {
-            announce("La verificación de duración de compases");
+            BarDurationCheckDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void completeBarsWithRests() {
-            announce("El asistente de silencios");
+            RestFillerDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void arrangeBars() {
-            announce("El organizador de compases");
+            BarArrangerDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void automaticFingering() {
-            announce("La digitación automática");
+            AutomaticFingeringDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void letRingOptions() {
-            announce("Las opciones de let ring");
+            StringOptionsDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void palmMuteOptions() {
-            announce("Las opciones de palm mute");
+            letRingOptions();
         }
 
         @Override
         public void dynamicOptions() {
-            announce("Las opciones de dinámica");
+            letRingOptions();
         }
 
         @Override
         public void pasteOptions() {
-            announce("Las opciones de pegado");
+            PasteDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
@@ -777,8 +832,14 @@ public final class MainFrame extends JFrame {
                     JOptionPane.INFORMATION_MESSAGE);
         }
 
-        private void announce(String what) {
-            PendingFeature.announce(MainFrame.this, what);
+        private void measureProperties(String tab) {
+            MeasurePropertiesDialog.show(MainFrame.this, editor, tab);
+            backToTheScore();
+        }
+
+        private void noteEffects(String tab) {
+            NoteEffectsDialog.show(MainFrame.this, editor, tab);
+            backToTheScore();
         }
     }
 }
