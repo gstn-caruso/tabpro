@@ -43,6 +43,7 @@ import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.percussion.PercussionAssistant;
+import com.gstncaruso.tabpro.ui.print.ScorePrinting;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.ViewMode;
 import com.gstncaruso.tabpro.ui.score.Zoom;
@@ -359,18 +360,39 @@ public final class MainFrame extends JFrame {
         }
 
         @Override
-        public void exportImage() {
-            PendingFeature.announce(MainFrame.this, "La exportación a imagen");
-        }
-
-        @Override
         public void exportPdf() {
             PendingFeature.announce(MainFrame.this, "La exportación a PDF");
         }
 
         @Override
+        public void exportImage() {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileFilter(new FileNameExtensionFilter("Imagen (*.png, *.jpg)", "png", "jpg", "jpeg"));
+            if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            try {
+                ScorePrinting.exportImage(
+                        editor.score(), ScorePrinting.withImageExtension(chooser.getSelectedFile()));
+                backToTheScore();
+            } catch (java.io.UncheckedIOException e) {
+                JOptionPane.showMessageDialog(
+                        MainFrame.this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        @Override
         public void print() {
-            PendingFeature.announce(MainFrame.this, "La impresión");
+            try {
+                ScorePrinting.print(editor.score(), document.displayName());
+                backToTheScore();
+            } catch (java.awt.print.PrinterException e) {
+                JOptionPane.showMessageDialog(
+                        MainFrame.this,
+                        "No se pudo imprimir: " + e.getMessage(),
+                        "tabpro",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
 
         @Override
