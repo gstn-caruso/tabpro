@@ -55,12 +55,12 @@ public final class ScorePrinting {
         job.pageDialog(job.defaultPage());
     }
 
-    public static void exportImage(Score score, PageSetup setup, Path path, ViewMode viewMode) {
+    public static void exportImage(Score score, PageSetup setup, Path path, ViewMode viewMode, Zoom zoom) {
         String format = formatOf(path);
         if (format.equals("bmp") && viewMode != ViewMode.PAGE) {
             throw new ImageExportException("La exportación a BMP sólo está disponible en modo Página.");
         }
-        writeImage(ScoreSheets.render(score, Zoom.whole(), setup), format, path);
+        writeImage(ScoreSheets.render(score, viewMode, zoom, setup), format, path);
     }
 
     /**

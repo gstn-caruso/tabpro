@@ -35,10 +35,6 @@ public final class ScoreSheets {
     private ScoreSheets() {
     }
 
-    private static Dimension sizeOf(Score score, Zoom zoom, PageSetup setup) {
-        return PageScorePainter.canvasSize(score, sheetViewport(zoom, setup));
-    }
-
     /** Lo que mide una sola hoja de papel dibujada con ese zoom. */
     public static Dimension pageSize(Zoom zoom, PageSetup setup) {
         PageMetrics sheet = PageMetrics.of(setup);
@@ -52,10 +48,20 @@ public final class ScoreSheets {
         return PageScorePainter.pageCount(score, sheetViewport(Zoom.whole(), setup));
     }
 
-    /** Toda la partitura en una sola imagen, lista para guardar. */
+    /**
+     * Toda la partitura en una sola imagen, lista para guardar, tal como se ve en la ventana: con
+     * el modo de vista y el zoom que tiene puestos quien exporta -pagina o pergamino paginan
+     * distinto, y el zoom cambia el tamano en pixeles.
+     */
+    public static BufferedImage render(Score score, ViewMode viewMode, Zoom zoom, PageSetup setup) {
+        ScoreViewport viewport = viewportFor(viewMode, zoom, setup);
+        Dimension size = PageScorePainter.canvasSize(score, viewport);
+        return drawnOn(size, graphics -> paintOn(graphics, score, viewport));
+    }
+
+    /** Igual que el de arriba, pero siempre en modo Pagina: lo que usan imprimir y el PDF. */
     public static BufferedImage render(Score score, Zoom zoom, PageSetup setup) {
-        Dimension size = sizeOf(score, zoom, setup);
-        return drawnOn(size, graphics -> paintOn(graphics, score, zoom, setup));
+        return render(score, ViewMode.PAGE, zoom, setup);
     }
 
     /** Una hoja sola, del tamano exacto del papel. */
@@ -72,10 +78,19 @@ public final class ScoreSheets {
         return List.copyOf(sheets);
     }
 
-    /** Dibuja la partitura entera sobre un lienzo ajeno. */
+    /** Dibuja la partitura entera sobre un lienzo ajeno, tal como se ve en la ventana. */
+    public static void paintOn(Graphics2D graphics, Score score, ViewMode viewMode, Zoom zoom, PageSetup setup) {
+        paintOn(graphics, score, viewportFor(viewMode, zoom, setup));
+    }
+
+    /** Igual que el de arriba, pero siempre en modo Pagina. */
     public static void paintOn(Graphics2D graphics, Score score, Zoom zoom, PageSetup setup) {
+        paintOn(graphics, score, ViewMode.PAGE, zoom, setup);
+    }
+
+    private static void paintOn(Graphics2D graphics, Score score, ScoreViewport viewport) {
         PageScorePainter.paint(
-                graphics, score, hiddenCursor(), Playhead.silent(), Optional.empty(), sheetViewport(zoom, setup));
+                graphics, score, hiddenCursor(), Playhead.silent(), Optional.empty(), viewport);
     }
 
     /** Dibuja una hoja sola sobre un lienzo ajeno, como el de la impresora. */
@@ -98,9 +113,17 @@ public final class ScoreSheets {
         return sheet;
     }
 
-    /** La hoja impresa siempre lleva la partitura entera, con todas sus pistas. */
+    /**
+     * La hoja impresa siempre lleva la partitura entera, con todas sus pistas, y siempre en modo
+     * Pagina: imprimir y exportar a PDF reparten fisicamente en hojas sin importar que modo de
+     * vista tiene la ventana -eso solo le importa a la exportacion de imagen.
+     */
     private static ScoreViewport sheetViewport(Zoom zoom, PageSetup setup) {
-        return ScoreViewport.of(ViewMode.PAGE, zoom, PageMetrics.of(setup).pageWidth()).withPageSetup(setup);
+        return viewportFor(ViewMode.PAGE, zoom, setup);
+    }
+
+    private static ScoreViewport viewportFor(ViewMode viewMode, Zoom zoom, PageSetup setup) {
+        return ScoreViewport.of(viewMode, zoom, PageMetrics.of(setup).pageWidth()).withPageSetup(setup);
     }
 
     /** Un cursor que no se ve porque apunta a una pista que no existe. */

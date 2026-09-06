@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.print;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -34,7 +35,7 @@ class ScorePrintingTest {
         Score score = scoreWithMeasures(4);
         Path path = tempDir.resolve("partitura.bmp");
 
-        ScorePrinting.exportImage(score, A4, path, ViewMode.PAGE);
+        ScorePrinting.exportImage(score, A4, path, ViewMode.PAGE, Zoom.whole());
 
         assertTrue(Files.exists(path));
         BufferedImage esperada = ScoreSheets.render(score, Zoom.whole(), A4);
@@ -55,7 +56,7 @@ class ScorePrintingTest {
         Path path = tempDir.resolve("partitura.bmp");
 
         ImageExportException error = assertThrows(ImageExportException.class,
-                () -> ScorePrinting.exportImage(score, A4, path, ViewMode.SCREEN_VERTICAL));
+                () -> ScorePrinting.exportImage(score, A4, path, ViewMode.SCREEN_VERTICAL, Zoom.whole()));
 
         assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("bmp"));
         assertFalse(Files.exists(path), "no tiene que quedar un archivo a medio escribir");
@@ -66,9 +67,43 @@ class ScorePrintingTest {
         Score score = scoreWithMeasures(4);
         Path path = tempDir.resolve("partitura.png");
 
-        ScorePrinting.exportImage(score, A4, path, ViewMode.SCREEN_VERTICAL);
+        ScorePrinting.exportImage(score, A4, path, ViewMode.SCREEN_VERTICAL, Zoom.whole());
 
         assertTrue(Files.exists(path), "la restriccion es solo para bmp");
+    }
+
+    @Test
+    void exportaLaImagenConElZoomQueTieneLaVentana(@TempDir Path tempDir) throws IOException {
+        Score score = scoreWithMeasures(4);
+        Path al100 = tempDir.resolve("al-100.png");
+        Path al200 = tempDir.resolve("al-200.png");
+
+        ScorePrinting.exportImage(score, A4, al100, ViewMode.PAGE, new Zoom(100));
+        ScorePrinting.exportImage(score, A4, al200, ViewMode.PAGE, new Zoom(200));
+
+        BufferedImage imagenAl100 = ImageIO.read(al100.toFile());
+        BufferedImage imagenAl200 = ImageIO.read(al200.toFile());
+
+        assertNotEquals(imagenAl100.getWidth(), imagenAl200.getWidth(),
+                "la misma partitura al 100% y al 200% no puede dar el mismo ancho en pixeles");
+        assertNotEquals(imagenAl100.getHeight(), imagenAl200.getHeight(),
+                "la misma partitura al 100% y al 200% no puede dar el mismo alto en pixeles");
+    }
+
+    @Test
+    void exportaLaImagenConElModoPergaminoSinSaltosDePagina(@TempDir Path tempDir) throws IOException {
+        Score score = scoreWithMeasures(80);
+        Path enPagina = tempDir.resolve("pagina.png");
+        Path enPergamino = tempDir.resolve("pergamino.png");
+
+        ScorePrinting.exportImage(score, A4, enPagina, ViewMode.PAGE, Zoom.whole());
+        ScorePrinting.exportImage(score, A4, enPergamino, ViewMode.PARCHMENT, Zoom.whole());
+
+        BufferedImage imagenEnPagina = ImageIO.read(enPagina.toFile());
+        BufferedImage imagenEnPergamino = ImageIO.read(enPergamino.toFile());
+
+        assertNotEquals(imagenEnPagina.getHeight(), imagenEnPergamino.getHeight(),
+                "en pergamino no hay saltos de pagina: el alto tiene que ser otro que en modo Pagina");
     }
 
     @Test

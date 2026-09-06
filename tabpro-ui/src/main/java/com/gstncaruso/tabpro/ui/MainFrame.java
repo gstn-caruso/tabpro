@@ -552,7 +552,7 @@ public final class MainFrame extends JFrame {
             try {
                 ScorePrinting.exportImage(
                         editor.score(), pageSetup, ScorePrinting.withImageExtension(chooser.getSelectedFile()),
-                        canvas.viewMode());
+                        canvas.viewMode(), canvas.zoom());
                 backToTheScore();
             } catch (java.io.UncheckedIOException | ImageExportException e) {
                 JOptionPane.showMessageDialog(
