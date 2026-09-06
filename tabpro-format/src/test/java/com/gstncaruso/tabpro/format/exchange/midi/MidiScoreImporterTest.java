@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.format.exchange.midi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -130,6 +131,25 @@ class MidiScoreImporterTest {
 
         assertEquals(Channel.PERCUSSION_CHANNEL, imported.track(0).channel().number());
         assertEquals(Channel.PERCUSSION_CHANNEL, imported.track(0).channel().effectChannel());
+    }
+
+    /**
+     * Channel.effectChannelNextTo(9) devuelve 10, el mismo de la percusion, si no lo evita: una
+     * pista melodica en el canal 9 no puede terminar con sus bends sonando como bateria. La
+     * regla ya salta la percusion en effectChannelNextTo (ver PR #83); este test lo confirma
+     * desde el lado del import, para que las dos puntas (import y reproduccion/exportacion)
+     * sigan compartiendo la misma funcion en vez de calcular el par cada una por su lado.
+     */
+    @Test
+    void aMelodicTrackOnChannelNineDoesNotGetThePercussionEffectChannel() {
+        Track track = Track.standardGuitar("Guitarra").withChannel(Channel.playing(25).withNumber(9));
+        Path path = export(new Score("Prueba", 120, List.of(track)), newTempDir());
+        List<Integer> indices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
+
+        Score imported = importer.importQuick(path, indices, false, Optional.empty(), true);
+
+        assertEquals(9, imported.track(0).channel().number());
+        assertNotEquals(Channel.PERCUSSION_CHANNEL, imported.track(0).channel().effectChannel());
     }
 
     @Test
