@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.AudioQuality;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileFormat;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.playback.Player;
@@ -236,14 +237,11 @@ public final class MainFrame extends JFrame {
      */
     public void openOnStartup(Path path) {
         try {
-            if (isAGuitarProFile(path)) {
-                document.adopt(exchange.importGuitarPro(path));
-            } else if (isATabEditFile(path)) {
-                document.adopt(exchange.importTabEdit(path));
-            } else if (isAPowerTabFile(path)) {
-                document.adopt(exchange.importPowerTab(path));
-            } else {
-                document.open(path);
+            switch (ScoreFileFormat.of(path)) {
+                case GUITAR_PRO -> document.adopt(exchange.importGuitarPro(path));
+                case TAB_EDIT -> document.adopt(exchange.importTabEdit(path));
+                case POWER_TAB -> document.adopt(exchange.importPowerTab(path));
+                case TABPRO -> document.open(path);
             }
             updateTitle();
         } catch (ScoreFileException e) {
@@ -251,18 +249,6 @@ public final class MainFrame extends JFrame {
         }
     }
 
-    private static boolean isAGuitarProFile(Path path) {
-        String name = path.getFileName().toString().toLowerCase(java.util.Locale.ROOT);
-        return name.endsWith(".gp3") || name.endsWith(".gp4") || name.endsWith(".gp5") || name.endsWith(".gtp");
-    }
-
-    private static boolean isATabEditFile(Path path) {
-        return path.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".tef");
-    }
-
-    private static boolean isAPowerTabFile(Path path) {
-        return path.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".ptb");
-    }
 
     private JSpinner tempoSpinner() {
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(editor.score().tempo(), 20, 400, 1));
@@ -387,6 +373,13 @@ public final class MainFrame extends JFrame {
         return new FileNameExtensionFilter("Partituras tabpro (*.tabpro)", "tabpro");
     }
 
+    /** El Abrir del manual: un solo cuadro que reconoce lo propio y lo de Guitar Pro. */
+    private FileNameExtensionFilter openableScoreFilter() {
+        return new FileNameExtensionFilter(
+                "Partituras (*.tabpro, *.gp3, *.gp4, *.gp5, *.gtp, *.tef, *.ptb)",
+                "tabpro", "gp3", "gp4", "gp5", "gtp", "tef", "ptb");
+    }
+
     /** El archivo abierto, tal como lo pide el menu Archivo del manual. */
     private final class Document implements Ports.Document {
 
@@ -402,13 +395,14 @@ public final class MainFrame extends JFrame {
             }
         }
 
+        /** El manual: un solo Abrir, que reconoce sus formatos indistintamente. */
         @Override
         public void open() {
             if (!askToDiscardChanges()) {
                 return;
             }
             JFileChooser chooser = new JFileChooser();
-            chooser.setFileFilter(tabproFilter());
+            chooser.setFileFilter(openableScoreFilter());
             if (chooser.showOpenDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
                 return;
             }
@@ -423,25 +417,15 @@ public final class MainFrame extends JFrame {
         }
 
         private void openChosen(Path path) {
-            try {
-                document.open(path);
-                updateTitle();
-                backToTheScore();
-            } catch (ScoreFileException e) {
-                showError(e);
-            }
+            openOnStartup(path);
+            backToTheScore();
         }
 
         @Override
         public void browse() {
-            ScoreBrowser browser = new ScoreBrowser(MainFrame.this, files, this::openQuietly, transport::preview);
+            ScoreBrowser browser = new ScoreBrowser(MainFrame.this, files, this::openChosen, transport::preview);
             browser.searchIn(document.path().map(Path::getParent).orElse(Path.of(System.getProperty("user.home"))));
             browser.setVisible(true);
-        }
-
-        private void openQuietly(Path path) {
-            openOnStartup(path);
-            backToTheScore();
         }
 
         @Override
