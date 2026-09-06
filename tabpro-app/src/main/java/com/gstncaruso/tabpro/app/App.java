@@ -28,7 +28,7 @@ public class App {
 
     public static void main(String[] args) {
         Theme theme = Theme.install();
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(), new SystemClipboardStorage());
 
         /*
          * Vacio: recien queda elegido cuando MainFrame se construye y aplica lo guardado en
