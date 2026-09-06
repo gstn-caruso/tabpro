@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.tracks;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.DrumKits;
 import com.gstncaruso.tabpro.core.model.Instruments;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
@@ -15,6 +16,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -45,6 +47,7 @@ public final class MixTableRow extends JPanel {
     private final JToggleButton mute = new JToggleButton("M");
     private final JToggleButton solo = new JToggleButton("S");
     private boolean syncing;
+    private boolean instrumentComboShowsDrumKits;
 
     public MixTableRow(Editor editor, MixTableModel model, int trackIndex) {
         this.editor = editor;
@@ -107,7 +110,7 @@ public final class MixTableRow extends JPanel {
         name.setText(track.name());
         port.setValue(ch.port());
         channel.setValue(ch.number());
-        instrument.setSelectedIndex(ch.program());
+        refreshInstrumentCombo(track);
         mute.setSelected(ch.muted());
         solo.setSelected(ch.solo());
         parameterCells.forEach(cell -> {
@@ -141,6 +144,10 @@ public final class MixTableRow extends JPanel {
 
     JSpinner channelField() {
         return channel;
+    }
+
+    JComboBox<String> instrumentField() {
+        return instrument;
     }
 
     List<ParameterCell> parameterCells() {
@@ -180,9 +187,27 @@ public final class MixTableRow extends JPanel {
     }
 
     private void pushProgram() {
-        if (!syncing && instrument.getSelectedIndex() >= 0) {
-            editor.setProgram(trackIndex, instrument.getSelectedIndex());
+        if (syncing || instrument.getSelectedIndex() < 0) {
+            return;
         }
+        int index = instrument.getSelectedIndex();
+        boolean percussion = editor.score().track(trackIndex).isPercussion();
+        editor.setProgram(trackIndex, percussion ? DrumKits.programAt(index) : index);
+    }
+
+    /**
+     * En el canal 10 el program change no elige un instrumento: elige un Drum Kit (manual,
+     * capitulo Percussion). El combo ofrece kits o instrumentos segun sea la pista.
+     */
+    private void refreshInstrumentCombo(Track track) {
+        boolean percussion = track.isPercussion();
+        if (percussion != instrumentComboShowsDrumKits) {
+            List<String> options = percussion ? DrumKits.names() : Instruments.names();
+            instrument.setModel(new DefaultComboBoxModel<>(options.toArray(new String[0])));
+            instrumentComboShowsDrumKits = percussion;
+        }
+        int program = track.channel().program();
+        instrument.setSelectedIndex(percussion ? DrumKits.indexOf(program) : program);
     }
 
     private void addColumn(JComponent component, int width) {
