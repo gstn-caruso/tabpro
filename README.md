@@ -43,9 +43,10 @@ genera los diagramas para cualquier afinación, los nombra y los digita, y la
 rango de compases. Más el afinador, el asistente de percusión y los seis
 asistentes del menú Herramientas.
 
-**Lo que todavía no está:** el lector de archivos de Guitar Pro está hecho y
-probado contra archivos armados byte a byte, pero falta contrastarlo con archivos
-reales.
+**Lo que todavía no está:** el lector de archivos de Guitar Pro abre bien los
+casos que cubren sus fixtures —las tres generaciones, con notas, afinación y
+compases— pero todavía no se probó contra partituras con efectos, acordes o
+varias pistas.
 
 ## Instalación
 
