@@ -35,6 +35,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
     private final java.util.List<Consumer<ScoreLayout.Hit>> clickListeners = new java.util.ArrayList<>();
     private VisibleNotations visibleNotations = VisibleNotations.both();
     private boolean graysTheInactiveVoice = true;
+    private boolean showsDynamicNotes = false;
     private Playhead playhead = Playhead.silent();
     private ViewMode viewMode = ViewMode.SCREEN_VERTICAL;
     private Zoom zoom = Zoom.whole();
@@ -193,6 +194,16 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
         repaint();
     }
 
+    /** Ver > Notas con dinamica [F11]: si la cabeza de la nota va con el gradiente de dinamica. */
+    public boolean showsDynamicNotes() {
+        return showsDynamicNotes;
+    }
+
+    public void setShowsDynamicNotes(boolean showsDynamicNotes) {
+        this.showsDynamicNotes = showsDynamicNotes;
+        repaint();
+    }
+
     private void showing(VisibleNotations visibleNotations) {
         this.visibleNotations = visibleNotations;
         revalidate();
@@ -325,7 +336,8 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
                 visibleTracks.tracks().withActiveTrack(editor.cursor().track()),
                 visibleNotations,
                 graysTheInactiveVoice,
-                pageSetup);
+                pageSetup,
+                showsDynamicNotes);
     }
 
     private int viewportWidth() {

@@ -64,6 +64,7 @@ public final class ScoreLayout {
     private final int blockHeightTotal;
     private final int systemCount;
     private final List<List<List<Rectangle>>> beatBounds;
+    private final boolean showsDynamicNotes;
 
     private ScoreLayout(
             Score score,
@@ -78,7 +79,8 @@ public final class ScoreLayout {
             int[] blockTop,
             int blockHeightTotal,
             int systemCount,
-            List<List<List<Rectangle>>> beatBounds) {
+            List<List<List<Rectangle>>> beatBounds,
+            boolean showsDynamicNotes) {
         this.score = score;
         this.visibleTracks = visibleTracks;
         this.visibleNotations = visibleNotations;
@@ -92,6 +94,7 @@ public final class ScoreLayout {
         this.blockHeightTotal = blockHeightTotal;
         this.systemCount = systemCount;
         this.beatBounds = beatBounds;
+        this.showsDynamicNotes = showsDynamicNotes;
     }
 
     public static ScoreLayout of(Score score, int availableWidth) {
@@ -104,6 +107,17 @@ public final class ScoreLayout {
 
     public static ScoreLayout of(
             Score score, int availableWidth, VisibleTracks visibleTracks, VisibleNotations visibleNotations) {
+        return of(score, availableWidth, visibleTracks, visibleNotations, false);
+    }
+
+    /**
+     * @param showsDynamicNotes si esta puesto "Ver > Notas con dinamica [F11]": la cabeza de la
+     *         nota se pinta con el gradiente de {@link ScoreColors#forDynamic} en vez de la
+     *         tinta pareja de siempre.
+     */
+    public static ScoreLayout of(
+            Score score, int availableWidth, VisibleTracks visibleTracks, VisibleNotations visibleNotations,
+            boolean showsDynamicNotes) {
         int measureCount = score.measureCount();
         int[] columnWidth = columnWidths(score, measureCount);
         int usableWidth = Math.max(MIN_MEASURE_WIDTH, availableWidth - LEFT_MARGIN - RIGHT_MARGIN);
@@ -117,7 +131,8 @@ public final class ScoreLayout {
         int x = LEFT_MARGIN;
         for (int measure = 0; measure < measureCount; measure++) {
             boolean alreadyAtLineStart = x == LEFT_MARGIN;
-            boolean startsASystem = alreadyAtLineStart || breaksBefore(score, measure, x, columnWidth[measure], usableWidth);
+            boolean startsASystem = alreadyAtLineStart
+                    || breaksBefore(score, visibleTracks, measure, x, columnWidth[measure], usableWidth);
             if (!alreadyAtLineStart && startsASystem) {
                 currentSystem++;
                 x = LEFT_MARGIN;
@@ -154,7 +169,8 @@ public final class ScoreLayout {
                 blockTop,
                 blockHeightTotal,
                 measureCount == 0 ? 1 : currentSystem + 1,
-                beatBoundsOf(score, columnX, headWidth, columnWidth));
+                beatBoundsOf(score, columnX, headWidth, columnWidth),
+                showsDynamicNotes);
     }
 
     /**
@@ -164,8 +180,9 @@ public final class ScoreLayout {
      * pedia el sistema actual se estira y el corte se corre al compas siguiente que si pueda
      * arrancar uno; automatico es el comportamiento de siempre, por ancho disponible.
      */
-    private static boolean breaksBefore(Score score, int measure, int x, int width, int usableWidth) {
-        LineBreak lineBreak = score.attributesOf(measure).lineBreak();
+    private static boolean breaksBefore(
+            Score score, VisibleTracks visibleTracks, int measure, int x, int width, int usableWidth) {
+        LineBreak lineBreak = lineBreakAt(score, visibleTracks, measure);
         if (lineBreak == LineBreak.FORCED) {
             return true;
         }
@@ -173,6 +190,21 @@ public final class ScoreLayout {
             return false;
         }
         return x + width > LEFT_MARGIN + usableWidth;
+    }
+
+    /**
+     * De donde sale el salto de linea de un compas: fuera de la vista multipista vale solo para
+     * la pista activa, que puede tener su propia organizacion de sistemas; en la vista
+     * multipista todas comparten la misma, la que arrastra la primera pista (igual que el resto
+     * de los atributos del compas, que siempre son los mismos en todas las pistas).
+     */
+    private static LineBreak lineBreakAt(Score score, VisibleTracks visibleTracks, int measure) {
+        if (visibleTracks.multitrack()) {
+            return score.attributesOf(measure).lineBreak();
+        }
+        Track track = score.track(visibleTracks.activeTrack());
+        int clamped = Math.clamp(measure, 0, track.measureCount() - 1);
+        return track.attributesOf(clamped).lineBreak();
     }
 
     /** Si la armadura o el compas de este comienzo difieren de los del compas anterior. */
@@ -335,6 +367,11 @@ public final class ScoreLayout {
 
     public boolean showsTablature(int track) {
         return visibleNotations.showsTablatureOf(score.track(track));
+    }
+
+    /** "Ver > Notas con dinamica [F11]": si la cabeza de la nota va con el gradiente de {@link ScoreColors#forDynamic}. */
+    public boolean showsDynamicNotes() {
+        return showsDynamicNotes;
     }
 
     /** Si esta pista se dibuja: la vista multipista y la mesa de mezcla deciden cuales se ven. */

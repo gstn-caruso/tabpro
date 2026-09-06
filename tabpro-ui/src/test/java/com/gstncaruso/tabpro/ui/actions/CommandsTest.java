@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationHandler;
@@ -57,7 +58,7 @@ class CommandsTest {
     void theShortcutsOfTheManualAreThere() {
         Set<String> expected = new HashSet<>(List.of(
                 "ctrl N", "ctrl O", "ctrl S", "ctrl P", "ctrl Z", "ctrl X", "ctrl C", "ctrl V", "ctrl A",
-                "F1", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12", "SPACE",
+                "F1", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "SPACE",
                 "PLUS", "MINUS", "ctrl G", "ctrl TAB", "shift TAB", "ENTER"));
         commands.all().values().stream()
                 .map(Command::accelerator)
@@ -113,6 +114,41 @@ class CommandsTest {
 
         commands.get("bar.resetLineBreak").actionPerformed(event());
         assertEquals(LineBreak.AUTOMATIC, editor.currentMeasure().attributes().lineBreak());
+
+        commands.get("bar.octave8va").actionPerformed(event());
+        assertEquals(OctaveMark.OTTAVA_ALTA, editor.currentMeasure().attributes().octaveMark());
+
+        commands.get("bar.octave8vb").actionPerformed(event());
+        assertEquals(OctaveMark.OTTAVA_BASSA, editor.currentMeasure().attributes().octaveMark());
+
+        commands.get("bar.octave15ma").actionPerformed(event());
+        assertEquals(OctaveMark.QUINDICESIMA_ALTA, editor.currentMeasure().attributes().octaveMark());
+
+        commands.get("bar.octave15mb").actionPerformed(event());
+        assertEquals(OctaveMark.QUINDICESIMA_BASSA, editor.currentMeasure().attributes().octaveMark());
+
+        commands.get("bar.octaveNone").actionPerformed(event());
+        assertEquals(OctaveMark.NONE, editor.currentMeasure().attributes().octaveMark());
+    }
+
+    /**
+     * El manual dice que el salto de linea vale solo para la pista activa o para la vista
+     * multipista, asi que el comando tiene que consultarle a la vista en cual de las dos esta
+     * antes de aplicarlo (el alcance en si lo prueba EditorBarsTest, en tabpro-core).
+     */
+    @Test
+    void theLineBreakCommandsAskTheViewWhetherTheMultitrackViewIsOn() {
+        commands.get("bar.forceLineBreak").actionPerformed(event());
+
+        assertTrue(asked.contains("isMultitrack"));
+    }
+
+    /** Ver > Notas con dinamica [F11] del manual: el comando le avisa a la vista. */
+    @Test
+    void theDynamicNotesCommandTogglesTheView() {
+        commands.get("view.dynamicNotes").actionPerformed(event());
+
+        assertEquals(List.of("toggleShowsDynamicNotes"), asked);
     }
 
     /**
@@ -166,7 +202,7 @@ class CommandsTest {
     private <T> T record(Class<T> port) {
         InvocationHandler handler = (proxy, method, args) -> {
             asked.add(method.getName());
-            return null;
+            return method.getReturnType() == boolean.class ? Boolean.FALSE : null;
         };
         return (T) Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[] {port}, handler);
     }

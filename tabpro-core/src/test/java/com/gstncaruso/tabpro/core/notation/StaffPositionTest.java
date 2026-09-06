@@ -107,4 +107,35 @@ class StaffPositionTest {
         assertEquals(21, position.step());
         assertEquals(6, position.ledgerLinesAbove());
     }
+
+    /**
+     * "8va"/"8vb"/"15ma"/"15mb" del manual: corren donde se escribe la nota (el step), nunca
+     * la altura sonante que ya quedo fijada en {@link StaffPosition#of}.
+     */
+    @Test
+    void shiftingBySevenStepsMovesOneOctaveOnTheStaffWithoutChangingTheSharpFlag() {
+        StaffPosition position = StaffPosition.of(new Pitch(42), Clef.TREBLE);
+
+        StaffPosition shiftedDown = position.shiftedBySteps(-7);
+        StaffPosition shiftedUp = position.shiftedBySteps(7);
+
+        assertEquals(position.step() - 7, shiftedDown.step());
+        assertEquals(position.step() + 7, shiftedUp.step());
+        assertEquals(position.sharp(), shiftedDown.sharp());
+        assertEquals(position.sharp(), shiftedUp.sharp());
+    }
+
+    @Test
+    void shiftingByZeroStepsLeavesThePositionExactlyAsItWas() {
+        StaffPosition position = StaffPosition.of(new Pitch(64), Clef.TREBLE);
+
+        assertEquals(position, position.shiftedBySteps(0));
+    }
+
+    @Test
+    void shiftingUpAndThenDownByTheSameAmountReturnsToTheOriginalPosition() {
+        StaffPosition position = StaffPosition.of(new Pitch(59), Clef.BASS);
+
+        assertEquals(position, position.shiftedBySteps(14).shiftedBySteps(-14));
+    }
 }

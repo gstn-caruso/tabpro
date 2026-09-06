@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.util.List;
 import java.util.Optional;
@@ -56,7 +57,8 @@ public record MeasureDto(
             String jump,
             String markerName,
             Integer markerColor,
-            String lineBreak) {
+            String lineBreak,
+            String octaveMark) {
 
         public static AttributesDto from(MeasureAttributes attributes) {
             KeySignature key = attributes.keySignature();
@@ -72,7 +74,8 @@ public record MeasureDto(
                     attributes.jump().map(Enum::name).orElse(null),
                     attributes.marker().map(Marker::name).orElse(null),
                     attributes.marker().map(marker -> marker.color().packed()).orElse(null),
-                    attributes.lineBreak() == LineBreak.AUTOMATIC ? null : attributes.lineBreak().name());
+                    attributes.lineBreak() == LineBreak.AUTOMATIC ? null : attributes.lineBreak().name(),
+                    attributes.octaveMark() == OctaveMark.NONE ? null : attributes.octaveMark().name());
         }
 
         public MeasureAttributes toAttributes() {
@@ -88,7 +91,8 @@ public record MeasureDto(
                     Optional.ofNullable(Enums.read(DirectionSymbol.class, symbol, null)),
                     Optional.ofNullable(Enums.read(DirectionJump.class, jump, null)),
                     toMarker(),
-                    Enums.read(LineBreak.class, lineBreak, LineBreak.AUTOMATIC));
+                    Enums.read(LineBreak.class, lineBreak, LineBreak.AUTOMATIC),
+                    Enums.read(OctaveMark.class, octaveMark, OctaveMark.NONE));
         }
 
         private Optional<Marker> toMarker() {

@@ -4,14 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
+import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +32,96 @@ class EditorBarsTest {
 
         assertTrue(editor.score().track(0).measure(0).attributes().repeatOpen());
         assertTrue(editor.score().track(1).measure(0).attributes().repeatOpen());
+    }
+
+    /**
+     * El manual dice que el salto de linea, a diferencia del resto de los atributos del compas,
+     * vale solo para la pista activa -salvo que se este en la vista multipista, donde vale para
+     * esa vista compartida por todas las pistas.
+     */
+    @Test
+    void aLineBreakOutsideTheMultitrackViewOnlyReachesTheActiveTrack() {
+        editor.setLineBreak(LineBreak.FORCED, false);
+
+        assertEquals(LineBreak.FORCED, editor.score().track(0).measure(0).attributes().lineBreak());
+        assertEquals(LineBreak.AUTOMATIC, editor.score().track(1).measure(0).attributes().lineBreak());
+    }
+
+    @Test
+    void aLineBreakOutsideTheMultitrackViewFollowsTheCursorToWhicheverTrackIsActive() {
+        editor.selectTrack(1);
+
+        editor.setLineBreak(LineBreak.FORCED, false);
+
+        assertEquals(LineBreak.AUTOMATIC, editor.score().track(0).measure(0).attributes().lineBreak());
+        assertEquals(LineBreak.FORCED, editor.score().track(1).measure(0).attributes().lineBreak());
+    }
+
+    @Test
+    void aLineBreakInTheMultitrackViewReachesEveryTrack() {
+        editor.setLineBreak(LineBreak.FORCED, true);
+
+        assertEquals(LineBreak.FORCED, editor.score().track(0).measure(0).attributes().lineBreak());
+        assertEquals(LineBreak.FORCED, editor.score().track(1).measure(0).attributes().lineBreak());
+    }
+
+    @Test
+    void resettingTheLineBreakOnTheActiveTrackDoesNotTouchTheOthers() {
+        editor.setLineBreak(LineBreak.FORCED, true);
+
+        editor.setLineBreak(LineBreak.PREVENTED, false);
+
+        assertEquals(LineBreak.PREVENTED, editor.score().track(0).measure(0).attributes().lineBreak());
+        assertEquals(LineBreak.FORCED, editor.score().track(1).measure(0).attributes().lineBreak());
+    }
+
+    /**
+     * 8va/8vb/15ma/15mb del manual: son una decision de notacion de una pista en un pasaje
+     * concreto -no de toda la partitura, como la armadura o una repeticion- asi que, igual que
+     * el salto de linea, valen solo para la pista activa.
+     */
+    @Test
+    void anOctaveMarkOnlyReachesTheActiveTrack() {
+        editor.setOctaveMark(OctaveMark.OTTAVA_ALTA);
+
+        assertEquals(OctaveMark.OTTAVA_ALTA, editor.score().track(0).measure(0).attributes().octaveMark());
+        assertEquals(OctaveMark.NONE, editor.score().track(1).measure(0).attributes().octaveMark());
+    }
+
+    @Test
+    void anOctaveMarkFollowsTheCursorToWhicheverTrackIsActive() {
+        editor.selectTrack(1);
+
+        editor.setOctaveMark(OctaveMark.OTTAVA_BASSA);
+
+        assertEquals(OctaveMark.NONE, editor.score().track(0).measure(0).attributes().octaveMark());
+        assertEquals(OctaveMark.OTTAVA_BASSA, editor.score().track(1).measure(0).attributes().octaveMark());
+    }
+
+    @Test
+    void resettingAnOctaveMarkGoesBackToNone() {
+        editor.setOctaveMark(OctaveMark.QUINDICESIMA_ALTA);
+
+        editor.setOctaveMark(OctaveMark.NONE);
+
+        assertEquals(OctaveMark.NONE, editor.score().track(0).measure(0).attributes().octaveMark());
+    }
+
+    /**
+     * El punto que mas importa del manual: la marca cambia donde se escribe la nota, nunca como
+     * suena. Ni el traste, ni la cuerda, ni la altura real que toca esa nota se mueven un pelo.
+     */
+    @Test
+    void anOctaveMarkNeverChangesWhatANoteSoundsLike() {
+        editor.setFret(5);
+        Note beforeTheMark = editor.currentNote().orElseThrow();
+        Pitch pitchBefore = editor.score().track(0).tuning().pitchOf(beforeTheMark);
+
+        editor.setOctaveMark(OctaveMark.QUINDICESIMA_BASSA);
+
+        Note afterTheMark = editor.currentNote().orElseThrow();
+        assertEquals(beforeTheMark, afterTheMark);
+        assertEquals(pitchBefore, editor.score().track(0).tuning().pitchOf(afterTheMark));
     }
 
     @Test

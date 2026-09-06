@@ -17,6 +17,9 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.Voice;
+import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -168,5 +171,46 @@ class JsonScoreFilesTest {
 
         assertEquals(3, loaded.number());
         assertEquals(11, loaded.effectChannel());
+    }
+
+    /**
+     * La perdida que encontro la revision: un compas marcado 8va se guardaba y, al volver a
+     * abrir el archivo, la marca habia desaparecido sin ningun aviso porque AttributesDto no
+     * tenia campo para ella.
+     */
+    @Test
+    void anOctaveMarkSurvivesSavingAndLoading(@TempDir Path tempDir) {
+        Score score = scoreWithOctaveMark(OctaveMark.OTTAVA_ALTA);
+        Path path = tempDir.resolve("score.tabpro");
+
+        scoreFiles.save(score, path);
+        Score loaded = scoreFiles.load(path);
+
+        assertEquals(OctaveMark.OTTAVA_ALTA, loaded.track(0).measure(0).attributes().octaveMark());
+    }
+
+    /**
+     * El default de {@link OctaveMark} tambien es {@code NONE}, asi que sin este otro compas el
+     * test de arriba podria pasar por casualidad aunque el campo nunca se leyera: hace falta
+     * probar tambien que un compas sin marca vuelve como NONE y no como cualquier otra cosa.
+     */
+    @Test
+    void aMeasureWithoutAnOctaveMarkLoadsAsNone(@TempDir Path tempDir) {
+        Score score = scoreWithOctaveMark(OctaveMark.NONE);
+        Path path = tempDir.resolve("score.tabpro");
+
+        scoreFiles.save(score, path);
+        Score loaded = scoreFiles.load(path);
+
+        assertEquals(OctaveMark.NONE, loaded.track(0).measure(0).attributes().octaveMark());
+    }
+
+    private static Score scoreWithOctaveMark(OctaveMark octaveMark) {
+        Measure measure = new Measure(
+                TimeSignature.fourFour(),
+                MeasureAttributes.plain().withOctaveMark(octaveMark),
+                List.of(new Voice(List.of(Beat.of(Duration.quarter(), new Note(6, 0)))), Voice.unused()));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Prueba", 120, List.of(track));
     }
 }

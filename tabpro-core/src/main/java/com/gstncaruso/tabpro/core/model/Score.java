@@ -1,7 +1,9 @@
 package com.gstncaruso.tabpro.core.model;
 
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
+import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,6 +129,30 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
     public Score withAttributesInEveryTrackAt(int index, MeasureAttributes attributes) {
         return mapTracks(track -> index < track.measureCount()
                 ? track.mappingMeasure(index, measure -> measure.withAttributes(attributes))
+                : track);
+    }
+
+    /**
+     * El salto de linea es la excepcion entre los atributos de compas: el manual dice que vale
+     * solo para la pista activa, asi que a diferencia de {@link #withAttributesInEveryTrackAt}
+     * cambia una sola pista y deja a las demas con el suyo propio.
+     */
+    public Score withLineBreakInTrackAt(int trackIndex, int measureIndex, LineBreak lineBreak) {
+        return mappingTrack(trackIndex, track -> measureIndex < track.measureCount()
+                ? track.mappingMeasure(measureIndex,
+                        measure -> measure.withAttributes(measure.attributes().withLineBreak(lineBreak)))
+                : track);
+    }
+
+    /**
+     * 8va/8vb/15ma/15mb del manual: igual que el salto de linea, es una decision de notacion de
+     * una pista en un pasaje concreto, no de toda la partitura -asi que tambien cambia una sola
+     * pista, nunca todas.
+     */
+    public Score withOctaveMarkInTrackAt(int trackIndex, int measureIndex, OctaveMark octaveMark) {
+        return mappingTrack(trackIndex, track -> measureIndex < track.measureCount()
+                ? track.mappingMeasure(measureIndex,
+                        measure -> measure.withAttributes(measure.attributes().withOctaveMark(octaveMark)))
                 : track);
     }
 

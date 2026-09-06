@@ -155,7 +155,8 @@ public final class PageScorePainter {
         int width = mode.showsPaper()
                 ? viewport.sheet().layoutWidth()
                 : (mode.scrollsHorizontally() ? UNWRAPPED_WIDTH : Math.max(200, viewport.width()));
-        return ScoreLayout.of(score, width, viewport.visibleTracks(), viewport.visibleNotations());
+        return ScoreLayout.of(
+                score, width, viewport.visibleTracks(), viewport.visibleNotations(), viewport.showsDynamicNotes());
     }
 
     private static void paintSheet(

@@ -1,7 +1,9 @@
 package com.gstncaruso.tabpro.ui.score;
 
 import com.gstncaruso.tabpro.core.model.ScoreColor;
+import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import java.awt.Color;
+import java.util.HashMap;
 import java.util.Map;
 
 /** Paleta unica de la partitura y del panel de pistas. */
@@ -49,21 +51,25 @@ public final class ScoreColors {
      * porque su color es justamente lo que dice: el rojo del cambio de parametro, el del compas
      * incompleto, el azul del cursor o el que el usuario le puso a un marcador.
      */
-    private static final Map<Color, Color> ON_PAPER = Map.of(
-            BACKGROUND, PAGE_PAPER,
-            INK, PAGE_INK,
-            LABEL, mirrored(LABEL),
-            MUTED_INK, mirrored(MUTED_INK),
-            STAFF_LINE, mirrored(STAFF_LINE),
-            BAR_LINE, mirrored(BAR_LINE),
-            VOICE_INACTIVE, mirrored(VOICE_INACTIVE),
-            CORRESPONDING_NOTE, mirrored(CORRESPONDING_NOTE));
+    private static final Map<Color, Color> ON_PAPER = buildOnPaperMap();
 
     private ScoreColors() {
     }
 
     public static Color of(ScoreColor color) {
         return new Color(color.red(), color.green(), color.blue());
+    }
+
+    /**
+     * "Ver > Notas con dinamica [F11]" del manual: la cabeza de la nota se lee con un gradiente
+     * en vez de la tinta pareja de siempre -de {@link #MUTED_INK} para la mas suave a
+     * {@link #INK} para la mas fuerte. Mirroreado en {@link #onPaper}, esa misma escala se lee
+     * al reves sobre el papel, que es justo lo que pide el manual: "cuanto mas clara, mas suave;
+     * cuanto mas oscura, mas fuerte".
+     */
+    public static Color forDynamic(Dynamic dynamic) {
+        double loudness = dynamic.ordinal() / (double) (Dynamic.values().length - 1);
+        return interpolated(MUTED_INK, INK, loudness);
     }
 
     /** Como se lee sobre la hoja clara un color elegido para la pantalla oscura. */
@@ -75,5 +81,33 @@ public final class ScoreColors {
     private static Color mirrored(Color color) {
         return new Color(
                 255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue(), color.getAlpha());
+    }
+
+    private static Color interpolated(Color from, Color to, double t) {
+        return new Color(
+                channel(from.getRed(), to.getRed(), t),
+                channel(from.getGreen(), to.getGreen(), t),
+                channel(from.getBlue(), to.getBlue(), t));
+    }
+
+    private static int channel(int from, int to, double t) {
+        return (int) Math.round(from + (to - from) * t);
+    }
+
+    private static Map<Color, Color> buildOnPaperMap() {
+        Map<Color, Color> onPaper = new HashMap<>();
+        onPaper.put(BACKGROUND, PAGE_PAPER);
+        onPaper.put(INK, PAGE_INK);
+        onPaper.put(LABEL, mirrored(LABEL));
+        onPaper.put(MUTED_INK, mirrored(MUTED_INK));
+        onPaper.put(STAFF_LINE, mirrored(STAFF_LINE));
+        onPaper.put(BAR_LINE, mirrored(BAR_LINE));
+        onPaper.put(VOICE_INACTIVE, mirrored(VOICE_INACTIVE));
+        onPaper.put(CORRESPONDING_NOTE, mirrored(CORRESPONDING_NOTE));
+        for (Dynamic dynamic : Dynamic.values()) {
+            Color forDynamic = forDynamic(dynamic);
+            onPaper.putIfAbsent(forDynamic, mirrored(forDynamic));
+        }
+        return Map.copyOf(onPaper);
     }
 }

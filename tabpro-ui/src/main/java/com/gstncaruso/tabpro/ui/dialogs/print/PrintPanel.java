@@ -1,8 +1,10 @@
 package com.gstncaruso.tabpro.ui.dialogs.print;
 
+import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import com.gstncaruso.tabpro.ui.print.PrintSettings;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
@@ -22,6 +24,7 @@ public final class PrintPanel extends FormPanel {
     private final JSpinner scalePercent = new JSpinner(new SpinnerNumberModel(
             100, PrintSettings.MIN_SCALE_PERCENT, PrintSettings.MAX_SCALE_PERCENT, 5));
     private final JCheckBox fitToPage = new JCheckBox("Ajustar a la hoja");
+    private final JButton configureButton = DialogStyle.flatButton("Configurar…");
 
     public PrintPanel(int sheetCount) {
         this.sheetCount = Math.max(1, sheetCount);
@@ -40,6 +43,7 @@ public final class PrintPanel extends FormPanel {
         addSection("Posicion");
         addRow("Escala (%)", scalePercent);
         addFullWidthRow(fitToPage);
+        addFullWidthRow(configureButton);
 
         everything.addActionListener(event -> refreshWhatIsEnabled());
         aRange.addActionListener(event -> refreshWhatIsEnabled());
@@ -93,5 +97,12 @@ public final class PrintPanel extends FormPanel {
 
     boolean rangeIsEditable() {
         return fromSheet.isEnabled();
+    }
+
+    /** El boton Configure del manual, para elegir el papel de la impresora (no el de la
+     * partitura, que es {@code Configurar pagina [F8]}); quien arma la ventana le engancha
+     * la accion real, asi este panel no depende de un dialogo real de impresion para probarse. */
+    public JButton configureButton() {
+        return configureButton;
     }
 }

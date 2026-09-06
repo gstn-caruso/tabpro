@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
+import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
@@ -141,9 +142,21 @@ public final class Commands {
         define("bar.alternateEndings", "Finales alternativos…", dialogs::alternateEndings)
                 .withIcon(Icons.alternateEndings());
         define("bar.directions", "Direcciones musicales…", dialogs::musicalDirections);
-        define("bar.forceLineBreak", "Forzar salto de línea", () -> editor.setLineBreak(LineBreak.FORCED));
-        define("bar.preventLineBreak", "Impedir salto de línea", () -> editor.setLineBreak(LineBreak.PREVENTED));
-        define("bar.resetLineBreak", "Reiniciar la organización", () -> editor.setLineBreak(LineBreak.AUTOMATIC));
+        define("bar.forceLineBreak", "Forzar salto de línea",
+                () -> editor.setLineBreak(LineBreak.FORCED, view.isMultitrack()));
+        define("bar.preventLineBreak", "Impedir salto de línea",
+                () -> editor.setLineBreak(LineBreak.PREVENTED, view.isMultitrack()));
+        define("bar.resetLineBreak", "Reiniciar la organización",
+                () -> editor.setLineBreak(LineBreak.AUTOMATIC, view.isMultitrack()));
+        define("bar.octave8va", "8va (suena una octava más arriba de lo escrito)",
+                () -> editor.setOctaveMark(OctaveMark.OTTAVA_ALTA));
+        define("bar.octave8vb", "8vb (suena una octava más abajo de lo escrito)",
+                () -> editor.setOctaveMark(OctaveMark.OTTAVA_BASSA));
+        define("bar.octave15ma", "15ma (suena dos octavas más arriba de lo escrito)",
+                () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_ALTA));
+        define("bar.octave15mb", "15mb (suena dos octavas más abajo de lo escrito)",
+                () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_BASSA));
+        define("bar.octaveNone", "Sin marca de octava", () -> editor.setOctaveMark(OctaveMark.NONE));
     }
 
     // ---- pistas -----------------------------------------------------------
@@ -352,6 +365,8 @@ public final class Commands {
         define("view.multitrack", "Vista multipista", view::toggleMultitrack).withIcon(Icons.multitrack());
         define("view.grayInactiveVoice", "Atenuar la voz inactiva", view::toggleGrayInactiveVoice)
                 .withAccelerator("ctrl G");
+        define("view.dynamicNotes", "Notas con dinámica", view::toggleShowsDynamicNotes)
+                .withAccelerator("F11");
         define("view.hideStandardNotation", "Ocultar el pentagrama", view::toggleStandardNotation);
         define("view.hideTablature", "Ocultar la tablatura", view::toggleTablature);
         define("view.fretboard", "Diapasón", view::toggleFretboard).withAccelerator("ctrl 3")

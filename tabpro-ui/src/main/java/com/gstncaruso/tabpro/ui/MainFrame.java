@@ -781,8 +781,18 @@ public final class MainFrame extends JFrame {
         }
 
         @Override
+        public boolean isMultitrack() {
+            return visibleTracks.isMultitrack();
+        }
+
+        @Override
         public void toggleGrayInactiveVoice() {
             canvas.setGrayingTheInactiveVoice(!canvas.graysTheInactiveVoice());
+        }
+
+        @Override
+        public void toggleShowsDynamicNotes() {
+            canvas.setShowsDynamicNotes(!canvas.showsDynamicNotes());
         }
 
         @Override
