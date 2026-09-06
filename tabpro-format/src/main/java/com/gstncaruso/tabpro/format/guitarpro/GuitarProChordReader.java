@@ -15,8 +15,27 @@ final class GuitarProChordReader {
     private static final int STRING_SLOTS = 7;
     private static final int BARRE_SLOTS = 5;
 
-    ChordDiagram read(GuitarProByteReader reader, GuitarProVersion version) {
-        return version.hasGp5ChordFormat() ? readGp5(reader) : readLegacy(reader);
+    ChordDiagram read(GuitarProByteReader reader, GuitarProVersion version, int stringCount) {
+        ChordDiagram diagram = version.hasGp5ChordFormat() ? readGp5(reader) : readLegacy(reader);
+        return onlyTheStringsOfTheTrack(diagram, stringCount);
+    }
+
+    /**
+     * El archivo guarda siempre siete cuerdas; el diagrama se queda con las que
+     * el instrumento tiene de verdad.
+     */
+    private static ChordDiagram onlyTheStringsOfTheTrack(ChordDiagram diagram, int stringCount) {
+        if (diagram.stringCount() <= stringCount) {
+            return diagram;
+        }
+        return new ChordDiagram(
+                diagram.name(),
+                diagram.baseFret(),
+                diagram.frets().subList(0, stringCount),
+                diagram.fingering().size() > stringCount
+                        ? diagram.fingering().subList(0, stringCount)
+                        : diagram.fingering(),
+                diagram.shown());
     }
 
     private ChordDiagram readGp5(GuitarProByteReader reader) {
