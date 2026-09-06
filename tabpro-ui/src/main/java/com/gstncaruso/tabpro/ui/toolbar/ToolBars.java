@@ -16,20 +16,29 @@ import javax.swing.JToolBar;
 /**
  * Las barras de herramientas, en las mismas tres filas que usa Guitar Pro: el
  * archivo y la edicion, la estructura y el sonido, y las figuras y los efectos.
+ * Ver > Menus y barras deja elegir cada fila por separado, ademas del interruptor
+ * general que las esconde a todas juntas.
  */
 public final class ToolBars {
 
     private final Commands commands;
     private final JPanel rows = new JPanel();
     private final JPanel structureRowExtras = transparentRow();
+    private final JComponent documentToolBar;
+    private final JComponent structureToolBar;
+    private final JComponent notationToolBar;
+
     public ToolBars(Commands commands) {
         this.commands = commands;
+        documentToolBar = leftAligned(documentRow());
+        structureToolBar = leftAligned(structureRow());
+        notationToolBar = leftAligned(notationRow());
         rows.setLayout(new BoxLayout(rows, BoxLayout.Y_AXIS));
         rows.setBackground(Palette.panel());
         rows.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Palette.separator()));
-        rows.add(leftAligned(documentRow()));
-        rows.add(leftAligned(structureRow()));
-        rows.add(leftAligned(notationRow()));
+        rows.add(documentToolBar);
+        rows.add(structureToolBar);
+        rows.add(notationToolBar);
     }
 
     public JComponent component() {
@@ -42,6 +51,33 @@ public final class ToolBars {
 
     public boolean isVisible() {
         return rows.isVisible();
+    }
+
+    /** Ver > Menus y barras: la fila del archivo y la edicion, elegible por separado. */
+    public void setDocumentToolBarVisible(boolean visible) {
+        documentToolBar.setVisible(visible);
+    }
+
+    public boolean isDocumentToolBarVisible() {
+        return documentToolBar.isVisible();
+    }
+
+    /** Ver > Menus y barras: la fila de la estructura y el sonido, elegible por separado. */
+    public void setStructureToolBarVisible(boolean visible) {
+        structureToolBar.setVisible(visible);
+    }
+
+    public boolean isStructureToolBarVisible() {
+        return structureToolBar.isVisible();
+    }
+
+    /** Ver > Menus y barras: la fila de las figuras y los efectos, elegible por separado. */
+    public void setNotationToolBarVisible(boolean visible) {
+        notationToolBar.setVisible(visible);
+    }
+
+    public boolean isNotationToolBarVisible() {
+        return notationToolBar.isVisible();
     }
 
     /** Los extras que la ventana agrega a la fila del sonido, como el tempo. */

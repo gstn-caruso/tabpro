@@ -46,6 +46,15 @@ public final class Command extends AbstractAction {
         return this;
     }
 
+    /**
+     * Para las acciones que se muestran con un casillero (JCheckBoxMenuItem): arranca tildado, y
+     * Swing se encarga de mantener el casillero y esta bandera sincronizados en los dos sentidos.
+     */
+    public Command checkedByDefault() {
+        putValue(SELECTED_KEY, Boolean.TRUE);
+        return this;
+    }
+
     public String label() {
         return (String) getValue(NAME);
     }

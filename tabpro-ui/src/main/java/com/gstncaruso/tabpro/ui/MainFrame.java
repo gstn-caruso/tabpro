@@ -81,7 +81,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JSplitPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -111,7 +110,9 @@ public final class MainFrame extends JFrame {
     private com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences editingPreferences =
             com.gstncaruso.tabpro.ui.dialogs.preferences.Preferences.defaults();
     private final ChosenScale chosenScale = new ChosenScale();
-    private final JSplitPane split;
+    private final com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties defaultScoreProperties =
+            com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties.userProperties();
+    private final ScoreMixSplit scoreMixSplit;
 
     public MainFrame(Editor editor, ScoreFiles files, Player player) {
         this(editor, files, player, ThemeSwitch.NONE, Ports.Devices.NONE, ScoreExchange.NONE, Ports.Microphone.NONE);
@@ -133,7 +134,8 @@ public final class MainFrame extends JFrame {
         this.player = player;
         this.editor = editor;
         this.files = files;
-        this.document = new ScoreDocument(editor, files, preferences);
+        this.document = new ScoreDocument(
+                editor, files, preferences, () -> defaultScoreProperties.get().newScore());
         editor.setUndoEnabled(preferences.undoEnabled());
         useMidiSetup(midiSetupFromPreferences());
         setSize(windowSize());
@@ -174,9 +176,7 @@ public final class MainFrame extends JFrame {
         canvas.onClickReposition(hit -> transport.seekTo(hit.measure(), hit.beat()));
         editor.addListener(this::updateTitle);
 
-        split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, trackPanel);
-        split.setResizeWeight(1);
-        split.setBorder(BorderFactory.createEmptyBorder());
+        scoreMixSplit = new ScoreMixSplit(scrollPane, trackPanel);
 
         JPanel top = new JPanel(new BorderLayout());
         top.add(toolBars.component(), BorderLayout.NORTH);
@@ -184,7 +184,7 @@ public final class MainFrame extends JFrame {
 
         setLayout(new BorderLayout());
         add(top, BorderLayout.NORTH);
-        add(split, BorderLayout.CENTER);
+        add(scoreMixSplit.component(), BorderLayout.CENTER);
         add(status, BorderLayout.SOUTH);
         updateTitle();
 
@@ -224,9 +224,9 @@ public final class MainFrame extends JFrame {
                 beatViews.showScale(tonic.semitone(), chosenScale.semitonesFromTheTonic()));
     }
 
-    /** La mesa de mezcla ocupa lo suyo abajo; el resto es partitura. */
+    /** La mesa de mezcla ocupa lo suyo; el resto es partitura. */
     private void showMixTable() {
-        split.setDividerLocation(Math.max(0, split.getHeight() - trackPanel.preferredPanelHeight()));
+        scoreMixSplit.showMixTable();
     }
 
     /**
@@ -379,6 +379,8 @@ public final class MainFrame extends JFrame {
             if (askToDiscardChanges()) {
                 document.newScore();
                 usePageSetup(DefaultPageSetup.userSetup().get());
+                updateTitle();
+                ScoreInfoDialog.show(MainFrame.this, editor, defaultScoreProperties);
                 updateTitle();
                 backToTheScore();
             }
@@ -829,14 +831,38 @@ public final class MainFrame extends JFrame {
             if (trackPanel.isVisible()) {
                 showMixTable();
             } else {
-                split.setDividerLocation(split.getHeight());
+                scoreMixSplit.hideMixTable();
             }
+            backToTheScore();
+        }
+
+        @Override
+        public void toggleView() {
+            scoreMixSplit.toggleView();
             backToTheScore();
         }
 
         @Override
         public void toggleToolBars() {
             toolBars.setVisible(!toolBars.isVisible());
+            backToTheScore();
+        }
+
+        @Override
+        public void toggleDocumentToolBar() {
+            toolBars.setDocumentToolBarVisible(!toolBars.isDocumentToolBarVisible());
+            backToTheScore();
+        }
+
+        @Override
+        public void toggleStructureToolBar() {
+            toolBars.setStructureToolBarVisible(!toolBars.isStructureToolBarVisible());
+            backToTheScore();
+        }
+
+        @Override
+        public void toggleNotationToolBar() {
+            toolBars.setNotationToolBarVisible(!toolBars.isNotationToolBarVisible());
             backToTheScore();
         }
 

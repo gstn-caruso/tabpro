@@ -157,7 +157,19 @@ public final class Ports {
 
         void toggleMixTable();
 
+        /** Ver > Intercambiar vistas: la partitura y la mesa de mezcla cambian de lugar. */
+        void toggleView();
+
         void toggleToolBars();
+
+        /** Muestra u oculta la fila de barras de documento y edicion. */
+        void toggleDocumentToolBar();
+
+        /** Muestra u oculta la fila de barras de estructura y sonido. */
+        void toggleStructureToolBar();
+
+        /** Muestra u oculta la fila de barras de figuras y efectos. */
+        void toggleNotationToolBar();
 
         /** Cambia el aspecto de la ventana, como el menu Skin del manual. */
         void useTheme(String name);

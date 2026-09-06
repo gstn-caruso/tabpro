@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /** El archivo abierto: donde vive, si tiene cambios sin guardar y como se recupera. */
 public final class ScoreDocument {
@@ -17,6 +18,7 @@ public final class ScoreDocument {
     private final Editor editor;
     private final ScoreFiles files;
     private final Preferences preferences;
+    private final Supplier<Score> newScoreTemplate;
     private Path path;
     private Score saved;
     private int changesSinceLastAutosave;
@@ -26,9 +28,20 @@ public final class ScoreDocument {
     }
 
     public ScoreDocument(Editor editor, ScoreFiles files, Preferences preferences) {
+        this(editor, files, preferences, Score::blank);
+    }
+
+    /**
+     * El supplier es de donde sale la partitura de Archivo > Nuevo: por defecto Score::blank,
+     * pero MainFrame le pasa lo que haya en "Propiedades por defecto" (ver
+     * com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties). Es la unica lectura de esos
+     * valores por defecto, y vive aca -no en MainFrame- porque esta clase se puede testear.
+     */
+    public ScoreDocument(Editor editor, ScoreFiles files, Preferences preferences, Supplier<Score> newScoreTemplate) {
         this.editor = editor;
         this.files = files;
         this.preferences = preferences;
+        this.newScoreTemplate = newScoreTemplate;
         this.saved = editor.score();
         editor.addListener(this::scoreChanged);
     }
@@ -87,7 +100,7 @@ public final class ScoreDocument {
     }
 
     public void newScore() {
-        editor.replaceScore(Score.blank());
+        editor.replaceScore(newScoreTemplate.get());
         path = null;
         markSaved();
     }

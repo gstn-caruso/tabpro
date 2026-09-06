@@ -192,7 +192,19 @@ public final class MenuBar {
         add(menu, "view.multitrack", "view.hideStandardNotation", "view.hideTablature",
                 "view.grayInactiveVoice");
         menu.addSeparator();
-        add(menu, "view.fretboard", "view.keyboard", "view.percussion", "view.mixTable", "view.toolBars");
+        add(menu, "view.fretboard", "view.keyboard", "view.percussion", "view.mixTable", "view.toggleView");
+        menu.addSeparator();
+        add(menu, "view.toolBars");
+        menu.add(toolBarsMenu());
+        return menu;
+    }
+
+    /** Ver > Menus y barras: un casillero por fila, para elegir cuales se ven. */
+    private JMenu toolBarsMenu() {
+        JMenu menu = new JMenu("Menús y barras");
+        addCheckbox(menu, "view.toolBars.document");
+        addCheckbox(menu, "view.toolBars.structure");
+        addCheckbox(menu, "view.toolBars.notation");
         return menu;
     }
 
@@ -246,5 +258,12 @@ public final class MenuBar {
             item.setIcon(null);
             menu.add(item);
         }
+    }
+
+    private void addCheckbox(JMenu menu, String name) {
+        Command command = commands.get(name);
+        javax.swing.JCheckBoxMenuItem item = new javax.swing.JCheckBoxMenuItem(command);
+        item.setIcon(null);
+        menu.add(item);
     }
 }
