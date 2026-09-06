@@ -15,6 +15,8 @@ import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.Tuplet;
+import com.gstncaruso.tabpro.core.model.bars.KeySignature;
+import com.gstncaruso.tabpro.core.model.bars.Mode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -114,9 +116,46 @@ class MusicXmlRoundTripTest {
                 com.gstncaruso.tabpro.core.files.ScoreFileException.class, () -> importer.importScore(file));
     }
 
+    @Test
+    void unCambioDeArmaduraAMitadDePiezaSobreviveElViajeDeIdaYVuelta(@TempDir Path folder) throws Exception {
+        Score score = scoreWithMeasures(measureInC(), measureInC(), measureInC())
+                .withKeySignatureFrom(2, new KeySignature(2, Mode.MAJOR));
+        Path file = folder.resolve("prueba.musicxml");
+
+        exporter.export(score, file);
+        Score loaded = importer.importScore(file);
+
+        assertEquals(0, loaded.attributesOf(0).keySignature().accidentals(), "compas 1 sigue en Do mayor");
+        assertEquals(0, loaded.attributesOf(1).keySignature().accidentals(), "compas 2 sigue en Do mayor");
+        assertEquals(2, loaded.attributesOf(2).keySignature().accidentals(), "compas 3 cambia a Re mayor");
+    }
+
+    @Test
+    void unCambioDeCompasAMitadDePiezaSobreviveElViajeDeIdaYVuelta(@TempDir Path folder) throws Exception {
+        Score score = scoreWithMeasures(measureInC(), measureInC(), measureInC())
+                .withTimeSignatureFrom(2, new TimeSignature(3, 4));
+        Path file = folder.resolve("prueba.musicxml");
+
+        exporter.export(score, file);
+        Score loaded = importer.importScore(file);
+
+        assertEquals(new TimeSignature(4, 4), loaded.timeSignatureOf(0), "compas 1 sigue en 4/4");
+        assertEquals(new TimeSignature(4, 4), loaded.timeSignatureOf(1), "compas 2 sigue en 4/4");
+        assertEquals(new TimeSignature(3, 4), loaded.timeSignatureOf(2), "compas 3 cambia a 3/4");
+    }
+
     private static Score scoreWith(Beat... beats) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         return new Score("Prueba", 120, List.of(track));
+    }
+
+    private static Score scoreWithMeasures(Measure... measures) {
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measures));
+        return new Score("Prueba", 120, List.of(track));
+    }
+
+    private static Measure measureInC() {
+        return new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 0))));
     }
 }

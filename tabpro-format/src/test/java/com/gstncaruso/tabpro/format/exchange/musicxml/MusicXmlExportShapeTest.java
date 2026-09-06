@@ -67,6 +67,30 @@ class MusicXmlExportShapeTest {
     }
 
     @Test
+    void unCompasQueNoCambiaNadaNoEscribeAttributes() throws Exception {
+        Score score = scoreWithMeasures(measureInC(), measureInC());
+
+        Document document = parse(exporter.toXml(score));
+
+        assertEquals(1, document.getElementsByTagName("attributes").getLength(),
+                "el segundo compas no cambia ni la armadura ni el compas: no tiene que escribir <attributes>");
+    }
+
+    @Test
+    void unCambioDeSoloElCompasNoRepiteLaArmadura() throws Exception {
+        Score score = scoreWithMeasures(measureInC(), measureInC())
+                .withTimeSignatureFrom(1, new TimeSignature(3, 4));
+
+        Document document = parse(exporter.toXml(score));
+        Element part = (Element) document.getElementsByTagName("part").item(0);
+        Element segundoCompas = elementsNamed(part, "measure").get(1);
+        Element attributes = firstChild(segundoCompas, "attributes").orElseThrow();
+
+        assertEquals(List.of("time"), childNames(attributes),
+                "solo cambio el compas: <attributes> no tiene que repetir <key> si la armadura sigue igual");
+    }
+
+    @Test
     void laDuracionDeCadaFiguraEsCoherenteConLasDivisionsDeclaradas() throws Exception {
         List<Duration> figuras = List.of(
                 Duration.of(NoteValue.WHOLE),
@@ -96,6 +120,15 @@ class MusicXmlExportShapeTest {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         return new Score("Prueba", 120, List.of(track));
+    }
+
+    private static Score scoreWithMeasures(Measure... measures) {
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measures));
+        return new Score("Prueba", 120, List.of(track));
+    }
+
+    private static Measure measureInC() {
+        return new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 0))));
     }
 
     private static Document parse(String xml) throws Exception {
