@@ -650,8 +650,13 @@ final class StaffPainter {
      * Donde se escribe una nota, con el corrimiento de {@code octaveShift} aplicado -8va/8vb/
      * 15ma/15mb del manual, ver {@link OctaveMark}. Nunca toca {@code track.tuning().pitchOf},
      * que es la altura real: la marca de octava es pura notacion.
+     *
+     * <p>Sin {@code private}: {@link ScorePainter} la reusa para ubicar, en el pentagrama, la
+     * marca de la nota correspondiente al cursor -tiene que coincidir con donde esta clase
+     * escribe la cabeza, corrimiento de octava incluido, y no vale repetir el
+     * {@code shiftedBySteps} a mano en dos lados.
      */
-    private static StaffPosition positionOf(Track track, Clef clef, Note note, int octaveShift) {
+    static StaffPosition positionOf(Track track, Clef clef, Note note, int octaveShift) {
         return StaffPosition.of(track.tuning().pitchOf(note), clef).shiftedBySteps(octaveShift);
     }
 
