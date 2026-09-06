@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.score;
 
 import com.gstncaruso.tabpro.core.model.ScoreColor;
 import java.awt.Color;
+import java.util.Map;
 
 /** Paleta unica de la partitura y del panel de pistas. */
 public final class ScoreColors {
@@ -40,10 +41,38 @@ public final class ScoreColors {
     public static final Color PAGE_MUTED = new Color(0x6B6E74);
     public static final Color PAGE_SHADOW = new Color(0, 0, 0, 90);
 
+    /**
+     * Que color es cada color de la partitura cuando se dibuja sobre la hoja clara en vez del
+     * fondo oscuro de la pantalla. Los grises se espejan —la tinta clara que se lee sobre el fondo
+     * oscuro se lee oscura sobre el papel— y lo que no esta en esta tabla se dibuja tal cual,
+     * porque su color es justamente lo que dice: el rojo del cambio de parametro, el del compas
+     * incompleto, el azul del cursor o el que el usuario le puso a un marcador.
+     */
+    private static final Map<Color, Color> ON_PAPER = Map.of(
+            BACKGROUND, PAGE_PAPER,
+            INK, PAGE_INK,
+            LABEL, mirrored(LABEL),
+            MUTED_INK, mirrored(MUTED_INK),
+            STAFF_LINE, mirrored(STAFF_LINE),
+            BAR_LINE, mirrored(BAR_LINE),
+            VOICE_INACTIVE, mirrored(VOICE_INACTIVE),
+            CORRESPONDING_NOTE, mirrored(CORRESPONDING_NOTE));
+
     private ScoreColors() {
     }
 
     public static Color of(ScoreColor color) {
         return new Color(color.red(), color.green(), color.blue());
+    }
+
+    /** Como se lee sobre la hoja clara un color elegido para la pantalla oscura. */
+    static Color onPaper(Color color) {
+        return ON_PAPER.getOrDefault(color, color);
+    }
+
+    /** El mismo gris del otro lado: lo que era claro queda oscuro y al reves, sin tocar la transparencia. */
+    private static Color mirrored(Color color) {
+        return new Color(
+                255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue(), color.getAlpha());
     }
 }

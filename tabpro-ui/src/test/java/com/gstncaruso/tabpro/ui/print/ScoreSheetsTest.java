@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.print;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -72,6 +73,21 @@ class ScoreSheetsTest {
         int onA3 = ScoreSheets.pageCount(score, biggerPaper());
 
         assertTrue(onA3 < onA4, "en A3 entra mas musica por hoja");
+    }
+
+    /**
+     * La hoja se dibuja sin canal alfa a proposito. Exportar a BMP una imagen que lo tenga no
+     * falla a los gritos: {@code ImageIO.write} devuelve false, no tira ninguna excepcion y no
+     * deja ningun archivo. La hoja opaca es lo que hace que eso no pueda pasar.
+     */
+    @Test
+    void everySheetIsOpaqueSoThatBmpCanBeWritten() {
+        assertFalse(
+                ScoreSheets.render(Score.blank(), Zoom.whole(), A4).getColorModel().hasAlpha(),
+                "la partitura entera se dibuja sin transparencia");
+        assertFalse(
+                ScoreSheets.renderPage(Score.blank(), Zoom.whole(), A4, 0).getColorModel().hasAlpha(),
+                "y cada hoja por separado tambien");
     }
 
     private static PageSetup biggerPaper() {

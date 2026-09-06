@@ -9,7 +9,6 @@ import com.gstncaruso.tabpro.ui.page.PageMetrics;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,8 +17,9 @@ import java.util.Optional;
  * El punto de entrada unico de la partitura para la ventana principal: elige como envolver los
  * compases segun el {@link ViewMode}, aplica el {@link Zoom}, y en Pagina/Pergamino reparte los
  * sistemas en hojas claras del papel que pide la configuracion de pagina (via {@link PageLayout})
- * dibujando la tinta con {@link PaperRenderer}. Pantalla vertical y horizontal dibujan directo
- * sobre el fondo oscuro, sin hoja.
+ * dibujando la tinta sobre un {@link PaperGraphics}, que es el que sabe de que color se lee cada
+ * cosa sobre el papel. Pantalla vertical y horizontal dibujan directo sobre el fondo oscuro, sin
+ * hoja.
  */
 public final class PageScorePainter {
 
@@ -169,15 +169,13 @@ public final class PageScorePainter {
         PageChromePainter.paintFooter(
                 g, viewport.pageSetup().footer().fillIn(fields), sheet, top, page.pageHeight());
 
-        BufferedImage ink = PaperRenderer.renderAsInk(
-                sheet.contentWidth(), page.paintedHeight(), inkGraphics -> {
-                    inkGraphics.scale(sheet.scoreScale(), sheet.scoreScale());
-                    inkGraphics.translate(0, -page.shiftUp());
-                    ScorePainter.paint(
-                            inkGraphics, layout, score, cursor, playhead, selection,
-                            viewport.highlighted(cursor.voice()), false);
-                });
-        g.drawImage(ink, sheet.contentLeft(), top + sheet.contentTop(), null);
+        Graphics2D ink = PaperGraphics.over(
+                g, sheet.contentLeft(), top + sheet.contentTop(), sheet.contentWidth(), page.paintedHeight());
+        ink.scale(sheet.scoreScale(), sheet.scoreScale());
+        ink.translate(0, -page.shiftUp());
+        ScorePainter.paint(
+                ink, layout, score, cursor, playhead, selection, viewport.highlighted(cursor.voice()), false);
+        ink.dispose();
     }
 
     private static int naturalWidthOf(ScoreLayout layout) {

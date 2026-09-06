@@ -24,6 +24,14 @@ import java.util.Optional;
  */
 public final class ScoreSheets {
 
+    /**
+     * La hoja se dibuja sin canal alfa a proposito. La exportacion a BMP no sabe escribir
+     * transparencia y no avisa a los gritos: {@code ImageIO.write} devuelve false, no tira ninguna
+     * excepcion y no deja ningun archivo. Una hoja opaca es papel de verdad, ademas: lo que no se
+     * dibujo es blanco, no un agujero.
+     */
+    private static final int OPAQUE_PAPER = BufferedImage.TYPE_INT_RGB;
+
     private ScoreSheets() {
     }
 
@@ -79,7 +87,7 @@ public final class ScoreSheets {
 
     private static BufferedImage drawnOn(Dimension size, java.util.function.Consumer<Graphics2D> painting) {
         BufferedImage sheet = new BufferedImage(
-                Math.max(1, size.width), Math.max(1, size.height), BufferedImage.TYPE_INT_RGB);
+                Math.max(1, size.width), Math.max(1, size.height), OPAQUE_PAPER);
         Graphics2D graphics = sheet.createGraphics();
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);

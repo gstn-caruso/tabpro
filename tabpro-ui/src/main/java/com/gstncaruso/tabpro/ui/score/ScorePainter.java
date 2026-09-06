@@ -41,9 +41,8 @@ public final class ScorePainter {
         paint(g, layout, score, cursor, playhead, selection, Optional.of(cursor.voice()), true);
     }
 
-    /** Igual que {@link #paint}, pero puede saltear el fondo oscuro: lo usa el Modo Pagina para
-     * dibujar solo la tinta sobre un lienzo transparente que despues se invierte y se pega sobre
-     * la hoja clara (ver {@link PaperRenderer}). */
+    /** Igual que {@link #paint}, pero puede saltear el fondo oscuro: el Modo Pagina dibuja sobre
+     * una hoja que ya esta pintada, con los colores que le pasa el {@link PaperGraphics}. */
     static void paint(
             Graphics2D g, ScoreLayout layout, Score score, Cursor cursor, Playhead playhead,
             Optional<Selection> selection, Optional<VoicePart> highlightedVoice, boolean paintBackground) {
