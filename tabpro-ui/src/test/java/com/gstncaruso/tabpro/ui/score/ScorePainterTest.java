@@ -21,6 +21,10 @@ import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
+import com.gstncaruso.tabpro.core.model.effects.Dynamic;
+import com.gstncaruso.tabpro.core.model.effects.GraceNote;
+import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
+import com.gstncaruso.tabpro.core.model.effects.NoteEffects;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
 import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
@@ -352,6 +356,34 @@ class ScorePainterTest {
         assertTrue(
                 inkAboveTheTablature(conWah) > inkAboveTheTablature(sinWah),
                 "el pedal de wah-wah tiene que quedar anotado arriba de la tablatura");
+    }
+
+    /**
+     * La transicion de la nota de adorno se elige en el dialogo y se guarda, pero
+     * la hoja quedaba igual con cualquiera de las cuatro: una notita suelta y
+     * desconectada. Cada una tiene que dejar su propia marca hasta la nota.
+     */
+    @Test
+    void laTransicionDeLaNotaDeAdornoSeDibujaHastaLaNota() {
+        int sinTransicion = inkBetweenTheGraceNoteAndTheNote(GraceTransition.NONE);
+
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.SLIDE) > sinTransicion, "falta el slide");
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.BEND) > sinTransicion, "falta el bend");
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.HAMMER) > sinTransicion, "falta el ligado");
+    }
+
+    private static int inkBetweenTheGraceNoteAndTheNote(GraceTransition transition) {
+        Note note = new Note(3, 5).withEffects(NoteEffects.none().withGrace(new GraceNote(
+                3, NoteValue.THIRTY_SECOND, Dynamic.defaultDynamic(), transition, false, false)));
+        Painted painted = paint(
+                scoreWith(measureOf(Beat.of(Duration.quarter(), note))),
+                new Cursor(0, 0, 0, 6), Playhead.silent());
+
+        Rectangle bounds = painted.layout().beatBounds(0, 0, 0);
+        int y = painted.layout().stringY(0, 0, 3);
+        int from = bounds.x + 2;
+        int to = bounds.x + bounds.width / 2 - 8;
+        return painted.inkIn(new Rectangle(from, y - 10, to - from, 9));
     }
 
     private static int inkUnderTheTablature(Beat beat) {

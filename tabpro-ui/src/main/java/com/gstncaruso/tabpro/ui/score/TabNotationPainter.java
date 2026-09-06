@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.Finger;
+import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import java.awt.BasicStroke;
@@ -21,7 +22,8 @@ import java.util.Optional;
 
 /**
  * Lo que el manual dibuja directamente sobre la tablatura, ademas del numero de traste: ligados,
- * slides, bends con su altura, notas de adorno y la digitacion de las dos manos.
+ * slides, bends con su altura, la palanca, notas de adorno con su transicion y como se digita
+ * con las dos manos.
  */
 final class TabNotationPainter {
 
@@ -121,7 +123,35 @@ final class TabNotationPainter {
             String text = String.valueOf(grace.fret());
             FontMetrics metrics = g.getFontMetrics();
             g.drawString(text, x - metrics.stringWidth(text), y + metrics.getAscent() / 2 - 1);
+            paintGraceTransition(g, grace.transition(), bounds.x + 2, bounds.x + bounds.width / 2 - 5, y);
         });
+    }
+
+    /**
+     * Como se llega desde la nota de adorno hasta la nota: el ligado con una
+     * ligadura, el slide con su raya y el bend con la curva que le es propia.
+     * Sin transicion no hay nada que dibujar entre las dos.
+     */
+    private static void paintGraceTransition(
+            Graphics2D g, GraceTransition transition, int fromX, int toX, int y) {
+        if (toX <= fromX) {
+            return;
+        }
+        g.setColor(ScoreColors.LABEL);
+        g.setStroke(new BasicStroke(1.1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        switch (transition) {
+            case SLIDE -> g.draw(new Line2D.Double(fromX, y + 4, toX, y - 4));
+            case HAMMER -> g.draw(new Arc2D.Double(fromX, y - 9, toX - fromX, 10, 20, 140, Arc2D.OPEN));
+            case BEND -> {
+                Path2D curve = new Path2D.Double();
+                curve.moveTo(fromX, y);
+                curve.curveTo(fromX + (toX - fromX) / 2.0, y, toX, y, toX, y - 8);
+                g.draw(curve);
+                paintArrowhead(g, toX, y - 8, UPWARDS);
+            }
+            case NONE -> {
+            }
+        }
     }
 
     private static void paintBend(
