@@ -1,3 +1,9 @@
+## [0.15.0](https://github.com/gstn-caruso/tabpro/compare/v0.14.1...v0.15.0) (2026-09-06)
+
+### Features
+
+* importar archivos de TablEdit ([#62](https://github.com/gstn-caruso/tabpro/issues/62)) ([27fb302](https://github.com/gstn-caruso/tabpro/commit/27fb302510c2b7a9d5ad1eecdf5229aa47c2ac7e))
+
 ## [0.14.1](https://github.com/gstn-caruso/tabpro/compare/v0.14.0...v0.14.1) (2026-09-06)
 
 ### Bug Fixes
