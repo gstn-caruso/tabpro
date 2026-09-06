@@ -140,4 +140,14 @@ enum GuitarProVersion {
     boolean hasStructuredHarmonic() {
         return generation >= 5;
     }
+
+    /** GP5 invierte el orden del adorno: primero la transicion y despues la duracion. */
+    boolean hasGraceTransitionBeforeDuration() {
+        return generation >= 5;
+    }
+
+    /** Que el adorno sea mudo o caiga en el tiempo solo se escribe desde GP5. */
+    boolean hasGraceFlags() {
+        return generation >= 5;
+    }
 }

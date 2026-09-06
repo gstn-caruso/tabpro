@@ -168,13 +168,16 @@ final class GuitarProHeaderReader {
         }
     }
 
+    /**
+     * La armadura inicial es un entero con signo y nada mas: cuantas alteraciones lleva.
+     * El modo mayor o menor no existe aca; solo aparece en los cambios de armadura de
+     * cada compas, que traen dos bytes propios.
+     */
     private KeySignature readKeySignatureAndOctave(GuitarProByteReader reader, GuitarProVersion version) {
-        int raw = reader.readInt();
-        int accidentals = (byte) raw;
-        int modeByte = (raw >> 8) & 0xFF;
+        int accidentals = (byte) reader.readInt();
         if (version.hasOctave()) {
             reader.readUnsignedByte();
         }
-        return new KeySignature(accidentals, modeByte == 0 ? Mode.MAJOR : Mode.MINOR);
+        return new KeySignature(accidentals, Mode.MAJOR);
     }
 }

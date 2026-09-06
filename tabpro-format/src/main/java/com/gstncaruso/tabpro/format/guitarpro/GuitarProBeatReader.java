@@ -30,8 +30,6 @@ final class GuitarProBeatReader {
     private static final int HAS_TUPLET = 0x20;
     private static final int HAS_STATUS = 0x40;
 
-    private static final int STATUS_REST = 0x02;
-
     private static final int STROKE_UP = 0x40;
     private static final int STROKE_DOWN = 0x02;
     private static final int HAS_TREMOLO_BAR_OR_SLAP = 0x20;
@@ -50,7 +48,7 @@ final class GuitarProBeatReader {
 
     Beat read(GuitarProByteReader reader, GuitarProVersion version, int stringCount) {
         int flags = reader.readUnsignedByte();
-        boolean rest = readStatus(reader, flags);
+        skipStatus(reader, flags);
         Duration duration = readDuration(reader, flags);
         BeatEffects effects = BeatEffects.none();
         OldOrnaments oldOrnaments = OldOrnaments.NONE;
@@ -71,18 +69,21 @@ final class GuitarProBeatReader {
         if ((flags & HAS_MIX_TABLE_CHANGE) != 0) {
             effects = effects.withParameterChange(readMixTableChange(reader, version));
         }
-        List<Note> played = rest ? List.of() : readNotes(reader, version, stringCount);
+        List<Note> played = readNotes(reader, version, stringCount);
         skipGp5BeatExtras(reader, version);
         return new Beat(duration, oldOrnaments.spreadOver(played), effects);
     }
 
     /**
-     * El byte de estado dice si el beat es un silencio. Cualquier otro valor,
-     * incluido el cero, trae notas: un beat sin notas se escribe con el estado
-     * de silencio, no con el de vacio.
+     * El byte de estado dice si el beat esta vacio, es normal o es un silencio. Los tres
+     * casos se escriben igual: siempre viene despues la mascara de cuerdas, aunque este
+     * en cero. Por eso el estado no cambia como se lee lo que sigue, y un beat es un
+     * silencio para tabpro cuando no tiene ninguna nota.
      */
-    private static boolean readStatus(GuitarProByteReader reader, int flags) {
-        return (flags & HAS_STATUS) != 0 && reader.readUnsignedByte() == STATUS_REST;
+    private static void skipStatus(GuitarProByteReader reader, int flags) {
+        if ((flags & HAS_STATUS) != 0) {
+            reader.readUnsignedByte();
+        }
     }
 
     private static Duration readDuration(GuitarProByteReader reader, int flags) {

@@ -8,13 +8,13 @@ import java.util.List;
 
 /**
  * Lee la curva de un bend o de una palanca. Guitar Pro guarda la posicion de
- * 0 a 60 (igual que {@link BendPoint#LAST_POSITION}) y el valor en centesimas
- * de tono, donde 100 unidades son medio tono: hay que pasarlo a cuartos de
- * tono, que es como lo guarda tabpro.
+ * 0 a 60 (igual que {@link BendPoint#LAST_POSITION}) y la profundidad en unidades
+ * de las que entran 25 en cada cuarto de tono: un tono entero, que es el bend
+ * completo, se escribe como 100. Tabpro la guarda en cuartos de tono.
  */
 final class GuitarProBendReader {
 
-    private static final int UNITS_PER_QUARTER_TONE = 50;
+    private static final int UNITS_PER_QUARTER_TONE = 25;
 
     Bend read(GuitarProByteReader reader) {
         int rawType = reader.readSignedByte();
