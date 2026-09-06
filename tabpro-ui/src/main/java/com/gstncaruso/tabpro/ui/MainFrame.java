@@ -11,6 +11,8 @@ import com.gstncaruso.tabpro.ui.browser.ScoreBrowser;
 import com.gstncaruso.tabpro.ui.harmony.ChordDialog;
 import com.gstncaruso.tabpro.ui.harmony.ChosenScale;
 import com.gstncaruso.tabpro.ui.harmony.ScalesDialog;
+import com.gstncaruso.tabpro.ui.dialogs.ascii.AsciiExportDialog;
+import com.gstncaruso.tabpro.ui.dialogs.ascii.AsciiImportDialog;
 import com.gstncaruso.tabpro.ui.dialogs.effects.NoteEffectsDialog;
 import com.gstncaruso.tabpro.ui.dialogs.help.HelpDialog;
 import com.gstncaruso.tabpro.ui.dialogs.info.ScoreInfoDialog;
@@ -19,6 +21,7 @@ import com.gstncaruso.tabpro.ui.dialogs.markers.MarkersDialog;
 import com.gstncaruso.tabpro.ui.dialogs.measure.MeasurePropertiesDialog;
 import com.gstncaruso.tabpro.ui.dialogs.metronome.MetronomeDialog;
 import com.gstncaruso.tabpro.ui.dialogs.metronome.MetronomeSettings;
+import com.gstncaruso.tabpro.ui.dialogs.midi.MidiImportDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.DynamicsDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.ParameterChangeDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.SoundDurationDialog;
@@ -348,12 +351,24 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void importMidi() {
-            importWith(exchange::importMidi, new FileNameExtensionFilter("Archivos MIDI (*.mid)", "mid", "midi"));
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileFilter(new FileNameExtensionFilter("Archivos MIDI (*.mid)", "mid", "midi"));
+            if (chooser.showOpenDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            MidiImportDialog.show(
+                    MainFrame.this, editor, exchange, this::askToDiscardChanges, document::adopt,
+                    () -> {
+                        updateTitle();
+                        backToTheScore();
+                    },
+                    chooser.getSelectedFile().toPath());
         }
 
         @Override
         public void importAscii() {
-            importWith(exchange::importAscii, new FileNameExtensionFilter("Tablatura ASCII (*.tab, *.txt)", "tab", "txt"));
+            AsciiImportDialog.show(MainFrame.this, editor, exchange);
+            updateTitle();
         }
 
         @Override
@@ -373,7 +388,7 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void exportAscii() {
-            exportWith(exchange::exportAscii, new FileNameExtensionFilter("Tablatura ASCII (*.tab)", "tab"), ".tab");
+            AsciiExportDialog.show(MainFrame.this, exchange, editor.currentTrack());
         }
 
         @Override
