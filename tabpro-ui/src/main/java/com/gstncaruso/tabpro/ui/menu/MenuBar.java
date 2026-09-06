@@ -96,7 +96,9 @@ public final class MenuBar {
         add(durations, "note.value.WHOLE", "note.value.HALF", "note.value.QUARTER", "note.value.EIGHTH",
                 "note.value.SIXTEENTH", "note.value.THIRTY_SECOND", "note.value.SIXTY_FOURTH");
         durations.addSeparator();
-        add(durations, "note.longer", "note.shorter", "note.dot", "note.triplet");
+        add(durations, "note.longer", "note.shorter", "note.dot", "note.triplet",
+                "note.tuplet.5", "note.tuplet.6", "note.tuplet.7",
+                "note.tuplet.9", "note.tuplet.10", "note.tuplet.11", "note.tuplet.12", "note.tuplet.13");
         menu.add(durations);
         menu.addSeparator();
         add(menu, "note.rest", "note.tie", "note.tieBeat");

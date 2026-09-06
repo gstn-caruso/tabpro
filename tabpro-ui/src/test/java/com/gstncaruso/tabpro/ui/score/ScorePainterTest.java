@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.score;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
@@ -246,6 +247,39 @@ class ScorePainterTest {
         assertDoesNotThrow(() -> ScorePainter.paint(
                 g, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent(), java.util.Optional.of(selection)));
         g.dispose();
+    }
+
+    /**
+     * El manual: al seleccionar compases enteros (Ctrl+clic) la seleccion tiene que abarcar el
+     * compas completo, no solo los beats que tiene la voz principal. Un compas siempre deja un
+     * margen (MEASURE_LEFT_PADDING/MEASURE_RIGHT_PADDING) que ningun beat pisa; si la seleccion
+     * de compas entero pinta ese margen tambien, es que esta usando el ancho del compas y no el
+     * de sus beats.
+     */
+    @Test
+    void aWholeMeasureSelectionPaintsTheFullMeasureIncludingItsMargin() {
+        Measure full = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Score score = scoreWith(full);
+        com.gstncaruso.tabpro.core.editing.Selection selection =
+                com.gstncaruso.tabpro.core.editing.Selection.ofMeasures(0, 0, 0);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH);
+        BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        ScorePainter.paint(
+                g, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent(), java.util.Optional.of(selection));
+        g.dispose();
+
+        Rectangle measureBounds = layout.measureBounds(0, 0);
+        int marginX = measureBounds.x + 2;
+        int y = measureBounds.y + measureBounds.height / 2;
+
+        assertNotEquals(ScoreColors.BACKGROUND.getRGB(), image.getRGB(marginX, y),
+                "el margen izquierdo del compas tiene que quedar pintado tambien");
     }
 
     @Test

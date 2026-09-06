@@ -115,6 +115,27 @@ class CommandsTest {
         assertEquals(LineBreak.AUTOMATIC, editor.currentMeasure().attributes().lineBreak());
     }
 
+    /**
+     * El manual agrupa cualquier n-tuplet igual que el tresillo (Managing the Triplets and
+     * n-Tuplets): quintillo, seisillo, septillo y los que sigan tienen que estar en el menu Nota.
+     */
+    @Test
+    void aTupletCommandGroupsTheCurrentBeatWithThatManyNotes() {
+        commands.get("note.tuplet.5").actionPerformed(event());
+
+        assertEquals(com.gstncaruso.tabpro.core.model.Tuplet.of(5), editor.currentBeat().duration().tuplet());
+    }
+
+    @Test
+    void everyAvailableTupletBesidesThePlainOneAndTheTripletHasItsOwnCommand() {
+        for (int enters : com.gstncaruso.tabpro.core.model.Tuplet.AVAILABLE) {
+            if (enters == 1 || enters == 3) {
+                continue;
+            }
+            assertNotNull(commands.get("note.tuplet." + enters), "falta el comando para el grupo de " + enters);
+        }
+    }
+
     @Test
     void anEffectCommandReachesTheNoteUnderTheCursor() {
         editor.setFret(5);

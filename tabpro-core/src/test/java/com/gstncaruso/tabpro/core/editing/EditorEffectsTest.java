@@ -151,6 +151,36 @@ class EditorEffectsTest {
         assertTrue(editor.currentBeat().duration().tuplet().isPlain());
     }
 
+    /**
+     * El manual: "agrupar" un beat con un n-tuplet cualquiera es el mismo gesto que el tresillo,
+     * solo que con otro numero. No hace falta un metodo por cada n.
+     */
+    @Test
+    void aQuintupletMakesFiveNotesFitInTheTimeOfFour() {
+        editor.setNoteValue(NoteValue.EIGHTH);
+
+        editor.toggleTuplet(5);
+
+        assertEquals(Tuplet.of(5), editor.currentBeat().duration().tuplet());
+    }
+
+    @Test
+    void theSameNTupletTwiceGoesBackToAPlainFigure() {
+        editor.toggleTuplet(7);
+        editor.toggleTuplet(7);
+
+        assertTrue(editor.currentBeat().duration().tuplet().isPlain());
+    }
+
+    @Test
+    void togglingADifferentNTupletReplacesTheOneThatWasThere() {
+        editor.toggleTuplet(5);
+
+        editor.toggleTuplet(7);
+
+        assertEquals(Tuplet.of(7), editor.currentBeat().duration().tuplet());
+    }
+
     @Test
     void movingANoteToAnotherStringKeepsItsPitch() {
         editor.moveDown();
