@@ -110,6 +110,10 @@ public interface ScoreExchange {
         throw notSupported("la apertura de archivos de Guitar Pro");
     }
 
+    default Score importTabEdit(Path path) {
+        throw notSupported("la apertura de archivos de TablEdit");
+    }
+
     private static ScoreFileException notSupported(String what) {
         return new ScoreFileException(what + " todavía no está disponible.");
     }

@@ -226,12 +226,15 @@ public final class MainFrame extends JFrame {
 
     /**
      * Abre la partitura que el escritorio paso por linea de comandos. Puede ser
-     * un archivo propio o uno de Guitar Pro, que se importa como partitura nueva.
+     * un archivo propio, uno de Guitar Pro o uno de TablEdit, que se importan
+     * como partitura nueva.
      */
     public void openOnStartup(Path path) {
         try {
             if (isAGuitarProFile(path)) {
                 document.adopt(exchange.importGuitarPro(path));
+            } else if (isATabEditFile(path)) {
+                document.adopt(exchange.importTabEdit(path));
             } else {
                 document.open(path);
             }
@@ -244,6 +247,10 @@ public final class MainFrame extends JFrame {
     private static boolean isAGuitarProFile(Path path) {
         String name = path.getFileName().toString().toLowerCase(java.util.Locale.ROOT);
         return name.endsWith(".gp3") || name.endsWith(".gp4") || name.endsWith(".gp5") || name.endsWith(".gtp");
+    }
+
+    private static boolean isATabEditFile(Path path) {
+        return path.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".tef");
     }
 
     private JSpinner tempoSpinner() {
@@ -451,6 +458,11 @@ public final class MainFrame extends JFrame {
         @Override
         public void importGuitarPro() {
             importWith(exchange::importGuitarPro, new FileNameExtensionFilter("Partituras de Guitar Pro", "gp3", "gp4", "gp5", "gtp"));
+        }
+
+        @Override
+        public void importTabEdit() {
+            importWith(exchange::importTabEdit, new FileNameExtensionFilter("Archivos de TablEdit (*.tef)", "tef"));
         }
 
         @Override

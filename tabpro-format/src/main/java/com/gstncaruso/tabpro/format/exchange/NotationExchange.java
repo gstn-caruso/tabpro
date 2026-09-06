@@ -17,6 +17,7 @@ import com.gstncaruso.tabpro.format.exchange.midi.MidiTrackSummary;
 import com.gstncaruso.tabpro.format.exchange.musicxml.MusicXmlScoreExporter;
 import com.gstncaruso.tabpro.format.exchange.musicxml.MusicXmlScoreImporter;
 import com.gstncaruso.tabpro.format.guitarpro.GuitarProFile;
+import com.gstncaruso.tabpro.format.tabledit.TabEditFile;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public final class NotationExchange implements ScoreExchange {
     private final AsciiTabImporter asciiImporter = new AsciiTabImporter();
     private final AsciiTabExporter asciiExporter = new AsciiTabExporter();
     private final GuitarProFile guitarPro = new GuitarProFile();
+    private final TabEditFile tabEdit = new TabEditFile();
     private final MusicXmlScoreImporter musicXmlImporter = new MusicXmlScoreImporter();
     private final MusicXmlScoreExporter musicXmlExporter = new MusicXmlScoreExporter();
 
@@ -87,6 +89,11 @@ public final class NotationExchange implements ScoreExchange {
     @Override
     public Score importGuitarPro(Path path) {
         return guitarPro.read(path);
+    }
+
+    @Override
+    public Score importTabEdit(Path path) {
+        return tabEdit.read(path);
     }
 
     @Override
