@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.pagesetup;
 
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.page.PageSetup;
 import java.awt.Component;
 import java.util.Optional;
 

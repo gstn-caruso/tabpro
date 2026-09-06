@@ -1,4 +1,4 @@
-package com.gstncaruso.tabpro.ui.dialogs.pagesetup;
+package com.gstncaruso.tabpro.ui.page;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

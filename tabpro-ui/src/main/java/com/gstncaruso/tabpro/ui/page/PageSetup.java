@@ -1,4 +1,4 @@
-package com.gstncaruso.tabpro.ui.dialogs.pagesetup;
+package com.gstncaruso.tabpro.ui.page;
 
 /**
  * La configuracion de pagina para imprimir: la ventana de Configurar pagina [F8].

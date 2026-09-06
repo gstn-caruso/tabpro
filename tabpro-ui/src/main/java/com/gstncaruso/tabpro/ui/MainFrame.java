@@ -26,7 +26,7 @@ import com.gstncaruso.tabpro.ui.dialogs.note.DynamicsDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.ParameterChangeDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.SoundDurationDialog;
 import com.gstncaruso.tabpro.ui.dialogs.note.FingeringDialog;
-import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetup;
+import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.dialogs.pagesetup.PageSetupDialog;
 import com.gstncaruso.tabpro.ui.dialogs.paste.PasteDialog;
 import com.gstncaruso.tabpro.ui.dialogs.preferences.PreferencesDialog;

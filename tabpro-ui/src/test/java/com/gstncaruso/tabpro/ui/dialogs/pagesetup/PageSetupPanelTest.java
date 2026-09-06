@@ -2,6 +2,9 @@ package com.gstncaruso.tabpro.ui.dialogs.pagesetup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.gstncaruso.tabpro.ui.page.Orientation;
+import com.gstncaruso.tabpro.ui.page.PageSetup;
+import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import org.junit.jupiter.api.Test;
 
 class PageSetupPanelTest {

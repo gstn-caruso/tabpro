@@ -1,6 +1,9 @@
 package com.gstncaruso.tabpro.ui.dialogs.pagesetup;
 
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.page.Orientation;
+import com.gstncaruso.tabpro.ui.page.PageSetup;
+import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;

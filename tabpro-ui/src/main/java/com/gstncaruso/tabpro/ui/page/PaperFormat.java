@@ -1,4 +1,4 @@
-package com.gstncaruso.tabpro.ui.dialogs.pagesetup;
+package com.gstncaruso.tabpro.ui.page;
 
 /** Los tamanos de papel mas comunes para imprimir la partitura. */
 public enum PaperFormat {
