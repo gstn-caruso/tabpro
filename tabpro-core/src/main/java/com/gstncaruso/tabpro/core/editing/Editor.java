@@ -2,11 +2,13 @@ package com.gstncaruso.tabpro.core.editing;
 
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.ChordFretting;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Lyrics;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
@@ -39,8 +41,12 @@ import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.TremoloPicking;
 import com.gstncaruso.tabpro.core.model.effects.Trill;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
@@ -424,7 +430,11 @@ public final class Editor {
     }
 
     public void setTuning(int index, Tuning tuning) {
-        changeTrack(index, track -> retuned(track, tuning));
+        Score next = score.mappingTrack(index, track -> retuned(track, tuning));
+        Cursor nextCursor = index == cursor.track()
+                ? cursor.onString(Math.min(cursor.string(), tuning.stringCount()))
+                : cursor;
+        change(next, nextCursor);
     }
 
     public void setProgram(int index, int program) {
@@ -874,19 +884,39 @@ public final class Editor {
         return index < track.measureCount() ? track.mappingMeasure(index, Measure::emptied) : track;
     }
 
-    /** Al cambiar la afinacion, las notas que ya no entran se quedan en la ultima cuerda. */
+    /**
+     * Al cambiar la afinacion, cada nota conserva su altura y se reubica en la cuerda y el
+     * traste de la afinacion nueva que la produzcan (el mismo truco de ChordFretting, que ya
+     * resuelve reunir alturas sueltas en cuerdas). Solo se pierde si no entra en ninguna cuerda.
+     */
     private static Track retuned(Track track, Tuning tuning) {
-        Track cleaned = track.mappingMeasures(measure -> {
+        Tuning oldTuning = track.tuning();
+        int fretLimit = Tuning.MAX_FRET;
+        Track relocated = track.mappingMeasures(measure -> {
             Measure updated = measure;
             for (VoicePart part : VoicePart.values()) {
                 updated = updated.mappingVoice(part, voice -> voice.mappingBeats(beat ->
-                        beat.withNotes(beat.notes().stream()
-                                .filter(note -> note.string() <= tuning.stringCount())
-                                .toList())));
+                        beat.withNotes(relocatedNotes(oldTuning, tuning, fretLimit, beat.notes()))));
             }
             return updated;
         });
-        return cleaned.withTuning(tuning);
+        return relocated.withTuning(tuning);
+    }
+
+    private static List<Note> relocatedNotes(Tuning oldTuning, Tuning newTuning, int fretLimit, List<Note> notes) {
+        Map<Pitch, Deque<Note>> byPitch = new LinkedHashMap<>();
+        List<Pitch> pitches = new ArrayList<>();
+        for (Note note : notes) {
+            Pitch pitch = oldTuning.pitchOf(note);
+            pitches.add(pitch);
+            byPitch.computeIfAbsent(pitch, p -> new ArrayDeque<>()).add(note);
+        }
+        List<Note> relocated = new ArrayList<>();
+        for (Note placed : ChordFretting.assign(newTuning, fretLimit, pitches)) {
+            Note original = byPitch.get(newTuning.pitchOf(placed)).poll();
+            relocated.add(placed.withEffects(original.effects()).tied(original.tied()));
+        }
+        return relocated;
     }
 
     /**
