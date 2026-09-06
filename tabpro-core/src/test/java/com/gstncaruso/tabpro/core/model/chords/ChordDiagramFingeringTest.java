@@ -70,4 +70,24 @@ class ChordDiagramFingeringTest {
         ChordDiagram lejos = ChordDiagram.named("X", List.of(10, 12, 11, 13, 13, 10));
         assertEquals(ChordComplexity.COMPLEX, lejos.complexity());
     }
+
+    @Test
+    void laFormaDeUnAcordeAbiertoSonSusPropiosTrastes() {
+        assertEquals(List.of(0, 1, 0, 2, 3, -1), OPEN_C.shape());
+    }
+
+    @Test
+    void unaCejillaConservaLaFormaAlMoverseDeTraste() {
+        // La misma cejilla de Fa (forma de Mi), corrida dos trastes: Sol mayor.
+        ChordDiagram solConCejilla = new ChordDiagram("G", 3, List.of(3, 3, 4, 5, 5, 3), List.of(), true);
+
+        assertEquals(BARRE_F.shape(), solConCejilla.shape());
+    }
+
+    @Test
+    void lasCuerdasAlAireYMudasNoSeCorrenConElTrasteBase() {
+        ChordDiagram enQuintoTraste = new ChordDiagram("X", 5, List.of(0, 5, 7, 7, 5, -1), List.of(), true);
+
+        assertEquals(List.of(0, 1, 3, 3, 1, -1), enQuintoTraste.shape());
+    }
 }

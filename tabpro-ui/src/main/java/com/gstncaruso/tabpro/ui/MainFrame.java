@@ -901,12 +901,13 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void chordDiagram() {
-            ChordDialog.show(MainFrame.this, editor, player);
+            ChordDialog.show(MainFrame.this, editor, player, editingPreferences.showBassInChordName());
             backToTheScore();
         }
 
         @Override
         public void scales() {
+            beatViews.prepareForScalesTool();
             ScalesDialog.show(MainFrame.this, editor, player, chosenScale);
             showChosenScaleOnTheInstruments();
             backToTheScore();

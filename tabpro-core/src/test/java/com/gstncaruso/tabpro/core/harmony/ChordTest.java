@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class ChordTest {
@@ -63,5 +64,39 @@ class ChordTest {
     void elFormulaCompletoIncluyeLosTonosOpcionales() {
         Chord sol7 = Chord.of(PitchClass.of("Sol"), ChordType.SEVENTH);
         assertTrue(sol7.formulaSemitones().contains(PitchClass.of("Re").semitone()));
+    }
+
+    @Test
+    void laPreferenciaPuedeEscribirLaInversionSinElBajo() {
+        Chord doConMiEnElBajo = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Mi"));
+        assertEquals("C", doConMiEnElBajo.name(false));
+        assertEquals("C/E", doConMiEnElBajo.name(true));
+    }
+
+    @Test
+    void unAcordeSinInversionSeEscribeIgualConCualquierPreferencia() {
+        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+        assertEquals("C", doMayor.name(false));
+        assertEquals("C", doMayor.name(true));
+    }
+
+    @Test
+    void omitirUnTonoLoSacaDeLosSemitonosImprescindibles() {
+        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+        assertFalse(doMayor.essentialSemitones(Set.of(Interval.PERFECT_FIFTH)).contains(PitchClass.of("Sol").semitone()));
+        assertTrue(doMayor.essentialSemitones(Set.of()).contains(PitchClass.of("Sol").semitone()));
+    }
+
+    @Test
+    void elBajoSigueSiendoImprescindibleAunqueSeOmitanTonosDelAcorde() {
+        Chord doConReEnElBajo = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Re"));
+        assertTrue(doConReEnElBajo.essentialSemitones(Set.of(Interval.MAJOR_THIRD, Interval.PERFECT_FIFTH))
+                .contains(PitchClass.of("Re").semitone()));
+    }
+
+    @Test
+    void omitirUnIntervaloQueElAcordeNoTieneNoCambiaNada() {
+        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+        assertEquals(doMayor.essentialSemitones(Set.of()), doMayor.essentialSemitones(Set.of(Interval.MINOR_SEVENTH)));
     }
 }

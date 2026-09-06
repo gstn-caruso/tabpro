@@ -85,6 +85,16 @@ public record ChordDiagram(String name, int baseFret, List<Integer> frets, List<
         return new ChordDiagram(name, baseFret, frets, fingering, shown);
     }
 
+    /**
+     * La forma con que se pisa este diagrama, para reconocer "el mismo acorde" en otra posicion
+     * del mastil: una cejilla movida no cambia de forma aunque cambien los trastes absolutos.
+     * Las cuerdas mudas y al aire quedan como estan; las pisadas se cuentan relativas al traste
+     * base. Sirve para memorizar una digitacion corregida a mano y reusarla en acordes parecidos.
+     */
+    public List<Integer> shape() {
+        return frets.stream().map(fret -> fret > 0 ? fret - baseFret + 1 : fret).toList();
+    }
+
     public ChordDiagram withFretOnString(int string, int fret) {
         List<Integer> updated = new ArrayList<>(frets);
         updated.set(string - 1, fret);

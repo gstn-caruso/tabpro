@@ -38,8 +38,20 @@ public record Chord(PitchClass root, ChordType type, PitchClass bass) {
 
     /** Los semitonos que hacen falta si o si: los tonos imprescindibles del acorde, mas el bajo. */
     public Set<Integer> essentialSemitones() {
+        return essentialSemitones(Set.of());
+    }
+
+    /**
+     * Lo mismo, pero dejando afuera de lo imprescindible los tonos que el usuario tildo para
+     * omitir (los casilleros 1', 3', 5'... de la ventana de acordes). El bajo indicado sigue
+     * siendo imprescindible siempre: omitir es cosa de las notas del acorde, no del bajo.
+     */
+    public Set<Integer> essentialSemitones(Set<Interval> omittedTones) {
         Set<Integer> semitones = new LinkedHashSet<>();
-        type.tones().stream().filter(ChordTone::essential).forEach(tone -> semitones.add(tone.interval().from(root).semitone()));
+        type.tones().stream()
+                .filter(ChordTone::essential)
+                .filter(tone -> !omittedTones.contains(tone.interval()))
+                .forEach(tone -> semitones.add(tone.interval().from(root).semitone()));
         semitones.add(bass.semitone());
         return semitones;
     }
@@ -54,8 +66,16 @@ public record Chord(PitchClass root, ChordType type, PitchClass bass) {
 
     /** Como se escribe: la fundamental, el sufijo del tipo y, si esta invertido, "/bajo". */
     public String name() {
+        return name(true);
+    }
+
+    /**
+     * Lo mismo, pero permitiendo no indicar el bajo aunque el acorde este invertido: la
+     * preferencia de Options > Preferences, pestaña General, que describe el manual.
+     */
+    public String name(boolean showBassWhenInverted) {
         String base = root.name() + type.suffix();
-        return isInverted() ? base + "/" + bass.name() : base;
+        return isInverted() && showBassWhenInverted ? base + "/" + bass.name() : base;
     }
 
     @Override

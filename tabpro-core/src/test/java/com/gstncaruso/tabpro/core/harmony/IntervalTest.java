@@ -46,4 +46,20 @@ class IntervalTest {
         assertEquals(Interval.MAJOR_THIRD, Interval.matching(2, 4).orElseThrow());
         assertEquals(Interval.MINOR_THIRD, Interval.matching(2, 3).orElseThrow());
     }
+
+    @Test
+    void elGradoEsElNumeroConQueLoNombraUnMusicoSinElAccidente() {
+        assertEquals(1, Interval.ROOT.degreeNumber());
+        assertEquals(3, Interval.MINOR_THIRD.degreeNumber());
+        assertEquals(3, Interval.MAJOR_THIRD.degreeNumber());
+        assertEquals(5, Interval.PERFECT_FIFTH.degreeNumber());
+        assertEquals(7, Interval.MINOR_SEVENTH.degreeNumber());
+    }
+
+    @Test
+    void lasExtensionesUsanElGradoDeMasDeUnaOctava() {
+        assertEquals(9, Interval.MAJOR_NINTH.degreeNumber());
+        assertEquals(11, Interval.PERFECT_ELEVENTH.degreeNumber());
+        assertEquals(13, Interval.MAJOR_THIRTEENTH.degreeNumber());
+    }
 }

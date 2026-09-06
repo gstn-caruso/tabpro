@@ -68,6 +68,17 @@ public final class BeatViews extends JPanel {
         keyboard.setScale(scale);
     }
 
+    /**
+     * Lo que dispara abrir la herramienta de escalas, segun el manual: el teclado se muestra
+     * solo (el diapason no -para eso hay que abrirlo antes con View > Fretboard) y los dos
+     * quedan en el modo "Beat y escala".
+     */
+    public void prepareForScalesTool() {
+        setKeyboardVisible(true);
+        fretboard.setDisplayMode(FretboardDisplayMode.BEAT_AND_SCALE);
+        keyboard.setDisplayMode(KeyboardDisplayMode.BEAT_AND_SCALE);
+    }
+
     public void showPlayhead(Playhead playhead) {
         this.playhead = playhead;
         refresh();
@@ -191,6 +202,7 @@ public final class BeatViews extends JPanel {
         JPanel bar = toolbar();
         bar.add(comboOf(FretboardDisplayMode.values(), fretboard::setDisplayMode));
         bar.add(comboOf(NoteNameMode.values(), fretboard::setNoteNameMode));
+        bar.add(comboOf(ScaleLabelMode.values(), fretboard::setScaleLabelMode));
         bar.add(comboOf(FretboardType.values(), fretboard::setFretboardType));
         bar.add(scalePicker(fretboard::setScale));
         bar.add(handednessCheckBox());

@@ -37,6 +37,7 @@ public final class ChordDiagramCanvas extends JComponent {
 
     private BiConsumer<Integer, Integer> onFretClick = (string, fret) -> { };
     private IntConsumer onHeaderClick = string -> { };
+    private IntConsumer onFingerClick = string -> { };
 
     public ChordDiagramCanvas() {
         setOpaque(true);
@@ -64,6 +65,11 @@ public final class ChordDiagramCanvas extends JComponent {
         this.onHeaderClick = listener;
     }
 
+    /** El clic en la fila de numeros de abajo: define o cambia la digitacion de esa cuerda. */
+    public void onFingerClick(IntConsumer listener) {
+        this.onFingerClick = listener;
+    }
+
     private void handleClick(int x, int y) {
         OptionalInt string = stringAt(x);
         if (string.isEmpty()) {
@@ -71,6 +77,10 @@ public final class ChordDiagramCanvas extends JComponent {
         }
         if (isHeaderRow(y)) {
             onHeaderClick.accept(string.getAsInt());
+            return;
+        }
+        if (isFingerRow(y)) {
+            onFingerClick.accept(string.getAsInt());
             return;
         }
         fretAt(y).ifPresent(fret -> onFretClick.accept(string.getAsInt(), fret));
@@ -138,6 +148,17 @@ public final class ChordDiagramCanvas extends JComponent {
         return (double) usable / rowCount();
     }
 
+    // ---- geometria: fila de digitacion, debajo de la grilla ------------------
+
+    /** El renglon con los numeros de dedo, debajo del ultimo traste dibujado. */
+    public int fingerRowY() {
+        return fretRowY(rowCount() - 1) + (int) Math.round(rowHeight() / 2) + BOTTOM_MARGIN / 2;
+    }
+
+    public boolean isFingerRow(int y) {
+        return y >= fretRowY(rowCount() - 1) + Math.round(rowHeight() / 2);
+    }
+
     // ---- pintura ------------------------------------------------------------
 
     @Override
@@ -152,6 +173,7 @@ public final class ChordDiagramCanvas extends JComponent {
         paintGrid(g);
         paintBarre(g);
         paintFingers(g);
+        paintFingerRow(g);
     }
 
     private void paintPositionLabel(Graphics2D g) {
@@ -261,5 +283,24 @@ public final class ChordDiagramCanvas extends JComponent {
 
     private int fingerRadius() {
         return Math.max(6, (int) (rowHeight() * 0.32));
+    }
+
+    /**
+     * Los numeros clickeables de abajo: la digitacion de la mano izquierda de cada cuerda
+     * pisada. Una cuerda al aire o muda no lleva numero, porque no se digita.
+     */
+    private void paintFingerRow(Graphics2D g) {
+        int y = fingerRowY();
+        g.setColor(ChordDiagramColors.LABEL);
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
+        FontMetrics metrics = g.getFontMetrics();
+        for (int string = 1; string <= stringCount(); string++) {
+            if (diagram.fretOfString(string) <= 0) {
+                continue;
+            }
+            String label = diagram.fingerOfString(string).map(Finger::leftHandSymbol).orElse("?");
+            int x = stringX(string);
+            g.drawString(label, x - metrics.stringWidth(label) / 2, y + (metrics.getAscent() - metrics.getDescent()) / 2);
+        }
     }
 }

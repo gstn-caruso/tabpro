@@ -60,6 +60,11 @@ public enum Interval {
         return label;
     }
 
+    /** El numero de grado tal como lo dice un musico (3, 5, 7, 9, 11, 13...), sin el accidente. */
+    public int degreeNumber() {
+        return letterSteps + 1 + (semitones >= 12 ? 7 : 0);
+    }
+
     /** La nota que resulta de aplicar este intervalo a esa fundamental. */
     public PitchClass from(PitchClass root) {
         return root.steppedBy(letterSteps, semitones);

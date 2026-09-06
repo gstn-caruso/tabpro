@@ -3,8 +3,10 @@ package com.gstncaruso.tabpro.ui.harmony;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.harmony.Chord;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
+import com.gstncaruso.tabpro.core.harmony.Interval;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.TrackChords;
+import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.playback.Player;
@@ -13,6 +15,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -24,8 +27,10 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JToolTip;
 import javax.swing.ListSelectionModel;
 
 /**
@@ -38,8 +43,9 @@ public final class ChordDialog {
     private ChordDialog() {
     }
 
-    public static void show(Component parent, Editor editor, Player player) {
-        ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), editor.currentTrack().tuning());
+    public static void show(Component parent, Editor editor, Player player, boolean showBassInChordName) {
+        ChordEditorModel model = ChordEditorModel.forBeat(
+                editor.currentBeat(), editor.currentTrack().tuning(), showBassInChordName, FingeringMemory.userMemory());
         ChordLibrary library = ChordLibrary.userLibrary();
         Panel panel = new Panel(model, library, editor, player);
         if (DialogShell.ask(parent, "Acorde", panel)) {
@@ -64,6 +70,8 @@ public final class ChordDialog {
         private final JCheckBox useDiagram = new JCheckBox("Usar diagrama", true);
         private final JCheckBox showFingering = new JCheckBox("Digitación", true);
         private final ChordDiagramCanvas canvas = new ChordDiagramCanvas();
+        private final JScrollBar baseFret = new JScrollBar(JScrollBar.VERTICAL, 1, 1, 1, Tuning.MAX_FRET + 1);
+        private final JPanel omitChecks = new JPanel();
         private final DefaultListModel<ChordDiagram> candidates = new DefaultListModel<>();
         private final DefaultListModel<Chord> alternatives = new DefaultListModel<>();
         private final DefaultListModel<ChordDiagram> used = new DefaultListModel<>();
@@ -79,6 +87,8 @@ public final class ChordDialog {
                 roots.addItem(pitchClass);
                 basses.addItem(pitchClass);
             });
+            omitChecks.setLayout(new BoxLayout(omitChecks, BoxLayout.Y_AXIS));
+            omitChecks.setBorder(BorderFactory.createTitledBorder("Omitir"));
             setLayout(new BorderLayout(10, 10));
             add(constructionZone(), BorderLayout.WEST);
             add(mainDiagramZone(), BorderLayout.CENTER);
@@ -105,7 +115,13 @@ public final class ChordDialog {
             zone.setBorder(BorderFactory.createTitledBorder("Diagrama"));
             zone.add(name, BorderLayout.NORTH);
             zone.add(canvas, BorderLayout.CENTER);
+            zone.add(baseFret, BorderLayout.WEST);
+            zone.add(omitChecks, BorderLayout.EAST);
+            zone.add(bottomControls(), BorderLayout.SOUTH);
+            return zone;
+        }
 
+        private JPanel bottomControls() {
             JPanel controls = new JPanel(new GridLayout(0, 1, 4, 4));
             controls.add(useDiagram);
             controls.add(showFingering);
@@ -119,8 +135,7 @@ public final class ChordDialog {
                 model.setUseDiagram(false);
             });
             controls.add(clear);
-            zone.add(controls, BorderLayout.SOUTH);
-            return zone;
+            return controls;
         }
 
         /** Listas D, E y F: nombres alternativos, acordes usados y biblioteca. */
@@ -200,12 +215,22 @@ public final class ChordDialog {
             name.addActionListener(event -> model.setCustomName(name.getText()));
             useDiagram.addActionListener(event -> model.setUseDiagram(useDiagram.isSelected()));
             showFingering.addActionListener(event -> model.setShowFingering(showFingering.isSelected()));
+            baseFret.addAdjustmentListener(event -> {
+                if (!updating) {
+                    model.setBaseFret(baseFret.getValue());
+                    refresh();
+                }
+            });
             canvas.onFretClick((string, fret) -> {
                 model.toggleFret(string, fret);
                 refresh();
             });
             canvas.onHeaderClick(string -> {
                 model.toggleOpenOrMuted(string);
+                refresh();
+            });
+            canvas.onFingerClick(string -> {
+                model.cycleFinger(string);
                 refresh();
             });
         }
@@ -228,9 +253,27 @@ public final class ChordDialog {
             name.setText(model.current().name());
             useDiagram.setSelected(model.useDiagram());
             showFingering.setSelected(model.showFingering());
+            baseFret.setValue(model.current().baseFret());
             canvas.show(model.current(), model.tuning());
+            refreshOmitChecks();
             refreshLists();
             updating = false;
+        }
+
+        /** Los casilleros 1', 3', 5'... cambian con el tipo de acorde, asi que se arman de nuevo. */
+        private void refreshOmitChecks() {
+            omitChecks.removeAll();
+            for (Interval tone : model.omittableTones()) {
+                JCheckBox check = new JCheckBox(tone.degreeNumber() + "'");
+                check.setSelected(model.omittedTones().contains(tone));
+                check.addActionListener(event -> {
+                    model.setToneOmitted(tone, check.isSelected());
+                    refresh();
+                });
+                omitChecks.add(check);
+            }
+            omitChecks.revalidate();
+            omitChecks.repaint();
         }
 
         private void refreshLists() {
@@ -245,9 +288,41 @@ public final class ChordDialog {
             values.forEach(listModel::addElement);
         }
 
-        private static JList<ChordDiagram> diagramList(DefaultListModel<ChordDiagram> listModel) {
-            JList<ChordDiagram> list = new JList<>(listModel);
+        /**
+         * Una lista de diagramas: se ve el nombre y la forma, y mientras el mouse esta encima de
+         * un elemento aparece el diagrama en una ventanita de ayuda, como describe el manual.
+         */
+        private JList<ChordDiagram> diagramList(DefaultListModel<ChordDiagram> listModel) {
+            JList<ChordDiagram> list = new JList<>(listModel) {
+
+                private ChordDiagram hovered;
+
+                @Override
+                public String getToolTipText(MouseEvent event) {
+                    int index = locationToIndex(event.getPoint());
+                    if (index < 0 || !getCellBounds(index, index).contains(event.getPoint())) {
+                        hovered = null;
+                        return null;
+                    }
+                    hovered = getModel().getElementAt(index);
+                    return hovered.name();
+                }
+
+                @Override
+                public JToolTip createToolTip() {
+                    JToolTip tip = new JToolTip();
+                    tip.setLayout(new BorderLayout());
+                    if (hovered != null) {
+                        ChordDiagramCanvas preview = new ChordDiagramCanvas();
+                        preview.setPreferredSize(new Dimension(110, 130));
+                        preview.show(hovered, model.tuning());
+                        tip.add(preview, BorderLayout.CENTER);
+                    }
+                    return tip;
+                }
+            };
             list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            list.setToolTipText("");
             list.setCellRenderer(new javax.swing.DefaultListCellRenderer() {
 
                 @Override
