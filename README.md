@@ -5,7 +5,7 @@ Java 25 con Swing.
 
 ## Estado
 
-**v0.7.2 — El clon.** tabpro hace lo que describe el manual de Guitar Pro 5, con
+**v0.8.0 — El clon.** tabpro hace lo que describe el manual de Guitar Pro 5, con
 la misma forma de pantalla pero con una estética moderna y plana en vez de la de
 Windows XP.
 
@@ -32,7 +32,9 @@ volumen, paneo, chorus, reverb, phaser, trémolo, silenciar y solo) y la **vista
 global** con la zona de marcadores y un cuadradito por compás.
 
 Suena en MIDI respetando el orden real de los compases —repeticiones, finales
-alternativos y saltos— y los efectos: bends y palanca con pitch bend, slides,
+alternativos y saltos—, los **cambios de parámetro** que se inserten a mitad de
+partitura (instrumento, volumen, paneo, tempo y los cuatro efectos, con su
+transición en beats) y los efectos: bends y palanca con pitch bend, slides,
 ligados, trinos, trémolos, armónicos, rasgueos demorados, notas de adorno, fade
 in y swing. Con metrónomo, cuenta regresiva, loop con entrenador de velocidad,
 tempo relativo de x0.25 a x2 y modo paso a paso.
@@ -58,7 +60,7 @@ Pro; y la importación de PowerTab y de TablEdit.
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.7.2_all.deb
+sudo apt install ./tabpro_0.8.0_all.deb
 tabpro
 ```
 
@@ -70,7 +72,7 @@ variante *headless* no alcanza.
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.7.2.jar [archivo]
+java -jar tabpro-app-0.8.0.jar [archivo]
 ```
 
 ## Uso
