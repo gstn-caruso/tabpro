@@ -112,4 +112,9 @@ public final class CombinedExchange implements ScoreExchange {
     public Score importGuitarPro(Path path) {
         return notation.importGuitarPro(path);
     }
+
+    @Override
+    public Score importTabEdit(Path path) {
+        return notation.importTabEdit(path);
+    }
 }
