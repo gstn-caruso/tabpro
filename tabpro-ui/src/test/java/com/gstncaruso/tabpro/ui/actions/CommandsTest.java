@@ -67,6 +67,31 @@ class CommandsTest {
         assertTrue(expected.isEmpty(), "faltan los atajos " + expected);
     }
 
+    /**
+     * El manual es explicito: "+ Divide the Duration of the Notes by 2" y
+     * "- Multiply the Duration of the Notes by 2". Es el atajo mas usado al escribir el ritmo.
+     */
+    @Test
+    void plusShortensTheFigureAndMinusLengthensIt() {
+        commands.get("note.value.QUARTER").actionPerformed(event());
+
+        pressing("PLUS");
+        assertEquals(NoteValue.EIGHTH, editor.currentBeat().duration().value());
+
+        pressing("MINUS");
+        pressing("MINUS");
+        assertEquals(NoteValue.HALF, editor.currentBeat().duration().value());
+    }
+
+    private void pressing(String accelerator) {
+        KeyStroke wanted = KeyStroke.getKeyStroke(accelerator);
+        commands.all().values().stream()
+                .filter(command -> wanted.equals(command.accelerator()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("no hay ningun comando con el atajo " + accelerator))
+                .actionPerformed(event());
+    }
+
     @Test
     void aCommandDoesWhatItsNameSays() {
         commands.get("note.rest").actionPerformed(event());

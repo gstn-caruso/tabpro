@@ -163,8 +163,9 @@ public final class Commands {
     // ---- notas ------------------------------------------------------------
 
     private void defineNoteCommands() {
-        define("note.longer", "Alargar la figura", editor::lengthenDuration).withAccelerator("PLUS");
-        define("note.shorter", "Acortar la figura", editor::shortenDuration).withAccelerator("MINUS");
+        // El manual: "+" divide la duracion por dos y "-" la multiplica, asi que "+" acorta.
+        define("note.shorter", "Acortar la figura", editor::shortenDuration).withAccelerator("PLUS");
+        define("note.longer", "Alargar la figura", editor::lengthenDuration).withAccelerator("MINUS");
         define("note.dot", "Puntillo", editor::toggleDot).withAccelerator("PERIOD").withIcon(Icons.dottedNote());
         define("note.rest", "Silencio", editor::clearBeat).withAccelerator("R").withIcon(Icons.rest());
         define("note.triplet", "Tresillo", editor::toggleTriplet).withAccelerator("SLASH").withIcon(Icons.tuplet());
