@@ -60,12 +60,74 @@ class InstrumentEditingTest {
     }
 
     @Test
-    void ignoresAKeyTheStringOfTheCursorCannotReach() {
+    void writesAKeyTheCursorStringCannotReachOnAStringThatCan() {
         editor.moveTo(0, 0, 1);
 
         editing.pressKey(40);
 
-        assertTrue(editor.currentBeat().isRest(), "la primera cuerda no llega al mi grave");
+        assertEquals(Optional.of(new Note(6, 0)), editor.currentBeat().noteOn(6));
+    }
+
+    @Test
+    void ignoresAKeyNoStringCanReach() {
+        editor.moveTo(0, 0, 1);
+
+        editing.pressKey(20);
+
+        assertTrue(editor.currentBeat().isRest(), "ninguna cuerda baja tanto");
+    }
+
+    @Test
+    void aSecondKeySumsUpIntoAChordInsteadOfPushingTheFirstOut() {
+        editor.moveTo(0, 0, 3);
+
+        editing.pressKey(60);
+        editing.pressKey(64);
+
+        assertEquals(Optional.of(new Note(3, 5)), editor.currentBeat().noteOn(3));
+        assertEquals(Optional.of(new Note(1, 0)), editor.currentBeat().noteOn(1));
+    }
+
+    @Test
+    void everyKeyKeepsGrowingTheChordOfTheBeat() {
+        editor.moveTo(0, 0, 3);
+
+        editing.pressKey(60);
+        editing.pressKey(64);
+        editing.pressKey(67);
+
+        assertEquals(3, editor.currentBeat().notes().size());
+        assertEquals(
+                List.of(60, 64, 67),
+                editor.currentBeat().notes().stream()
+                        .map(note -> editor.currentTrack().tuning().pitchOf(note).midiNumber())
+                        .sorted()
+                        .toList());
+    }
+
+    @Test
+    void withNoFreeStringLeftTheKeyOverwritesTheCursorString() {
+        for (int string = 1; string <= 6; string++) {
+            editing.pressFret(new Note(string, 1));
+        }
+        editor.moveTo(0, 0, 3);
+
+        editing.pressKey(60);
+
+        assertEquals(Optional.of(new Note(3, 5)), editor.currentBeat().noteOn(3));
+        assertEquals(6, editor.currentBeat().notes().size());
+    }
+
+    @Test
+    void togglingAKeyOffFindsItWhereverItLandedInTheChord() {
+        editor.moveTo(0, 0, 3);
+        editing.toggleKey(60);
+        editing.toggleKey(64);
+
+        editing.toggleKey(64);
+
+        assertEquals(Optional.of(new Note(3, 5)), editor.currentBeat().noteOn(3));
+        assertEquals(1, editor.currentBeat().notes().size());
     }
 
     @Test
@@ -91,7 +153,7 @@ class InstrumentEditingTest {
     void soundsNothingWhenNothingGetsWritten() {
         editor.moveTo(0, 0, 1);
 
-        editing.pressKey(40);
+        editing.pressKey(20);
 
         assertEquals(List.of(), player.sounded());
     }
