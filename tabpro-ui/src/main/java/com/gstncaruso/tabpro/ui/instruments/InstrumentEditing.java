@@ -34,12 +34,17 @@ public final class InstrumentEditing {
      */
     public void toggleFret(Note note) {
         if (isAlreadyThere(note)) {
-            Cursor cursor = editor.cursor();
-            editor.moveTo(cursor.measure(), cursor.beat(), note.string());
-            editor.clearNote();
+            erase(note);
             return;
         }
         pressFret(note);
+    }
+
+    /** Apaga la nota: se muda a su cuerda y la borra del beat. */
+    private void erase(Note note) {
+        Cursor cursor = editor.cursor();
+        editor.moveTo(cursor.measure(), cursor.beat(), note.string());
+        editor.clearNote();
     }
 
     /** Clic derecho: agrega la nota y avanza al beat siguiente, como aconseja el manual. */
