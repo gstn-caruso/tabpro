@@ -11,6 +11,9 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class BeatViewsTest {
@@ -135,6 +138,46 @@ class BeatViewsTest {
         assertFalse(
                 views.isFretboardVisible(),
                 "el manual pide usar View > Fretboard antes: la herramienta no lo fuerza");
+    }
+
+    @Test
+    void clickingSeveralKeysBuildsTheChordOfTheBeat() {
+        Editor editor = new Editor(Score.blank());
+        BeatViews views = new BeatViews(editor, new RecordingPlayer());
+
+        clickKey(views, 60);
+        clickKey(views, 64);
+        clickKey(views, 67);
+
+        assertEquals(
+                List.of(60, 64, 67),
+                editor.currentBeat().notes().stream()
+                        .map(note -> editor.currentTrack().tuning().pitchOf(note).midiNumber())
+                        .sorted()
+                        .toList(),
+                "las tres teclas suenan juntas en el mismo beat");
+    }
+
+    @Test
+    void clickingTheSameKeyAgainTakesItOutOfTheChord() {
+        Editor editor = new Editor(Score.blank());
+        BeatViews views = new BeatViews(editor, new RecordingPlayer());
+        clickKey(views, 60);
+        clickKey(views, 64);
+
+        clickKey(views, 64);
+
+        assertEquals(1, editor.currentBeat().notes().size());
+    }
+
+    /** El gesto real: un clic en el centro de esa tecla del piano. */
+    private static void clickKey(BeatViews views, int midiNumber) {
+        KeyboardView keyboard = views.keyboard();
+        keyboard.setSize(900, 92);
+        Rectangle key = keyboard.keyBounds(midiNumber).orElseThrow();
+        keyboard.dispatchEvent(new MouseEvent(
+                keyboard, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0,
+                key.x + key.width / 2, key.y + key.height - 4, 1, false, MouseEvent.BUTTON1));
     }
 
     @Test
