@@ -59,12 +59,23 @@ public final class ScorePainter {
                 paintTrack(g, layout, score, trackIndex, cursor, highlightedVoice);
             }
         }
+        if (showsTheEditingCursor(score, cursor)) {
+            paintCursorTrail(g, layout, cursor);
+        }
         paintPlayingLines(g, layout, score, playhead);
         selection.ifPresent(sel -> paintSelection(g, layout, score, sel));
         if (showsTheEditingCursor(score, cursor)) {
             paintCursor(g, layout, score, cursor);
             paintCorrespondingMark(g, layout, score, cursor);
         }
+    }
+
+    private static void paintCursorTrail(Graphics2D g, ScoreLayout layout, Cursor cursor) {
+        int x = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat()).x;
+        int top = layout.systemTop(layout.systemOf(cursor.measure()));
+        int bottom = top + layout.systemHeight();
+        g.setColor(ScoreColors.CURSOR);
+        g.fillRect(x, top, 1, bottom - top);
     }
 
     /**
