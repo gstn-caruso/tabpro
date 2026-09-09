@@ -45,13 +45,13 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void quickImportRoundTripsATrackWithNaturalFrets() {
+    void quickImportRoundTripsATrackWithNaturalFrets(@TempDir Path tempDir) {
         Beat beat = Beat.of(Duration.of(NoteValue.QUARTER), new Note(3, 0), new Note(6, 0));
         Measure measure = new Measure(TimeSignature.fourFour(),
                 List.of(beat, Beat.rest(Duration.of(NoteValue.QUARTER)), Beat.rest(Duration.of(NoteValue.HALF))));
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score original = new Score("Cancion", 100, List.of(track));
-        Path path = export(original, newTempDir());
+        Path path = export(original, tempDir);
 
         Score imported = importer.importQuick(path);
 
@@ -64,10 +64,10 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void quickImportGuessesBassTuningFromTheGeneralMidiProgram() {
+    void quickImportGuessesBassTuningFromTheGeneralMidiProgram(@TempDir Path tempDir) {
         Track track = Track.standardBass("Bajo");
         Score original = new Score("Prueba", 120, List.of(track));
-        Path path = export(original, newTempDir());
+        Path path = export(original, tempDir);
 
         Score imported = importer.importQuick(path);
 
@@ -75,11 +75,11 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void quickImportPutsPercussionOnItsOwnPercussionTrack() {
+    void quickImportPutsPercussionOnItsOwnPercussionTrack(@TempDir Path tempDir) {
         Track drums = Track.percussion("Bateria").withMeasure(0,
                 new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 38)))));
         Score original = new Score("Prueba", 120, List.of(drums));
-        Path path = export(original, newTempDir());
+        Path path = export(original, tempDir);
 
         Score imported = importer.importQuick(path);
 
@@ -92,9 +92,9 @@ class MidiScoreImporterTest {
      * dos pistas quedan en canales de efectos distintos de los suyos propios.
      */
     @Test
-    void quickImportDefaultsToTwoChannelsPerTrack() {
+    void quickImportDefaultsToTwoChannelsPerTrack(@TempDir Path tempDir) {
         Track track = Track.standardGuitar("Guitarra");
-        Path path = export(new Score("Prueba", 120, List.of(track)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(track)), tempDir);
         List<Integer> indices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
 
         Score imported = importer.importQuick(path, indices, false, Optional.empty());
@@ -105,9 +105,9 @@ class MidiScoreImporterTest {
 
     /** La casilla destildada equivale a un solo canal por pista. */
     @Test
-    void quickImportCanUseOnlyOneChannelPerTrack() {
+    void quickImportCanUseOnlyOneChannelPerTrack(@TempDir Path tempDir) {
         Track track = Track.standardGuitar("Guitarra");
-        Path path = export(new Score("Prueba", 120, List.of(track)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(track)), tempDir);
         List<Integer> indices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
 
         Score imported = importer.importQuick(path, indices, false, Optional.empty(), false);
@@ -122,10 +122,10 @@ class MidiScoreImporterTest {
      * percusion suene siempre en el 10.
      */
     @Test
-    void quickImportGivesPercussionItsOwnEffectChannelToo() {
+    void quickImportGivesPercussionItsOwnEffectChannelToo(@TempDir Path tempDir) {
         Track drums = Track.percussion("Bateria").withMeasure(0,
                 new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 38)))));
-        Path path = export(new Score("Prueba", 120, List.of(drums)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(drums)), tempDir);
 
         Score imported = importer.importQuick(path);
 
@@ -141,9 +141,9 @@ class MidiScoreImporterTest {
      * sigan compartiendo la misma funcion en vez de calcular el par cada una por su lado.
      */
     @Test
-    void aMelodicTrackOnChannelNineDoesNotGetThePercussionEffectChannel() {
+    void aMelodicTrackOnChannelNineDoesNotGetThePercussionEffectChannel(@TempDir Path tempDir) {
         Track track = Track.standardGuitar("Guitarra").withChannel(Channel.playing(25).withNumber(9));
-        Path path = export(new Score("Prueba", 120, List.of(track)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(track)), tempDir);
         List<Integer> indices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
 
         Score imported = importer.importQuick(path, indices, false, Optional.empty(), true);
@@ -153,8 +153,8 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void quickImportFallsBackToTheFileNameWhenThereIsNoTrackName() throws Exception {
-        Path path = newTempDir().resolve("sin-nombre.mid");
+    void quickImportFallsBackToTheFileNameWhenThereIsNoTrackName(@TempDir Path tempDir) throws Exception {
+        Path path = tempDir.resolve("sin-nombre.mid");
         javax.sound.midi.Sequence sequence = PlainMidiWriter.sequenceOf(Score.blank());
         removeTrackNameEvents(sequence);
         javax.sound.midi.MidiSystem.write(sequence, 1, path.toFile());
@@ -165,11 +165,11 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void importsAChosenMidiTrackOntoAnExistingTrackKeepingItsIdentity() {
+    void importsAChosenMidiTrackOntoAnExistingTrackKeepingItsIdentity(@TempDir Path tempDir) {
         Beat beat = Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 0));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat, Beat.rest(new Duration(NoteValue.HALF, true))));
         Track sourceInScore = new Track("Solo", Tuning.standard(), Channel.playing(30), List.of(measure));
-        Path path = export(new Score("Prueba", 120, List.of(sourceInScore)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(sourceInScore)), tempDir);
         Track existing = Track.standardBass("Mi pista");
         int midiTrackIndex = importer.tracksIn(path).get(0).index();
 
@@ -182,11 +182,11 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void transposesDownAnOctaveWhenAsked() {
+    void transposesDownAnOctaveWhenAsked(@TempDir Path tempDir) {
         Beat beat = Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 12));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat, Beat.rest(new Duration(NoteValue.HALF, true))));
         Track source = new Track("Solo", Tuning.standard(), Channel.playing(30), List.of(measure));
-        Path path = export(new Score("Prueba", 120, List.of(source)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(source)), tempDir);
         Track existing = Track.standardGuitar("Guitarra");
         int midiTrackIndex = importer.tracksIn(path).get(0).index();
 
@@ -196,7 +196,7 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void mergesSeveralMidiTracksIntoOneWhenSeveralIndicesAreGiven() {
+    void mergesSeveralMidiTracksIntoOneWhenSeveralIndicesAreGiven(@TempDir Path tempDir) {
         Measure measureA = new Measure(TimeSignature.fourFour(), List.of(
                 Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 0)),
                 Beat.rest(Duration.of(NoteValue.QUARTER)),
@@ -209,7 +209,7 @@ class MidiScoreImporterTest {
                 Beat.rest(Duration.of(NoteValue.QUARTER))));
         Track trackA = new Track("Guitarra 1", Tuning.standard(), Channel.playing(25), List.of(measureA));
         Track trackB = new Track("Guitarra 2", Tuning.standard(), Channel.playing(25), List.of(measureB));
-        Path path = export(new Score("Prueba", 120, List.of(trackA, trackB)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(trackA, trackB)), tempDir);
         List<Integer> indices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
         Track existing = Track.standardGuitar("Guitarra fusionada");
 
@@ -220,10 +220,10 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void quickImportKeepsOnlyTheSelectedTracks() {
+    void quickImportKeepsOnlyTheSelectedTracks(@TempDir Path tempDir) {
         Track guitar = Track.standardGuitar("Guitarra");
         Track bass = Track.standardBass("Bajo");
-        Path path = export(new Score("Prueba", 120, List.of(guitar, bass)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(guitar, bass)), tempDir);
         int bassIndex = importer.tracksIn(path).stream()
                 .filter(summary -> summary.name().equals("Bajo"))
                 .findFirst()
@@ -237,11 +237,11 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void quickImportCanTransposeDownAnOctave() {
+    void quickImportCanTransposeDownAnOctave(@TempDir Path tempDir) {
         Beat beat = Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 12));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat, Beat.rest(new Duration(NoteValue.HALF, true))));
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        Path path = export(new Score("Prueba", 120, List.of(track)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(track)), tempDir);
         List<Integer> allIndices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
 
         Score imported = importer.importQuick(path, allIndices, true);
@@ -250,19 +250,19 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void quickImportWithNoTracksSelectedThrows() {
-        Path path = export(new Score("Prueba", 120, List.of(Track.standardGuitar("Guitarra"))), newTempDir());
+    void quickImportWithNoTracksSelectedThrows(@TempDir Path tempDir) {
+        Path path = export(new Score("Prueba", 120, List.of(Track.standardGuitar("Guitarra"))), tempDir);
 
         assertThrows(ScoreFileException.class, () -> importer.importQuick(path, List.of(), false));
     }
 
     @Test
-    void importsTitleTempoAndTimeSignatureChangesOntoTheCurrentScore() {
+    void importsTitleTempoAndTimeSignatureChangesOntoTheCurrentScore(@TempDir Path tempDir) {
         Measure fourFour = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
         Measure threeFour = Measure.empty(new TimeSignature(3, 4), Duration.quarter());
         Track fileTrack = new Track("Guitarra", Tuning.standard(), Channel.playing(25),
                 List.of(fourFour, fourFour, threeFour));
-        Path path = export(new Score("Cancion", 140, List.of(fileTrack)), newTempDir());
+        Path path = export(new Score("Cancion", 140, List.of(fileTrack)), tempDir);
         Measure sixEight = Measure.empty(new TimeSignature(6, 8), Duration.quarter());
         Track targetTrack = new Track("Mi pista", Tuning.standardBass(), Channel.playing(33),
                 List.of(sixEight, sixEight, sixEight));
@@ -280,11 +280,11 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void importingTitleAndTimeSignaturesStopsAtTheLastMeasureOfTheCurrentScore() {
+    void importingTitleAndTimeSignaturesStopsAtTheLastMeasureOfTheCurrentScore(@TempDir Path tempDir) {
         Measure fourFour = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
         Measure threeFour = Measure.empty(new TimeSignature(3, 4), Duration.quarter());
         Track fileTrack = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(fourFour, threeFour));
-        Path path = export(new Score("Cancion", 100, List.of(fileTrack)), newTempDir());
+        Path path = export(new Score("Cancion", 100, List.of(fileTrack)), tempDir);
         Measure sixEight = Measure.empty(new TimeSignature(6, 8), Duration.quarter());
         Score target = new Score("T", 120, List.of(
                 new Track("Pista", Tuning.standard(), Channel.playing(25), List.of(sixEight))));
@@ -296,8 +296,8 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void importingTitleAndTimeSignaturesFallsBackToTheFileNameWhenThereIsNoTrackName() throws Exception {
-        Path path = newTempDir().resolve("sin-nombre-2.mid");
+    void importingTitleAndTimeSignaturesFallsBackToTheFileNameWhenThereIsNoTrackName(@TempDir Path tempDir) throws Exception {
+        Path path = tempDir.resolve("sin-nombre-2.mid");
         javax.sound.midi.Sequence sequence = PlainMidiWriter.sequenceOf(Score.blank());
         removeTrackNameEvents(sequence);
         javax.sound.midi.MidiSystem.write(sequence, 1, path.toFile());
@@ -309,14 +309,14 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void aCoarserPrecisionQuantizesTheSameMidiFileToADifferentScore() {
+    void aCoarserPrecisionQuantizesTheSameMidiFileToADifferentScore(@TempDir Path tempDir) {
         // una corchea con puntillo (360 tics: 1.5 semicorcheas) es una figura exacta sin
         // restringir la grilla; pidiendo que no sea mas fina que la corchea, esa figura no entra
         // y la nota se redondea a la corchea simple -- la misma entrada MIDI da otra partitura.
         Beat beat = Beat.of(new Duration(NoteValue.SIXTEENTH, true), new Note(1, 0));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        Path path = export(new Score("Prueba", 120, List.of(track)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(track)), tempDir);
         List<Integer> indices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
 
         Score sinRestringir = importer.importQuick(path, indices, false);
@@ -327,11 +327,11 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void theStepByStepImportAlsoRespectsTheChosenPrecision() {
+    void theStepByStepImportAlsoRespectsTheChosenPrecision(@TempDir Path tempDir) {
         Beat beat = Beat.of(new Duration(NoteValue.SIXTEENTH, true), new Note(1, 0));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
         Track source = new Track("Solo", Tuning.standard(), Channel.playing(30), List.of(measure));
-        Path path = export(new Score("Prueba", 120, List.of(source)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(source)), tempDir);
         Track existing = Track.standardGuitar("Guitarra");
         int midiTrackIndex = importer.tracksIn(path).get(0).index();
 
@@ -341,11 +341,11 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void timelineOfASelectedTrackHasItsNotesReadyToListenBeforeImporting() {
+    void timelineOfASelectedTrackHasItsNotesReadyToListenBeforeImporting(@TempDir Path tempDir) {
         Beat beat = Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 5));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
         Track track = new Track("Solo", Tuning.standard(), Channel.playing(30), List.of(measure));
-        Path path = export(new Score("Prueba", 120, List.of(track)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(track)), tempDir);
         int midiTrackIndex = importer.tracksIn(path).get(0).index();
 
         Timeline timeline = importer.timelineOf(path, List.of(midiTrackIndex));
@@ -361,12 +361,12 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void timelineOfMergesTheSelectedTracksToListenToThemTogether() {
+    void timelineOfMergesTheSelectedTracksToListenToThemTogether(@TempDir Path tempDir) {
         Measure measureA = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 0))));
         Measure measureB = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 3))));
         Track trackA = new Track("Guitarra 1", Tuning.standard(), Channel.playing(25), List.of(measureA));
         Track trackB = new Track("Guitarra 2", Tuning.standard(), Channel.playing(25), List.of(measureB));
-        Path path = export(new Score("Prueba", 120, List.of(trackA, trackB)), newTempDir());
+        Path path = export(new Score("Prueba", 120, List.of(trackA, trackB)), tempDir);
         List<Integer> indices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
 
         Timeline timeline = importer.timelineOf(path, indices);
@@ -376,8 +376,8 @@ class MidiScoreImporterTest {
     }
 
     @Test
-    void timelineOfRejectsWhenNoTrackIsSelected() {
-        Path path = export(new Score("Prueba", 120, List.of(Track.standardGuitar("Guitarra"))), newTempDir());
+    void timelineOfRejectsWhenNoTrackIsSelected(@TempDir Path tempDir) {
+        Path path = export(new Score("Prueba", 120, List.of(Track.standardGuitar("Guitarra"))), tempDir);
 
         assertThrows(ScoreFileException.class, () -> importer.timelineOf(path, List.of()));
     }
@@ -397,14 +397,6 @@ class MidiScoreImporterTest {
         Path path = dir.resolve("prueba.mid");
         PlainMidiWriter.write(score, path);
         return path;
-    }
-
-    private static Path newTempDir() {
-        try {
-            return java.nio.file.Files.createTempDirectory("midi-import-test");
-        } catch (java.io.IOException e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     private static void removeTrackNameEvents(javax.sound.midi.Sequence sequence) {
