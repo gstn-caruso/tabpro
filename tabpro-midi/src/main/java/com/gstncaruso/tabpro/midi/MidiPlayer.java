@@ -21,7 +21,7 @@ import javax.sound.midi.Sequencer;
 
 public final class MidiPlayer implements Player, AutoCloseable {
 
-    private static final int END_OF_TRACK_META_TYPE = 47;
+    static final int END_OF_TRACK_META_TYPE = 47;
 
     /** El puerto que usa una pista nueva; el unico que conduce el tempo, los beats y el fin de la reproduccion. */
     private static final int PRIMARY_PORT = 1;
@@ -107,6 +107,11 @@ public final class MidiPlayer implements Player, AutoCloseable {
     /** La secuencia que esta tocando el puerto principal, la que dirige el tempo y avisa los beats. */
     Sequence sequenceInPlay() {
         return sequencer.getSequence();
+    }
+
+    /** Para tests: deja el listener enganchado sin arrancar la reproduccion real. */
+    void listenTo(PlaybackListener listener) {
+        this.listener = listener;
     }
 
     /** Para tests: en que tick quedo el secuenciador de ese puerto, o -1 si no tiene ninguno. */
@@ -297,7 +302,8 @@ public final class MidiPlayer implements Player, AutoCloseable {
         };
     }
 
-    private void notifyListenerOf(MetaMessage message) {
+    /** El secuenciador real llama esto al vivo; para tests, se le empuja un mensaje construido a mano. */
+    void notifyListenerOf(MetaMessage message) {
         if (message.getType() == END_OF_TRACK_META_TYPE) {
             listener.playbackFinished();
             return;
