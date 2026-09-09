@@ -46,14 +46,20 @@ class CommandsTest {
     @Test
     void noTwoCommandsShareTheSameShortcut() {
         Map<KeyStroke, String> byShortcut = new HashMap<>();
+        List<String> repetidos = new ArrayList<>();
         commands.all().forEach((name, command) -> {
             KeyStroke shortcut = command.accelerator();
             if (shortcut == null) {
                 return;
             }
             String previous = byShortcut.put(shortcut, name);
-            assertEquals(null, previous, "el atajo " + shortcut + " lo usan " + previous + " y " + name);
+            if (previous != null) {
+                repetidos.add("el atajo " + shortcut + " lo usan " + previous + " y " + name);
+            }
         });
+
+        assertFalse(byShortcut.isEmpty(), "ningun comando tiene atajo: no habria nada que verificar");
+        assertEquals(List.of(), repetidos);
     }
 
     /**
