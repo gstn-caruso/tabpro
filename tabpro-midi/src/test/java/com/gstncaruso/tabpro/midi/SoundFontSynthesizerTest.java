@@ -13,6 +13,7 @@ import java.util.Optional;
 import javax.sound.midi.MidiUnavailableException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -70,6 +71,7 @@ class SoundFontSynthesizerTest {
         assertFalse(bank.active());
     }
 
+    @Tag("integracion")
     @Test
     void aRealSoundFontLoadsAndBecomesActive() {
         Path real = firstInstalledOrSkip();
@@ -80,6 +82,7 @@ class SoundFontSynthesizerTest {
         assertTrue(bank.file().isPresent());
     }
 
+    @Tag("integracion")
     @Test
     void togglingItOffAndOnAgainSwitchesTheLoadedInstruments() {
         Path real = firstInstalledOrSkip();
