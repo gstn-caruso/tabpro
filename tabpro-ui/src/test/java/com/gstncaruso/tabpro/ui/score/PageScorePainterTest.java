@@ -233,10 +233,11 @@ class PageScorePainterTest {
      */
     @Test
     void theScoreIsWrittenInDarkInkOnPaper() {
-        BufferedImage music = musicOf(render(scoreWithAParameterChange(), PageSetup.defaults()));
+        LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
+        Rectangle music = musicRegionOf(PageSetup.defaults());
 
-        assertTrue(paints(music, ScoreColors.PAGE_INK), "la partitura se escribe con la tinta de la hoja");
-        assertFalse(paints(music, ScoreColors.INK), "y no con la tinta clara de la pantalla");
+        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.PAGE_INK, music), "la partitura se escribe con la tinta de la hoja");
+        assertFalse(lienzo.dibujaColorEnRegion(ScoreColors.INK, music), "y no con la tinta clara de la pantalla");
     }
 
     /**
