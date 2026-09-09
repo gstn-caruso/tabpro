@@ -209,6 +209,7 @@ class MidiPlayerTest {
      * tempo tardaria cuatro segundos en terminar sola; si el salto funciona, la nota del segundo
      * compas se escucha mucho antes de eso.
      */
+    @Tag("integracion")
     @Test
     void afterSeekingWhatSoundsIsTheRequestedMeasure() throws Exception {
         long measureTicks = 4L * Duration.TICKS_PER_QUARTER;
