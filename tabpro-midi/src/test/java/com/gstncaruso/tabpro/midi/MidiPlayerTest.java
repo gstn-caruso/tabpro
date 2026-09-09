@@ -52,7 +52,7 @@ class MidiPlayerTest {
             Assumptions.assumeTrue(false, "sin sequencer MIDI");
             return;
         }
-        player = new MidiPlayer(sequencer);
+        player = new MidiPlayer(sequencer, port -> silentReceiver());
     }
 
     @AfterEach
