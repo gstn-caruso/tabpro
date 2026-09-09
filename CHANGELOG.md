@@ -1,3 +1,9 @@
+## [0.27.1](https://github.com/gstn-caruso/tabpro/compare/v0.27.0...v0.27.1) (2026-09-09)
+
+### Bug Fixes
+
+* las teclas del piano suman un acorde en el compás ([#100](https://github.com/gstn-caruso/tabpro/issues/100)) ([f668479](https://github.com/gstn-caruso/tabpro/commit/f6684790beb4ffe087ffbd7cac277c8743e40398))
+
 ## [0.27.0](https://github.com/gstn-caruso/tabpro/compare/v0.26.0...v0.27.0) (2026-09-06)
 
 ### Features
