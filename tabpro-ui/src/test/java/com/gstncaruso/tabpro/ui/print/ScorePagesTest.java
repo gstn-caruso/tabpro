@@ -90,18 +90,18 @@ class ScorePagesTest {
         ScorePrinting.ScorePages paginas = new ScorePrinting.ScorePages(score, A4, soloDeLaDosALaTres);
         PageFormat papel = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
 
-        BufferedImage primeraQueSale = blankPage(papel);
-        BufferedImage segundaQueSale = blankPage(papel);
-        assertEquals(Printable.PAGE_EXISTS, imprimir(paginas, primeraQueSale, papel, 0));
-        assertEquals(Printable.PAGE_EXISTS, imprimir(paginas, segundaQueSale, papel, 1));
-        assertEquals(Printable.NO_SUCH_PAGE, imprimir(paginas, blankPage(papel), papel, 2),
+        LienzoDePrueba primeraQueSale = new LienzoDePrueba();
+        LienzoDePrueba segundaQueSale = new LienzoDePrueba();
+        assertEquals(Printable.PAGE_EXISTS, paginas.print(primeraQueSale, papel, 0));
+        assertEquals(Printable.PAGE_EXISTS, paginas.print(segundaQueSale, papel, 1));
+        assertEquals(Printable.NO_SUCH_PAGE, imprimirEnLienzo(paginas, papel, 2),
                 "el rango pide dos hojas nada mas");
 
-        assertEquals(
-                pixelsOf(ScoreSheets.renderPage(score, Zoom.whole(), A4, 1)), pixelsOf(primeraQueSale),
+        assertTrue(
+                lienzoDeLaHojaReal(score, 1).coincideCon(primeraQueSale),
                 "lo primero que imprime el rango 2-3 tiene que ser la hoja 2 real de la partitura, no la 1");
-        assertEquals(
-                pixelsOf(ScoreSheets.renderPage(score, Zoom.whole(), A4, 2)), pixelsOf(segundaQueSale),
+        assertTrue(
+                lienzoDeLaHojaReal(score, 2).coincideCon(segundaQueSale),
                 "lo segundo que imprime el rango 2-3 tiene que ser la hoja 3 real de la partitura");
     }
 
@@ -174,6 +174,12 @@ class ScorePagesTest {
     private static LienzoDePrueba lienzoDeLaHojaImpresa(ScorePrinting.ScorePages paginas, PageFormat format, int pageIndex) {
         LienzoDePrueba lienzo = new LienzoDePrueba();
         paginas.print(lienzo, format, pageIndex);
+        return lienzo;
+    }
+
+    private static LienzoDePrueba lienzoDeLaHojaReal(Score score, int page) {
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+        ScoreSheets.paintPageOn(lienzo, score, Zoom.whole(), A4, page);
         return lienzo;
     }
 
