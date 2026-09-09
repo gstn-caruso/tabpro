@@ -182,10 +182,11 @@ class PageScorePainterTest {
                 PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, 100,
                 onlyTheTitleSaying("Cancionero de la casa"), PageBanner.footer());
 
-        BufferedImage one = render(Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
-        BufferedImage another = render(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
+        LienzoDePrueba one = renderConLienzo(Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
+        LienzoDePrueba another = renderConLienzo(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
 
-        assertTrue(sameSheet(one, another), "el encabezado es el texto configurado, no el titulo de la partitura");
+        assertTrue(one.coincideEnRegionCon(another, headerRegionOf(fixedHeading)),
+                "el encabezado es el texto configurado, no el titulo de la partitura");
     }
 
     /**
