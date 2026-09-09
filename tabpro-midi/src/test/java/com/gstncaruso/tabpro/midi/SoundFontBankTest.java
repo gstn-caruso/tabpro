@@ -21,6 +21,7 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Synthesizer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -182,6 +183,7 @@ class SoundFontBankTest {
     }
 
     /** Lo mismo, pero con un banco de verdad puesto: tampoco ahi puede abrir una linea real. */
+    @Tag("integracion")
     @Test
     void freshSynthesizerNeverOpensARealTimeLineWhenLoadingARealBank() throws Exception {
         Path real = firstInstalledOrSkip();
@@ -213,6 +215,7 @@ class SoundFontBankTest {
 
     // ---- con un banco real instalado: se saltea sola si la maquina no tiene ninguno ----
 
+    @Tag("integracion")
     @Test
     void aRealFileLoadsIndependentlyOnEachPortItIsAskedFor() {
         Path real = firstInstalledOrSkip();
@@ -225,6 +228,7 @@ class SoundFontBankTest {
         assertEquals("Sonando con " + real.getFileName(), bank.status());
     }
 
+    @Tag("integracion")
     @Test
     void toggleTurnsOffEveryOpenPortAtOnce() {
         Path real = firstInstalledOrSkip();
