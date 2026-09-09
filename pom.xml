@@ -80,6 +80,13 @@
             -->
             <argLine>-Djava.awt.headless=true --add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED</argLine>
             <excludedGroups>${tests.excluded.groups}</excludedGroups>
+            <properties>
+              <configurationParameters>
+                junit.jupiter.execution.parallel.enabled=true
+                junit.jupiter.execution.parallel.mode.default=concurrent
+                junit.jupiter.execution.parallel.mode.classes.default=concurrent
+              </configurationParameters>
+            </properties>
           </configuration>
         </plugin>
       </plugins>
