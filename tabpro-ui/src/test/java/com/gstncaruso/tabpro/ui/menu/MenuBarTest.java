@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -72,11 +73,15 @@ class MenuBarTest {
             recolectar(bar.getMenu(i), enElMenu);
         }
 
-        commands.all().forEach((nombre, comando) -> {
-            if (comando.accelerator() != null) {
-                assertTrue(enElMenu.contains(comando), "el atajo de " + nombre + " no cuelga de ningun menu");
-            }
-        });
+        long conAcelerador = commands.all().values().stream().filter(c -> c.accelerator() != null).count();
+        List<String> sueltos = commands.all().entrySet().stream()
+                .filter(entrada -> entrada.getValue().accelerator() != null)
+                .filter(entrada -> !enElMenu.contains(entrada.getValue()))
+                .map(Map.Entry::getKey)
+                .toList();
+
+        assertTrue(conAcelerador > 0, "ningun comando tiene acelerador: no habria nada que verificar");
+        assertEquals(List.of(), sueltos, "hay atajos que no cuelgan de ningun menu");
     }
 
     private void recolectar(JMenu menu, Set<Command> encontrados) {
