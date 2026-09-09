@@ -29,6 +29,7 @@ import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -192,9 +193,10 @@ class PageScorePainterTest {
      */
     @Test
     void theParameterChangeMarkIsRedOnPaperJustLikeOnScreen() {
-        BufferedImage music = musicOf(render(scoreWithAParameterChange(), PageSetup.defaults()));
+        LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
 
-        assertTrue(paints(music, ScoreColors.PARAMETER_CHANGE), "el cambio de parametro se anuncia en rojo");
+        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.PARAMETER_CHANGE, musicRegionOf(PageSetup.defaults())),
+                "el cambio de parametro se anuncia en rojo");
     }
 
     /**
@@ -327,6 +329,18 @@ class PageScorePainterTest {
             }
         }
         return banner;
+    }
+
+    private static LienzoDePrueba renderConLienzo(Score score, PageSetup setup) {
+        ScoreViewport viewport = pageViewport(setup);
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+        PageScorePainter.paint(lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
+        return lienzo;
+    }
+
+    private static Rectangle musicRegionOf(PageSetup setup) {
+        PageMetrics paper = PageMetrics.of(setup);
+        return new Rectangle(paper.contentLeft(), paper.contentTop(), paper.contentWidth(), paper.contentHeight());
     }
 
     private static BufferedImage render(Score score, PageSetup setup) {
