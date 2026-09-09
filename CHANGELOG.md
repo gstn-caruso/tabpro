@@ -1,3 +1,9 @@
+## [0.28.0](https://github.com/gstn-caruso/tabpro/compare/v0.27.1...v0.28.0) (2026-09-09)
+
+### Features
+
+* la grilla se alinea con las filas del mixer y marca el compás del cursor ([#101](https://github.com/gstn-caruso/tabpro/issues/101)) ([1b43f5d](https://github.com/gstn-caruso/tabpro/commit/1b43f5d04278eebc51eb2446a3834f138574c4ec))
+
 ## [0.27.1](https://github.com/gstn-caruso/tabpro/compare/v0.27.0...v0.27.1) (2026-09-09)
 
 ### Bug Fixes
