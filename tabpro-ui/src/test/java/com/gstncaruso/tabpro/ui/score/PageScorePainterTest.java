@@ -221,9 +221,10 @@ class PageScorePainterTest {
      */
     @Test
     void theEditingCursorIsTheSameRedOnPaperAsOnScreen() {
-        BufferedImage music = musicOf(render(scoreWithAParameterChange(), PageSetup.defaults()));
+        LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
 
-        assertTrue(paints(music, ScoreColors.CURSOR), "el cursor de edicion tiene que verse rojo en la hoja");
+        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.CURSOR, musicRegionOf(PageSetup.defaults())),
+                "el cursor de edicion tiene que verse rojo en la hoja");
     }
 
     /**
