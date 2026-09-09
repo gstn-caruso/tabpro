@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 class ChordEditorModelTest {
 
-    private final Preferences scratch = Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName());
+    private final Preferences scratch = Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
     private final FingeringMemory fingeringMemory = new FingeringMemory(scratch);
     private final ChordEditorModel model = new ChordEditorModel(Tuning.standard(), true, fingeringMemory);
 
