@@ -13,6 +13,7 @@ import java.util.Optional;
 import javax.sound.midi.MidiUnavailableException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -36,7 +37,7 @@ class SoundFontSynthesizerTest {
 
     @Test
     void withoutAnyFileItStaysOnTheInternalSynthesizer() {
-        bank = open(Optional.empty());
+        bank = openWithFake(Optional.empty());
 
         assertFalse(bank.active());
         assertTrue(bank.file().isEmpty());
@@ -47,7 +48,7 @@ class SoundFontSynthesizerTest {
         Path bogus = tempDir.resolve("invalido.sf2");
         Files.writeString(bogus, "esto no es un banco SoundFont valido");
 
-        bank = open(Optional.of(bogus));
+        bank = openWithFake(Optional.of(bogus));
 
         assertFalse(bank.active());
         assertTrue(bank.file().isEmpty(), "un banco que no cargo no puede quedar activo");
@@ -56,20 +57,21 @@ class SoundFontSynthesizerTest {
 
     @Test
     void aMissingFileDegradesToTheInternalSynthesizerWithoutThrowing() {
-        bank = open(Optional.of(tempDir.resolve("no-existe.sf2")));
+        bank = openWithFake(Optional.of(tempDir.resolve("no-existe.sf2")));
 
         assertFalse(bank.active());
     }
 
     @Test
     void togglingWithoutAnyBankLoadedDoesNothing() {
-        bank = open(Optional.empty());
+        bank = openWithFake(Optional.empty());
 
         bank.toggle();
 
         assertFalse(bank.active());
     }
 
+    @Tag("integracion")
     @Test
     void aRealSoundFontLoadsAndBecomesActive() {
         Path real = firstInstalledOrSkip();
@@ -80,6 +82,7 @@ class SoundFontSynthesizerTest {
         assertTrue(bank.file().isPresent());
     }
 
+    @Tag("integracion")
     @Test
     void togglingItOffAndOnAgainSwitchesTheLoadedInstruments() {
         Path real = firstInstalledOrSkip();
@@ -108,6 +111,14 @@ class SoundFontSynthesizerTest {
             return SoundFontSynthesizer.open(file);
         } catch (MidiUnavailableException e) {
             Assumptions.assumeTrue(false, "sin sintetizador MIDI disponible en esta maquina");
+            throw new AssertionError(e);
+        }
+    }
+
+    private SoundFontSynthesizer openWithFake(Optional<Path> file) {
+        try {
+            return SoundFontSynthesizer.open(file, FakeSynthesizer::new);
+        } catch (MidiUnavailableException e) {
             throw new AssertionError(e);
         }
     }

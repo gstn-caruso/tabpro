@@ -52,7 +52,7 @@ class MidiPlayerTest {
             Assumptions.assumeTrue(false, "sin sequencer MIDI");
             return;
         }
-        player = new MidiPlayer(sequencer);
+        player = new MidiPlayer(sequencer, port -> silentReceiver(), MidiPlayerTest::unconnectedSequencer);
     }
 
     @AfterEach
@@ -315,8 +315,8 @@ class MidiPlayerTest {
      */
     @Test
     void withoutAnySoundFontBothPortsStillPlayThroughTheirOwnInternalSynth() {
-        SoundFontBank bank = new SoundFontBank(Optional.empty());
-        MidiPlayer withBank = new MidiPlayer(sequencer, bank::receiverForPort);
+        SoundFontBank bank = new SoundFontBank(Optional.empty(), FakeSynthesizer::new);
+        MidiPlayer withBank = new MidiPlayer(sequencer, bank::receiverForPort, MidiPlayerTest::unconnectedSequencer);
         TrackTimeline enElPuertoUno = new TrackTimeline(25, 100, 64, false, 1, List.of(), List.of(), List.of());
         TrackTimeline enElPuertoDos = new TrackTimeline(30, 100, 64, false, 2, List.of(), List.of(), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(enElPuertoUno, enElPuertoDos));
