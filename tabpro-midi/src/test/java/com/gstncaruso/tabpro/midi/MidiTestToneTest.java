@@ -46,7 +46,7 @@ class MidiTestToneTest {
     void doesNotTurnTheNoteOffBeforeItsDuration() {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
 
-        MidiTestTone.play(receiverInto(received), 0, 500);
+        MidiTestTone.play(receiverInto(received), 0, 500, () -> { }, cuandoTodaviaNoPaso());
 
         assertFalse(received.stream().anyMatch(message -> message.getCommand() == ShortMessage.NOTE_OFF));
     }
@@ -67,6 +67,11 @@ class MidiTestToneTest {
         MidiTestTone.play(receiverInto(new CopyOnWriteArrayList<>()), 0, 20, () -> ranAfterward.set(true), alInstante());
 
         assertTrue(ranAfterward.get());
+    }
+
+    /** El retardo cuya espera todavia no termino: la accion diferida no corrio ni va a correr. */
+    private static Retardo cuandoTodaviaNoPaso() {
+        return (millis, accion) -> { };
     }
 
     /** El retardo que no hace esperar a nadie: la accion diferida corre ya mismo. */
