@@ -39,6 +39,7 @@ import javax.sound.midi.ShortMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 class MidiPlayerTest {
@@ -82,6 +83,7 @@ class MidiPlayerTest {
      * El secuenciador tiene que sonar por el mismo receiver que la preview, para que un banco
      * SoundFont cargado ahi se escuche en la partitura entera y no solo al escribir una nota.
      */
+    @Tag("integracion")
     @Test
     void playingTheTimelineReachesTheSameReceiverAsThePreview() throws InterruptedException {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
