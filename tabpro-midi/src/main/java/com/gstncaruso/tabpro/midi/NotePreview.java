@@ -1,10 +1,6 @@
 package com.gstncaruso.tabpro.midi;
 
 import com.gstncaruso.tabpro.core.model.Pitch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
@@ -19,24 +15,37 @@ final class NotePreview implements AutoCloseable {
     private static final long RING_MILLIS = 700;
 
     private final Receiver receiver;
-    private final ScheduledExecutorService releases =
-            Executors.newSingleThreadScheduledExecutor(daemonThreads());
+    private final Retardo retardo;
 
     NotePreview(Receiver receiver) {
+        this(receiver, new RetardoDelReloj());
+    }
+
+    NotePreview(Receiver receiver, Retardo retardo) {
         this.receiver = receiver;
+        this.retardo = retardo;
     }
 
     void play(Pitch pitch, int program) {
         send(ShortMessage.PROGRAM_CHANGE, program, 0);
         send(ShortMessage.NOTE_ON, pitch.midiNumber(), VELOCITY);
-        releases.schedule(
-                () -> send(ShortMessage.NOTE_OFF, pitch.midiNumber(), 0), RING_MILLIS, TimeUnit.MILLISECONDS);
+        retardo.luegoDe(RING_MILLIS, () -> send(ShortMessage.NOTE_OFF, pitch.midiNumber(), 0));
     }
 
     @Override
     public void close() {
-        releases.shutdownNow();
+        if (retardo instanceof AutoCloseable closeable) {
+            cerrar(closeable);
+        }
         receiver.close();
+    }
+
+    private static void cerrar(AutoCloseable closeable) {
+        try {
+            closeable.close();
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private void send(int command, int data1, int data2) {
@@ -45,13 +54,5 @@ final class NotePreview implements AutoCloseable {
         } catch (InvalidMidiDataException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    private static ThreadFactory daemonThreads() {
-        return runnable -> {
-            Thread thread = new Thread(runnable, "midi-note-release");
-            thread.setDaemon(true);
-            return thread;
-        };
     }
 }

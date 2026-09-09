@@ -6,8 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
@@ -45,34 +44,37 @@ class MidiTestToneTest {
     void doesNotTurnTheNoteOffBeforeItsDuration() {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
 
-        MidiTestTone.play(receiverInto(received), 0, 500);
+        MidiTestTone.play(receiverInto(received), 0, 500, () -> { }, cuandoTodaviaNoPaso());
 
         assertFalse(received.stream().anyMatch(message -> message.getCommand() == ShortMessage.NOTE_OFF));
     }
 
     @Test
-    void turnsTheNoteOffOnceItsDurationPasses() throws InterruptedException {
+    void turnsTheNoteOffOnceItsDurationPasses() {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
-        CountDownLatch turnedOff = new CountDownLatch(1);
 
-        MidiTestTone.play(receiverInto(received), 0, 20, turnedOff::countDown);
+        MidiTestTone.play(receiverInto(received), 0, 20, () -> { }, alInstante());
 
-        assertTrue(turnedOff.await(5, TimeUnit.SECONDS));
         assertTrue(received.stream().anyMatch(message -> message.getCommand() == ShortMessage.NOTE_OFF));
     }
 
     @Test
-    void runsTheGivenCallbackOnceTheNoteTurnsOff() throws InterruptedException {
-        java.util.concurrent.atomic.AtomicBoolean ranAfterward = new java.util.concurrent.atomic.AtomicBoolean(false);
-        CountDownLatch afterwardRan = new CountDownLatch(1);
+    void runsTheGivenCallbackOnceTheNoteTurnsOff() {
+        AtomicBoolean ranAfterward = new AtomicBoolean(false);
 
-        MidiTestTone.play(receiverInto(new CopyOnWriteArrayList<>()), 0, 20, () -> {
-            ranAfterward.set(true);
-            afterwardRan.countDown();
-        });
+        MidiTestTone.play(receiverInto(new CopyOnWriteArrayList<>()), 0, 20, () -> ranAfterward.set(true), alInstante());
 
-        assertTrue(afterwardRan.await(5, TimeUnit.SECONDS));
         assertTrue(ranAfterward.get());
+    }
+
+    /** El retardo cuya espera todavia no termino: la accion diferida no corrio ni va a correr. */
+    private static Retardo cuandoTodaviaNoPaso() {
+        return (millis, accion) -> { };
+    }
+
+    /** El retardo que no hace esperar a nadie: la accion diferida corre ya mismo. */
+    private static Retardo alInstante() {
+        return (millis, accion) -> accion.run();
     }
 
     private static Receiver receiverInto(List<ShortMessage> received) {

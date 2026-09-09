@@ -28,6 +28,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -37,6 +39,7 @@ import javax.sound.midi.ShortMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 class MidiPlayerTest {
@@ -80,6 +83,7 @@ class MidiPlayerTest {
      * El secuenciador tiene que sonar por el mismo receiver que la preview, para que un banco
      * SoundFont cargado ahi se escuche en la partitura entera y no solo al escribir una nota.
      */
+    @Tag("integracion")
     @Test
     void playingTheTimelineReachesTheSameReceiverAsThePreview() throws InterruptedException {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
@@ -123,14 +127,12 @@ class MidiPlayerTest {
     }
 
     @Test
-    void notifiesBeatsInOrder() throws InterruptedException {
+    void notifiesBeatsInOrder() {
         List<BeatPosition> received = new CopyOnWriteArrayList<>();
-        CountDownLatch latch = new CountDownLatch(4);
-        player.play(shortTimeline(), new PlaybackListener() {
+        player.listenTo(new PlaybackListener() {
             @Override
             public void beatStarted(BeatPosition position) {
                 received.add(position);
-                latch.countDown();
             }
 
             @Override
@@ -138,7 +140,8 @@ class MidiPlayerTest {
             }
         });
 
-        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        metaMessagesOf(shortTimeline()).forEach(player::notifyListenerOf);
+
         assertEquals(List.of(
                 new BeatPosition(0, 0, 0),
                 new BeatPosition(0, 0, 1),
@@ -147,22 +150,25 @@ class MidiPlayerTest {
     }
 
     @Test
-    void notifiesWhenTheSequenceEnds() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        player.play(shortTimeline(), new PlaybackListener() {
+    void notifiesWhenTheSequenceEnds() throws InvalidMidiDataException {
+        boolean[] finished = {false};
+        player.listenTo(new PlaybackListener() {
             @Override
             public void beatStarted(BeatPosition position) {
             }
 
             @Override
             public void playbackFinished() {
-                latch.countDown();
+                finished[0] = true;
             }
         });
 
-        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        player.notifyListenerOf(new MetaMessage(MidiPlayer.END_OF_TRACK_META_TYPE, new byte[0], 0));
+
+        assertTrue(finished[0]);
     }
 
+    @Tag("integracion")
     @Test
     void restartsFromTheBeginningOnASecondPlay() throws InterruptedException {
         CountDownLatch finishedLatch = new CountDownLatch(1);
@@ -203,6 +209,7 @@ class MidiPlayerTest {
      * tempo tardaria cuatro segundos en terminar sola; si el salto funciona, la nota del segundo
      * compas se escucha mucho antes de eso.
      */
+    @Tag("integracion")
     @Test
     void afterSeekingWhatSoundsIsTheRequestedMeasure() throws Exception {
         long measureTicks = 4L * Duration.TICKS_PER_QUARTER;
@@ -346,6 +353,17 @@ class MidiPlayerTest {
 
     private int programOf(javax.sound.midi.Track track) {
         return ((ShortMessage) track.get(0).getMessage()).getData1();
+    }
+
+    private static List<MetaMessage> metaMessagesOf(Timeline timeline) {
+        javax.sound.midi.Sequence sequence = MidiSequences.fromTimeline(timeline);
+        return java.util.Arrays.stream(sequence.getTracks())
+                .flatMap(track -> java.util.stream.IntStream.range(0, track.size()).mapToObj(track::get))
+                .sorted(java.util.Comparator.comparingLong(javax.sound.midi.MidiEvent::getTick))
+                .map(javax.sound.midi.MidiEvent::getMessage)
+                .filter(message -> message instanceof MetaMessage)
+                .map(message -> (MetaMessage) message)
+                .toList();
     }
 
     private static Receiver receiverInto(List<ShortMessage> received) {
