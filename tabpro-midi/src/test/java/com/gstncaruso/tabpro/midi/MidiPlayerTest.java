@@ -315,7 +315,7 @@ class MidiPlayerTest {
      */
     @Test
     void withoutAnySoundFontBothPortsStillPlayThroughTheirOwnInternalSynth() {
-        SoundFontBank bank = new SoundFontBank(Optional.empty());
+        SoundFontBank bank = new SoundFontBank(Optional.empty(), FakeSynthesizer::new);
         MidiPlayer withBank = new MidiPlayer(sequencer, bank::receiverForPort);
         TrackTimeline enElPuertoUno = new TrackTimeline(25, 100, 64, false, 1, List.of(), List.of(), List.of());
         TrackTimeline enElPuertoDos = new TrackTimeline(30, 100, 64, false, 2, List.of(), List.of(), List.of());
