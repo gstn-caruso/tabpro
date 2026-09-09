@@ -1,3 +1,9 @@
+## [0.29.0](https://github.com/gstn-caruso/tabpro/compare/v0.28.1...v0.29.0) (2026-09-09)
+
+### Features
+
+* la línea del cursor cruza todas las pistas del sistema ([#106](https://github.com/gstn-caruso/tabpro/issues/106)) ([1cee48a](https://github.com/gstn-caruso/tabpro/commit/1cee48a25450a2bc8ec8b1b551963d314f5eaef6))
+
 ## [0.28.1](https://github.com/gstn-caruso/tabpro/compare/v0.28.0...v0.28.1) (2026-09-09)
 
 ### Bug Fixes
