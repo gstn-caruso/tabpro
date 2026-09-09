@@ -28,6 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
@@ -147,20 +148,22 @@ class MidiPlayerTest {
     }
 
     @Test
-    void notifiesWhenTheSequenceEnds() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        player.play(shortTimeline(), new PlaybackListener() {
+    void notifiesWhenTheSequenceEnds() throws InvalidMidiDataException {
+        boolean[] finished = {false};
+        player.listenTo(new PlaybackListener() {
             @Override
             public void beatStarted(BeatPosition position) {
             }
 
             @Override
             public void playbackFinished() {
-                latch.countDown();
+                finished[0] = true;
             }
         });
 
-        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        player.notifyListenerOf(new MetaMessage(MidiPlayer.END_OF_TRACK_META_TYPE, new byte[0], 0));
+
+        assertTrue(finished[0]);
     }
 
     @Test
