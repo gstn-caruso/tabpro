@@ -1,3 +1,9 @@
+## [0.28.1](https://github.com/gstn-caruso/tabpro/compare/v0.28.0...v0.28.1) (2026-09-09)
+
+### Bug Fixes
+
+* los tests dejan de acumular basura en /tmp y en las preferencias ([#102](https://github.com/gstn-caruso/tabpro/issues/102)) ([d5bf782](https://github.com/gstn-caruso/tabpro/commit/d5bf78292acf0fb3fc173d5bf605790121196171))
+
 ## [0.28.0](https://github.com/gstn-caruso/tabpro/compare/v0.27.1...v0.28.0) (2026-09-09)
 
 ### Features
