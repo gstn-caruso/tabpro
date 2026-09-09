@@ -28,20 +28,16 @@ public final class MidiTestTone {
 
     /** Lo mismo, pero avisando cuando termina -por ejemplo, para cerrar el dispositivo de prueba. */
     public static void play(Receiver receiver, int program, long durationMillis, Runnable afterward) {
+        play(receiver, program, durationMillis, afterward, new RetardoDelReloj());
+    }
+
+    static void play(Receiver receiver, int program, long durationMillis, Runnable afterward, Retardo retardo) {
         send(receiver, ShortMessage.PROGRAM_CHANGE, program, 0);
         send(receiver, ShortMessage.NOTE_ON, TEST_PITCH, TEST_VELOCITY);
-        Thread noteOff = new Thread(() -> {
-            try {
-                Thread.sleep(durationMillis);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
-            }
+        retardo.luegoDe(durationMillis, () -> {
             send(receiver, ShortMessage.NOTE_OFF, TEST_PITCH, 0);
             afterward.run();
         });
-        noteOff.setDaemon(true);
-        noteOff.start();
     }
 
     private static void send(Receiver receiver, int command, int data1, int data2) {
