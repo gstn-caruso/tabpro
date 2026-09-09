@@ -28,6 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -123,14 +124,12 @@ class MidiPlayerTest {
     }
 
     @Test
-    void notifiesBeatsInOrder() throws InterruptedException {
+    void notifiesBeatsInOrder() {
         List<BeatPosition> received = new CopyOnWriteArrayList<>();
-        CountDownLatch latch = new CountDownLatch(4);
-        player.play(shortTimeline(), new PlaybackListener() {
+        player.listenTo(new PlaybackListener() {
             @Override
             public void beatStarted(BeatPosition position) {
                 received.add(position);
-                latch.countDown();
             }
 
             @Override
@@ -138,7 +137,8 @@ class MidiPlayerTest {
             }
         });
 
-        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        metaMessagesOf(shortTimeline()).forEach(player::notifyListenerOf);
+
         assertEquals(List.of(
                 new BeatPosition(0, 0, 0),
                 new BeatPosition(0, 0, 1),
@@ -346,6 +346,17 @@ class MidiPlayerTest {
 
     private int programOf(javax.sound.midi.Track track) {
         return ((ShortMessage) track.get(0).getMessage()).getData1();
+    }
+
+    private static List<MetaMessage> metaMessagesOf(Timeline timeline) {
+        javax.sound.midi.Sequence sequence = MidiSequences.fromTimeline(timeline);
+        return java.util.Arrays.stream(sequence.getTracks())
+                .flatMap(track -> java.util.stream.IntStream.range(0, track.size()).mapToObj(track::get))
+                .sorted(java.util.Comparator.comparingLong(javax.sound.midi.MidiEvent::getTick))
+                .map(javax.sound.midi.MidiEvent::getMessage)
+                .filter(message -> message instanceof MetaMessage)
+                .map(message -> (MetaMessage) message)
+                .toList();
     }
 
     private static Receiver receiverInto(List<ShortMessage> received) {
