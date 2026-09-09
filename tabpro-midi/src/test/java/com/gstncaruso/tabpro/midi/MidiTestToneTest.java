@@ -51,13 +51,11 @@ class MidiTestToneTest {
     }
 
     @Test
-    void turnsTheNoteOffOnceItsDurationPasses() throws InterruptedException {
+    void turnsTheNoteOffOnceItsDurationPasses() {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
-        CountDownLatch turnedOff = new CountDownLatch(1);
 
-        MidiTestTone.play(receiverInto(received), 0, 20, turnedOff::countDown);
+        MidiTestTone.play(receiverInto(received), 0, 20, () -> { }, alInstante());
 
-        assertTrue(turnedOff.await(5, TimeUnit.SECONDS));
         assertTrue(received.stream().anyMatch(message -> message.getCommand() == ShortMessage.NOTE_OFF));
     }
 
@@ -73,6 +71,11 @@ class MidiTestToneTest {
 
         assertTrue(afterwardRan.await(5, TimeUnit.SECONDS));
         assertTrue(ranAfterward.get());
+    }
+
+    /** El retardo que no hace esperar a nadie: la accion diferida corre ya mismo. */
+    private static Retardo alInstante() {
+        return (millis, accion) -> accion.run();
     }
 
     private static Receiver receiverInto(List<ShortMessage> received) {
