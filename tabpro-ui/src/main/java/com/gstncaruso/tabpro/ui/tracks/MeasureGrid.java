@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
+import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
@@ -19,8 +20,9 @@ import java.util.OptionalInt;
 import javax.swing.JComponent;
 
 /**
- * Un cuadradito por compas y por pista: marcado si esa pista toca algo ahi, y toda la columna
- * en rojo mientras ese compas suena.
+ * Un cuadradito por compas y por pista: marcado si esa pista toca algo ahi, rodeado de un borde
+ * claro si es el compas donde esta parada la edicion, y toda la columna en rojo mientras ese
+ * compas suena.
  */
 public final class MeasureGrid extends JComponent {
 
@@ -102,6 +104,7 @@ public final class MeasureGrid extends JComponent {
         for (int track = 0; track < score.trackCount(); track++) {
             paintRow(g, score.track(track), track, track == editor.cursor().track());
         }
+        outlineCursorCell(g, score);
         playingMeasure.ifPresent(measure -> outlinePlayingColumn(g, score, measure));
     }
 
@@ -111,6 +114,18 @@ public final class MeasureGrid extends JComponent {
         }
         g.setColor(PLAYING_TINT);
         g.fillRect(measure * CELL_WIDTH, 0, CELL_WIDTH, getHeight());
+    }
+
+    /** Donde esta parada la edicion: el compas del cursor, en la fila de su pista. */
+    private void outlineCursorCell(Graphics2D g, Score score) {
+        Cursor cursor = editor.cursor();
+        if (isOutside(score, cursor.measure())) {
+            return;
+        }
+        Rectangle cell = cellBounds(cursor.track(), cursor.measure());
+        g.setColor(ScoreColors.INK);
+        g.setStroke(new BasicStroke(1));
+        g.drawRect(cell.x + 1, cell.y + 1, cell.width - 3, cell.height - 3);
     }
 
     /** El borde va despues de las celdas, para que marque la columna sin taparla. */
