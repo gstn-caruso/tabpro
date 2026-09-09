@@ -49,7 +49,7 @@ class SoundFontBankTest {
 
     @Test
     void withoutAnyFileEveryPortStillSoundsWithTheInternalSynth() {
-        bank = new SoundFontBank(Optional.empty());
+        bank = new SoundFontBank(Optional.empty(), FakeSynthesizer::new);
 
         Receiver receiver = bank.receiverForPort(1);
 
@@ -59,7 +59,7 @@ class SoundFontBankTest {
 
     @Test
     void withoutAnyFileItIsNotActive() {
-        bank = new SoundFontBank(Optional.empty());
+        bank = new SoundFontBank(Optional.empty(), FakeSynthesizer::new);
 
         assertFalse(bank.active());
         assertTrue(bank.file().isEmpty());
@@ -67,14 +67,14 @@ class SoundFontBankTest {
 
     @Test
     void withoutAnyFileTheStatusSaysSo() {
-        bank = new SoundFontBank(Optional.empty());
+        bank = new SoundFontBank(Optional.empty(), FakeSynthesizer::new);
 
         assertEquals("Sin ningún banco de sonido: suena el sintetizador interno del JDK", bank.status());
     }
 
     @Test
     void withoutAnyFileTogglingDoesNothing() {
-        bank = new SoundFontBank(Optional.empty());
+        bank = new SoundFontBank(Optional.empty(), FakeSynthesizer::new);
 
         bank.toggle();
 
@@ -83,7 +83,7 @@ class SoundFontBankTest {
 
     @Test
     void withoutAnyFileEveryPortWorksIndependently() {
-        bank = new SoundFontBank(Optional.empty());
+        bank = new SoundFontBank(Optional.empty(), FakeSynthesizer::new);
 
         Receiver port1 = bank.receiverForPort(1);
         Receiver port2 = bank.receiverForPort(2);
@@ -100,7 +100,7 @@ class SoundFontBankTest {
 
     @Test
     void withoutAnyFileAFreshSynthesizerForWaveExportStillWorks() throws Exception {
-        bank = new SoundFontBank(Optional.empty());
+        bank = new SoundFontBank(Optional.empty(), FakeSynthesizer::new);
 
         Synthesizer synth = bank.freshSynthesizer();
 
@@ -113,7 +113,7 @@ class SoundFontBankTest {
     void anInvalidFileDegradesToTheInternalSynthOnEveryPortWithoutBreakingAnything() throws IOException {
         Path bogus = tempDir.resolve("invalido.sf2");
         Files.writeString(bogus, "esto no es un banco SoundFont valido");
-        bank = new SoundFontBank(Optional.of(bogus));
+        bank = new SoundFontBank(Optional.of(bogus), FakeSynthesizer::new);
 
         Receiver port1 = bank.receiverForPort(1);
         Receiver port2 = bank.receiverForPort(2);
