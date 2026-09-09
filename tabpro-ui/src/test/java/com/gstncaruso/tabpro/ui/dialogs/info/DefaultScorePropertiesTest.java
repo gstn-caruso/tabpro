@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 class DefaultScorePropertiesTest {
 
-    private final Preferences scratch = Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName());
+    private final Preferences scratch = Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
     private final DefaultScoreProperties stored = new DefaultScoreProperties(scratch);
 
     @AfterEach

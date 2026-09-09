@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
  */
 class MidiSetupPreferencesTest {
 
-    private final Preferences scratch = Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName());
+    private final Preferences scratch = Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
     private final MidiSetupPreferences preferences = new MidiSetupPreferences(scratch);
 
     @AfterEach
