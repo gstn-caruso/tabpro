@@ -168,6 +168,7 @@ class MidiPlayerTest {
         assertTrue(finished[0]);
     }
 
+    @Tag("integracion")
     @Test
     void restartsFromTheBeginningOnASecondPlay() throws InterruptedException {
         CountDownLatch finishedLatch = new CountDownLatch(1);
