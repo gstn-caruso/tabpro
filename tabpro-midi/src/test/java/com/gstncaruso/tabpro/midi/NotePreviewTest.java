@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
@@ -50,13 +48,12 @@ class NotePreviewTest {
     }
 
     @Test
-    void releasesTheNoteOnItsOwn() throws InterruptedException {
+    void releasesTheNoteOnItsOwn() {
         RecordingReceiver receiver = new RecordingReceiver();
-        NotePreview preview = new NotePreview(receiver);
+        NotePreview preview = new NotePreview(receiver, (millis, accion) -> accion.run());
 
         preview.play(new Pitch(60), 25);
 
-        assertTrue(receiver.awaitNoteOff(5, TimeUnit.SECONDS), "la nota se quedo sonando para siempre");
         assertEquals(60, receiver.firstOf(ShortMessage.NOTE_OFF).getData1());
 
         preview.close();
@@ -65,23 +62,14 @@ class NotePreviewTest {
     private static final class RecordingReceiver implements Receiver {
 
         private final List<ShortMessage> received = new CopyOnWriteArrayList<>();
-        private final CountDownLatch noteOff = new CountDownLatch(1);
 
         @Override
         public void send(MidiMessage message, long timeStamp) {
-            ShortMessage shortMessage = (ShortMessage) message;
-            received.add(shortMessage);
-            if (shortMessage.getCommand() == ShortMessage.NOTE_OFF) {
-                noteOff.countDown();
-            }
+            received.add((ShortMessage) message);
         }
 
         @Override
         public void close() {
-        }
-
-        boolean awaitNoteOff(long timeout, TimeUnit unit) throws InterruptedException {
-            return noteOff.await(timeout, unit);
         }
 
         List<Integer> firstTwoCommands() {
