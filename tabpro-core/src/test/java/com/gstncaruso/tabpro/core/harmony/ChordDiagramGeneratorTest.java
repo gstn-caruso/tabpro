@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -37,15 +38,26 @@ class ChordDiagramGeneratorTest {
         Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
         List<ChordDiagram> diagramas = ChordDiagramGenerator.generate(doMayor, Tuning.standard());
 
+        List<Integer> queSuenan = semitonosQueSuenan(diagramas);
+
+        assertFalse(queSuenan.isEmpty(), "ningun diagrama toca una cuerda: no habria nada que verificar");
+        assertEquals(
+                List.of(),
+                queSuenan.stream().filter(semitono -> !doMayor.formulaSemitones().contains(semitono)).toList(),
+                "hay cuerdas sonando notas ajenas al acorde");
+    }
+
+    private static List<Integer> semitonosQueSuenan(List<ChordDiagram> diagramas) {
+        List<Integer> semitonos = new ArrayList<>();
         for (ChordDiagram diagrama : diagramas) {
             for (int cuerda = 1; cuerda <= diagrama.stringCount(); cuerda++) {
                 if (diagrama.isPlayed(cuerda)) {
-                    int semitono =
-                            (Tuning.standard().pitchOfString(cuerda).midiNumber() + diagrama.fretOfString(cuerda)) % 12;
-                    assertTrue(doMayor.formulaSemitones().contains(semitono));
+                    semitonos.add(
+                            (Tuning.standard().pitchOfString(cuerda).midiNumber() + diagrama.fretOfString(cuerda)) % 12);
                 }
             }
         }
+        return semitonos;
     }
 
     @Test
