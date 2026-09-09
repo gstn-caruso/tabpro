@@ -171,7 +171,8 @@ class PageScorePainterTest {
                 PageBanner.header().with(PageElement.TITLE, false, "[%title]"), PageBanner.footer());
 
         assertFalse(
-                sameSheet(render(score, showingTheTitle), render(score, hidingTheTitle)),
+                renderConLienzo(score, showingTheTitle).coincideEnRegionCon(
+                        renderConLienzo(score, hidingTheTitle), headerRegionOf(showingTheTitle)),
                 "destildar el titulo tiene que sacarlo de la hoja");
     }
 
@@ -347,6 +348,11 @@ class PageScorePainterTest {
     private static Rectangle musicRegionOf(PageSetup setup) {
         PageMetrics paper = PageMetrics.of(setup);
         return new Rectangle(paper.contentLeft(), paper.contentTop(), paper.contentWidth(), paper.contentHeight());
+    }
+
+    private static Rectangle headerRegionOf(PageSetup setup) {
+        PageMetrics paper = PageMetrics.of(setup);
+        return new Rectangle(0, 0, paper.pageWidth(), paper.contentTop());
     }
 
     private static BufferedImage render(Score score, PageSetup setup) {

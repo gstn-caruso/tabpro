@@ -68,6 +68,15 @@ public final class LienzoDePrueba extends Graphics2D {
         return ordenes.stream().anyMatch(orden -> orden.color().equals(color) && orden.tocaA(region));
     }
 
+    /** Si dentro de esa region se dibujo exactamente lo mismo -mismo orden, forma, color y texto- que en otro lienzo. */
+    public boolean coincideEnRegionCon(LienzoDePrueba otro, Rectangle region) {
+        return ordenesEnRegion(region).equals(otro.ordenesEnRegion(region));
+    }
+
+    private List<OrdenDeDibujo> ordenesEnRegion(Rectangle region) {
+        return ordenes.stream().filter(orden -> orden.tocaA(region)).toList();
+    }
+
     private void anotar(Rectangle2D limitesLocales, String texto) {
         Rectangle2D absolutos = delegado.getTransform().createTransformedShape(limitesLocales).getBounds2D();
         ordenes.add(new OrdenDeDibujo(absolutos.getX(), absolutos.getY(), absolutos.getWidth(), absolutos.getHeight(),
