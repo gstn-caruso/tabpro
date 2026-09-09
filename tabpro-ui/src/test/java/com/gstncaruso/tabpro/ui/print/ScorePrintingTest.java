@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -30,6 +31,7 @@ class ScorePrintingTest {
 
     private static final PageSetup A4 = PageSetup.defaults();
 
+    @Tag("integracion")
     @Test
     void exportaUnBmpDeVerdadEnModoPagina(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(4);
@@ -62,6 +64,7 @@ class ScorePrintingTest {
         assertFalse(Files.exists(path), "no tiene que quedar un archivo a medio escribir");
     }
 
+    @Tag("integracion")
     @Test
     void pngFueraDelModoPaginaSeExportaSinProblema(@TempDir Path tempDir) {
         Score score = scoreWithMeasures(4);
@@ -72,6 +75,7 @@ class ScorePrintingTest {
         assertTrue(Files.exists(path), "la restriccion es solo para bmp");
     }
 
+    @Tag("integracion")
     @Test
     void exportaLaImagenConElZoomQueTieneLaVentana(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(4);
@@ -90,6 +94,7 @@ class ScorePrintingTest {
                 "la misma partitura al 100% y al 200% no puede dar el mismo alto en pixeles");
     }
 
+    @Tag("integracion")
     @Test
     void exportaLaImagenConElModoPergaminoSinSaltosDePagina(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(16);

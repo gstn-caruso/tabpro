@@ -29,6 +29,7 @@ import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -170,7 +171,8 @@ class PageScorePainterTest {
                 PageBanner.header().with(PageElement.TITLE, false, "[%title]"), PageBanner.footer());
 
         assertFalse(
-                sameSheet(render(score, showingTheTitle), render(score, hidingTheTitle)),
+                renderConLienzo(score, showingTheTitle).coincideEnRegionCon(
+                        renderConLienzo(score, hidingTheTitle), headerRegionOf(showingTheTitle)),
                 "destildar el titulo tiene que sacarlo de la hoja");
     }
 
@@ -180,10 +182,11 @@ class PageScorePainterTest {
                 PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, 100,
                 onlyTheTitleSaying("Cancionero de la casa"), PageBanner.footer());
 
-        BufferedImage one = render(Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
-        BufferedImage another = render(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
+        LienzoDePrueba one = renderConLienzo(Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
+        LienzoDePrueba another = renderConLienzo(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
 
-        assertTrue(sameSheet(one, another), "el encabezado es el texto configurado, no el titulo de la partitura");
+        assertTrue(one.coincideEnRegionCon(another, headerRegionOf(fixedHeading)),
+                "el encabezado es el texto configurado, no el titulo de la partitura");
     }
 
     /**
@@ -192,9 +195,10 @@ class PageScorePainterTest {
      */
     @Test
     void theParameterChangeMarkIsRedOnPaperJustLikeOnScreen() {
-        BufferedImage music = musicOf(render(scoreWithAParameterChange(), PageSetup.defaults()));
+        LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
 
-        assertTrue(paints(music, ScoreColors.PARAMETER_CHANGE), "el cambio de parametro se anuncia en rojo");
+        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.PARAMETER_CHANGE, musicRegionOf(PageSetup.defaults())),
+                "el cambio de parametro se anuncia en rojo");
     }
 
     /**
@@ -204,12 +208,12 @@ class PageScorePainterTest {
      */
     @Test
     void thePlayingLineIsTheSameGreenOnPaperAsOnScreen() {
-        BufferedImage music = musicOf(render(
+        LienzoDePrueba lienzo = renderConLienzo(
                 scoreWithAParameterChange(), PageSetup.defaults(),
-                com.gstncaruso.tabpro.core.playback.Playhead.silent().advancedTo(
-                        new com.gstncaruso.tabpro.core.playback.BeatPosition(0, 0, 0))));
+                Playhead.silent().advancedTo(new com.gstncaruso.tabpro.core.playback.BeatPosition(0, 0, 0)));
 
-        assertTrue(paints(music, ScoreColors.PLAYING), "la linea de reproduccion tiene que verse verde en la hoja");
+        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.PLAYING, musicRegionOf(PageSetup.defaults())),
+                "la linea de reproduccion tiene que verse verde en la hoja");
     }
 
     /**
@@ -219,9 +223,10 @@ class PageScorePainterTest {
      */
     @Test
     void theEditingCursorIsTheSameRedOnPaperAsOnScreen() {
-        BufferedImage music = musicOf(render(scoreWithAParameterChange(), PageSetup.defaults()));
+        LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
 
-        assertTrue(paints(music, ScoreColors.CURSOR), "el cursor de edicion tiene que verse rojo en la hoja");
+        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.CURSOR, musicRegionOf(PageSetup.defaults())),
+                "el cursor de edicion tiene que verse rojo en la hoja");
     }
 
     /**
@@ -230,10 +235,11 @@ class PageScorePainterTest {
      */
     @Test
     void theScoreIsWrittenInDarkInkOnPaper() {
-        BufferedImage music = musicOf(render(scoreWithAParameterChange(), PageSetup.defaults()));
+        LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
+        Rectangle music = musicRegionOf(PageSetup.defaults());
 
-        assertTrue(paints(music, ScoreColors.PAGE_INK), "la partitura se escribe con la tinta de la hoja");
-        assertFalse(paints(music, ScoreColors.INK), "y no con la tinta clara de la pantalla");
+        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.PAGE_INK, music), "la partitura se escribe con la tinta de la hoja");
+        assertFalse(lienzo.dibujaColorEnRegion(ScoreColors.INK, music), "y no con la tinta clara de la pantalla");
     }
 
     /**
@@ -308,17 +314,6 @@ class PageScorePainterTest {
                 new Track("Guitarra", guitar.tuning(), guitar.channel(), List.of(measure))));
     }
 
-    private static boolean paints(BufferedImage sheet, Color color) {
-        for (int y = 0; y < sheet.getHeight(); y++) {
-            for (int x = 0; x < sheet.getWidth(); x++) {
-                if (sheet.getRGB(x, y) == color.getRGB()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private static PageBanner onlyTheTitleSaying(String text) {
         PageBanner banner = PageBanner.header();
         for (PageElement element : PageElement.values()) {
@@ -327,6 +322,27 @@ class PageScorePainterTest {
             }
         }
         return banner;
+    }
+
+    private static LienzoDePrueba renderConLienzo(Score score, PageSetup setup) {
+        return renderConLienzo(score, setup, Playhead.silent());
+    }
+
+    private static LienzoDePrueba renderConLienzo(Score score, PageSetup setup, Playhead playhead) {
+        ScoreViewport viewport = pageViewport(setup);
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+        PageScorePainter.paint(lienzo, score, new Cursor(0, 0, 0, 1), playhead, Optional.empty(), viewport);
+        return lienzo;
+    }
+
+    private static Rectangle musicRegionOf(PageSetup setup) {
+        PageMetrics paper = PageMetrics.of(setup);
+        return new Rectangle(paper.contentLeft(), paper.contentTop(), paper.contentWidth(), paper.contentHeight());
+    }
+
+    private static Rectangle headerRegionOf(PageSetup setup) {
+        PageMetrics paper = PageMetrics.of(setup);
+        return new Rectangle(0, 0, paper.pageWidth(), paper.contentTop());
     }
 
     private static BufferedImage render(Score score, PageSetup setup) {
@@ -382,13 +398,8 @@ class PageScorePainterTest {
     }
 
     private static void paintOn(Score score, ScoreViewport viewport) {
-        Dimension size = PageScorePainter.canvasSize(score, viewport);
-        BufferedImage image = new BufferedImage(
-                Math.max(1, size.width), Math.max(1, size.height), BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = image.createGraphics();
         PageScorePainter.paint(
-                g, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
-        g.dispose();
+                new LienzoDePrueba(), score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
     }
 
     private static Score scoreWithLyricsAndInfo() {

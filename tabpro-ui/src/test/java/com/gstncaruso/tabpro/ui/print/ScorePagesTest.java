@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
+import com.gstncaruso.tabpro.ui.score.LienzoDePrueba;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -45,8 +46,8 @@ class ScorePagesTest {
         ScorePrinting.ScorePages paginas = new ScorePrinting.ScorePages(corta, A4, PrintSettings.everything(total));
         PageFormat papel = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
 
-        assertEquals(Printable.PAGE_EXISTS, imprimir(paginas, blankPage(papel), papel, 0));
-        assertEquals(Printable.NO_SUCH_PAGE, imprimir(paginas, blankPage(papel), papel, 1));
+        assertEquals(Printable.PAGE_EXISTS, imprimirEnLienzo(paginas, papel, 0));
+        assertEquals(Printable.NO_SUCH_PAGE, imprimirEnLienzo(paginas, papel, 1));
     }
 
     @Test
@@ -59,10 +60,10 @@ class ScorePagesTest {
         PageFormat papel = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
 
         for (int i = 0; i < total; i++) {
-            assertEquals(Printable.PAGE_EXISTS, imprimir(paginas, blankPage(papel), papel, i),
+            assertEquals(Printable.PAGE_EXISTS, imprimirEnLienzo(paginas, papel, i),
                     "la hoja " + i + " tiene que existir");
         }
-        assertEquals(Printable.NO_SUCH_PAGE, imprimir(paginas, blankPage(papel), papel, total),
+        assertEquals(Printable.NO_SUCH_PAGE, imprimirEnLienzo(paginas, papel, total),
                 "despues de la ultima hoja no puede haber una pagina mas");
     }
 
@@ -73,12 +74,10 @@ class ScorePagesTest {
         ScorePrinting.ScorePages paginas = new ScorePrinting.ScorePages(larga, A4, PrintSettings.everything(total));
         PageFormat papel = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
 
-        BufferedImage hoja1 = blankPage(papel);
-        BufferedImage hoja2 = blankPage(papel);
-        imprimir(paginas, hoja1, papel, 0);
-        imprimir(paginas, hoja2, papel, 1);
+        LienzoDePrueba hoja1 = lienzoDeLaHojaImpresa(paginas, papel, 0);
+        LienzoDePrueba hoja2 = lienzoDeLaHojaImpresa(paginas, papel, 1);
 
-        assertNotEquals(pixelsOf(hoja1), pixelsOf(hoja2), "la hoja 2 no puede salir igual a la 1");
+        assertFalse(hoja1.coincideCon(hoja2), "la hoja 2 no puede salir igual a la 1");
     }
 
     @Test
@@ -91,18 +90,18 @@ class ScorePagesTest {
         ScorePrinting.ScorePages paginas = new ScorePrinting.ScorePages(score, A4, soloDeLaDosALaTres);
         PageFormat papel = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
 
-        BufferedImage primeraQueSale = blankPage(papel);
-        BufferedImage segundaQueSale = blankPage(papel);
-        assertEquals(Printable.PAGE_EXISTS, imprimir(paginas, primeraQueSale, papel, 0));
-        assertEquals(Printable.PAGE_EXISTS, imprimir(paginas, segundaQueSale, papel, 1));
-        assertEquals(Printable.NO_SUCH_PAGE, imprimir(paginas, blankPage(papel), papel, 2),
+        LienzoDePrueba primeraQueSale = new LienzoDePrueba();
+        LienzoDePrueba segundaQueSale = new LienzoDePrueba();
+        assertEquals(Printable.PAGE_EXISTS, paginas.print(primeraQueSale, papel, 0));
+        assertEquals(Printable.PAGE_EXISTS, paginas.print(segundaQueSale, papel, 1));
+        assertEquals(Printable.NO_SUCH_PAGE, imprimirEnLienzo(paginas, papel, 2),
                 "el rango pide dos hojas nada mas");
 
-        assertEquals(
-                pixelsOf(ScoreSheets.renderPage(score, Zoom.whole(), A4, 1)), pixelsOf(primeraQueSale),
+        assertTrue(
+                lienzoDeLaHojaReal(score, 1).coincideCon(primeraQueSale),
                 "lo primero que imprime el rango 2-3 tiene que ser la hoja 2 real de la partitura, no la 1");
-        assertEquals(
-                pixelsOf(ScoreSheets.renderPage(score, Zoom.whole(), A4, 2)), pixelsOf(segundaQueSale),
+        assertTrue(
+                lienzoDeLaHojaReal(score, 2).coincideCon(segundaQueSale),
                 "lo segundo que imprime el rango 2-3 tiene que ser la hoja 3 real de la partitura");
     }
 
@@ -166,6 +165,22 @@ class ScorePagesTest {
                 "el papel chico que da la impresora recorta el pie de pagina");
         assertTrue(tieneTintaCercaDeLaFila(imagenGrande, filaDelPie, 20, sheet.width),
                 "el papel grande que da la impresora deja entrar el pie de pagina");
+    }
+
+    private static int imprimirEnLienzo(ScorePrinting.ScorePages paginas, PageFormat format, int pageIndex) {
+        return paginas.print(new LienzoDePrueba(), format, pageIndex);
+    }
+
+    private static LienzoDePrueba lienzoDeLaHojaImpresa(ScorePrinting.ScorePages paginas, PageFormat format, int pageIndex) {
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+        paginas.print(lienzo, format, pageIndex);
+        return lienzo;
+    }
+
+    private static LienzoDePrueba lienzoDeLaHojaReal(Score score, int page) {
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+        ScoreSheets.paintPageOn(lienzo, score, Zoom.whole(), A4, page);
+        return lienzo;
     }
 
     private static int imprimir(
@@ -232,16 +247,6 @@ class ScorePagesTest {
         int g = (rgb >> 8) & 0xFF;
         int b = rgb & 0xFF;
         return (r + g + b) / 3 < 200;
-    }
-
-    private static String pixelsOf(BufferedImage image) {
-        StringBuilder pixels = new StringBuilder();
-        for (int y = 0; y < image.getHeight(); y += 7) {
-            for (int x = 0; x < image.getWidth(); x += 7) {
-                pixels.append(image.getRGB(x, y)).append(' ');
-            }
-        }
-        return pixels.toString();
     }
 
     private static Score scoreWithMeasures(int count) {
