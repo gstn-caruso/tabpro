@@ -74,12 +74,10 @@ class ScorePagesTest {
         ScorePrinting.ScorePages paginas = new ScorePrinting.ScorePages(larga, A4, PrintSettings.everything(total));
         PageFormat papel = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
 
-        BufferedImage hoja1 = blankPage(papel);
-        BufferedImage hoja2 = blankPage(papel);
-        imprimir(paginas, hoja1, papel, 0);
-        imprimir(paginas, hoja2, papel, 1);
+        LienzoDePrueba hoja1 = lienzoDeLaHojaImpresa(paginas, papel, 0);
+        LienzoDePrueba hoja2 = lienzoDeLaHojaImpresa(paginas, papel, 1);
 
-        assertNotEquals(pixelsOf(hoja1), pixelsOf(hoja2), "la hoja 2 no puede salir igual a la 1");
+        assertFalse(hoja1.coincideCon(hoja2), "la hoja 2 no puede salir igual a la 1");
     }
 
     @Test
@@ -171,6 +169,12 @@ class ScorePagesTest {
 
     private static int imprimirEnLienzo(ScorePrinting.ScorePages paginas, PageFormat format, int pageIndex) {
         return paginas.print(new LienzoDePrueba(), format, pageIndex);
+    }
+
+    private static LienzoDePrueba lienzoDeLaHojaImpresa(ScorePrinting.ScorePages paginas, PageFormat format, int pageIndex) {
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+        paginas.print(lienzo, format, pageIndex);
+        return lienzo;
     }
 
     private static int imprimir(
