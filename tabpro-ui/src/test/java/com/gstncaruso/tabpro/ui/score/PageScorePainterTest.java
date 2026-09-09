@@ -206,12 +206,12 @@ class PageScorePainterTest {
      */
     @Test
     void thePlayingLineIsTheSameGreenOnPaperAsOnScreen() {
-        BufferedImage music = musicOf(render(
+        LienzoDePrueba lienzo = renderConLienzo(
                 scoreWithAParameterChange(), PageSetup.defaults(),
-                com.gstncaruso.tabpro.core.playback.Playhead.silent().advancedTo(
-                        new com.gstncaruso.tabpro.core.playback.BeatPosition(0, 0, 0))));
+                Playhead.silent().advancedTo(new com.gstncaruso.tabpro.core.playback.BeatPosition(0, 0, 0)));
 
-        assertTrue(paints(music, ScoreColors.PLAYING), "la linea de reproduccion tiene que verse verde en la hoja");
+        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.PLAYING, musicRegionOf(PageSetup.defaults())),
+                "la linea de reproduccion tiene que verse verde en la hoja");
     }
 
     /**
@@ -332,9 +332,13 @@ class PageScorePainterTest {
     }
 
     private static LienzoDePrueba renderConLienzo(Score score, PageSetup setup) {
+        return renderConLienzo(score, setup, Playhead.silent());
+    }
+
+    private static LienzoDePrueba renderConLienzo(Score score, PageSetup setup, Playhead playhead) {
         ScoreViewport viewport = pageViewport(setup);
         LienzoDePrueba lienzo = new LienzoDePrueba();
-        PageScorePainter.paint(lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
+        PageScorePainter.paint(lienzo, score, new Cursor(0, 0, 0, 1), playhead, Optional.empty(), viewport);
         return lienzo;
     }
 
