@@ -92,7 +92,7 @@ class ScorePrintingTest {
 
     @Test
     void exportaLaImagenConElModoPergaminoSinSaltosDePagina(@TempDir Path tempDir) throws IOException {
-        Score score = scoreWithMeasures(80);
+        Score score = scoreWithMeasures(16);
         Path enPagina = tempDir.resolve("pagina.png");
         Path enPergamino = tempDir.resolve("pergamino.png");
 
