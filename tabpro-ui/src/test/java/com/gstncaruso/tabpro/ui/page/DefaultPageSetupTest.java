@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class DefaultPageSetupTest {
 
-    private final Preferences scratch = Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName());
+    private final Preferences scratch = Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
     private final DefaultPageSetup stored = new DefaultPageSetup(scratch);
 
     @AfterEach
