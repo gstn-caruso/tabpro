@@ -22,9 +22,9 @@ class MeasureGridTest {
         Rectangle lowerTrack = grid.cellBounds(1, 0);
 
         assertEquals(0, first.x);
-        assertEquals(TrackPanel.HEADER_HEIGHT, first.y);
+        assertEquals(MeasureGrid.NUMBERS_HEIGHT, first.y);
         assertEquals(3 * MeasureGrid.CELL_WIDTH, laterMeasure.x);
-        assertEquals(TrackPanel.HEADER_HEIGHT + TrackPanel.ROW_HEIGHT, lowerTrack.y);
+        assertEquals(MeasureGrid.NUMBERS_HEIGHT + TrackPanel.ROW_HEIGHT, lowerTrack.y);
     }
 
     @Test
@@ -44,7 +44,7 @@ class MeasureGridTest {
         MeasureGrid grid = new MeasureGrid(editor);
 
         assertEquals(Optional.empty(), grid.hitTest(4, 3));
-        assertEquals(Optional.empty(), grid.hitTest(40 * MeasureGrid.CELL_WIDTH, TrackPanel.HEADER_HEIGHT + 3));
+        assertEquals(Optional.empty(), grid.hitTest(40 * MeasureGrid.CELL_WIDTH, MeasureGrid.NUMBERS_HEIGHT + 3));
         assertEquals(Optional.empty(), grid.hitTest(4, 10_000));
     }
 
@@ -54,7 +54,7 @@ class MeasureGridTest {
         MeasureGrid grid = new MeasureGrid(editor);
 
         assertEquals(3 * MeasureGrid.CELL_WIDTH, grid.getPreferredSize().width);
-        assertEquals(TrackPanel.HEADER_HEIGHT + 2 * TrackPanel.ROW_HEIGHT, grid.getPreferredSize().height);
+        assertEquals(MeasureGrid.NUMBERS_HEIGHT + 2 * TrackPanel.ROW_HEIGHT, grid.getPreferredSize().height);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
+import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
@@ -19,13 +20,20 @@ import java.util.OptionalInt;
 import javax.swing.JComponent;
 
 /**
- * Un cuadradito por compas y por pista: marcado si esa pista toca algo ahi, y toda la columna
- * en rojo mientras ese compas suena.
+ * Un cuadradito por compas y por pista: marcado si esa pista toca algo ahi, rodeado de un borde
+ * claro si es el compas donde esta parada la edicion, y toda la columna en rojo mientras ese
+ * compas suena.
  */
 public final class MeasureGrid extends JComponent {
 
     public static final int CELL_WIDTH = 15;
     public static final int NUMBER_EVERY = 5;
+    /**
+     * La franja de los numeros de compas: lo que queda del encabezado de la mesa de mezcla una vez
+     * que la zona de marcadores se llevo su parte. Las dos juntas miden lo mismo que el encabezado
+     * del mixer, asi que el cuadrado de una pista queda a la altura de su fila.
+     */
+    public static final int NUMBERS_HEIGHT = TrackPanel.HEADER_HEIGHT - MarkerZone.HEIGHT;
 
     private static final Color PLAYING_TINT = new Color(
             ScoreColors.PLAYING_MEASURE.getRed(),
@@ -56,7 +64,7 @@ public final class MeasureGrid extends JComponent {
     public Rectangle cellBounds(int track, int measure) {
         return new Rectangle(
                 measure * CELL_WIDTH,
-                TrackPanel.HEADER_HEIGHT + track * TrackPanel.ROW_HEIGHT,
+                NUMBERS_HEIGHT + track * TrackPanel.ROW_HEIGHT,
                 CELL_WIDTH,
                 TrackPanel.ROW_HEIGHT);
     }
@@ -64,9 +72,9 @@ public final class MeasureGrid extends JComponent {
     public Optional<Cell> hitTest(int x, int y) {
         Score score = editor.score();
         int measure = x / CELL_WIDTH;
-        int track = (y - TrackPanel.HEADER_HEIGHT) / TrackPanel.ROW_HEIGHT;
+        int track = (y - NUMBERS_HEIGHT) / TrackPanel.ROW_HEIGHT;
         boolean inside = x >= 0
-                && y >= TrackPanel.HEADER_HEIGHT
+                && y >= NUMBERS_HEIGHT
                 && measure < score.measureCount()
                 && track >= 0
                 && track < score.trackCount();
@@ -78,7 +86,7 @@ public final class MeasureGrid extends JComponent {
         Score score = editor.score();
         return new Dimension(
                 Math.max(1, score.measureCount()) * CELL_WIDTH,
-                TrackPanel.HEADER_HEIGHT + score.trackCount() * TrackPanel.ROW_HEIGHT);
+                NUMBERS_HEIGHT + score.trackCount() * TrackPanel.ROW_HEIGHT);
     }
 
     @Override
@@ -96,6 +104,7 @@ public final class MeasureGrid extends JComponent {
         for (int track = 0; track < score.trackCount(); track++) {
             paintRow(g, score.track(track), track, track == editor.cursor().track());
         }
+        outlineCursorCell(g, score);
         playingMeasure.ifPresent(measure -> outlinePlayingColumn(g, score, measure));
     }
 
@@ -105,6 +114,18 @@ public final class MeasureGrid extends JComponent {
         }
         g.setColor(PLAYING_TINT);
         g.fillRect(measure * CELL_WIDTH, 0, CELL_WIDTH, getHeight());
+    }
+
+    /** Donde esta parada la edicion: el compas del cursor, en la fila de su pista. */
+    private void outlineCursorCell(Graphics2D g, Score score) {
+        Cursor cursor = editor.cursor();
+        if (isOutside(score, cursor.measure())) {
+            return;
+        }
+        Rectangle cell = cellBounds(cursor.track(), cursor.measure());
+        g.setColor(ScoreColors.INK);
+        g.setStroke(new BasicStroke(1));
+        g.drawRect(cell.x + 1, cell.y + 1, cell.width - 3, cell.height - 3);
     }
 
     /** El borde va despues de las celdas, para que marque la columna sin taparla. */
@@ -126,7 +147,7 @@ public final class MeasureGrid extends JComponent {
         g.setColor(ScoreColors.MUTED_INK);
         for (int measure = 0; measure < score.measureCount(); measure++) {
             if (measure == 0 || (measure + 1) % NUMBER_EVERY == 0) {
-                g.drawString(String.valueOf(measure + 1), measure * CELL_WIDTH + 2, TrackPanel.HEADER_HEIGHT - 7);
+                g.drawString(String.valueOf(measure + 1), measure * CELL_WIDTH + 2, NUMBERS_HEIGHT - 2);
             }
         }
     }

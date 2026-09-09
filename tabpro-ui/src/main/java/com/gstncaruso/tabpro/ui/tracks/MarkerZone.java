@@ -22,7 +22,7 @@ import javax.swing.JOptionPane;
  */
 public final class MarkerZone extends JComponent {
 
-    public static final int HEIGHT = 16;
+    public static final int HEIGHT = 12;
 
     private final Editor editor;
 

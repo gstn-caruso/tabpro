@@ -69,7 +69,7 @@ class TrackPanelTest {
         panel.addBass();
 
         assertEquals(
-                TrackPanel.HEADER_HEIGHT + 2 * TrackPanel.ROW_HEIGHT,
+                MeasureGrid.NUMBERS_HEIGHT + 2 * TrackPanel.ROW_HEIGHT,
                 panel.gridComponent().getPreferredSize().height);
     }
 }
