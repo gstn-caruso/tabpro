@@ -150,6 +150,48 @@ class ScorePainterTest {
     }
 
     @Test
+    void theEditingCursorLineCrossesTheOtherTracksInTheSystemToo() {
+        Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
+        Cursor cursor = new Cursor(0, 0, 0, 3);
+        Painted painted = paint(score, cursor, Playhead.silent());
+
+        int x = painted.layout().beatBounds(0, 0, 0).x;
+        int nearTheOtherTrack = painted.layout().trackTop(1, 0) + 5;
+
+        assertTrue(
+                nearTheOtherTrack < painted.layout().staffTop(1, 0),
+                "el punto de control tiene que estar arriba de la pista de abajo, no adentro");
+        assertTrue(painted.hasInkNear(x, nearTheOtherTrack, 0),
+                "la linea del cursor tiene que cruzar tambien la pista que no se esta editando");
+    }
+
+    @Test
+    void theEditingCursorIsDimmedOverTheOtherTracks() {
+        Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
+        Cursor cursor = new Cursor(0, 0, 0, 3);
+        Painted painted = paint(score, cursor, Playhead.silent());
+
+        int x = painted.layout().beatBounds(0, 0, 0).x;
+        int onTheOtherTrack = painted.layout().staffTop(1, 0) + 2;
+
+        assertNotEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x, onTheOtherTrack),
+                "sobre la pista que no se edita el cursor tiene que quedar atenuado, no pleno");
+    }
+
+    @Test
+    void theEditingCursorIsFullRedOnlyOverItsOwnTrack() {
+        Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
+        Cursor cursor = new Cursor(0, 0, 0, 3);
+        Painted painted = paint(score, cursor, Playhead.silent());
+
+        int x = painted.layout().beatBounds(0, 0, 0).x;
+        int onItsOwnTrack = painted.layout().staffTop(0, 0) + 2;
+
+        assertEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x, onItsOwnTrack),
+                "sobre su propia pista el cursor tiene que seguir siendo el rojo pleno");
+    }
+
+    @Test
     void drawsAThinLineAtTheBeatThatIsSoundingInsteadOfAFilledBlock() {
         Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
         Painted silent = paint(score, new Cursor(0, 0, 0, 1), Playhead.silent());

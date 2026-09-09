@@ -59,12 +59,30 @@ public final class ScorePainter {
                 paintTrack(g, layout, score, trackIndex, cursor, highlightedVoice);
             }
         }
+        if (showsTheEditingCursor(score, cursor)) {
+            paintCursorTrail(g, layout, cursor);
+        }
         paintPlayingLines(g, layout, score, playhead);
         selection.ifPresent(sel -> paintSelection(g, layout, score, sel));
         if (showsTheEditingCursor(score, cursor)) {
             paintCursor(g, layout, score, cursor);
             paintCorrespondingMark(g, layout, score, cursor);
         }
+    }
+
+    /**
+     * El cursor de edicion tambien cruza el sistema entero, igual que la linea de reproduccion y
+     * por la misma razon geometrica: no se corta en los huecos entre pistas. Se pinta atenuado
+     * -no a pleno color, ver {@link #paintCursor}- y antes que la linea de reproduccion, para
+     * que si coinciden en la misma columna gane el verde, mas importante para seguir donde suena
+     * la musica; el rojo pleno de la pista que se esta editando vuelve a pintarse encima despues.
+     */
+    private static void paintCursorTrail(Graphics2D g, ScoreLayout layout, Cursor cursor) {
+        int x = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat()).x;
+        int top = layout.systemTop(layout.systemOf(cursor.measure()));
+        int bottom = top + layout.systemHeight();
+        g.setColor(ScoreColors.CURSOR_DIMMED);
+        g.fillRect(x, top, 1, bottom - top);
     }
 
     /**
@@ -248,10 +266,11 @@ public final class ScorePainter {
     }
 
     /**
-     * El cursor de edicion: una linea vertical fina y roja en el arranque del beat actual, que
-     * cruza el pentagrama y la tablatura de la pista que se esta editando. A diferencia de la
-     * linea de reproduccion -que cruza el sistema entero porque todas las pistas suenan juntas-
-     * esta es de una sola pista, porque solo se edita una a la vez.
+     * El cursor de edicion a pleno color: una linea vertical fina y roja en el arranque del beat
+     * actual, que cruza el pentagrama y la tablatura de la pista que se esta editando. Fuera de
+     * esa pista la linea sigue existiendo pero atenuada -ver {@link #paintCursorTrail}-, para que
+     * de un vistazo se siga viendo en cual de las pistas esta parado el cursor sin que se corte
+     * entre pistas como si fueran sistemas separados.
      *
      * <p>El cuadradito que marca donde esta parado el cursor va en la notacion activa -manual,
      * linea 769: la tablatura si se edita ahi, la cabeza de la nota en el pentagrama si se edita

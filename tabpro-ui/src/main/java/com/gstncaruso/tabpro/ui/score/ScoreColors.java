@@ -28,6 +28,12 @@ public final class ScoreColors {
      * de la linea de reproduccion.
      */
     public static final Color CURSOR = new Color(0xFF, 0x3B, 0x30);
+    /**
+     * El mismo rojo del cursor, atenuado con transparencia: la parte de la linea que cruza las
+     * pistas que no se estan editando, para que se vea continua de punta a punta del sistema sin
+     * confundirse con el rojo pleno de la pista activa.
+     */
+    public static final Color CURSOR_DIMMED = new Color(0xFF, 0x3B, 0x30, 0x80);
     /** La linea vertical fina que marca por donde va la reproduccion, como en Guitar Pro. */
     public static final Color PLAYING = new Color(0x27, 0xAE, 0x60);
     public static final Color PLAYING_MEASURE = new Color(0xE5484D);
