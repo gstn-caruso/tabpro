@@ -314,17 +314,6 @@ class PageScorePainterTest {
                 new Track("Guitarra", guitar.tuning(), guitar.channel(), List.of(measure))));
     }
 
-    private static boolean paints(BufferedImage sheet, Color color) {
-        for (int y = 0; y < sheet.getHeight(); y++) {
-            for (int x = 0; x < sheet.getWidth(); x++) {
-                if (sheet.getRGB(x, y) == color.getRGB()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private static PageBanner onlyTheTitleSaying(String text) {
         PageBanner banner = PageBanner.header();
         for (PageElement element : PageElement.values()) {
