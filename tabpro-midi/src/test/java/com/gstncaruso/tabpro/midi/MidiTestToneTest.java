@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.sound.midi.MidiMessage;
@@ -60,16 +61,11 @@ class MidiTestToneTest {
     }
 
     @Test
-    void runsTheGivenCallbackOnceTheNoteTurnsOff() throws InterruptedException {
-        java.util.concurrent.atomic.AtomicBoolean ranAfterward = new java.util.concurrent.atomic.AtomicBoolean(false);
-        CountDownLatch afterwardRan = new CountDownLatch(1);
+    void runsTheGivenCallbackOnceTheNoteTurnsOff() {
+        AtomicBoolean ranAfterward = new AtomicBoolean(false);
 
-        MidiTestTone.play(receiverInto(new CopyOnWriteArrayList<>()), 0, 20, () -> {
-            ranAfterward.set(true);
-            afterwardRan.countDown();
-        });
+        MidiTestTone.play(receiverInto(new CopyOnWriteArrayList<>()), 0, 20, () -> ranAfterward.set(true), alInstante());
 
-        assertTrue(afterwardRan.await(5, TimeUnit.SECONDS));
         assertTrue(ranAfterward.get());
     }
 
