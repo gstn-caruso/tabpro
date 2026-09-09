@@ -64,10 +64,14 @@ class MidiTestToneTest {
     @Test
     void runsTheGivenCallbackOnceTheNoteTurnsOff() throws InterruptedException {
         java.util.concurrent.atomic.AtomicBoolean ranAfterward = new java.util.concurrent.atomic.AtomicBoolean(false);
+        CountDownLatch afterwardRan = new CountDownLatch(1);
 
-        MidiTestTone.play(receiverInto(new CopyOnWriteArrayList<>()), 0, 20, () -> ranAfterward.set(true));
-        Thread.sleep(300);
+        MidiTestTone.play(receiverInto(new CopyOnWriteArrayList<>()), 0, 20, () -> {
+            ranAfterward.set(true);
+            afterwardRan.countDown();
+        });
 
+        assertTrue(afterwardRan.await(5, TimeUnit.SECONDS));
         assertTrue(ranAfterward.get());
     }
 
