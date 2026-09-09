@@ -60,10 +60,10 @@ class ScorePagesTest {
         PageFormat papel = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
 
         for (int i = 0; i < total; i++) {
-            assertEquals(Printable.PAGE_EXISTS, imprimir(paginas, blankPage(papel), papel, i),
+            assertEquals(Printable.PAGE_EXISTS, imprimirEnLienzo(paginas, papel, i),
                     "la hoja " + i + " tiene que existir");
         }
-        assertEquals(Printable.NO_SUCH_PAGE, imprimir(paginas, blankPage(papel), papel, total),
+        assertEquals(Printable.NO_SUCH_PAGE, imprimirEnLienzo(paginas, papel, total),
                 "despues de la ultima hoja no puede haber una pagina mas");
     }
 
