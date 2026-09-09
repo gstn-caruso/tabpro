@@ -249,16 +249,6 @@ class ScorePagesTest {
         return (r + g + b) / 3 < 200;
     }
 
-    private static String pixelsOf(BufferedImage image) {
-        StringBuilder pixels = new StringBuilder();
-        for (int y = 0; y < image.getHeight(); y += 7) {
-            for (int x = 0; x < image.getWidth(); x += 7) {
-                pixels.append(image.getRGB(x, y)).append(' ');
-            }
-        }
-        return pixels.toString();
-    }
-
     private static Score scoreWithMeasures(int count) {
         List<Measure> measures = new ArrayList<>();
         for (int i = 0; i < count; i++) {
