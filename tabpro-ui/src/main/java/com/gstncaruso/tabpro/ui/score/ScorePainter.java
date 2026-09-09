@@ -74,7 +74,7 @@ public final class ScorePainter {
         int x = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat()).x;
         int top = layout.systemTop(layout.systemOf(cursor.measure()));
         int bottom = top + layout.systemHeight();
-        g.setColor(ScoreColors.CURSOR);
+        g.setColor(ScoreColors.CURSOR_DIMMED);
         g.fillRect(x, top, 1, bottom - top);
     }
 

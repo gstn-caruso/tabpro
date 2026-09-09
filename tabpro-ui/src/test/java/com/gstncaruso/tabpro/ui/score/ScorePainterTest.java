@@ -166,6 +166,19 @@ class ScorePainterTest {
     }
 
     @Test
+    void theEditingCursorIsDimmedOverTheOtherTracks() {
+        Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
+        Cursor cursor = new Cursor(0, 0, 0, 3);
+        Painted painted = paint(score, cursor, Playhead.silent());
+
+        int x = painted.layout().beatBounds(0, 0, 0).x;
+        int onTheOtherTrack = painted.layout().staffTop(1, 0) + 2;
+
+        assertNotEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x, onTheOtherTrack),
+                "sobre la pista que no se edita el cursor tiene que quedar atenuado, no pleno");
+    }
+
+    @Test
     void drawsAThinLineAtTheBeatThatIsSoundingInsteadOfAFilledBlock() {
         Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
         Painted silent = paint(score, new Cursor(0, 0, 0, 1), Playhead.silent());
