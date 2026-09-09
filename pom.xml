@@ -78,6 +78,7 @@
               forma de pedirle audio al sintetizador mas rapido que en tiempo real.
             -->
             <argLine>-Djava.awt.headless=true --add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED</argLine>
+            <excludedGroups>integracion</excludedGroups>
           </configuration>
         </plugin>
       </plugins>
