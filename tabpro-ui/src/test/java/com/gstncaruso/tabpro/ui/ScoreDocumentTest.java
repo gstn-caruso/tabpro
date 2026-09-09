@@ -17,9 +17,19 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 class ScoreDocumentTest {
+
+    private java.util.prefs.Preferences scratch;
+
+    @AfterEach
+    void clearsTheScratchNode() throws java.util.prefs.BackingStoreException {
+        if (scratch != null) {
+            scratch.removeNode();
+        }
+    }
 
     @Test
     void startsWithABlankScoreAndNoPath() {
@@ -105,7 +115,7 @@ class ScoreDocumentTest {
      */
     @Test
     void newScoreUsaLoQueHayGuardadoEnPropiedadesPorDefecto() {
-        java.util.prefs.Preferences scratch = java.util.prefs.Preferences.userRoot()
+        scratch = java.util.prefs.Preferences.userRoot()
                 .node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
         DefaultScoreProperties defaultProperties = new DefaultScoreProperties(scratch);
         defaultProperties.save(new NewScoreDefaults(
