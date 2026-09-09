@@ -402,13 +402,8 @@ class PageScorePainterTest {
     }
 
     private static void paintOn(Score score, ScoreViewport viewport) {
-        Dimension size = PageScorePainter.canvasSize(score, viewport);
-        BufferedImage image = new BufferedImage(
-                Math.max(1, size.width), Math.max(1, size.height), BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = image.createGraphics();
         PageScorePainter.paint(
-                g, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
-        g.dispose();
+                new LienzoDePrueba(), score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
     }
 
     private static Score scoreWithLyricsAndInfo() {
