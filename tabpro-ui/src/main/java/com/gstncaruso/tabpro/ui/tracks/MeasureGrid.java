@@ -26,6 +26,12 @@ public final class MeasureGrid extends JComponent {
 
     public static final int CELL_WIDTH = 15;
     public static final int NUMBER_EVERY = 5;
+    /**
+     * La franja de los numeros de compas: lo que queda del encabezado de la mesa de mezcla una vez
+     * que la zona de marcadores se llevo su parte. Las dos juntas miden lo mismo que el encabezado
+     * del mixer, asi que el cuadrado de una pista queda a la altura de su fila.
+     */
+    public static final int NUMBERS_HEIGHT = TrackPanel.HEADER_HEIGHT - MarkerZone.HEIGHT;
 
     private static final Color PLAYING_TINT = new Color(
             ScoreColors.PLAYING_MEASURE.getRed(),
@@ -56,7 +62,7 @@ public final class MeasureGrid extends JComponent {
     public Rectangle cellBounds(int track, int measure) {
         return new Rectangle(
                 measure * CELL_WIDTH,
-                TrackPanel.HEADER_HEIGHT + track * TrackPanel.ROW_HEIGHT,
+                NUMBERS_HEIGHT + track * TrackPanel.ROW_HEIGHT,
                 CELL_WIDTH,
                 TrackPanel.ROW_HEIGHT);
     }
@@ -64,9 +70,9 @@ public final class MeasureGrid extends JComponent {
     public Optional<Cell> hitTest(int x, int y) {
         Score score = editor.score();
         int measure = x / CELL_WIDTH;
-        int track = (y - TrackPanel.HEADER_HEIGHT) / TrackPanel.ROW_HEIGHT;
+        int track = (y - NUMBERS_HEIGHT) / TrackPanel.ROW_HEIGHT;
         boolean inside = x >= 0
-                && y >= TrackPanel.HEADER_HEIGHT
+                && y >= NUMBERS_HEIGHT
                 && measure < score.measureCount()
                 && track >= 0
                 && track < score.trackCount();
@@ -78,7 +84,7 @@ public final class MeasureGrid extends JComponent {
         Score score = editor.score();
         return new Dimension(
                 Math.max(1, score.measureCount()) * CELL_WIDTH,
-                TrackPanel.HEADER_HEIGHT + score.trackCount() * TrackPanel.ROW_HEIGHT);
+                NUMBERS_HEIGHT + score.trackCount() * TrackPanel.ROW_HEIGHT);
     }
 
     @Override
@@ -126,7 +132,7 @@ public final class MeasureGrid extends JComponent {
         g.setColor(ScoreColors.MUTED_INK);
         for (int measure = 0; measure < score.measureCount(); measure++) {
             if (measure == 0 || (measure + 1) % NUMBER_EVERY == 0) {
-                g.drawString(String.valueOf(measure + 1), measure * CELL_WIDTH + 2, TrackPanel.HEADER_HEIGHT - 7);
+                g.drawString(String.valueOf(measure + 1), measure * CELL_WIDTH + 2, NUMBERS_HEIGHT - 2);
             }
         }
     }
