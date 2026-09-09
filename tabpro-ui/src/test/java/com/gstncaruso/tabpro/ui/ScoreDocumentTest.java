@@ -235,9 +235,10 @@ class ScoreDocumentTest {
         assertTrue(document.hasUnsavedChanges());
     }
 
-    private static Preferences testPreferences() {
-        return new Preferences(java.util.prefs.Preferences.userRoot()
-                .node("com/gstncaruso/tabpro/test/" + java.util.UUID.randomUUID()));
+    private Preferences testPreferences() {
+        scratch = java.util.prefs.Preferences.userRoot()
+                .node("com/gstncaruso/tabpro/test/" + java.util.UUID.randomUUID());
+        return new Preferences(scratch);
     }
 
     private static final class FakeScoreFiles implements ScoreFiles {
