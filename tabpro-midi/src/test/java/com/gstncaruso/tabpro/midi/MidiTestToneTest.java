@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
@@ -51,10 +53,11 @@ class MidiTestToneTest {
     @Test
     void turnsTheNoteOffOnceItsDurationPasses() throws InterruptedException {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
+        CountDownLatch turnedOff = new CountDownLatch(1);
 
-        MidiTestTone.play(receiverInto(received), 0, 20);
-        Thread.sleep(300);
+        MidiTestTone.play(receiverInto(received), 0, 20, turnedOff::countDown);
 
+        assertTrue(turnedOff.await(5, TimeUnit.SECONDS));
         assertTrue(received.stream().anyMatch(message -> message.getCommand() == ShortMessage.NOTE_OFF));
     }
 
