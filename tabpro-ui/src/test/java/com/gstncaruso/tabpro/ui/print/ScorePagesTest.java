@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
+import com.gstncaruso.tabpro.ui.score.LienzoDePrueba;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -45,8 +46,8 @@ class ScorePagesTest {
         ScorePrinting.ScorePages paginas = new ScorePrinting.ScorePages(corta, A4, PrintSettings.everything(total));
         PageFormat papel = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
 
-        assertEquals(Printable.PAGE_EXISTS, imprimir(paginas, blankPage(papel), papel, 0));
-        assertEquals(Printable.NO_SUCH_PAGE, imprimir(paginas, blankPage(papel), papel, 1));
+        assertEquals(Printable.PAGE_EXISTS, imprimirEnLienzo(paginas, papel, 0));
+        assertEquals(Printable.NO_SUCH_PAGE, imprimirEnLienzo(paginas, papel, 1));
     }
 
     @Test
@@ -166,6 +167,10 @@ class ScorePagesTest {
                 "el papel chico que da la impresora recorta el pie de pagina");
         assertTrue(tieneTintaCercaDeLaFila(imagenGrande, filaDelPie, 20, sheet.width),
                 "el papel grande que da la impresora deja entrar el pie de pagina");
+    }
+
+    private static int imprimirEnLienzo(ScorePrinting.ScorePages paginas, PageFormat format, int pageIndex) {
+        return paginas.print(new LienzoDePrueba(), format, pageIndex);
     }
 
     private static int imprimir(

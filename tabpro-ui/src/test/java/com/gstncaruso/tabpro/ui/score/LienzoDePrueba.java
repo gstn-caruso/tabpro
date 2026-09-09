@@ -73,6 +73,11 @@ public final class LienzoDePrueba extends Graphics2D {
         return ordenesEnRegion(region).equals(otro.ordenesEnRegion(region));
     }
 
+    /** Si se dibujo exactamente lo mismo -mismo orden, forma, color y texto- que en otro lienzo. */
+    public boolean coincideCon(LienzoDePrueba otro) {
+        return ordenes.equals(otro.ordenes);
+    }
+
     private List<OrdenDeDibujo> ordenesEnRegion(Rectangle region) {
         return ordenes.stream().filter(orden -> orden.tocaA(region)).toList();
     }
