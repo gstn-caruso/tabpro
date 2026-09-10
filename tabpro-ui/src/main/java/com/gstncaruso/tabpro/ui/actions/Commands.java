@@ -19,6 +19,7 @@ import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
 import com.gstncaruso.tabpro.ui.EdtEditorListener;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -81,30 +82,34 @@ public final class Commands {
     }
 
     private void defineFileCommands() {
-        define("file.new", "Nuevo", document::newScore).withAccelerator("ctrl N").withIcon(Icons.newScore());
-        define("file.open", "Abrir…", document::open).withAccelerator("ctrl O").withIcon(Icons.open());
-        define("file.browse", "Explorar…", document::browse).withAccelerator("ctrl B");
-        define("file.save", "Guardar", document::save).withAccelerator("ctrl S").withIcon(Icons.save());
-        define("file.saveAs", "Guardar como…", document::saveAs);
-        define("file.importMidi", "MIDI…", document::importMidi);
-        define("file.importAscii", "Tablatura ASCII…", document::importAscii);
-        define("file.importMusicXml", "MusicXML…", document::importMusicXml);
-        define("file.importGuitarPro", "Guitar Pro…", document::importGuitarPro);
-        define("file.importTabEdit", "TablEdit…", document::importTabEdit);
-        define("file.importPowerTab", "PowerTab…", document::importPowerTab);
-        define("file.exportMidi", "MIDI…", document::exportMidi);
-        define("file.exportWave", "WAVE…", document::exportWave);
-        define("file.exportAscii", "Tablatura ASCII…", document::exportAscii);
-        define("file.exportMusicXml", "MusicXML…", document::exportMusicXml);
-        define("file.exportGuitarPro", "Guitar Pro 4…", document::exportGuitarPro);
-        define("file.exportImage", "Imagen…", document::exportImage);
-        define("file.exportPdf", "PDF…", document::exportPdf);
-        define("file.information", "Información de la partitura…", dialogs::scoreInformation)
+        define("file.new", Texts.get("menus.file.new"), document::newScore)
+                .withAccelerator("ctrl N").withIcon(Icons.newScore());
+        define("file.open", Texts.get("menus.file.open"), document::open)
+                .withAccelerator("ctrl O").withIcon(Icons.open());
+        define("file.browse", Texts.get("menus.file.browse"), document::browse).withAccelerator("ctrl B");
+        define("file.save", Texts.get("menus.file.save"), document::save)
+                .withAccelerator("ctrl S").withIcon(Icons.save());
+        define("file.saveAs", Texts.get("menus.file.saveAs"), document::saveAs);
+        define("file.importMidi", Texts.get("menus.file.importMidi"), document::importMidi);
+        define("file.importAscii", Texts.get("menus.file.importAscii"), document::importAscii);
+        define("file.importMusicXml", Texts.get("menus.file.importMusicXml"), document::importMusicXml);
+        define("file.importGuitarPro", Texts.get("menus.file.importGuitarPro"), document::importGuitarPro);
+        define("file.importTabEdit", Texts.get("menus.file.importTabEdit"), document::importTabEdit);
+        define("file.importPowerTab", Texts.get("menus.file.importPowerTab"), document::importPowerTab);
+        define("file.exportMidi", Texts.get("menus.file.exportMidi"), document::exportMidi);
+        define("file.exportWave", Texts.get("menus.file.exportWave"), document::exportWave);
+        define("file.exportAscii", Texts.get("menus.file.exportAscii"), document::exportAscii);
+        define("file.exportMusicXml", Texts.get("menus.file.exportMusicXml"), document::exportMusicXml);
+        define("file.exportGuitarPro", Texts.get("menus.file.exportGuitarPro"), document::exportGuitarPro);
+        define("file.exportImage", Texts.get("menus.file.exportImage"), document::exportImage);
+        define("file.exportPdf", Texts.get("menus.file.exportPdf"), document::exportPdf);
+        define("file.information", Texts.get("menus.file.information"), dialogs::scoreInformation)
                 .withAccelerator("F5").withIcon(Icons.scoreInformation());
-        define("file.pageSetup", "Configurar página…", dialogs::pageSetup)
+        define("file.pageSetup", Texts.get("menus.file.pageSetup"), dialogs::pageSetup)
                 .withAccelerator("F8").withIcon(Icons.pageSetup());
-        define("file.print", "Imprimir…", document::print).withAccelerator("ctrl P").withIcon(Icons.print());
-        define("file.quit", "Salir", document::quit);
+        define("file.print", Texts.get("menus.file.print"), document::print)
+                .withAccelerator("ctrl P").withIcon(Icons.print());
+        define("file.quit", Texts.get("menus.file.quit"), document::quit);
     }
 
     private void defineEditCommands() {
