@@ -167,4 +167,11 @@ class PreferencesTest {
     void fretboardStartsHidden() {
         assertFalse(preferences.fretboardVisible());
     }
+
+    @Test
+    void remembersThatTheFretboardIsVisible() {
+        preferences.setFretboardVisible(true);
+
+        assertTrue(preferences.fretboardVisible());
+    }
 }

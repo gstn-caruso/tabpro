@@ -150,4 +150,8 @@ public final class Preferences {
     public boolean fretboardVisible() {
         return stored.getBoolean(FRETBOARD_VISIBLE, false);
     }
+
+    public void setFretboardVisible(boolean visible) {
+        stored.putBoolean(FRETBOARD_VISIBLE, visible);
+    }
 }
