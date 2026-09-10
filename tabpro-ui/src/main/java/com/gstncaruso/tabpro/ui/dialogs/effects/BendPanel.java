@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
@@ -31,7 +32,7 @@ public final class BendPanel extends FormPanel {
         grid = new BendGridPanel(curve);
 
         type.setRenderer((list, value, index, isSelected, hasFocus) ->
-                new javax.swing.JLabel(value == null ? "" : value.label()));
+                new javax.swing.JLabel(value == null ? "" : Labels.of(value)));
 
         type.addActionListener(event -> regenerate());
         height.addChangeListener(event -> regenerate());

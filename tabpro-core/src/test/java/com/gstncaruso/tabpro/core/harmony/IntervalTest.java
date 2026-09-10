@@ -35,10 +35,10 @@ class IntervalTest {
     }
 
     @Test
-    void theNinthAndTheSecondSoundTheSameButHaveADifferentLabel() {
+    void theNinthAndTheSecondSoundTheSameButAreDifferentDegrees() {
         assertEquals(Interval.MAJOR_SECOND.semitones(), Interval.MAJOR_NINTH.semitones() % 12);
-        assertEquals("2", Interval.MAJOR_SECOND.label());
-        assertEquals("9", Interval.MAJOR_NINTH.label());
+        assertEquals(2, Interval.MAJOR_SECOND.degreeNumber());
+        assertEquals(9, Interval.MAJOR_NINTH.degreeNumber());
     }
 
     @Test

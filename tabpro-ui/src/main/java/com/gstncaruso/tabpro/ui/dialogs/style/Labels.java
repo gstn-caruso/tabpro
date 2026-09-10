@@ -4,19 +4,10 @@ import com.gstncaruso.tabpro.core.harmony.Chord;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
-import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Tuning;
-import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
-import com.gstncaruso.tabpro.ui.instruments.FretboardDisplayMode;
-import com.gstncaruso.tabpro.ui.instruments.FretboardType;
-import com.gstncaruso.tabpro.ui.instruments.KeyboardDisplayMode;
-import com.gstncaruso.tabpro.ui.instruments.NoteNameMode;
-import com.gstncaruso.tabpro.ui.instruments.ScaleLabelMode;
-import com.gstncaruso.tabpro.ui.instruments.ScaleType;
-import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
-import com.gstncaruso.tabpro.ui.page.Orientation;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import java.util.List;
 
@@ -27,29 +18,25 @@ public final class Labels {
 
     public static String of(Object value) {
         return switch (value) {
-            case NoteValue noteValue -> noteValueLabel(noteValue);
             case Chord chord -> chord.name();
             case ChordType chordType -> chordTypeLabel(chordType);
-            case ChordComplexity chordComplexity -> chordComplexityLabel(chordComplexity);
-            case BarrePreference barrePreference -> barrePreferenceLabel(barrePreference);
-            case PitchClass pitchClass -> pitchClass.name() + " (" + pitchClass.solfegeName() + ")";
+            case PitchClass pitchClass ->
+                    Texts.get("domain.PitchClass.format", pitchClass.name(), pitchClass.solfegeName());
             case Scale scale -> scale.name();
             case Tuning tuning -> tuning.name() + " (" + stringLetters(tuning) + ")";
             case Dynamic dynamic -> dynamic.symbol();
-            case ScaleType scaleType -> scaleType.label();
-            case FretboardDisplayMode fretboardDisplayMode -> fretboardDisplayMode.label();
-            case NoteNameMode noteNameMode -> noteNameMode.label();
-            case ScaleLabelMode scaleLabelMode -> scaleLabelMode.label();
-            case FretboardType fretboardType -> fretboardType.label();
-            case KeyboardDisplayMode keyboardDisplayMode -> keyboardDisplayMode.label();
-            case Orientation orientation -> orientation.label();
             case PaperFormat paperFormat -> paperFormatLabelWithDimensions(paperFormat);
+            case Enum<?> constant -> domainLabel(constant);
             default -> throw new IllegalArgumentException("No label for " + value);
         };
     }
 
+    private static String domainLabel(Enum<?> constant) {
+        return Texts.get("domain." + constant.getDeclaringClass().getSimpleName() + "." + constant.name());
+    }
+
     private static String paperFormatLabelWithDimensions(PaperFormat format) {
-        return format.label() + " (" + Math.round(format.widthMillimetres()) + " x "
+        return domainLabel(format) + " (" + Math.round(format.widthMillimetres()) + " x "
                 + Math.round(format.heightMillimetres()) + " mm)";
     }
 
@@ -62,35 +49,8 @@ public final class Labels {
         return letters.toString();
     }
 
-    private static String barrePreferenceLabel(BarrePreference value) {
-        return switch (value) {
-            case ANY -> "Cualquiera";
-            case FORCE -> "Forzar cejilla";
-            case FORBID -> "Prohibir cejilla";
-        };
-    }
-
     private static String chordTypeLabel(ChordType value) {
         return value == ChordType.MAJOR ? "M" : value.suffix();
     }
 
-    private static String chordComplexityLabel(ChordComplexity value) {
-        return switch (value) {
-            case SIMPLE -> "Simple";
-            case MEDIUM -> "Media";
-            case COMPLEX -> "Todas";
-        };
-    }
-
-    private static String noteValueLabel(NoteValue value) {
-        return switch (value) {
-            case WHOLE -> "Redonda";
-            case HALF -> "Blanca";
-            case QUARTER -> "Negra";
-            case EIGHTH -> "Corchea";
-            case SIXTEENTH -> "Semicorchea";
-            case THIRTY_SECOND -> "Fusa";
-            case SIXTY_FOURTH -> "Semifusa";
-        };
-    }
 }

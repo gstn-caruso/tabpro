@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.dialogs.measure;
 
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import javax.swing.JComboBox;
 
 public final class TripletFeelPanel extends FormPanel {
@@ -10,7 +11,7 @@ public final class TripletFeelPanel extends FormPanel {
 
     public TripletFeelPanel(TripletFeel initial) {
         tripletFeel.setRenderer((list, value, index, isSelected, hasFocus) ->
-                new javax.swing.JLabel(value == null ? "" : value.label()));
+                new javax.swing.JLabel(value == null ? "" : Labels.of(value)));
         addRow("Triplet feel", tripletFeel);
         apply(initial);
     }

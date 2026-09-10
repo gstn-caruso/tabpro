@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.EnumMap;
@@ -43,13 +44,13 @@ public final class ParameterChangeDialog {
 
         FormPanel form = new FormPanel();
         for (SoundParameter parameter : SoundParameter.values()) {
-            JCheckBox box = new JCheckBox(parameter.label(), current.changes(parameter));
+            JCheckBox box = new JCheckBox(Labels.of(parameter), current.changes(parameter));
             JSpinner spinner = new JSpinner(new SpinnerNumberModel(
                     current.valueOf(parameter).orElse(defaultOf(parameter, editor)),
                     parameter.minimum(), parameter.maximum(), 1));
             spinner.setEnabled(box.isSelected());
-            spinner.getAccessibleContext().setAccessibleName(parameter.label());
-            spinner.setToolTipText(parameter.label());
+            spinner.getAccessibleContext().setAccessibleName(Labels.of(parameter));
+            spinner.setToolTipText(Labels.of(parameter));
             box.addActionListener(event -> spinner.setEnabled(box.isSelected()));
             enabled.put(parameter, box);
             values.put(parameter, spinner);

@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.notation.VerticalStack;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import java.awt.BasicStroke;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -94,7 +95,7 @@ final class TabSymbolPainter {
         if (effects.wideVibrato() || has(beat, Ornament.VIBRATO)) {
             labels.add(effects.wideVibrato() ? "~~" : "~");
         }
-        effects.wah().ifPresent(wah -> labels.add("wah " + wah.label().toLowerCase(Locale.ROOT)));
+        effects.wah().ifPresent(wah -> labels.add("wah " + Labels.of(wah).toLowerCase(Locale.ROOT)));
         return labels;
     }
 

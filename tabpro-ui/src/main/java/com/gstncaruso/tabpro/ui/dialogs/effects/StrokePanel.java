@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -16,7 +17,7 @@ public final class StrokePanel extends FormPanel {
 
     public StrokePanel(Stroke initial) {
         direction.setRenderer((list, value, index, isSelected, hasFocus) ->
-                new javax.swing.JLabel(value == null ? "" : value.label()));
+                new javax.swing.JLabel(value == null ? "" : Labels.of(value)));
         speed.setRenderer(new LabeledListCellRenderer());
 
         addRow("Dirección", direction);

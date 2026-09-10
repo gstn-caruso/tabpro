@@ -8,14 +8,14 @@ import java.util.Optional;
 import java.util.Set;
 
 public enum KeyboardDisplayMode {
-    ONLY_BEAT("Solo el beat") {
+    ONLY_BEAT {
         @Override
         public KeyMarks marks(BeatLocation location, Optional<Scale> scale) {
             Tuning tuning = location.track().tuning();
             return KeyMarks.of(keysOf(location.beat(), tuning), Set.of());
         }
     },
-    BEAT_AND_MEASURE("Beat y compás") {
+    BEAT_AND_MEASURE {
         @Override
         public KeyMarks marks(BeatLocation location, Optional<Scale> scale) {
             Tuning tuning = location.track().tuning();
@@ -26,7 +26,7 @@ public enum KeyboardDisplayMode {
             return KeyMarks.of(keysOf(location.beat(), tuning), ofMeasure);
         }
     },
-    BEAT_AND_NEXT_BEAT("Beat y beat siguiente") {
+    BEAT_AND_NEXT_BEAT {
         @Override
         public KeyMarks marks(BeatLocation location, Optional<Scale> scale) {
             Tuning tuning = location.track().tuning();
@@ -34,7 +34,7 @@ public enum KeyboardDisplayMode {
             return KeyMarks.of(keysOf(location.beat(), tuning), ofNext);
         }
     },
-    BEAT_AND_SCALE("Beat y escala") {
+    BEAT_AND_SCALE {
         @Override
         public KeyMarks marks(BeatLocation location, Optional<Scale> scale) {
             Tuning tuning = location.track().tuning();
@@ -42,16 +42,6 @@ public enum KeyboardDisplayMode {
             return KeyMarks.of(keysOf(location.beat(), tuning), ofScale);
         }
     };
-
-    private final String label;
-
-    KeyboardDisplayMode(String label) {
-        this.label = label;
-    }
-
-    public String label() {
-        return label;
-    }
 
     public abstract KeyMarks marks(BeatLocation location, Optional<Scale> scale);
 

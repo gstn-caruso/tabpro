@@ -6,14 +6,33 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.gstncaruso.tabpro.core.harmony.Chord;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
+import com.gstncaruso.tabpro.core.harmony.Interval;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
+import com.gstncaruso.tabpro.core.model.DiagramPlacement;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
+import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
+import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
+import com.gstncaruso.tabpro.core.model.bars.LineBreak;
+import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
+import com.gstncaruso.tabpro.core.model.effects.BendType;
+import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
+import com.gstncaruso.tabpro.core.model.effects.SlideType;
+import com.gstncaruso.tabpro.core.model.effects.StemOverride;
+import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
+import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
+import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
+import com.gstncaruso.tabpro.core.model.effects.Ornament;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
+import com.gstncaruso.tabpro.core.model.effects.Wah;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.instruments.FretboardDisplayMode;
 import com.gstncaruso.tabpro.ui.instruments.FretboardType;
 import com.gstncaruso.tabpro.ui.instruments.KeyboardDisplayMode;
@@ -23,6 +42,7 @@ import com.gstncaruso.tabpro.ui.instruments.ScaleType;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 import com.gstncaruso.tabpro.ui.page.Orientation;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -41,6 +61,7 @@ class LabelsTest {
 
         assertFalse(label.isBlank());
         assertNotEquals(value.name(), label);
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text("domain.NoteValue." + value.name()).isBlank());
     }
 
     @Test
@@ -74,6 +95,7 @@ class LabelsTest {
 
         assertFalse(label.isBlank());
         assertNotEquals(value.name(), label);
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text("domain.ChordComplexity." + value.name()).isBlank());
     }
 
     @Test
@@ -88,6 +110,7 @@ class LabelsTest {
 
         assertFalse(label.isBlank());
         assertNotEquals(value.name(), label);
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text("domain.BarrePreference." + value.name()).isBlank());
     }
 
     @Test
@@ -100,6 +123,11 @@ class LabelsTest {
         PitchClass fSharp = PitchClass.of("F#");
 
         assertNotEquals(fSharp.toString(), Labels.of(fSharp));
+    }
+
+    @Test
+    void translatesTheNoteWithOnlyTheLetterNameInEnglish() {
+        assertEquals("C", Texts.forLocale(Locale.ENGLISH).text("domain.PitchClass.format", "C", "Do"));
     }
 
     @Test
@@ -165,6 +193,7 @@ class LabelsTest {
 
         assertFalse(label.isBlank());
         assertNotEquals(value.name(), label);
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text("domain.ScaleType." + value.name()).isBlank());
     }
 
     @Test
@@ -174,6 +203,51 @@ class LabelsTest {
         assertEquals("Nombre", Labels.of(ScaleLabelMode.NAME));
         assertEquals("Eléctrica", Labels.of(FretboardType.ELECTRIC));
         assertEquals("Solo el beat", Labels.of(KeyboardDisplayMode.ONLY_BEAT));
+    }
+
+    @ParameterizedTest
+    @EnumSource(FretboardDisplayMode.class)
+    void everyFretboardDisplayModeHasSpanishAndEnglishText(FretboardDisplayMode value) {
+        String key = "domain.FretboardDisplayMode." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @ParameterizedTest
+    @EnumSource(NoteNameMode.class)
+    void everyNoteNameModeHasSpanishAndEnglishText(NoteNameMode value) {
+        String key = "domain.NoteNameMode." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @ParameterizedTest
+    @EnumSource(ScaleLabelMode.class)
+    void everyScaleLabelModeHasSpanishAndEnglishText(ScaleLabelMode value) {
+        String key = "domain.ScaleLabelMode." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @ParameterizedTest
+    @EnumSource(FretboardType.class)
+    void everyFretboardTypeHasSpanishAndEnglishText(FretboardType value) {
+        String key = "domain.FretboardType." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @ParameterizedTest
+    @EnumSource(KeyboardDisplayMode.class)
+    void everyKeyboardDisplayModeHasSpanishAndEnglishText(KeyboardDisplayMode value) {
+        String key = "domain.KeyboardDisplayMode." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
     }
 
     @Test
@@ -189,6 +263,7 @@ class LabelsTest {
 
         assertFalse(label.isBlank());
         assertNotEquals(value.name(), label);
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text("domain.Orientation." + value.name()).isBlank());
     }
 
     @Test
@@ -204,5 +279,258 @@ class LabelsTest {
 
         assertFalse(label.isBlank());
         assertNotEquals(value.name(), label);
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text("domain.PaperFormat." + value.name()).isBlank());
+    }
+
+    @Test
+    void translatesTheTripletFeel() {
+        assertEquals("Corcheas con swing", Labels.of(TripletFeel.EIGHTH));
+    }
+
+    @ParameterizedTest
+    @EnumSource(TripletFeel.class)
+    void everyTripletFeelHasSpanishAndEnglishText(TripletFeel value) {
+        String key = "domain.TripletFeel." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheLineBreak() {
+        assertEquals("Forzar salto", Labels.of(LineBreak.FORCED));
+    }
+
+    @ParameterizedTest
+    @EnumSource(LineBreak.class)
+    void everyLineBreakHasSpanishAndEnglishText(LineBreak value) {
+        String key = "domain.LineBreak." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheBeamBreak() {
+        assertEquals("Forzar corte", Labels.of(BeamBreak.FORCED));
+    }
+
+    @ParameterizedTest
+    @EnumSource(BeamBreak.class)
+    void everyBeamBreakHasSpanishAndEnglishText(BeamBreak value) {
+        String key = "domain.BeamBreak." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheStemOverride() {
+        assertEquals("Arriba", Labels.of(StemOverride.UP));
+    }
+
+    @ParameterizedTest
+    @EnumSource(StemOverride.class)
+    void everyStemOverrideHasSpanishAndEnglishText(StemOverride value) {
+        String key = "domain.StemOverride." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesThePickstrokeDirection() {
+        assertEquals("Hacia arriba", Labels.of(PickstrokeDirection.UP));
+    }
+
+    @ParameterizedTest
+    @EnumSource(PickstrokeDirection.class)
+    void everyPickstrokeDirectionHasSpanishAndEnglishText(PickstrokeDirection value) {
+        String key = "domain.PickstrokeDirection." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheDiagramPlacement() {
+        assertEquals("Debajo del título", Labels.of(DiagramPlacement.UNDER_THE_TITLE));
+    }
+
+    @ParameterizedTest
+    @EnumSource(DiagramPlacement.class)
+    void everyDiagramPlacementHasSpanishAndEnglishText(DiagramPlacement value) {
+        String key = "domain.DiagramPlacement." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheVoicePart() {
+        assertEquals("Voz 1", Labels.of(VoicePart.LEAD));
+    }
+
+    @ParameterizedTest
+    @EnumSource(VoicePart.class)
+    void everyVoicePartHasSpanishAndEnglishText(VoicePart value) {
+        String key = "domain.VoicePart." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheMode() {
+        assertEquals("Mayor", Labels.of(Mode.MAJOR));
+    }
+
+    @ParameterizedTest
+    @EnumSource(Mode.class)
+    void everyModeHasSpanishAndEnglishText(Mode value) {
+        String key = "domain.Mode." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheGraceTransition() {
+        assertEquals("Ligado", Labels.of(GraceTransition.HAMMER));
+    }
+
+    @ParameterizedTest
+    @EnumSource(GraceTransition.class)
+    void everyGraceTransitionHasSpanishAndEnglishText(GraceTransition value) {
+        String key = "domain.GraceTransition." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheStrokeDirection() {
+        assertEquals("Hacia arriba", Labels.of(StrokeDirection.UP));
+    }
+
+    @ParameterizedTest
+    @EnumSource(StrokeDirection.class)
+    void everyStrokeDirectionHasSpanishAndEnglishText(StrokeDirection value) {
+        String key = "domain.StrokeDirection." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheBendType() {
+        assertEquals("Bend y suelta", Labels.of(BendType.BEND_RELEASE));
+    }
+
+    @ParameterizedTest
+    @EnumSource(BendType.class)
+    void everyBendTypeHasSpanishAndEnglishText(BendType value) {
+        String key = "domain.BendType." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheSlideType() {
+        assertEquals("Slide legato", Labels.of(SlideType.LEGATO));
+    }
+
+    @ParameterizedTest
+    @EnumSource(SlideType.class)
+    void everySlideTypeHasSpanishAndEnglishText(SlideType value) {
+        String key = "domain.SlideType." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheOrnament() {
+        assertEquals("Nota fantasma", Labels.of(Ornament.GHOST));
+    }
+
+    @ParameterizedTest
+    @EnumSource(Ornament.class)
+    void everyOrnamentHasSpanishAndEnglishText(Ornament value) {
+        String key = "domain.Ornament." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheSoundParameter() {
+        assertEquals("Volumen", Labels.of(SoundParameter.VOLUME));
+    }
+
+    @ParameterizedTest
+    @EnumSource(SoundParameter.class)
+    void everySoundParameterHasSpanishAndEnglishText(SoundParameter value) {
+        String key = "domain.SoundParameter." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheWah() {
+        assertEquals("Abierto", Labels.of(Wah.OPEN));
+    }
+
+    @ParameterizedTest
+    @EnumSource(Wah.class)
+    void everyWahHasSpanishAndEnglishText(Wah value) {
+        String key = "domain.Wah." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheDirectionSymbol() {
+        assertEquals("Doble coda", Labels.of(DirectionSymbol.DOUBLE_CODA));
+    }
+
+    @ParameterizedTest
+    @EnumSource(DirectionSymbol.class)
+    void everyDirectionSymbolHasSpanishAndEnglishText(DirectionSymbol value) {
+        String key = "domain.DirectionSymbol." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheDirectionJump() {
+        assertEquals("Da Segno al Coda", Labels.of(DirectionJump.DA_SEGNO_AL_CODA));
+    }
+
+    @ParameterizedTest
+    @EnumSource(DirectionJump.class)
+    void everyDirectionJumpHasSpanishAndEnglishText(DirectionJump value) {
+        String key = "domain.DirectionJump." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheInterval() {
+        assertEquals("9", Labels.of(Interval.MAJOR_NINTH));
+    }
+
+    @ParameterizedTest
+    @EnumSource(Interval.class)
+    void everyIntervalHasSpanishAndEnglishText(Interval value) {
+        String key = "domain.Interval." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
     }
 }

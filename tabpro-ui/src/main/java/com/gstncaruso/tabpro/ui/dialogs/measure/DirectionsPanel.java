@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.measure;
 import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
 import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +16,9 @@ public final class DirectionsPanel extends FormPanel {
 
     public DirectionsPanel(Optional<DirectionSymbol> initialSymbol, Optional<DirectionJump> initialJump) {
         symbol.setRenderer((list, value, index, isSelected, hasFocus) ->
-                new javax.swing.JLabel(value == null ? "(Ninguno)" : value.label()));
+                new javax.swing.JLabel(value == null ? "(Ninguno)" : Labels.of(value)));
         jump.setRenderer((list, value, index, isSelected, hasFocus) ->
-                new javax.swing.JLabel(value == null ? "(Ninguno)" : value.label()));
+                new javax.swing.JLabel(value == null ? "(Ninguno)" : Labels.of(value)));
 
         addRow("Símbolo", symbol);
         addRow("Salto", jump);

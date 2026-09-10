@@ -1,20 +1,10 @@
 package com.gstncaruso.tabpro.core.model;
 
 public enum DiagramPlacement {
-    ABOVE_THE_STAFF("Sobre el pentagrama"),
-    UNDER_THE_TITLE("Debajo del título"),
-    BOTH("En los dos lados"),
-    HIDDEN("Ocultos");
-
-    private final String label;
-
-    DiagramPlacement(String label) {
-        this.label = label;
-    }
-
-    public String label() {
-        return label;
-    }
+    ABOVE_THE_STAFF,
+    UNDER_THE_TITLE,
+    BOTH,
+    HIDDEN;
 
     public static DiagramPlacement of(boolean onTheScore, boolean underTheTitle) {
         if (onTheScore && underTheTitle) {
