@@ -35,4 +35,10 @@ class TextsTest {
         assertNotEquals(withoutTheNoFallbackControl, Texts.forLocale(Locale.ENGLISH).text("common.accept"));
         assertEquals("OK", Texts.forLocale(Locale.ENGLISH).text("common.accept"));
     }
+
+    @Test
+    void placeholdersAreInterpolatedInBothLanguages() {
+        assertEquals("Hola, Gastón", Texts.get("fixture.greeting", "Gastón"));
+        assertEquals("Hello, Gastón", Texts.forLocale(Locale.ENGLISH).text("fixture.greeting", "Gastón"));
+    }
 }
