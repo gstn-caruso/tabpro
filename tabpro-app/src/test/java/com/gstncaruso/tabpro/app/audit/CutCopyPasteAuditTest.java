@@ -21,7 +21,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class CutCopyPasteAuditTest {
 
     @Test
-    void copiarConCtrlCLlenaElPortapapelesRealDelEditor() throws Exception {
+    void copyingWithCtrlCFillsTheEditorsRealClipboard() throws Exception {
         Editor editor = blankEditor();
         editor.setFret(5);
         MainFrame frame = newFrame(editor);
@@ -39,7 +39,7 @@ class CutCopyPasteAuditTest {
     }
 
     @Test
-    void copiarYPegarConLosAtajosRealesEscribenLaMismaNotaEnOtroCompas() throws Exception {
+    void copyingAndPastingWithTheRealShortcutsWriteTheSameNoteInAnotherBar() throws Exception {
         Editor editor = blankEditor();
         editor.insertMeasure();
         editor.moveToLastMeasure();

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class FingeringRightHandAuditTest {
 
     @Test
-    void elBotonDeManoDerechaAbreElDialogoRealConElFocoEnSuPropioCampo() throws Exception {
+    void theRightHandButtonOpensTheRealDialogWithFocusOnItsOwnField() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
