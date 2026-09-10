@@ -1,3 +1,9 @@
+## [0.58.3](https://github.com/gstn-caruso/tabpro/compare/v0.58.2...v0.58.3) (2026-09-10)
+
+### Bug Fixes
+
+* **score:** los textos de efecto no pisan el traste, el marcador mide lo del manual y el staccato va opuesto a la plica ([#178](https://github.com/gstn-caruso/tabpro/issues/178)) ([9d98728](https://github.com/gstn-caruso/tabpro/commit/9d987289c25d0d0a179b220aa1d2f1fffd370758))
+
 ## [0.58.2](https://github.com/gstn-caruso/tabpro/compare/v0.58.1...v0.58.2) (2026-09-10)
 
 ### Bug Fixes
