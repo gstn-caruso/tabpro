@@ -97,4 +97,13 @@ class PrintSettingsTest {
         assertEquals(1, nothing.sheetsToPrint());
         assertEquals(1, nothing.sheetAt(0));
     }
+
+    @Test
+    void centeredDocumentDefaultsToOffButCanBeAskedExplicitly() {
+        PrintSettings sinCentrar = PrintSettings.of(1, 7, SEVEN_SHEETS, 100, false);
+        PrintSettings centrado = PrintSettings.of(1, 7, SEVEN_SHEETS, 100, false, true);
+
+        assertEquals(false, sinCentrar.centeredDocument());
+        assertEquals(true, centrado.centeredDocument());
+    }
 }

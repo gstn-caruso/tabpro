@@ -24,6 +24,7 @@ public final class PrintPanel extends FormPanel {
     private final JSpinner scalePercent = new JSpinner(new SpinnerNumberModel(
             100, PrintSettings.MIN_SCALE_PERCENT, PrintSettings.MAX_SCALE_PERCENT, 5));
     private final JCheckBox fitToPage = new JCheckBox("Ajustar a la hoja");
+    private final JCheckBox centeredDocument = new JCheckBox("Documento centrado");
     private final JButton configureButton = DialogStyle.flatButton("Configurar…");
 
     public PrintPanel(int sheetCount) {
@@ -43,6 +44,7 @@ public final class PrintPanel extends FormPanel {
         addSection("Posicion");
         addRow("Escala (%)", scalePercent);
         addFullWidthRow(fitToPage);
+        addFullWidthRow(centeredDocument);
         addFullWidthRow(configureButton);
 
         everything.addActionListener(event -> refreshWhatIsEnabled());
@@ -65,11 +67,12 @@ public final class PrintPanel extends FormPanel {
     public PrintSettings toPrintSettings() {
         if (everything.isSelected()) {
             return PrintSettings.of(
-                    1, sheetCount, sheetCount, (Integer) scalePercent.getValue(), fitToPage.isSelected());
+                    1, sheetCount, sheetCount, (Integer) scalePercent.getValue(), fitToPage.isSelected(),
+                    centeredDocument.isSelected());
         }
         return PrintSettings.of(
                 (Integer) fromSheet.getValue(), (Integer) toSheet.getValue(), sheetCount,
-                (Integer) scalePercent.getValue(), fitToPage.isSelected());
+                (Integer) scalePercent.getValue(), fitToPage.isSelected(), centeredDocument.isSelected());
     }
 
     /** Para poder armar la ventana ya pidiendo un rango, y para los tests. */
@@ -89,6 +92,10 @@ public final class PrintPanel extends FormPanel {
     public void fitToPage() {
         fitToPage.setSelected(true);
         refreshWhatIsEnabled();
+    }
+
+    public void centerDocument() {
+        centeredDocument.setSelected(true);
     }
 
     boolean scaleIsEditable() {
