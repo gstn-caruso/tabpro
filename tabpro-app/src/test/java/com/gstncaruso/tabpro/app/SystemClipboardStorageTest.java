@@ -16,11 +16,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 /**
- * La CI (y buena parte de los entornos donde corre tabpro) es headless:
- * Toolkit.getSystemClipboard() tira HeadlessException apenas se lo pide, no hay
- * portapapeles del sistema operativo de verdad. Ninguno de estos tests lo toca -serian
- * no confiables e imposibles de correr en CI-; en cambio prueban por separado el
- * mecanismo de extraer texto de un Transferable y el efecto de la degradacion.
+ * Toolkit.getSystemClipboard() throws HeadlessException in CI and in most environments that run
+ * tabpro headless, so there is no real system clipboard to test against here; these tests
+ * exercise the Transferable-to-text mechanism and the degradation path separately instead.
  */
 class SystemClipboardStorageTest {
 
@@ -38,8 +36,8 @@ class SystemClipboardStorageTest {
 
     @Test
     void pastingWithinTheSameSessionStillWorksWithoutASystemClipboard() {
-        // El <argLine> del pom fuerza -Djava.awt.headless=true: esta suite corre headless de
-        // verdad, asi que este test ejercita la degradacion (no una simulacion de ella).
+        // The pom's <argLine> forces -Djava.awt.headless=true: this suite really runs headless,
+        // so this test exercises the actual degradation, not a simulation of it.
         Editor editor = new Editor(
                 new Score("Prueba", 120, List.of(Track.standardGuitar("Guitarra"))), new SystemClipboardStorage());
         editor.setFret(5);

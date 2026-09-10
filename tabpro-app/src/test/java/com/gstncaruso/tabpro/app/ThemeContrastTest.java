@@ -4,8 +4,8 @@ import com.gstncaruso.tabpro.ui.theme.Contrast;
 import org.junit.jupiter.api.Test;
 
 /**
- * Los dos temas de la ventana: oscuro y claro. Lee la paleta directo de {@link Theme}, sin pasar
- * por {@code UIManager}, para no correr una carrera con otro test que tambien lo mute.
+ * Reads the palette directly from {@link Theme}, not through {@code UIManager}, to avoid a race
+ * with another test mutating that shared, JVM-wide state.
  */
 class ThemeContrastTest {
 

@@ -10,12 +10,6 @@ import com.gstncaruso.tabpro.core.model.Score;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/**
- * El portapapeles del sistema operativo solo entiende texto, asi que lo que se copia
- * tiene que cruzarlo como JSON -reusando MeasureDto/BeatDto, que tabpro-format ya usa
- * para leer y escribir compases y beats en los archivos .json de tabpro-. Estos tests
- * no tocan el portapapeles real (eso rompe en headless); prueban el codec solo.
- */
 class ClippingJsonTest {
 
     private final ClippingJson json = new ClippingJson();

@@ -12,9 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
 
 /**
- * Preferencias [F12] > Accesibilidad, aplicadas de verdad sobre el UIManager. {@code @Isolated}
- * porque estos tests mutan estado global de la maquina virtual (UIManager, la propiedad de
- * animaciones de FlatLaf): no pueden correr al mismo tiempo que otro test.
+ * {@code @Isolated} because these tests mutate JVM-wide state (the UIManager, FlatLaf's
+ * animation system property): they cannot run at the same time as another test.
  */
 @Isolated
 class ThemeAccessibilityTest {
