@@ -15,18 +15,18 @@ public record PitchClass(int letter, int alteration) {
 
     public PitchClass {
         if (letter < 0 || letter >= LETTER_NAMES.length) {
-            throw new IllegalArgumentException("letter debe estar entre 0 y 6: " + letter);
+            throw new IllegalArgumentException("letter must be between 0 and 6: " + letter);
         }
     }
 
     public static PitchClass of(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("una nota necesita un nombre");
+            throw new IllegalArgumentException("a note needs a name");
         }
         String trimmed = name.trim();
         return read(trimmed, SOLFEGE_NAMES)
                 .or(() -> read(trimmed, LETTER_NAMES))
-                .orElseThrow(() -> new IllegalArgumentException("nota desconocida: " + name));
+                .orElseThrow(() -> new IllegalArgumentException("unknown note: " + name));
     }
 
     private static java.util.Optional<PitchClass> read(String name, String[] names) {
@@ -48,7 +48,7 @@ public record PitchClass(int letter, int alteration) {
         boolean sharp = symbol == '#';
         boolean flat = symbol == 'b';
         if ((!sharp && !flat) || suffix.chars().anyMatch(character -> character != symbol)) {
-            throw new IllegalArgumentException("alteración desconocida: " + suffix);
+            throw new IllegalArgumentException("unknown accidental: " + suffix);
         }
         return sharp ? suffix.length() : -suffix.length();
     }

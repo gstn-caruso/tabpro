@@ -8,10 +8,10 @@ public record TempoMap(List<TempoChange> changes) {
 
     public TempoMap {
         if (changes.isEmpty()) {
-            throw new IllegalArgumentException("un mapa de tempo tiene que decir a que velocidad arranca");
+            throw new IllegalArgumentException("a tempo map has to say what speed it starts at");
         }
         if (changes.getFirst().tick() != 0) {
-            throw new IllegalArgumentException("el primer tramo arranca en el tick 0");
+            throw new IllegalArgumentException("the first segment starts at tick 0");
         }
         changes = collapsed(changes);
     }
@@ -87,7 +87,7 @@ public record TempoMap(List<TempoChange> changes) {
         List<TempoChange> kept = new ArrayList<>();
         for (TempoChange change : changes) {
             if (!kept.isEmpty() && change.tick() < kept.getLast().tick()) {
-                throw new IllegalArgumentException("los tramos van en el orden en que suenan");
+                throw new IllegalArgumentException("segments go in the order they sound");
             }
             if (!kept.isEmpty() && change.tick() == kept.getLast().tick()) {
                 kept.removeLast();

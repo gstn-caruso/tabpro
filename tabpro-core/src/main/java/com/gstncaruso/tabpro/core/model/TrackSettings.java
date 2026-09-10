@@ -14,10 +14,10 @@ public record TrackSettings(
 
     public TrackSettings {
         if (capo < 0) {
-            throw new IllegalArgumentException("la cejilla no puede ser negativa: " + capo);
+            throw new IllegalArgumentException("the capo cannot be negative: " + capo);
         }
         if (fretCount < 1 || fretCount > Tuning.MAX_FRET) {
-            throw new IllegalArgumentException("fretCount fuera de rango: " + fretCount);
+            throw new IllegalArgumentException("fretCount out of range: " + fretCount);
         }
     }
 

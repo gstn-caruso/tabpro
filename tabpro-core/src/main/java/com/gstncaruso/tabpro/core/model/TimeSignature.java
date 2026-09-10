@@ -4,10 +4,10 @@ public record TimeSignature(int beats, int beatUnit) {
 
     public TimeSignature {
         if (beats < 1) {
-            throw new IllegalArgumentException("beats debe ser >= 1: " + beats);
+            throw new IllegalArgumentException("beats must be >= 1: " + beats);
         }
         if (!isPowerOfTwoUpTo64(beatUnit)) {
-            throw new IllegalArgumentException("beatUnit debe ser una potencia de 2 entre 1 y 64: " + beatUnit);
+            throw new IllegalArgumentException("beatUnit must be a power of 2 between 1 and 64: " + beatUnit);
         }
     }
 

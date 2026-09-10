@@ -437,7 +437,7 @@ public final class Editor {
 
     public void selectTrack(int index) {
         if (index < 0 || index >= score.trackCount()) {
-            throw new IllegalArgumentException("track fuera de rango: " + index);
+            throw new IllegalArgumentException("track out of range: " + index);
         }
         moveCursor(clampedCursorIn(score, index));
     }
@@ -550,14 +550,14 @@ public final class Editor {
     public void moveTo(int measure, int beat, int string) {
         Track track = currentTrack();
         if (measure < 0 || measure >= track.measureCount()) {
-            throw new IllegalArgumentException("measure fuera de rango: " + measure);
+            throw new IllegalArgumentException("measure out of range: " + measure);
         }
         Voice voice = track.measure(measure).voice(cursor.voice());
         if (beat < 0 || beat >= voice.beatCount()) {
-            throw new IllegalArgumentException("beat fuera de rango: " + beat);
+            throw new IllegalArgumentException("beat out of range: " + beat);
         }
         if (string < 1 || string > track.stringCount()) {
-            throw new IllegalArgumentException("string fuera de rango: " + string);
+            throw new IllegalArgumentException("string out of range: " + string);
         }
         moveCursor(new Cursor(cursor.track(), measure, cursor.voice(), beat, string, cursor.notation(), Optional.empty()));
     }

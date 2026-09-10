@@ -119,7 +119,7 @@ class TrackRendererEffectsTest {
 
         List<ScheduledNote> notes = notesOf(score);
 
-        assertTrue(notes.size() > 1, "el trino tiene que sonar mas de una vez");
+        assertTrue(notes.size() > 1, "the trill has to sound more than once");
         assertTrue(notes.get(0).pitch().midiNumber() != notes.get(1).pitch().midiNumber());
         long totalTicks = notes.stream().mapToLong(ScheduledNote::durationTicks).sum();
         assertEquals(QUARTER.ticks(), totalTicks);
@@ -165,7 +165,7 @@ class TrackRendererEffectsTest {
         ScheduledNote first = notes.get(0);
         ScheduledNote second = notes.get(1);
         assertEquals(0, first.startTick());
-        assertTrue(second.startTick() > 0, "la nota principal arranca despues del adorno");
+        assertTrue(second.startTick() > 0, "the main note starts after the grace note");
     }
 
     @Test
@@ -181,7 +181,7 @@ class TrackRendererEffectsTest {
         assertEquals(2, notes.size());
         ScheduledNote grace = notes.get(0);
         ScheduledNote main = notes.get(1);
-        assertTrue(grace.startTick() < 0, "el adorno le pide prestado tiempo al compas anterior");
+        assertTrue(grace.startTick() < 0, "the grace note borrows time from the previous bar");
         assertEquals(0, main.startTick());
     }
 
@@ -194,7 +194,7 @@ class TrackRendererEffectsTest {
         assertEquals(2, notes.size());
         assertTrue(
                 notes.stream().allMatch(note -> note.bend().isFlat()),
-                "sin transicion no hay nada que conecte el adorno con la nota");
+                "with no transition, nothing connects the grace note to the main note");
     }
 
     @Test
@@ -203,11 +203,11 @@ class TrackRendererEffectsTest {
 
         List<ScheduledNote> notes = notesOf(score);
 
-        assertEquals(1, notes.size(), "el adorno y la nota tienen que ser un solo ataque");
+        assertEquals(1, notes.size(), "the grace note and the main note have to be a single attack");
         ScheduledNote sounding = notes.get(0);
         assertEquals(GRACE_TICKS + QUARTER.ticks() - GRACE_TICKS, sounding.durationTicks());
-        assertEquals(0.0, sounding.bend().semitonesAt(0), "arranca en la altura del adorno");
-        assertEquals(1.0, sounding.bend().semitonesAt(GRACE_TICKS / 2), "y se desliza hasta la nota");
+        assertEquals(0.0, sounding.bend().semitonesAt(0), "starts at the pitch of the grace note");
+        assertEquals(1.0, sounding.bend().semitonesAt(GRACE_TICKS / 2), "and slides into the main note");
         assertEquals(2.0, sounding.bend().semitonesAt(GRACE_TICKS));
     }
 
@@ -229,7 +229,7 @@ class TrackRendererEffectsTest {
 
         assertEquals(1, notes.size());
         ScheduledNote sounding = notes.get(0);
-        assertEquals(0.0, sounding.bend().semitonesAt(GRACE_TICKS / 2), "el ligado no se desliza: se queda en el adorno");
+        assertEquals(0.0, sounding.bend().semitonesAt(GRACE_TICKS / 2), "the hammer-on does not slide: it stays at the grace note");
         assertEquals(2.0, sounding.bend().semitonesAt(GRACE_TICKS));
     }
 
@@ -243,7 +243,7 @@ class TrackRendererEffectsTest {
         List<ScheduledNote> notes = notesOf(score);
 
         assertEquals(1, notes.size());
-        assertTrue(notes.get(0).startTick() < 0, "el adorno le sigue pidiendo prestado tiempo al compas anterior");
+        assertTrue(notes.get(0).startTick() < 0, "the grace note still borrows time from the previous bar");
         assertEquals(2.0, notes.get(0).bend().semitonesAt(GRACE_TICKS));
     }
 
@@ -284,7 +284,7 @@ class TrackRendererEffectsTest {
                 List.of(new Voice(List.of(
                         Beat.of(eighth, new Note(1, 0)), Beat.of(eighth, new Note(1, 1)))),
                         Voice.unused()));
-        Track track = Track.standardGuitar("Guitarra").withMeasure(0, measure);
+        Track track = Track.standardGuitar("Guitar").withMeasure(0, measure);
         Score score = Score.blank().withTrack(0, track);
 
         List<ScheduledNote> notes = notesOf(score);
@@ -299,7 +299,7 @@ class TrackRendererEffectsTest {
 
     private Score scoreWithLeadBeats(Beat... beatsInOrder) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beatsInOrder));
-        Track track = Track.standardGuitar("Guitarra").withMeasure(0, measure);
+        Track track = Track.standardGuitar("Guitar").withMeasure(0, measure);
         return Score.blank().withTrack(0, track);
     }
 }

@@ -10,7 +10,7 @@ public record Tuplet(int enters, int inTheTimeOf) {
 
     public Tuplet {
         if (enters < 1 || inTheTimeOf < 1) {
-            throw new IllegalArgumentException("un grupo irregular necesita cantidades positivas");
+            throw new IllegalArgumentException("an irregular group needs positive amounts");
         }
     }
 
@@ -20,7 +20,7 @@ public record Tuplet(int enters, int inTheTimeOf) {
 
     public static Tuplet of(int enters) {
         if (!AVAILABLE.contains(enters)) {
-            throw new IllegalArgumentException("grupo irregular no soportado: " + enters);
+            throw new IllegalArgumentException("irregular group not supported: " + enters);
         }
         return enters == 1 ? NONE : new Tuplet(enters, Integer.highestOneBit(enters - 1));
     }

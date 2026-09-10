@@ -4,7 +4,7 @@ public record PasteOptions(boolean inserting, int repetitions) {
 
     public PasteOptions {
         if (repetitions < 1) {
-            throw new IllegalArgumentException("hay que pegar al menos una vez: " + repetitions);
+            throw new IllegalArgumentException("must paste at least once: " + repetitions);
         }
     }
 

@@ -6,13 +6,13 @@ public record TupletGroup(int firstBeat, int lastBeat, Tuplet tuplet) {
 
     public TupletGroup {
         if (firstBeat < 0) {
-            throw new IllegalArgumentException("firstBeat debe ser >= 0: " + firstBeat);
+            throw new IllegalArgumentException("firstBeat must be >= 0: " + firstBeat);
         }
         if (lastBeat < firstBeat) {
-            throw new IllegalArgumentException("lastBeat debe ser >= firstBeat: " + lastBeat);
+            throw new IllegalArgumentException("lastBeat must be >= firstBeat: " + lastBeat);
         }
         if (tuplet.isPlain()) {
-            throw new IllegalArgumentException("un grupo irregular no puede ser el tuplet neutro");
+            throw new IllegalArgumentException("an irregular group cannot be the plain tuplet");
         }
     }
 

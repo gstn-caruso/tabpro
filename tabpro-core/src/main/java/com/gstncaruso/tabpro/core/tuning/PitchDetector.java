@@ -11,7 +11,7 @@ public final class PitchDetector {
 
     public PitchDetector(int sampleRate) {
         if (sampleRate <= 0) {
-            throw new IllegalArgumentException("sampleRate debe ser > 0: " + sampleRate);
+            throw new IllegalArgumentException("sampleRate must be > 0: " + sampleRate);
         }
         this.sampleRate = sampleRate;
     }

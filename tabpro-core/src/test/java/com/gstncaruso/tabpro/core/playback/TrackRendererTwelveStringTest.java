@@ -49,7 +49,7 @@ class TrackRendererTwelveStringTest {
 
     private Score scoreWithLeadBeats(boolean twelveString, Beat... beatsInOrder) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beatsInOrder));
-        Track track = Track.standardGuitar("Guitarra")
+        Track track = Track.standardGuitar("Guitar")
                 .withMeasure(0, measure)
                 .mappingSettings(settings -> settings.withTwelveString(twelveString));
         return Score.blank().withTrack(0, track);

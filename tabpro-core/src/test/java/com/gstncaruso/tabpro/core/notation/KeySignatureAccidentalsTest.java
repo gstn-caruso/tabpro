@@ -66,6 +66,6 @@ class KeySignatureAccidentalsTest {
         KeySignatureAccidentals secondMeasure = new KeySignatureAccidentals(Clef.TREBLE, gMajor());
         AccidentalGlyph glyph = secondMeasure.glyphFor(StaffPosition.of(F_SHARP, Clef.TREBLE));
 
-        assertEquals(AccidentalGlyph.NONE, glyph, "la armadura vuelve a regir sola al empezar el compas");
+        assertEquals(AccidentalGlyph.NONE, glyph, "the key signature takes over again on its own at the start of the bar");
     }
 }

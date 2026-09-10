@@ -10,7 +10,7 @@ public record Lyrics(int trackIndex, List<LyricLine> lines) {
 
     public Lyrics {
         if (lines.size() != LyricLine.MAX_LINES) {
-            throw new IllegalArgumentException("la letra tiene " + LyricLine.MAX_LINES + " lineas");
+            throw new IllegalArgumentException("the lyrics have " + LyricLine.MAX_LINES + " lines");
         }
         lines = List.copyOf(lines);
     }

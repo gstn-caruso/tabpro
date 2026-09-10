@@ -24,7 +24,7 @@ public record MeasureAttributes(
 
     public MeasureAttributes {
         if (repeatCount < 0) {
-            throw new IllegalArgumentException("repeatCount debe ser >= 0: " + repeatCount);
+            throw new IllegalArgumentException("repeatCount must be >= 0: " + repeatCount);
         }
         alternateEndings = alternateEndings.stream().distinct().sorted().toList();
     }

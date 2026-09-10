@@ -9,35 +9,35 @@ class ScoreFileFormatTest {
 
     @Test
     void aTabproFileIsItsOwnFormat() {
-        assertEquals(ScoreFileFormat.TABPRO, ScoreFileFormat.of(Path.of("cancion.tabpro")));
+        assertEquals(ScoreFileFormat.TABPRO, ScoreFileFormat.of(Path.of("song.tabpro")));
     }
 
     @Test
     void anUnknownExtensionFallsBackToTabpro() {
-        assertEquals(ScoreFileFormat.TABPRO, ScoreFileFormat.of(Path.of("cancion")));
-        assertEquals(ScoreFileFormat.TABPRO, ScoreFileFormat.of(Path.of("cancion.xyz")));
+        assertEquals(ScoreFileFormat.TABPRO, ScoreFileFormat.of(Path.of("song")));
+        assertEquals(ScoreFileFormat.TABPRO, ScoreFileFormat.of(Path.of("song.xyz")));
     }
 
     @Test
     void recognizesEveryGuitarProExtension() {
-        assertEquals(ScoreFileFormat.GUITAR_PRO, ScoreFileFormat.of(Path.of("cancion.gp3")));
-        assertEquals(ScoreFileFormat.GUITAR_PRO, ScoreFileFormat.of(Path.of("cancion.gp4")));
-        assertEquals(ScoreFileFormat.GUITAR_PRO, ScoreFileFormat.of(Path.of("cancion.gp5")));
-        assertEquals(ScoreFileFormat.GUITAR_PRO, ScoreFileFormat.of(Path.of("cancion.gtp")));
+        assertEquals(ScoreFileFormat.GUITAR_PRO, ScoreFileFormat.of(Path.of("song.gp3")));
+        assertEquals(ScoreFileFormat.GUITAR_PRO, ScoreFileFormat.of(Path.of("song.gp4")));
+        assertEquals(ScoreFileFormat.GUITAR_PRO, ScoreFileFormat.of(Path.of("song.gp5")));
+        assertEquals(ScoreFileFormat.GUITAR_PRO, ScoreFileFormat.of(Path.of("song.gtp")));
     }
 
     @Test
     void recognizesGuitarProRegardlessOfCase() {
-        assertEquals(ScoreFileFormat.GUITAR_PRO, ScoreFileFormat.of(Path.of("Cancion.GP5")));
+        assertEquals(ScoreFileFormat.GUITAR_PRO, ScoreFileFormat.of(Path.of("Song.GP5")));
     }
 
     @Test
     void recognizesTabEdit() {
-        assertEquals(ScoreFileFormat.TAB_EDIT, ScoreFileFormat.of(Path.of("cancion.tef")));
+        assertEquals(ScoreFileFormat.TAB_EDIT, ScoreFileFormat.of(Path.of("song.tef")));
     }
 
     @Test
     void aPowerTabFileIsRecognizedByItsExtension() {
-        assertEquals(ScoreFileFormat.POWER_TAB, ScoreFileFormat.of(Path.of("cancion.ptb")));
+        assertEquals(ScoreFileFormat.POWER_TAB, ScoreFileFormat.of(Path.of("song.ptb")));
     }
 }

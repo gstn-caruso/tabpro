@@ -7,7 +7,7 @@ public record GraceNote(
 
     public GraceNote {
         if (fret < 0) {
-            throw new IllegalArgumentException("fret debe ser >= 0: " + fret);
+            throw new IllegalArgumentException("fret must be >= 0: " + fret);
         }
     }
 

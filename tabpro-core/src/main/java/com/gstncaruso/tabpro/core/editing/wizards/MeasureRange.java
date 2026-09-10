@@ -4,10 +4,10 @@ public record MeasureRange(int from, int to) {
 
     public MeasureRange {
         if (from < 1) {
-            throw new IllegalArgumentException("el primer compás se cuenta desde 1: " + from);
+            throw new IllegalArgumentException("the first bar is numbered from 1: " + from);
         }
         if (to < from) {
-            throw new IllegalArgumentException("el rango termina antes de empezar: " + from + ".." + to);
+            throw new IllegalArgumentException("the range ends before it starts: " + from + ".." + to);
         }
     }
 

@@ -9,7 +9,7 @@ public record ParameterChange(Map<SoundParameter, Integer> values, int transitio
     public ParameterChange {
         values = Map.copyOf(values);
         if (transitionBeats < 0) {
-            throw new IllegalArgumentException("la transición no puede durar menos que nada: " + transitionBeats);
+            throw new IllegalArgumentException("a transition cannot last less than nothing: " + transitionBeats);
         }
     }
 

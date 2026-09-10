@@ -16,19 +16,19 @@ class EditorTracksTest {
     void addsATrackAndSelectsIt() {
         Editor editor = new Editor(Score.blank());
 
-        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardBass("Bass"));
 
         assertEquals(2, editor.score().trackCount());
         assertEquals(1, editor.cursor().track());
-        assertEquals("Bajo", editor.currentTrack().name());
+        assertEquals("Bass", editor.currentTrack().name());
     }
 
     @Test
     void addingATrackAssignsItTheNextFreeChannelPair() {
         Editor editor = new Editor(Score.blank());
 
-        editor.addTrack(Track.standardBass("Bajo"));
-        editor.addTrack(Track.standardGuitar("Guitarra 2"));
+        editor.addTrack(Track.standardBass("Bass"));
+        editor.addTrack(Track.standardGuitar("Guitar 2"));
 
         Channel first = editor.score().track(0).channel();
         Channel second = editor.score().track(1).channel();
@@ -44,7 +44,7 @@ class EditorTracksTest {
     void addingATrackThatForcesChannels11to16AssignsItThere() {
         Editor editor = new Editor(Score.blank());
 
-        editor.addTrack(Track.standardBass("Bajo")
+        editor.addTrack(Track.standardBass("Bass")
                 .mappingSettings(settings -> settings.withForceChannels11to16(true)));
 
         Channel channel = editor.score().track(1).channel();
@@ -56,7 +56,7 @@ class EditorTracksTest {
     void addingAPercussionTrackKeepsItOnTheTenthChannel() {
         Editor editor = new Editor(Score.blank());
 
-        editor.addTrack(Track.percussion("Bateria"));
+        editor.addTrack(Track.percussion("Drums"));
 
         Channel percussion = editor.score().track(1).channel();
         assertEquals(Channel.PERCUSSION_CHANNEL, percussion.number());
@@ -69,7 +69,7 @@ class EditorTracksTest {
         editor.insertMeasure();
         editor.insertMeasure();
 
-        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardBass("Bass"));
 
         assertEquals(editor.score().track(0).measureCount(), editor.currentTrack().measureCount());
     }
@@ -77,7 +77,7 @@ class EditorTracksTest {
     @Test
     void selectsAnotherTrack() {
         Editor editor = new Editor(Score.blank());
-        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardBass("Bass"));
 
         editor.selectTrack(0);
 
@@ -94,7 +94,7 @@ class EditorTracksTest {
         editor.moveDown();
         assertEquals(6, editor.cursor().string());
 
-        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardBass("Bass"));
 
         assertEquals(4, editor.cursor().string());
     }
@@ -110,7 +110,7 @@ class EditorTracksTest {
     @Test
     void removesTheSelectedTrackAndSelectsTheOneBefore() {
         Editor editor = new Editor(Score.blank());
-        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardBass("Bass"));
 
         editor.removeCurrentTrack();
 
@@ -130,15 +130,15 @@ class EditorTracksTest {
     void renamesATrack() {
         Editor editor = new Editor(Score.blank());
 
-        editor.renameTrack(0, "Ritmica");
+        editor.renameTrack(0, "Rhythm");
 
-        assertEquals("Ritmica", editor.score().track(0).name());
+        assertEquals("Rhythm", editor.score().track(0).name());
     }
 
     @Test
     void changesTheMixerOfATrackThatIsNotTheSelectedOne() {
         Editor editor = new Editor(Score.blank());
-        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardBass("Bass"));
 
         editor.setProgram(0, 30);
         editor.setVolume(0, 80);
@@ -169,7 +169,7 @@ class EditorTracksTest {
     void addingATrackCanBeUndone() {
         Editor editor = new Editor(Score.blank());
 
-        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardBass("Bass"));
         editor.undo();
 
         assertEquals(1, editor.score().trackCount());
@@ -179,7 +179,7 @@ class EditorTracksTest {
     @Test
     void insertingAMeasureKeepsEveryTrackTheSameLength() {
         Editor editor = new Editor(Score.blank());
-        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardBass("Bass"));
 
         editor.insertMeasure();
 
@@ -190,7 +190,7 @@ class EditorTracksTest {
     @Test
     void deletingAMeasureKeepsEveryTrackTheSameLength() {
         Editor editor = new Editor(Score.blank());
-        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardBass("Bass"));
         editor.insertMeasure();
 
         editor.deleteMeasure();
@@ -202,7 +202,7 @@ class EditorTracksTest {
     @Test
     void runningPastTheEndAppendsAMeasureToEveryTrack() {
         Editor editor = new Editor(Score.blank());
-        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardBass("Bass"));
         fillTheMeasure(editor);
 
         editor.moveRight();
@@ -215,7 +215,7 @@ class EditorTracksTest {
     @Test
     void aFreshScoreSelectsItsFirstTrack() {
         Editor editor = new Editor(Score.blank());
-        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardBass("Bass"));
 
         editor.replaceScore(Score.blank());
 

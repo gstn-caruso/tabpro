@@ -66,7 +66,7 @@ class ScaleFinderTest {
                 new Note(1, 5),
                 new Note(1, 7));
         Measure bar = new Measure(TimeSignature.fourFour(), List.of(beat));
-        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(bar));
+        Track track = Track.standardGuitar("Guitar").withMeasures(List.of(bar));
 
         List<ScaleMatch> candidates = ScaleFinder.findIn(track, 0, 0);
 

@@ -47,6 +47,6 @@ class ChordNamerTest {
 
         List<Chord> names = ChordNamer.namesFor(diagram, Tuning.standard());
 
-        assertTrue(names.size() >= 4, "un disminuido 7 tiene cuatro nombres igual de validos");
+        assertTrue(names.size() >= 4, "a diminished 7 has four equally valid names");
     }
 }

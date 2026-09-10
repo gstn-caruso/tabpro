@@ -24,7 +24,7 @@ class ScoreTest {
     @Test
     void replacesATrack() {
         Score score = Score.blank();
-        Track newTrack = Track.standardGuitar("Bajo");
+        Track newTrack = Track.standardGuitar("Bass");
         Score replaced = score.withTrack(0, newTrack);
         assertEquals(newTrack, replaced.track(0));
     }
@@ -39,14 +39,14 @@ class ScoreTest {
     @Test
     void changesTitle() {
         Score score = Score.blank();
-        Score changed = score.withTitle("Mi cancion");
-        assertEquals("Mi cancion", changed.title());
+        Score changed = score.withTitle("My song");
+        assertEquals("My song", changed.title());
     }
 
     @Test
     void addsATrackAtTheEnd() {
         Score score = Score.blank();
-        Track bass = Track.standardBass("Bajo");
+        Track bass = Track.standardBass("Bass");
 
         Score grown = score.withTrackAdded(bass);
 
@@ -56,12 +56,12 @@ class ScoreTest {
 
     @Test
     void removesATrack() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bajo"));
+        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
 
         Score shrunk = score.withoutTrackAt(0);
 
         assertEquals(1, shrunk.trackCount());
-        assertEquals("Bajo", shrunk.track(0).name());
+        assertEquals("Bass", shrunk.track(0).name());
     }
 
     @Test
@@ -74,8 +74,8 @@ class ScoreTest {
     @Test
     void countsAsManyMeasuresAsItsLongestTrack() {
         Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
-        Track shortTrack = Track.standardGuitar("Guitarra");
-        Track longTrack = new Track("Bajo", Tuning.standardBass(), Channel.playing(33), List.of(measure, measure, measure));
+        Track shortTrack = Track.standardGuitar("Guitar");
+        Track longTrack = new Track("Bass", Tuning.standardBass(), Channel.playing(33), List.of(measure, measure, measure));
 
         Score score = new Score("", 120, List.of(shortTrack, longTrack));
 
@@ -84,7 +84,7 @@ class ScoreTest {
 
     @Test
     void everyUnmutedTrackIsAudibleWhenNobodyPlaysSolo() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bajo"));
+        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
 
         assertTrue(score.isAudible(0));
         assertTrue(score.isAudible(1));
@@ -92,7 +92,7 @@ class ScoreTest {
 
     @Test
     void aMutedTrackIsNotAudible() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bajo"));
+        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
 
         Score muted = score.withTrack(0, score.track(0).withChannel(score.track(0).channel().toggledMute()));
 
@@ -102,7 +102,7 @@ class ScoreTest {
 
     @Test
     void onlySoloTracksAreAudibleWhenSomebodyPlaysSolo() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bajo"));
+        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
 
         Score soloed = score.withTrack(1, score.track(1).withChannel(score.track(1).channel().toggledSolo()));
 
@@ -122,7 +122,7 @@ class ScoreTest {
 
     @Test
     void insertsAMeasureInEveryTrackSoTheyStayAligned() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bajo"));
+        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
 
         Score grown = score.withMeasureInsertedInEveryTrackAt(0);
 
@@ -134,8 +134,8 @@ class ScoreTest {
     @Test
     void aMeasureInsertedInEveryTrackKeepsTheTimeSignatureOfEachOne() {
         TimeSignature threeFour = new TimeSignature(3, 4);
-        Track waltz = Track.standardBass("Bajo").withMeasure(0, Measure.empty(threeFour, Duration.quarter()));
-        Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), waltz));
+        Track waltz = Track.standardBass("Bass").withMeasure(0, Measure.empty(threeFour, Duration.quarter()));
+        Score score = new Score("", 120, List.of(Track.standardGuitar("Guitar"), waltz));
 
         Score grown = score.withMeasureInsertedInEveryTrackAt(0);
 
@@ -145,7 +145,7 @@ class ScoreTest {
 
     @Test
     void appendsAMeasureToEveryTrackWhenInsertingPastTheEnd() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bajo"));
+        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
 
         Score grown = score.withMeasureInsertedInEveryTrackAt(score.measureCount());
 
@@ -156,7 +156,7 @@ class ScoreTest {
     @Test
     void removesAMeasureFromEveryTrack() {
         Score score = Score.blank()
-                .withTrackAdded(Track.standardBass("Bajo"))
+                .withTrackAdded(Track.standardBass("Bass"))
                 .withMeasureInsertedInEveryTrackAt(0);
 
         Score shrunk = score.withoutMeasureInEveryTrackAt(0);
@@ -168,8 +168,8 @@ class ScoreTest {
     @Test
     void leavesShorterTracksAloneWhenRemovingAMeasureTheyDoNotHave() {
         Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
-        Track longTrack = new Track("Larga", Tuning.standard(), Channel.playing(25), List.of(measure, measure));
-        Score score = new Score("", 120, List.of(longTrack, Track.standardBass("Corta")));
+        Track longTrack = new Track("Long", Tuning.standard(), Channel.playing(25), List.of(measure, measure));
+        Score score = new Score("", 120, List.of(longTrack, Track.standardBass("Short")));
 
         Score shrunk = score.withoutMeasureInEveryTrackAt(1);
 
@@ -180,7 +180,7 @@ class ScoreTest {
     @Test
     void rejectsANonPositiveTempo() {
         assertThrows(IllegalArgumentException.class,
-                () -> new Score("", 0, List.of(Track.standardGuitar("Guitarra"))));
+                () -> new Score("", 0, List.of(Track.standardGuitar("Guitar"))));
     }
 
     @Test
@@ -211,7 +211,7 @@ class ScoreTest {
         }
         score = score.withAttributesInEveryTrackAt(1, MeasureAttributes.plain().withMarker(Marker.named("Intro")));
         score = score.withAttributesInEveryTrackAt(
-                3, MeasureAttributes.plain().withMarker(Marker.named("Estribillo")));
+                3, MeasureAttributes.plain().withMarker(Marker.named("Chorus")));
 
         assertEquals(1, score.measureOfMarkerInEffectAt(2).getAsInt());
         assertTrue(score.measureOfMarkerInEffectAt(0).isEmpty());

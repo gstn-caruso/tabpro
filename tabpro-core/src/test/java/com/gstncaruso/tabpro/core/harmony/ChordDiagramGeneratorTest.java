@@ -40,11 +40,11 @@ class ChordDiagramGeneratorTest {
 
         List<Integer> soundingSemitones = soundingSemitonesOf(diagrams);
 
-        assertFalse(soundingSemitones.isEmpty(), "ningun diagrama toca una cuerda: no habria nada que verificar");
+        assertFalse(soundingSemitones.isEmpty(), "no diagram plays a string: there would be nothing to check");
         assertEquals(
                 List.of(),
                 soundingSemitones.stream().filter(semitone -> !cMajor.formulaSemitones().contains(semitone)).toList(),
-                "hay cuerdas sonando notas ajenas al acorde");
+                "some strings sound notes foreign to the chord");
     }
 
     private static List<Integer> soundingSemitonesOf(List<ChordDiagram> diagrams) {
@@ -116,8 +116,8 @@ class ChordDiagramGeneratorTest {
                 cMajor, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX,
                 Set.of(Interval.PERFECT_FIFTH));
 
-        assertTrue(withoutRequiredFifth.containsAll(normal), "omitir relaja el requisito, no prohibe la nota");
-        assertTrue(withoutRequiredFifth.size() > normal.size(), "aparecen posiciones nuevas sin la quinta");
+        assertTrue(withoutRequiredFifth.containsAll(normal), "omitting relaxes the requirement, it does not forbid the note");
+        assertTrue(withoutRequiredFifth.size() > normal.size(), "new positions appear without the fifth");
     }
 
     @Test
@@ -137,6 +137,6 @@ class ChordDiagramGeneratorTest {
                 return string;
             }
         }
-        throw new IllegalStateException("un diagrama valido siempre tiene alguna cuerda sonando");
+        throw new IllegalStateException("a valid diagram always has some string sounding");
     }
 }

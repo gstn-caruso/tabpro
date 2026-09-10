@@ -8,7 +8,7 @@ public record Marker(String name, ScoreColor color) {
 
     public Marker {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("un marcador necesita un nombre");
+            throw new IllegalArgumentException("a marker needs a name");
         }
     }
 

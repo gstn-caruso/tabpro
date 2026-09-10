@@ -13,8 +13,8 @@ class SharedClipboardTest {
     @Test
     void copyingInOneEditorAndPastingInAnotherSharesTheMeasures() {
         ClipboardStorage sharedPlace = ClipboardStorage.inMemory();
-        Editor first = new Editor(new Score("Origen", 120, List.of(Track.standardGuitar("Guitarra"))), sharedPlace);
-        Editor second = new Editor(new Score("Destino", 120, List.of(Track.standardGuitar("Guitarra"))), sharedPlace);
+        Editor first = new Editor(new Score("Source", 120, List.of(Track.standardGuitar("Guitar"))), sharedPlace);
+        Editor second = new Editor(new Score("Destination", 120, List.of(Track.standardGuitar("Guitar"))), sharedPlace);
 
         first.setFret(5);
         first.copy(false);
@@ -28,8 +28,8 @@ class SharedClipboardTest {
 
     @Test
     void editorsWithTheirOwnStorageDoNotShareAnything() {
-        Editor first = new Editor(new Score("Origen", 120, List.of(Track.standardGuitar("Guitarra"))));
-        Editor second = new Editor(new Score("Destino", 120, List.of(Track.standardGuitar("Guitarra"))));
+        Editor first = new Editor(new Score("Source", 120, List.of(Track.standardGuitar("Guitar"))));
+        Editor second = new Editor(new Score("Destination", 120, List.of(Track.standardGuitar("Guitar"))));
 
         first.setFret(5);
         first.copy(false);

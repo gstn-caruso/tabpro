@@ -27,7 +27,7 @@ public record Channel(
         requireInRange(phaser, "phaser");
         requireInRange(tremolo, "tremolo");
         if (port < 1 || port > PORT_COUNT) {
-            throw new IllegalArgumentException("port debe estar entre 1 y " + PORT_COUNT + ": " + port);
+            throw new IllegalArgumentException("port must be between 1 and " + PORT_COUNT + ": " + port);
         }
         requireAChannelOfThePort(number, "number");
         requireAChannelOfThePort(effectChannel, "effectChannel");
@@ -155,14 +155,14 @@ public record Channel(
 
     private static void requireInRange(int value, String name) {
         if (value < 0 || value > MAX) {
-            throw new IllegalArgumentException(name + " debe estar entre 0 y " + MAX + ": " + value);
+            throw new IllegalArgumentException(name + " must be between 0 and " + MAX + ": " + value);
         }
     }
 
     private static void requireAChannelOfThePort(int value, String name) {
         if (value < 1 || value > CHANNELS_PER_PORT) {
             throw new IllegalArgumentException(
-                    name + " debe estar entre 1 y " + CHANNELS_PER_PORT + ": " + value);
+                    name + " must be between 1 and " + CHANNELS_PER_PORT + ": " + value);
         }
     }
 }

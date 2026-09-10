@@ -146,8 +146,8 @@ class PitchTrajectoryTest {
 
         PitchTrajectory curve = PitchTrajectory.of(withVibrato, 960);
 
-        assertTrue(maxBetween(curve, 0, 960) > 2.0, "la vibrada tiene que pasar por encima de la altura del punto");
-        assertTrue(minBetween(curve, 0, 960) < 2.0, "la vibrada tiene que pasar por debajo de la altura del punto");
+        assertTrue(maxBetween(curve, 0, 960) > 2.0, "the vibrato has to swing above the pitch of the point");
+        assertTrue(minBetween(curve, 0, 960) < 2.0, "the vibrato has to swing below the pitch of the point");
     }
 
     @Test
@@ -171,7 +171,7 @@ class PitchTrajectoryTest {
         double softDeparture = maxBetween(PitchTrajectory.of(soft, 960), 0, 960);
         double strongDeparture = maxBetween(PitchTrajectory.of(strong, 960), 0, 960);
 
-        assertTrue(strongDeparture > softDeparture, "tres niveles de vibrada tienen que apartarse mas que uno");
+        assertTrue(strongDeparture > softDeparture, "three vibrato levels have to swing farther than one");
     }
 
     @Test
@@ -183,9 +183,9 @@ class PitchTrajectoryTest {
 
         PitchTrajectory curve = PitchTrajectory.of(onlyAtTheStart, 960);
 
-        assertTrue(maxBetween(curve, 0, 470) > 2.0, "el primer tramo vibra");
-        assertEquals(2.0, maxBetween(curve, 490, 960), "el tramo sin vibrada queda quieto");
-        assertEquals(2.0, minBetween(curve, 490, 960), "el tramo sin vibrada queda quieto");
+        assertTrue(maxBetween(curve, 0, 470) > 2.0, "the first segment vibrates");
+        assertEquals(2.0, maxBetween(curve, 490, 960), "the segment without vibrato stays still");
+        assertEquals(2.0, minBetween(curve, 490, 960), "the segment without vibrato stays still");
     }
 
     private static double maxBetween(PitchTrajectory curve, long from, long to) {

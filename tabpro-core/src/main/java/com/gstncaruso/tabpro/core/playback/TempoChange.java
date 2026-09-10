@@ -4,10 +4,10 @@ public record TempoChange(long tick, int bpm) {
 
     public TempoChange {
         if (tick < 0) {
-            throw new IllegalArgumentException("un tramo no puede empezar antes del principio: " + tick);
+            throw new IllegalArgumentException("a segment cannot start before the beginning: " + tick);
         }
         if (bpm <= 0) {
-            throw new IllegalArgumentException("bpm debe ser > 0: " + bpm);
+            throw new IllegalArgumentException("bpm must be > 0: " + bpm);
         }
     }
 

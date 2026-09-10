@@ -10,7 +10,7 @@ public record Tuning(String name, List<Pitch> strings) {
 
     public Tuning {
         if (strings.isEmpty()) {
-            throw new IllegalArgumentException("una afinación necesita al menos una cuerda");
+            throw new IllegalArgumentException("a tuning needs at least one string");
         }
         strings = List.copyOf(strings);
     }
@@ -41,7 +41,7 @@ public record Tuning(String name, List<Pitch> strings) {
 
     public Pitch pitchOfString(int string) {
         if (string < 1 || string > stringCount()) {
-            throw new IllegalArgumentException("string fuera de rango: " + string);
+            throw new IllegalArgumentException("string out of range: " + string);
         }
         return strings.get(string - 1);
     }
