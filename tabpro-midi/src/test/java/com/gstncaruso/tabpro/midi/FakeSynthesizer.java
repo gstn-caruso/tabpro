@@ -176,7 +176,7 @@ final class FakeSynthesizer implements Synthesizer {
 
         @Override
         public String getName() {
-            return "banco de prueba";
+            return "test bank";
         }
 
         @Override
