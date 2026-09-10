@@ -99,8 +99,6 @@ class ScoreColorsContrastTest {
                 new Pair("borde de tecla (KEY_EDGE) / tecla blanca", InstrumentColors.KEY_EDGE, whiteKey,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("borde de tecla (KEY_EDGE) / tecla negra", InstrumentColors.KEY_EDGE, blackKey,
-                        Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("cejilla (NUT) / mastil electrico", InstrumentColors.NUT, FretboardType.ELECTRIC.woodColor(),
                         Contrast.GRAPHICAL_MINIMUM_RATIO)));
         pairs.addAll(fretboardPairs(FretboardType.ELECTRIC));
         pairs.addAll(fretboardPairs(FretboardType.ACOUSTIC));
