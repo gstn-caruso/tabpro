@@ -113,19 +113,25 @@ public final class Commands {
     }
 
     private void defineEditCommands() {
-        define("edit.undo", "Deshacer", editor::undo).withAccelerator("ctrl Z").withIcon(Icons.undo());
-        define("edit.redo", "Rehacer", editor::redo).withAccelerator("ctrl shift Z").withIcon(Icons.redo());
-        define("edit.cut", "Cortar", editor::cut).withAccelerator("ctrl X").withIcon(Icons.cut());
-        define("edit.copy", "Copiar", () -> editor.copy(true)).withAccelerator("ctrl C").withIcon(Icons.copy());
-        define("edit.copyTrack", "Copiar sólo esta pista", () -> editor.copy(false));
-        define("edit.paste", "Pegar", () -> editor.paste(PasteOptions.replacingOnce()))
+        define("edit.undo", Texts.get("menus.edit.undo"), editor::undo)
+                .withAccelerator("ctrl Z").withIcon(Icons.undo());
+        define("edit.redo", Texts.get("menus.edit.redo"), editor::redo)
+                .withAccelerator("ctrl shift Z").withIcon(Icons.redo());
+        define("edit.cut", Texts.get("menus.edit.cut"), editor::cut).withAccelerator("ctrl X").withIcon(Icons.cut());
+        define("edit.copy", Texts.get("menus.edit.copy"), () -> editor.copy(true))
+                .withAccelerator("ctrl C").withIcon(Icons.copy());
+        define("edit.copyTrack", Texts.get("menus.edit.copyTrack"), () -> editor.copy(false));
+        define("edit.paste", Texts.get("menus.edit.paste"), () -> editor.paste(PasteOptions.replacingOnce()))
                 .withAccelerator("ctrl V").withIcon(Icons.paste());
-        define("edit.pasteOptions", "Pegar con opciones…", dialogs::pasteOptions);
-        define("edit.selectAll", "Seleccionar todo", editor::selectAll).withAccelerator("ctrl A");
-        define("edit.leadVoice", "Voz 1 (principal)", () -> editor.editVoice(VoicePart.LEAD)).withAccelerator("ctrl 1");
-        define("edit.bassVoice", "Voz 2 (bajos)", () -> editor.editVoice(VoicePart.BASS)).withAccelerator("ctrl 2");
-        define("edit.emptyBar", "Vaciar el compás", () -> editor.emptyCurrentMeasure(false));
-        define("edit.emptyBarEveryTrack", "Vaciar el compás en todas las pistas",
+        define("edit.pasteOptions", Texts.get("menus.edit.pasteOptions"), dialogs::pasteOptions);
+        define("edit.selectAll", Texts.get("menus.edit.selectAll"), editor::selectAll)
+                .withAccelerator("ctrl A");
+        define("edit.leadVoice", Texts.get("menus.edit.leadVoice"), () -> editor.editVoice(VoicePart.LEAD))
+                .withAccelerator("ctrl 1");
+        define("edit.bassVoice", Texts.get("menus.edit.bassVoice"), () -> editor.editVoice(VoicePart.BASS))
+                .withAccelerator("ctrl 2");
+        define("edit.emptyBar", Texts.get("menus.edit.emptyBar"), () -> editor.emptyCurrentMeasure(false));
+        define("edit.emptyBarEveryTrack", Texts.get("menus.edit.emptyBarEveryTrack"),
                 () -> editor.emptyCurrentMeasure(true));
     }
 
