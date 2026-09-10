@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.ui.dialogs.effects;
 
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
-import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -37,8 +36,8 @@ public final class BendGridPanel extends JComponent implements AccessibleControl
     public BendGridPanel(BendCurveEditor editor) {
         this.editor = editor;
         setPreferredSize(new Dimension(360, 180));
-        setToolTipText(Texts.get("edit_dialogs.BendGridPanel.title"));
-        getAccessibleContext().setAccessibleName(Texts.get("edit_dialogs.BendGridPanel.title"));
+        setToolTipText("Grilla del bend");
+        getAccessibleContext().setAccessibleName("Grilla del bend");
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent event) {
