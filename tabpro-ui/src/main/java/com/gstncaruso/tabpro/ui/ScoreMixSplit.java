@@ -5,11 +5,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 
-/**
- * La partitura y la mesa de mezcla comparten un JSplitPane vertical. Esta clase es la
- * responsable de esa disposicion: cual va arriba y cual abajo, cuanto ocupa la mesa cuando
- * esta visible, y el intercambio que pide el manual en Ver > Intercambiar vistas.
- */
 public final class ScoreMixSplit {
 
     private final JComponent score;
@@ -33,25 +28,19 @@ public final class ScoreMixSplit {
         return swapped;
     }
 
-    /** El componente que hoy esta arriba del split. */
     public java.awt.Component top() {
         return split.getTopComponent();
     }
 
-    /** El componente que hoy esta abajo del split. */
     public java.awt.Component bottom() {
         return split.getBottomComponent();
     }
 
-    /**
-     * Ver > Intercambiar vistas: la partitura y la mesa de mezcla cambian de lugar, sin que
-     * la mesa deje de ser una franja chica.
-     */
     public void toggleView() {
         int mixTableHeight = mixTable.getHeight();
         swapped = !swapped;
-        // JSplitPane no reubica un componente que ya es hijo suyo en la otra posicion
-        // si no se lo saca primero de la que tiene.
+        // JSplitPane will not move a component that is already its child to the other slot
+        // unless it is removed from its current one first.
         split.setTopComponent(null);
         split.setBottomComponent(null);
         if (swapped) {
@@ -64,12 +53,10 @@ public final class ScoreMixSplit {
         applyMixTableHeight(mixTableHeight);
     }
 
-    /** La mesa ocupa lo suyo; el resto es partitura. Se llama al abrir la ventana y al volver a mostrarla. */
     public void showMixTable() {
         applyMixTableHeight(mixTable.preferredPanelHeight());
     }
 
-    /** La mesa desaparece del todo, sin cambiar el orden de arriba/abajo. */
     public void hideMixTable() {
         split.setDividerLocation(swapped ? 0 : split.getHeight());
     }

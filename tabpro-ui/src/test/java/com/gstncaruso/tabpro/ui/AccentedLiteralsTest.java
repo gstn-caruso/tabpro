@@ -14,13 +14,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Ninguna de estas formas sin tilde puede aparecer, como palabra completa, en un literal de texto
- * de la interfaz: son justamente las que la auditoria visual encontro escritas sin acento
- * (Tamano, Titulo, Guitarra estandar, Jonico, Dorico, Eolico...). Un identificador de comando, una
- * clave de switch, un placeholder de plantilla o un protocolo externo (MIDI, PDF, nombres de
- * fuente) no son texto de interfaz: quedan afuera de este chequeo.
- */
 class AccentedLiteralsTest {
 
     private static final Set<String> MISSING_ACCENT_FORMS = Set.of(
@@ -34,12 +27,10 @@ class AccentedLiteralsTest {
             "direccion", "transicion", "violin", "album", "asi", "aqui", "despues", "encontro",
             "ningun", "alteracion", "pua", "recuperacion", "espanola", "margenes");
 
-    /** Archivos enteros que son un protocolo externo en ingles, no texto de interfaz. */
-    private static final Set<String> EXCLUDED_FILES = Set.of(
+    private static final Set<String> FILES_WHOSE_CONTENT_IS_AN_ENGLISH_ONLY_EXTERNAL_PROTOCOL = Set.of(
             "tabpro-core/src/main/java/com/gstncaruso/tabpro/core/model/Instruments.java");
 
-    /** Un literal puntual que es una clave tecnica, no texto de interfaz. */
-    private static final Set<String> TECHNICAL_KEYS = Set.of(
+    private static final Set<String> TECHNICAL_LITERALS_THAT_ARE_NOT_INTERFACE_TEXT = Set.of(
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/page/PageFields.java::album",
             "tabpro-core/src/main/java/com/gstncaruso/tabpro/core/model/Channel.java::tremolo");
 
@@ -75,13 +66,13 @@ class AccentedLiteralsTest {
 
     private static boolean isNotExcluded(Path file) {
         String path = file.toString().replace('\\', '/');
-        return EXCLUDED_FILES.stream().noneMatch(path::endsWith);
+        return FILES_WHOSE_CONTENT_IS_AN_ENGLISH_ONLY_EXTERNAL_PROTOCOL.stream().noneMatch(path::endsWith);
     }
 
     private static Stream<Literal> literalsIn(Path file) {
         try {
             String content = Files.readString(file);
-            return stringLiteralsIn(content).stream()
+            return stringLiteralsSkippingComments(content).stream()
                     .filter(literal -> !isTechnicalKey(file, literal))
                     .map(literal -> new Literal(file, literal))
                     .toList()
@@ -93,11 +84,10 @@ class AccentedLiteralsTest {
 
     private static boolean isTechnicalKey(Path file, String literal) {
         String path = file.toString().replace('\\', '/');
-        return TECHNICAL_KEYS.stream().anyMatch(key -> (path + "::" + literal).endsWith(key));
+        return TECHNICAL_LITERALS_THAT_ARE_NOT_INTERFACE_TEXT.stream().anyMatch(key -> (path + "::" + literal).endsWith(key));
     }
 
-    /** Extrae el contenido de los literales de texto, sin comillas, salteando comentarios. */
-    private static List<String> stringLiteralsIn(String source) {
+    private static List<String> stringLiteralsSkippingComments(String source) {
         List<String> found = new java.util.ArrayList<>();
         int i = 0;
         int n = source.length();

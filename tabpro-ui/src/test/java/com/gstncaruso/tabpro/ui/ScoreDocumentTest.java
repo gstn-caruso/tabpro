@@ -23,7 +23,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@ResourceLock(RealPreferencesTests.LOCK)
+@ResourceLock(RealPreferencesTests.SHARED_PREFERENCES_FILESYSTEM_NODE_LOCK)
 class ScoreDocumentTest {
 
     private final List<java.util.prefs.Preferences> scratchNodes = new ArrayList<>();
@@ -112,12 +112,6 @@ class ScoreDocumentTest {
         assertEquals(Score.blank(), editor.score());
     }
 
-    /**
-     * Archivo > Nuevo tiene que usar lo que este guardado en "Propiedades por defecto". Este
-     * test ata esa lectura a newScore(): si algun dia alguien vuelve a llamar Score::blank a
-     * secas en vez del supplier, la partitura nueva no tiene tempo 90 ni compas 3/4 y el test
-     * se cae, aunque DefaultScorePropertiesTest siga verde.
-     */
     @Test
     void newScoreUsaLoQueHayGuardadoEnPropiedadesPorDefecto() {
         java.util.prefs.Preferences defaultsNode = java.util.prefs.Preferences.userRoot()

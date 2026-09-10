@@ -7,10 +7,6 @@ import com.gstncaruso.tabpro.ui.browser.ScoreSearch;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
-/**
- * El escritorio le pasa a tabpro cualquiera de los archivos que sabe abrir, asi
- * que hay que reconocerlos por su nombre antes de elegir con que leerlos.
- */
 class ScoreFileKindTest {
 
     @Test

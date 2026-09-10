@@ -16,9 +16,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Ningun componente Swing puede suscribirse al Editor sin pasar por EdtEditorListener: el
- * hilo que dispare la notificacion puede ser cualquiera (el reproductor, el que mueve el
- * cursor), y solo el adaptador garantiza que la entrega llegue al EDT.
+ * No Swing component may subscribe to the Editor without going through EdtEditorListener: the
+ * thread that fires the notification can be anything (the player, whatever moves the cursor),
+ * and only the adapter guarantees delivery reaches the EDT, as Swing requires.
  */
 class EditorListenerSubscriptionTest {
 

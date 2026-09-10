@@ -55,11 +55,6 @@ class TransportTest {
         assertEquals(timeline, player.lastTimeline);
     }
 
-    /**
-     * El explorador de partituras del manual: "it is possible to set the number of bars to
-     * play before jumping to the next file". previewBars es quien de verdad acota cuantos
-     * compases suenan; el salto al siguiente archivo lo decide quien lo llama.
-     */
     @Test
     void previewBarsPlaysOnlyTheRequestedBars() {
         Score score = twoMeasureScore();
@@ -90,10 +85,6 @@ class TransportTest {
         assertTrue(finished[0]);
     }
 
-    /**
-     * Si alguien para la reproduccion a mano antes de que termine, el aviso no tiene que
-     * llegar: quien pidio previewBars -el explorador- no debe saltar al siguiente archivo.
-     */
     @Test
     void stoppingBeforeItFinishesCancelsTheNotification() {
         boolean[] finished = {false};
@@ -217,13 +208,6 @@ class TransportTest {
         assertTrue(transport.isMetronomeOn());
     }
 
-    /**
-     * Preferencias [F12], linea 2151 del manual: la pestaña General configura el metronomo.
-     * MainFrame siembra este estado al arrancar -{@code new Transport(..., preferences
-     * .metronomeEnabled())}-, sin que nadie toque Sonido > Metronomo. La prueba no mira si la
-     * preferencia "se leyo": construye el Transport tal cual arranca el programa y comprueba
-     * que el metronomo ya esta sonando.
-     */
     @Test
     void startsWithTheMetronomeOnWhenTheProgramSaysSo() {
         Transport metronomeOnFromTheStart = new Transport(editor, player, Runnable::run, true);
@@ -283,11 +267,6 @@ class TransportTest {
                 "arrancar en el medio recupera el tempo que dejó el cambio anterior");
     }
 
-    /**
-     * El manual: "durante la reproduccion, el tempo actual se muestra en la barra de titulo".
-     * Importa porque el tempo puede cambiar a mitad de partitura -hay un mapa de tempo- y porque
-     * el tempo relativo lo escala.
-     */
     @Test
     void hasNoTempoBeforePlaying() {
         assertEquals(java.util.OptionalInt.empty(), transport.currentTempoBpm());
@@ -354,10 +333,6 @@ class TransportTest {
         return new Score("", 120, java.util.List.of(Track.standardGuitar("Guitarra").withMeasure(0, measure)));
     }
 
-    /**
-     * El manual: durante la reproduccion se puede hacer clic en la partitura para volver a
-     * arrancar desde ahi sin frenar. Sin reproduccion no hay nada que saltar.
-     */
     @Test
     void seekToDoesNothingWhenNotPlaying() {
         transport.seekTo(0, 0);
@@ -385,12 +360,6 @@ class TransportTest {
         assertEquals(null, player.lastSeekTick);
     }
 
-    /**
-     * El manual: "los botones permiten reproducir la partitura nota por nota. Durante la
-     * reproducción, estos botones cambian a ◀◀ ▶▶ y permiten ir al compás anterior o al
-     * siguiente sin frenar." Sin reproducción, stepForward/stepBack siguen navegando nota a nota
-     * y no le piden nada al player.
-     */
     @Test
     void withoutPlaybackStepForwardMovesNoteByNoteAndDoesNotSeek() {
         transport.stepForward();

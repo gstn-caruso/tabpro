@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-/** El archivo abierto: donde vive, si tiene cambios sin guardar y como se recupera. */
 public final class ScoreDocument {
 
     public static final String UNTITLED = "Sin título";
@@ -31,12 +30,6 @@ public final class ScoreDocument {
         this(editor, files, preferences, Score::blank);
     }
 
-    /**
-     * El supplier es de donde sale la partitura de Archivo > Nuevo: por defecto Score::blank,
-     * pero MainFrame le pasa lo que haya en "Propiedades por defecto" (ver
-     * com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties). Es la unica lectura de esos
-     * valores por defecto, y vive aca -no en MainFrame- porque esta clase se puede testear.
-     */
     public ScoreDocument(Editor editor, ScoreFiles files, Preferences preferences, Supplier<Score> newScoreTemplate) {
         this.editor = editor;
         this.files = files;
@@ -50,7 +43,6 @@ public final class ScoreDocument {
         return Optional.ofNullable(path);
     }
 
-    /** Los archivos que se abrieron o guardaron hace poco, para ofrecerlos en el menu Archivo. */
     public java.util.List<Path> recentFiles() {
         return preferences.recentFiles();
     }
@@ -59,7 +51,6 @@ public final class ScoreDocument {
         return path == null ? UNTITLED : path.getFileName().toString();
     }
 
-    /** El titulo de la ventana: el archivo, un asterisco si hay cambios, y la partitura. */
     public String windowTitle() {
         String heading = editor.score().info().heading();
         return displayName() + (hasUnsavedChanges() ? " *" : "") + " — " + heading + " — tabpro";
@@ -92,7 +83,6 @@ public final class ScoreDocument {
         markSaved();
     }
 
-    /** Al importar, la partitura entra sin archivo propio: hay que guardarla como .tabpro. */
     public void adopt(Score imported) {
         editor.replaceScore(imported);
         this.path = null;
@@ -105,7 +95,6 @@ public final class ScoreDocument {
         markSaved();
     }
 
-    /** El archivo temporal con el que se recupera la partitura si el programa se corta. */
     public Path recoveryFile() {
         return Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recuperación" + EXTENSION);
     }
@@ -118,8 +107,7 @@ public final class ScoreDocument {
     public void discardRecovery() {
         try {
             Files.deleteIfExists(recoveryFile());
-        } catch (IOException ignored) {
-            // Si no se puede borrar, la proxima recuperacion simplemente lo pisa.
+        } catch (IOException nextRecoveryWillOverwriteIt) {
         }
     }
 

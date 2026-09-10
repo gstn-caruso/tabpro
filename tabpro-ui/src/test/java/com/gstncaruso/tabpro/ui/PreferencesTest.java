@@ -12,7 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@ResourceLock(RealPreferencesTests.LOCK)
+@ResourceLock(RealPreferencesTests.SHARED_PREFERENCES_FILESYSTEM_NODE_LOCK)
 class PreferencesTest {
 
     private final java.util.prefs.Preferences node =
@@ -55,10 +55,6 @@ class PreferencesTest {
         assertEquals(Preferences.MAX_RECENT_FILES, preferences.recentFiles().size());
     }
 
-    /**
-     * El manual: "You can force the multitrack view when using the Horizontal Screen Mode".
-     * Apagada por defecto, para no cambiar lo que ya se ve hoy.
-     */
     @Test
     void forcingMultitrackOnHorizontalScreenStartsOff() {
         assertFalse(preferences.forceMultitrackInHorizontalMode());
@@ -71,12 +67,6 @@ class PreferencesTest {
         assertTrue(preferences.forceMultitrackInHorizontalMode());
     }
 
-    /**
-     * Preferencias [F12]: "Figura por defecto al insertar" y "Desplazar la pantalla durante la
-     * reproduccion" se quedaban solo en memoria -{@code editingPreferences} en MainFrame- y se
-     * olvidaban al cerrar el programa. Tienen que persistir aca, igual que undoEnabled y
-     * autosaveEvery.
-     */
     @Test
     void remembersTheDefaultNoteValueAndTheAutoScrollPreference() {
         preferences.setDefaultNoteValue(NoteValue.EIGHTH);
@@ -92,10 +82,6 @@ class PreferencesTest {
         assertTrue(preferences.autoScrollDuringPlayback());
     }
 
-    /**
-     * Manual, linea 2151: la pestaña General de Preferencias [F12] configura el metronomo.
-     * MainFrame siembra {@link Transport} con este valor al arrancar.
-     */
     @Test
     void remembersTheMetronomePreference() {
         preferences.setMetronomeEnabled(true);
@@ -108,7 +94,6 @@ class PreferencesTest {
         assertFalse(preferences.metronomeEnabled());
     }
 
-    /** Preferencias [F12] > Accesibilidad: la fuente base de la interfaz, hoy fija en 12pt. */
     @Test
     void interfaceFontSizeStartsAtTwelvePoints() {
         assertEquals(12, preferences.interfaceFontSize());
@@ -121,7 +106,6 @@ class PreferencesTest {
         assertEquals(16, preferences.interfaceFontSize());
     }
 
-    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
     @Test
     void highContrastStartsOff() {
         assertFalse(preferences.highContrastEnabled());
@@ -134,7 +118,6 @@ class PreferencesTest {
         assertTrue(preferences.highContrastEnabled());
     }
 
-    /** Preferencias [F12] > Accesibilidad: "Sin animaciones" apaga las de FlatLaf y las propias. */
     @Test
     void animationsStartEnabled() {
         assertFalse(preferences.animationsDisabled());
@@ -147,7 +130,6 @@ class PreferencesTest {
         assertTrue(preferences.animationsDisabled());
     }
 
-    /** Ver > Menus y barras > Efectos: visible por defecto, como las otras filas. */
     @Test
     void effectsToolBarStartsVisible() {
         assertTrue(preferences.effectsToolBarVisible());
@@ -160,9 +142,6 @@ class PreferencesTest {
         assertFalse(preferences.effectsToolBarVisible());
     }
 
-    /**
-     * Guitar Pro 5: el diapason arranca cerrado hasta que el usuario lo pide con Ctrl+3 o Ver.
-     */
     @Test
     void fretboardStartsHidden() {
         assertFalse(preferences.fretboardVisible());
@@ -175,7 +154,6 @@ class PreferencesTest {
         assertTrue(preferences.fretboardVisible());
     }
 
-    /** Guitar Pro 5: el teclado arranca cerrado hasta que el usuario lo pide con Ctrl+4 o Ver. */
     @Test
     void keyboardStartsHidden() {
         assertFalse(preferences.keyboardVisible());
