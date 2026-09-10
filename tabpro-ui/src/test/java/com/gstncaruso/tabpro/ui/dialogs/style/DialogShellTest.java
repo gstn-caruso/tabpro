@@ -11,11 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import org.junit.jupiter.api.Test;
 
-/**
- * La regla general: un dialogo nunca es mas alto que el area util de la pantalla, y los
- * botones de accion siempre quedan visibles fuera de cualquier scroll. El alto disponible
- * se inyecta como parametro para poder probarlo sin un display real.
- */
 class DialogShellTest {
 
     @Test

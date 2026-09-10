@@ -4,7 +4,6 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-/** La barra de Aceptar/Cancelar al pie de toda ventana del manual. */
 public final class ButtonBar extends JPanel {
 
     private final JButton acceptButton;

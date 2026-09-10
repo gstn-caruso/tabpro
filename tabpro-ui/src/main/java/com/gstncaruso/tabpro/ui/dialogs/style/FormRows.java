@@ -9,7 +9,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** Las filas etiqueta-campo de un {@link FormPanel}, apiladas en el panel que le toque a cada una. */
 final class FormRows {
 
     private final JPanel target;
