@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
+import javax.swing.JScrollBar;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
@@ -34,7 +35,7 @@ public final class AccessibilityWalker {
         if (isInteractive(component)) {
             check(component, path, violations);
         }
-        if (isStandardAtomicControl(component)) {
+        if (hidesLookAndFeelChildren(component)) {
             return;
         }
         for (Component child : childrenOf(component)) {
@@ -66,6 +67,10 @@ public final class AccessibilityWalker {
         return isStandardAtomicControl(component)
                 || component instanceof JTabbedPane
                 || component instanceof AccessibleControl;
+    }
+
+    private boolean hidesLookAndFeelChildren(Component component) {
+        return isStandardAtomicControl(component) || component instanceof JScrollBar;
     }
 
     private boolean isStandardAtomicControl(Component component) {

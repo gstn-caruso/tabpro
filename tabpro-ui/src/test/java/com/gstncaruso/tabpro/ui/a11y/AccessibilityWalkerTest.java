@@ -11,6 +11,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -177,6 +179,14 @@ class AccessibilityWalkerTest {
         bar.add(menu);
 
         assertTrue(walker.walk(bar).isEmpty());
+    }
+
+    @Test
+    void losBotonesDeFlechaDeUnScrollPaneNoSonControlesDeLaAplicacion() {
+        JPanel panel = new JPanel();
+        panel.add(new JScrollPane(new JTextArea()));
+
+        assertTrue(walker.walk(panel).isEmpty());
     }
 
     @Test
