@@ -7,11 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Los atajos de teclado agrupados como los agrupa el capitulo Reference del manual: edicion,
- * efectos, navegacion, sonido y varios. Se arma leyendo el catalogo de comandos, asi que un
- * comando nuevo con atajo aparece solo, sin que haya que acordarse de anotarlo aca.
- */
 public final class ShortcutList {
 
     private static final List<Section> SECTIONS = List.of(
@@ -51,11 +46,9 @@ public final class ShortcutList {
         }
     }
 
-    /** Un bloque de la ayuda, con su titulo y sus atajos. */
     public record Group(String title, List<Entry> entries) {
     }
 
-    /** Un atajo: que hace y que teclas hay que apretar. */
     public record Entry(String label, String shortcut) {
     }
 }
