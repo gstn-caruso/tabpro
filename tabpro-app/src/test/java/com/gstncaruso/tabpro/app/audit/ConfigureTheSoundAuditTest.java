@@ -1,9 +1,11 @@
 package com.gstncaruso.tabpro.app.audit;
 
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.blankEditor;
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.findButton;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findComponent;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findMenuItem;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.pressKey;
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.withDialog;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,6 +14,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import javax.swing.JMenuItem;
+import javax.swing.JSlider;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -20,14 +23,8 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 /**
  * Manual, "Configure the Sound" (linea 1945 del texto extraido): F2 activa o desactiva el banco
  * de sonido cargado (Ports.Devices real, no el Devices.NONE de los demas capitulos, para poder
- * mirar desde afuera si el atajo real lo prendio).
- *
- * <p>Nota aparte, encontrada revisando el codigo mientras se armaba este capitulo (no hace falta
- * un test dinamico: es una ausencia, no una mentira): {@code Ports.Dialogs.metronomeSettings()}
- * esta declarado, implementado en {@code MainFrame.Windows} y hasta tiene su propio
- * {@code MetronomeDialog}, pero ningun comando de {@code Commands.java} ni ningun JMenuItem de
- * {@code MenuBar.java} lo llama: el dialogo de volumen del metronomo del manual no tiene forma
- * de abrirse desde la interfaz real.
+ * mirar desde afuera si el atajo real lo prendio), y el menu Sonido ofrece la configuracion del
+ * metronomo (volumen y actividad), que se ejercita por el dialogo real.
  */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
@@ -52,6 +49,35 @@ class ConfigureTheSoundAuditTest {
             assertEquals(cambiosAntes + 1, devices.toggleCount(),
                     "F2, despachado de verdad sobre el lienzo, tiene que llegar al Devices real");
             assertEquals(!antes, devices.soundFontActive(), "F2 tiene que alternar el banco de sonido real");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    /**
+     * Manual, "Configure the Sound" (linea 1945): el volumen del metronomo se elige en su propio
+     * dialogo, abierto por el menu real y detectado por WINDOW_OPENED. El Transport no se puede
+     * mirar desde afuera de MainFrame salvo por su propio metodo publico transport(): ahi vive el
+     * volumen que el dialogo real, con su slider real, tiene que dejar despues de Aceptar.
+     */
+    @Test
+    void elMenuOfreceLaConfiguracionDelMetronomoYElVolumenElegidoLlegaAlTransporte() throws Exception {
+        Editor editor = blankEditor();
+        MainFrame frame = AuditSupport.newFrame(editor);
+        try {
+            JMenuItem item = findMenuItem(frame.getJMenuBar(), "Configuración del metrónomo…");
+            assertNotNull(item, "no encontre 'Configuración del metrónomo…' en el menu real");
+
+            withDialog(item::doClick, dialog -> {
+                JSlider volumen = findComponent(dialog, JSlider.class);
+                assertNotNull(volumen, "no encontre el slider real de Volumen");
+                volumen.setValue(42);
+
+                findButton(dialog, "Aceptar").doClick();
+            });
+
+            assertEquals(42, frame.transport().metronomeVolume(),
+                    "el volumen elegido en el slider real tiene que llegar al Transport real");
         } finally {
             AuditSupport.dispose(frame);
         }

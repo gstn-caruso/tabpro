@@ -358,6 +358,7 @@ public final class Commands {
         define("sound.tempo", "Tempo…", playback::tempo);
         define("sound.relativeTempo", "Tempo relativo…", playback::relativeTempo);
         define("sound.metronome", "Metrónomo", playback::toggleMetronome).withIcon(Icons.metronome());
+        define("sound.metronomeSettings", "Configuración del metrónomo…", dialogs::metronomeSettings);
         define("sound.countDown", "Cuenta regresiva", playback::toggleCountDown).withIcon(Icons.countDown());
         define("sound.stepBack", "Nota anterior", playback::stepBack);
         define("sound.midiInput", "Entrada MIDI activa", playback::toggleMidiInput);

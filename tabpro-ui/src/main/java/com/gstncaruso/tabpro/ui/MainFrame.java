@@ -211,6 +211,11 @@ public final class MainFrame extends JFrame {
         });
     }
 
+    /** El transporte del menu Sonido, para quien necesite observar su estado desde afuera. */
+    public Transport transport() {
+        return transport;
+    }
+
     /**
      * Si quedo una copia de recuperacion de una sesion anterior, se ofrece
      * abrirla, que es lo que hace Guitar Pro despues de una terminacion anormal.
