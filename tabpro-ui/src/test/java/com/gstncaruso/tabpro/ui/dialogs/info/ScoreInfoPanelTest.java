@@ -26,18 +26,18 @@ class ScoreInfoPanelTest {
     void reflectsWhateverYouLoadAfterwards() {
         ScoreInfoPanel panel = new ScoreInfoPanel(ScoreInfo.empty());
 
-        panel.apply(ScoreInfo.empty().withTitle("Nueva").withCopyright("2026"));
+        panel.apply(ScoreInfo.empty().withTitle("New").withCopyright("2026"));
 
         ScoreInfo result = panel.toScoreInfo();
-        assertEquals("Nueva", result.title());
+        assertEquals("New", result.title());
         assertEquals("2026", result.copyright());
     }
 
     @Test
     void allTenFieldsRoundTrip() {
         ScoreInfo info = new ScoreInfo(
-                "titulo", "subtitulo", "artista", "album", "letrista",
-                "musico", "copyright", "transcriptor", "instrucciones", "notas");
+                "title", "subtitle", "artist", "album", "lyrics author",
+                "music author", "copyright", "transcriber", "instructions", "notice");
 
         ScoreInfoPanel panel = new ScoreInfoPanel(info);
 
