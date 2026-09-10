@@ -26,7 +26,7 @@ class ThemeContrastTest {
     }
 
     private static void assertReads(Palette palette) {
-        Color accent = Theme.accent();
+        Color accent = palette.accent();
         List<String> failures = new ArrayList<>();
         check(failures, "texto / fondo", palette.text(), palette.background(), Contrast.TEXT_MINIMUM_RATIO);
         check(failures, "texto / panel", palette.text(), palette.panel(), Contrast.TEXT_MINIMUM_RATIO);

@@ -37,7 +37,7 @@ public final class Palette {
     }
 
     public static Color accent() {
-        return color("tabpro.accent", new Color(0xBE7B17));
+        return color("tabpro.accent", new Color(0xE8A33D));
     }
 
     /** El rojo con que se marca lo que no cierra: un compas incompleto, el playhead. */
