@@ -59,8 +59,13 @@ public final class PageScorePainter {
 
         List<PagePlacement> pages = placementsFor(layout, viewport);
         List<ChordDiagram> diagramsUnderTheTitle = TrackChords.underTheTitle(score);
+        Rectangle clip = g.getClipBounds();
         for (int page = 0; page < pages.size(); page++) {
-            paintSheet(g, score, layout, cursor, playhead, selection, viewport, pages.get(page),
+            PagePlacement placement = pages.get(page);
+            if (clip != null && !placement.intersectsVertically(clip)) {
+                continue;
+            }
+            paintSheet(g, score, layout, cursor, playhead, selection, viewport, placement,
                     new PageFields(score.info(), page + 1, pages.size()), diagramsUnderTheTitle);
         }
     }
@@ -242,6 +247,11 @@ public final class PageScorePainter {
 
         int bottom() {
             return screenTop + pageHeight;
+        }
+
+        /** Si esta hoja cae, aunque sea en parte, adentro de lo que el clip deja ver. */
+        boolean intersectsVertically(Rectangle clip) {
+            return clip.y < bottom() && clip.y + clip.height > screenTop;
         }
 
         /** La misma hoja pero puesta en el origen, sin las que venian antes. */

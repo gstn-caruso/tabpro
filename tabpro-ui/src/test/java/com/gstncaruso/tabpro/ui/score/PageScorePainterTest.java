@@ -34,6 +34,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 class PageScorePainterTest {
@@ -160,6 +162,47 @@ class PageScorePainterTest {
                         PageBanner.header(), PageBanner.footer()));
 
         assertDoesNotThrow(() -> paintOn(score, viewport));
+    }
+
+    /**
+     * Cambiar a Modo Pagina con una partitura larga hoy pinta las 300 hojas aunque la ventana
+     * solo pueda mostrar una o dos: el clip que Swing ya calcula para lo que esta a la vista se
+     * ignora. Con un clip que cubre solo la hoja del medio, las hojas de mas alla no tienen que
+     * tocarse en absoluto.
+     */
+    @Test
+    void pagesOutsideTheClipAreNotPainted() {
+        Score score = scoreWithMeasures(200);
+        ScoreViewport viewport = pageViewport(PageSetup.defaults());
+        int total = PageScorePainter.pageCount(score, viewport);
+        assertTrue(total >= 3, "hace falta al menos tres hojas para este test");
+
+        PageMetrics sheet = PageMetrics.of(PageSetup.defaults());
+        int stride = sheet.pageHeight() + PageMetrics.PAGE_GAP;
+        Rectangle clipOnTheMiddlePage = new Rectangle(0, stride, sheet.pageWidth(), sheet.pageHeight());
+        LienzoDePrueba lienzo = new LienzoDePrueba(clipOnTheMiddlePage);
+
+        PageScorePainter.paint(
+                lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
+
+        Set<String> footersPainted = footersPaintedIn(lienzo);
+
+        assertFalse(footersPainted.contains(footerOf(1, total)),
+                "la primera hoja, fuera del clip, no tiene que pintarse");
+        assertFalse(footersPainted.contains(footerOf(3, total)),
+                "la tercera hoja, fuera del clip, no tiene que pintarse");
+        assertTrue(footersPainted.contains(footerOf(2, total)),
+                "la hoja del medio, adentro del clip, si se tiene que pintar");
+    }
+
+    private static String footerOf(int pageNumber, int totalPages) {
+        return "Página " + pageNumber + " de " + totalPages;
+    }
+
+    private static Set<String> footersPaintedIn(LienzoDePrueba lienzo) {
+        return lienzo.textosDibujados().stream()
+                .map(LienzoDePrueba.TextoDibujado::texto)
+                .collect(Collectors.toSet());
     }
 
     @Test
