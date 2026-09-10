@@ -159,4 +159,12 @@ class PreferencesTest {
 
         assertFalse(preferences.effectsToolBarVisible());
     }
+
+    /**
+     * Guitar Pro 5: el diapason arranca cerrado hasta que el usuario lo pide con Ctrl+3 o Ver.
+     */
+    @Test
+    void fretboardStartsHidden() {
+        assertFalse(preferences.fretboardVisible());
+    }
 }

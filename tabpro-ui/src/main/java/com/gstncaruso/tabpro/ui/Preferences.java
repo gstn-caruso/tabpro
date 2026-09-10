@@ -27,6 +27,7 @@ public final class Preferences {
     private static final String AUTO_SCROLL_DURING_PLAYBACK = "autoScrollDuringPlayback";
     private static final String FORCE_MULTITRACK_IN_HORIZONTAL_MODE = "forceMultitrackInHorizontalMode";
     private static final String EFFECTS_TOOL_BAR_VISIBLE = "effectsToolBarVisible";
+    private static final String FRETBOARD_VISIBLE = "fretboardVisible";
     private static final String SEPARATOR = "\n";
 
     private final java.util.prefs.Preferences stored;
@@ -143,5 +144,10 @@ public final class Preferences {
 
     public void setEffectsToolBarVisible(boolean visible) {
         stored.putBoolean(EFFECTS_TOOL_BAR_VISIBLE, visible);
+    }
+
+    /** Ver > Diapasón [Ctrl+3]: cerrado por defecto, como en el manual, hasta que el usuario lo pide. */
+    public boolean fretboardVisible() {
+        return stored.getBoolean(FRETBOARD_VISIBLE, false);
     }
 }
