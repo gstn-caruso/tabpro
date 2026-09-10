@@ -126,6 +126,15 @@ class PotentiometerTest {
         assertEquals(54, knob.getValue());
     }
 
+    @Test
+    void theHomeKeyGoesToTheMinimum() {
+        Potentiometer knob = new Potentiometer(0, 127, 64);
+
+        pressShortcut(knob, KeyStroke.getKeyStroke("HOME"));
+
+        assertEquals(0, knob.getValue());
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
