@@ -46,10 +46,10 @@ class PageSetupFitsScreenAuditTest {
 
                 assertWithinTheDialog(dialog, findButton(dialog, "Actualizar partitura"),
                         "Actualizar partitura");
-                assertWithinTheDialog(dialog, findButton(dialog, "Guardar como configuracion por defecto"),
-                        "Guardar como configuracion por defecto");
-                assertWithinTheDialog(dialog, findButton(dialog, "Aplicar configuracion por defecto"),
-                        "Aplicar configuracion por defecto");
+                assertWithinTheDialog(dialog, findButton(dialog, "Guardar como configuración por defecto"),
+                        "Guardar como configuración por defecto");
+                assertWithinTheDialog(dialog, findButton(dialog, "Aplicar configuración por defecto"),
+                        "Aplicar configuración por defecto");
                 assertWithinTheDialog(dialog, findButton(dialog, "Aceptar"), "Aceptar");
                 assertWithinTheDialog(dialog, findButton(dialog, "Cancelar"), "Cancelar");
 
