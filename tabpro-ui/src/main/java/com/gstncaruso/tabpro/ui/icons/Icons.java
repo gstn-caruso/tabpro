@@ -338,7 +338,7 @@ public final class Icons {
     }
 
     public static Icon lastBar() {
-        return icon((graphics, size) -> skip(graphics, size, false, true));
+        return svgIcon("player-skip-forward");
     }
 
     public static Icon pageMode() {
