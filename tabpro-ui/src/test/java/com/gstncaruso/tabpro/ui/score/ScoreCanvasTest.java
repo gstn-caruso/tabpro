@@ -321,14 +321,18 @@ class ScoreCanvasTest {
     /** Treinta compases en Pantalla Horizontal -que nunca envuelve- para que el ultimo quede
      * bien lejos del origen y un scroll de verdad haga falta para llegar a el. */
     private static ScoreCanvas canvasWithManyMeasuresScrolledHorizontally() {
+        ScoreCanvas manyMeasures = new ScoreCanvas(editorWithManyMeasures(30));
+        manyMeasures.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+        return manyMeasures;
+    }
+
+    private static Editor editorWithManyMeasures(int count) {
         List<Measure> measures = new java.util.ArrayList<>();
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < count; i++) {
             measures.add(Measure.empty(TimeSignature.fourFour(), Duration.quarter()));
         }
         Track guitar = Track.standardGuitar("Guitarra").withMeasures(measures);
-        ScoreCanvas manyMeasures = new ScoreCanvas(new Editor(new Score("Prueba", 120, List.of(guitar))));
-        manyMeasures.setViewMode(ViewMode.SCREEN_HORIZONTAL);
-        return manyMeasures;
+        return new Editor(new Score("Prueba", 120, List.of(guitar)));
     }
 
     /** Un JScrollPane real, medido y layouteado sin necesidad de mostrar ninguna ventana. */
