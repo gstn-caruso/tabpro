@@ -13,17 +13,17 @@ import org.junit.jupiter.api.Test;
 class GraceNotePanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new GraceNotePanel(GraceNote.before(0)));
     }
 
     @Test
-    void elComboDeDuracionMuestraLaFiguraEnCastellano() {
+    void theDurationComboShowsTheNoteValueInSpanish() {
         GraceNotePanel panel = new GraceNotePanel(GraceNote.before(0));
 
-        String texto = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
+        String renderedText = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
 
-        assertEquals("Negra", texto);
+        assertEquals("Negra", renderedText);
     }
 
     @Test

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 class AddTrackDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AddTrackDialog.Fields fields = AddTrackDialog.buildFields(1);
 
         AccessibilityAssertions.assertNoViolations(fields.form());

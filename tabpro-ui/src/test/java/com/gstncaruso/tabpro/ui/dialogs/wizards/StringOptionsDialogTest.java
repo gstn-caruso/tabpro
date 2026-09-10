@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class StringOptionsDialogTest {
 
     @Test
-    void cadaOpcionTieneSuPropioTitulo() {
+    void everyOptionHasItsOwnTitle() {
         assertEquals("Opciones de let ring", StringOptionsDialog.titleFor(StringOptionsDialog.Option.LET_RING));
         assertEquals("Opciones de palm mute", StringOptionsDialog.titleFor(StringOptionsDialog.Option.PALM_MUTE));
         assertEquals("Opciones de dinámica", StringOptionsDialog.titleFor(StringOptionsDialog.Option.DYNAMIC));

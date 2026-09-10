@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class MetronomePanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new MetronomePanel(120, new MetronomeSettings(true, 80)));
     }
 

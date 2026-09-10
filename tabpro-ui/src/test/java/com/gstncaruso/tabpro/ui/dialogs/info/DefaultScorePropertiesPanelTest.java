@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class DefaultScorePropertiesPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         NewScoreDefaults defaults = new NewScoreDefaults(
                 120, new TimeSignature(4, 4), KeySignature.cMajor(), "", "");
         AccessibilityAssertions.assertNoViolations(new DefaultScorePropertiesPanel(defaults));

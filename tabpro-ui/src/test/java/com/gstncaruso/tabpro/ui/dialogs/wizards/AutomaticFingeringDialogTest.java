@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 class AutomaticFingeringDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(AutomaticFingeringDialog.buildContent("Guitarra"));
     }
 }

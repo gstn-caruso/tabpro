@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 class BendGridPanelTest {
 
     @Test
-    void tieneNombreYTooltipAccesibles() {
+    void hasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new BendGridPanel(BendCurveEditor.blank(BendType.BEND, 4)));
     }
 

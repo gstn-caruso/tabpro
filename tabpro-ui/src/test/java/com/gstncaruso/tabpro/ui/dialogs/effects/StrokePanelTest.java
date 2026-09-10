@@ -12,17 +12,17 @@ import org.junit.jupiter.api.Test;
 class StrokePanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new StrokePanel(Stroke.of(StrokeDirection.DOWN)));
     }
 
     @Test
-    void elComboDeVelocidadMuestraLaFiguraEnCastellano() {
+    void theSpeedComboShowsTheNoteValueInSpanish() {
         StrokePanel panel = new StrokePanel(Stroke.of(StrokeDirection.DOWN));
 
-        String texto = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
+        String renderedText = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
 
-        assertEquals("Negra", texto);
+        assertEquals("Negra", renderedText);
     }
 
     @Test

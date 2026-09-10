@@ -17,7 +17,7 @@ class MidiImportPanelTest {
     private final RecordingPlayer player = new RecordingPlayer();
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(panel(List.of(track(0, "Guitarra"))));
     }
 

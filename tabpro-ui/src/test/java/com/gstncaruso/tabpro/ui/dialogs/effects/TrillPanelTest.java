@@ -11,17 +11,17 @@ import org.junit.jupiter.api.Test;
 class TrillPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new TrillPanel(Trill.to(0)));
     }
 
     @Test
-    void elComboDeVelocidadMuestraLaFiguraEnCastellano() {
+    void theSpeedComboShowsTheNoteValueInSpanish() {
         TrillPanel panel = new TrillPanel(Trill.to(0));
 
-        String texto = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
+        String renderedText = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
 
-        assertEquals("Negra", texto);
+        assertEquals("Negra", renderedText);
     }
 
     @Test

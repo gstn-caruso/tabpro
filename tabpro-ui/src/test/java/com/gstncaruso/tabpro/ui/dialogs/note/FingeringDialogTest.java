@@ -9,21 +9,21 @@ import org.junit.jupiter.api.Test;
 class FingeringDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         FingeringDialog.Fields fields = FingeringDialog.buildFields(Optional.empty(), Optional.empty());
 
         AccessibilityAssertions.assertNoViolations(fields.form());
     }
 
     @Test
-    void porDefectoElFocoInicialQuedaEnElCampoDeManoIzquierda() {
+    void byDefaultTheInitialFocusIsOnTheLeftHandField() {
         FingeringDialog.Fields fields = FingeringDialog.buildFields(Optional.empty(), Optional.empty());
 
         assertSame(fields.leftHand(), fields.initialFocus());
     }
 
     @Test
-    void siSePideElFocoEnManoDerechaElCampoInicialEsElDeManoDerecha() {
+    void whenTheRightHandFocusIsRequestedTheInitialFieldIsTheRightHandOne() {
         FingeringDialog.Fields fields = FingeringDialog.buildFields(
                 Optional.empty(), Optional.empty(), FingeringDialog.Hand.RIGHT);
 

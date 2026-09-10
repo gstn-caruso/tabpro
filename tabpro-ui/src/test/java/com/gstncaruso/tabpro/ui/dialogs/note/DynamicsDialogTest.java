@@ -10,18 +10,18 @@ import org.junit.jupiter.api.Test;
 class DynamicsDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         DynamicsDialog.Fields fields = DynamicsDialog.buildFields(Dynamic.defaultDynamic());
 
         AccessibilityAssertions.assertNoViolations(fields.form());
     }
 
     @Test
-    void elComboDeDinamicaMuestraElSimboloMusicalEnVezDelEnumCrudo() {
+    void theDynamicComboShowsTheMusicalSymbolInsteadOfTheRawEnum() {
         DynamicsDialog.Fields fields = DynamicsDialog.buildFields(Dynamic.defaultDynamic());
 
-        String texto = Combos.renderedTextOf(fields.form(), Dynamic.class, Dynamic.MEZZO_FORTE);
+        String renderedText = Combos.renderedTextOf(fields.form(), Dynamic.class, Dynamic.MEZZO_FORTE);
 
-        assertEquals("mf", texto);
+        assertEquals("mf", renderedText);
     }
 }

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 class BarArrangerDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         BarArrangerDialog.Fields fields = BarArrangerDialog.buildFields();
 
         AccessibilityAssertions.assertNoViolations(fields.content());

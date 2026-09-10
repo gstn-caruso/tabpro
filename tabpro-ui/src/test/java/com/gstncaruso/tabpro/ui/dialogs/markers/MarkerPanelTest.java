@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class MarkerPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new MarkerPanel(new Marker("Solo", ScoreColor.rgb(0))));
     }
 

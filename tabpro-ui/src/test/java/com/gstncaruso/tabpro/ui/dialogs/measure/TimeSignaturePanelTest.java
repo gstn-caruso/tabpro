@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class TimeSignaturePanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new TimeSignaturePanel(new TimeSignature(4, 4)));
     }
 

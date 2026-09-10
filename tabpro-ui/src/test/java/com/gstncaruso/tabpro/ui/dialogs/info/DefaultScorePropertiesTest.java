@@ -22,38 +22,38 @@ class DefaultScorePropertiesTest {
     }
 
     @Test
-    void sinNadaGuardadoElDefectoEsElQueTraePartituraEnBlanco() {
+    void withNothingSavedTheDefaultIsTheOneThatBringsABlankScore() {
         assertEquals(NewScoreDefaults.blank(), stored.get());
     }
 
     @Test
-    void guardarLoDejaComoElDefecto() {
-        NewScoreDefaults mios = new NewScoreDefaults(
+    void savingLeavesItAsTheDefault() {
+        NewScoreDefaults custom = new NewScoreDefaults(
                 90, new TimeSignature(3, 4), new KeySignature(-2, Mode.MINOR), "Improvisando", "Yo");
 
-        stored.save(mios);
+        stored.save(custom);
 
-        assertEquals(mios, stored.get());
+        assertEquals(custom, stored.get());
     }
 
     @Test
-    void guardarDeNuevoReemplazaLoQueHabia() {
+    void savingAgainReplacesWhatWasThere() {
         stored.save(new NewScoreDefaults(60, TimeSignature.fourFour(), KeySignature.cMajor(), "", ""));
-        NewScoreDefaults ultimo = new NewScoreDefaults(
+        NewScoreDefaults latest = new NewScoreDefaults(
                 180, new TimeSignature(6, 8), new KeySignature(4, Mode.MAJOR), "Rapida", "Banda");
 
-        stored.save(ultimo);
+        stored.save(latest);
 
-        assertEquals(ultimo, stored.get());
+        assertEquals(latest, stored.get());
     }
 
     @Test
-    void loQueSeGuardaComoPropiedadesPorDefectoTerminaEnLaPartituraQueArchivoNuevoCrea() {
+    void whatIsSavedAsDefaultPropertiesEndsUpInTheScoreThatNewFileCreates() {
         stored.save(new NewScoreDefaults(90, new TimeSignature(3, 4), KeySignature.cMajor(), "", ""));
 
-        Score nueva = stored.get().newScore();
+        Score newScore = stored.get().newScore();
 
-        assertEquals(90, nueva.tempo());
-        assertEquals(new TimeSignature(3, 4), nueva.timeSignatureOf(0));
+        assertEquals(90, newScore.tempo());
+        assertEquals(new TimeSignature(3, 4), newScore.timeSignatureOf(0));
     }
 }

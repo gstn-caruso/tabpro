@@ -17,17 +17,17 @@ import org.junit.jupiter.api.Test;
 class PreferencesPanelTest {
 
     @Test
-    void ningunCampoQuedaSinNombreNiTooltipAccesible() {
+    void everyFieldHasAnAccessibleNameAndTooltip() {
         PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
 
         AccessibilityAssertions.assertNoViolations(panel);
     }
 
     @Test
-    void elComboDeFiguraPorDefectoMuestraElNombreEnCastellanoEnVezDelEnumCrudo() {
+    void theDefaultNoteValueComboShowsTheNameInSpanishInsteadOfTheRawEnum() {
         PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
 
-        JComboBox combo = comboDeFigura(panel);
+        JComboBox combo = noteValueCombo(panel);
         Component rendered = combo.getRenderer()
                 .getListCellRendererComponent(new JList<>(), NoteValue.QUARTER, 0, false, false);
 
@@ -35,13 +35,13 @@ class PreferencesPanelTest {
     }
 
     @SuppressWarnings("rawtypes")
-    private static JComboBox comboDeFigura(Component container) {
+    private static JComboBox noteValueCombo(Component container) {
         if (container instanceof JComboBox combo) {
             return combo;
         }
         if (container instanceof java.awt.Container parent) {
             for (Component child : parent.getComponents()) {
-                JComboBox found = comboDeFigura(child);
+                JComboBox found = noteValueCombo(child);
                 if (found != null) {
                     return found;
                 }

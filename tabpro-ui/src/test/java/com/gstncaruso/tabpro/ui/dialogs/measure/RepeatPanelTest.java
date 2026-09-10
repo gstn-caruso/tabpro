@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class RepeatPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new RepeatPanel(false, 0));
     }
 

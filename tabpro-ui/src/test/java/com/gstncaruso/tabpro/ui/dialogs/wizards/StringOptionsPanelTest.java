@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class StringOptionsPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new StringOptionsPanel(6, 8));
     }
 
@@ -42,7 +42,7 @@ class StringOptionsPanelTest {
     }
 
     @Test
-    void cadaOpcionSeñalaSuPropioCombo() {
+    void everyOptionPointsToItsOwnCombo() {
         StringOptionsPanel panel = new StringOptionsPanel(6, 4);
 
         assertEquals(panel.letRingCombo(), panel.comboFor(StringOptionsDialog.Option.LET_RING));

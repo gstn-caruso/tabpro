@@ -17,7 +17,7 @@ class LyricsPanelTest {
     private final List<String> trackNames = List.of("Guitarra", "Bajo", "Voz");
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new LyricsPanel(trackNames, Lyrics.none()));
     }
 

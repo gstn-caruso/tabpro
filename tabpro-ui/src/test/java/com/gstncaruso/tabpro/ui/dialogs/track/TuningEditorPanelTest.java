@@ -21,12 +21,12 @@ class TuningEditorPanelTest {
     private final RecordingPlayer player = new RecordingPlayer();
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new TuningEditorPanel(Tuning.standard(), 25, player));
     }
 
     @Test
-    void elComboDeLaBibliotecaMuestraElNombreYElResumenDeCuerdasEnVezDelRecordCrudo() {
+    void theLibraryComboShowsTheNameAndStringSummaryInsteadOfTheRawRecord() {
         TuningEditorPanel panel = new TuningEditorPanel(Tuning.standard(), 25, player);
 
         @SuppressWarnings("unchecked")

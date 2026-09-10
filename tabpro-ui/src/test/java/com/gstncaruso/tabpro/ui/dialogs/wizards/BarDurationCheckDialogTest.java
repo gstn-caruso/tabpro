@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test;
 class BarDurationCheckDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesibleConHallazgos() {
+    void everyControlHasAnAccessibleNameAndTooltipWithFindings() {
         List<BarDurationCheck.Finding> findings = List.of(new BarDurationCheck.Finding(0, 0, true));
 
         AccessibilityAssertions.assertNoViolations(BarDurationCheckDialog.buildContent(findings));
     }
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesibleSinHallazgos() {
+    void everyControlHasAnAccessibleNameAndTooltipWithoutFindings() {
         AccessibilityAssertions.assertNoViolations(BarDurationCheckDialog.buildContent(List.of()));
     }
 }

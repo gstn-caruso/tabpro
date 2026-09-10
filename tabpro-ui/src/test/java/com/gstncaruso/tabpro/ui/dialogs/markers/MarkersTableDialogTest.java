@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 class MarkersTableDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         Editor editor = new Editor(Score.blank());
         editor.setMarker(Marker.named("Intro"));
 

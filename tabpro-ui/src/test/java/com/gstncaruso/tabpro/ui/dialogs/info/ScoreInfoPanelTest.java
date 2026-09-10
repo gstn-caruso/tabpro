@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class ScoreInfoPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new ScoreInfoPanel(ScoreInfo.empty()));
     }
 

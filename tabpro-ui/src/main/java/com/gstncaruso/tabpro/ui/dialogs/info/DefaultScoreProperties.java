@@ -51,7 +51,7 @@ public final class DefaultScoreProperties {
             return new TimeSignature(
                     store.getInt(TIME_SIGNATURE_BEATS, fallback.beats()),
                     store.getInt(TIME_SIGNATURE_BEAT_UNIT, fallback.beatUnit()));
-        } catch (IllegalArgumentException noSeEntiende) {
+        } catch (IllegalArgumentException invalidStoredValue) {
             return fallback;
         }
     }
@@ -60,7 +60,7 @@ public final class DefaultScoreProperties {
         try {
             Mode mode = Mode.valueOf(store.get(KEY_SIGNATURE_MODE, fallback.mode().name()));
             return new KeySignature(store.getInt(KEY_SIGNATURE_ACCIDENTALS, fallback.accidentals()), mode);
-        } catch (IllegalArgumentException noSeEntiende) {
+        } catch (IllegalArgumentException invalidStoredValue) {
             return fallback;
         }
     }

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class HarmonicPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new HarmonicPanel(HarmonicType.NATURAL));
     }
 

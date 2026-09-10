@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class RestFillerPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new RestFillerPanel(8));
     }
 

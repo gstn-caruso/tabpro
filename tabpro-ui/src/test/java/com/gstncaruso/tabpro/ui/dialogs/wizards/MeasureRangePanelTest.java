@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class MeasureRangePanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new MeasureRangePanel(10));
     }
 
