@@ -70,4 +70,20 @@ class ChordDialogTest {
 
         assertEquals("Todas", ((JLabel) rendered).getText());
     }
+
+    @Test
+    void elComboDeCejillaMuestraLaPreferenciaEnCastellano() {
+        Editor editor = new Editor(Score.blank());
+        ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
+        ChordLibrary library = new ChordLibrary(scratch);
+
+        ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
+
+        @SuppressWarnings("unchecked")
+        JComboBox<BarrePreference> barres = Combos.firstWithItemType(panel, BarrePreference.class);
+        Component rendered = barres.getRenderer()
+                .getListCellRendererComponent(new JList<>(), BarrePreference.ANY, 0, false, false);
+
+        assertEquals("Cualquiera", ((JLabel) rendered).getText());
+    }
 }

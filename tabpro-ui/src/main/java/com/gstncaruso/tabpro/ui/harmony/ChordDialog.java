@@ -90,6 +90,7 @@ public final class ChordDialog {
             });
             types.setRenderer(new LabeledListCellRenderer());
             complexities.setRenderer(new LabeledListCellRenderer());
+            barres.setRenderer(new LabeledListCellRenderer());
             name.getAccessibleContext().setAccessibleName("Nombre del acorde");
             name.setToolTipText("Nombre del acorde");
             baseFret.getAccessibleContext().setAccessibleName("Traste base");

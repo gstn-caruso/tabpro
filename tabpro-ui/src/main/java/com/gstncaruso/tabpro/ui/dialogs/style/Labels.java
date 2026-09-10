@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.style;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
+import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 
 /**
  * El unico punto que traduce un tipo del dominio a su texto en castellano: ningun combo
@@ -18,7 +19,16 @@ public final class Labels {
             case NoteValue noteValue -> noteValueLabel(noteValue);
             case ChordType chordType -> chordTypeLabel(chordType);
             case ChordComplexity chordComplexity -> chordComplexityLabel(chordComplexity);
+            case BarrePreference barrePreference -> barrePreferenceLabel(barrePreference);
             default -> throw new IllegalArgumentException("Sin etiqueta para " + value);
+        };
+    }
+
+    private static String barrePreferenceLabel(BarrePreference value) {
+        return switch (value) {
+            case ANY -> "Cualquiera";
+            case FORCE -> "Forzar cejilla";
+            case FORBID -> "Prohibir cejilla";
         };
     }
 

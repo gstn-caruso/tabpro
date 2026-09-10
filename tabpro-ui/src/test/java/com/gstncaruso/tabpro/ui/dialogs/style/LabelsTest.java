@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
+import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -58,6 +59,20 @@ class LabelsTest {
     @ParameterizedTest
     @EnumSource(ChordComplexity.class)
     void todaComplejidadDePosicionesTieneUnaEtiquetaPropia(ChordComplexity value) {
+        String etiqueta = Labels.of(value);
+
+        assertFalse(etiqueta.isBlank());
+        assertNotEquals(value.name(), etiqueta);
+    }
+
+    @Test
+    void traduceLaPreferenciaDeCejilla() {
+        assertEquals("Cualquiera", Labels.of(BarrePreference.ANY));
+    }
+
+    @ParameterizedTest
+    @EnumSource(BarrePreference.class)
+    void todaPreferenciaDeCejillaTieneUnaEtiquetaPropia(BarrePreference value) {
         String etiqueta = Labels.of(value);
 
         assertFalse(etiqueta.isBlank());
