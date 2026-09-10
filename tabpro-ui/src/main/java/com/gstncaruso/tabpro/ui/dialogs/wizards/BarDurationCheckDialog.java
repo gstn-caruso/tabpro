@@ -20,7 +20,7 @@ public final class BarDurationCheckDialog {
 
     public static void show(Component parent, Editor editor) {
         List<BarDurationCheck.Finding> findings = BarDurationCheck.run(editor.score());
-        DialogShell.show(parent, "Verificar duracion de compases", buildContent(findings));
+        DialogShell.show(parent, "Verificar duración de compases", buildContent(findings));
     }
 
     /** Arma el contenido de la ventana sin abrir ningun dialogo, para poder probarlo. */

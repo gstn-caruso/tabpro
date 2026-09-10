@@ -41,7 +41,7 @@ public final class StringOptionsPanel extends FormPanel {
         addFullWidthRow(range);
         addRow("Let ring", letRing);
         addRow("Palm mute", palmMute);
-        addRow("Dinamica", dynamic);
+        addRow("Dinámica", dynamic);
     }
 
     private static Dynamic[] withNoChange() {

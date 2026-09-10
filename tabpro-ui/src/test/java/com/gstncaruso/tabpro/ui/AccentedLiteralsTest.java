@@ -49,13 +49,6 @@ class AccentedLiteralsTest {
      * quede vacio.
      */
     private static final Set<String> PENDING_FILES = Set.of(
-            "tabpro-core/src/main/java/com/gstncaruso/tabpro/core/editing/wizards/MeasureRange.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/AutomaticFingeringDialog.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/BarArrangerDialog.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/BarDurationCheckDialog.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/BarDurationReport.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/MeasureRangePanel.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/StringOptionsPanel.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/score/ViewMode.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/ScoreDocument.java");
 
