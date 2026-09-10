@@ -32,7 +32,6 @@ class EditorListenerSubscriptionTest {
     private static final String ADAPTER_CALL = "EdtEditorListener.onEdt(";
 
     private static final Set<String> STILL_PENDING = Set.of(
-            "ScoreDocument.java#this::scoreChanged",
             "BeatViews.java#this::refresh",
             "MainFrame.java#this::updateTitle",
             "MainFrame.java#() -> spinner.setValue(editor.score().tempo())");

@@ -43,7 +43,7 @@ public final class ScoreDocument {
         this.preferences = preferences;
         this.newScoreTemplate = newScoreTemplate;
         this.saved = editor.score();
-        editor.addListener(this::scoreChanged);
+        editor.addListener(EdtEditorListener.onEdt(this::scoreChanged));
     }
 
     public Optional<Path> path() {
