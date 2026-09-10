@@ -5,11 +5,6 @@ import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.ui.score.Pagination;
 
-/**
- * Todo lo que la barra de estado tiene que mostrar, calculado a partir del editor y de como quedo
- * repartida la partitura en hojas. Quien decide que mostrar no es quien lo dibuja: esta clase no
- * sabe nada de Swing.
- */
 public record StatusInfo(
         int pageNumber,
         int pageCount,

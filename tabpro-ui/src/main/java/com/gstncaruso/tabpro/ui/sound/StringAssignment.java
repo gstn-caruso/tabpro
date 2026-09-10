@@ -1,9 +1,5 @@
 package com.gstncaruso.tabpro.ui.sound;
 
-/**
- * Como se decide en que cuerda cae una nota que llega de un instrumento MIDI,
- * tal como lo plantea "String affectation using Channel Detection" del manual.
- */
 public enum StringAssignment {
     FIRST_CHANNEL_IS_THE_HIGHEST_STRING("El primer canal es la cuerda más aguda"),
     FIRST_CHANNEL_IS_THE_LOWEST_STRING("El primer canal es la cuerda más grave"),
@@ -19,7 +15,6 @@ public enum StringAssignment {
         return label;
     }
 
-    /** La cuerda que le toca a ese canal, o vacio si hay que elegirla por la altura. */
     public java.util.OptionalInt stringFor(int channel, int stringCount) {
         return switch (this) {
             case FIRST_CHANNEL_IS_THE_HIGHEST_STRING -> withinReach(channel + 1, stringCount);

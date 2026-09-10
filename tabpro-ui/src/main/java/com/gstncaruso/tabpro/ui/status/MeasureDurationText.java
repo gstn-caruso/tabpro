@@ -4,7 +4,6 @@ import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 
-/** Cuanto dura realmente un compas contra lo que pide su medida, como "3.5/4". */
 public final class MeasureDurationText {
 
     private MeasureDurationText() {
@@ -20,7 +19,6 @@ public final class MeasureDurationText {
         return Duration.TICKS_PER_QUARTER * 4L / timeSignature.beatUnit();
     }
 
-    /** Entero cuando cae justo, con un decimal cuando el compas quedo a mitad de un tiempo. */
     private static String format(double beats) {
         double rounded = Math.round(beats * 100) / 100.0;
         if (rounded == Math.rint(rounded)) {

@@ -14,10 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
-/**
- * La barra de abajo de la ventana: pagina, posicion del cursor, si el compas actual esta
- * completo, la pista activa y, a la derecha, el titulo y el autor de la partitura.
- */
 public final class StatusBar extends JPanel {
 
     private final Editor editor;
@@ -33,7 +29,6 @@ public final class StatusBar extends JPanel {
         this(editor, Pagination::single);
     }
 
-    /** La reparticion en hojas la sabe el lienzo, y cambia con el papel y con el modo de vista. */
     public StatusBar(Editor editor, Supplier<Pagination> pagination) {
         this.editor = editor;
         this.pagination = pagination;

@@ -16,16 +16,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * La ventana de "Play looped / Speed Trainer": repetir un rango de compases,
- * ya sea al mismo tempo o subiendolo un poco en cada vuelta.
- */
 public final class LoopDialog {
 
     private LoopDialog() {
     }
 
-    /** Lo que la ventana devuelve: el rango a repetir y, si se pidio, el entrenador. */
     public record Loop(LoopRange range, Optional<SpeedTrainer> trainer) {
     }
 

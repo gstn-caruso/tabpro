@@ -11,10 +11,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
-/**
- * El tempo relativo del manual: un coeficiente de x0.25 a x2 que acelera o
- * frena la reproduccion sin tocar el archivo.
- */
 public final class RelativeTempoDialog {
 
     private static final int STEPS_PER_UNIT = 100;
