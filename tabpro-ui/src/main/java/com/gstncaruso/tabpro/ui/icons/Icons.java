@@ -38,14 +38,7 @@ public final class Icons {
     }
 
     public static Icon scoreInformation() {
-        return icon((graphics, size) -> {
-            page(graphics, size);
-            graphics.setStroke(thin());
-            for (int line = 0; line < 3; line++) {
-                double y = size * (0.42 + line * 0.15);
-                graphics.draw(new Line2D.Double(size * 0.3, y, size * 0.7, y));
-            }
-        });
+        return svgIcon("info-circle");
     }
 
     public static Icon pageSetup() {
