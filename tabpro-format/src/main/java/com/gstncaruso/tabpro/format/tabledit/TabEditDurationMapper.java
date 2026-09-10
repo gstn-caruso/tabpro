@@ -6,12 +6,11 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuplet;
 
 /**
- * Traduce el codigo de figura de TablEdit (0 a 31) a una {@link Duration}.
- * TablEdit numera sus figuras como una sola escala: cada tres codigos bajan un
- * nivel (redonda, blanca, negra, ...), y dentro de cada nivel el resto de
- * dividir por tres dice si es la figura simple, la punteada o el tresillo.
- * Un puñado de codigos son puro relleno, y otros cuatro piden un doble
- * puntillo que el modelo de tabpro no puede representar.
+ * Translates TablEdit's note-value code (0 to 31) into a {@link Duration}. TablEdit
+ * numbers its note values as a single scale: every three codes drop one level (whole,
+ * half, quarter, ...), and within each level the remainder of dividing by three says
+ * whether it is the simple note value, the dotted one, or the triplet. A handful of
+ * codes are pure filler, and four others ask for a double dot the tabpro model cannot represent.
  */
 final class TabEditDurationMapper {
 
@@ -54,7 +53,7 @@ final class TabEditDurationMapper {
         return new Duration(value, dotted, tuplet);
     }
 
-    /** Los codigos 20/23/26/29 repiten la semicorchea; 21/24/27/30 repiten la semifusa. */
+    /** Codes 20/23/26/29 repeat the sixteenth note; 21/24/27/30 repeat the sixty-fourth. */
     private static boolean isFillerFor(int code, NoteValue value) {
         int base = value == NoteValue.SIXTEENTH ? 20 : 21;
         return code == base || code == base + 3 || code == base + 6 || code == base + 9;

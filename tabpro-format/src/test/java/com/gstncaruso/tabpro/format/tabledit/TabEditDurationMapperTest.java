@@ -13,13 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.api.Test;
 
-/**
- * TablEdit numera sus 32 figuras posibles con un solo codigo de 0 a 31: la
- * mayoria son la combinacion de una figura base, un puntillo o un tresillo,
- * pero unos pocos codigos son puro relleno (repiten una figura simple) y
- * cuatro codigos piden un doble puntillo que el modelo de tabpro no puede
- * representar.
- */
 class TabEditDurationMapperTest {
 
     @ParameterizedTest
