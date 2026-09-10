@@ -214,6 +214,15 @@ class LabelsTest {
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
     }
 
+    @ParameterizedTest
+    @EnumSource(NoteNameMode.class)
+    void everyNoteNameModeHasSpanishAndEnglishText(NoteNameMode value) {
+        String key = "domain.NoteNameMode." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
     @Test
     void translatesTheOrientationToItsSpanishName() {
         assertEquals("Vertical", Labels.of(Orientation.PORTRAIT));
