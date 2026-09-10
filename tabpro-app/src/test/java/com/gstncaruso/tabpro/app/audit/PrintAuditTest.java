@@ -57,7 +57,7 @@ class PrintAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Imprimir…");
-            assertNotNull(item, "no encontre 'Imprimir…' en el menu real");
+            assertNotNull(item, "could not find 'Imprimir…' in the real menu");
             assertEquals(KeyStroke.getKeyStroke("ctrl P"), item.getAccelerator());
 
             int sheetCount = ScorePrinting.pageCount(
@@ -66,23 +66,23 @@ class PrintAuditTest {
 
             withDialog(item::doClick, dialog -> {
                 PrintPanel panel = findComponent(dialog, PrintPanel.class);
-                assertNotNull(panel, "no encontre el PrintPanel real dentro del dialogo");
+                assertNotNull(panel, "could not find the real PrintPanel inside the dialog");
                 assertEquals(
                         PrintSettings.everything(sheetCount), panel.toPrintSettings(),
-                        "por defecto tiene que salir toda la partitura, con la cantidad real de hojas");
+                        "by default the whole score must come out, with the real sheet count");
 
                 panel.printOnly(1, 1);
                 assertEquals(
                         PrintSettings.of(1, 1, sheetCount, 100, false), panel.toPrintSettings(),
-                        "el radio 'Paginas' y los spinners reales tienen que llegar a PrintSettings");
+                        "the 'Paginas' radio and the real spinners must reach PrintSettings");
 
                 panel.fitToPage();
                 java.util.List<JSpinner> spinners = AuditSupport.findComponents(dialog, JSpinner.class);
                 JSpinner scalePercent = spinners.get(2);
-                assertFalse(scalePercent.isEnabled(), "con 'Ajustar a la hoja' marcado, la escala real no se edita");
+                assertFalse(scalePercent.isEnabled(), "with 'Ajustar a la hoja' checked, the real scale is not editable");
 
                 panel.scaleTo(150);
-                assertTrue(scalePercent.isEnabled(), "al volver a una escala fija, el spinner real se vuelve a habilitar");
+                assertTrue(scalePercent.isEnabled(), "going back to a fixed scale re-enables the real spinner");
                 assertEquals(150, panel.toPrintSettings().scalePercent());
 
                 findButton(dialog, "Cancelar").doClick();
@@ -100,7 +100,7 @@ class PrintAuditTest {
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Imprimir…");
             int sheetCount = ScorePrinting.pageCount(editor.score(), DefaultPageSetup.userSetup().get());
-            assertTrue(sheetCount > 1, "hace falta una partitura de varias hojas para elegir un rango angosto");
+            assertTrue(sheetCount > 1, "a multi-sheet score is needed to choose a narrow range");
             int from = 2;
 
             withDialog(item::doClick, dialog -> {
@@ -109,20 +109,20 @@ class PrintAuditTest {
                 findButton(dialog, "Imprimir").doClick();
             });
 
-            assertTrue(printing.printCalled(), "apretar Imprimir tiene que llegar de verdad al PrinterJob (falso)");
+            assertTrue(printing.printCalled(), "pressing Imprimir must really reach the (fake) PrinterJob");
             assertNotNull(printing.jobName());
-            assertNotNull(printing.printable(), "tiene que llegar el Printable real de la partitura");
+            assertNotNull(printing.printable(), "the real Printable of the score must arrive");
 
             int pagesInRange = sheetCount - from + 1;
             PrintResult lastInRange = printOnLargeCanvas(printing.printable(), pagesInRange - 1);
             assertEquals(Printable.PAGE_EXISTS, lastInRange.pageResult(),
-                    "la ultima pagina del rango elegido tiene que existir");
+                    "the last page of the chosen range must exist");
             assertTrue(hasInk(lastInRange.canvas()),
-                    "el Printable recibido tiene que pintar la partitura real, no quedar en blanco");
+                    "the received Printable must paint the real score, not stay blank");
 
             PrintResult outsideRange = printOnLargeCanvas(printing.printable(), pagesInRange);
             assertEquals(Printable.NO_SUCH_PAGE, outsideRange.pageResult(),
-                    "el rango elegido en el dialogo real tiene que ser el que llega al Printable, no la partitura entera");
+                    "the range chosen in the real dialog must be the one that reaches the Printable, not the whole score");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -172,21 +172,21 @@ class PrintAuditTest {
 
             withDialog(item::doClick, dialog -> findButton(dialog, "Imprimir").doClick());
             Printable uncentered = printing.printable();
-            assertNotNull(uncentered, "tiene que llegar el Printable real de la partitura");
+            assertNotNull(uncentered, "the real Printable of the score must arrive");
 
             withDialog(item::doClick, dialog -> {
                 PrintPanel panel = findComponent(dialog, PrintPanel.class);
                 assertFalse(panel.toPrintSettings().centeredDocument(),
-                        "por defecto el documento real no arranca centrado");
+                        "by default the real document does not start centered");
 
                 panel.centerDocument();
 
                 assertTrue(panel.toPrintSettings().centeredDocument(),
-                        "tildar el casillero real 'Documento centrado' tiene que llegar a las opciones reales");
+                        "checking the real 'Documento centrado' checkbox must reach the real options");
                 findButton(dialog, "Imprimir").doClick();
             });
             Printable centered = printing.printable();
-            assertNotNull(centered, "tiene que llegar el Printable real, ya centrado");
+            assertNotNull(centered, "the real Printable must arrive, already centered");
 
             PageSetup setup = DefaultPageSetup.userSetup().get();
             Dimension sheet = ScoreSheets.pageSize(Zoom.whole(), setup);
@@ -199,8 +199,8 @@ class PrintAuditTest {
 
             assertTrue(
                     Math.abs((centeredColumn - uncenteredColumn) - horizontalSlack / 2) <= 5,
-                    "con 'Documento centrado' tildado desde el dialogo real, el PrinterJob falso tiene que "
-                            + "recibir la hoja corrida la mitad del sobrante horizontal");
+                    "with 'Documento centrado' checked from the real dialog, the fake PrinterJob must "
+                            + "receive the sheet shifted half the horizontal slack");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -235,7 +235,7 @@ class PrintAuditTest {
                 }
             }
         }
-        throw new IllegalStateException("la imagen no tiene tinta en ningun lado");
+        throw new IllegalStateException("the image has no ink anywhere");
     }
 
     @Test
@@ -244,11 +244,11 @@ class PrintAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
-            assertNotNull(canvas, "no encontre el ScoreCanvas real");
+            assertNotNull(canvas, "could not find the real ScoreCanvas");
 
             boolean openedADialog = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("ctrl P"), 2000);
 
-            assertTrue(openedADialog, "Ctrl+P con la partitura enfocada tiene que abrir el dialogo real de Imprimir");
+            assertTrue(openedADialog, "Ctrl+P with the score focused must open the real Imprimir dialog");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -260,12 +260,12 @@ class PrintAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Configurar página…");
-            assertNotNull(item, "no encontre 'Configurar página…' en el menu real");
+            assertNotNull(item, "could not find 'Configurar página…' in the real menu");
             assertEquals(KeyStroke.getKeyStroke("F8"), item.getAccelerator());
 
             withDialog(item::doClick, dialog -> {
                 PageSetupPanel panel = findComponent(dialog, PageSetupPanel.class);
-                assertNotNull(panel, "no encontre el PageSetupPanel real dentro del dialogo");
+                assertNotNull(panel, "could not find the real PageSetupPanel inside the dialog");
                 PageSetup current = panel.toPageSetup();
                 PageSetup changed = new PageSetup(
                         current.paperFormat(), current.orientation(), current.marginTop(), current.marginBottom(),
@@ -273,7 +273,7 @@ class PrintAuditTest {
                 assertNotEquals(current, changed);
 
                 panel.apply(changed);
-                assertEquals(changed, panel.toPageSetup(), "aplicar el cambio tiene que reflejarse en los campos reales");
+                assertEquals(changed, panel.toPageSetup(), "applying the change must be reflected in the real fields");
 
                 findButton(dialog, "Aceptar").doClick();
             });
@@ -282,7 +282,7 @@ class PrintAuditTest {
                 PageSetupPanel reopened = findComponent(dialog, PageSetupPanel.class);
                 assertEquals(
                         150, reopened.toPageSetup().scorePercent(),
-                        "el tamano de partitura elegido en el dialogo real tiene que seguir aplicado al reabrirlo");
+                        "the score size chosen in the real dialog must still be applied when reopened");
 
                 findButton(dialog, "Cancelar").doClick();
             });
