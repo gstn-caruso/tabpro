@@ -21,7 +21,7 @@ class AsciiTabImporterTest {
     @Test
     void ignoresCommentsAroundTheTabAndReadsTwoNotesWithAFixedRhythm() {
         String block = block(6, "--5--0--");
-        String text = "Un comentario antes.\n\n" + block + "\nComentario despues.\n";
+        String text = "A comment before.\n\n" + block + "\nComment after.\n";
 
         Score score = importer.importScore(text, AsciiTabImportOptions.standard());
 
@@ -93,17 +93,17 @@ class AsciiTabImporterTest {
 
     @Test
     void rejectsATextWithoutAnyTab() {
-        assertThrows(ScoreFileException.class, () -> importer.importScore("no hay tablatura aca", AsciiTabImportOptions.standard()));
+        assertThrows(ScoreFileException.class, () -> importer.importScore("no tab here", AsciiTabImportOptions.standard()));
     }
 
     @Test
     void importsOntoTheActiveTrackKeepingItsIdentity() {
         String text = block(4, "-5-");
-        Track existing = Track.standardBass("Bajo activo");
+        Track existing = Track.standardBass("Active bass");
 
         Track merged = importer.importInto(existing, text, AsciiTabImportOptions.standard());
 
-        assertEquals("Bajo activo", merged.name());
+        assertEquals("Active bass", merged.name());
         assertEquals(Tuning.standardBass(), merged.tuning());
         assertEquals(existing.channel(), merged.channel());
         assertEquals(List.of(new Note(1, 5)), merged.measure(0).beat(0).notes());
@@ -112,7 +112,7 @@ class AsciiTabImporterTest {
     @Test
     void mergesConsecutiveBlocksWithTheSameStringCountWhenImportingOntoATrack() {
         String text = block(6, "-5-") + "\n" + block(6, "-0-");
-        Track existing = Track.standardGuitar("Guitarra activa");
+        Track existing = Track.standardGuitar("Active guitar");
 
         Track merged = importer.importInto(existing, text, AsciiTabImportOptions.standard());
 
@@ -122,7 +122,7 @@ class AsciiTabImporterTest {
     @Test
     void onlyUsesTheFirstGroupOfBlocksWhenTheStringCountChangesWhileImportingOntoATrack() {
         String text = block(6, "-5-") + "\n" + block(4, "-3-");
-        Track existing = Track.standardGuitar("Guitarra activa");
+        Track existing = Track.standardGuitar("Active guitar");
 
         Track merged = importer.importInto(existing, text, AsciiTabImportOptions.standard());
 
@@ -132,9 +132,9 @@ class AsciiTabImporterTest {
 
     @Test
     void rejectsATextWithoutAnyTabWhenImportingOntoATrack() {
-        Track existing = Track.standardGuitar("Guitarra activa");
+        Track existing = Track.standardGuitar("Active guitar");
         assertThrows(ScoreFileException.class,
-                () -> importer.importInto(existing, "no hay tablatura aca", AsciiTabImportOptions.standard()));
+                () -> importer.importInto(existing, "no tab here", AsciiTabImportOptions.standard()));
     }
 
     private static String block(int stringCount, String firstStringContent) {

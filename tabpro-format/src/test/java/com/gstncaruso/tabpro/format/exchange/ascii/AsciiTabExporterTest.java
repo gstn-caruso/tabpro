@@ -23,17 +23,17 @@ class AsciiTabExporterTest {
     @Test
     void drawsEachStringAsADashLineWithBarsAtTheEdges() {
         Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.of(NoteValue.WHOLE));
-        Track track = new Track("Guitarra", Tuning.standard(), com.gstncaruso.tabpro.core.model.Channel.playing(25), List.of(measure));
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), com.gstncaruso.tabpro.core.model.Channel.playing(25), List.of(measure));
+        Score score = new Score("Test", 120, List.of(track));
 
         String tab = exporter.export(score, AsciiTabExportOptions.standard());
 
         List<String> lines = linesOf(tab);
         assertEquals(6, stringLinesOf(lines).size());
         for (String line : stringLinesOf(lines)) {
-            assertTrue(line.startsWith("|"), "cada linea de cuerda arranca con una barra: " + line);
-            assertTrue(line.endsWith("|"), "cada linea de cuerda termina con una barra: " + line);
-            assertTrue(line.chars().allMatch(c -> c == '-' || c == '|'), "solo guiones y barras: " + line);
+            assertTrue(line.startsWith("|"), "every string line starts with a bar: " + line);
+            assertTrue(line.endsWith("|"), "every string line ends with a bar: " + line);
+            assertTrue(line.chars().allMatch(c -> c == '-' || c == '|'), "only dashes and bars: " + line);
         }
     }
 
@@ -41,23 +41,23 @@ class AsciiTabExporterTest {
     void placesEachFretUnderItsOwnString() {
         Beat beat = Beat.of(Duration.of(NoteValue.QUARTER), new Note(3, 5), new Note(6, 0));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat, Beat.rest(new Duration(NoteValue.HALF, true))));
-        Track track = new Track("Guitarra", Tuning.standard(), com.gstncaruso.tabpro.core.model.Channel.playing(25), List.of(measure));
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), com.gstncaruso.tabpro.core.model.Channel.playing(25), List.of(measure));
+        Score score = new Score("Test", 120, List.of(track));
 
         String tab = exporter.export(score, AsciiTabExportOptions.standard());
 
         List<String> stringLines = stringLinesOf(linesOf(tab));
-        assertTrue(stringLines.get(2).contains("5"), "la cuerda 3 tiene el traste 5: " + stringLines.get(2));
-        assertTrue(stringLines.get(5).contains("0"), "la cuerda 6 tiene el traste 0: " + stringLines.get(5));
-        assertTrue(stringLines.get(0).chars().noneMatch(Character::isDigit), "la cuerda 1 no suena: " + stringLines.get(0));
+        assertTrue(stringLines.get(2).contains("5"), "string 3 has fret 5: " + stringLines.get(2));
+        assertTrue(stringLines.get(5).contains("0"), "string 6 has fret 0: " + stringLines.get(5));
+        assertTrue(stringLines.get(0).chars().noneMatch(Character::isDigit), "string 1 does not sound: " + stringLines.get(0));
     }
 
     @Test
     void keepsTwoDigitFretsAligned() {
         Beat beat = Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 12), new Note(6, 0));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat, Beat.rest(new Duration(NoteValue.HALF, true))));
-        Track track = new Track("Guitarra", Tuning.standard(), com.gstncaruso.tabpro.core.model.Channel.playing(25), List.of(measure));
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), com.gstncaruso.tabpro.core.model.Channel.playing(25), List.of(measure));
+        Score score = new Score("Test", 120, List.of(track));
 
         String tab = exporter.export(score, AsciiTabExportOptions.standard());
 
@@ -71,39 +71,39 @@ class AsciiTabExporterTest {
                 new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.of(NoteValue.WHOLE), new Note(6, 0)))),
                 new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.of(NoteValue.WHOLE), new Note(6, 1)))),
                 new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.of(NoteValue.WHOLE), new Note(6, 2)))));
-        Track track = new Track("Guitarra", Tuning.standard(), com.gstncaruso.tabpro.core.model.Channel.playing(25), measures);
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), com.gstncaruso.tabpro.core.model.Channel.playing(25), measures);
+        Score score = new Score("Test", 120, List.of(track));
         AsciiTabExportOptions narrow = new AsciiTabExportOptions(20);
 
         String tab = exporter.export(score, narrow);
 
         List<String> stringLines = stringLinesOf(linesOf(tab));
-        assertTrue(stringLines.size() > 6, "con columnas angostas hacen falta varios sistemas: " + tab);
+        assertTrue(stringLines.size() > 6, "narrow columns need several systems: " + tab);
         for (String line : stringLines) {
-            assertTrue(line.length() <= narrow.columnsPerLine(), "ninguna linea supera el ancho pedido: " + line);
+            assertTrue(line.length() <= narrow.columnsPerLine(), "no line exceeds the requested width: " + line);
         }
     }
 
     @Test
     void includesTheTrackNameAsAHeading() {
-        Track track = Track.standardBass("Bajo");
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = Track.standardBass("Bass");
+        Score score = new Score("Test", 120, List.of(track));
 
         String tab = exporter.export(score, AsciiTabExportOptions.standard());
 
-        assertTrue(tab.contains("Bajo"));
+        assertTrue(tab.contains("Bass"));
     }
 
     @Test
     void exportsOnlyTheGivenTrackNotTheWholeScore() {
-        Track guitar = new Track("Guitarra", Tuning.standard(), com.gstncaruso.tabpro.core.model.Channel.playing(25),
+        Track guitar = new Track("Guitar", Tuning.standard(), com.gstncaruso.tabpro.core.model.Channel.playing(25),
                 List.of(Measure.empty(TimeSignature.fourFour(), Duration.of(NoteValue.WHOLE))));
-        Track bass = Track.standardBass("Bajo");
+        Track bass = Track.standardBass("Bass");
 
         String tab = exporter.export(guitar, AsciiTabExportOptions.standard());
 
-        assertTrue(tab.contains("Guitarra"));
-        assertTrue(!tab.contains("Bajo"), "no debe traer otras pistas: " + tab);
+        assertTrue(tab.contains("Guitar"));
+        assertTrue(!tab.contains("Bass"), "must not carry other tracks: " + tab);
     }
 
     private static List<String> linesOf(String text) {
