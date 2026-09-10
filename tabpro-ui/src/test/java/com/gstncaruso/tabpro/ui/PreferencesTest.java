@@ -118,4 +118,10 @@ class PreferencesTest {
 
         assertEquals(16, preferences.interfaceFontSize());
     }
+
+    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
+    @Test
+    void highContrastStartsOff() {
+        assertFalse(preferences.highContrastEnabled());
+    }
 }

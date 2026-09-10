@@ -21,6 +21,7 @@ public final class Preferences {
     private static final String METRONOME_ENABLED = "metronomeEnabled";
     private static final String INTERFACE_FONT_SIZE = "interfaceFontSize";
     private static final int DEFAULT_INTERFACE_FONT_SIZE = 12;
+    private static final String HIGH_CONTRAST_ENABLED = "highContrastEnabled";
     private static final String DEFAULT_NOTE_VALUE = "defaultNoteValue";
     private static final String AUTO_SCROLL_DURING_PLAYBACK = "autoScrollDuringPlayback";
     private static final String FORCE_MULTITRACK_IN_HORIZONTAL_MODE = "forceMultitrackInHorizontalMode";
@@ -86,6 +87,11 @@ public final class Preferences {
 
     public void setInterfaceFontSize(int points) {
         stored.putInt(INTERFACE_FONT_SIZE, points);
+    }
+
+    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
+    public boolean highContrastEnabled() {
+        return stored.getBoolean(HIGH_CONTRAST_ENABLED, false);
     }
 
     /** Preferencias [F12], "Figura por defecto al insertar": la usa {@code Editor.insertBeat}. */
