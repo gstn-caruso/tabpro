@@ -29,6 +29,13 @@ class StatusInfoTest {
     }
 
     @Test
+    void aFreshMeasureShowsItsBeatsRatioInGuitarProFormat() {
+        StatusInfo info = StatusInfo.of(new Editor(Score.blank()), Pagination.single());
+
+        assertEquals("1.000 : 4.000", info.measureBeatsRatioText());
+    }
+
+    @Test
     void movingTheCursorMovesThePosition() {
         Editor editor = new Editor(Score.blank());
         editor.addTrack(Track.standardBass("Bajo"));

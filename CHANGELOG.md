@@ -1,3 +1,29 @@
+## [0.42.0](https://github.com/gstn-caruso/tabpro/compare/v0.41.0...v0.42.0) (2026-09-10)
+
+### Features
+
+* **status:** la barra de estado tiene los seis paneles hundidos de Guitar Pro 5 ([#139](https://github.com/gstn-caruso/tabpro/issues/139)) ([e4682d7](https://github.com/gstn-caruso/tabpro/commit/e4682d73eb88750f462d747fdb8ce520b340e6ab))
+* **toolbar:** el zoom es un combo editable con el porcentaje visible, como en Guitar Pro 5 ([#140](https://github.com/gstn-caruso/tabpro/issues/140)) ([9815fcb](https://github.com/gstn-caruso/tabpro/commit/9815fcbab09992a96d533afb222bfaaeb88de79e))
+
+## [0.41.0](https://github.com/gstn-caruso/tabpro/compare/v0.40.0...v0.41.0) (2026-09-10)
+
+### Features
+
+* **instruments:** el diapasón tiene veta y trastes metálicos, y el teclado marca la nota con un punto ([#138](https://github.com/gstn-caruso/tabpro/issues/138)) ([27f3a2f](https://github.com/gstn-caruso/tabpro/commit/27f3a2f411646dca68131fb331105d2e655ce3eb))
+
+## [0.40.0](https://github.com/gstn-caruso/tabpro/compare/v0.39.2...v0.40.0) (2026-09-10)
+
+### Features
+
+* **print:** configurar página conserva el formato elegido, y la impresión se verifica hasta el PrinterJob ([#137](https://github.com/gstn-caruso/tabpro/issues/137)) ([b7e2296](https://github.com/gstn-caruso/tabpro/commit/b7e2296d818e0b6ed8bba73495fc44dc9f6a6c6d))
+* **toolbar:** el selector de pista por número de Guitar Pro 5 al final de la fila 1 ([#136](https://github.com/gstn-caruso/tabpro/issues/136)) ([0d1d762](https://github.com/gstn-caruso/tabpro/commit/0d1d762872e13da1279adca49830d3dcb9b7e236))
+
+## [0.39.2](https://github.com/gstn-caruso/tabpro/compare/v0.39.1...v0.39.2) (2026-09-10)
+
+### Bug Fixes
+
+* **instruments:** la cejilla entra a la paleta de cada mástil y cumple el contraste en el clásico ([#135](https://github.com/gstn-caruso/tabpro/issues/135)) ([5c4aabc](https://github.com/gstn-caruso/tabpro/commit/5c4aabc51b6ec534fbb7a698221aea0fb64e2b3e))
+
 ## [0.39.1](https://github.com/gstn-caruso/tabpro/compare/v0.39.0...v0.39.1) (2026-09-10)
 
 ### Bug Fixes

@@ -19,6 +19,7 @@ public record StatusInfo(
         String trackName,
         MeasureCompleteness completeness,
         String measureDurationText,
+        String measureBeatsRatioText,
         String title,
         String author) {
 
@@ -34,6 +35,7 @@ public record StatusInfo(
                 editor.currentTrack().name(),
                 MeasureCompleteness.of(measure),
                 MeasureDurationText.of(measure),
+                MeasureBeatsRatioText.of(measure),
                 titleOf(info),
                 authorOf(info));
     }

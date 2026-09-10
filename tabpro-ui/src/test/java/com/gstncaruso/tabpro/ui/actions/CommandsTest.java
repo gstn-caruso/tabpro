@@ -273,6 +273,12 @@ class CommandsTest {
         assertThrows(IllegalArgumentException.class, () -> commands.get("no.existe"));
     }
 
+    @Test
+    void lasFlechasDePistaTienenIcono() {
+        assertNotNull(commands.get("track.previous").icon());
+        assertNotNull(commands.get("track.next").icon());
+    }
+
     private static ActionEvent event() {
         return new ActionEvent(new Object(), ActionEvent.ACTION_PERFORMED, "test");
     }

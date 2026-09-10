@@ -1,13 +1,17 @@
 package com.gstncaruso.tabpro.ui.status;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import java.awt.Component;
+import java.awt.Container;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import org.junit.jupiter.api.Test;
 
 class StatusBarTest {
@@ -25,7 +29,7 @@ class StatusBarTest {
         StatusBar bar = new StatusBar(editor);
 
         assertEquals("Pág. 1/1", bar.pageText());
-        assertEquals("Compás 1/1 · Pista 1", bar.positionText());
+        assertEquals("001 : 001", bar.positionText());
         assertEquals("Guitarra", bar.trackNameText());
     }
 
@@ -34,8 +38,15 @@ class StatusBarTest {
         Editor editor = new Editor(Score.blank());
         StatusBar bar = new StatusBar(editor);
 
-        assertTrue(bar.completenessText().contains("1/4"));
-        assertTrue(bar.completenessText().contains("corto"));
+        assertEquals("Compás corto", bar.completenessText());
+    }
+
+    @Test
+    void showsTheMeasureDurationInBeats() {
+        Editor editor = new Editor(Score.blank());
+        StatusBar bar = new StatusBar(editor);
+
+        assertEquals("1.000 : 4.000", bar.durationText());
     }
 
     @Test
@@ -55,7 +66,42 @@ class StatusBarTest {
 
         editor.selectTrack(1);
 
-        assertEquals("Compás 1/1 · Pista 2", bar.positionText());
+        assertEquals("001 : 001", bar.positionText());
         assertEquals("Bajo", bar.trackNameText());
+    }
+
+    @Test
+    void everyPanelHasAnAccessibleNameAndASunkenBorder() {
+        StatusBar bar = new StatusBar(new Editor(Score.blank()));
+
+        assertHasASunkenPanel(bar, "Página");
+        assertHasASunkenPanel(bar, "Posición");
+        assertHasASunkenPanel(bar, "Estado del compás");
+        assertHasASunkenPanel(bar, "Pista");
+        assertHasASunkenPanel(bar, "Duración del compás");
+        assertHasASunkenPanel(bar, "Título y autor");
+    }
+
+    private static void assertHasASunkenPanel(Container root, String accessibleName) {
+        JLabel label = findLabelByAccessibleName(root, accessibleName);
+        assertNotNull(label, "no se encontro ningun panel llamado " + accessibleName);
+        assertNotNull(label.getParent(), accessibleName + " no esta dentro de un panel");
+        assertNotNull(((JPanel) label.getParent()).getBorder(), accessibleName + " no tiene borde hundido");
+    }
+
+    private static JLabel findLabelByAccessibleName(Container root, String accessibleName) {
+        for (Component child : root.getComponents()) {
+            if (child instanceof JLabel label
+                    && accessibleName.equals(label.getAccessibleContext().getAccessibleName())) {
+                return label;
+            }
+            if (child instanceof Container container) {
+                JLabel found = findLabelByAccessibleName(container, accessibleName);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 }

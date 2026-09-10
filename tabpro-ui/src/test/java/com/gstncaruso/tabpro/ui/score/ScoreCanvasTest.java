@@ -43,6 +43,16 @@ class ScoreCanvasTest {
         assertTrue(canvas.isMultitrack());
     }
 
+    @Test
+    void avisaCuandoElZoomCambia() {
+        boolean[] avisado = {false};
+        canvas.onZoomChange(() -> avisado[0] = true);
+
+        canvas.zoomIn();
+
+        assertTrue(avisado[0]);
+    }
+
     /**
      * Tab es, de fabrica, una tecla de navegacion de foco para cualquier JComponent: si
      * ScoreCanvas no la desactiva, AWT se queda con ella para mover el foco antes de que

@@ -12,7 +12,6 @@ import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -22,7 +21,11 @@ import javax.imageio.ImageIO;
 /** Imprimir la partitura y guardarla como imagen, como pide el manual. */
 public final class ScorePrinting {
 
-    private ScorePrinting() {
+    private final Printing printing;
+    private PageFormat pageFormat;
+
+    public ScorePrinting(Printing printing) {
+        this.printing = printing;
     }
 
     /**
@@ -30,13 +33,12 @@ public final class ScorePrinting {
      * que tamano ya lo decidio la ventana de Imprimir; el dialogo del sistema queda solo para
      * elegir la impresora y su papel.
      */
-    public static void print(Score score, PageSetup setup, PrintSettings settings, String jobName)
+    public void print(Score score, PageSetup setup, PrintSettings settings, String jobName)
             throws PrinterException {
-        PrinterJob job = PrinterJob.getPrinterJob();
-        job.setJobName(jobName);
-        job.setPrintable(new ScorePages(score, setup, settings));
-        if (job.printDialog()) {
-            job.print();
+        printing.setJobName(jobName);
+        printing.setPrintable(new ScorePages(score, setup, settings), currentPageFormat());
+        if (printing.printDialog()) {
+            printing.print();
         }
     }
 
@@ -48,11 +50,18 @@ public final class ScorePrinting {
     /**
      * El boton Configure del manual, en la ventana de Imprimir: deja elegir el papel y la
      * orientacion de la impresora misma. Es otro formato distinto del {@link PageSetup} de la
-     * partitura -ese lo pide "Configurar pagina [F8]" y describe el documento, no el aparato.
+     * partitura -ese lo pide "Configurar pagina [F8]" y describe el documento, no el aparato. Lo
+     * elegido queda para la proxima vez que se imprima.
      */
-    public static void configurePrinterPage() {
-        PrinterJob job = PrinterJob.getPrinterJob();
-        job.pageDialog(job.defaultPage());
+    public void configurePrinterPage() {
+        pageFormat = printing.pageDialog(currentPageFormat());
+    }
+
+    private PageFormat currentPageFormat() {
+        if (pageFormat == null) {
+            pageFormat = printing.defaultPage();
+        }
+        return pageFormat;
     }
 
     public static void exportImage(Score score, PageSetup setup, Path path, ViewMode viewMode, Zoom zoom) {

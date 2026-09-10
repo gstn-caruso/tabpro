@@ -609,18 +609,6 @@ public final class Icons {
         });
     }
 
-    public static Icon zoomIn() {
-        return svgIcon("zoom-in");
-    }
-
-    public static Icon zoomOut() {
-        return svgIcon("zoom-out");
-    }
-
-    public static Icon zoomReset() {
-        return svgIcon("zoom-reset");
-    }
-
     public static Icon multitrack() {
         return icon((graphics, size) -> {
             Glyphs.staff(graphics, size * 0.12, size * 0.16, size * 0.76, size * 0.06);
@@ -662,6 +650,10 @@ public final class Icons {
 
     public static Icon tuner() {
         return svgIcon("gauge");
+    }
+
+    public static Icon handedness() {
+        return svgIcon("arrows-horizontal");
     }
 
     public static Icon transpose() {
@@ -720,6 +712,14 @@ public final class Icons {
 
     public static Icon trackDelete() {
         return svgIcon("trash");
+    }
+
+    public static Icon chevronLeft() {
+        return svgIcon("chevron-left");
+    }
+
+    public static Icon chevronRight() {
+        return svgIcon("chevron-right");
     }
 
     /** El casillero verde del manual: "Verificar la duracion de los compases". */

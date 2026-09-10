@@ -12,11 +12,14 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.JComponent;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
@@ -230,6 +233,33 @@ class BeatViewsTest {
         keyboard.dispatchEvent(new MouseEvent(
                 keyboard, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0,
                 key.x + key.width / 2, key.y + key.height - 4, 1, false, MouseEvent.BUTTON1));
+    }
+
+    @Test
+    void theHandednessButtonFlipsTheFretboardWithAnIcon() {
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        JToggleButton toggle = findHandednessToggle(views)
+                .orElseThrow(() -> new AssertionError("no encontre el boton de zurdo"));
+
+        toggle.doClick();
+
+        assertEquals(Handedness.LEFT_HANDED, views.fretboard().handedness());
+        assertTrue(toggle.getIcon() != null, "el boton de zurdo tiene que mostrar un icono, no una casilla de texto");
+    }
+
+    private static java.util.Optional<JToggleButton> findHandednessToggle(Container container) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof JToggleButton toggle) {
+                return java.util.Optional.of(toggle);
+            }
+            if (component instanceof Container nested) {
+                java.util.Optional<JToggleButton> found = findHandednessToggle(nested);
+                if (found.isPresent()) {
+                    return found;
+                }
+            }
+        }
+        return java.util.Optional.empty();
     }
 
     @Test

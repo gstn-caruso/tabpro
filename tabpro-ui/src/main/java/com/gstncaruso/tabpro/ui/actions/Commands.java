@@ -183,8 +183,10 @@ public final class Commands {
         define("track.properties", "Propiedades de la pista…", dialogs::trackProperties)
                 .withAccelerator("F6").withIcon(Icons.trackProperties());
         define("track.instrument", "Instrumento…", dialogs::instrument).withAccelerator("F7");
-        define("track.previous", "Pista anterior", editor::moveToPreviousTrack).withAccelerator("ctrl UP");
-        define("track.next", "Pista siguiente", editor::moveToNextTrack).withAccelerator("ctrl DOWN");
+        define("track.previous", "Pista anterior", editor::moveToPreviousTrack)
+                .withAccelerator("ctrl UP").withIcon(Icons.chevronLeft());
+        define("track.next", "Pista siguiente", editor::moveToNextTrack)
+                .withAccelerator("ctrl DOWN").withIcon(Icons.chevronRight());
     }
 
     // ---- notas ------------------------------------------------------------
@@ -426,9 +428,9 @@ public final class Commands {
                 .withIcon(Icons.verticalScreen());
         define("view.horizontalScreen", "Pantalla horizontal", view::horizontalScreenMode)
                 .withIcon(Icons.horizontalScreen());
-        define("view.zoomIn", "Acercar", view::zoomIn).withAccelerator("ctrl EQUALS").withIcon(Icons.zoomIn());
-        define("view.zoomOut", "Alejar", view::zoomOut).withAccelerator("ctrl MINUS").withIcon(Icons.zoomOut());
-        define("view.resetZoom", "Zoom al 100%", view::resetZoom).withAccelerator("ctrl 0").withIcon(Icons.zoomReset());
+        define("view.zoomIn", "Acercar", view::zoomIn).withAccelerator("ctrl EQUALS");
+        define("view.zoomOut", "Alejar", view::zoomOut).withAccelerator("ctrl MINUS");
+        define("view.resetZoom", "Zoom al 100%", view::resetZoom).withAccelerator("ctrl 0");
         define("view.multitrack", "Vista multipista", view::toggleMultitrack).withIcon(Icons.multitrack());
         define("view.grayInactiveVoice", "Atenuar la voz inactiva", view::toggleGrayInactiveVoice)
                 .withAccelerator("ctrl G");

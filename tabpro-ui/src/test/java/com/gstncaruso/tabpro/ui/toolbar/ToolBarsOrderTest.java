@@ -6,6 +6,8 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import com.gstncaruso.tabpro.ui.score.Zoom;
+import com.gstncaruso.tabpro.ui.score.ZoomHolder;
 import java.awt.Component;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -23,12 +25,14 @@ import org.junit.jupiter.api.Test;
 class ToolBarsOrderTest {
 
     private static final String SEP = "|";
+    private static final String SELECTOR = "@selector";
+    private static final String ZOOM = "@zoom";
 
     private final Editor editor = new Editor(Score.blank());
     private final Commands commands = new Commands(
             editor, record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
-    private final ToolBars toolBars = new ToolBars(commands);
+    private final ToolBars toolBars = new ToolBars(editor, commands, new FakeZoomHolder());
 
     @Test
     void laFilaDeDocumentoYEdicionSigueElOrdenDeGuitarPro5() {
@@ -43,9 +47,10 @@ class ToolBarsOrderTest {
                 "edit.cut", "options.preferences", SEP,
                 "view.multitrack", SEP,
                 "view.page", "view.parchment", "view.verticalScreen", "view.horizontalScreen", SEP,
-                "view.zoomOut", "view.resetZoom", "view.zoomIn", SEP,
+                ZOOM, SEP,
                 "view.fretboard", "view.keyboard", "view.mixTable", SEP,
-                "edit.copy", "edit.paste");
+                "edit.copy", "edit.paste", SEP,
+                SELECTOR);
     }
 
     @Test
@@ -96,7 +101,8 @@ class ToolBarsOrderTest {
     private void assertOrder(JToolBar bar, String... tokens) {
         List<Object> expected = new ArrayList<>();
         for (String token : tokens) {
-            expected.add(token.equals(SEP) ? SEP : commands.get(token));
+            expected.add(token.equals(SEP) || token.equals(SELECTOR) || token.equals(ZOOM)
+                    ? token : commands.get(token));
         }
         assertEquals(expected, actualOrderOf(bar));
     }
@@ -106,11 +112,30 @@ class ToolBarsOrderTest {
         for (Component component : bar.getComponents()) {
             if (component instanceof JToolBar.Separator) {
                 actual.add(SEP);
+            } else if (component instanceof TrackSelector) {
+                actual.add(SELECTOR);
+            } else if (component instanceof ZoomSelector) {
+                actual.add(ZOOM);
             } else if (component instanceof AbstractButton button) {
                 actual.add(button.getAction());
             }
         }
         return actual;
+    }
+
+    private static final class FakeZoomHolder implements ZoomHolder {
+        @Override
+        public Zoom zoom() {
+            return Zoom.whole();
+        }
+
+        @Override
+        public void setZoom(Zoom zoom) {
+        }
+
+        @Override
+        public void onZoomChange(Runnable listener) {
+        }
     }
 
     @SuppressWarnings("unchecked")

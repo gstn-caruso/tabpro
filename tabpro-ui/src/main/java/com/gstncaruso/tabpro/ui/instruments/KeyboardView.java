@@ -50,6 +50,11 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
     private static final double BLACK_KEY_WIDTH = 0.62;
     private static final double BLACK_KEY_HEIGHT = 0.62;
     private static final Set<Integer> WHITE_PITCH_CLASSES = Set.of(0, 2, 4, 5, 7, 9, 11);
+    private static final double MARK_RADIUS_RATIO = 0.32;
+    private static final int MARK_RADIUS_MIN = 2;
+    private static final double MARK_MARGIN_RATIO = 0.04;
+    private static final int MARK_MARGIN_MIN = 1;
+    private static final int BEVEL_THICKNESS = 2;
 
     private BeatLocation location = defaultLocation();
     private KeyboardDisplayMode displayMode = KeyboardDisplayMode.ONLY_BEAT;
@@ -296,21 +301,32 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
     }
 
     private void paintKeys(Graphics2D g, KeyMarks marks, boolean white) {
+        Color base = white ? InstrumentColors.WHITE_KEY : InstrumentColors.BLACK_KEY;
         for (int key : keysInRange(white)) {
             Rectangle bounds = keyBounds(key).orElseThrow();
-            g.setColor(colorOf(key, marks, white));
+            g.setColor(base);
             g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
             g.setColor(InstrumentColors.KEY_EDGE);
             g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+            paintKeyBevel(g, bounds, base);
+            marks.kindOf(key).ifPresent(kind -> paintMarkDot(g, bounds, kind));
         }
     }
 
-    private java.awt.Color colorOf(int key, KeyMarks marks, boolean white) {
-        Optional<MarkKind> kind = marks.kindOf(key);
-        if (kind.isPresent()) {
-            return kind.get() == MarkKind.PRIMARY ? InstrumentColors.PRESSED : InstrumentColors.CONTEXT;
-        }
-        return white ? InstrumentColors.WHITE_KEY : InstrumentColors.BLACK_KEY;
+    private void paintKeyBevel(Graphics2D g, Rectangle bounds, Color base) {
+        g.setColor(base.brighter());
+        g.fillRect(bounds.x, bounds.y, bounds.width, BEVEL_THICKNESS);
+        g.setColor(base.darker());
+        g.fillRect(bounds.x, bounds.y + bounds.height - BEVEL_THICKNESS, bounds.width, BEVEL_THICKNESS);
+    }
+
+    private void paintMarkDot(Graphics2D g, Rectangle bounds, MarkKind kind) {
+        int radius = Math.max(MARK_RADIUS_MIN, (int) Math.round(bounds.width * MARK_RADIUS_RATIO));
+        int marginBottom = Math.max(MARK_MARGIN_MIN, (int) Math.round(bounds.height * MARK_MARGIN_RATIO));
+        int centerX = bounds.x + bounds.width / 2;
+        int centerY = bounds.y + bounds.height - marginBottom - radius;
+        g.setColor(kind == MarkKind.PRIMARY ? InstrumentColors.PRESSED : InstrumentColors.CONTEXT);
+        g.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
     }
 
     private void paintHover(Graphics2D g) {

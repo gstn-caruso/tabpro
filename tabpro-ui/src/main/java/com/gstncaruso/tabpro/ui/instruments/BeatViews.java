@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.core.playback.Player;
+import com.gstncaruso.tabpro.ui.icons.Icons;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -22,11 +23,11 @@ import java.util.Optional;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
 /**
@@ -224,7 +225,7 @@ public final class BeatViews extends JPanel {
         bar.add(comboOf("Modo de etiqueta de escala", ScaleLabelMode.values(), fretboard::setScaleLabelMode));
         bar.add(comboOf("Tipo de diapasón", FretboardType.values(), fretboard::setFretboardType));
         bar.add(scalePicker(fretboard::setScale));
-        bar.add(handednessCheckBox());
+        bar.add(handednessToggle());
         bar.add(navigationButtons());
         return bar;
     }
@@ -276,11 +277,12 @@ public final class BeatViews extends JPanel {
         return picker;
     }
 
-    private JComponent handednessCheckBox() {
-        JCheckBox zurdo = new JCheckBox("Zurdo");
-        zurdo.setOpaque(false);
-        zurdo.setFont(zurdo.getFont().deriveFont(10f));
-        zurdo.setForeground(ScoreColors.LABEL);
+    private JComponent handednessToggle() {
+        JToggleButton zurdo = new JToggleButton(Icons.handedness());
+        zurdo.setToolTipText("Zurdo: invierte el diapasón");
+        zurdo.getAccessibleContext().setAccessibleName("Zurdo");
+        zurdo.setFocusable(false);
+        zurdo.setMargin(new java.awt.Insets(0, 4, 0, 4));
         zurdo.addActionListener(
                 e -> fretboard.setHandedness(zurdo.isSelected() ? Handedness.LEFT_HANDED : Handedness.RIGHT_HANDED));
         return zurdo;

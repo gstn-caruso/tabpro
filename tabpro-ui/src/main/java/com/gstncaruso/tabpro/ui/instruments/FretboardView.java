@@ -49,6 +49,8 @@ public final class FretboardView extends JComponent implements AccessibleControl
     private static final int NUMBERS_HEIGHT = 15;
     private static final Set<Integer> SINGLE_INLAYS = Set.of(3, 5, 7, 9, 15, 17, 19, 21);
     private static final Set<Integer> DOUBLE_INLAYS = Set.of(12, 24);
+    private static final int GRAIN_PERIOD = 3;
+    private static final double GRAIN_DARKENING = 0.12;
 
     private BeatLocation location = defaultLocation();
     private FretboardDisplayMode displayMode = FretboardDisplayMode.ONLY_BEAT;
@@ -401,10 +403,29 @@ public final class FretboardView extends JComponent implements AccessibleControl
         int padding = neckPadding();
         int top = stringY(1) - padding;
         int bottom = stringY(stringCount()) + padding;
+        int left = logicalNutX();
+        int width = getWidth() - SIDE_MARGIN - logicalNutX();
         g.setColor(fretboardType.woodColor());
-        g.fillRect(logicalNutX(), top, getWidth() - SIDE_MARGIN - logicalNutX(), bottom - top);
+        g.fillRect(left, top, width, bottom - top);
+        paintWoodGrain(g, left, top, width, bottom - top);
         g.setColor(fretboardType.edgeColor());
-        g.drawRect(logicalNutX(), top, getWidth() - SIDE_MARGIN - logicalNutX(), bottom - top);
+        g.drawRect(left, top, width, bottom - top);
+    }
+
+    private void paintWoodGrain(Graphics2D g, int x, int y, int width, int height) {
+        g.setColor(towardBlack(fretboardType.woodColor(), GRAIN_DARKENING));
+        for (int row = y; row < y + height; row++) {
+            if (Math.floorMod(row, GRAIN_PERIOD) == 0) {
+                g.drawLine(x, row, x + width - 1, row);
+            }
+        }
+    }
+
+    private static Color towardBlack(Color color, double amount) {
+        int r = (int) Math.round(color.getRed() * (1 - amount));
+        int g = (int) Math.round(color.getGreen() * (1 - amount));
+        int b = (int) Math.round(color.getBlue() * (1 - amount));
+        return new Color(r, g, b);
     }
 
     private void paintInlays(Graphics2D g) {
@@ -428,11 +449,16 @@ public final class FretboardView extends JComponent implements AccessibleControl
         int top = stringY(1) - padding;
         int bottom = stringY(stringCount()) + padding;
 
-        g.setColor(fretboardType.fretWireColor());
         g.setStroke(new BasicStroke(1));
+        Color fretWire = fretboardType.fretWireColor();
         for (int fret = 1; fret <= fretCount(); fret++) {
             int x = (int) Math.round(logicalNutX() + fret * fretWidth());
+            g.setColor(fretWire.brighter());
+            g.drawLine(x - 1, top, x - 1, bottom);
+            g.setColor(fretWire);
             g.drawLine(x, top, x, bottom);
+            g.setColor(fretWire.darker());
+            g.drawLine(x + 1, top, x + 1, bottom);
         }
 
         g.setColor(InstrumentColors.NUT);

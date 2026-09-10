@@ -60,8 +60,10 @@ import com.gstncaruso.tabpro.ui.score.HorizontalMultitrack;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.percussion.PercussionAssistant;
 import com.gstncaruso.tabpro.ui.print.ImageExportException;
+import com.gstncaruso.tabpro.ui.print.Printing;
 import com.gstncaruso.tabpro.ui.print.PrintSettings;
 import com.gstncaruso.tabpro.ui.print.ScorePrinting;
+import com.gstncaruso.tabpro.ui.print.SystemPrinting;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import com.gstncaruso.tabpro.ui.score.ViewMode;
@@ -109,6 +111,7 @@ public final class MainFrame extends JFrame {
     private final Ports.Devices devices;
     private final Ports.Microphone microphone;
     private final Player player;
+    private final ScorePrinting printing;
     private final MidiSetupPreferences midiSetupPreferences = MidiSetupPreferences.userPreferences();
     private StringAssignment stringAssignment = midiSetupPreferences.stringAssignment();
     private PageSetup pageSetup = DefaultPageSetup.userSetup().get();
@@ -120,7 +123,8 @@ public final class MainFrame extends JFrame {
     private final ScoreMixSplit scoreMixSplit;
 
     public MainFrame(Editor editor, ScoreFiles files, Player player) {
-        this(editor, files, player, ThemeSwitch.NONE, Ports.Devices.NONE, ScoreExchange.NONE, Ports.Microphone.NONE);
+        this(editor, files, player, ThemeSwitch.NONE, Ports.Devices.NONE, ScoreExchange.NONE, Ports.Microphone.NONE,
+                new SystemPrinting());
     }
 
     public MainFrame(
@@ -130,7 +134,8 @@ public final class MainFrame extends JFrame {
             ThemeSwitch themes,
             Ports.Devices devices,
             ScoreExchange exchange,
-            Ports.Microphone microphone) {
+            Ports.Microphone microphone,
+            Printing printing) {
         super("tabpro");
         this.exchange = exchange;
         this.microphone = microphone;
@@ -139,6 +144,7 @@ public final class MainFrame extends JFrame {
         this.player = player;
         this.editor = editor;
         this.files = files;
+        this.printing = new ScorePrinting(printing);
         this.document = new ScoreDocument(
                 editor, files, preferences, () -> defaultScoreProperties.get().newScore());
         editor.setUndoEnabled(preferences.undoEnabled());
@@ -162,7 +168,7 @@ public final class MainFrame extends JFrame {
         Document documentActions = new Document();
         commands = new Commands(
                 editor, documentActions, new Windows(), new Playback(), new View(), themes.names());
-        toolBars = new ToolBars(commands);
+        toolBars = new ToolBars(editor, commands, canvas);
         boolean effectsToolBarVisible = preferences.effectsToolBarVisible();
         toolBars.setEffectsToolBarVisible(effectsToolBarVisible);
         // El casillero de "Efectos" en Ver > Menus y barras arranca marcado por defecto
@@ -643,10 +649,10 @@ public final class MainFrame extends JFrame {
         @Override
         public void print() {
             try {
-                java.util.Optional<PrintSettings> chosen =
-                        PrintDialog.ask(MainFrame.this, ScorePrinting.pageCount(editor.score(), pageSetup));
+                java.util.Optional<PrintSettings> chosen = PrintDialog.ask(
+                        MainFrame.this, ScorePrinting.pageCount(editor.score(), pageSetup), printing);
                 if (chosen.isPresent()) {
-                    ScorePrinting.print(editor.score(), pageSetup, chosen.get(), document.displayName());
+                    printing.print(editor.score(), pageSetup, chosen.get(), document.displayName());
                 }
                 backToTheScore();
             } catch (java.awt.print.PrinterException e) {
