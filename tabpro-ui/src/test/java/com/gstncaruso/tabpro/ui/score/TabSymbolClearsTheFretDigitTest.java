@@ -26,7 +26,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 class TabSymbolClearsTheFretDigitTest {
 
     private static final int WIDTH = 300;
-    private static final int BAJO = 1;
+    private static final int BASS_TRACK = 1;
 
     @ParameterizedTest
     @EnumSource(value = Ornament.class, names = {"PALM_MUTE", "LET_RING"})
@@ -35,7 +35,7 @@ class TabSymbolClearsTheFretDigitTest {
         Painted plain = paint(new Note(1, 3));
 
         Rectangle gapArea = new Rectangle(
-                plain.layout.measureX(0), plain.layout.staffBottom(BAJO, 0),
+                plain.layout.measureX(0), plain.layout.staffBottom(BASS_TRACK, 0),
                 plain.layout.measureWidth(0), ScoreLayout.STAFF_TO_TAB_GAP);
         Rectangle digitArea = digitArea(plain.layout);
 
@@ -46,8 +46,8 @@ class TabSymbolClearsTheFretDigitTest {
     }
 
     private static Rectangle digitArea(ScoreLayout layout) {
-        int tabTop = layout.tabTop(BAJO, 0);
-        Rectangle beat = layout.beatBounds(BAJO, 0, 0);
+        int tabTop = layout.tabTop(BASS_TRACK, 0);
+        Rectangle beat = layout.beatBounds(BASS_TRACK, 0, 0);
         int centerX = beat.x + beat.width / 2;
         int halfHeight = ScoreLayout.STRING_SPACING / 2;
         return new Rectangle(centerX - 20, tabTop - halfHeight, 40, halfHeight * 2);
@@ -61,11 +61,11 @@ class TabSymbolClearsTheFretDigitTest {
                 Beat.rest(Duration.quarter())));
     }
 
-    private static Painted paint(Note bajoNote) {
-        Track guitarra = new Track(
+    private static Painted paint(Note bassNote) {
+        Track guitarTrack = new Track(
                 "Guitarra", Tuning.standard(), Channel.playing(25), List.of(measureWith(new Note(1, 0))));
-        Track bajo = new Track("Bajo", Tuning.standard(), Channel.playing(33), List.of(measureWith(bajoNote)));
-        Score score = new Score("", 120, List.of(guitarra, bajo));
+        Track bassTrack = new Track("Bajo", Tuning.standard(), Channel.playing(33), List.of(measureWith(bassNote)));
+        Score score = new Score("", 120, List.of(guitarTrack, bassTrack));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH);
         BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
