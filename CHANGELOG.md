@@ -1,3 +1,9 @@
+## [0.59.1](https://github.com/gstn-caruso/tabpro/compare/v0.59.0...v0.59.1) (2026-09-10)
+
+### Bug Fixes
+
+* **dialogs:** ningún diálogo supera la pantalla ni tapa sus botones; Configurar página y MIDI entran enteros ([#182](https://github.com/gstn-caruso/tabpro/issues/182)) ([e385eee](https://github.com/gstn-caruso/tabpro/commit/e385eeee5d0a0d96d0c2f9fc8c2f6448affefc05)), closes [#180](https://github.com/gstn-caruso/tabpro/issues/180)
+
 ## [0.59.0](https://github.com/gstn-caruso/tabpro/compare/v0.58.6...v0.59.0) (2026-09-10)
 
 ### Features
