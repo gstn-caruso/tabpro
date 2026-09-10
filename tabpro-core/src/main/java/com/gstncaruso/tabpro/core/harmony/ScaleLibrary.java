@@ -17,11 +17,11 @@ public final class ScaleLibrary {
     }
 
     public static Scale major() {
-        return sevenNotes("Mayor (Jonico)", List.of(0, 2, 4, 5, 7, 9, 11));
+        return sevenNotes("Mayor (Jónico)", List.of(0, 2, 4, 5, 7, 9, 11));
     }
 
     public static Scale dorian() {
-        return sevenNotes("Dorico", List.of(0, 2, 3, 5, 7, 9, 10));
+        return sevenNotes("Dórico", List.of(0, 2, 3, 5, 7, 9, 10));
     }
 
     public static Scale phrygian() {
@@ -37,7 +37,7 @@ public final class ScaleLibrary {
     }
 
     public static Scale naturalMinor() {
-        return sevenNotes("Menor natural (Eolico)", List.of(0, 2, 3, 5, 7, 8, 10));
+        return sevenNotes("Menor natural (Eólico)", List.of(0, 2, 3, 5, 7, 8, 10));
     }
 
     public static Scale locrian() {
@@ -45,19 +45,19 @@ public final class ScaleLibrary {
     }
 
     public static Scale harmonicMinor() {
-        return sevenNotes("Menor armonica", List.of(0, 2, 3, 5, 7, 8, 11));
+        return sevenNotes("Menor armónica", List.of(0, 2, 3, 5, 7, 8, 11));
     }
 
     public static Scale melodicMinor() {
-        return sevenNotes("Menor melodica", List.of(0, 2, 3, 5, 7, 9, 11));
+        return sevenNotes("Menor melódica", List.of(0, 2, 3, 5, 7, 9, 11));
     }
 
     public static Scale majorPentatonic() {
-        return new Scale("Pentatonica mayor", List.of(0, 2, 4, 7, 9), List.of(0, 1, 2, 4, 5));
+        return new Scale("Pentatónica mayor", List.of(0, 2, 4, 7, 9), List.of(0, 1, 2, 4, 5));
     }
 
     public static Scale minorPentatonic() {
-        return new Scale("Pentatonica menor", List.of(0, 3, 5, 7, 10), List.of(0, 2, 3, 4, 6));
+        return new Scale("Pentatónica menor", List.of(0, 3, 5, 7, 10), List.of(0, 2, 3, 4, 6));
     }
 
     public static Scale blues() {
@@ -70,7 +70,7 @@ public final class ScaleLibrary {
 
     public static Scale chromatic() {
         return new Scale(
-                "Cromatica",
+                "Cromática",
                 List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
                 List.of(0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6));
     }
@@ -90,11 +90,11 @@ public final class ScaleLibrary {
     }
 
     public static Scale hungarianMinor() {
-        return sevenNotes("Menor hungara", List.of(0, 2, 3, 6, 7, 8, 11));
+        return sevenNotes("Menor húngara", List.of(0, 2, 3, 6, 7, 8, 11));
     }
 
     public static Scale phrygianDominant() {
-        return sevenNotes("Espanola (frigia dominante)", List.of(0, 1, 4, 5, 7, 8, 10));
+        return sevenNotes("Española (frigia dominante)", List.of(0, 1, 4, 5, 7, 8, 10));
     }
 
     public static Scale neapolitanMinor() {
@@ -106,7 +106,7 @@ public final class ScaleLibrary {
     }
 
     public static Scale enigmatic() {
-        return sevenNotes("Enigmatica", List.of(0, 1, 4, 6, 8, 10, 11));
+        return sevenNotes("Enigmática", List.of(0, 1, 4, 6, 8, 10, 11));
     }
 
     public static Scale hirajoshi() {
@@ -137,11 +137,11 @@ public final class ScaleLibrary {
     }
 
     public static Scale majorSharpFive() {
-        return sevenNotes("Mayor #5 (Jonico aumentado)", List.of(0, 2, 4, 5, 8, 9, 11));
+        return sevenNotes("Mayor #5 (Jónico aumentado)", List.of(0, 2, 4, 5, 8, 9, 11));
     }
 
     public static Scale dorianSharpFour() {
-        return sevenNotes("Dorico #4", List.of(0, 2, 3, 6, 7, 9, 10));
+        return sevenNotes("Dórico #4", List.of(0, 2, 3, 6, 7, 9, 10));
     }
 
     public static Scale lydianSharpTwo() {
@@ -152,7 +152,7 @@ public final class ScaleLibrary {
     // Los modos de la menor melodica.
 
     public static Scale dorianFlatTwo() {
-        return sevenNotes("Dorico b2", List.of(0, 1, 3, 5, 7, 9, 10));
+        return sevenNotes("Dórico b2", List.of(0, 1, 3, 5, 7, 9, 10));
     }
 
     public static Scale lydianAugmented() {
@@ -191,7 +191,7 @@ public final class ScaleLibrary {
     }
 
     public static Scale arabian() {
-        return sevenNotes("Arabe", List.of(0, 2, 4, 5, 6, 8, 10));
+        return sevenNotes("Árabe", List.of(0, 2, 4, 5, 6, 8, 10));
     }
 
     public static Scale balinese() {
@@ -203,7 +203,7 @@ public final class ScaleLibrary {
     }
 
     public static Scale hungarianMajor() {
-        return sevenNotes("Hungara mayor", List.of(0, 3, 4, 6, 7, 9, 10));
+        return sevenNotes("Húngara mayor", List.of(0, 3, 4, 6, 7, 9, 10));
     }
 
     public static Scale javanese() {
@@ -227,7 +227,7 @@ public final class ScaleLibrary {
     }
 
     public static Scale overtone() {
-        return sevenNotes("Armonicos (Overtone)", List.of(0, 2, 4, 6, 7, 9, 10));
+        return sevenNotes("Armónicos (Overtone)", List.of(0, 2, 4, 6, 7, 9, 10));
     }
 
     public static List<Scale> all() {

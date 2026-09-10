@@ -108,7 +108,7 @@ class LabelsTest {
 
     @Test
     void traduceLaEscalaConSuNombreEnCastellano() {
-        assertEquals("Mayor (Jonico)", Labels.of(ScaleLibrary.major()));
+        assertEquals("Mayor (Jónico)", Labels.of(ScaleLibrary.major()));
     }
 
     @Test

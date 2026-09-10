@@ -61,7 +61,7 @@ public record PitchClass(int letter, int alteration) {
         boolean sharp = symbol == '#';
         boolean flat = symbol == 'b';
         if ((!sharp && !flat) || suffix.chars().anyMatch(character -> character != symbol)) {
-            throw new IllegalArgumentException("alteracion desconocida: " + suffix);
+            throw new IllegalArgumentException("alteración desconocida: " + suffix);
         }
         return sharp ? suffix.length() : -suffix.length();
     }

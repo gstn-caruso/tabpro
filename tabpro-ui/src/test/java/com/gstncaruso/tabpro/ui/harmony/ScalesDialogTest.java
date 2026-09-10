@@ -47,7 +47,7 @@ class ScalesDialogTest {
 
         JList<?> scales = Combos.firstListNamed(panel, "Escala");
 
-        assertEquals("Mayor (Jonico)", Combos.renderedTextOfList(scales, ScaleLibrary.major()));
+        assertEquals("Mayor (Jónico)", Combos.renderedTextOfList(scales, ScaleLibrary.major()));
     }
 
     @Test
