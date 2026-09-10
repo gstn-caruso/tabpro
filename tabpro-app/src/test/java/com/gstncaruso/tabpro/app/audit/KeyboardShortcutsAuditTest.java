@@ -32,7 +32,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
  * dispatches real KeyEvents on a real MainFrame's canvas instead of only comparing accelerators
  * against the command catalog statically.
  */
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class KeyboardShortcutsAuditTest {
 

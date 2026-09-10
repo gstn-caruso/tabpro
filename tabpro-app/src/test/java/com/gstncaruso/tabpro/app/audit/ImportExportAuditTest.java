@@ -53,7 +53,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ImportExportAuditTest {
 

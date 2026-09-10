@@ -33,11 +33,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>25</maven.compiler.release>
     <junit.version>5.11.4</junit.version>
-    <tests.excluded.groups>integracion</tests.excluded.groups>
+    <tests.excluded.groups>integration</tests.excluded.groups>
     <!--
       Real-use audit tests (tabpro-app/src/test/.../audit) instantiate the main window to dispatch real keyboard and mouse events:
       they need a non-headless toolkit for focus and true peers. Defaults to true (same as mvn -B verify has always run);
-      only the integracion group is invoked with -Dtests.headless=false.
+      only the integration group is invoked with -Dtests.headless=false.
     -->
     <tests.headless>true</tests.headless>
     <flatlaf.version>3.7.2</flatlaf.version>

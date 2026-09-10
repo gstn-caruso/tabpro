@@ -79,7 +79,7 @@ class MidiPlayerTest {
         withFakeSynth.close();
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void playingTheTimelineReachesTheSameReceiverAsThePreview() throws InterruptedException {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
@@ -104,7 +104,7 @@ class MidiPlayerTest {
         withFakeSynth.close();
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void soundsASequenceOfNotesInOrderWithRealTimingBetweenThem() throws InterruptedException {
         List<Long> noteOnTimestamps = new CopyOnWriteArrayList<>();
@@ -195,7 +195,7 @@ class MidiPlayerTest {
         assertTrue(finished[0]);
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void restartsFromTheBeginningOnASecondPlay() throws InterruptedException {
         CountDownLatch finishedLatch = new CountDownLatch(1);
@@ -230,7 +230,7 @@ class MidiPlayerTest {
         assertEquals(new BeatPosition(0, 0, 0), firstBeat.get());
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void afterSeekingWhatSoundsIsTheRequestedMeasure() throws Exception {
         long measureTicks = 4L * Duration.TICKS_PER_QUARTER;

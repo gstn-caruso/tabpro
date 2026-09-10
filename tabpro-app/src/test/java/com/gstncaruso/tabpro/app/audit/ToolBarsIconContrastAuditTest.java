@@ -28,7 +28,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
  * MainFrame extends JFrame, so building a real one requires a non-headless toolkit (see
  * AuditSupport); that is why this is an audit test instead of an ordinary one.
  */
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ToolBarsIconContrastAuditTest {
 

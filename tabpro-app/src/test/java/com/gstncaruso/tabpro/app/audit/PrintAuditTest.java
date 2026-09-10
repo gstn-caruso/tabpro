@@ -47,7 +47,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
  * chosen) and then closes with Cancel, the only way to exercise the path without risking the
  * process waiting on a native window that nobody will handle.
  */
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class PrintAuditTest {
 

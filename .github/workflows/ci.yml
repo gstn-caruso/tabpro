@@ -36,7 +36,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
       - name: Integration tests
-        run: xvfb-run -a mvn -B test -Dtests.headless=false -Dgroups=integracion -Dtests.excluded.groups= -Dsurefire.failIfNoSpecifiedTests=false
+        run: xvfb-run -a mvn -B test -Dtests.headless=false -Dgroups=integration -Dtests.excluded.groups= -Dsurefire.failIfNoSpecifiedTests=false
 
   release:
     needs: build

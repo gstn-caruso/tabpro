@@ -18,7 +18,7 @@ import org.junit.jupiter.api.parallel.Isolated;
  * {@code @Isolated} because this writes to the same {@code java.util.prefs} node that any real
  * {@code MainFrame} in the suite uses.
  */
-@Tag("integracion")
+@Tag("integration")
 @Isolated
 class AccessibilityPreferencesAuditTest {
 

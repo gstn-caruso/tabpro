@@ -67,7 +67,7 @@ class SoundFontSynthesizerTest {
         assertFalse(bank.active());
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void aRealSoundFontLoadsAndBecomesActive() {
         Path real = firstInstalledOrSkip();
@@ -78,7 +78,7 @@ class SoundFontSynthesizerTest {
         assertTrue(bank.file().isPresent());
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void togglingItOffAndOnAgainSwitchesTheLoadedInstruments() {
         Path real = firstInstalledOrSkip();
