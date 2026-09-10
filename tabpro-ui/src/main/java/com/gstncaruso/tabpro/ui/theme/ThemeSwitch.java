@@ -28,6 +28,10 @@ public interface ThemeSwitch {
         @Override
         public void useFontSize(int points) {
         }
+
+        @Override
+        public void useHighContrast(boolean enabled) {
+        }
     };
 
     List<String> names();
@@ -38,4 +42,7 @@ public interface ThemeSwitch {
 
     /** Preferencias [F12] > Accesibilidad: la fuente base de toda la interfaz. */
     void useFontSize(int points);
+
+    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
+    void useHighContrast(boolean enabled);
 }

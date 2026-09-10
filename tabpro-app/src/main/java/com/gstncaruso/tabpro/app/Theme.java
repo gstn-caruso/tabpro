@@ -45,6 +45,7 @@ public final class Theme implements ThemeSwitch {
 
     private String current = DARK;
     private int fontSize = DEFAULT_FONT_SIZE;
+    private boolean highContrast = false;
 
     public static Theme install() {
         Theme theme = new Theme();
@@ -72,15 +73,13 @@ public final class Theme implements ThemeSwitch {
 
     @Override
     public void apply(String name) {
-        Palette palette = paletteFor(name);
         if (LIGHT.equals(name)) {
             FlatLightLaf.setup();
         } else {
             FlatDarkLaf.setup();
         }
         current = PALETTES.containsKey(name) ? name : DARK;
-        putPalette(palette);
-        putFlatLafTweaks(palette.accent());
+        paintActivePalette();
     }
 
     @Override
@@ -88,6 +87,20 @@ public final class Theme implements ThemeSwitch {
         fontSize = points;
         UIManager.put("defaultFont", interfaceFont());
         FlatLaf.updateUI();
+    }
+
+    @Override
+    public void useHighContrast(boolean enabled) {
+        highContrast = enabled;
+        paintActivePalette();
+        FlatLaf.updateUI();
+    }
+
+    /** El alto contraste manda sobre el tema oscuro/claro elegido mientras esta prendido. */
+    private void paintActivePalette() {
+        Palette palette = highContrast ? HIGH_CONTRAST_PALETTE : paletteFor(current);
+        putPalette(palette);
+        putFlatLafTweaks(palette.accent());
     }
 
     private static void putPalette(Palette palette) {

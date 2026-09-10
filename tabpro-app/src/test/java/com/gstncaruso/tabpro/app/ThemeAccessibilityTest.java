@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.app;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.awt.Color;
 import javax.swing.UIManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
@@ -21,5 +22,14 @@ class ThemeAccessibilityTest {
         theme.useFontSize(16);
 
         assertEquals(16f, UIManager.getFont("defaultFont").getSize2D());
+    }
+
+    @Test
+    void turningOnHighContrastPaintsItsOwnPalette() {
+        theme.apply(Theme.LIGHT);
+
+        theme.useHighContrast(true);
+
+        assertEquals(Color.BLACK, UIManager.getColor("tabpro.background"));
     }
 }
