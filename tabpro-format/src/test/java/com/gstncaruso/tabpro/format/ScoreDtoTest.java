@@ -115,6 +115,14 @@ class ScoreDtoTest {
     }
 
     @Test
+    void roundTripsATremoloBarWithItsOwnType() {
+        Beat beat = Beat.of(Duration.quarter(), new Note(1, 5)).withEffects(
+                com.gstncaruso.tabpro.core.model.effects.BeatEffects.none()
+                        .withTremoloBar(Bend.of(BendType.DIP, 4)));
+        assertRoundTrips(scoreWith(new Measure(TimeSignature.fourFour(), List.of(beat))));
+    }
+
+    @Test
     void roundTripsTheSecondVoice() {
         Voice lead = new Voice(List.of(Beat.of(Duration.quarter(), new Note(1, 5))));
         Voice bass = new Voice(List.of(Beat.of(Duration.quarter(), new Note(6, 3))));

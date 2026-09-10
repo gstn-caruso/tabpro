@@ -42,7 +42,8 @@ public final class NoteEffectsDialog {
         TogglableEffectPanel<BendPanel> bendTab = new TogglableEffectPanel<>(
                 noteEffects.bend().isPresent(), new BendPanel(noteEffects.bend().orElse(defaultBend())));
         TogglableEffectPanel<BendPanel> tremoloBarTab = new TogglableEffectPanel<>(
-                beatEffects.tremoloBar().isPresent(), new BendPanel(beatEffects.tremoloBar().orElse(defaultBend())));
+                beatEffects.tremoloBar().isPresent(),
+                new BendPanel(beatEffects.tremoloBar().orElse(defaultTremoloBar()), BendType.tremoloBarTypes()));
         TogglableEffectPanel<GraceNotePanel> graceTab = new TogglableEffectPanel<>(
                 noteEffects.grace().isPresent(), new GraceNotePanel(noteEffects.grace().orElse(GraceNote.before(0))));
         TogglableEffectPanel<StrokePanel> strokeTab = new TogglableEffectPanel<>(
@@ -81,6 +82,10 @@ public final class NoteEffectsDialog {
 
     private static Bend defaultBend() {
         return Bend.of(BendType.BEND, 4);
+    }
+
+    private static Bend defaultTremoloBar() {
+        return Bend.of(BendType.DIP, 4);
     }
 
     /** Abre la ventana ya parada en la solapa que pidio el menu. */

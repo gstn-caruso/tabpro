@@ -31,6 +31,12 @@ final class GuitarProBendWriter {
             case BEND_RELEASE_BEND -> 3;
             case PREBEND -> 4;
             case PREBEND_RELEASE -> 5;
+            case DIP -> 6;
+            case DIVE -> 7;
+            case RELEASE_UP -> 8;
+            case INVERTED_DIP -> 9;
+            case RETURN -> 10;
+            case RELEASE_DOWN -> 11;
         };
     }
 }

@@ -57,6 +57,15 @@ class PitchTrajectoryTest {
     }
 
     @Test
+    void unaPalancaSeReproduceConElMismoMecanismoQueElBendPeroPuedeBajar() {
+        Bend dive = Bend.of(BendType.DIVE, 4); // dive: baja medio tono y se queda
+        PitchTrajectory trajectory = PitchTrajectory.of(dive, 960);
+
+        assertEquals(0.0, trajectory.semitonesAt(0));
+        assertEquals(-2.0, trajectory.semitonesAt(960));
+    }
+
+    @Test
     void unSaltoInstantaneoNoInterpolaEntreElAntesYElDespues() {
         PitchTrajectory trajectory = PitchTrajectory.flat()
                 .withJumpAt(500, 5.0);

@@ -17,6 +17,12 @@ class BendPanelTest {
     }
 
     @Test
+    void ningunControlDeLaPalancaQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(
+                new BendPanel(Bend.of(BendType.DIP, 4), BendType.tremoloBarTypes()));
+    }
+
+    @Test
     void startsWithTheGivenBend() {
         Bend bend = Bend.of(BendType.BEND_RELEASE, 6);
 
@@ -42,5 +48,19 @@ class BendPanelTest {
         panel.rightClickAt(0);
 
         assertEquals(1, panel.toBend().points().getFirst().vibrato());
+    }
+
+    @Test
+    void laAlturaMostradaEsLaMagnitudDeLaCurvaAunqueSoloBaje() {
+        BendPanel panel = new BendPanel(Bend.of(BendType.DIVE, 8));
+
+        assertEquals(8, panel.selectedHeight());
+    }
+
+    @Test
+    void elTipoDisponibleSeRestringeALosQueSeLePasan() {
+        BendPanel panel = new BendPanel(Bend.of(BendType.DIP, 4), BendType.tremoloBarTypes());
+
+        assertEquals(BendType.tremoloBarTypes(), panel.availableTypes());
     }
 }

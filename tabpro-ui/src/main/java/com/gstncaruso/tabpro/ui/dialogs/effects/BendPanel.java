@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -14,14 +15,23 @@ import javax.swing.SpinnerNumberModel;
  */
 public final class BendPanel extends FormPanel {
 
-    private final JComboBox<BendType> type = new JComboBox<>(BendType.values());
+    private final List<BendType> availableTypes;
+    private final JComboBox<BendType> type;
     private final JSpinner height = new JSpinner(new SpinnerNumberModel(4, 1, BendPoint.MAX_QUARTER_TONES, 1));
     private final BendCurveEditor curve;
     private final BendGridPanel grid;
 
     public BendPanel(Bend initial) {
+        this(initial, BendType.bendTypes());
+    }
+
+    /** Como {@link #BendPanel(Bend)}, pero restringido a los tipos que le pasan (bend o palanca). */
+    public BendPanel(Bend initial, List<BendType> availableTypes) {
+        this.availableTypes = availableTypes;
+        type = new JComboBox<>(availableTypes.toArray(new BendType[0]));
         type.setSelectedItem(initial.type());
-        height.setValue(initial.peakQuarterTones() == 0 ? 4 : initial.peakQuarterTones());
+        int magnitude = Math.abs(initial.farthestQuarterTones());
+        height.setValue(magnitude == 0 ? 4 : magnitude);
         curve = BendCurveEditor.of(initial);
         grid = new BendGridPanel(curve);
 
@@ -49,7 +59,7 @@ public final class BendPanel extends FormPanel {
         return (BendType) type.getSelectedItem();
     }
 
-    private int selectedHeight() {
+    int selectedHeight() {
         return (Integer) height.getValue();
     }
 
@@ -66,5 +76,9 @@ public final class BendPanel extends FormPanel {
 
     public Bend toBend() {
         return curve.toBend(selectedType());
+    }
+
+    List<BendType> availableTypes() {
+        return availableTypes;
     }
 }
