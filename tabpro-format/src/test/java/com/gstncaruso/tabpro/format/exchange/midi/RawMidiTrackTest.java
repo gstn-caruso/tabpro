@@ -20,6 +20,15 @@ class RawMidiTrackTest {
         assertSame(raw, quantized);
     }
 
+    @Test
+    void aNoteCloseToTheDownbeatSnapsToItWithAQuarterNoteGrid() {
+        RawMidiTrack raw = trackWith(notesByTick(240L, new RawNote(64, 100)));
+
+        RawMidiTrack quantized = raw.withPositionsQuantizedTo(Optional.of(NoteValue.QUARTER));
+
+        assertEquals(List.of(0L), List.copyOf(quantized.notesByTick().keySet()));
+    }
+
     private static RawMidiTrack trackWith(TreeMap<Long, List<RawNote>> notesByTick) {
         return new RawMidiTrack(0, "Guitarra", 25, 1, 1, 100, 64, 0, 0, 0, 0, false, notesByTick);
     }
