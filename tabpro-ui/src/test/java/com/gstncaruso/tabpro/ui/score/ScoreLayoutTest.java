@@ -62,6 +62,22 @@ class ScoreLayoutTest {
                 "abajo de todo se recorta al ultimo sistema");
     }
 
+    /**
+     * Quien exporta o imprime una hoja necesita el camino inverso al de {@link #systemAtFindsWhichSystemCoversThatScreenHeight}:
+     * dado el rango de sistemas de esa hoja, en que compas arrancar a pintar sin recorrer los de
+     * las hojas anteriores.
+     */
+    @Test
+    void firstMeasureOfSystemFindsWhereEachSystemStarts() {
+        Score score = scoreWithMeasures(12);
+        ScoreLayout layout = ScoreLayout.of(score, 800);
+
+        assertEquals(0, layout.firstMeasureOfSystem(0));
+        assertEquals(3, layout.firstMeasureOfSystem(1));
+        assertEquals(6, layout.firstMeasureOfSystem(2));
+        assertEquals(9, layout.firstMeasureOfSystem(3));
+    }
+
     @Test
     void everySystemStartsAtTheLeftMargin() {
         Score score = scoreWithMeasures(12);

@@ -63,6 +63,7 @@ public final class ScoreLayout {
     private final int[] blockTop;
     private final int blockHeightTotal;
     private final int systemCount;
+    private final int[] firstMeasureOfEachSystem;
     private final List<List<List<Rectangle>>> beatBounds;
     private final boolean showsDynamicNotes;
 
@@ -79,6 +80,7 @@ public final class ScoreLayout {
             int[] blockTop,
             int blockHeightTotal,
             int systemCount,
+            int[] firstMeasureOfEachSystem,
             List<List<List<Rectangle>>> beatBounds,
             boolean showsDynamicNotes) {
         this.score = score;
@@ -93,6 +95,7 @@ public final class ScoreLayout {
         this.blockTop = blockTop;
         this.blockHeightTotal = blockHeightTotal;
         this.systemCount = systemCount;
+        this.firstMeasureOfEachSystem = firstMeasureOfEachSystem;
         this.beatBounds = beatBounds;
         this.showsDynamicNotes = showsDynamicNotes;
     }
@@ -127,6 +130,7 @@ public final class ScoreLayout {
         int[] system = new int[measureCount];
         boolean[] systemStart = new boolean[measureCount];
         boolean[] signatureChange = new boolean[measureCount];
+        List<Integer> firstMeasureOfEachSystem = new ArrayList<>();
         int currentSystem = 0;
         int x = LEFT_MARGIN;
         for (int measure = 0; measure < measureCount; measure++) {
@@ -143,6 +147,9 @@ public final class ScoreLayout {
             system[measure] = currentSystem;
             systemStart[measure] = startsASystem;
             signatureChange[measure] = changesSignature;
+            if (startsASystem) {
+                firstMeasureOfEachSystem.add(measure);
+            }
             x += columnWidth[measure] + headWidth[measure];
         }
 
@@ -169,6 +176,7 @@ public final class ScoreLayout {
                 blockTop,
                 blockHeightTotal,
                 measureCount == 0 ? 1 : currentSystem + 1,
+                firstMeasureOfEachSystem.stream().mapToInt(Integer::intValue).toArray(),
                 beatBoundsOf(score, columnX, headWidth, columnWidth),
                 showsDynamicNotes);
     }
@@ -358,6 +366,15 @@ public final class ScoreLayout {
         int stride = blockHeightTotal + SYSTEM_GAP;
         int system = (y - TOP_MARGIN) / stride;
         return Math.clamp(system, 0, systemCount - 1);
+    }
+
+    /**
+     * El primer compas de ese sistema: el camino inverso a {@link #systemOf}, para que quien
+     * pinta una hoja arranque directo en su primer compas en vez de recorrer los de las hojas
+     * anteriores buscandolo.
+     */
+    public int firstMeasureOfSystem(int system) {
+        return system < firstMeasureOfEachSystem.length ? firstMeasureOfEachSystem[system] : measureCount();
     }
 
     public int trackTop(int track, int measure) {
