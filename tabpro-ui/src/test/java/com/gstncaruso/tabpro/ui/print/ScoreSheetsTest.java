@@ -72,17 +72,17 @@ class ScoreSheetsTest {
         int onA4 = ScoreSheets.pageCount(score, A4);
         int onA3 = ScoreSheets.pageCount(score, biggerPaper());
 
-        assertTrue(onA3 < onA4, "en A3 entra mas musica por hoja");
+        assertTrue(onA3 < onA4, "more music fits per sheet on A3");
     }
 
     @Test
     void everySheetIsOpaqueSoThatBmpCanBeWritten() {
         assertFalse(
                 ScoreSheets.render(Score.blank(), Zoom.whole(), A4).getColorModel().hasAlpha(),
-                "la partitura entera se dibuja sin transparencia");
+                "the whole score is drawn without transparency");
         assertFalse(
                 ScoreSheets.renderPage(Score.blank(), Zoom.whole(), A4, 0).getColorModel().hasAlpha(),
-                "y cada hoja por separado tambien");
+                "and so is every sheet on its own");
     }
 
     private static PageSetup biggerPaper() {

@@ -42,13 +42,13 @@ class ScorePrintingTest {
         RecordingPrinting printing = new RecordingPrinting();
         ScorePrinting scorePrinting = new ScorePrinting(printing);
 
-        scorePrinting.print(score, A4, settings, "mi-partitura.tab");
+        scorePrinting.print(score, A4, settings, "my-score.tab");
 
-        assertEquals("mi-partitura.tab", printing.jobName());
-        assertTrue(printing.printCalled(), "si el dialogo se acepta, tiene que llegar a imprimir de verdad");
+        assertEquals("my-score.tab", printing.jobName());
+        assertTrue(printing.printCalled(), "accepting the dialog has to actually reach the print call");
         assertEquals(
                 new ScorePrinting.ScorePages(score, A4, settings), printing.printable(),
-                "el Printable recibido tiene que ser el que pinta esta partitura real (ver ScorePagesTest)");
+                "the received Printable has to be the one that paints this real score (see ScorePagesTest)");
     }
 
     @Test
@@ -58,9 +58,9 @@ class ScorePrintingTest {
         printing.cancelPrintDialog();
         ScorePrinting scorePrinting = new ScorePrinting(printing);
 
-        scorePrinting.print(score, A4, PrintSettings.everything(1), "mi-partitura.tab");
+        scorePrinting.print(score, A4, PrintSettings.everything(1), "my-score.tab");
 
-        assertFalse(printing.printCalled(), "si se cancela el dialogo, no tiene que llegar a imprimir de verdad");
+        assertFalse(printing.printCalled(), "cancelling the dialog must never actually reach the print call");
     }
 
     @Test
@@ -72,17 +72,17 @@ class ScorePrintingTest {
         ScorePrinting scorePrinting = new ScorePrinting(printing);
 
         scorePrinting.configurePrinterPage();
-        scorePrinting.print(score, A4, PrintSettings.everything(1), "mi-partitura.tab");
+        scorePrinting.print(score, A4, PrintSettings.everything(1), "my-score.tab");
 
         assertSame(chosen, printing.printableFormat(),
-                "el PageFormat elegido en Configurar tiene que ser el que se usa en la proxima impresion");
+                "the PageFormat chosen in Configure has to be the one used in the next print");
     }
 
     @Tag("integration")
     @Test
     void exportsAnActualBmpInPageMode(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(4);
-        Path path = tempDir.resolve("partitura.bmp");
+        Path path = tempDir.resolve("score.bmp");
 
         ScorePrinting.exportImage(score, A4, path, ViewMode.PAGE, Zoom.whole());
 
@@ -92,53 +92,53 @@ class ScorePrintingTest {
 
         assertEquals(expected.getWidth(), read.getWidth());
         assertEquals(expected.getHeight(), read.getHeight());
-        assertEquals(pixelsOf(expected), pixelsOf(read), "el bmp tiene que verse igual que el render en memoria");
-        assertTrue(distinctColorsOf(read).size() > 1, "la imagen no puede salir de un solo color");
+        assertEquals(pixelsOf(expected), pixelsOf(read), "the bmp has to look the same as the in-memory render");
+        assertTrue(distinctColorsOf(read).size() > 1, "the image cannot come out as a single color");
     }
 
     @Tag("integration")
     @Test
     void theExportedBmpIsIdenticalToWhatBmpDocumentWrites(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(4);
-        Path path = tempDir.resolve("partitura.bmp");
+        Path path = tempDir.resolve("score.bmp");
 
         ScorePrinting.exportImage(score, A4, path, ViewMode.PAGE, Zoom.whole());
 
         java.io.ByteArrayOutputStream expected = new java.io.ByteArrayOutputStream();
         BmpDocument.writeTo(ScoreSheets.render(score, Zoom.whole(), A4), expected);
         assertArrayEquals(expected.toByteArray(), Files.readAllBytes(path),
-                "el bmp exportado tiene que ser el que escribe BmpDocument, no otro codec");
+                "the exported bmp has to be the one BmpDocument writes, not another codec");
     }
 
     @Test
     void bmpOutsidePageModeWarnsAndWritesNothing(@TempDir Path tempDir) {
         Score score = scoreWithMeasures(4);
-        Path path = tempDir.resolve("partitura.bmp");
+        Path path = tempDir.resolve("score.bmp");
 
         ImageExportException error = assertThrows(ImageExportException.class,
                 () -> ScorePrinting.exportImage(score, A4, path, ViewMode.SCREEN_VERTICAL, Zoom.whole()));
 
         assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("bmp"));
-        assertFalse(Files.exists(path), "no tiene que quedar un archivo a medio escribir");
+        assertFalse(Files.exists(path), "no half-written file can be left behind");
     }
 
     @Tag("integration")
     @Test
     void pngOutsidePageModeExportsWithoutIssue(@TempDir Path tempDir) {
         Score score = scoreWithMeasures(4);
-        Path path = tempDir.resolve("partitura.png");
+        Path path = tempDir.resolve("score.png");
 
         ScorePrinting.exportImage(score, A4, path, ViewMode.SCREEN_VERTICAL, Zoom.whole());
 
-        assertTrue(Files.exists(path), "la restriccion es solo para bmp");
+        assertTrue(Files.exists(path), "the restriction is only for bmp");
     }
 
     @Tag("integration")
     @Test
     void exportsTheImageWithTheWindowsZoom(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(4);
-        Path at100 = tempDir.resolve("al-100.png");
-        Path at200 = tempDir.resolve("al-200.png");
+        Path at100 = tempDir.resolve("at-100.png");
+        Path at200 = tempDir.resolve("at-200.png");
 
         ScorePrinting.exportImage(score, A4, at100, ViewMode.PAGE, new Zoom(100));
         ScorePrinting.exportImage(score, A4, at200, ViewMode.PAGE, new Zoom(200));
@@ -147,17 +147,17 @@ class ScorePrintingTest {
         BufferedImage imageAt200 = ImageIO.read(at200.toFile());
 
         assertNotEquals(imageAt100.getWidth(), imageAt200.getWidth(),
-                "la misma partitura al 100% y al 200% no puede dar el mismo ancho en pixeles");
+                "the same score at 100% and at 200% cannot give the same width in pixels");
         assertNotEquals(imageAt100.getHeight(), imageAt200.getHeight(),
-                "la misma partitura al 100% y al 200% no puede dar el mismo alto en pixeles");
+                "the same score at 100% and at 200% cannot give the same height in pixels");
     }
 
     @Tag("integration")
     @Test
     void exportsTheImageInParchmentModeWithoutPageBreaks(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(16);
-        Path pagePath = tempDir.resolve("pagina.png");
-        Path parchmentPath = tempDir.resolve("pergamino.png");
+        Path pagePath = tempDir.resolve("page.png");
+        Path parchmentPath = tempDir.resolve("parchment.png");
 
         ScorePrinting.exportImage(score, A4, pagePath, ViewMode.PAGE, Zoom.whole());
         ScorePrinting.exportImage(score, A4, parchmentPath, ViewMode.PARCHMENT, Zoom.whole());
@@ -166,33 +166,33 @@ class ScorePrintingTest {
         BufferedImage parchmentImage = ImageIO.read(parchmentPath.toFile());
 
         assertNotEquals(pageImage.getHeight(), parchmentImage.getHeight(),
-                "en pergamino no hay saltos de pagina: el alto tiene que ser otro que en modo Pagina");
+                "in parchment there are no page breaks: the height has to differ from Page mode");
     }
 
     @Test
     void anImageThatImageIoCannotEncodeAsBmpWarnsInsteadOfStayingSilent(@TempDir Path tempDir) {
-        Path path = tempDir.resolve("no-se-puede.bmp");
+        Path path = tempDir.resolve("cannot-be-written.bmp");
         BufferedImage imageWithRealAlpha = imageWithRealTransparency();
 
         ImageExportException error = assertThrows(ImageExportException.class,
                 () -> ScorePrinting.writeImage(imageWithRealAlpha, "bmp", path));
 
         assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("bmp"),
-                "el mensaje tiene que decir en que formato fallo");
-        assertFalse(Files.exists(path), "si ImageIO no pudo escribir nada, no puede quedar un archivo");
+                "the message has to say which format failed");
+        assertFalse(Files.exists(path), "if ImageIO could not write anything, no file can be left behind");
     }
 
     @Test
     void anImageThatImageIoCannotEncodeAsJpgWarnsInsteadOfStayingSilent(@TempDir Path tempDir) {
-        Path path = tempDir.resolve("no-se-puede.jpg");
+        Path path = tempDir.resolve("cannot-be-written.jpg");
         BufferedImage imageWithRealAlpha = imageWithRealTransparency();
 
         ImageExportException error = assertThrows(ImageExportException.class,
                 () -> ScorePrinting.writeImage(imageWithRealAlpha, "jpg", path));
 
         assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("jpg"),
-                "el mensaje tiene que decir en que formato fallo");
-        assertFalse(Files.exists(path), "si ImageIO no pudo escribir nada, no puede quedar un archivo");
+                "the message has to say which format failed");
+        assertFalse(Files.exists(path), "if ImageIO could not write anything, no file can be left behind");
     }
 
     private static BufferedImage imageWithRealTransparency() {

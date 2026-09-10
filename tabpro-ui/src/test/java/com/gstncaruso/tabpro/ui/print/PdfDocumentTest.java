@@ -67,8 +67,8 @@ class PdfDocumentTest {
 
         write(image);
 
-        assertEquals(0, image.singlePixelCalls(), "no puede llamar a getRGB(x, y) por cada pixel");
-        assertEquals(image.getHeight(), image.bulkRowCalls(), "tiene que pedir los pixeles fila por fila");
+        assertEquals(0, image.singlePixelCalls(), "must not call getRGB(x, y) for every pixel");
+        assertEquals(image.getHeight(), image.bulkRowCalls(), "has to ask for the pixels row by row");
     }
 
     @Test
@@ -81,7 +81,7 @@ class PdfDocumentTest {
         pdf.writeTo(out);
 
         byte[] decoded = inflate(imageStreamOf(out.toByteArray()));
-        assertArrayEquals(rgbBytesOf(image), decoded, "el pdf tiene que decodificar a los mismos pixeles que la imagen");
+        assertArrayEquals(rgbBytesOf(image), decoded, "the pdf has to decode to the same pixels as the image");
     }
 
     @Test
@@ -95,7 +95,7 @@ class PdfDocumentTest {
 
         byte[] imageStream = imageStreamOf(out.toByteArray());
         assertArrayEquals(deflateAt(rgbBytesOf(image), Deflater.BEST_SPEED), imageStream,
-                "el pdf tiene que comprimir con Deflater.BEST_SPEED, no con otro nivel");
+                "the pdf has to compress with Deflater.BEST_SPEED, not another level");
     }
 
     @Test

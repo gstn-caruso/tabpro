@@ -35,7 +35,7 @@ class ScorePagesTest {
     void aShortScoreHasOnlyOneSheetAndNoSuchPageMarksTheLimit() {
         Score shortScore = scoreWithMeasures(4);
         int total = ScoreSheets.pageCount(shortScore, A4);
-        assertEquals(1, total, "esta partitura corta tiene que entrar en una sola hoja");
+        assertEquals(1, total, "this short score has to fit on a single sheet");
 
         ScorePrinting.ScorePages pages = new ScorePrinting.ScorePages(shortScore, A4, PrintSettings.everything(total));
         PageFormat paper = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
@@ -48,17 +48,17 @@ class ScorePagesTest {
     void aLongScoreHasSeveralSheetsAndNoSuchPageMarksTheLimit() {
         Score longScore = scoreWithMeasures(40);
         int total = ScoreSheets.pageCount(longScore, A4);
-        assertTrue(total > 1, "esta partitura larga tiene que necesitar mas de una hoja");
+        assertTrue(total > 1, "this long score has to need more than one sheet");
 
         ScorePrinting.ScorePages pages = new ScorePrinting.ScorePages(longScore, A4, PrintSettings.everything(total));
         PageFormat paper = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
 
         for (int i = 0; i < total; i++) {
             assertEquals(Printable.PAGE_EXISTS, printOnANewCanvas(pages, paper, i),
-                    "la hoja " + i + " tiene que existir");
+                    "sheet " + i + " has to exist");
         }
         assertEquals(Printable.NO_SUCH_PAGE, printOnANewCanvas(pages, paper, total),
-                "despues de la ultima hoja no puede haber una pagina mas");
+                "there cannot be one more page after the last sheet");
     }
 
     @Test
@@ -71,14 +71,14 @@ class ScorePagesTest {
         RecordingCanvas sheet1 = canvasOfThePrintedSheet(pages, paper, 0);
         RecordingCanvas sheet2 = canvasOfThePrintedSheet(pages, paper, 1);
 
-        assertFalse(sheet1.matches(sheet2), "la hoja 2 no puede salir igual a la 1");
+        assertFalse(sheet1.matches(sheet2), "sheet 2 cannot come out the same as sheet 1");
     }
 
     @Test
     void theChosenPageRangeIsRespectedAndNotTheRest() {
         Score score = scoreWithMeasures(40);
         int total = ScoreSheets.pageCount(score, A4);
-        assertTrue(total >= 4, "hace falta una partitura de varias hojas para probar un rango angosto");
+        assertTrue(total >= 4, "a multi-sheet score is needed to test a narrow range");
 
         PrintSettings onlyFromPageTwoToThree = PrintSettings.of(2, 3, total, 100, false);
         ScorePrinting.ScorePages pages = new ScorePrinting.ScorePages(score, A4, onlyFromPageTwoToThree);
@@ -89,14 +89,14 @@ class ScorePagesTest {
         assertEquals(Printable.PAGE_EXISTS, pages.print(firstPrinted, paper, 0));
         assertEquals(Printable.PAGE_EXISTS, pages.print(secondPrinted, paper, 1));
         assertEquals(Printable.NO_SUCH_PAGE, printOnANewCanvas(pages, paper, 2),
-                "el rango pide dos hojas nada mas");
+                "the range asks for only two sheets");
 
         assertTrue(
                 canvasOfTheActualSheet(score, 1).matches(firstPrinted),
-                "lo primero que imprime el rango 2-3 tiene que ser la hoja 2 real de la partitura, no la 1");
+                "the first thing the 2-3 range prints has to be the score's real sheet 2, not sheet 1");
         assertTrue(
                 canvasOfTheActualSheet(score, 2).matches(secondPrinted),
-                "lo segundo que imprime el rango 2-3 tiene que ser la hoja 3 real de la partitura");
+                "the second thing the 2-3 range prints has to be the score's real sheet 3");
     }
 
     @Test
@@ -118,9 +118,9 @@ class ScorePagesTest {
         printInto(at50, imageAt50, smallPaper, 0);
 
         assertFalse(hasInkNearTheRow(imageAt100, footerRow, 20, 405),
-                "al 100% el pie de pagina no entra en un papel mas chico que la hoja: se pierde");
+                "at 100% the footer does not fit on paper smaller than the sheet: it is lost");
         assertTrue(hasInkNearTheRow(imageAt50, Math.round(footerRow * 0.5f), 20, 405),
-                "al 50% la hoja entera -pie de pagina incluido- entra en el mismo papel chico");
+                "at 50% the whole sheet -footer included- fits on the same small paper");
     }
 
     @Test
@@ -143,9 +143,9 @@ class ScorePagesTest {
         printInto(pages, bigImage, paperWithRoomForTheFooter, 0);
 
         assertFalse(hasInkNearTheRow(smallImage, footerRow, 20, sheet.width),
-                "el papel chico que da la impresora recorta el pie de pagina");
+                "the small paper the printer gives crops the footer");
         assertTrue(hasInkNearTheRow(bigImage, footerRow, 20, sheet.width),
-                "el papel grande que da la impresora deja entrar el pie de pagina");
+                "the large paper the printer gives lets the footer fit");
     }
 
     @Test
@@ -170,8 +170,8 @@ class ScorePagesTest {
 
         assertTrue(
                 Math.abs((centeredColumn - columnNotCentered) - horizontalSlack / 2) <= 3,
-                "con 'Documento centrado' tildado el dibujo se tiene que correr la mitad del sobrante horizontal "
-                        + "respecto de donde arranca sin centrar");
+                "with 'Center document' checked the drawing has to shift half the horizontal slack "
+                        + "from where it starts without centering");
     }
 
     private static int printOnANewCanvas(ScorePrinting.ScorePages pages, PageFormat format, int pageIndex) {
@@ -230,7 +230,7 @@ class ScorePagesTest {
                 }
             }
         }
-        throw new IllegalStateException("la imagen no tiene tinta en ningun lado");
+        throw new IllegalStateException("the image has no ink anywhere");
     }
 
     private static int firstInkColumnOf(BufferedImage image) {
@@ -241,7 +241,7 @@ class ScorePagesTest {
                 }
             }
         }
-        throw new IllegalStateException("la imagen no tiene tinta en ningun lado");
+        throw new IllegalStateException("the image has no ink anywhere");
     }
 
     private static boolean hasInkNearTheRow(BufferedImage image, int expectedRow, int margin, int maxWidth) {
