@@ -299,7 +299,7 @@ public final class MainFrame extends JFrame {
         spinner.setMaximumSize(new Dimension(70, 24));
         spinner.setPreferredSize(new Dimension(70, 24));
         spinner.addChangeListener(event -> editor.setTempo((Integer) spinner.getValue()));
-        editor.addListener(() -> spinner.setValue(editor.score().tempo()));
+        editor.addListener(EdtEditorListener.onEdt(() -> spinner.setValue(editor.score().tempo())));
         return spinner;
     }
 

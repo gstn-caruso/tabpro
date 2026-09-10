@@ -31,8 +31,7 @@ class EditorListenerSubscriptionTest {
     private static final Pattern SUBSCRIPTION = Pattern.compile("editor\\.addListener\\((.*)\\);");
     private static final String ADAPTER_CALL = "EdtEditorListener.onEdt(";
 
-    private static final Set<String> STILL_PENDING = Set.of(
-            "MainFrame.java#() -> spinner.setValue(editor.score().tempo())");
+    private static final Set<String> STILL_PENDING = Set.of();
 
     static Stream<Subscription> subscriptions() {
         return sourceRoots().filter(Files::isDirectory).flatMap(EditorListenerSubscriptionTest::subscriptionsUnder);
