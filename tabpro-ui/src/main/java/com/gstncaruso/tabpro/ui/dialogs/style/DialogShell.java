@@ -16,7 +16,15 @@ import javax.swing.SwingUtilities;
  */
 public final class DialogShell {
 
+    /** Barra de titulo y bordes del sistema operativo, mas un margen de aire contra el borde de pantalla. */
+    static final int WINDOW_CHROME_HEIGHT = 80;
+
     private DialogShell() {
+    }
+
+    /** Lo que le queda al contenido despues de restarle a la pantalla la barra de botones y el chrome de la ventana. */
+    static int availableContentHeight(int screenHeight, int southHeight) {
+        return screenHeight - southHeight - WINDOW_CHROME_HEIGHT;
     }
 
     public static boolean ask(Component parent, String title, JComponent content) {

@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.dialogs.style;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,5 +39,12 @@ class DialogShellTest {
         assertSame(content, scroll.getViewport().getView());
         assertTrue(scroll.getPreferredSize().height <= 400,
                 "el alto preferido del scroll no puede superar el disponible");
+    }
+
+    @Test
+    void elAltoDisponibleParaElContenidoDescuentaLaBarraDeBotonesYElMargenDeLaVentana() {
+        int alto = DialogShell.availableContentHeight(1024, 60);
+
+        assertEquals(1024 - 60 - DialogShell.WINDOW_CHROME_HEIGHT, alto);
     }
 }
