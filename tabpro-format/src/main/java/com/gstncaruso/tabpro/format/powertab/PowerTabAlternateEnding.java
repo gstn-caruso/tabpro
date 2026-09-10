@@ -3,11 +3,11 @@ package com.gstncaruso.tabpro.format.powertab;
 import java.util.List;
 
 /**
- * Un final alternativo de PowerTab: en que sistema y en que posicion de ese
- * sistema empieza, y los numeros de vuelta que le tocan (1a, 2a...). Vive en
- * un arreglo a nivel partitura que mezcla los finales de todos los sistemas;
- * el campo "sistema" es el que permite repartirlos. Si ademas marca D.C./D.S.,
- * ese dato todavia no tiene destino en el modelo y se descarta.
+ * A PowerTab alternate ending: which system and which position of that system it
+ * starts at, and the round numbers it covers (1st, 2nd...). It lives in a score-level
+ * array that mixes the endings of every system; the "system" field is what lets them be
+ * sorted out. If it also marks D.C./D.S., that data has no place in the model yet and
+ * is discarded.
  */
 record PowerTabAlternateEnding(int system, int position, List<Integer> numbers) {
 }

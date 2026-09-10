@@ -1,11 +1,10 @@
 package com.gstncaruso.tabpro.format.powertab;
 
 /**
- * Un marcador de tempo de PowerTab. tabpro solo guarda un tempo por partitura
- * entera (no un cambio a mitad de camino), asi que de todos los marcadores
- * del archivo solo se usa el primero que sea un marcador estandar (negra =
- * tantos); los de tipo listesso o "acelerando/ritardando", y la descripcion,
- * no tienen destino en el modelo.
+ * A PowerTab tempo marker. tabpro only stores a single tempo for the whole score (not a
+ * change partway through), so of every marker in the file only the first one that is a
+ * standard marker (quarter note = so many) is used; the listesso or
+ * "accelerando/ritardando" kinds, and the description, have no place in the model.
  */
 record PowerTabTempoMarker(int system, int position, int type, int beatsPerMinute) {
 

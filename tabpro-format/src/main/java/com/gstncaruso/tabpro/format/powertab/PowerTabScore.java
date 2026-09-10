@@ -3,9 +3,8 @@ package com.gstncaruso.tabpro.format.powertab;
 import java.util.List;
 
 /**
- * Una de las dos "score" que trae un archivo de PowerTab (la de guitarra o la
- * de bajo, en ese orden): sus guitarras, sus asignaciones de guitarra a
- * pentagrama, sus finales alternativos y sus sistemas.
+ * One of the two "scores" a PowerTab file carries (guitar or bass, in that order): its
+ * guitars, its guitar-to-staff assignments, its alternate endings, and its systems.
  */
 record PowerTabScore(
         List<PowerTabGuitar> guitars,

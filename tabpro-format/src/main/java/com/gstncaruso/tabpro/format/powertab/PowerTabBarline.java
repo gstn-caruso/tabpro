@@ -4,10 +4,10 @@ import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 
 /**
- * Una barra de PowerTab: en que posicion del sistema esta anclada, su tipo
- * (compas comun, repeticion, doble barra...), y la armadura y la medida que
- * rigen desde ahi. Cada barra trae su propio valor completo: a diferencia de
- * Guitar Pro, PowerTab no marca "cambio" con una bandera.
+ * A PowerTab barline: which position of the system it is anchored to, its type (plain
+ * measure, repeat, double bar...), and the key signature and time signature that govern
+ * from there on. Every barline carries its own complete value: unlike Guitar Pro,
+ * PowerTab does not mark a "change" with a flag.
  */
 record PowerTabBarline(int position, int type, int repeatCount, TimeSignature timeSignature, KeySignature keySignature) {
 
