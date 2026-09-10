@@ -11,11 +11,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Los dos lados del intercambio en el unico puerto que ve la ventana: la notacion, que sabe
- * tabpro-format, y el sonido a archivo, que sabe tabpro-midi. Ninguno de los dos conoce al
- * otro; aca es donde se juntan, que es lo que hace la app.
- */
 public final class CombinedExchange implements ScoreExchange {
 
     private final ScoreExchange notation;
@@ -69,10 +64,6 @@ public final class CombinedExchange implements ScoreExchange {
         return notation.importMidiTitleAndTimeSignatures(target, path);
     }
 
-    /**
-     * Escuchar una pista del archivo MIDI antes de importarla es parte de importar: la arma
-     * quien sabe leer esa notacion ajena, no quien exporta sonido.
-     */
     @Override
     public Timeline midiTrackTimeline(Path path, List<Integer> midiTrackIndices) {
         return notation.midiTrackTimeline(path, midiTrackIndices);

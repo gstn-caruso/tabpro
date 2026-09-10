@@ -9,7 +9,6 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-/** El icono de la aplicacion: unas cuerdas con tres trastes escritos. */
 final class AppIcon {
 
     private static final Color BACKGROUND = new Color(0x1E1F22);
