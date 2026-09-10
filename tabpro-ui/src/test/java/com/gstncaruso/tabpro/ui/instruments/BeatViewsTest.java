@@ -44,6 +44,15 @@ class BeatViewsTest {
         assertFalse(views.isKeyboardVisible());
     }
 
+    @Test
+    void theCloseButtonsShowAnIconNotATextGlyph() {
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+
+        JButton close = findButtonNamed(views, "Cerrar diapasón").orElseThrow();
+
+        assertTrue(close.getIcon() != null, "el boton de cerrar tiene que mostrar un icono, no un caracter");
+    }
+
     private static java.util.Optional<JButton> findButtonNamed(Container container, String name) {
         for (Component component : container.getComponents()) {
             if (component instanceof JButton button

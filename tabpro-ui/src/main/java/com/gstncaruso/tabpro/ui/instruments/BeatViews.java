@@ -326,7 +326,7 @@ public final class BeatViews extends JPanel {
         label.setForeground(ScoreColors.MUTED_INK);
         label.setBorder(BorderFactory.createEmptyBorder(3, 12, 2, 0));
 
-        JButton close = new JButton("✕");
+        JButton close = new JButton(Icons.closePanel());
         close.getAccessibleContext().setAccessibleName(closeAccessibleName);
         close.setToolTipText(closeAccessibleName);
         close.addActionListener(e -> onClose.run());

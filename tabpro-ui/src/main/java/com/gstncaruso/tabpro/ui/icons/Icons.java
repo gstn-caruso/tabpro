@@ -648,6 +648,11 @@ public final class Icons {
         return svgIcon("piano");
     }
 
+    /** La cruz de cerrar de una mini-ventana como el diapason o el teclado. */
+    public static Icon closePanel() {
+        return svgIcon("x");
+    }
+
     public static Icon tuner() {
         return svgIcon("gauge");
     }
