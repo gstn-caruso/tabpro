@@ -65,6 +65,28 @@ class DialogShellFitsScreenTest {
         }
     }
 
+    @Test
+    void unosBotonesExtraQuedanVisiblesFueraDelScrollJuntoALaBarraDeAceptarYCancelar() throws Exception {
+        JFrame owner = new JFrame();
+        JPanel anchor = anchoredTo(owner);
+        JPanel tallContent = new JPanel();
+        tallContent.setPreferredSize(new Dimension(300, 5000));
+        JButton extra = new JButton("Actualizar partitura");
+        JPanel extraButtons = new JPanel();
+        extraButtons.add(extra);
+
+        JDialog dialog = openDialogAndWait(
+                owner, () -> DialogShell.ask(anchor, "Prueba", tallContent, extraButtons, "Aceptar", null));
+        try {
+            assertFitsTheScreen(dialog);
+            assertTrue(extra.isShowing(), "el boton extra tiene que quedar visible fuera de cualquier scroll");
+            assertTrue(findButton(dialog, "Aceptar").isShowing());
+        } finally {
+            SwingUtilities.invokeAndWait(dialog::dispose);
+            owner.dispose();
+        }
+    }
+
     private static JPanel anchoredTo(JFrame owner) {
         JPanel anchor = new JPanel();
         owner.add(anchor);

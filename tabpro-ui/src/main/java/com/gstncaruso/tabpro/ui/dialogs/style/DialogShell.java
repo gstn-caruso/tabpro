@@ -44,6 +44,17 @@ public final class DialogShell {
 
     public static boolean ask(
             Component parent, String title, JComponent content, String acceptLabel, JComponent initialFocus) {
+        return ask(parent, title, content, null, acceptLabel, initialFocus);
+    }
+
+    /**
+     * Como {@link #ask(Component, String, JComponent, String, JComponent)}, pero con una fila de
+     * botones propios de la ventana (por ejemplo "Actualizar partitura" en Configurar pagina) que
+     * queda, igual que Aceptar y Cancelar, siempre visible fuera de cualquier scroll.
+     */
+    public static boolean ask(
+            Component parent, String title, JComponent content, JComponent extraButtons,
+            String acceptLabel, JComponent initialFocus) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title, Dialog.ModalityType.APPLICATION_MODAL);
         ButtonBar buttons = ButtonBar.acceptCancel(acceptLabel);
         boolean[] accepted = {false};
@@ -69,14 +80,26 @@ public final class DialogShell {
             });
         }
 
+        JComponent south = southOf(extraButtons, buttons);
         dialog.getContentPane().setLayout(new BorderLayout());
-        dialog.getContentPane().add(fittedToScreen(content, buttons), BorderLayout.CENTER);
-        dialog.getContentPane().add(buttons, BorderLayout.SOUTH);
+        dialog.getContentPane().add(fittedToScreen(content, south), BorderLayout.CENTER);
+        dialog.getContentPane().add(south, BorderLayout.SOUTH);
         dialog.pack();
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
 
         return accepted[0];
+    }
+
+    private static JComponent southOf(JComponent extraButtons, JComponent buttons) {
+        if (extraButtons == null) {
+            return buttons;
+        }
+        JComponent south = new javax.swing.JPanel(new BorderLayout());
+        south.setOpaque(false);
+        south.add(extraButtons, BorderLayout.NORTH);
+        south.add(buttons, BorderLayout.SOUTH);
+        return south;
     }
 
     private static JComponent fittedToScreen(JComponent content, JComponent southBar) {
