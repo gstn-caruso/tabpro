@@ -53,6 +53,21 @@ class ZoomSelectorTest {
         assertEquals(150, zoomHolder.zoom().percent());
     }
 
+    @Test
+    void tipearAlgoInvalidoIgnoraYVuelveAlValorReal() {
+        ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
+
+        type(selector, "abc");
+
+        assertEquals(100, zoomHolder.zoom().percent());
+        assertEquals("100%", String.valueOf(selector.getEditor().getItem()));
+    }
+
+    private static void type(ZoomSelector selector, String text) {
+        selector.getEditor().setItem(text);
+        selector.actionPerformed(new java.awt.event.ActionEvent(selector, java.awt.event.ActionEvent.ACTION_PERFORMED, ""));
+    }
+
     private static final class FakeZoomHolder implements com.gstncaruso.tabpro.ui.score.ZoomHolder {
         private Zoom zoom = Zoom.whole();
         private final List<Runnable> listeners = new ArrayList<>();

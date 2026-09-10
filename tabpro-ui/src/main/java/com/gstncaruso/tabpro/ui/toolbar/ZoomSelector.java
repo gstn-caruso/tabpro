@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.toolbar;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import com.gstncaruso.tabpro.ui.score.ZoomHolder;
+import java.util.OptionalInt;
 import javax.swing.JComboBox;
 
 /**
@@ -21,8 +22,18 @@ public final class ZoomSelector extends JComboBox<String> {
     }
 
     private void applyEnteredZoom() {
-        String enteredPercent = String.valueOf(getEditor().getItem()).strip().replace("%", "");
-        zoomHolder.setZoom(new Zoom(Integer.parseInt(enteredPercent)));
+        String entered = String.valueOf(getEditor().getItem());
+        parsedPercentOf(entered).ifPresentOrElse(
+                percent -> zoomHolder.setZoom(new Zoom(percent)),
+                this::refresh);
+    }
+
+    private static OptionalInt parsedPercentOf(String text) {
+        try {
+            return OptionalInt.of(Integer.parseInt(text.strip().replace("%", "")));
+        } catch (NumberFormatException notANumber) {
+            return OptionalInt.empty();
+        }
     }
 
     private void refresh() {
