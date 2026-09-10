@@ -183,8 +183,10 @@ public final class Commands {
         define("track.properties", "Propiedades de la pista…", dialogs::trackProperties)
                 .withAccelerator("F6").withIcon(Icons.trackProperties());
         define("track.instrument", "Instrumento…", dialogs::instrument).withAccelerator("F7");
-        define("track.previous", "Pista anterior", editor::moveToPreviousTrack).withAccelerator("ctrl UP");
-        define("track.next", "Pista siguiente", editor::moveToNextTrack).withAccelerator("ctrl DOWN");
+        define("track.previous", "Pista anterior", editor::moveToPreviousTrack)
+                .withAccelerator("ctrl UP").withIcon(Icons.chevronLeft());
+        define("track.next", "Pista siguiente", editor::moveToNextTrack)
+                .withAccelerator("ctrl DOWN").withIcon(Icons.chevronRight());
     }
 
     // ---- notas ------------------------------------------------------------
