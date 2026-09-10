@@ -1,3 +1,9 @@
+## [0.52.0](https://github.com/gstn-caruso/tabpro/compare/v0.51.0...v0.52.0) (2026-09-10)
+
+### Features
+
+* **dialogs:** las cinco líneas de letra se editan en pestañas con área multilínea, como en Guitar Pro 5 ([#160](https://github.com/gstn-caruso/tabpro/issues/160)) ([ab52899](https://github.com/gstn-caruso/tabpro/commit/ab5289932e08bd529ff104f0b878a226b0ad3746))
+
 ## [0.51.0](https://github.com/gstn-caruso/tabpro/compare/v0.50.2...v0.51.0) (2026-09-10)
 
 ### Features
