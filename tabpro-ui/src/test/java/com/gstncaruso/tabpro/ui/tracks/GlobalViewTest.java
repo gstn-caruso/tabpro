@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -18,5 +19,19 @@ class GlobalViewTest {
 
         assertEquals(MeasureGrid.CELL_WIDTH, size.width);
         assertEquals(MarkerZone.HEIGHT + view.grid().getPreferredSize().height, size.height);
+    }
+
+    @Test
+    void movingTheCursorHighlightDelegatesToTheGridWithoutRevalidating() {
+        Editor editor = new Editor(Score.blank());
+        SpyingMeasureGrid grid = new SpyingMeasureGrid(editor);
+        GlobalView view = new GlobalView(new MarkerZone(editor), grid);
+        grid.forgetCallsMadeWhileBuilding();
+
+        view.moveCursorHighlight();
+
+        assertEquals(0, grid.revalidateCalls);
+        assertFalse(grid.fullRepaintCalled);
+        assertEquals(1, grid.repaintedAreas.size());
     }
 }

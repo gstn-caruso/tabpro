@@ -42,4 +42,10 @@ public final class GlobalView extends JPanel {
         grid.revalidate();
         grid.repaint();
     }
+
+    /** Solo cambio el cursor: la zona de marcadores no depende de el, y la grilla se limita a
+     * resaltar la celda nueva sin recalcular todas las demas. */
+    public void moveCursorHighlight() {
+        grid.moveCursorHighlight();
+    }
 }
