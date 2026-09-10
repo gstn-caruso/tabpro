@@ -32,6 +32,9 @@ jobs:
       - name: Build and test
         run: mvn -B verify
 
+      - name: Tests under a Spanish locale
+        run: mvn -B test -Dtests.locale="-Duser.language=es -Duser.country=ES"
+
       - name: Install Xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
