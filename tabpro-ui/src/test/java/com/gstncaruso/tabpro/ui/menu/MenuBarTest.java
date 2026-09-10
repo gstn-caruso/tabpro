@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.a11y.MnemonicWalker;
+import com.gstncaruso.tabpro.ui.a11y.Violation;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
@@ -90,6 +92,74 @@ class MenuBarTest {
         JMenuBar bar = new MenuBar(commands).build();
 
         AccessibilityAssertions.assertNoViolations(bar);
+    }
+
+    @Test
+    void todosLosMenusDeLaBarraTienenMnemonicoYSinChoques() {
+        JMenuBar bar = new MenuBar(commands).build();
+
+        assertEquals(List.of(), new MnemonicWalker().walkMenuBar(bar));
+    }
+
+    @Test
+    void ningunMenuDeNivelSuperiorUsaLaMismaLetraQueUnAceleradorAltExistente() {
+        JMenuBar bar = new MenuBar(commands).build();
+        Set<Integer> mnemonicosDeMenus = new HashSet<>();
+        for (int i = 0; i < bar.getMenuCount(); i++) {
+            mnemonicosDeMenus.add(bar.getMenu(i).getMnemonic());
+        }
+
+        List<javax.swing.KeyStroke> aceleradoresAltLetra = commands.all().values().stream()
+                .map(Command::accelerator)
+                .filter(java.util.Objects::nonNull)
+                .filter(accelerator -> (accelerator.getModifiers() & java.awt.event.InputEvent.ALT_DOWN_MASK) != 0)
+                .toList();
+
+        assertTrue(!aceleradoresAltLetra.isEmpty(), "no hay ningun acelerador Alt+letra para verificar");
+        assertTrue(aceleradoresAltLetra.stream().noneMatch(a -> mnemonicosDeMenus.contains(a.getKeyCode())));
+    }
+
+    @Test
+    void ningunItemDeNingunMenuChocaConOtroDeSuMismoMenu() {
+        List<Violation> violaciones = mnemonicViolationsOfEveryItem(new MenuBar(commands).build());
+
+        assertTrue(violaciones.stream().noneMatch(v -> v.reason().equals("mnemónico repetido")));
+    }
+
+    @Test
+    void soloLosItemsDeLosMenusMasPobladosQuedanSinLetraLibre() {
+        List<Violation> violaciones = mnemonicViolationsOfEveryItem(new MenuBar(commands).build());
+
+        Set<String> sinMnemonico = violaciones.stream()
+                .filter(v -> v.reason().equals("sin mnemónico"))
+                .map(Violation::path)
+                .collect(java.util.stream.Collectors.toCollection(HashSet::new));
+
+        assertEquals(Set.of(
+                "Acorde…", "Barra de unión", "Plica",
+                "Nota muerta", "Nota acentuada", "Fade in", "Nota de adorno…", "Armónicos…",
+                "Slap", "Pop", "Rasgueo y púa",
+                "Último compás",
+                "Mesa de mezcla"), sinMnemonico);
+    }
+
+    private List<Violation> mnemonicViolationsOfEveryItem(JMenuBar bar) {
+        MnemonicWalker walker = new MnemonicWalker();
+        List<Violation> violaciones = new ArrayList<>();
+        for (int i = 0; i < bar.getMenuCount(); i++) {
+            collectMnemonicViolations(bar.getMenu(i), walker, violaciones);
+        }
+        return violaciones;
+    }
+
+    private void collectMnemonicViolations(JMenu menu, MnemonicWalker walker, List<Violation> violaciones) {
+        violaciones.addAll(walker.walkMenu(menu));
+        for (int i = 0; i < menu.getItemCount(); i++) {
+            JMenuItem item = menu.getItem(i);
+            if (item instanceof JMenu submenu) {
+                collectMnemonicViolations(submenu, walker, violaciones);
+            }
+        }
     }
 
     private void recolectar(JMenu menu, Set<Command> encontrados) {

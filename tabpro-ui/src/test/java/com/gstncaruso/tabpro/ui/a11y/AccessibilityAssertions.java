@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.a11y;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Container;
+import java.util.ArrayList;
 import java.util.List;
 
 /** Assertion compartida por los tests de "raíz de la UI sin violaciones de accesibilidad". */
@@ -12,7 +13,14 @@ public final class AccessibilityAssertions {
     }
 
     public static void assertNoViolations(Container root) {
-        List<Violation> violations = new AccessibilityWalker().walk(root);
+        List<Violation> violations = new ArrayList<>(new AccessibilityWalker().walk(root));
+        violations.addAll(mnemonicClashesOf(root));
         assertTrue(violations.isEmpty(), violations.toString());
+    }
+
+    private static List<Violation> mnemonicClashesOf(Container root) {
+        return new MnemonicWalker().walkForm(root).stream()
+                .filter(violation -> violation.reason().equals("mnemónico repetido"))
+                .toList();
     }
 }
