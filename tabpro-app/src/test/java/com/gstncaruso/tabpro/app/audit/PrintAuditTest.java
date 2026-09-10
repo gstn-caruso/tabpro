@@ -21,7 +21,10 @@ import com.gstncaruso.tabpro.ui.page.DefaultPageSetup;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.print.PrintSettings;
 import com.gstncaruso.tabpro.ui.print.ScorePrinting;
+import com.gstncaruso.tabpro.ui.print.ScoreSheets;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
+import com.gstncaruso.tabpro.ui.score.Zoom;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
@@ -169,6 +172,88 @@ class PrintAuditTest {
             }
         }
         return false;
+    }
+
+    /**
+     * Manual, "Print" > [Position]: "Centered Document" centra la hoja en el papel cuando el
+     * ancho impreso es menor que el area imprimible. Se imprime dos veces con el mismo
+     * {@code Printing} falso -sin tildar el casillero real y despues tildandolo- y se compara,
+     * en un papel mas ancho que la hoja, donde arranca la tinta en cada caso.
+     */
+    @Test
+    void alTildarDocumentoCentradoElPrintableRealCorreLaHojaLaMitadDelSobranteHorizontal() throws Exception {
+        Editor editor = editorWithMeasures(4);
+        AuditSupport.RecordingPrinting printing = new AuditSupport.RecordingPrinting();
+        MainFrame frame = newFrame(editor, printing);
+        try {
+            JMenuItem item = findMenuItem(frame.getJMenuBar(), "Imprimir…");
+
+            withDialog(item::doClick, dialog -> findButton(dialog, "Imprimir").doClick());
+            Printable sinCentrar = printing.printable();
+            assertNotNull(sinCentrar, "tiene que llegar el Printable real de la partitura");
+
+            withDialog(item::doClick, dialog -> {
+                PrintPanel panel = findComponent(dialog, PrintPanel.class);
+                assertFalse(panel.toPrintSettings().centeredDocument(),
+                        "por defecto el documento real no arranca centrado");
+
+                panel.centerDocument();
+
+                assertTrue(panel.toPrintSettings().centeredDocument(),
+                        "tildar el casillero real 'Documento centrado' tiene que llegar a las opciones reales");
+                findButton(dialog, "Imprimir").doClick();
+            });
+            Printable centrado = printing.printable();
+            assertNotNull(centrado, "tiene que llegar el Printable real, ya centrado");
+
+            PageSetup setup = DefaultPageSetup.userSetup().get();
+            Dimension sheet = ScoreSheets.pageSize(Zoom.whole(), setup);
+            int sobranteHorizontal = 200;
+
+            int columnaSinCentrar = firstInkColumnOf(printOnPaper(
+                    sinCentrar, sheet.width + sobranteHorizontal, sheet.height));
+            int columnaCentrada = firstInkColumnOf(printOnPaper(
+                    centrado, sheet.width + sobranteHorizontal, sheet.height));
+
+            assertTrue(
+                    Math.abs((columnaCentrada - columnaSinCentrar) - sobranteHorizontal / 2) <= 5,
+                    "con 'Documento centrado' tildado desde el dialogo real, el PrinterJob falso tiene que "
+                            + "recibir la hoja corrida la mitad del sobrante horizontal");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    private static BufferedImage printOnPaper(Printable printable, int width, int height)
+            throws java.awt.print.PrinterException {
+        Paper paper = new Paper();
+        paper.setSize(width, height);
+        paper.setImageableArea(0, 0, width, height);
+        PageFormat format = new PageFormat();
+        format.setPaper(paper);
+
+        BufferedImage canvas = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = canvas.createGraphics();
+        graphics.setColor(java.awt.Color.WHITE);
+        graphics.fillRect(0, 0, width, height);
+        printable.print(graphics, format, 0);
+        graphics.dispose();
+        return canvas;
+    }
+
+    private static int firstInkColumnOf(BufferedImage image) {
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                int rgb = image.getRGB(x, y);
+                int r = (rgb >> 16) & 0xFF;
+                int g = (rgb >> 8) & 0xFF;
+                int b = rgb & 0xFF;
+                if ((r + g + b) / 3 < 200) {
+                    return x;
+                }
+            }
+        }
+        throw new IllegalStateException("la imagen no tiene tinta en ningun lado");
     }
 
     @Test
