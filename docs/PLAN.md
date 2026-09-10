@@ -260,6 +260,18 @@ componentes sin tooltip, nombre accesible ni teclado; paleta) se generan con
 agentes de un solo pase y no se commitean: lo que vale de ellos entra en el
 PR que lo usa.
 
+### Cómo retomar sin contexto
+
+El loop es: elegir el siguiente corte de esta tabla (o el próximo hallazgo de la
+última auditoría en `docs/`) → briefear un `worker` (`~/.claude/agents/worker.md`)
+con objetivo, branch, decisiones cerradas, criterio de terminado y trailer →
+mirar el PNG que el worker deja en el scratchpad → abrir el PR con qué y por qué
+→ `gh pr checks` verde → `gh pr merge --squash` → borrar la branch remota sólo si
+el PR figura MERGED → actualizar esta tabla. Cuando una auditoría se agota, se
+busca un oráculo nuevo del lado de afuera (el manual, sus capturas, archivos
+reales); las tres primeras fueron uso real, visual de la ventana y de la
+partitura; la cuarta, el corpus; la quinta, en curso, los diálogos.
+
 ### Estado
 
 | Ítem | Branch | PR | Estado |
@@ -305,6 +317,11 @@ PR que lo usa.
 | E · selección amarilla y cuadrado de color del marcador | `feat/seleccion-amarilla-y-marcador-con-color-como-gp5` | #150 | mergeado |
 | E · el cuadrado del marcador no pisa el nombre de pista | `fix/el-cuadrado-del-marcador-no-pisa-el-nombre-de-pista` | #151 | mergeado |
 | E · dinámicas escritas bajo la nota | — | — | **no aplica**: el manual dice que GP5 no las muestra en la partitura; el modo F11 ya existe |
+| B4 · botón de digitación de mano derecha | `feat/boton-de-digitacion-de-mano-derecha` | #154 | mergeado |
+| F · auditoría de robustez con el corpus real (71 archivos: 68 abren, 68 pasan render, export y reapertura) | `docs/auditoria-corpus` | #155 | mergeado |
+| F · fix: la partitura recibe las notificaciones del `Editor` en el EDT y no scrollea con viewport 0×0 | `fix/las-notificaciones-del-editor-llegan-por-el-edt` | #156 | mergeado |
+| F · todos los componentes Swing escuchan al `Editor` por el adaptador del EDT | `refactor/todos-los-componentes-escuchan-al-editor-por-el-edt` | — | en curso |
+| G · auditoría visual de los diálogos contra las capturas del manual | — | — | en curso |
 
 Lo que queda anotado para después: digitación de mano derecha como botón
 aparte (el diálogo único ya cubre las dos manos), tres íconos de la captura de
@@ -312,8 +329,8 @@ GP5 que no se distinguen, `doubleBar` y `tuplet` en Java2D por ser sub-píxel en
 Bravura, los valores predefinidos del combo de zoom (el manual no los lista), y
 la fuente del dígito de traste, que la resolución del manual no permite afirmar.
 
-**Estado al cierre (2026-09-10):** 41 PRs de la etapa (#112–#152) en `main`,
-CI verde, ~2730 tests. Tres auditorías hechas, todas con oráculo externo: uso
+**Estado (2026-09-10, tarde):** 45 PRs de la etapa (#112–#156) en `main`, CI
+verde, ~2750 tests. Tres auditorías hechas, todas con oráculo externo: uso
 real de los 15 capítulos del manual (harness que corre en el CI bajo Xvfb),
 visual zona por zona y de la partitura contra las capturas del manual, medidas
 en píxeles. Lo que las tres encontraron está cerrado o anotado arriba.
