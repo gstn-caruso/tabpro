@@ -50,11 +50,6 @@ class ScalesDialogTest {
         assertEquals("Mayor (Jónico)", Combos.renderedTextOfList(scales, ScaleLibrary.major()));
     }
 
-    /**
-     * El manual no dice con que escala abre la herramienta ("Tools for the Guitarist"); Guitar
-     * Pro 5 la muestra con el diagrama de grados ya pintado, asi que sin una eleccion previa el
-     * valor inicial es Do mayor.
-     */
     @Test
     void sinEleccionPreviaAbreConDoMayorYElDiagramaYaPintado() {
         Editor editor = new Editor(Score.blank());

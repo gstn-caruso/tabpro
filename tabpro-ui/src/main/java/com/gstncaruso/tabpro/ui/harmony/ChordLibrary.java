@@ -7,11 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-/**
- * La lista F: los acordes propios del usuario, guardados entre sesiones con
- * java.util.prefs. Cada vez que cambia algo se reescribe entera -son pocos acordes,
- * y asi no hay que llevar la cuenta de que indices quedaron libres.
- */
 public final class ChordLibrary {
 
     private static final String COUNT_KEY = "count";
@@ -51,7 +46,6 @@ public final class ChordLibrary {
         persist(updated);
     }
 
-    /** El boton "actualizar": reemplaza el diagrama de esa posicion por el que se armo ahora. */
     public void update(int index, ChordDiagram diagram) {
         List<ChordDiagram> updated = new ArrayList<>(all());
         updated.set(index, diagram);

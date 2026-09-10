@@ -20,11 +20,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Todo lo que decide la ventana de acordes, sin Swing: que diagrama esta armado (zona B), que
- * posiciones ofrece la busqueda (zona C), que otros nombres explican al principal (zona D), y si
- * el usuario paso a armar el diagrama a mano ("Personalizado", con el nombre para escribir).
- */
 public final class ChordEditorModel {
 
     private final Tuning tuning;
@@ -57,10 +52,6 @@ public final class ChordEditorModel {
         rebuildFromSelection();
     }
 
-    /**
-     * El estado con el que abre la ventana: si el beat ya tiene un acorde lo carga, si no pero
-     * tiene notas arma el diagrama con ellas, y si esta vacio arranca con la seleccion inicial.
-     */
     public static ChordEditorModel forBeat(Beat beat, Tuning tuning) {
         return forBeat(beat, tuning, true, FingeringMemory.userMemory());
     }
@@ -79,8 +70,6 @@ public final class ChordEditorModel {
         }
         return new ChordEditorModel(tuning, showBassInChordName, fingeringMemory);
     }
-
-    // ---- consultas ----------------------------------------------------
 
     public Tuning tuning() {
         return tuning;
@@ -118,17 +107,14 @@ public final class ChordEditorModel {
         return showFingering;
     }
 
-    /** Los tonos del acorde elegido que se pueden tildar para omitir: 1', 3', 5'... */
     public List<Interval> omittableTones() {
         return selection.chord().type().tones().stream().map(ChordTone::interval).toList();
     }
 
-    /** Los tonos que el usuario tildo para que no haga falta que suenen. */
     public Set<Interval> omittedTones() {
         return omittedTones;
     }
 
-    /** El diagrama tal como hay que escribirlo en el beat: respeta "usar diagrama" y "digitacion". */
     public ChordDiagram result() {
         ChordDiagram diagram = current.shownAs(useDiagram);
         if (!showFingering) {
@@ -136,8 +122,6 @@ public final class ChordEditorModel {
         }
         return diagram;
     }
-
-    // ---- zona A: construccion ------------------------------------------
 
     public void selectRoot(PitchClass root) {
         applySelection(selection.withRoot(root));
@@ -151,7 +135,6 @@ public final class ChordEditorModel {
         applySelection(selection.withBass(bass));
     }
 
-    /** El bajo se fija a la nota que resulta de aplicar ese grado a la fundamental: la inversion. */
     public void selectInversion(Interval degree) {
         selectBass(degree.from(selection.root()));
     }
@@ -165,7 +148,6 @@ public final class ChordEditorModel {
         rebuildFromSelection();
     }
 
-    /** Tildar o destildar un casillero 1', 3', 5'... de la zona B. */
     public void setToneOmitted(Interval tone, boolean omitted) {
         Set<Interval> updated = new LinkedHashSet<>(omittedTones);
         if (omitted) {
@@ -200,7 +182,6 @@ public final class ChordEditorModel {
                 .toList();
     }
 
-    /** Si esta forma ya se digito a mano alguna vez, se usa esa digitacion en vez de la automatica. */
     private ChordDiagram withRememberedFingering(ChordDiagram diagram) {
         return fingeringMemory.fingeringFor(diagram.shape()).map(diagram::withFingering).orElse(diagram);
     }
@@ -209,15 +190,11 @@ public final class ChordEditorModel {
         return chord.name(showBassInChordName);
     }
 
-    // ---- zona C: posiciones ---------------------------------------------
-
     public void pickCandidate(ChordDiagram diagram) {
         current = diagram;
         custom = false;
         recomputeAlternativeNames();
     }
-
-    // ---- zona D: nombres alternativos ------------------------------------
 
     public void pickAlternativeName(Chord chord) {
         selection = new ChordSelection(chord.root(), chord.type(), chord.bass(), selection.complexity());
@@ -232,15 +209,11 @@ public final class ChordEditorModel {
         alternativeNames = ChordNamer.namesFor(current, tuning);
     }
 
-    // ---- zona B: el diagrama a mano ---------------------------------------
-
-    /** Un clic en una cuerda a ese traste: la agrega, o la saca si ya estaba ahi. */
     public void toggleFret(int string, int fret) {
         int already = current.fretOfString(string);
         editDiagram(already == fret ? ChordDiagram.MUTED : fret, string);
     }
 
-    /** El circulo/cruz de arriba de cada cuerda: alterna entre al aire y muda. */
     public void toggleOpenOrMuted(int string) {
         editDiagram(current.fretOfString(string) == 0 ? ChordDiagram.MUTED : 0, string);
     }
@@ -252,10 +225,6 @@ public final class ChordEditorModel {
         fingeringMemory.remember(current.shape(), fingering);
     }
 
-    /**
-     * El clic en el numero debajo del diagrama: pasa al dedo siguiente (indice, medio, anular,
-     * menique, pulgar) y de ahi vuelve a "sin dedo". Una cuerda al aire o muda no se digita.
-     */
     public void cycleFinger(int string) {
         if (current.fretOfString(string) <= 0) {
             return;
@@ -276,7 +245,6 @@ public final class ChordEditorModel {
         current = ChordDiagrams.withBaseFret(current, baseFret);
     }
 
-    /** Solo tiene efecto en modo personalizado: ahi el nombre lo escribe el usuario. */
     public void setCustomName(String name) {
         current = current.withName(name);
     }
@@ -323,13 +291,6 @@ public final class ChordEditorModel {
         }
     }
 
-    // ---- aplicar ------------------------------------------------------
-
-    /**
-     * Graba el diagrama en el beat actual del editor. Si el beat no tenia notas propias,
-     * ademas escribe las del diagrama -asi el pentagrama y la tablatura suenan igual que lo
-     * que se armo aca.
-     */
     public void applyTo(Editor editor) {
         ChordDiagram toWrite = result();
         boolean beatHadNoNotes = editor.currentBeat().notes().isEmpty();

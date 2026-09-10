@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 class FingeringMemoryTest {
 
-    /** Cejilla de Fa: forma de Mi (ver ChordDiagram#shape). */
     private static final List<Integer> FORMA_CEJILLA_DE_MI = List.of(1, 1, 2, 3, 3, 1);
 
     private final Preferences scratch = Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
