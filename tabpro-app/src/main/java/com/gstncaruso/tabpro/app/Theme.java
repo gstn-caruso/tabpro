@@ -31,6 +31,15 @@ public final class Theme implements ThemeSwitch {
                     new Color(0x24262A), new Color(0x6B7078), new Color(0xFFFFFF), new Color(0x101010),
                     new Color(0xBE7B17)));
 
+    /**
+     * Preferencias [F12] > Accesibilidad > Alto contraste: negro puro y blanco puro, con un
+     * amarillo de acento que llega a 7:1 incluso con texto negro encima (seleccion de menu).
+     */
+    private static final Palette HIGH_CONTRAST_PALETTE = new Palette(
+            Color.BLACK, Color.BLACK, Color.BLACK, new Color(0x888888),
+            Color.WHITE, new Color(0xCCCCCC), Color.WHITE, Color.BLACK,
+            new Color(0xFFD400));
+
     private String current = DARK;
 
     public static Theme install() {
@@ -51,6 +60,10 @@ public final class Theme implements ThemeSwitch {
 
     static Palette paletteFor(String name) {
         return PALETTES.getOrDefault(name, PALETTES.get(DARK));
+    }
+
+    static Palette highContrastPalette() {
+        return HIGH_CONTRAST_PALETTE;
     }
 
     @Override
