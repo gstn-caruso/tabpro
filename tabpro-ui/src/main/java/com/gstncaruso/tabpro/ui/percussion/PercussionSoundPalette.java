@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.function.IntConsumer;
@@ -34,9 +35,13 @@ public final class PercussionSoundPalette extends JPanel {
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setBackground(ScoreColors.SURFACE);
         list.setForeground(ScoreColors.INK);
-        list.setCellRenderer(new SoundRenderer());
+        SoundRenderer renderer = new SoundRenderer();
+        list.setCellRenderer(renderer);
         list.setLayoutOrientation(JList.VERTICAL_WRAP);
         list.setVisibleRowCount(rowsToFitFourColumns(list.getModel().getSize()));
+        Dimension cellSize = widestCellSize(list, renderer);
+        list.setFixedCellHeight(cellSize.height);
+        list.setFixedCellWidth(cellSize.width);
         list.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -65,6 +70,19 @@ public final class PercussionSoundPalette extends JPanel {
 
     private static int rowsToFitFourColumns(int soundCount) {
         return (soundCount + COLUMNS - 1) / COLUMNS;
+    }
+
+    private static Dimension widestCellSize(JList<Integer> list, SoundRenderer renderer) {
+        int width = 0;
+        int height = 0;
+        for (int sound : PercussionKit.sounds()) {
+            Dimension preferred = renderer
+                    .getListCellRendererComponent(list, sound, 0, false, false)
+                    .getPreferredSize();
+            width = Math.max(width, preferred.width);
+            height = Math.max(height, preferred.height);
+        }
+        return new Dimension(width, height);
     }
 
     private static final class SoundRenderer extends DefaultListCellRenderer {
