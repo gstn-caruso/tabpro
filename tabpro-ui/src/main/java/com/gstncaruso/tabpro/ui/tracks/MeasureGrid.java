@@ -10,6 +10,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -39,6 +40,7 @@ public final class MeasureGrid extends JComponent implements AccessibleControl {
 
     public static final int CELL_WIDTH = 15;
     public static final int NUMBER_EVERY = 5;
+    private static final int NUMBER_MARGIN = 4;
     /**
      * La franja de los numeros de compas: lo que queda del encabezado de la mesa de mezcla una vez
      * que la zona de marcadores se llevo su parte. Las dos juntas miden lo mismo que el encabezado
@@ -256,11 +258,22 @@ public final class MeasureGrid extends JComponent implements AccessibleControl {
     private void paintMeasureNumbers(Graphics2D g, Score score) {
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9));
         g.setColor(ScoreColors.MUTED_INK);
+        int step = numberStep(score.measureCount(), g.getFontMetrics());
         for (int measure = 0; measure < score.measureCount(); measure++) {
-            if (measure == 0 || (measure + 1) % NUMBER_EVERY == 0) {
+            if (measure == 0 || (measure + 1) % step == 0) {
                 g.drawString(String.valueOf(measure + 1), measure * CELL_WIDTH + 2, NUMBERS_HEIGHT - 2);
             }
         }
+    }
+
+    /**
+     * Como en Guitar Pro 5: un numero por compas si el mas ancho de todos entra en la celda, o
+     * uno cada {@link #NUMBER_EVERY} compases cuando no entra.
+     */
+    static int numberStep(int measureCount, FontMetrics metrics) {
+        String widestNumber = String.valueOf(measureCount);
+        boolean everyNumberFitsTheCell = metrics.stringWidth(widestNumber) + NUMBER_MARGIN <= CELL_WIDTH;
+        return everyNumberFitsTheCell ? 1 : NUMBER_EVERY;
     }
 
     /** Una pista que no suena se ve apagada, igual que su nombre en la lista. */
