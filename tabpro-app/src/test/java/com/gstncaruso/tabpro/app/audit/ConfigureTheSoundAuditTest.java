@@ -26,7 +26,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class ConfigureTheSoundAuditTest {
 
     @Test
-    void f2PorElAtajoPrendeElBancoDeSonidoRealDeDevices() throws Exception {
+    void f2ByTheShortcutTurnsOnTheRealSoundBankInDevices() throws Exception {
         Editor editor = blankEditor();
         AuditSupport.RecordingDevices devices = new AuditSupport.RecordingDevices();
         MainFrame frame = AuditSupport.newFrame(editor, devices);
@@ -36,43 +36,43 @@ class ConfigureTheSoundAuditTest {
             assertNotNull(item, "no encontre 'Banco de sonido' en el menu real");
             assertEquals(KeyStroke.getKeyStroke("F2"), item.getAccelerator());
 
-            boolean antes = devices.soundFontActive();
-            int cambiosAntes = devices.toggleCount();
+            boolean before = devices.soundFontActive();
+            int togglesBefore = devices.toggleCount();
 
             pressKey(canvas, KeyStroke.getKeyStroke("F2"));
 
-            assertEquals(cambiosAntes + 1, devices.toggleCount(),
+            assertEquals(togglesBefore + 1, devices.toggleCount(),
                     "F2, despachado de verdad sobre el lienzo, tiene que llegar al Devices real");
-            assertEquals(!antes, devices.soundFontActive(), "F2 tiene que alternar el banco de sonido real");
+            assertEquals(!before, devices.soundFontActive(), "F2 tiene que alternar el banco de sonido real");
         } finally {
             AuditSupport.dispose(frame);
         }
     }
 
     @Test
-    void f2ConLaPartituraEnfocadaSincronizaElBotonRealDeLaBarra() throws Exception {
+    void f2WithTheScoreFocusedSynchronizesTheRealToolbarButton() throws Exception {
         Editor editor = blankEditor();
         AuditSupport.RecordingDevices devices = new AuditSupport.RecordingDevices();
         MainFrame frame = AuditSupport.newFrame(editor, devices);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
-            JToggleButton boton = AuditSupport.findToggleButtonByActionName(frame.getContentPane(), "Banco de sonido");
-            assertNotNull(boton, "no encontre el boton conmutable real de 'Banco de sonido'");
-            assertEquals(devices.soundFontActive(), boton.isSelected(),
+            JToggleButton button = AuditSupport.findToggleButtonByActionName(frame.getContentPane(), "Banco de sonido");
+            assertNotNull(button, "no encontre el boton conmutable real de 'Banco de sonido'");
+            assertEquals(devices.soundFontActive(), button.isSelected(),
                     "el boton tiene que arrancar mostrando el estado real del banco de sonido");
-            boolean antes = boton.isSelected();
+            boolean before = button.isSelected();
 
             pressKey(canvas, KeyStroke.getKeyStroke("F2"));
 
-            assertEquals(!antes, boton.isSelected(), "F2 tiene que sincronizar el boton conmutable real");
-            assertEquals(devices.soundFontActive(), boton.isSelected());
+            assertEquals(!before, button.isSelected(), "F2 tiene que sincronizar el boton conmutable real");
+            assertEquals(devices.soundFontActive(), button.isSelected());
         } finally {
             AuditSupport.dispose(frame);
         }
     }
 
     @Test
-    void elMenuOfreceLaConfiguracionDelMetronomoYElVolumenElegidoLlegaAlTransporte() throws Exception {
+    void theMenuOffersTheMetronomeConfigurationAndTheChosenVolumeReachesTheTransport() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = AuditSupport.newFrame(editor);
         try {
@@ -80,9 +80,9 @@ class ConfigureTheSoundAuditTest {
             assertNotNull(item, "no encontre 'Configuración del metrónomo…' en el menu real");
 
             withDialog(item::doClick, dialog -> {
-                JSlider volumen = findComponent(dialog, JSlider.class);
-                assertNotNull(volumen, "no encontre el slider real de Volumen");
-                volumen.setValue(42);
+                JSlider volume = findComponent(dialog, JSlider.class);
+                assertNotNull(volume, "no encontre el slider real de Volumen");
+                volume.setValue(42);
 
                 findButton(dialog, "Aceptar").doClick();
             });
