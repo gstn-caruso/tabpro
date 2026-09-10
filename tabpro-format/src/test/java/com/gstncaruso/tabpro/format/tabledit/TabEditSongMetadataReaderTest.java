@@ -9,7 +9,7 @@ class TabEditSongMetadataReaderTest {
     private final TabEditSongMetadataReader reader = new TabEditSongMetadataReader();
 
     @Test
-    void leeTituloAutorComentariosYNotas() {
+    void readsTitleAuthorCommentsAndNotes() {
         TabEditFileWriter writer = new TabEditFileWriter()
                 .writeShortString("Mi cancion")
                 .writeShortString("Un autor")
@@ -28,7 +28,7 @@ class TabEditSongMetadataReaderTest {
     }
 
     @Test
-    void leeUrlYCopyrightSoloSiElEncabezadoLosAnuncia() {
+    void readsUrlAndCopyrightOnlyWhenTheHeaderAnnouncesThem() {
         TabEditFileWriter writer = new TabEditFileWriter()
                 .writeShortString("T")
                 .writeShortString("A")
@@ -45,7 +45,7 @@ class TabEditSongMetadataReaderTest {
     }
 
     @Test
-    void consumeLosEventosDeTextoSinPerderLaAlineacion() {
+    void consumesTheTextEventsWithoutLosingAlignment() {
         TabEditFileWriter writer = new TabEditFileWriter()
                 .writeShortString("T")
                 .writeShortString("A")

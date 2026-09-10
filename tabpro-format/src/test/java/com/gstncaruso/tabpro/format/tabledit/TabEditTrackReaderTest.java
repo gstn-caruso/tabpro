@@ -14,7 +14,7 @@ class TabEditTrackReaderTest {
     private final TabEditTrackReader reader = new TabEditTrackReader();
 
     @Test
-    void leeLaAfinacionEnMidiYElNombreDeLaPista() {
+    void readsTheMidiTuningAndTheTrackName() {
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(MAX_TRACK_SIZE).writeShort(1);
         writeTrack(writer, 6, 25, 0, new int[] {64, 59, 55, 50, 45, 40}, "Guitarra");
 
@@ -30,7 +30,7 @@ class TabEditTrackReaderTest {
     }
 
     @Test
-    void leeElCapoYReconocePercusionPorElInstrumento96() {
+    void readsTheCapoAndRecognizesPercussionByInstrument96() {
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(MAX_TRACK_SIZE).writeShort(2);
         writeTrack(writer, 6, 25, 3, new int[] {32, 37, 41, 46, 51, 56}, "Con cejilla");
         writeTrack(writer, 4, 96, 0, new int[] {60, 55, 50, 45}, "Bateria");
@@ -43,7 +43,7 @@ class TabEditTrackReaderTest {
     }
 
     @Test
-    void variasPistasQuedanAlineadasCadaUnaEnSuBloque() {
+    void severalTracksStayAlignedEachInItsOwnBlock() {
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(MAX_TRACK_SIZE).writeShort(2);
         writeTrack(writer, 4, 33, 0, new int[] {45, 50, 55, 60}, "Bajo");
         writeTrack(writer, 6, 25, 0, new int[] {32, 37, 41, 46, 51, 56}, "Guitarra 2");
