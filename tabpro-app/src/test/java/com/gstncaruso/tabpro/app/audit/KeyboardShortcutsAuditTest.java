@@ -37,7 +37,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class KeyboardShortcutsAuditTest {
 
     @Test
-    void lasUnicasCincoTeclasQueElScrollPaneYElSplitPaneYaOcupabanSonLasDocumentadas() throws Exception {
+    void theOnlyFiveKeysThatScrollPaneAndSplitPaneAlreadyOccupiedAreTheDocumentedOnes() throws Exception {
         Editor editor = AuditSupport.blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -46,25 +46,25 @@ class KeyboardShortcutsAuditTest {
             assertNotNull(scrollPane);
             assertNotNull(splitPane);
 
-            List<String> colisiones = new ArrayList<>();
+            List<String> collisions = new ArrayList<>();
             for (JMenuItem item : AuditSupport.allMenuItems(frame.getJMenuBar())) {
                 KeyStroke accelerator = item.getAccelerator();
                 if (accelerator == null) {
                     continue;
                 }
-                boolean ocupadaEnScroll =
+                boolean occupiedInScroll =
                         scrollPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(accelerator) != null;
-                boolean ocupadaEnSplit =
+                boolean occupiedInSplit =
                         splitPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(accelerator) != null;
-                if (ocupadaEnScroll || ocupadaEnSplit) {
-                    colisiones.add(item.getText());
+                if (occupiedInScroll || occupiedInSplit) {
+                    collisions.add(item.getText());
                 }
             }
 
             assertEquals(
                     java.util.Set.of("Primer compás", "Último compás", "Propiedades de la pista…",
                             "Configurar página…", "Marcador siguiente"),
-                    java.util.Set.copyOf(colisiones),
+                    java.util.Set.copyOf(collisions),
                     "las cinco colisiones documentadas no cambiaron; si esto falla hay una nueva (o una que se arreglo)");
         } finally {
             AuditSupport.dispose(frame);
@@ -72,7 +72,7 @@ class KeyboardShortcutsAuditTest {
     }
 
     @Test
-    void f6AbreLasPropiedadesDeLaPistaConLaPartituraEnfocada() throws Exception {
+    void f6OpensTrackPropertiesWithTheScoreFocused() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -82,9 +82,9 @@ class KeyboardShortcutsAuditTest {
             assertNotNull(item);
             assertEquals(KeyStroke.getKeyStroke("F6"), item.getAccelerator());
 
-            boolean abrioUnDialogo = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("F6"), 800);
+            boolean openedADialog = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("F6"), 800);
 
-            assertTrue(abrioUnDialogo,
+            assertTrue(openedADialog,
                     "F6 con la partitura enfocada tiene que abrir 'Propiedades de la pista', "
                             + "igual que el menu Pista > Propiedades");
         } finally {
@@ -93,7 +93,7 @@ class KeyboardShortcutsAuditTest {
     }
 
     @Test
-    void f8AbreConfigurarPaginaConLaPartituraEnfocada() throws Exception {
+    void f8OpensPageSetupWithTheScoreFocused() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -103,9 +103,9 @@ class KeyboardShortcutsAuditTest {
             assertNotNull(item);
             assertEquals(KeyStroke.getKeyStroke("F8"), item.getAccelerator());
 
-            boolean abrioUnDialogo = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("F8"), 800);
+            boolean openedADialog = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("F8"), 800);
 
-            assertTrue(abrioUnDialogo,
+            assertTrue(openedADialog,
                     "F8 con la partitura enfocada tiene que abrir 'Configurar página', "
                             + "igual que el menu Archivo > Configurar página");
         } finally {
@@ -114,7 +114,7 @@ class KeyboardShortcutsAuditTest {
     }
 
     @Test
-    void ctrlTabPorMenuYPorAtajoMuevenElCursorAlMarcadorSiguiente() throws Exception {
+    void ctrlTabByMenuAndByShortcutMoveTheCursorToTheNextMarker() throws Exception {
         assertAcceleratorMatchesMenu("Marcador siguiente", () -> {
             Editor editor = editorWithMeasures(2);
             editor.moveTo(1, 0, editor.cursor().string());
@@ -125,7 +125,7 @@ class KeyboardShortcutsAuditTest {
     }
 
     @Test
-    void deshacerPorMenuYPorAtajoCtrlZCoinciden() throws Exception {
+    void undoByMenuAndByCtrlZShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Deshacer", () -> {
             Editor editor = editorWithANote();
             editor.setFret(5);
@@ -134,51 +134,51 @@ class KeyboardShortcutsAuditTest {
     }
 
     @Test
-    void cortarPorMenuYPorAtajoCtrlXCoinciden() throws Exception {
+    void cutByMenuAndByCtrlXShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Cortar", AuditSupport::editorWithANote);
     }
 
     @Test
-    void acortarLaFiguraPorMenuYPorAtajoMasCoinciden() throws Exception {
+    void shorteningTheNoteValueByMenuAndByPlusShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Acortar la figura", AuditSupport::editorWithANote);
     }
 
     @Test
-    void subirUnSemitonoPorMenuYPorAtajoShiftMasCoinciden() throws Exception {
+    void raisingASemitoneByMenuAndByShiftPlusShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Subir un semitono", AuditSupport::editorWithANote);
     }
 
     @Test
-    void ligadoHammerPorMenuYPorAtajoHCoinciden() throws Exception {
+    void hammerOnPullOffByMenuAndByHShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Ligado (hammer on / pull off)", AuditSupport::editorWithANote);
     }
 
     @Test
-    void vibratoPorMenuYPorAtajoVCoinciden() throws Exception {
+    void vibratoByMenuAndByVShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Vibrato", AuditSupport::editorWithANote);
     }
 
     @Test
-    void palmMutePorMenuYPorAtajoPCoinciden() throws Exception {
+    void palmMuteByMenuAndByPShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Palm mute", AuditSupport::editorWithANote);
     }
 
     @Test
-    void notaMuertaPorMenuYPorAtajoXCoinciden() throws Exception {
+    void deadNoteByMenuAndByXShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Nota muerta", AuditSupport::editorWithANote);
     }
 
     @Test
-    void atenuarLaVozInactivaPorAtajoCtrlGCambiaElCanvasReal() throws Exception {
+    void grayingTheInactiveVoiceByTheCtrlGShortcutChangesTheRealCanvas() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
-            boolean antes = canvas.graysTheInactiveVoice();
+            boolean before = canvas.graysTheInactiveVoice();
 
             AuditSupport.pressKey(canvas, KeyStroke.getKeyStroke("ctrl G"));
 
-            assertEquals(!antes, canvas.graysTheInactiveVoice(),
+            assertEquals(!before, canvas.graysTheInactiveVoice(),
                     "Ctrl+G, despachado de verdad sobre el lienzo, tiene que alternar el atenuado real");
         } finally {
             AuditSupport.dispose(frame);
@@ -186,7 +186,7 @@ class KeyboardShortcutsAuditTest {
     }
 
     @Test
-    void pistaSiguientePorMenuYPorAtajoCtrlDownCoinciden() throws Exception {
+    void nextTrackByMenuAndByCtrlDownShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Pista siguiente", () -> {
             Editor editor = editorWithANote();
             editor.addTrack(com.gstncaruso.tabpro.core.model.Track.standardBass("Bajo"));
@@ -196,7 +196,7 @@ class KeyboardShortcutsAuditTest {
     }
 
     @Test
-    void compasAnteriorPorMenuYPorAtajoCtrlLeftCoinciden() throws Exception {
+    void previousBarByMenuAndByCtrlLeftShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Compás anterior", () -> {
             Editor editor = editorWithMeasures(2);
             editor.moveToLastMeasure();
@@ -209,7 +209,7 @@ class KeyboardShortcutsAuditTest {
      * real window with a DISPLAY.
      */
     @Test
-    void ctrlF6SacaElFocoDeLaPartituraDeVerdad() throws Exception {
+    void ctrlF6ReallyTakesFocusAwayFromTheScore() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -217,9 +217,9 @@ class KeyboardShortcutsAuditTest {
             assertTrue(AuditSupport.requestFocusAndAwait(canvas, 2000),
                     "la partitura nunca gano el foco real para arrancar el test");
 
-            boolean perdioElFoco = AuditSupport.pressKeyAndAwaitFocusLost(canvas, KeyStroke.getKeyStroke("ctrl F6"), 2000);
+            boolean lostFocus = AuditSupport.pressKeyAndAwaitFocusLost(canvas, KeyStroke.getKeyStroke("ctrl F6"), 2000);
 
-            assertTrue(perdioElFoco,
+            assertTrue(lostFocus,
                     "Ctrl+F6 con la partitura enfocada tiene que sacarle el foco de verdad");
         } finally {
             AuditSupport.dispose(frame);
