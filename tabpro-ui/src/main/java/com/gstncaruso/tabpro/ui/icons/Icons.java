@@ -312,16 +312,7 @@ public final class Icons {
     }
 
     public static Icon loop() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new RoundRectangle2D.Double(size * 0.16, size * 0.28, size * 0.68, size * 0.44, size * 0.4, size * 0.4));
-            Path2D head = new Path2D.Double();
-            head.moveTo(size * 0.52, size * 0.14);
-            head.lineTo(size * 0.72, size * 0.28);
-            head.lineTo(size * 0.52, size * 0.42);
-            head.closePath();
-            graphics.fill(head);
-        });
+        return svgIcon("repeat");
     }
 
     public static Icon metronome() {
