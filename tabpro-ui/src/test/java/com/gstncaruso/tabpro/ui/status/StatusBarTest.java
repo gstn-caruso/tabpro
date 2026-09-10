@@ -55,7 +55,7 @@ class StatusBarTest {
         Editor editor = new Editor(new Score(info, 120, Score.blank().tracks(), Score.blank().lyrics()));
         StatusBar bar = new StatusBar(editor);
 
-        assertEquals("Sultans of Swing — Musica: Mark Knopfler", bar.creditsText());
+        assertEquals("Sultans of Swing — Música: Mark Knopfler", bar.creditsText());
     }
 
     @Test

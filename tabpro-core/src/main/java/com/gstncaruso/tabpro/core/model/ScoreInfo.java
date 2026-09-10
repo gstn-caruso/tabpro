@@ -39,7 +39,7 @@ public record ScoreInfo(
     /** Como se nombra la partitura cuando hace falta una sola linea. */
     public String heading() {
         if (title.isBlank()) {
-            return artist.isBlank() ? "Sin titulo" : artist;
+            return artist.isBlank() ? "Sin título" : artist;
         }
         return artist.isBlank() ? title : title + " - " + artist;
     }
@@ -47,11 +47,11 @@ public record ScoreInfo(
     /** Los dos autores tal como se escriben arriba a la derecha de la hoja. */
     public String credits() {
         if (musicAuthor.equals(lyricsAuthor)) {
-            return musicAuthor.isBlank() ? "" : "Letra y musica: " + musicAuthor;
+            return musicAuthor.isBlank() ? "" : "Letra y música: " + musicAuthor;
         }
         StringBuilder credits = new StringBuilder();
         if (!musicAuthor.isBlank()) {
-            credits.append("Musica: ").append(musicAuthor);
+            credits.append("Música: ").append(musicAuthor);
         }
         if (!lyricsAuthor.isBlank()) {
             credits.append(credits.isEmpty() ? "" : "\n").append("Letra: ").append(lyricsAuthor);

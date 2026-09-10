@@ -34,7 +34,7 @@ class TuningEditorPanelTest {
         Component rendered = library.getRenderer()
                 .getListCellRendererComponent(new JList<>(), TuningLibrary.standardGuitar(), 0, false, false);
 
-        assertEquals("Guitarra estandar (EADGBE)", ((JLabel) rendered).getText());
+        assertEquals("Guitarra estándar (EADGBE)", ((JLabel) rendered).getText());
     }
 
     @Test
@@ -68,7 +68,7 @@ class TuningEditorPanelTest {
     void aTuningOutsideTheCurrentFamilyIsRejected() {
         TuningEditorPanel panel = new TuningEditorPanel(Tuning.standard(), 25, player);
 
-        assertThrows(IllegalArgumentException.class, () -> panel.selectFromLibrary("Bajo estandar"));
+        assertThrows(IllegalArgumentException.class, () -> panel.selectFromLibrary("Bajo estándar"));
     }
 
     @Test

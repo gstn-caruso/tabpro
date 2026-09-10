@@ -123,7 +123,7 @@ class LabelsTest {
 
     @Test
     void traduceLaAfinacionConSuNombreYElResumenDeCuerdas() {
-        assertEquals("Guitarra estandar (EADGBE)", Labels.of(TuningLibrary.standardGuitar()));
+        assertEquals("Guitarra estándar (EADGBE)", Labels.of(TuningLibrary.standardGuitar()));
     }
 
     @Test
