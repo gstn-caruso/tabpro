@@ -3,12 +3,11 @@ package com.gstncaruso.tabpro.format.powertab;
 import java.util.List;
 
 /**
- * Lee una "score" (la de guitarra o la de bajo): sus guitarras, y despues los
- * diagramas de acorde y el texto flotante, que se descartan; las asignaciones
- * de guitarra a pentagrama, que se guardan para validar mas adelante; los
- * marcadores de tempo (de los que solo interesa el primero estandar: tabpro
- * no admite cambios de tempo a mitad de partitura); las dinamicas, que se
- * descartan; los finales alternativos, y por ultimo los sistemas.
+ * Reads a "score" (guitar or bass): its guitars, and then the chord diagrams and the
+ * floating text, which are discarded; the guitar-to-staff assignments, which are kept
+ * for later validation; the tempo markers (of which only the first standard one
+ * matters: tabpro does not support tempo changes partway through a score); the
+ * dynamics, which are discarded; the alternate endings, and lastly the systems.
  */
 final class PowerTabScoreReader {
 
