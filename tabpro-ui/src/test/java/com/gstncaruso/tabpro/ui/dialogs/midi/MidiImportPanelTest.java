@@ -6,10 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class MidiImportPanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new MidiImportPanel(List.of(track(0, "Guitarra"))));
+    }
 
     @Test
     void startsWithNoTracksSelected() {

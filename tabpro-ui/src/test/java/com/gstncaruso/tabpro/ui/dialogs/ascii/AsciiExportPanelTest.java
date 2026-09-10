@@ -2,9 +2,15 @@ package com.gstncaruso.tabpro.ui.dialogs.ascii;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import org.junit.jupiter.api.Test;
 
 class AsciiExportPanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new AsciiExportPanel());
+    }
 
     @Test
     void defaultsToTheStandardColumnCount() {

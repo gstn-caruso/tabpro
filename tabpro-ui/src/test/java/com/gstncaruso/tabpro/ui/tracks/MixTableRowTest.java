@@ -163,6 +163,21 @@ class MixTableRowTest {
         assertEquals(25, editor.score().track(0).channel().program());
     }
 
+    @Test
+    void losControlesSinEtiquetaVisibleNombranLaPista() {
+        Editor editor = twoTrackEditor();
+        MixTableRow row = new MixTableRow(editor, new MixTableModel(), 1);
+
+        assertEquals("Mostrar pista Bajo", row.visibleCheckbox().getAccessibleContext().getAccessibleName());
+        assertEquals("Silenciar Bajo", row.muteToggle().getAccessibleContext().getAccessibleName());
+        assertEquals("Solo Bajo", row.soloToggle().getAccessibleContext().getAccessibleName());
+        assertEquals("Puerto de Bajo", row.portField().getAccessibleContext().getAccessibleName());
+        assertEquals("Canal MIDI de Bajo", row.channelField().getAccessibleContext().getAccessibleName());
+        assertEquals(
+                "Canal de efectos de Bajo", row.effectChannelField().getAccessibleContext().getAccessibleName());
+        assertEquals("Instrumento de Bajo", row.instrumentField().getAccessibleContext().getAccessibleName());
+    }
+
     private static Editor twoTrackEditor() {
         Editor editor = new Editor(Score.blank());
         editor.addTrack(Track.standardBass("Bajo"));

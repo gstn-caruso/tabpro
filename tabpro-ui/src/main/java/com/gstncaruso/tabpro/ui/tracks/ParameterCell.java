@@ -48,7 +48,15 @@ public final class ParameterCell extends JPanel {
         knob.setValue(value);
         numberField.setValue(value);
         cards.show(this, model.displayModeOf(parameter) == DisplayMode.KNOB ? KNOB_CARD : NUMBER_CARD);
+        refreshAccessibleName();
         syncing = false;
+    }
+
+    private void refreshAccessibleName() {
+        String name = parameter.label() + " de " + editor.score().track(trackIndex).name();
+        knob.getAccessibleContext().setAccessibleName(name);
+        numberField.getAccessibleContext().setAccessibleName(name);
+        numberField.setToolTipText(name);
     }
 
     public int currentValue() {

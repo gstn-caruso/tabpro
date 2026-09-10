@@ -41,13 +41,18 @@ public final class MidiImportPanel extends JPanel {
         DialogStyle.padded(this);
         trackList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         trackList.setCellRenderer(trackLabels());
+        trackList.getAccessibleContext().setAccessibleName("Pistas del archivo MIDI");
+        trackList.setToolTipText("Pistas del archivo MIDI");
         showTracks(tracks);
         precisionChoice.setSelectedItem(figureName(NoteValue.SIXTEENTH));
+
+        JLabel precisionLabel = new JLabel("Precisión");
+        precisionLabel.setLabelFor(precisionChoice);
 
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, DialogStyle.GAP_S));
         bottom.add(transpose);
         bottom.add(twoChannelsPerTrack);
-        bottom.add(new JLabel("Precisión"));
+        bottom.add(precisionLabel);
         bottom.add(precisionChoice);
 
         add(new JScrollPane(trackList), BorderLayout.CENTER);

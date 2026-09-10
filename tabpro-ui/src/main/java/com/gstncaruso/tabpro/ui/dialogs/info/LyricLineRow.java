@@ -13,9 +13,15 @@ final class LyricLineRow extends JPanel {
     private final JSpinner startingMeasure = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
     private final JTextField text = new JTextField();
 
-    LyricLineRow(LyricLine initial) {
+    LyricLineRow(LyricLine initial, int lineNumber) {
         super(new BorderLayout(8, 0));
         setOpaque(false);
+        String startingMeasureName = "Compás inicial de la línea " + lineNumber;
+        startingMeasure.getAccessibleContext().setAccessibleName(startingMeasureName);
+        startingMeasure.setToolTipText(startingMeasureName);
+        String textName = "Línea " + lineNumber;
+        text.getAccessibleContext().setAccessibleName(textName);
+        text.setToolTipText(textName);
         add(startingMeasure, BorderLayout.WEST);
         add(text, BorderLayout.CENTER);
         apply(initial);

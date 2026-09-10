@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -32,5 +33,13 @@ class MarkerZoneTest {
         assertEquals(0, zone.measureAt(2));
         assertEquals(1, zone.measureAt(MeasureGrid.CELL_WIDTH + 2));
         assertEquals(2, zone.measureAt(2 * MeasureGrid.CELL_WIDTH + 2));
+    }
+
+    @Test
+    void tieneNombreYTooltipAccesibles() {
+        MarkerZone zone = new MarkerZone(new Editor(Score.blank()));
+
+        assertEquals("Zona de marcadores", zone.getAccessibleContext().getAccessibleName());
+        assertTrue(zone.getToolTipText() != null && !zone.getToolTipText().isBlank());
     }
 }

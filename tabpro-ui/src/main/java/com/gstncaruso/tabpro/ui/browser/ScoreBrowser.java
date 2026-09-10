@@ -55,6 +55,8 @@ public final class ScoreBrowser extends JDialog {
 
         results.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         results.setCellRenderer(new PathRenderer());
+        results.getAccessibleContext().setAccessibleName("Partituras encontradas");
+        results.setToolTipText("Partituras encontradas");
         results.addListSelectionListener(event -> describeSelection());
 
         setLayout(new BorderLayout(8, 8));
@@ -91,7 +93,9 @@ public final class ScoreBrowser extends JDialog {
         JPanel bar = new JPanel(new BorderLayout(8, 0));
         bar.add(summary, BorderLayout.CENTER);
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
-        buttons.add(new JLabel("Compases antes de saltar:"));
+        JLabel barsLabel = new JLabel("Compases antes de saltar:");
+        barsLabel.setLabelFor(barsBeforeJumping);
+        buttons.add(barsLabel);
         buttons.add(barsBeforeJumping);
         listen.addActionListener(event -> toggleListening());
         JButton open = new JButton("Abrir");

@@ -23,10 +23,17 @@ public final class MarkersDialog {
     }
 
     public static void show(Component parent, Editor editor) {
+        DialogShell.show(parent, "Marcadores", buildContent(editor));
+    }
+
+    /** Arma el contenido de la ventana sin abrir ningun dialogo, para poder probarlo. */
+    static JPanel buildContent(Editor editor) {
         MarkerPanel form = new MarkerPanel(Marker.named("Marcador"));
         DefaultListModel<MarkerList.Positioned> model = new DefaultListModel<>();
         JList<MarkerList.Positioned> list = new JList<>(model);
         list.setCellRenderer((jlist, value, index, isSelected, hasFocus) -> new javax.swing.JLabel(value.label()));
+        list.getAccessibleContext().setAccessibleName("Marcadores");
+        list.setToolTipText("Marcadores");
         refresh(model, editor);
 
         JButton insert = DialogStyle.flatButton("Insertar aqui");
@@ -56,8 +63,7 @@ public final class MarkersDialog {
         content.add(form, BorderLayout.NORTH);
         content.add(new JScrollPane(list), BorderLayout.CENTER);
         content.add(buttons, BorderLayout.SOUTH);
-
-        DialogShell.show(parent, "Marcadores", content);
+        return content;
     }
 
     private static void refresh(DefaultListModel<MarkerList.Positioned> model, Editor editor) {

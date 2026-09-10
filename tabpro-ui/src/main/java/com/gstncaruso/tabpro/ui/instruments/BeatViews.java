@@ -200,10 +200,10 @@ public final class BeatViews extends JPanel {
 
     private JComponent fretboardToolbar() {
         JPanel bar = toolbar();
-        bar.add(comboOf(FretboardDisplayMode.values(), fretboard::setDisplayMode));
-        bar.add(comboOf(NoteNameMode.values(), fretboard::setNoteNameMode));
-        bar.add(comboOf(ScaleLabelMode.values(), fretboard::setScaleLabelMode));
-        bar.add(comboOf(FretboardType.values(), fretboard::setFretboardType));
+        bar.add(comboOf("Modo de vista del diapasón", FretboardDisplayMode.values(), fretboard::setDisplayMode));
+        bar.add(comboOf("Modo de nombres de nota", NoteNameMode.values(), fretboard::setNoteNameMode));
+        bar.add(comboOf("Modo de etiqueta de escala", ScaleLabelMode.values(), fretboard::setScaleLabelMode));
+        bar.add(comboOf("Tipo de diapasón", FretboardType.values(), fretboard::setFretboardType));
         bar.add(scalePicker(fretboard::setScale));
         bar.add(handednessCheckBox());
         bar.add(navigationButtons());
@@ -212,7 +212,7 @@ public final class BeatViews extends JPanel {
 
     private JComponent keyboardToolbar() {
         JPanel bar = toolbar();
-        bar.add(comboOf(KeyboardDisplayMode.values(), keyboard::setDisplayMode));
+        bar.add(comboOf("Modo de vista del teclado", KeyboardDisplayMode.values(), keyboard::setDisplayMode));
         bar.add(scalePicker(keyboard::setScale));
         bar.add(navigationButtons());
         return bar;
@@ -224,9 +224,11 @@ public final class BeatViews extends JPanel {
         return bar;
     }
 
-    private <T> JComboBox<T> comboOf(T[] values, java.util.function.Consumer<T> onChoice) {
+    private <T> JComboBox<T> comboOf(String name, T[] values, java.util.function.Consumer<T> onChoice) {
         JComboBox<T> combo = new JComboBox<>(values);
         combo.setFont(combo.getFont().deriveFont(10f));
+        combo.getAccessibleContext().setAccessibleName(name);
+        combo.setToolTipText(name);
         combo.addActionListener(e -> onChoice.accept(combo.getItemAt(combo.getSelectedIndex())));
         return combo;
     }
@@ -238,8 +240,12 @@ public final class BeatViews extends JPanel {
 
         JComboBox<String> rootCombo = new JComboBox<>(roots);
         rootCombo.setFont(rootCombo.getFont().deriveFont(10f));
+        rootCombo.getAccessibleContext().setAccessibleName("Nota raíz de la escala");
+        rootCombo.setToolTipText("Nota raíz de la escala");
         JComboBox<ScaleType> typeCombo = new JComboBox<>(ScaleType.values());
         typeCombo.setFont(typeCombo.getFont().deriveFont(10f));
+        typeCombo.getAccessibleContext().setAccessibleName("Tipo de escala");
+        typeCombo.setToolTipText("Tipo de escala");
 
         Runnable notify = () -> onChoice.accept(
                 new Scale(rootCombo.getSelectedIndex(), typeCombo.getItemAt(typeCombo.getSelectedIndex())));
@@ -264,18 +270,20 @@ public final class BeatViews extends JPanel {
     private JComponent navigationButtons() {
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
         nav.setOpaque(false);
-        JButton previous = navButton("◀", editor::moveLeft);
-        JButton next = navButton("▶", editor::moveRight);
+        JButton previous = navButton("◀", "Beat anterior", editor::moveLeft);
+        JButton next = navButton("▶", "Beat siguiente", editor::moveRight);
         nav.add(previous);
         nav.add(next);
         return nav;
     }
 
-    private JButton navButton(String text, Runnable action) {
+    private JButton navButton(String text, String name, Runnable action) {
         JButton button = new JButton(text);
         button.setFont(button.getFont().deriveFont(9f));
         button.setMargin(new java.awt.Insets(0, 4, 0, 4));
         button.setFocusable(false);
+        button.getAccessibleContext().setAccessibleName(name);
+        button.setToolTipText(name);
         button.addActionListener(e -> action.run());
         return button;
     }

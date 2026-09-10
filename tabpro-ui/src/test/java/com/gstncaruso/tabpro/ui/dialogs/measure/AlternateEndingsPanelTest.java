@@ -2,10 +2,16 @@ package com.gstncaruso.tabpro.ui.dialogs.measure;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class AlternateEndingsPanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new AlternateEndingsPanel(List.of()));
+    }
 
     @Test
     void startsWithNoneCheckedWhenThereAreNoEndings() {

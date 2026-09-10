@@ -34,10 +34,13 @@ public final class AsciiExportPanel extends JPanel {
         preview.setEditable(false);
         preview.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
+        JLabel columnsLabel = new JLabel("Columnas por línea");
+        columnsLabel.setLabelFor(columnsPerLine);
+
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, DialogStyle.GAP_S));
         toolbar.add(printButton);
         toolbar.add(exportButton);
-        toolbar.add(new JLabel("Columnas por línea"));
+        toolbar.add(columnsLabel);
         toolbar.add(columnsPerLine);
 
         add(toolbar, BorderLayout.NORTH);

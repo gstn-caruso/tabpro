@@ -3,9 +3,15 @@ package com.gstncaruso.tabpro.ui.dialogs.info;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import org.junit.jupiter.api.Test;
 
 class ScoreInfoPanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new ScoreInfoPanel(ScoreInfo.empty()));
+    }
 
     @Test
     void startsWithTheGivenInfo() {

@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.editing.Selection;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.tab.FretContextMenu;
 import com.gstncaruso.tabpro.ui.tab.FretDigits;
@@ -16,6 +17,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
 import java.util.function.Consumer;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.Scrollable;
@@ -25,7 +28,7 @@ import javax.swing.Scrollable;
  * {@link Zoom} y las {@link VisibleTracks} elegidas, y traduce los clics a movimientos del
  * cursor o, arrastrando, a una seleccion multiple.
  */
-public final class ScoreCanvas extends JComponent implements Scrollable {
+public final class ScoreCanvas extends JComponent implements Scrollable, AccessibleControl {
 
     private static final int FALLBACK_WIDTH = 900;
 
@@ -59,6 +62,8 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
         setOpaque(true);
         setFocusable(true);
         setBackground(ScoreColors.BACKGROUND);
+        setToolTipText("Partitura");
+        getAccessibleContext().setAccessibleName("Partitura");
         editor.addListener(this::editorChanged);
         new KeyboardEditing(editor, new FretDigits(System::currentTimeMillis)).install(this);
 
@@ -97,6 +102,19 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
         };
         addMouseListener(mouse);
         addMouseMotionListener(mouse);
+    }
+
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        if (accessibleContext == null) {
+            accessibleContext = new AccessibleJComponent() {
+                @Override
+                public AccessibleRole getAccessibleRole() {
+                    return AccessibleRole.CANVAS;
+                }
+            };
+        }
+        return accessibleContext;
     }
 
     // ---- Modo de vista y zoom: la API que usa el menu Ver de la ventana principal ----

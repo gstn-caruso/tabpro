@@ -3,9 +3,15 @@ package com.gstncaruso.tabpro.ui.dialogs.paste;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.editing.PasteOptions;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import org.junit.jupiter.api.Test;
 
 class PastePanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new PastePanel());
+    }
 
     @Test
     void defaultsToInsertingOnce() {

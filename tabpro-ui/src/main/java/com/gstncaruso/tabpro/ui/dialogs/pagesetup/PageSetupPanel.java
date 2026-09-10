@@ -117,6 +117,8 @@ public final class PageSetupPanel extends FormPanel {
             setOpaque(false);
             shown.setOpaque(false);
             shown.setPreferredSize(new Dimension(LABEL_WIDTH, shown.getPreferredSize().height));
+            text.getAccessibleContext().setAccessibleName("Texto de " + element.label());
+            text.setToolTipText("Texto de " + element.label());
             add(shown, BorderLayout.WEST);
             add(text, BorderLayout.CENTER);
         }

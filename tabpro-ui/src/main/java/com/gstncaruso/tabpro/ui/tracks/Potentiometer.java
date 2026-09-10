@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
+import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -12,6 +13,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 import javax.swing.JComponent;
 
 /**
@@ -19,7 +22,7 @@ import javax.swing.JComponent;
  * Guitar Pro para la mesa de mezcla. Barre 270 grados: abajo a la izquierda es el minimo, arriba
  * es la mitad, abajo a la derecha es el maximo.
  */
-public final class Potentiometer extends JComponent {
+public final class Potentiometer extends JComponent implements AccessibleControl {
 
     private static final double START_ANGLE = 225.0;
     private static final double SWEEP_DEGREES = -270.0;
@@ -68,6 +71,19 @@ public final class Potentiometer extends JComponent {
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(20, 20);
+    }
+
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        if (accessibleContext == null) {
+            accessibleContext = new AccessibleJComponent() {
+                @Override
+                public AccessibleRole getAccessibleRole() {
+                    return AccessibleRole.SLIDER;
+                }
+            };
+        }
+        return accessibleContext;
     }
 
     @Override

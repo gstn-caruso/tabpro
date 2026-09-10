@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
@@ -82,6 +83,13 @@ class MenuBarTest {
 
         assertTrue(conAcelerador > 0, "ningun comando tiene acelerador: no habria nada que verificar");
         assertEquals(List.of(), sueltos, "hay atajos que no cuelgan de ningun menu");
+    }
+
+    @Test
+    void ningunItemDeMenuQuedaSinNombreNiTooltipAccesible() {
+        JMenuBar bar = new MenuBar(commands).build();
+
+        AccessibilityAssertions.assertNoViolations(bar);
     }
 
     private void recolectar(JMenu menu, Set<Command> encontrados) {

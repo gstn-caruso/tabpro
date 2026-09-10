@@ -11,12 +11,20 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class BeatViewsTest {
+
+    @Test
+    void ningunControlDelDiapasonNiDelTecladoQuedaSinNombreNiTooltipAccesible() {
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+
+        AccessibilityAssertions.assertNoViolations(views);
+    }
 
     @Test
     void showsTheBeatUnderTheCursorWhileNothingSounds() {

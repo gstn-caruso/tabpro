@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.percussion;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,11 @@ import org.junit.jupiter.api.Test;
 class PercussionStaffPickerTest {
 
     private static final int WIDTH = 200;
+
+    @Test
+    void tieneNombreYTooltipAccesibles() {
+        AccessibilityAssertions.assertNoViolations(new PercussionStaffPicker());
+    }
     private static final int HEIGHT = PercussionStaffPicker.PREFERRED_HEIGHT;
 
     @Test

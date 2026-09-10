@@ -27,6 +27,14 @@ public final class TunerDialog {
     }
 
     public static void show(Component parent, Editor editor, Player player, Ports.Microphone microphone) {
+        Tabs tabs = buildTabs(editor, player, microphone);
+        DialogShell.show(parent, "Afinador", tabs.pane());
+        tabs.midiTuner().stopAllLoops();
+        microphone.stopListening();
+    }
+
+    /** Arma las dos solapas del afinador sin abrir ningun dialogo, para poder probarlas. */
+    static Tabs buildTabs(Editor editor, Player player, Ports.Microphone microphone) {
         Track track = editor.currentTrack();
         Tuning tuning = track.tuning();
 
@@ -39,6 +47,8 @@ public final class TunerDialog {
         }
         stringChooser.setRenderer((list, value, index, isSelected, hasFocus) -> new javax.swing.JLabel(
                 value == null ? "" : "Cuerda " + value + " (" + PitchName.of(tuning.pitchOfString(value)).textWithOctave() + ")"));
+        stringChooser.getAccessibleContext().setAccessibleName("Cuerda a afinar");
+        stringChooser.setToolTipText("Cuerda a afinar");
         stringChooser.addActionListener(event -> digitalTuner.setTarget(tuning.pitchOfString((Integer) stringChooser.getSelectedItem())));
 
         JPanel digitalTab = new JPanel(new BorderLayout(0, DialogStyle.GAP_S));
@@ -54,10 +64,10 @@ public final class TunerDialog {
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Afinador MIDI", midiTab);
         tabs.addTab("Afinador digital", digitalTab);
+        return new Tabs(tabs, midiTuner);
+    }
 
-        DialogShell.show(parent, "Afinador", tabs);
-        midiTuner.stopAllLoops();
-        microphone.stopListening();
+    record Tabs(JTabbedPane pane, MidiTunerPanel midiTuner) {
     }
 
     /**

@@ -38,12 +38,17 @@ public final class AsciiImportPanel extends JPanel {
         intervalsChoice.setEnabled(fixedRhythm().isEmpty());
         rhythmChoice.addActionListener(event -> intervalsChoice.setEnabled(fixedRhythm().isEmpty()));
 
+        JLabel rhythmLabel = new JLabel("Importar con");
+        rhythmLabel.setLabelFor(rhythmChoice);
+        JLabel intervalsLabel = new JLabel("Intervalos por negra");
+        intervalsLabel.setLabelFor(intervalsChoice);
+
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, DialogStyle.GAP_S));
         toolbar.add(openButton);
         toolbar.add(printButton);
-        toolbar.add(new JLabel("Importar con"));
+        toolbar.add(rhythmLabel);
         toolbar.add(rhythmChoice);
-        toolbar.add(new JLabel("Intervalos por negra"));
+        toolbar.add(intervalsLabel);
         toolbar.add(intervalsChoice);
 
         add(toolbar, BorderLayout.NORTH);

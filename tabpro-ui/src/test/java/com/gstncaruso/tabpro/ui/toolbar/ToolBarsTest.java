@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import java.lang.reflect.InvocationHandler;
@@ -55,6 +56,11 @@ class ToolBarsTest {
         assertFalse(toolBars.isDocumentToolBarVisible());
         assertFalse(toolBars.isStructureToolBarVisible());
         assertTrue(toolBars.isNotationToolBarVisible());
+    }
+
+    @Test
+    void ningunBotonQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(toolBars.component());
     }
 
     @SuppressWarnings("unchecked")
