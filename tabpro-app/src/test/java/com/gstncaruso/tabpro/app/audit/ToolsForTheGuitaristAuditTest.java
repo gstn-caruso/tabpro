@@ -23,7 +23,7 @@ class ToolsForTheGuitaristAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Escalas…");
-            assertNotNull(item, "no encontre 'Escalas…' en el menu real");
+            assertNotNull(item, "could not find 'Escalas…' in the real menu");
 
             withDialog(item::doClick, dialog -> dialog.dispose());
         } finally {
@@ -37,7 +37,7 @@ class ToolsForTheGuitaristAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Afinador…");
-            assertNotNull(item, "no encontre 'Afinador…' en el menu real");
+            assertNotNull(item, "could not find 'Afinador…' in the real menu");
 
             withDialog(item::doClick, dialog -> dialog.dispose());
         } finally {
