@@ -8,6 +8,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.accessibility.AccessibleContext;
@@ -34,6 +36,7 @@ public final class BendGridPanel extends JComponent implements AccessibleControl
     private final BendCurveEditor editor;
     private int caretPosition;
     private int caretQuarterTones;
+    private boolean showsFocusRing;
 
     public BendGridPanel(BendCurveEditor editor) {
         this.editor = editor;
@@ -54,6 +57,23 @@ public final class BendGridPanel extends JComponent implements AccessibleControl
             }
         });
         installKeyboardShortcuts();
+        installFocusRing();
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
     }
 
     /** Donde esta parado el caret de teclado, en la misma escala de posicion que un clic. */
@@ -142,6 +162,21 @@ public final class BendGridPanel extends JComponent implements AccessibleControl
                 g.drawOval(x - 5 - point.vibrato(), y - 5 - point.vibrato(), (5 + point.vibrato()) * 2, (5 + point.vibrato()) * 2);
             }
         }
+        if (showsFocusRing) {
+            paintCaretRing(g);
+        }
+    }
+
+    private void paintCaretRing(Graphics2D g) {
+        int x = xOf(caretPosition);
+        int y = yOf(caretQuarterTones);
+        g.setColor(focusRingColor());
+        g.drawOval(x - 6, y - 6, 12, 12);
+    }
+
+    private Color focusRingColor() {
+        Color base = UIManager.getColor("Component.focusColor");
+        return base != null ? base : curveColor();
     }
 
     private int xOf(int position) {
