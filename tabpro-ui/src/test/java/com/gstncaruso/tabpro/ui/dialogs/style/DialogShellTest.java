@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class DialogShellTest {
 
     @Test
-    void unContenidoQueYaEntraEnElAltoDisponibleNoSeEnvuelveEnNingunScroll() {
+    void contentThatAlreadyFitsTheAvailableHeightIsNotWrappedInAnyScroll() {
         JPanel content = new JPanel();
         content.setPreferredSize(new Dimension(300, 200));
 
@@ -24,7 +24,7 @@ class DialogShellTest {
     }
 
     @Test
-    void unContenidoMasAltoQueElDisponibleQuedaEnvueltoEnUnScrollConEseTope() {
+    void contentTallerThanAvailableIsWrappedInAScrollWithThatCap() {
         JPanel content = new JPanel();
         content.setPreferredSize(new Dimension(300, 5000));
 
@@ -37,9 +37,9 @@ class DialogShellTest {
     }
 
     @Test
-    void elAltoDisponibleParaElContenidoDescuentaLaBarraDeBotonesYElMargenDeLaVentana() {
-        int alto = DialogShell.availableContentHeight(1024, 60);
+    void theAvailableContentHeightSubtractsTheButtonBarAndTheWindowMargin() {
+        int availableHeight = DialogShell.availableContentHeight(1024, 60);
 
-        assertEquals(1024 - 60 - DialogShell.WINDOW_CHROME_HEIGHT, alto);
+        assertEquals(1024 - 60 - DialogShell.WINDOW_CHROME_HEIGHT, availableHeight);
     }
 }

@@ -28,7 +28,7 @@ class DialogShellFitsScreenTest {
     static final String SWING_LOCK = "tabpro-audit-swing";
 
     @Test
-    void unContenidoMasAltoQueLaPantallaNoHaceQueElDialogoLaSupereYAceptarSigueVisible() throws Exception {
+    void contentTallerThanTheScreenDoesNotMakeTheDialogExceedItAndAcceptStaysVisible() throws Exception {
         JFrame owner = new JFrame();
         JPanel anchor = anchoredTo(owner);
         JPanel tallContent = new JPanel();
@@ -47,7 +47,7 @@ class DialogShellFitsScreenTest {
     }
 
     @Test
-    void unContenidoMasAltoQueLaPantallaNoHaceQueUnaVentanaDeSoloCerrarLaSupereYCerrarSigueVisible() throws Exception {
+    void contentTallerThanTheScreenDoesNotMakeACloseOnlyWindowExceedItAndCloseStaysVisible() throws Exception {
         JFrame owner = new JFrame();
         JPanel anchor = anchoredTo(owner);
         JPanel tallContent = new JPanel();
@@ -66,7 +66,7 @@ class DialogShellFitsScreenTest {
     }
 
     @Test
-    void unosBotonesExtraQuedanVisiblesFueraDelScrollJuntoALaBarraDeAceptarYCancelar() throws Exception {
+    void extraButtonsStayVisibleOutsideTheScrollNextToTheAcceptAndCancelBar() throws Exception {
         JFrame owner = new JFrame();
         JPanel anchor = anchoredTo(owner);
         JPanel tallContent = new JPanel();
