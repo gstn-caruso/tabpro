@@ -353,7 +353,7 @@ class ScoreLayoutTest {
     void aTrackWithFewerMeasuresSimplyHasNoneThere() {
         Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
         Track shortTrack = trackWith(measure);
-        Track longTrack = new Track("Larga", shortTrack.tuning(), shortTrack.channel(), List.of(measure, measure));
+        Track longTrack = new Track("Long", shortTrack.tuning(), shortTrack.channel(), List.of(measure, measure));
         Score score = new Score("", 120, List.of(shortTrack, longTrack));
 
         ScoreLayout layout = ScoreLayout.of(score, WIDE);
