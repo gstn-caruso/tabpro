@@ -89,16 +89,13 @@ class WriteAScoreAuditTest {
     }
 
     /**
-     * HALLAZGO (ver docs/auditoria-uso-real.md, "Write a Score"): el manual (linea 780 del
-     * texto extraido) pide que Tab alterne tablatura/pentagrama sin mover el cursor, y
-     * {@code KeyboardEditing} tiene el binding -esta comprobado en su propio test unitario-,
-     * pero Tab tambien es de fabrica una tecla de foco (FORWARD_TRAVERSAL_KEYS) para cualquier
-     * JComponent, y {@code ScoreCanvas} nunca llama a setFocusTraversalKeysEnabled(false). En la
-     * ventana real, AWT se queda con la tecla para mover el foco antes de que
-     * KeyboardEditing la vea: este test documenta que, hoy, Tab NO cambia de notacion.
+     * El manual (linea 780 del texto extraido) pide que Tab alterne tablatura/pentagrama sin
+     * mover el cursor: {@code KeyboardEditing} tiene el binding, y {@code ScoreCanvas} desactiva
+     * sus teclas de foco (FORWARD_TRAVERSAL_KEYS) para que Tab, despachado de verdad sobre el
+     * lienzo real, llegue hasta el.
      */
     @Test
-    void tabCrudoNoCambiaDeNotacionPorQuedarseConElFocoAntes() throws Exception {
+    void tabCrudoCambiaDeNotacionSinMoverElCursor() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -107,11 +104,16 @@ class WriteAScoreAuditTest {
                     .get(KeyStroke.getKeyStroke("TAB")), "KeyboardEditing tiene que declarar el binding de Tab");
 
             var notacionInicial = editor.cursor().notation();
+            int compasInicial = editor.cursor().measure();
+            int beatInicial = editor.cursor().beat();
+            int cuerdaInicial = editor.cursor().string();
             pressKey(canvas, KeyStroke.getKeyStroke("TAB"));
 
-            assertEquals(notacionInicial, editor.cursor().notation(),
-                    "HALLAZGO: Tab no llega a KeyboardEditing porque ScoreCanvas no desactiva "
-                            + "sus teclas de foco (ver informe)");
+            assertNotEquals(notacionInicial, editor.cursor().notation(),
+                    "Tab, despachado de verdad sobre el lienzo, tiene que alternar tablatura/pentagrama");
+            assertEquals(compasInicial, editor.cursor().measure(), "Tab no tiene que mover el cursor de compas");
+            assertEquals(beatInicial, editor.cursor().beat(), "Tab no tiene que mover el cursor de beat");
+            assertEquals(cuerdaInicial, editor.cursor().string(), "Tab no tiene que mover el cursor de cuerda");
         } finally {
             AuditSupport.dispose(frame);
         }
