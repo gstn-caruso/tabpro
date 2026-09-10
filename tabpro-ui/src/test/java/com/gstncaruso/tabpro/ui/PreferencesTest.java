@@ -124,4 +124,11 @@ class PreferencesTest {
     void highContrastStartsOff() {
         assertFalse(preferences.highContrastEnabled());
     }
+
+    @Test
+    void remembersThatHighContrastIsOn() {
+        preferences.setHighContrastEnabled(true);
+
+        assertTrue(preferences.highContrastEnabled());
+    }
 }

@@ -94,6 +94,10 @@ public final class Preferences {
         return stored.getBoolean(HIGH_CONTRAST_ENABLED, false);
     }
 
+    public void setHighContrastEnabled(boolean enabled) {
+        stored.putBoolean(HIGH_CONTRAST_ENABLED, enabled);
+    }
+
     /** Preferencias [F12], "Figura por defecto al insertar": la usa {@code Editor.insertBeat}. */
     public NoteValue defaultNoteValue() {
         return NoteValue.valueOf(stored.get(DEFAULT_NOTE_VALUE, NoteValue.QUARTER.name()));
