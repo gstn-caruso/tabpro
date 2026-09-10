@@ -39,7 +39,7 @@ public final class MeasureGrid extends JComponent {
             ScoreColors.PLAYING_MEASURE.getRed(),
             ScoreColors.PLAYING_MEASURE.getGreen(),
             ScoreColors.PLAYING_MEASURE.getBlue(),
-            60);
+            225);
 
     private final Editor editor;
     private OptionalInt playingMeasure = OptionalInt.empty();
