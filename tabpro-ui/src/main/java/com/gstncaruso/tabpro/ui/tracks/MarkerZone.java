@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -169,8 +170,23 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     /** Como en Guitar Pro 5: el nombre del marcador se lee en rojo sobre la cabecera de la grilla. */
     private void paintSegment(Graphics2D g, MarkerSegments.Segment segment) {
         int x = segment.fromMeasure() * MeasureGrid.CELL_WIDTH;
+        int width = (segment.toMeasureExclusive() - segment.fromMeasure()) * MeasureGrid.CELL_WIDTH;
         g.setColor(ScoreColors.WARNING);
-        g.drawString(segment.marker().name(), x + 3, HEIGHT - 4);
+        g.drawString(truncated(segment.marker().name(), width - 3, g.getFontMetrics()), x + 3, HEIGHT - 4);
+    }
+
+    /** Corta el nombre del marcador con puntos suspensivos si no entra en el ancho del segmento. */
+    static String truncated(String name, int maxWidth, FontMetrics metrics) {
+        if (metrics.stringWidth(name) <= maxWidth) {
+            return name;
+        }
+        for (int length = name.length() - 1; length > 0; length--) {
+            String candidate = name.substring(0, length) + "…";
+            if (metrics.stringWidth(candidate) <= maxWidth) {
+                return candidate;
+            }
+        }
+        return "…";
     }
 
     private void editMarkerAt(int measureIndex) {

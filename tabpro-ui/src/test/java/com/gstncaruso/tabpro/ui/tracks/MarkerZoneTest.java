@@ -22,6 +22,9 @@ class MarkerZoneTest {
     @Test
     void paintsTheMarkerNameInWarningRedInsteadOfItsOwnColor() {
         Editor editor = new Editor(Score.blank());
+        for (int i = 0; i < 5; i++) {
+            editor.insertMeasure();
+        }
         editor.setMarker(Marker.named("Estribillo"));
         MarkerZone zone = new MarkerZone(editor);
         zone.setSize(zone.getPreferredSize());
