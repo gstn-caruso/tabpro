@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
@@ -13,15 +14,15 @@ public final class StrokePanel extends FormPanel {
 
     private final JComboBox<StrokeDirection> direction = new JComboBox<>(StrokeDirection.values());
     private final JComboBox<NoteValue> speed = new JComboBox<>(NoteValue.values());
-    private final JCheckBox rasgueado = new JCheckBox("Rasgueado");
+    private final JCheckBox rasgueado = new JCheckBox(Texts.get("edit_dialogs.StrokePanel.rasgueado"));
 
     public StrokePanel(Stroke initial) {
         direction.setRenderer((list, value, index, isSelected, hasFocus) ->
                 new javax.swing.JLabel(value == null ? "" : Labels.of(value)));
         speed.setRenderer(new LabeledListCellRenderer());
 
-        addRow("Dirección", direction);
-        addRow("Velocidad", speed);
+        addRow(Texts.get("edit_dialogs.StrokePanel.direction"), direction);
+        addRow(Texts.get("edit_dialogs.shared.speed"), speed);
         addFullWidthRow(rasgueado);
 
         apply(initial);
