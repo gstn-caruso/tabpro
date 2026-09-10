@@ -12,41 +12,41 @@ import org.junit.jupiter.api.Test;
 class ChordNamerTest {
 
     @Test
-    void reconoceElAcordeAbiertoDeDoMayor() {
-        ChordDiagram diagrama = ChordDiagram.named("?", List.of(0, 1, 0, 2, 3, -1));
+    void recognizesTheOpenCMajorChord() {
+        ChordDiagram diagram = ChordDiagram.named("?", List.of(0, 1, 0, 2, 3, -1));
 
-        List<Chord> nombres = ChordNamer.namesFor(diagrama, Tuning.standard());
+        List<Chord> names = ChordNamer.namesFor(diagram, Tuning.standard());
 
-        assertFalse(nombres.isEmpty());
-        assertEquals("C", nombres.get(0).name());
+        assertFalse(names.isEmpty());
+        assertEquals("C", names.get(0).name());
     }
 
     @Test
-    void reconoceElAcordeAbiertoDeLaMenor() {
-        ChordDiagram diagrama = ChordDiagram.named("?", List.of(0, 1, 2, 2, 0, -1));
+    void recognizesTheOpenAMinorChord() {
+        ChordDiagram diagram = ChordDiagram.named("?", List.of(0, 1, 2, 2, 0, -1));
 
-        List<Chord> nombres = ChordNamer.namesFor(diagrama, Tuning.standard());
+        List<Chord> names = ChordNamer.namesFor(diagram, Tuning.standard());
 
-        assertEquals("Am", nombres.get(0).name());
+        assertEquals("Am", names.get(0).name());
     }
 
     @Test
-    void unaInversionSeNombraConElBajoIndicado() {
-        ChordDiagram doConMiEnElBajo = ChordDiagram.named("?", List.of(0, 1, 0, 2, -1, -1));
+    void anInversionIsNamedWithTheIndicatedBass() {
+        ChordDiagram cWithEInTheBass = ChordDiagram.named("?", List.of(0, 1, 0, 2, -1, -1));
 
-        List<Chord> nombres = ChordNamer.namesFor(doConMiEnElBajo, Tuning.standard());
+        List<Chord> names = ChordNamer.namesFor(cWithEInTheBass, Tuning.standard());
 
-        assertTrue(nombres.stream().anyMatch(c -> c.name().equals("C/E")));
+        assertTrue(names.stream().anyMatch(c -> c.name().equals("C/E")));
     }
 
     @Test
-    void unDiagramaSimetricoTieneVariosNombresAlternativos() {
+    void aSymmetricDiagramHasSeveralAlternativeNames() {
         Chord base = Chord.of(PitchClass.of("Do"), ChordType.DIMINISHED_SEVENTH);
-        ChordDiagram diagrama =
+        ChordDiagram diagram =
                 ChordDiagramGenerator.generate(base, Tuning.standard()).stream().findFirst().orElseThrow();
 
-        List<Chord> nombres = ChordNamer.namesFor(diagrama, Tuning.standard());
+        List<Chord> names = ChordNamer.namesFor(diagram, Tuning.standard());
 
-        assertTrue(nombres.size() >= 4, "un disminuido 7 tiene cuatro nombres igual de validos");
+        assertTrue(names.size() >= 4, "un disminuido 7 tiene cuatro nombres igual de validos");
     }
 }
