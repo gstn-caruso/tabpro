@@ -26,7 +26,7 @@ class TuningEditorPanelTest {
     }
 
     @Test
-    void elComboDeLaBibliotecaMuestraElNombreYElResumenDeCuerdasEnVezDelRecordCrudo() {
+    void theLibraryComboShowsTheNameAndStringSummaryInsteadOfTheRawRecord() {
         TuningEditorPanel panel = new TuningEditorPanel(Tuning.standard(), 25, player);
 
         @SuppressWarnings("unchecked")
