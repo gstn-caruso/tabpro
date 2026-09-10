@@ -224,6 +224,40 @@ final class AuditSupport {
         return null;
     }
 
+    /** El contenido real de una solapa de un JTabbedPane, por su titulo. */
+    static Container tabContent(Container root, String tabTitle) {
+        javax.swing.JTabbedPane tabs = findComponent(root, javax.swing.JTabbedPane.class);
+        if (tabs == null) {
+            return null;
+        }
+        int index = tabs.indexOfTab(tabTitle);
+        return index < 0 ? null : (Container) tabs.getComponentAt(index);
+    }
+
+    /** Todos los componentes de ese tipo, en el orden en que aparecen en el arbol real. */
+    static <T extends Component> List<T> findComponents(Container root, Class<T> type) {
+        List<T> found = new ArrayList<>();
+        collectComponents(root, type, found);
+        return found;
+    }
+
+    /**
+     * OJO: no agregar el hijo aca Y llamarse de nuevo sobre el si es Container -todo componente
+     * Swing lo es-, porque el chequeo de "es el tipo buscado" ya esta arriba, al entrar a la
+     * llamada recursiva: hacer las dos cosas cuenta cada componente dos veces.
+     */
+    @SuppressWarnings("unchecked")
+    private static <T extends Component> void collectComponents(Container root, Class<T> type, List<T> into) {
+        if (type.isInstance(root)) {
+            into.add((T) root);
+        }
+        for (Component child : root.getComponents()) {
+            if (child instanceof Container container) {
+                collectComponents(container, type, into);
+            }
+        }
+    }
+
     static javax.swing.JRadioButton findRadioButton(Container root, String text) {
         if (root instanceof javax.swing.JRadioButton button && text.equals(button.getText())) {
             return button;
