@@ -34,6 +34,20 @@ public final class DigitalTunerPanel extends JComponent implements AccessibleCon
         setToolTipText("Afinador digital");
         getAccessibleContext().setAccessibleName("Afinador digital");
         installFocusRing();
+        updateAccessibleDescription();
+    }
+
+    private void updateAccessibleDescription() {
+        getAccessibleContext().setAccessibleDescription(
+                PitchName.of(target).textWithOctave() + ", " + deviationDescription());
+    }
+
+    private String deviationDescription() {
+        if (deviationCents == 0) {
+            return "afinado";
+        }
+        String direction = deviationCents > 0 ? "agudo" : "grave";
+        return Math.abs(deviationCents) + " centésimas " + direction;
     }
 
     private void installFocusRing() {
@@ -67,6 +81,7 @@ public final class DigitalTunerPanel extends JComponent implements AccessibleCon
 
     public void setTarget(Pitch target) {
         this.target = target;
+        updateAccessibleDescription();
         repaint();
     }
 
@@ -77,6 +92,7 @@ public final class DigitalTunerPanel extends JComponent implements AccessibleCon
     /** Cuantas centesimas de semitono esta desafinado: negativo grave, positivo agudo. */
     public void setDeviationCents(int cents) {
         this.deviationCents = Math.clamp(cents, -MAX_CENTS, MAX_CENTS);
+        updateAccessibleDescription();
         repaint();
     }
 

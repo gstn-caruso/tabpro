@@ -103,4 +103,13 @@ class DigitalTunerPanelTest {
         }
         return false;
     }
+
+    @Test
+    void laDescripcionAccesibleDiceCuantoSeAparta() {
+        DigitalTunerPanel panel = new DigitalTunerPanel(new Pitch(64));
+
+        panel.setDeviationCents(-12);
+
+        assertEquals("E4, 12 centésimas grave", panel.getAccessibleContext().getAccessibleDescription());
+    }
 }
