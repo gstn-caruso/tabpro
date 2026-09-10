@@ -18,10 +18,10 @@ import org.junit.jupiter.api.Test;
 
 class BrowserPlaybackTest {
 
-    private final Path primero = Path.of("/tmp/primero.tabpro");
-    private final Path segundo = Path.of("/tmp/segundo.tabpro");
-    private final Score scoreDelPrimero = new Score("primero", 100, List.of(Track.standardGuitar("Guitarra")));
-    private final Score scoreDelSegundo = new Score("segundo", 110, List.of(Track.standardGuitar("Guitarra")));
+    private final Path first = Path.of("/tmp/primero.tabpro");
+    private final Path second = Path.of("/tmp/segundo.tabpro");
+    private final Score firstScore = new Score("primero", 100, List.of(Track.standardGuitar("Guitarra")));
+    private final Score secondScore = new Score("segundo", 110, List.of(Track.standardGuitar("Guitarra")));
     private final FakeScoreFiles files = new FakeScoreFiles();
     private final FakeSound sound = new FakeSound();
     private final FakeListener listener = new FakeListener();
@@ -29,25 +29,25 @@ class BrowserPlaybackTest {
 
     @BeforeEach
     void setUp() {
-        files.scores.put(primero, scoreDelPrimero);
-        files.scores.put(segundo, scoreDelSegundo);
+        files.scores.put(first, firstScore);
+        files.scores.put(second, secondScore);
         playback = new BrowserPlayback(files, sound, listener);
     }
 
     @Test
     void listeningToTheFirstFileEndsUpPlayingTheSecondOne() {
-        playback.play(List.of(primero, segundo), primero, 4);
-        assertEquals(scoreDelPrimero, sound.lastScore);
+        playback.play(List.of(first, second), first, 4);
+        assertEquals(firstScore, sound.lastScore);
 
         sound.finishCurrentFile();
 
-        assertEquals(scoreDelSegundo, sound.lastScore);
+        assertEquals(secondScore, sound.lastScore);
         assertEquals(2, sound.playCalls);
     }
 
     @Test
     void theBarsLimitReachesTheSoundOnEveryFileOfTheChain() {
-        playback.play(List.of(primero, segundo), primero, 4);
+        playback.play(List.of(first, second), first, 4);
         assertEquals(4, sound.lastBars);
 
         sound.finishCurrentFile();
@@ -57,7 +57,7 @@ class BrowserPlaybackTest {
 
     @Test
     void theLastFileInTheListJustStopsWhenItFinishes() {
-        playback.play(List.of(primero, segundo), segundo, 4);
+        playback.play(List.of(first, second), second, 4);
 
         sound.finishCurrentFile();
 
@@ -67,7 +67,7 @@ class BrowserPlaybackTest {
 
     @Test
     void stoppingByHandCancelsTheJumpToTheNextFile() {
-        playback.play(List.of(primero, segundo), primero, 4);
+        playback.play(List.of(first, second), first, 4);
 
         playback.stop();
         sound.finishCurrentFile();
@@ -78,18 +78,18 @@ class BrowserPlaybackTest {
 
     @Test
     void aScoreShorterThanTheLimitStillJumpsWhenItFinishes() {
-        playback.play(List.of(primero, segundo), primero, 400);
+        playback.play(List.of(first, second), first, 400);
 
         sound.finishCurrentFile();
 
-        assertEquals(scoreDelSegundo, sound.lastScore);
+        assertEquals(secondScore, sound.lastScore);
     }
 
     @Test
     void aFileThatFailsToLoadEndsTheChainInsteadOfBreaking() {
-        Path roto = Path.of("/tmp/roto.tabpro");
+        Path broken = Path.of("/tmp/roto.tabpro");
 
-        playback.play(List.of(roto, segundo), roto, 4);
+        playback.play(List.of(broken, second), broken, 4);
 
         assertEquals(0, sound.playCalls);
         assertTrue(listener.chainEnded);
@@ -97,19 +97,19 @@ class BrowserPlaybackTest {
 
     @Test
     void aFileThatFailsToLoadTellsTheListenerWhichPathFailed() {
-        Path roto = Path.of("/tmp/roto.tabpro");
+        Path broken = Path.of("/tmp/roto.tabpro");
 
-        playback.play(List.of(roto, segundo), roto, 4);
+        playback.play(List.of(broken, second), broken, 4);
 
-        assertEquals(List.of(roto), listener.loadFailures);
+        assertEquals(List.of(broken), listener.loadFailures);
     }
 
     @Test
     void everyJumpTellsTheListenerWhichFileIsPlayingNow() {
-        playback.play(List.of(primero, segundo), primero, 4);
+        playback.play(List.of(first, second), first, 4);
         sound.finishCurrentFile();
 
-        assertEquals(List.of(primero, segundo), listener.advancedTo);
+        assertEquals(List.of(first, second), listener.advancedTo);
     }
 
     private static final class FakeScoreFiles implements ScoreFiles {

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class ScoreBrowserPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void noControlIsLeftWithoutAnAccessibleNameOrTooltip() {
         ScoreBrowserPanel panel = new ScoreBrowserPanel(new NoOpScoreFiles(), path -> { }, new NoOpSound(), () -> { });
 
         AccessibilityAssertions.assertNoViolations(panel);
