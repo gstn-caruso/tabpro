@@ -25,6 +25,9 @@ public record Channel(
     public static final int PORT_COUNT = 4;
     public static final int CHANNELS_PER_PORT = 16;
 
+    /** Donde arranca el barrido de "Forzar canales 11 a 16" del manual. */
+    private static final int FORCED_FIRST_CHANNEL = 11;
+
     public Channel {
         requireInRange(program, "program");
         requireInRange(volume, "volume");
@@ -78,7 +81,17 @@ public record Channel(
      * configurado llegara a sonar de verdad.
      */
     public Channel withNextFreeChannelPairAfter(Set<Integer> channelsInUse) {
-        for (int candidate = 1; candidate <= CHANNELS_PER_PORT; candidate++) {
+        return withNextFreeChannelPairAfter(channelsInUse, false);
+    }
+
+    /**
+     * Como {@link #withNextFreeChannelPairAfter(Set)}, pero si {@code forceChannels11to16} viene
+     * de la casilla "Forzar canales 11 a 16" del manual, el barrido arranca en el 11 en vez del 1:
+     * la pista y sus efectos quedan en la mitad alta del puerto, dejando la baja para otras pistas.
+     */
+    public Channel withNextFreeChannelPairAfter(Set<Integer> channelsInUse, boolean forceChannels11to16) {
+        int firstChannel = forceChannels11to16 ? FORCED_FIRST_CHANNEL : 1;
+        for (int candidate = firstChannel; candidate <= CHANNELS_PER_PORT; candidate++) {
             if (candidate == PERCUSSION_CHANNEL || channelsInUse.contains(candidate)) {
                 continue;
             }
@@ -88,17 +101,17 @@ public record Channel(
             }
         }
         // no quedo ningun par libre: comparte consigo misma antes que fallar.
-        int onlyFree = firstFreeChannel(channelsInUse);
+        int onlyFree = firstFreeChannel(channelsInUse, firstChannel);
         return withNumber(onlyFree).withEffectChannel(onlyFree);
     }
 
-    private static int firstFreeChannel(Set<Integer> channelsInUse) {
-        for (int candidate = 1; candidate <= CHANNELS_PER_PORT; candidate++) {
+    private static int firstFreeChannel(Set<Integer> channelsInUse, int firstChannel) {
+        for (int candidate = firstChannel; candidate <= CHANNELS_PER_PORT; candidate++) {
             if (candidate != PERCUSSION_CHANNEL && !channelsInUse.contains(candidate)) {
                 return candidate;
             }
         }
-        return 1;
+        return firstChannel;
     }
 
     /**
