@@ -192,4 +192,13 @@ class ScoreTest {
 
         assertTrue(score.measureOfMarkerInEffectAt(0).isEmpty());
     }
+
+    @Test
+    void theMarkerInEffectIsTheOneOnTheSameMeasure() {
+        Score score = Score.blank().withAttributesInEveryTrackAt(
+                0, com.gstncaruso.tabpro.core.model.bars.MeasureAttributes.plain()
+                        .withMarker(com.gstncaruso.tabpro.core.model.bars.Marker.named("Intro")));
+
+        assertEquals(0, score.measureOfMarkerInEffectAt(0).getAsInt());
+    }
 }

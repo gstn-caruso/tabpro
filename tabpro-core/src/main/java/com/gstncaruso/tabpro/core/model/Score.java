@@ -61,7 +61,9 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
     }
 
     public java.util.OptionalInt measureOfMarkerInEffectAt(int measureIndex) {
-        return java.util.OptionalInt.empty();
+        return attributesOf(measureIndex).marker().isPresent()
+                ? java.util.OptionalInt.of(measureIndex)
+                : java.util.OptionalInt.empty();
     }
 
     public TimeSignature timeSignatureOf(int measureIndex) {
