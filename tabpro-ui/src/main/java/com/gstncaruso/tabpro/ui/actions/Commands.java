@@ -172,10 +172,14 @@ public final class Commands {
         define("track.addGuitar", "Agregar una guitarra", () -> editor.addTrack(Track.standardGuitar("Guitarra")));
         define("track.addBass", "Agregar un bajo", () -> editor.addTrack(Track.standardBass("Bajo")));
         define("track.addPercussion", "Agregar percusión", () -> editor.addTrack(Track.percussion("Batería")));
-        define("track.delete", "Borrar la pista", editor::removeCurrentTrack).withAccelerator("ctrl shift DELETE");
-        define("track.moveUp", "Subir la pista", () -> editor.moveCurrentTrack(-1)).withAccelerator("ctrl alt UP");
-        define("track.moveDown", "Bajar la pista", () -> editor.moveCurrentTrack(1)).withAccelerator("ctrl alt DOWN");
-        define("track.properties", "Propiedades de la pista…", dialogs::trackProperties).withAccelerator("F6");
+        define("track.delete", "Borrar la pista", editor::removeCurrentTrack)
+                .withAccelerator("ctrl shift DELETE").withIcon(Icons.trackDelete());
+        define("track.moveUp", "Subir la pista", () -> editor.moveCurrentTrack(-1))
+                .withAccelerator("ctrl alt UP").withIcon(Icons.trackMoveUp());
+        define("track.moveDown", "Bajar la pista", () -> editor.moveCurrentTrack(1))
+                .withAccelerator("ctrl alt DOWN").withIcon(Icons.trackMoveDown());
+        define("track.properties", "Propiedades de la pista…", dialogs::trackProperties)
+                .withAccelerator("F6").withIcon(Icons.trackProperties());
         define("track.instrument", "Instrumento…", dialogs::instrument).withAccelerator("F7");
         define("track.previous", "Pista anterior", editor::moveToPreviousTrack).withAccelerator("ctrl UP");
         define("track.next", "Pista siguiente", editor::moveToNextTrack).withAccelerator("ctrl DOWN");
@@ -350,7 +354,7 @@ public final class Commands {
         define("tool.automaticFingering", "Digitación automática…", dialogs::automaticFingering);
         define("tool.transpose", "Transponer…", dialogs::transpose);
         define("tool.checkBarDurations", "Verificar la duración de los compases", dialogs::checkBarDurations)
-                .withAccelerator("F4");
+                .withAccelerator("F4").withIcon(Icons.checkBarDurations());
         define("tool.scales", "Escalas…", dialogs::scales).withIcon(Icons.scales());
         define("tool.tuner", "Afinador…", dialogs::tuner).withIcon(Icons.tuner());
     }

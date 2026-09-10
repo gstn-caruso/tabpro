@@ -597,6 +597,44 @@ public final class Icons {
         });
     }
 
+    /** Las propiedades de la pista: el pentagrama con el lapiz de quien las edita. */
+    public static Icon trackProperties() {
+        return icon((graphics, size) -> {
+            Glyphs.staff(graphics, size * 0.08, size * 0.3, size * 0.56, size * 0.09);
+            graphics.setStroke(thin());
+            graphics.draw(new Line2D.Double(size * 0.62, size * 0.82, size * 0.9, size * 0.54));
+        });
+    }
+
+    public static Icon trackMoveUp() {
+        return icon((graphics, size) -> {
+            Glyphs.staff(graphics, size * 0.08, size * 0.56, size * 0.56, size * 0.09);
+            graphics.setStroke(thin());
+            graphics.draw(Glyphs.arrow(size * 0.82, size * 0.7, size * 0.18, size * 0.14));
+        });
+    }
+
+    public static Icon trackMoveDown() {
+        return icon((graphics, size) -> {
+            Glyphs.staff(graphics, size * 0.08, size * 0.24, size * 0.56, size * 0.09);
+            graphics.setStroke(thin());
+            graphics.draw(Glyphs.arrow(size * 0.82, size * 0.3, size * 0.82, size * 0.14));
+        });
+    }
+
+    public static Icon trackDelete() {
+        return svgIcon("trash");
+    }
+
+    /** El casillero verde del manual: "Verificar la duracion de los compases". */
+    public static Icon checkBarDurations() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(new BasicStroke(size / 8f));
+            graphics.draw(new Line2D.Double(size * 0.2, size * 0.52, size * 0.42, size * 0.74));
+            graphics.draw(new Line2D.Double(size * 0.42, size * 0.74, size * 0.82, size * 0.28));
+        });
+    }
+
     // ---- trazos compartidos -----------------------------------------------
 
     private static String metNoteGlyphOf(NoteValue value) {

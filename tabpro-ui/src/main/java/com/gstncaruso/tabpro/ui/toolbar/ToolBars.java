@@ -122,7 +122,8 @@ public final class ToolBars {
         bar.addSeparator();
         add(bar, "edit.undo", "edit.redo");
         bar.addSeparator();
-        add(bar, "track.add");
+        add(bar, "track.add", "track.properties", "track.moveUp", "track.moveDown", "track.delete",
+                "tool.checkBarDurations");
         bar.addSeparator();
         add(bar, "bar.insert", "bar.delete");
         bar.addSeparator();
