@@ -7,8 +7,11 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class MeasureGridTest {
@@ -87,6 +90,21 @@ class MeasureGridTest {
         MeasureGrid grid = new MeasureGrid(editor);
 
         assertTrue(grid.hitTest(grid.cellBounds(1, 1).x + 2, grid.cellBounds(1, 1).y + 2).isPresent());
+    }
+
+    @Test
+    void theRightArrowKeyMovesTheCaretToTheNextMeasure() {
+        Editor editor = editorWithTwoTracksAndThreeMeasures();
+        MeasureGrid grid = new MeasureGrid(editor);
+
+        pressShortcut(grid, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals(new MeasureGrid.Cell(0, 1), grid.caret());
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 
     private static MouseEvent pressAt(MeasureGrid grid, int x, int y) {
