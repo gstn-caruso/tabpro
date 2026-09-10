@@ -101,7 +101,6 @@ public final class MidiImportPanel extends JPanel {
         add(bottom, BorderLayout.SOUTH);
     }
 
-    /** El manual: marcar todas las pistas del archivo de un clic, antes de importarlas. */
     public void selectAllTracks() {
         int lastIndex = trackList.getModel().getSize() - 1;
         if (lastIndex >= 0) {
@@ -109,10 +108,6 @@ public final class MidiImportPanel extends JPanel {
         }
     }
 
-    /**
-     * El manual: "it is possible to listen to them" -- reproduce, tal como suena en el archivo
-     * MIDI, la o las pistas marcadas en la lista. Sin ninguna marcada no hay nada que escuchar.
-     */
     public void listen() {
         List<Integer> selected = selectedTrackIndices();
         if (selected.isEmpty()) {
@@ -166,7 +161,6 @@ public final class MidiImportPanel extends JPanel {
         chordPositionQuantizeGroup.choose(value);
     }
 
-    /** La precision con la que se cuantiza la duracion de las notas al importar. */
     public NoteValue noteDurationQuantize() {
         return noteDurationQuantizeGroup.chosen();
     }
