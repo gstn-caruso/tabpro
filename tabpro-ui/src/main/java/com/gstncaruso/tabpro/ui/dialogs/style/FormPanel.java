@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.dialogs.style;
 
+import com.gstncaruso.tabpro.ui.a11y.MnemonicAssigner;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -14,6 +15,7 @@ import javax.swing.JPanel;
 public class FormPanel extends JPanel {
 
     private final GridBagLayout layout = new GridBagLayout();
+    private final MnemonicAssigner labelMnemonics = new MnemonicAssigner();
     private int row = 0;
 
     public FormPanel() {
@@ -44,6 +46,7 @@ public class FormPanel extends JPanel {
         labelConstraints.insets = new Insets(DialogStyle.GAP_XS, 0, DialogStyle.GAP_XS, DialogStyle.GAP_S);
         JLabel labelComponent = new JLabel(label);
         labelComponent.setLabelFor(labeledField);
+        labelMnemonics.applyTo(labelComponent);
         add(labelComponent, labelConstraints);
 
         GridBagConstraints fieldConstraints = new GridBagConstraints();
