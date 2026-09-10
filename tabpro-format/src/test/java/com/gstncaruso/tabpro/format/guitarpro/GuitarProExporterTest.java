@@ -43,17 +43,17 @@ class GuitarProExporterTest {
 
     @Test
     void aSingleNote() {
-        Score original = new Score("Una nota", 120,
-                List.of(Track.standardGuitar("Guitarra")
+        Score original = new Score("A note", 120,
+                List.of(Track.standardGuitar("Guitar")
                         .withMeasure(0, new Measure(TimeSignature.fourFour(),
                                 List.of(Beat.of(Duration.quarter(), new Note(5, 3)))))));
 
         Score reread = exportAndReread(original);
 
-        assertEquals("Una nota", reread.title());
+        assertEquals("A note", reread.title());
         assertEquals(120, reread.tempo());
         assertEquals(1, reread.trackCount());
-        assertEquals("Guitarra", reread.track(0).name());
+        assertEquals("Guitar", reread.track(0).name());
         assertEquals(3, reread.track(0).measure(0).beat(0).noteOn(5).orElseThrow().fret());
     }
 
@@ -66,8 +66,8 @@ class GuitarProExporterTest {
                 Beat.of(Duration.of(NoteValue.EIGHTH), new Note(6, 3))));
         Measure secondBar = new Measure(TimeSignature.fourFour(), List.of(
                 Beat.of(Duration.of(NoteValue.WHOLE).in(Tuplet.of(3)), new Note(6, 5))));
-        Track track = Track.standardGuitar("Guitarra").withMeasure(0, firstBar).withMeasureInsertedAt(1, secondBar);
-        Score original = new Score("Varios compases", 100, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withMeasure(0, firstBar).withMeasureInsertedAt(1, secondBar);
+        Score original = new Score("Several measures", 100, List.of(track));
 
         Score reread = exportAndReread(original);
 
@@ -81,19 +81,19 @@ class GuitarProExporterTest {
     @Test
     void severalTracksWithDifferentTuningsAndInstruments() {
         Track guitar = Track.standardGuitar("Lead").withMeasure(0, aNote(5, 3));
-        Track bass = Track.standardBass("Bajo")
+        Track bass = Track.standardBass("Bass")
                 .withChannel(Channel.playing(Track.BASS_PROGRAM).withNumber(2))
                 .withMeasure(0, aNote(2, 1));
-        Track percussionTrack = Track.percussion("Batería").withMeasure(0, new Measure(TimeSignature.fourFour(),
+        Track percussionTrack = Track.percussion("Drums").withMeasure(0, new Measure(TimeSignature.fourFour(),
                 List.of(Beat.of(Duration.quarter(), new Note(1, 38)))));
-        Score original = new Score("Banda", 90, List.of(guitar, bass, percussionTrack));
+        Score original = new Score("Band", 90, List.of(guitar, bass, percussionTrack));
 
         Score reread = exportAndReread(original);
 
         assertEquals(3, reread.trackCount());
         assertEquals("Lead", reread.track(0).name());
         assertEquals(Tuning.standard().strings(), reread.track(0).tuning().strings());
-        assertEquals("Bajo", reread.track(1).name());
+        assertEquals("Bass", reread.track(1).name());
         assertEquals(Tuning.standardBass().strings(), reread.track(1).tuning().strings());
         assertTrue(reread.track(2).isPercussion());
         assertEquals(Channel.PERCUSSION_CHANNEL, reread.track(2).channel().number());
@@ -118,8 +118,8 @@ class GuitarProExporterTest {
                 Beat.of(Duration.quarter(), harmonicNote),
                 Beat.of(Duration.quarter(), graceNote),
                 Beat.rest(Duration.of(NoteValue.HALF))));
-        Track track = Track.standardGuitar("Guitarra").withMeasure(0, measure).withMeasureInsertedAt(1, measure2);
-        Score original = new Score("Efectos", 120, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withMeasure(0, measure).withMeasureInsertedAt(1, measure2);
+        Score original = new Score("Effects", 120, List.of(track));
 
         Score reread = exportAndReread(original);
 
@@ -145,8 +145,8 @@ class GuitarProExporterTest {
         Beat beatWithChord = Beat.of(Duration.quarter(), new Note(5, 3)).withEffects(
                 com.gstncaruso.tabpro.core.model.effects.BeatEffects.none().withChord(cadd9));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beatWithChord));
-        Track track = Track.standardGuitar("Guitarra").withMeasure(0, measure);
-        Score original = new Score("Acorde", 120, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withMeasure(0, measure);
+        Score original = new Score("Chord", 120, List.of(track));
 
         Score reread = exportAndReread(original);
 
@@ -166,8 +166,8 @@ class GuitarProExporterTest {
                         .withRepeatCount(2).withAlternateEndings(List.of(1)),
                 List.of(new com.gstncaruso.tabpro.core.model.Voice(List.of(Beat.of(Duration.quarter(), new Note(6, 1)))),
                         com.gstncaruso.tabpro.core.model.Voice.unused()));
-        Track track = Track.standardGuitar("Guitarra").withMeasure(0, opensRepeat).withMeasureInsertedAt(1, closesWithEndings);
-        Score original = new Score("Repeticion", 120, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withMeasure(0, opensRepeat).withMeasureInsertedAt(1, closesWithEndings);
+        Score original = new Score("Repeat", 120, List.of(track));
 
         Score reread = exportAndReread(original);
 
@@ -183,19 +183,19 @@ class GuitarProExporterTest {
         Measure threeFourBarWithKeySignature = new Measure(new TimeSignature(3, 4),
                 com.gstncaruso.tabpro.core.model.bars.MeasureAttributes.plain()
                         .withKeySignature(new KeySignature(2, Mode.MAJOR))
-                        .withMarker(Marker.named("Estribillo")),
+                        .withMarker(Marker.named("Chorus")),
                 List.of(new com.gstncaruso.tabpro.core.model.Voice(List.of(Beat.of(Duration.of(NoteValue.HALF), new Note(6, 1)),
                         Beat.of(Duration.quarter(), new Note(6, 2)))),
                         com.gstncaruso.tabpro.core.model.Voice.unused()));
-        Track track = Track.standardGuitar("Guitarra").withMeasure(0, fourFourBar).withMeasureInsertedAt(1, threeFourBarWithKeySignature);
-        Score original = new Score("Cambios", 120, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withMeasure(0, fourFourBar).withMeasureInsertedAt(1, threeFourBarWithKeySignature);
+        Score original = new Score("Changes", 120, List.of(track));
 
         Score reread = exportAndReread(original);
 
         assertEquals(TimeSignature.fourFour(), reread.track(0).measure(0).timeSignature());
         assertEquals(new TimeSignature(3, 4), reread.track(0).measure(1).timeSignature());
         assertEquals(new KeySignature(2, Mode.MAJOR), reread.track(0).measure(1).attributes().keySignature());
-        assertEquals("Estribillo", reread.track(0).measure(1).attributes().marker().orElseThrow().name());
+        assertEquals("Chorus", reread.track(0).measure(1).attributes().marker().orElseThrow().name());
     }
 
     @Test
@@ -204,8 +204,8 @@ class GuitarProExporterTest {
                 com.gstncaruso.tabpro.core.model.bars.MeasureAttributes.plain(),
                 List.of(new com.gstncaruso.tabpro.core.model.Voice(List.of(Beat.of(Duration.quarter(), new Note(6, 0)))),
                         new com.gstncaruso.tabpro.core.model.Voice(List.of(Beat.of(Duration.quarter(), new Note(5, 2))))));
-        Track track = Track.standardGuitar("Guitarra").withMeasure(0, withSecondVoice);
-        Score original = new Score("Con segunda voz", 120, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withMeasure(0, withSecondVoice);
+        Score original = new Score("With second voice", 120, List.of(track));
 
         List<String> warnings = exporter.warningsFor(original);
 
@@ -218,20 +218,20 @@ class GuitarProExporterTest {
 
     @Test
     void roundTripsMultilineLyricsText() {
-        Lyrics lyrics = Lyrics.none().onTrack(0).withLine(0, new LyricLine(1, "primera linea\nsegunda linea"));
+        Lyrics lyrics = Lyrics.none().onTrack(0).withLine(0, new LyricLine(1, "first line\nsecond line"));
         Score original = new Score(
-                ScoreInfo.titled("Prueba"), 120, List.of(Track.standardGuitar("Guitarra").withMeasure(0, aNote(6, 0))),
+                ScoreInfo.titled("Test"), 120, List.of(Track.standardGuitar("Guitar").withMeasure(0, aNote(6, 0))),
                 lyrics);
 
         Score reread = exportAndReread(original);
 
-        assertEquals("primera linea\nsegunda linea", reread.lyrics().line(0).text());
+        assertEquals("first line\nsecond line", reread.lyrics().line(0).text());
     }
 
     @Test
     void warnsThatTheMusicAuthorIsLost() {
-        Score original = new Score(ScoreInfo.titled("Titulo").withMusicAuthor("Compositor"), 120,
-                List.of(Track.standardGuitar("Guitarra").withMeasure(0, aNote(6, 0))), com.gstncaruso.tabpro.core.model.Lyrics.none());
+        Score original = new Score(ScoreInfo.titled("Title").withMusicAuthor("Composer"), 120,
+                List.of(Track.standardGuitar("Guitar").withMeasure(0, aNote(6, 0))), com.gstncaruso.tabpro.core.model.Lyrics.none());
 
         List<String> warnings = exporter.warningsFor(original);
 
@@ -243,7 +243,7 @@ class GuitarProExporterTest {
 
     @Test
     void noLossesMeanNoWarnings() {
-        Score original = new Score("Simple", 120, List.of(Track.standardGuitar("Guitarra").withMeasure(0, aNote(6, 0))));
+        Score original = new Score("Simple", 120, List.of(Track.standardGuitar("Guitar").withMeasure(0, aNote(6, 0))));
 
         assertTrue(exporter.warningsFor(original).isEmpty());
     }
