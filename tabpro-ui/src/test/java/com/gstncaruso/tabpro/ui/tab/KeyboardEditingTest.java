@@ -61,11 +61,6 @@ class KeyboardEditingTest {
         assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
     }
 
-    /**
-     * Manual, linea 780: "The TAB (tabulation) key allows you to switch notation". No mueve el
-     * cursor -eso ya lo hacia moverRight, que TAB usaba antes por descuido-, solo cambia en que
-     * notacion se esta editando.
-     */
     @Test
     void bindsTabToToggleTheNotation() {
         Editor editor = new Editor(Score.blank());
@@ -79,10 +74,6 @@ class KeyboardEditingTest {
         assertEquals(Notation.TABLATURE, editor.cursor().notation());
     }
 
-    /**
-     * Como en Guitar Pro 5 y en cualquier editor: la flecha sola mueve el cursor y limpia
-     * cualquier seleccion vieja; con Shift, en cambio, la extiende desde el ancla.
-     */
     @Test
     void bindsShiftRightToExtendTheSelectionInsteadOfClearingIt() {
         Editor editor = new Editor(Score.blank());
@@ -165,11 +156,6 @@ class KeyboardEditingTest {
         assertEquals(Optional.of(new Note(1, 2)), editor.currentBeat().noteOn(1));
     }
 
-    /**
-     * El manual lista el atajo del puntillo como "* or .". El "." ya es el acelerador de
-     * note.dot; el "*" es una tecla alternativa que no puede duplicar ese atajo, asi que se
-     * resuelve aca, como una tecla mas del lienzo, en vez de como un segundo comando.
-     */
     @Test
     void typingAnAsteriskTogglesTheDotJustLikeThePeriodDoes() {
         Editor editor = new Editor(Score.blank());

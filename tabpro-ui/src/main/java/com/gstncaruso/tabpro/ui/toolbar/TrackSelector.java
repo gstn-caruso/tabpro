@@ -13,10 +13,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
-/**
- * Guitar Pro 5, manual pagina 14, fila 1: el selector de pista al final de la barra, un boton
- * numerado por pista y las flechas para ir a la anterior y la siguiente.
- */
 public final class TrackSelector extends JPanel {
 
     private final Editor editor;

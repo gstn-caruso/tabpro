@@ -16,10 +16,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5, manual pagina 14, fila 1: el selector de pista, un boton numerado por pista mas
- * las flechas para ir a la anterior y la siguiente.
- */
 class TrackSelectorTest {
 
     private final Editor editor = new Editor(Score.blank());

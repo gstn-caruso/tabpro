@@ -15,12 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
-/**
- * Las barras de herramientas, con los mismos cuatro grupos que usa Guitar Pro 5: arriba, el
- * archivo y la edicion, la estructura y el sonido, y las figuras; abajo, pegada a la mesa de
- * mezcla, la barra de efectos ({@link #effectsComponent()}). Ver > Menus y barras deja elegir
- * cada fila por separado, ademas del interruptor general que esconde las tres de arriba juntas.
- */
 public final class ToolBars {
 
     private final Commands commands;
@@ -48,15 +42,10 @@ public final class ToolBars {
         rows.add(notationToolBar);
     }
 
-    /** Las tres filas de arriba: documento y edicion, estructura y sonido, figuras. */
     public JComponent component() {
         return rows;
     }
 
-    /**
-     * La barra de efectos, la cuarta fila del manual: en Guitar Pro 5 va abajo de la partitura,
-     * pegada a la mesa de mezcla, no arriba junto a las otras tres.
-     */
     public JComponent effectsComponent() {
         return effectsToolBar;
     }
@@ -69,7 +58,6 @@ public final class ToolBars {
         return rows.isVisible();
     }
 
-    /** Ver > Menus y barras: la fila del archivo y la edicion, elegible por separado. */
     public void setDocumentToolBarVisible(boolean visible) {
         documentToolBar.setVisible(visible);
     }
@@ -78,7 +66,6 @@ public final class ToolBars {
         return documentToolBar.isVisible();
     }
 
-    /** Ver > Menus y barras: la fila de la estructura y el sonido, elegible por separado. */
     public void setStructureToolBarVisible(boolean visible) {
         structureToolBar.setVisible(visible);
     }
@@ -87,7 +74,6 @@ public final class ToolBars {
         return structureToolBar.isVisible();
     }
 
-    /** Ver > Menus y barras: la fila de las figuras y los efectos, elegible por separado. */
     public void setNotationToolBarVisible(boolean visible) {
         notationToolBar.setVisible(visible);
     }
@@ -96,7 +82,6 @@ public final class ToolBars {
         return notationToolBar.isVisible();
     }
 
-    /** Ver > Menus y barras: la fila de efectos, elegible por separado como las otras tres. */
     public void setEffectsToolBarVisible(boolean visible) {
         effectsToolBar.setVisible(visible);
     }
@@ -105,21 +90,11 @@ public final class ToolBars {
         return effectsToolBar.isVisible();
     }
 
-    /**
-     * Los extras que la ventana agrega a la fila del sonido, como el tempo: Guitar Pro 5 no los
-     * trae en esta fila, asi que {@link #structureRow()} ya dejo un separador antes de ellos.
-     */
     public void addToSoundRow(JComponent component) {
         structureToolBar.add(Box.createHorizontalStrut(4));
         structureToolBar.add(component);
     }
 
-    /**
-     * Guitar Pro 5, manual pagina 14, fila 1: archivo, edicion, pistas, compases, vistas, zoom,
-     * paneles y, al final, el selector de pista («‹ 1 2 3 4 5 ›»). Copiar y pegar no estan en
-     * esta fila del manual; se conservan antes del selector, que es donde ya vivian antes de
-     * este orden.
-     */
     private JToolBar documentRow() {
         JToolBar bar = emptyBar();
         add(bar, "file.new", "file.open", "file.save");
@@ -151,11 +126,6 @@ public final class ToolBars {
         return bar;
     }
 
-    /**
-     * Guitar Pro 5, manual pagina 14, fila 2: atributos del compas, barras, marcadores,
-     * transporte. La pista anterior/siguiente y las herramientas de escalas y afinador no estan
-     * en esta fila del manual; se conservan al final, que es donde ya vivian antes de este orden.
-     */
     private JToolBar structureRow() {
         JToolBar bar = emptyBar();
         add(bar, "bar.keySignature", "bar.timeSignature", "bar.tripletFeel");
@@ -179,10 +149,6 @@ public final class ToolBars {
         return bar;
     }
 
-    /**
-     * Guitar Pro 5, manual pagina 14, fila 3: figuras y su notacion (los efectos de la nota
-     * tienen su propia barra, ver {@link #effectsRow()}).
-     */
     private JToolBar notationRow() {
         JToolBar bar = emptyBar();
         add(bar, "note.value.WHOLE", "note.value.HALF", "note.value.QUARTER", "note.value.EIGHTH",
@@ -208,10 +174,6 @@ public final class ToolBars {
         return bar;
     }
 
-    /**
-     * Guitar Pro 5, manual pagina 14, barra de efectos: va abajo de la partitura, pegada a la
-     * mesa de mezcla, no junto a las otras tres filas de arriba.
-     */
     private JToolBar effectsRow() {
         JToolBar bar = emptyBar();
         add(bar, "effect.deadNote", "effect.graceNote", "effect.ghostNote", "effect.accent",
@@ -233,7 +195,6 @@ public final class ToolBars {
         return bar;
     }
 
-    /** Las filas arrancan pegadas a la izquierda, como en una barra de verdad. */
     private static <T extends JComponent> T leftAligned(T row) {
         row.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, row.getPreferredSize().height));
@@ -254,7 +215,6 @@ public final class ToolBars {
         }
     }
 
-    /** Un boton de barra: solo el icono, plano, con la ayuda y el atajo en el tooltip. */
     private static JButton button(Command command) {
         JButton button = new JButton(command);
         button.setText(null);
@@ -271,11 +231,6 @@ public final class ToolBars {
         return button;
     }
 
-    /**
-     * Guitar Pro 5, manual pagina 14: donde esa fila trae los dos iconos de RSE, tabpro pone uno
-     * solo, conmutable: F2 y este boton comparten el mismo comando, asi que prender uno prende
-     * el otro.
-     */
     private JToggleButton soundFontToggle() {
         return toggleButton(commands.get("sound.soundFont"));
     }

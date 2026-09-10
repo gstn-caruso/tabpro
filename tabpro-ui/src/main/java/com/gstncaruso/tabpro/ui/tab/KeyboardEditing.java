@@ -12,11 +12,6 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
-/**
- * Lo que se escribe con el teclado sobre la partitura y no pasa por los menus:
- * los digitos de los trastes y el movimiento del cursor. Todo lo que tiene
- * atajo en un menu vive en el catalogo de comandos, para no tenerlo dos veces.
- */
 public final class KeyboardEditing {
 
     private final Editor editor;
@@ -56,17 +51,11 @@ public final class KeyboardEditing {
         return () -> editor.whileExtendingSelection(movement);
     }
 
-    /**
-     * Los digitos escriben el numero de la pista: el traste en una pista de cuerdas, el sonido
-     * MIDI en una de percusion. Dos seguidos forman el numero de dos cifras que la pista acepte.
-     */
     public void keyTyped(char c) {
         if (Character.isDigit(c)) {
             editor.setFret(digits.fretFor(c, editor.currentTrack()::acceptsTypedNumber));
             return;
         }
-        // El manual lista el puntillo como "* or .": el "." ya es el acelerador de note.dot,
-        // asi que el "*" se resuelve aca para no repetir un atajo entre dos comandos.
         if (c == '*') {
             editor.toggleDot();
         }
