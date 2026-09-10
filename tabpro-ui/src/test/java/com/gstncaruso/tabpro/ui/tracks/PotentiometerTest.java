@@ -117,6 +117,15 @@ class PotentiometerTest {
         assertEquals(74, knob.getValue());
     }
 
+    @Test
+    void thePageDownKeyDecreasesTheValueByTenSteps() {
+        Potentiometer knob = new Potentiometer(0, 127, 64);
+
+        pressShortcut(knob, KeyStroke.getKeyStroke("PAGE_DOWN"));
+
+        assertEquals(54, knob.getValue());
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
