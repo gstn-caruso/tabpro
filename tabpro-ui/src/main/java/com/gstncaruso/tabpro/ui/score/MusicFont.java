@@ -74,6 +74,8 @@ final class MusicFont {
     private static final int ARTIC_STACCATO_ABOVE = 0xE4A2;
     /** SMuFL U+E4A3 "articStaccatoBelow": el staccato dibujado abajo de la nota. */
     private static final int ARTIC_STACCATO_BELOW = 0xE4A3;
+    /** SMuFL U+E048 "coda": el simbolo de coda, arriba del sistema. */
+    private static final int CODA = 0xE048;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -224,6 +226,11 @@ final class MusicFont {
     /** El staccato dibujado abajo de la nota. */
     static String articStaccatoBelow() {
         return glyph(ARTIC_STACCATO_BELOW);
+    }
+
+    /** El simbolo de coda, arriba del sistema. */
+    static String coda() {
+        return glyph(CODA);
     }
 
     /**
