@@ -16,10 +16,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
- * La tablatura ASCII no tiene forma de anotar un silencio, asi que una nota seguida de un
- * silencio se ve identica a una nota mas larga: esa ambiguedad la advierte el manual y no hay
- * forma de evitarla leyendo solo el espaciado. Por eso la ida y vuelta que se puede pedir sin
- * perder nada es la de una pista sin silencios, con duraciones multiplo de la corchea.
+ * ASCII tab has no way to notate a rest, so a note followed by a rest looks identical to a
+ * longer note: the manual warns about this ambiguity, and there is no way to avoid it by
+ * reading the spacing alone. That is why the round trip that is guaranteed lossless is one for
+ * a track without rests, with durations that are multiples of an eighth note.
  */
 class AsciiTabRoundTripTest {
 
@@ -38,9 +38,11 @@ class AsciiTabRoundTripTest {
         Score original = new Score("Prueba", 120, List.of(track));
 
         String tab = exporter.export(original, AsciiTabExportOptions.standard());
-        // el exportador usa una columna por semicorchea (4 por negra): con esa misma cantidad de
-        // intervalos por negra la ida y vuelta preserva las duraciones exactas.
-        Score imported = importer.importScore(tab, AsciiTabImportOptions.standard().withRhythm(RhythmStrategy.fromSpacing(4)));
+        int intervalsPerQuarterNoteMatchingTheExportersColumnWidth = 4;
+        Score imported = importer.importScore(
+                tab,
+                AsciiTabImportOptions.standard()
+                        .withRhythm(RhythmStrategy.fromSpacing(intervalsPerQuarterNoteMatchingTheExportersColumnWidth)));
 
         assertEquals(List.of(chord, first, second, third, fourth), imported.track(0).measure(0).beats());
     }

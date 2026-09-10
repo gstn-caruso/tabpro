@@ -17,14 +17,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-/**
- * Pasa una partitura a la tablatura de texto clasica: las cuerdas como lineas de guiones, las
- * barras de compas como {@code |}, con el ancho de columna que haga falta para que los trastes
- * de dos digitos no desalineen a las demas cuerdas.
- */
 public final class AsciiTabExporter {
 
-    /** Una columna de guion representa esta fraccion de una negra: la base para el ancho de cada beat. */
+    /** A dash column stands for this fraction of a quarter note: the base width for every beat. */
     private static final long BASE_UNIT_TICKS = Duration.of(NoteValue.SIXTEENTH).ticks();
 
     public String export(Score score, AsciiTabExportOptions options) {
@@ -35,7 +30,6 @@ public final class AsciiTabExporter {
         write(path, export(score, options));
     }
 
-    /** La ventana de export de ASCII exporta solo la pista activa, como pide el manual. */
     public String export(Track track, AsciiTabExportOptions options) {
         return exportTrack(track, options);
     }

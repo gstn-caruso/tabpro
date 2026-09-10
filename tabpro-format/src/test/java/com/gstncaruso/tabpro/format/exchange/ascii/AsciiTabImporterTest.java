@@ -20,7 +20,6 @@ class AsciiTabImporterTest {
 
     @Test
     void ignoresCommentsAroundTheTabAndReadsTwoNotesWithAFixedRhythm() {
-        // celda de 8 columnas: nota en la columna 2 (traste 5) y en la columna 5 (traste 0)
         String block = block(6, "--5--0--");
         String text = "Un comentario antes.\n\n" + block + "\nComentario despues.\n";
 
@@ -48,11 +47,9 @@ class AsciiTabImporterTest {
     void infersDurationFromTheSpacingBetweenColumns() {
         String text = block(6, "--5--0--");
 
-        // 2 intervalos por negra: cada columna vale una corchea (960/2 tics).
         Score score = importer.importScore(text, AsciiTabImportOptions.standard().withRhythm(RhythmStrategy.fromSpacing(2)));
 
         List<Beat> beats = track(score).measure(0).beats();
-        // hay un silencio de negra antes de la primera nota (arranca en la columna 2 de 8)
         assertEquals(new Duration(NoteValue.QUARTER, false), beats.get(0).duration());
         assertEquals(List.of(new Note(1, 5)), beats.get(1).notes());
         assertEquals(new Duration(NoteValue.QUARTER, true).ticks(), beats.get(1).duration().ticks());
@@ -61,9 +58,6 @@ class AsciiTabImporterTest {
 
     @Test
     void aDifferentNumberOfIntervalsPerQuarterNoteInfersADifferentRhythmFromTheSameSpacing() {
-        // la misma tablatura ASCII, pero pidiendo el doble de intervalos por negra: cada columna
-        // pasa a valer la mitad de tics (una semicorchea en vez de una corchea), y el mismo
-        // espaciado entre columnas da otro ritmo.
         String text = block(6, "--5--0--");
 
         Score coarse = importer.importScore(text, AsciiTabImportOptions.standard().withRhythm(RhythmStrategy.fromSpacing(2)));
@@ -143,7 +137,6 @@ class AsciiTabImporterTest {
                 () -> importer.importInto(existing, "no hay tablatura aca", AsciiTabImportOptions.standard()));
     }
 
-    /** Un bloque de stringCount lineas: la primera cuerda lleva firstStringContent entre barras, el resto va vacio. */
     private static String block(int stringCount, String firstStringContent) {
         StringBuilder text = new StringBuilder();
         text.append('|').append(firstStringContent).append('|').append('\n');
