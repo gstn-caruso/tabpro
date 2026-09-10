@@ -21,4 +21,12 @@ class FingeringDialogTest {
 
         assertSame(fields.leftHand(), fields.initialFocus());
     }
+
+    @Test
+    void siSePideElFocoEnManoDerechaElCampoInicialEsElDeManoDerecha() {
+        FingeringDialog.Fields fields = FingeringDialog.buildFields(
+                Optional.empty(), Optional.empty(), FingeringDialog.Hand.RIGHT);
+
+        assertSame(fields.rightHand(), fields.initialFocus());
+    }
 }

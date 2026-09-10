@@ -29,8 +29,15 @@ public final class FingeringDialog {
         editor.setRightHandFinger(chosen(fields.rightHand()));
     }
 
+    enum Hand { LEFT, RIGHT }
+
     /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
     static Fields buildFields(Optional<Finger> left, Optional<Finger> right) {
+        return buildFields(left, right, Hand.LEFT);
+    }
+
+    /** Como {@link #buildFields(Optional, Optional)}, pero elige donde arranca el foco inicial. */
+    static Fields buildFields(Optional<Finger> left, Optional<Finger> right, Hand initialFocus) {
         JComboBox<Object> leftHand = fingers(left, Finger::leftHandSymbol);
         JComboBox<Object> rightHand = fingers(right, Finger::rightHandSymbol);
 
@@ -38,7 +45,7 @@ public final class FingeringDialog {
                 .addRow("Mano izquierda", leftHand)
                 .addRow("Mano derecha", rightHand);
 
-        return new Fields(form, leftHand, rightHand, leftHand);
+        return new Fields(form, leftHand, rightHand, initialFocus == Hand.RIGHT ? rightHand : leftHand);
     }
 
     record Fields(FormPanel form, JComboBox<Object> leftHand, JComboBox<Object> rightHand, JComponent initialFocus) {
