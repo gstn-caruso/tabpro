@@ -186,10 +186,10 @@ class MidiSequencesTest {
 
     @Test
     void playsANoteWithAnEffectOnTheSecondChannelOfTheTrack() {
-        ScheduledNote limpia = new ScheduledNote(0, 960, new Pitch(64));
-        ScheduledNote conBend = new ScheduledNote(960, 960, new Pitch(67), new Velocity(100),
+        ScheduledNote plainNote = new ScheduledNote(0, 960, new Pitch(64));
+        ScheduledNote bentNote = new ScheduledNote(960, 960, new Pitch(67), new Velocity(100),
                 PitchTrajectory.ramp(0, 0, 960, 2), false);
-        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, List.of(limpia, conBend), List.of());
+        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, List.of(plainNote, bentNote), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
 
         Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
@@ -199,9 +199,9 @@ class MidiSequencesTest {
 
     @Test
     void theBendOfANoteTravelsOnTheChannelWhereThatNoteSounds() {
-        ScheduledNote conBend = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100),
+        ScheduledNote bentNote = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100),
                 PitchTrajectory.ramp(0, 0, 960, 2), false);
-        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, List.of(conBend), List.of());
+        TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64, List.of(bentNote), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
 
         Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
@@ -213,9 +213,9 @@ class MidiSequencesTest {
 
     @Test
     void aPercussionTrackPlaysItsEffectsOnTheTenthChannelToo() {
-        ScheduledNote conBend = new ScheduledNote(0, 960, new Pitch(38), new Velocity(100),
+        ScheduledNote bentNote = new ScheduledNote(0, 960, new Pitch(38), new Velocity(100),
                 PitchTrajectory.ramp(0, 0, 960, 2), false);
-        TrackTimeline percussion = new TrackTimeline(0, 100, 64, true, List.of(conBend), List.of());
+        TrackTimeline percussion = new TrackTimeline(0, 100, 64, true, List.of(bentNote), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(percussion));
 
         Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
@@ -448,7 +448,7 @@ class MidiSequencesTest {
     }
 
     @Test
-    void laVelocidadDeLaNotaSeUsaComoVelocityMidi() {
+    void theNoteVelocityIsUsedAsTheMidiVelocity() {
         ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64),
                 new Velocity(45),
                 PitchTrajectory.flat(), false);
@@ -462,7 +462,7 @@ class MidiSequencesTest {
     }
 
     @Test
-    void unaPistaDePercusionSiempreUsaElCanal10() {
+    void aPercussionTrackAlwaysUsesChannel10() {
         TrackTimeline first = new TrackTimeline(25, 100, 64, false, List.of(), List.of());
         TrackTimeline percussion = new TrackTimeline(0, 100, 64, true, List.of(), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(first, percussion));
@@ -473,7 +473,7 @@ class MidiSequencesTest {
     }
 
     @Test
-    void unaPistaDePercusionNoLeQuitaUnCanalALasDemas() {
+    void aPercussionTrackDoesNotTakeAChannelFromTheOthers() {
         TrackTimeline percussion = new TrackTimeline(0, 100, 64, true, List.of(), List.of());
         TrackTimeline second = new TrackTimeline(25, 100, 64, false, List.of(), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(percussion, second));
@@ -484,7 +484,7 @@ class MidiSequencesTest {
     }
 
     @Test
-    void unaNotaSinBendNoEmiteEventosDePitchBend() {
+    void aNoteWithoutBendEmitsNoPitchBendEvents() {
         TrackTimeline trackTimeline = new TrackTimeline(25, 100, 64,
                 List.of(new ScheduledNote(0, 960, new Pitch(64))), List.of());
         Timeline timeline = new Timeline(120, 960, List.of(trackTimeline));
@@ -495,7 +495,7 @@ class MidiSequencesTest {
     }
 
     @Test
-    void unaNotaConBendEmiteEventosDePitchBendQueSiguenLaCurva() {
+    void aNoteWithBendEmitsPitchBendEventsThatFollowTheCurve() {
         PitchTrajectory bend = PitchTrajectory.ramp(0, 0.0, 960, 2.0);
         ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64),
                 new Velocity(100), bend, false);
@@ -507,13 +507,13 @@ class MidiSequencesTest {
         List<ShortMessage> bends = pitchBendEvents(track);
         assertFalse(bends.isEmpty());
         int centerValue = pitchBendValue(bends.get(0));
-        boolean subioEnAlgunPunto = bends.stream().anyMatch(message -> pitchBendValue(message) > centerValue);
-        assertTrue(subioEnAlgunPunto, "el pitch bend tiene que subir en algun punto de la curva");
+        boolean wentUpAtSomePoint = bends.stream().anyMatch(message -> pitchBendValue(message) > centerValue);
+        assertTrue(wentUpAtSomePoint, "el pitch bend tiene que subir en algun punto de la curva");
         assertEquals(centerValue, pitchBendValue(bends.get(bends.size() - 1)));
     }
 
     @Test
-    void unaPistaConNotasConBendConfiguraElRangoDePitchBend() {
+    void aTrackWithBentNotesConfiguresThePitchBendRange() {
         PitchTrajectory bend = PitchTrajectory.ramp(0, 0.0, 960, 2.0);
         ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64),
                 new Velocity(100), bend, false);
@@ -526,7 +526,7 @@ class MidiSequencesTest {
     }
 
     @Test
-    void unaNotaConFadeInEmiteUnaRampaDeExpresion() {
+    void aNoteWithFadeInEmitsAnExpressionRamp() {
         ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64),
                 new Velocity(100),
                 PitchTrajectory.flat(), true);
@@ -594,17 +594,17 @@ class MidiSequencesTest {
     }
 
     @Test
-    void laVibradaDeUnPuntoDelBendMueveElPitchBendDeLaSecuencia() {
-        List<Integer> quieto = pitchBendValuesOfANoteBentWithVibrato(0);
-        List<Integer> vibrado = pitchBendValuesOfANoteBentWithVibrato(3);
+    void aBendPointsVibratoMovesTheSequencesPitchBend() {
+        List<Integer> steady = pitchBendValuesOfANoteBentWithVibrato(0);
+        List<Integer> vibrated = pitchBendValuesOfANoteBentWithVibrato(3);
 
-        int alturaDelBend = quieto.stream().mapToInt(Integer::intValue).max().orElseThrow();
-        assertEquals(1, quieto.stream().filter(value -> value == alturaDelBend).distinct().count());
+        int bendHeight = steady.stream().mapToInt(Integer::intValue).max().orElseThrow();
+        assertEquals(1, steady.stream().filter(value -> value == bendHeight).distinct().count());
         assertTrue(
-                vibrado.stream().anyMatch(value -> value > alturaDelBend),
+                vibrated.stream().anyMatch(value -> value > bendHeight),
                 "la vibrada tiene que empujar el pitch bend por encima de la altura del bend");
         assertTrue(
-                quieto.stream().noneMatch(value -> value > alturaDelBend),
+                steady.stream().noneMatch(value -> value > bendHeight),
                 "sin vibrada el bend no puede pasar de su altura");
     }
 
@@ -622,33 +622,33 @@ class MidiSequencesTest {
     }
 
     @Test
-    void elPedalDeWahWahViajaComoControladorEnLaSecuencia() {
-        List<MidiEvent> abierto = wahEventsOf(beatWith(Wah.OPEN));
-        List<MidiEvent> cerrado = wahEventsOf(beatWith(Wah.CLOSED));
-        List<MidiEvent> sinPedal = wahEventsOf(plainBeat());
+    void theWahWahPedalTravelsAsAControllerInTheSequence() {
+        List<MidiEvent> openEvents = wahEventsOf(beatWith(Wah.OPEN));
+        List<MidiEvent> closedEvents = wahEventsOf(beatWith(Wah.CLOSED));
+        List<MidiEvent> noPedalEvents = wahEventsOf(plainBeat());
 
-        assertTrue(sinPedal.isEmpty(), "sin pedal no hay nada que mandar");
-        assertFalse(abierto.isEmpty(), "el wah abierto tiene que llegar a la secuencia");
+        assertTrue(noPedalEvents.isEmpty(), "sin pedal no hay nada que mandar");
+        assertFalse(openEvents.isEmpty(), "el wah abierto tiene que llegar a la secuencia");
         assertTrue(
-                controllerValueOf(abierto.get(0)) > controllerValueOf(cerrado.get(0)),
+                controllerValueOf(openEvents.get(0)) > controllerValueOf(closedEvents.get(0)),
                 "el pedal abierto tiene que abrir mas que el cerrado");
     }
 
     @Test
-    void elPedalDeWahWahSeMandaEnElTickDelBeatQueLoLleva() {
-        List<MidiEvent> eventos = wahEventsOf(plainBeat(), beatWith(Wah.OPEN));
+    void theWahWahPedalIsSentAtTheTickOfTheBeatThatCarriesIt() {
+        List<MidiEvent> events = wahEventsOf(plainBeat(), beatWith(Wah.OPEN));
 
-        assertFalse(eventos.isEmpty());
-        assertEquals(Duration.quarter().ticks(), eventos.get(0).getTick());
+        assertFalse(events.isEmpty());
+        assertEquals(Duration.quarter().ticks(), events.get(0).getTick());
     }
 
     @Test
-    void apagarElWahWahDevuelveElPedalAlReposo() {
-        List<MidiEvent> eventos = wahEventsOf(beatWith(Wah.OPEN), beatWith(Wah.OFF));
+    void turningTheWahWahOffReturnsThePedalToRest() {
+        List<MidiEvent> events = wahEventsOf(beatWith(Wah.OPEN), beatWith(Wah.OFF));
 
-        assertEquals(2, eventos.size());
+        assertEquals(2, events.size());
         assertTrue(
-                controllerValueOf(eventos.get(1)) < controllerValueOf(eventos.get(0)),
+                controllerValueOf(events.get(1)) < controllerValueOf(events.get(0)),
                 "apagar el pedal tiene que soltar lo que dejo abierto el beat anterior");
     }
 
@@ -715,7 +715,7 @@ class MidiSequencesTest {
     }
 
     @Test
-    void agregaUnaPistaDeMetronomoConSusClicksEnElCanalDePercusion() {
+    void addsAMetronomeTrackWithItsClicksOnThePercussionChannel() {
         Timeline timeline = new Timeline(120, 960, List.of());
         Sequence sequence = MidiSequences.fromTimeline(timeline);
         List<MetronomeClick> clicks = List.of(
@@ -737,7 +737,7 @@ class MidiSequencesTest {
     }
 
     @Test
-    void elVolumenDelClickSeUsaComoVelocityMidi() {
+    void theClickVolumeIsUsedAsTheMidiVelocity() {
         Timeline timeline = new Timeline(120, 960, List.of());
         Sequence sequence = MidiSequences.fromTimeline(timeline);
         List<MetronomeClick> clicks = List.of(new MetronomeClick(0, true, 42));
@@ -756,7 +756,7 @@ class MidiSequencesTest {
     }
 
     @Test
-    void sinClicksNoAgregaNingunaPista() {
+    void withoutClicksNoTrackIsAdded() {
         Timeline timeline = new Timeline(120, 960, List.of());
         Sequence sequence = MidiSequences.fromTimeline(timeline);
         int tracksBefore = sequence.getTracks().length;
