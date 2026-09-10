@@ -8,7 +8,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/** Como pegar lo copiado: insertando o reemplazando, y cuantas veces. */
 public final class PastePanel extends FormPanel {
 
     private final JRadioButton inserting = new JRadioButton("Insertar", true);
