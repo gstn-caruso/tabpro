@@ -14,12 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Donde va cada cosa en la partitura: los compases se reparten en sistemas segun el ancho
- * disponible y, dentro de cada sistema, las pistas se apilan una debajo de la otra con su
- * pentagrama arriba y su tablatura abajo. Una columna de compas mide lo mismo para todas las
- * pistas, asi el compas tres de la guitarra empieza donde empieza el compas tres del bajo.
- */
 public final class ScoreLayout {
 
     public static final int LEFT_MARGIN = 20;
@@ -35,20 +29,13 @@ public final class ScoreLayout {
     public static final int STRING_SPACING = 12;
     public static final int TRACK_GAP = 20;
 
-    /**
-     * Los numeros de la tablatura se dibujan centrados sobre su cuerda, asi que
-     * la mitad de un digito cae por debajo de la ultima linea y la pista tiene
-     * que reservar ese lugar o el numero queda cortado al pie de la hoja.
-     */
     public static final int TAB_BOTTOM_PADDING = STRING_SPACING;
     public static final int SYSTEM_GAP = 26;
 
     public static final int MEASURE_LEFT_PADDING = 26;
     public static final int MEASURE_RIGHT_PADDING = 10;
     public static final int MIN_MEASURE_WIDTH = 76;
-    /** Lo que se reserva al arranque de cada sistema para la clave y la indicacion de compas. */
     public static final int SYSTEM_HEAD_WIDTH = 54;
-    /** Lo que se reserva en medio de un sistema cuando cambia la armadura o el compas. */
     public static final int SIGNATURE_CHANGE_WIDTH = 30;
 
     private final Score score;
@@ -113,11 +100,6 @@ public final class ScoreLayout {
         return of(score, availableWidth, visibleTracks, visibleNotations, false);
     }
 
-    /**
-     * @param showsDynamicNotes si esta puesto "Ver > Notas con dinamica [F11]": la cabeza de la
-     *         nota se pinta con el gradiente de {@link ScoreColors#forDynamic} en vez de la
-     *         tinta pareja de siempre.
-     */
     public static ScoreLayout of(
             Score score, int availableWidth, VisibleTracks visibleTracks, VisibleNotations visibleNotations,
             boolean showsDynamicNotes) {
@@ -181,13 +163,6 @@ public final class ScoreLayout {
                 showsDynamicNotes);
     }
 
-    /**
-     * Si este compas tiene que arrancar un sistema nuevo, dado que todavia no arranco uno solo
-     * por estar al principio de la linea. "Compas > Salto de linea" deja elegir por compas:
-     * forzado siempre corta ahi aunque sobre ancho; impedido nunca corta ahi, y si el ancho lo
-     * pedia el sistema actual se estira y el corte se corre al compas siguiente que si pueda
-     * arrancar uno; automatico es el comportamiento de siempre, por ancho disponible.
-     */
     private static boolean breaksBefore(
             Score score, VisibleTracks visibleTracks, int measure, int x, int width, int usableWidth) {
         LineBreak lineBreak = lineBreakAt(score, visibleTracks, measure);
@@ -200,12 +175,6 @@ public final class ScoreLayout {
         return x + width > LEFT_MARGIN + usableWidth;
     }
 
-    /**
-     * De donde sale el salto de linea de un compas: fuera de la vista multipista vale solo para
-     * la pista activa, que puede tener su propia organizacion de sistemas; en la vista
-     * multipista todas comparten la misma, la que arrastra la primera pista (igual que el resto
-     * de los atributos del compas, que siempre son los mismos en todas las pistas).
-     */
     private static LineBreak lineBreakAt(Score score, VisibleTracks visibleTracks, int measure) {
         if (visibleTracks.multitrack()) {
             return score.attributesOf(measure).lineBreak();
@@ -215,7 +184,6 @@ public final class ScoreLayout {
         return track.attributesOf(clamped).lineBreak();
     }
 
-    /** Si la armadura o el compas de este comienzo difieren de los del compas anterior. */
     private static boolean signatureChangedAt(Score score, int measure) {
         boolean timeChanged = !score.timeSignatureOf(measure).equals(score.timeSignatureOf(measure - 1));
         boolean keyChanged = !score.attributesOf(measure).keySignature().equals(score.attributesOf(measure - 1).keySignature());
@@ -257,11 +225,6 @@ public final class ScoreLayout {
         return duration.dotted() ? base + 6 : base;
     }
 
-    /**
-     * El alto de una pista, con la franja de la notacion que no se dibuja encogida a cero. Sin
-     * pentagrama la tablatura sube a su lugar; sin tablatura el aire que la separaba queda
-     * abajo del pentagrama, que es donde van la digitacion y la letra.
-     */
     private static int blockHeight(Track track, VisibleNotations notations) {
         int staff = notations.showsStandardNotationOf(track) ? STAFF_HEIGHT + STAFF_TO_TAB_GAP : 0;
         int tab = notations.showsTablatureOf(track) ? tabHeightOf(track) + TAB_BOTTOM_PADDING : 0;
@@ -272,11 +235,6 @@ public final class ScoreLayout {
         return (track.tuning().stringCount() - 1) * STRING_SPACING;
     }
 
-    /**
-     * Las figuras de un compas se estiran para llenar su columna, que puede ser mas ancha de lo
-     * que la pista pide porque otra pista mete mas notas en el mismo compas. Cada beat se lleva
-     * una tajada proporcional a su figura, y el ultimo cierra justo contra la barra.
-     */
     private static List<List<List<Rectangle>>> beatBoundsOf(
             Score score, int[] columnX, int[] headWidth, int[] columnWidth) {
         List<List<List<Rectangle>>> perTrack = new ArrayList<>();
@@ -332,7 +290,6 @@ public final class ScoreLayout {
         return columnWidth[measure] + headWidth[measure];
     }
 
-    /** Cuanto de la columna se lleva la clave y la indicacion de compas al arrancar un sistema. */
     public int headWidth(int measure) {
         return headWidth[measure];
     }
@@ -341,7 +298,6 @@ public final class ScoreLayout {
         return systemStart[measure];
     }
 
-    /** Si en medio de un sistema cambia la armadura o el compas, y hay que volver a escribirlos. */
     public boolean hasSignatureChange(int measure) {
         return signatureChange[measure];
     }
@@ -350,35 +306,24 @@ public final class ScoreLayout {
         return TOP_MARGIN + systemCount * (blockHeightTotal + SYSTEM_GAP) - SYSTEM_GAP + BOTTOM_MARGIN;
     }
 
-    /** El techo de un sistema entero, con todas sus pistas apiladas adentro. */
     public int systemTop(int system) {
         return TOP_MARGIN + system * (blockHeightTotal + SYSTEM_GAP);
     }
 
-    /** Cuanto mide de alto un sistema, con todas las pistas ya apiladas. */
     public int systemHeight() {
         return blockHeightTotal;
     }
 
-    /** Que sistema cae en esa altura de pantalla, recortado a los limites reales de la
-     * partitura: sirve para saber, dado el clip de pintado, entre que sistemas hay que pintar. */
     public int systemAt(int y) {
         int stride = blockHeightTotal + SYSTEM_GAP;
         int system = (y - TOP_MARGIN) / stride;
         return Math.clamp(system, 0, systemCount - 1);
     }
 
-    /**
-     * El primer compas de ese sistema: el camino inverso a {@link #systemOf}, para que quien
-     * pinta una hoja arranque directo en su primer compas en vez de recorrer los de las hojas
-     * anteriores buscandolo.
-     */
     public int firstMeasureOfSystem(int system) {
         return system < firstMeasureOfEachSystem.length ? firstMeasureOfEachSystem[system] : measureCount();
     }
 
-    /** El ultimo compas de ese sistema: el limite opuesto a {@link #firstMeasureOfSystem}, para
-     * que quien pinta una hoja sepa donde parar sin seguir de largo hacia la hoja siguiente. */
     public int lastMeasureOfSystem(int system) {
         return system + 1 < systemCount ? firstMeasureOfSystem(system + 1) - 1 : measureCount() - 1;
     }
@@ -400,20 +345,14 @@ public final class ScoreLayout {
         return visibleNotations.showsTablatureOf(score.track(track));
     }
 
-    /** "Ver > Notas con dinamica [F11]": si la cabeza de la nota va con el gradiente de {@link ScoreColors#forDynamic}. */
     public boolean showsDynamicNotes() {
         return showsDynamicNotes;
     }
 
-    /** Si esta pista se dibuja: la vista multipista y la mesa de mezcla deciden cuales se ven. */
     public boolean shows(int track) {
         return visibleTracks.shows(track);
     }
 
-    /**
-     * La primera pista que se ve. Lo que vale para el compas entero y no para una pista
-     * —repeticiones, direcciones, marcadores— se dibuja una sola vez, sobre esa.
-     */
     public int firstShownTrack() {
         for (int track = 0; track < score.trackCount(); track++) {
             if (shows(track)) {
@@ -435,7 +374,6 @@ public final class ScoreLayout {
         return staffBottom(track, measure) - line * STAFF_LINE_SPACING;
     }
 
-    /** Y del grado indicado del pentagrama: 0 es la linea inferior y cada grado sube media linea. */
     public int stepY(int track, int measure, int step) {
         return staffBottom(track, measure) - step * (STAFF_LINE_SPACING / 2);
     }
@@ -503,11 +441,6 @@ public final class ScoreLayout {
         return beats.size() - 1;
     }
 
-    /**
-     * La cuerda mas cercana al clic. Arriba de la tablatura se busca entre las notas del beat
-     * mas cercano cual queda mas cerca en el pentagrama; en la tablatura, la cuerda mas cercana
-     * por distancia vertical entre lineas.
-     */
     private int nearestString(int track, int measure, int x, int y) {
         if (y < tabTop(track, measure)) {
             return nearestStringOnStaff(track, measure, x, y);

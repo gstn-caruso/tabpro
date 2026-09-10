@@ -13,7 +13,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-/** La tablatura de una pista: sus cuerdas, sus barras de compas y los trastes escritos encima. */
 final class TabPainter {
 
     private TabPainter() {
@@ -64,7 +63,6 @@ final class TabPainter {
         g.drawString(fret, centerX - textWidth / 2, y + (metrics.getAscent() - metrics.getDescent()) / 2);
     }
 
-    /** La nota muerta se escribe X y la fantasma entre parentesis, como pide el manual. */
     private static String fretText(Note note) {
         if (note.has(Ornament.DEAD)) {
             return "X";
@@ -80,7 +78,6 @@ final class TabPainter {
         g.fillRect(centerX - width / 2, y - height / 2, width, height);
     }
 
-    /** La marca "TAB" que abre cada sistema, al estilo de las tablaturas impresas. */
     static void paintTabMark(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
         int stringCount = track.tuning().stringCount();
         int top = layout.stringY(trackIndex, measureIndex, 1);
@@ -98,7 +95,6 @@ final class TabPainter {
         }
     }
 
-    /** La leyenda de afinacion: el nombre de cada cuerda al aire, de punta a punta de la tab. */
     static void paintTuningLegend(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
         int stringCount = track.tuning().stringCount();
         g.setColor(ScoreColors.LABEL);
@@ -111,8 +107,6 @@ final class TabPainter {
         }
     }
 
-    /** El ritmo de cada golpe dibujado como una plica suelta arriba de la tablatura, para las
-     * pistas que piden ver la figura sin abrir el pentagrama. */
     static void paintRhythm(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
         Measure measure = track.measure(measureIndex);
         for (int beatIndex = 0; beatIndex < measure.beats().size(); beatIndex++) {

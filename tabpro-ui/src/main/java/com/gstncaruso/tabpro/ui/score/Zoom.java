@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.ui.score;
 
 import java.util.List;
 
-/** El zoom de la partitura, del 30% al 200% como pide el manual. */
 public record Zoom(int percent) {
 
     public static final int MIN_PERCENT = 30;

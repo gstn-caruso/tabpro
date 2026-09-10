@@ -19,16 +19,10 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.util.Optional;
 
-/**
- * Lo que el manual dibuja directamente sobre la tablatura, ademas del numero de traste: ligados,
- * slides, bends con su altura, la palanca, notas de adorno con su transicion y como se digita
- * con las dos manos.
- */
 final class TabNotationPainter {
 
     private static final int FINGER_RADIUS = 6;
 
-    /** Cuanto cuelga bajo la tablatura la curva de la palanca. */
     private static final int BAR_CURVE_HEIGHT = 10;
 
     private static final int UPWARDS = -1;
@@ -124,11 +118,6 @@ final class TabNotationPainter {
         });
     }
 
-    /**
-     * Como se llega desde la nota de adorno hasta la nota: el ligado con una
-     * ligadura, el slide con su raya y el bend con la curva que le es propia.
-     * Sin transicion no hay nada que dibujar entre las dos.
-     */
     private static void paintGraceTransition(
             Graphics2D g, GraceTransition transition, int fromX, int toX, int y) {
         if (toX <= fromX) {
@@ -171,11 +160,6 @@ final class TabNotationPainter {
         g.drawString(label, x + 12, top + 3);
     }
 
-    /**
-     * La palanca se anota como el bend, pero vale para el beat entero y cuelga
-     * bajo la tablatura: la curva sale del centro del beat hacia donde lleva la
-     * altura y al lado va cuanto se aparta.
-     */
     private static void paintTremoloBar(
             Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, int beatIndex, Bend bar) {
         Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, beatIndex);
@@ -207,12 +191,10 @@ final class TabNotationPainter {
         g.draw(head);
     }
 
-    /** Lo mismo que {@link #bendLabel}, pero para una curva que puede bajar, como la palanca. */
     static String signedBendLabel(int quarterTones) {
         return quarterTones < 0 ? "-" + bendLabel(-quarterTones) : bendLabel(quarterTones);
     }
 
-    /** Cuanto sube el bend, en la notacion habitual: cuartos, medios y enteros de tono. */
     static String bendLabel(int quarterTones) {
         double tones = quarterTones / 4.0;
         if (tones == Math.floor(tones)) {
@@ -251,12 +233,6 @@ final class TabNotationPainter {
         g.draw(new Arc2D.Double(fromX, y - 6, toX - fromX, 10, 20, 140, Arc2D.OPEN));
     }
 
-    /**
-     * El legato y el shift slide van los dos hacia la nota siguiente, pero el manual los
-     * distingue: en el legato la nota de destino no se ataca de nuevo, en el shift si
-     * ({@link SlideType#picksTheDestination()}). Esa diferencia se ve en la raya: solida para uno,
-     * cortada para el otro.
-     */
     private static void paintSlideToNext(
             Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, int fromBeat, int toBeat, int string,
             SlideType slide) {

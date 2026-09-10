@@ -6,18 +6,14 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Paleta unica de la partitura y del panel de pistas. */
 public final class ScoreColors {
 
     public static final Color BACKGROUND = new Color(0x1E1F22);
     public static final Color SURFACE = new Color(0x2B2D30);
     public static final Color SURFACE_HIGHLIGHT = new Color(0x35373B);
     public static final Color BORDER = new Color(0x71, 0x77, 0x80);
-    /** El tinte claro del bisel hundido en los paneles de la barra de estado. */
     public static final Color BEVEL_SHADE = new Color(0x7E, 0x83, 0x8B);
-    /** El fondo de la banda de titulo del diapason y del teclado, mas clara que el resto del panel. */
     public static final Color TITLE_BAR = new Color(0x7A, 0x80, 0x89);
-    /** El texto y el icono de cerrar sobre {@link #TITLE_BAR}, que es clara y pide tinta oscura. */
     public static final Color TITLE_BAR_INK = new Color(0x0C, 0x0D, 0x0E);
 
     public static final Color STAFF_LINE = new Color(0x72, 0x76, 0x7F);
@@ -29,59 +25,29 @@ public final class ScoreColors {
     private static final Color MEASURE_NUMBER_DARKENED_TO_MEET_PAPER_CONTRAST = new Color(0xD6, 0x03, 0x00);
 
     public static final Color ACCENT = new Color(0x3574F0);
-    /** El relleno del deslizador de volumen en la mesa de mezcla, como el naranja de Guitar Pro. */
     public static final Color VOLUME_LEVEL = new Color(0xE0, 0x7A, 0x3D);
-    /** El deslizador de paneo, pintado de punta a punta: solo se mueve la caja del valor. */
     public static final Color PAN_LEVEL = new Color(0xC7, 0xB5, 0x3A);
-    /**
-     * La linea vertical fina y roja del cursor de edicion, como en Guitar Pro. Un rojo saturado y
-     * a pleno brillo para que no se confunda con los otros dos rojos de la partitura -el apagado
-     * del compas incompleto y el del cambio de parametro-, y para que se distinga bien del verde
-     * de la linea de reproduccion.
-     */
     public static final Color CURSOR = new Color(0xFF, 0x3B, 0x30);
-    /**
-     * El mismo rojo del cursor, atenuado con transparencia: la parte de la linea que cruza las
-     * pistas que no se estan editando, para que se vea continua de punta a punta del sistema sin
-     * confundirse con el rojo pleno de la pista activa.
-     */
     public static final Color CURSOR_DIMMED = new Color(0xFF, 0x3B, 0x30, 0xE5);
-    /** La linea vertical fina que marca por donde va la reproduccion, como en Guitar Pro. */
     public static final Color PLAYING = new Color(0x24, 0xA2, 0x5A);
     public static final Color PLAYING_MEASURE = new Color(0xE5484D);
     public static final Color WARNING = new Color(0xE5A44A);
-    /** El compas sin notas en la vista general de la mesa de mezcla, plateado como en Guitar Pro 5. */
     public static final Color EMPTY_MEASURE = new Color(0xB8, 0xBC, 0xC2);
 
-    /** El rectangulito rojo que anuncia un cambio de parametro sin simbolo musical propio. */
     public static final Color PARAMETER_CHANGE = new Color(0xD32F3B);
     public static final Color TEMPO = new Color(0xFF, 0x65, 0x63);
-    /** El compas que no suma lo que su medida pide, salvo el que se esta editando. */
     public static final Color INCOMPLETE_MEASURE = new Color(0xE5484D);
-    /** El relleno de una seleccion multiple, amarillo como en Guitar Pro 5 (medido #FFFF00). */
     public static final Color SELECTION = new Color(0xFF, 0xFF, 0x00, 0x50);
-    /** El contorno solido de la seleccion, del mismo amarillo que Guitar Pro 5. */
     public static final Color SELECTION_BORDER = new Color(0xFF, 0xFF, 0x00);
-    /** El amarillo puro no llega a 3:1 contra la hoja clara (da 1,01); este oscurecido sí (3,30). */
     private static final Color SELECTION_BORDER_DARKENED_TO_MEET_PAPER_CONTRAST = new Color(0x8C, 0x8C, 0x00);
-    /** El rectangulo gris que marca, en la otra notacion, la nota que corresponde al cursor. */
     public static final Color CORRESPONDING_NOTE = new Color(0x9D, 0xA1, 0xA8, 0xAF);
-    /** La voz que no se esta editando, cuando se pide dibujarla atenuada. */
     public static final Color VOICE_INACTIVE = new Color(0x8C, 0x8F, 0x94);
 
-    /** La hoja clara del Modo Pagina y del Modo Pergamino, sobre el fondo oscuro de la ventana. */
     public static final Color PAGE_PAPER = new Color(0xF6F6F2);
     public static final Color PAGE_INK = new Color(0x202124);
     public static final Color PAGE_MUTED = new Color(0x6B6E74);
     public static final Color PAGE_SHADOW = new Color(0, 0, 0, 90);
 
-    /**
-     * Que color es cada color de la partitura cuando se dibuja sobre la hoja clara en vez del
-     * fondo oscuro de la pantalla. Los grises se espejan —la tinta clara que se lee sobre el fondo
-     * oscuro se lee oscura sobre el papel— y lo que no esta en esta tabla se dibuja tal cual,
-     * porque su color es justamente lo que dice: el rojo del cambio de parametro, el del compas
-     * incompleto, el del cursor de edicion o el que el usuario le puso a un marcador.
-     */
     private static final Map<Color, Color> ON_PAPER = buildOnPaperMap();
 
     private ScoreColors() {
@@ -91,24 +57,15 @@ public final class ScoreColors {
         return new Color(color.red(), color.green(), color.blue());
     }
 
-    /**
-     * "Ver > Notas con dinamica [F11]" del manual: la cabeza de la nota se lee con un gradiente
-     * en vez de la tinta pareja de siempre -de {@link #MUTED_INK} para la mas suave a
-     * {@link #INK} para la mas fuerte. Mirroreado en {@link #onPaper}, esa misma escala se lee
-     * al reves sobre el papel, que es justo lo que pide el manual: "cuanto mas clara, mas suave;
-     * cuanto mas oscura, mas fuerte".
-     */
     public static Color forDynamic(Dynamic dynamic) {
         double loudness = dynamic.ordinal() / (double) (Dynamic.values().length - 1);
         return interpolated(MUTED_INK, INK, loudness);
     }
 
-    /** Como se lee sobre la hoja clara un color elegido para la pantalla oscura. */
     static Color onPaper(Color color) {
         return ON_PAPER.getOrDefault(color, color);
     }
 
-    /** El mismo gris del otro lado: lo que era claro queda oscuro y al reves, sin tocar la transparencia. */
     private static Color mirrored(Color color) {
         return new Color(
                 255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue(), color.getAlpha());

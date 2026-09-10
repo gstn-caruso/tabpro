@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/** El pentagrama de una pista: clave, armadura, figuras, plicas, barras de union, silencios y
- * las dos voces, cuando la pista las usa. */
 final class StaffPainter {
 
     private static final double SPACE = ScoreLayout.STAFF_LINE_SPACING;
@@ -44,12 +42,9 @@ final class StaffPainter {
     private static final double STEM_LENGTH = SPACE * 3.4;
     private static final double BEAM_THICKNESS = SPACE * 0.52;
     private static final double BEAM_GAP = SPACE * 0.84;
-    /** El tope de inclinacion de una barra de union: un espacio de pentagrama por grupo, la
-     * convencion tipografica habitual (nunca mas de dos). */
     private static final double MAX_BEAM_SLOPE = SPACE;
     private static final int MIDDLE_LINE_STEP = 4;
 
-    /** Los grados donde va cada alteracion de la armadura, en orden de letra (Do..Si). */
     private static final int[] TREBLE_KEY_STEPS = {5, 6, 7, 8, 9, 3, 4};
     private static final int[] BASS_KEY_STEPS = {3, 4, 5, 6, 7, 1, 2};
 
@@ -58,7 +53,6 @@ final class StaffPainter {
     private static final BasicStroke DOTTED = new BasicStroke(
             1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] {1.5f, 2.5f}, 0f);
     private static final Font OCTAVE_MARK_FONT = ScoreFonts.octaveMarkFont(SPACE);
-    /** El aire entre el pentagrama y la marca de octava (rotulo + linea de puntos). */
     private static final double OCTAVE_MARK_GAP = SPACE * 0.8;
 
     private StaffPainter() {
@@ -107,7 +101,6 @@ final class StaffPainter {
         g.drawString(bottom, centerX - metrics.stringWidth(bottom) / 2, lowerY);
     }
 
-    /** Una cifra de compas armada glifo por glifo, uno por cada digito del numero. */
     private static String timeSignatureGlyphsOf(int number) {
         StringBuilder glyphs = new StringBuilder();
         for (char digit : String.valueOf(number).toCharArray()) {
@@ -116,7 +109,6 @@ final class StaffPainter {
         return glyphs.toString();
     }
 
-    /** Los sostenidos o los bemoles de la armadura, en el orden convencional de la clave. */
     static void paintKeySignature(
             Graphics2D g, ScoreLayout layout, Clef clef, KeySignature key, int trackIndex, int measureIndex, double x) {
         if (key.alteredCount() == 0) {
@@ -141,9 +133,6 @@ final class StaffPainter {
         Measure measure = track.measure(measureIndex);
         boolean twoVoices = measure.usesTwoVoices();
         KeySignatureAccidentals accidentals = new KeySignatureAccidentals(clef, measure.attributes().keySignature());
-        // Las dos voces comparten los mismos carriles horizontales de la voz principal, que es
-        // la que arma ScoreLayout: funciona sin fisuras cuando comparten subdivision ritmica, que
-        // es el caso comun de una melodia con su linea de bajo debajo (limitacion documentada).
         int laneCount = Math.max(1, measure.lead().beatCount());
         OctaveMark octaveMark = measure.attributes().octaveMark();
         int octaveShift = octaveMark.staffStepShift();
@@ -160,7 +149,6 @@ final class StaffPainter {
         paintOctaveMark(g, layout, octaveMark, trackIndex, measureIndex);
     }
 
-    /** Se atenua toda voz que no sea la destacada; si no hay destacada, no se atenua ninguna. */
     private static boolean dims(Optional<VoicePart> highlightedVoice, VoicePart part) {
         return highlightedVoice.isPresent() && highlightedVoice.get() != part;
     }
@@ -193,8 +181,6 @@ final class StaffPainter {
                 ink, octaveShift);
     }
 
-    /** Reusa el agrupamiento por barra de {@link Beaming} armando un compas de una sola voz con
-     * los beats que corresponda: sirve tanto para la principal como para la de bajos. */
     private static List<BeamGroup> groupsFor(TimeSignature timeSignature, List<Beat> beats) {
         return Beaming.groupsOf(new Measure(timeSignature, beats));
     }
@@ -214,9 +200,6 @@ final class StaffPainter {
             int octaveShift) {
         double centerX = noteCenterX(layout, trackIndex, measureIndex, beatIndex);
         String notehead = noteheadGlyphFor(beat.duration().value());
-        // "Ver > Notas con dinamica [F11]": solo la cabeza de la nota cambia de tinta, y solo
-        // cuando no esta atenuada -la voz que no se edita se sigue viendo pareja, sin importar
-        // cuan fuerte suena cada una de sus notas.
         boolean colorsByDynamic = layout.showsDynamicNotes() && !dimmed;
 
         for (Note note : beat.notes()) {
@@ -348,7 +331,6 @@ final class StaffPainter {
         paintAccidentalGlyph(g, MusicFont.accidentalNatural(), x, y, ink);
     }
 
-    /** Los arcos de ligadura de prolongacion, entre golpes consecutivos de la misma cuerda. */
     private static void paintTies(
             Graphics2D g, ScoreLayout layout, Track track, Clef clef, int trackIndex, int measureIndex,
             List<Beat> beats, int laneCount, Color ink, int octaveShift) {
@@ -386,7 +368,6 @@ final class StaffPainter {
         }
     }
 
-    /** Los corchetes de los grupos irregulares, con su numero en el medio. */
     private static void paintTupletBrackets(
             Graphics2D g, ScoreLayout layout, Track track, Clef clef, int trackIndex, int measureIndex, Measure measure) {
         int octaveShift = measure.attributes().octaveMark().staffStepShift();
@@ -518,14 +499,6 @@ final class StaffPainter {
         paintPartialBeams(g, stems, beats, group, beamLine, direction, beams);
     }
 
-    /**
-     * La barra de un grupo: sigue la pendiente que dan las cabezas de nota del primer y el ultimo
-     * beat, acotada a {@link #MAX_BEAM_SLOPE}, y horizontal cuando el rasgo de la pista lo fuerza,
-     * cuando las notas estan todas a la misma altura o cuando el grupo hace zigzag (las notas de
-     * adentro cruzan la linea que uniria los extremos). El extremo que ya queda mas lejos de las
-     * cabezas de nota (el que fijaria la barra horizontal de siempre) se mantiene sin estirar de
-     * mas; el otro extremo es el que se acerca, nunca mas alla de lo que ya alcanzaba solo.
-     */
     private static BeamLine beamLineFor(
             Track track,
             Clef clef,
@@ -563,9 +536,6 @@ final class StaffPainter {
         return Math.max(-cap, Math.min(cap, value));
     }
 
-    /** El grado mas lejos del centro del pentagrama de cada beat del grupo -el mismo que ata la
-     * plica, ver {@link #stemOf}-, en orden: la referencia para decidir si el grupo sube, baja o
-     * hace zigzag. */
     private static List<Integer> outerStepsOf(
             Track track, Clef clef, List<Beat> beats, BeamGroup group, boolean up, int octaveShift) {
         List<Integer> steps = new ArrayList<>();
@@ -580,8 +550,6 @@ final class StaffPainter {
         return steps;
     }
 
-    /** Sin tendencia clara: todas las notas a la misma altura, o un zigzag donde el grado no crece
-     * ni decrece de punta a punta sin cambiar de sentido en el medio. */
     private static boolean isFlatTrend(List<Integer> steps) {
         boolean nonDecreasing = true;
         boolean nonIncreasing = true;
@@ -597,9 +565,6 @@ final class StaffPainter {
         return !monotonic || steps.get(0).equals(steps.get(steps.size() - 1));
     }
 
-    /** El cuerpo de una barra entre sus dos extremos: un rectangulo cuando es horizontal, un
-     * paralelogramo cuando tiene pendiente. El espesor crece en la direccion de {@code direction}
-     * (hacia las cabezas de nota), nunca hacia afuera de la plica. */
     private static void fillBeam(Graphics2D g, double x1, double y1, double x2, double y2, double direction) {
         double dy = direction * BEAM_THICKNESS;
         java.awt.geom.Path2D.Double body = new java.awt.geom.Path2D.Double();
@@ -644,7 +609,6 @@ final class StaffPainter {
         }
     }
 
-    /** Los dos extremos de una barra de union, con la pendiente que dan sus dos puntas. */
     private record BeamLine(double firstX, double firstY, double lastX, double lastY) {
         double yAt(double x) {
             if (lastX == firstX) {
@@ -654,12 +618,6 @@ final class StaffPainter {
         }
     }
 
-    /**
-     * El manual, linea 923: la direccion de la plica es automatica, pero se puede forzar a mano
-     * desde el menu Nota. Una barra de union comparte una sola plica para todo el grupo, asi que
-     * el primer override que aparezca entre sus beats -{@link StemOverride#AUTOMATIC} no cuenta-
-     * decide por el grupo entero; si ninguno lo pide, sigue la regla automatica de siempre.
-     */
     private static boolean groupPointsUp(
             Track track, Clef clef, List<Beat> beats, BeamGroup group, VoicePart part, boolean twoVoices,
             int octaveShift) {
@@ -725,25 +683,10 @@ final class StaffPainter {
         return new Stem(x, rootY, up ? rootY - span : rootY + span, up);
     }
 
-    /**
-     * Donde se escribe una nota, con el corrimiento de {@code octaveShift} aplicado -8va/8vb/
-     * 15ma/15mb del manual, ver {@link OctaveMark}. Nunca toca {@code track.tuning().pitchOf},
-     * que es la altura real: la marca de octava es pura notacion.
-     *
-     * <p>Sin {@code private}: {@link ScorePainter} la reusa para ubicar, en el pentagrama, la
-     * marca de la nota correspondiente al cursor -tiene que coincidir con donde esta clase
-     * escribe la cabeza, corrimiento de octava incluido, y no vale repetir el
-     * {@code shiftedBySteps} a mano en dos lados.
-     */
     static StaffPosition positionOf(Track track, Clef clef, Note note, int octaveShift) {
         return StaffPosition.of(track.tuning().pitchOf(note), clef).shiftedBySteps(octaveShift);
     }
 
-    /**
-     * "8va"/"8vb"/"15ma"/"15mb" del manual: el rotulo y su linea de puntos hasta donde alcanza,
-     * arriba del pentagrama para lo agudo (8va/15ma, que se escribe mas abajo) y abajo para lo
-     * grave (8vb/15mb, que se escribe mas arriba). Puro dibujo: no cambia una sola nota.
-     */
     private static void paintOctaveMark(
             Graphics2D g, ScoreLayout layout, OctaveMark octaveMark, int trackIndex, int measureIndex) {
         if (octaveMark == OctaveMark.NONE) {
