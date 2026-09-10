@@ -5,10 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class StringOptionsPanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new StringOptionsPanel(6, 8));
+    }
 
     @Test
     void startsWithEveryStringSelected() {

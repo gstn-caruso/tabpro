@@ -3,9 +3,15 @@ package com.gstncaruso.tabpro.ui.dialogs.metronome;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import org.junit.jupiter.api.Test;
 
 class MetronomePanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new MetronomePanel(120, new MetronomeSettings(true, 80)));
+    }
 
     @Test
     void startsWithTheScoresTempoAndTheGivenSettings() {
