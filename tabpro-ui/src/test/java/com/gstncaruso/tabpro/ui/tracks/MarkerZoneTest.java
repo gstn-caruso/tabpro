@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class MarkerZoneTest {
@@ -41,5 +44,22 @@ class MarkerZoneTest {
 
         assertEquals("Zona de marcadores", zone.getAccessibleContext().getAccessibleName());
         assertTrue(zone.getToolTipText() != null && !zone.getToolTipText().isBlank());
+    }
+
+    @Test
+    void theRightArrowKeyMovesTheCaretToTheNextMeasure() {
+        Editor editor = new Editor(Score.blank());
+        editor.insertMeasure();
+        editor.insertMeasure();
+        MarkerZone zone = new MarkerZone(editor);
+
+        pressShortcut(zone, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals(1, zone.caret());
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 }

@@ -12,12 +12,17 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 
 /**
  * La franja arriba de la grilla de compases: el nombre de cada marcador con su color, sobre los
@@ -28,6 +33,7 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     public static final int HEIGHT = 12;
 
     private final Editor editor;
+    private int caret;
 
     public MarkerZone(Editor editor) {
         this.editor = editor;
@@ -43,6 +49,36 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
                 }
             }
         });
+        installKeyboardShortcuts();
+    }
+
+    /** Donde esta parado el caret de teclado: no se confunde con el cursor real hasta Enter. */
+    public int caret() {
+        return caret;
+    }
+
+    private void installKeyboardShortcuts() {
+        InputMap inputMap = getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = getActionMap();
+        bindCaretMove(inputMap, actionMap, "RIGHT", 1);
+        bindCaretMove(inputMap, actionMap, "LEFT", -1);
+    }
+
+    private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int delta) {
+        String name = "markerzone.caret." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moveCaret(delta);
+            }
+        });
+    }
+
+    private void moveCaret(int delta) {
+        int lastMeasure = Math.max(0, editor.score().measureCount() - 1);
+        caret = Math.max(0, Math.min(lastMeasure, caret + delta));
+        repaint();
     }
 
     @Override
