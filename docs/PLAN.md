@@ -264,31 +264,41 @@ PR que lo usa.
 
 | Ítem | Branch | PR | Estado |
 |---|---|---|---|
-| Plan de la etapa | `docs/plan-etapa-visual` | #112 | mergeado |
-| A · auditoría de uso real (47 OK / 7 MIENTE / 1 AUSENTE, harness de 54 tests) | `docs/auditoria-uso-real` | #114 | mergeado |
+| Plan de la etapa y actualizaciones | `docs/plan-etapa-visual`, `docs/estado-etapa-visual` | #112, #120 | mergeado |
+| A · auditoría de uso real, 15 de 15 capítulos (47 OK / 7 MIENTE / 1 AUSENTE; Print e Import/Export todo OK) | `docs/auditoria-uso-real`, `docs/auditoria-uso-real-print-e-import-export` | #114, #129 | mergeado |
 | A · el CI corre el harness bajo Xvfb | `ci/harness-con-display` | #117 | mergeado |
 | A · fix: la configuración del metrónomo se abre desde Sonido (hallazgo 6) | `fix/configuracion-del-metronomo-alcanzable` | #119 | mergeado |
-| A · fix: los siete atajos que Swing interceptaba (hallazgos 1–5) | `fix/atajos-que-swing-interceptaba` | — | en curso |
+| A · fix: los siete atajos que Swing interceptaba (hallazgos 1–5) | `fix/atajos-que-swing-interceptaba` | #121 | mergeado |
 | B1 · íconos genéricos desde Tabler (`SvgIcon` + `jsvg`) | `feat/iconos-tabler` | #113 | mergeado |
 | B3 · símbolos musicales desde Bravura (`GlyphIcon`) | `feat/iconos-bravura` | #118 | mergeado |
-| B4 · barras agrupadas y ordenadas como GP5, efectos abajo de la partitura | — | — | pendiente |
+| B4 · barras con el orden y los grupos de GP5, efectos abajo de la partitura | `feat/barras-como-gp5` | #127 | mergeado |
+| B4 · dinámicas ppp…fff y banco de sonidos como botones | `feat/dinamicas-y-banco-de-sonidos-en-las-barras` | #132 | mergeado |
+| B4 · las barras fijan sus colores desde la paleta, con o sin tema | `fix/barras-superiores-apagadas` | #133 | mergeado |
+| B4 · selector de pista por número (fila 1) | `feat/selector-de-pista-por-numero` | — | en curso |
 | C1 · nombre accesible y tooltip en todo control (`AccessibilityWalker`) | `feat/nombres-accesibles` | #115 | mergeado |
-| C2 · mnemónicos en menús y formularios | `feat/mnemonicos` | — | en curso |
-| C3 · teclado y foco visible en perillas, diapasón, teclado y grilla | `feat/teclado-en-los-componentes-custom` | — | en curso |
+| C1 · siete diálogos separables para el recorredor | `refactor/dialogos-separables-para-el-recorredor` | #128 | mergeado |
+| C2 · mnemónicos Alt+letra en menús y formularios | `feat/mnemonicos` | #124 | mergeado |
+| C3 · teclado y foco visible en perilla, diapasón, teclado y grilla | `feat/teclado-en-los-componentes-custom` | #122 | mergeado |
+| C3 · marcadores, percusión, bends y afinador por teclado; Ctrl+F6 cede el foco | `feat/teclado-en-los-custom-menores-y-salida-de-foco` | #125 | mergeado |
+| C3 · el test de Ctrl+F6 inyecta la travesía de foco | `test/ctrl-f6-sin-el-focus-manager-global` | #130 | mergeado |
 | C4 · contraste WCAG AA en las dos paletas, con tests | `fix/contraste-wcag` | #116 | mergeado |
-| C5 · Preferencias > Accesibilidad (letra, alto contraste, sin animaciones) | `feat/preferencias-de-accesibilidad` | — | en curso |
+| C4 · contraste en la mesa de mezcla y los cuatro mástiles | `fix/contraste-en-la-mesa-y-los-mastiles` | #126 | mergeado |
+| C5 · Preferencias > Accesibilidad (letra, alto contraste, sin animaciones) | `feat/preferencias-de-accesibilidad` | #123 | mergeado |
+| D · README y capturas con el tema real | `docs/readme-y-capturas-de-la-etapa-visual` | #131 | mergeado |
 
-Lo que la etapa dejó anotado para después: la perilla y la fila seleccionada de
-la mesa de mezcla no pasan el contraste; los mástiles acústico, clásico y
-básico necesitan paleta propia; `doubleBar` y `tuplet` siguen en Java2D porque
-sus glifos SMuFL son sub-píxel a 18 px; seis diálogos arman su panel dentro del
-método que lo muestra y el recorredor de accesibilidad no los alcanza; y la
-auditoría no cubrió Print ni Import/Export (piden `PrinterJob` y `JFileChooser`
-reales).
+Lo que queda anotado para después: editar un marcador puntual desde la barra
+(hoy sólo hay lista), digitación de mano derecha como botón aparte (el diálogo
+único ya cubre las dos manos), tres íconos de la captura de GP5 que no se
+distinguen, la cejilla sobre el mástil clásico sin contraste AA, `doubleBar` y
+`tuplet` en Java2D por ser sub-píxel en Bravura, y `ScorePrinting` llamando a
+`PrinterJob.getPrinterJob()` sin costura (diálogo nativo, no verificable).
 
 **Lo que enseñó esta tanda:** el `AcceleratorGuard` de la etapa anterior era él
 mismo una interfaz que mentía: ponía una acción vacía en vez de sacarle la tecla
 al `JScrollPane`, y su test verificaba que el scroll ya no la atendiera, no que
 el atajo funcionara después. La auditoría de uso real lo encontró porque despacha
-la tecla de verdad. Y `jsvg` resuelve `currentColor` desde `Graphics2D.getColor()`
-al renderizar, no desde el componente: sin setear el color antes pinta blanco.
+la tecla de verdad. `jsvg` resuelve `currentColor` desde `Graphics2D.getColor()`
+al renderizar, no desde el componente. Un conmutable que no lee el estado real al
+construirse miente igual que una preferencia sin lector. Y una captura del
+`MainFrame` sin `Theme.install()` muestra Metal, no la app: el harness construye
+la ventana sin tema y hay que instalarlo como hace `App.main()`.
