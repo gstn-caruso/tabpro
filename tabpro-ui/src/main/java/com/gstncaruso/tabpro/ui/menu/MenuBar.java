@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.menu;
 import com.gstncaruso.tabpro.ui.a11y.MnemonicAssigner;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.event.InputEvent;
 import java.nio.file.Path;
 import java.util.IdentityHashMap;
@@ -77,17 +78,17 @@ public final class MenuBar {
     }
 
     private JMenu fileMenu() {
-        JMenu menu = new JMenu("Archivo");
+        JMenu menu = new JMenu(Texts.get("menus.title.file"));
         add(menu, "file.new", "file.open", "file.browse");
         recentFilesMenu().ifPresent(recent -> addSubmenu(menu, recent));
         menu.addSeparator();
         add(menu, "file.save", "file.saveAs");
         menu.addSeparator();
-        JMenu importMenu = new JMenu("Importar");
+        JMenu importMenu = new JMenu(Texts.get("menus.title.import"));
         add(importMenu, "file.importGuitarPro", "file.importTabEdit", "file.importPowerTab", "file.importMidi",
                 "file.importAscii", "file.importMusicXml");
         addSubmenu(menu, importMenu);
-        JMenu exportMenu = new JMenu("Exportar");
+        JMenu exportMenu = new JMenu(Texts.get("menus.title.export"));
         add(exportMenu, "file.exportMidi", "file.exportWave", "file.exportAscii", "file.exportMusicXml",
                 "file.exportGuitarPro",
                 "file.exportImage", "file.exportPdf");
@@ -100,12 +101,12 @@ public final class MenuBar {
     }
 
     private JMenu editMenu() {
-        JMenu menu = new JMenu("Editar");
+        JMenu menu = new JMenu(Texts.get("menus.title.edit"));
         add(menu, "edit.undo", "edit.redo");
         menu.addSeparator();
         add(menu, "edit.cut", "edit.copy", "edit.copyTrack", "edit.paste", "edit.pasteOptions", "edit.selectAll");
         menu.addSeparator();
-        JMenu voices = new JMenu("Voces");
+        JMenu voices = new JMenu(Texts.get("menus.title.voices"));
         add(voices, "edit.leadVoice", "edit.bassVoice");
         addSubmenu(menu, voices);
         menu.addSeparator();
@@ -114,22 +115,22 @@ public final class MenuBar {
     }
 
     private JMenu barMenu() {
-        JMenu menu = new JMenu("Compás");
+        JMenu menu = new JMenu(Texts.get("menus.title.bar"));
         add(menu, "bar.keySignature", "bar.timeSignature", "bar.tripletFeel");
         menu.addSeparator();
         add(menu, "bar.doubleBar", "bar.repeatOpen", "bar.repeatClose", "bar.alternateEndings", "bar.directions");
         menu.addSeparator();
-        JMenu lineBreaks = new JMenu("Salto de línea");
+        JMenu lineBreaks = new JMenu(Texts.get("menus.title.lineBreak"));
         add(lineBreaks, "bar.forceLineBreak", "bar.preventLineBreak", "bar.resetLineBreak");
         addSubmenu(menu, lineBreaks);
-        JMenu octave = new JMenu("Octava");
+        JMenu octave = new JMenu(Texts.get("menus.title.octave"));
         add(octave, "bar.octave8va", "bar.octave8vb", "bar.octave15ma", "bar.octave15mb", "bar.octaveNone");
         addSubmenu(menu, octave);
         return menu;
     }
 
     private JMenu trackMenu() {
-        JMenu menu = new JMenu("Pista");
+        JMenu menu = new JMenu(Texts.get("menus.title.track"));
         add(menu, "track.add", "track.addGuitar", "track.addBass", "track.addPercussion", "track.delete");
         menu.addSeparator();
         add(menu, "track.moveUp", "track.moveDown");
@@ -141,8 +142,8 @@ public final class MenuBar {
     }
 
     private JMenu noteMenu() {
-        JMenu menu = new JMenu("Nota");
-        JMenu durations = new JMenu("Duración");
+        JMenu menu = new JMenu(Texts.get("menus.title.note"));
+        JMenu durations = new JMenu(Texts.get("menus.title.durations"));
         add(durations, "note.value.WHOLE", "note.value.HALF", "note.value.QUARTER", "note.value.EIGHTH",
                 "note.value.SIXTEENTH", "note.value.THIRTY_SECOND", "note.value.SIXTY_FOURTH");
         durations.addSeparator();
@@ -164,17 +165,17 @@ public final class MenuBar {
                 "note.soundDuration", "note.fingering", "note.chord", "note.mixTableChange",
                 "note.fingeringRightHand");
         menu.addSeparator();
-        JMenu beams = new JMenu("Barra de unión");
+        JMenu beams = new JMenu(Texts.get("menus.title.beams"));
         add(beams, "note.forceBeamBreak", "note.preventBeamBreak", "note.resetBeamBreak");
         addSubmenu(menu, beams);
-        JMenu stems = new JMenu("Plica");
+        JMenu stems = new JMenu(Texts.get("menus.title.stems"));
         add(stems, "note.stemUp", "note.stemDown", "note.stemAutomatic");
         addSubmenu(menu, stems);
         return menu;
     }
 
     private JMenu effectsMenu() {
-        JMenu menu = new JMenu("Efectos");
+        JMenu menu = new JMenu(Texts.get("menus.title.effects"));
         add(menu, "effect.hammer", "effect.legatoSlide", "effect.shiftSlide", "effect.slideInFromBelow",
                 "effect.slideInFromAbove", "effect.slideOutDownwards", "effect.slideOutUpwards", "effect.noSlide");
         menu.addSeparator();
@@ -187,11 +188,11 @@ public final class MenuBar {
         add(menu, "effect.graceNote", "effect.harmonics", "effect.naturalHarmonic", "effect.artificialHarmonic",
                 "effect.tapping", "effect.slapping", "effect.popping");
         menu.addSeparator();
-        JMenu strokes = new JMenu("Rasgueo y púa");
+        JMenu strokes = new JMenu(Texts.get("menus.title.strokes"));
         add(strokes, "effect.strokeDown", "effect.strokeUp", "effect.strokeOptions",
                 "effect.pickstrokeDown", "effect.pickstrokeUp");
         addSubmenu(menu, strokes);
-        JMenu wah = new JMenu("Wah-wah");
+        JMenu wah = new JMenu(Texts.get("menus.title.wah"));
         add(wah, "effect.wahOpen", "effect.wahClosed", "effect.wahOff");
         addSubmenu(menu, wah);
         menu.addSeparator();
@@ -200,7 +201,7 @@ public final class MenuBar {
     }
 
     private JMenu markersMenu() {
-        JMenu menu = new JMenu("Marcadores");
+        JMenu menu = new JMenu(Texts.get("menus.title.markers"));
         add(menu, "marker.insert", "marker.edit", "marker.list");
         menu.addSeparator();
         add(menu, "marker.previous", "marker.next");
@@ -208,7 +209,7 @@ public final class MenuBar {
     }
 
     private JMenu toolsMenu() {
-        JMenu menu = new JMenu("Herramientas");
+        JMenu menu = new JMenu(Texts.get("menus.title.tools"));
         add(menu, "tool.letRingOptions", "tool.palmMuteOptions", "tool.dynamicOptions");
         menu.addSeparator();
         add(menu, "tool.arrangeBars", "tool.completeBars", "tool.automaticFingering");
@@ -220,7 +221,7 @@ public final class MenuBar {
     }
 
     private JMenu soundMenu() {
-        JMenu menu = new JMenu("Sonido");
+        JMenu menu = new JMenu(Texts.get("menus.title.sound"));
         add(menu, "sound.play", "sound.playFromStart", "sound.loop");
         menu.addSeparator();
         add(menu, "sound.tempo", "sound.relativeTempo", "sound.metronome", "sound.metronomeSettings",
@@ -233,7 +234,7 @@ public final class MenuBar {
     }
 
     private JMenu viewMenu() {
-        JMenu menu = new JMenu("Ver");
+        JMenu menu = new JMenu(Texts.get("menus.title.view"));
         add(menu, "view.page", "view.parchment", "view.verticalScreen", "view.horizontalScreen");
         menu.addSeparator();
         add(menu, "view.zoomIn", "view.zoomOut", "view.resetZoom");
@@ -249,7 +250,7 @@ public final class MenuBar {
     }
 
     private JMenu toolBarsMenu() {
-        JMenu menu = new JMenu("Menús y barras");
+        JMenu menu = new JMenu(Texts.get("menus.title.toolBars"));
         addCheckbox(menu, "view.toolBars.document");
         addCheckbox(menu, "view.toolBars.structure");
         addCheckbox(menu, "view.toolBars.notation");
@@ -258,7 +259,7 @@ public final class MenuBar {
     }
 
     private JMenu optionsMenu() {
-        JMenu menu = new JMenu("Opciones");
+        JMenu menu = new JMenu(Texts.get("menus.title.options"));
         themesMenu().ifPresent(theme -> addSubmenu(menu, theme));
         add(menu, "options.midiSetup", "options.preferences");
         return menu;
@@ -272,7 +273,7 @@ public final class MenuBar {
         if (names.isEmpty()) {
             return java.util.Optional.empty();
         }
-        JMenu menu = new JMenu("Tema");
+        JMenu menu = new JMenu(Texts.get("menus.title.theme"));
         add(menu, names.toArray(String[]::new));
         return java.util.Optional.of(menu);
     }
@@ -282,7 +283,7 @@ public final class MenuBar {
         if (paths.isEmpty()) {
             return Optional.empty();
         }
-        JMenu menu = new JMenu("Abrir reciente");
+        JMenu menu = new JMenu(Texts.get("menus.title.recentFiles"));
         for (Path path : paths) {
             JMenuItem item = new JMenuItem(path.getFileName().toString());
             item.setToolTipText(path.toString());
@@ -293,7 +294,7 @@ public final class MenuBar {
     }
 
     private JMenu helpMenu() {
-        JMenu menu = new JMenu("Ayuda");
+        JMenu menu = new JMenu(Texts.get("menus.title.help"));
         add(menu, "help.contents", "help.about");
         return menu;
     }
