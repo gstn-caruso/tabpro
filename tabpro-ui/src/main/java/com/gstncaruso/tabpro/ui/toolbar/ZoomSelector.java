@@ -18,6 +18,7 @@ public final class ZoomSelector extends JComboBox<String> {
     public ZoomSelector(ZoomHolder zoomHolder, Commands commands) {
         super(presetLabels());
         this.zoomHolder = zoomHolder;
+        setEditable(true);
         getAccessibleContext().setAccessibleName("Zoom");
         setToolTipText(tooltipFrom(commands));
         addActionListener(event -> applyEnteredZoom());

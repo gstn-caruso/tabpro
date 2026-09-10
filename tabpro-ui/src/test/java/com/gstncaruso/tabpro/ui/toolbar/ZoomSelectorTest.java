@@ -28,6 +28,13 @@ class ZoomSelectorTest {
     private final FakeZoomHolder zoomHolder = new FakeZoomHolder();
 
     @Test
+    void esEditableParaPoderTipearUnValor() {
+        ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
+
+        assertTrue(selector.isEditable());
+    }
+
+    @Test
     void arrancaMostrandoElZoomReal() {
         ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
 
