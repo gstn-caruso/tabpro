@@ -88,7 +88,13 @@ class FixtureCorpusSmokeTest {
     }
 
     static Stream<Path> fixturesDelCorpus() throws IOException {
-        return Stream.concat(fixturesDeGuitarPro(), fixturesDePowerTab());
+        return Stream.of(fixturesDeGuitarPro(), fixturesDePowerTab(), fixturesDeMusicXml())
+                .reduce(Stream::concat)
+                .orElseGet(Stream::empty);
+    }
+
+    static Stream<Path> fixturesDeMusicXml() throws IOException {
+        return fixturesCon(repoFile("tabpro-format/src/test/resources/musicxml"), ".musicxml");
     }
 
     static Stream<Path> fixturesDeGuitarPro() throws IOException {
