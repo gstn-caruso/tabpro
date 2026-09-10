@@ -181,7 +181,8 @@ public final class MenuBar {
         add(menu, "effect.palmMute", "effect.letRing", "effect.staccato",
                 "effect.deadNote", "effect.ghostNote", "effect.accent", "effect.heavyAccent", "effect.fadeIn");
         menu.addSeparator();
-        add(menu, "effect.graceNote", "effect.harmonics", "effect.tapping", "effect.slapping", "effect.popping");
+        add(menu, "effect.graceNote", "effect.harmonics", "effect.naturalHarmonic", "effect.artificialHarmonic",
+                "effect.tapping", "effect.slapping", "effect.popping");
         menu.addSeparator();
         JMenu strokes = new JMenu("Rasgueo y púa");
         add(strokes, "effect.strokeDown", "effect.strokeUp", "effect.strokeOptions",

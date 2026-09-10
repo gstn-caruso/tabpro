@@ -417,6 +417,17 @@ public final class Icons {
         });
     }
 
+    /** El slide con ataque nuevo: la misma diagonal, con una marca de ataque al empezar. */
+    public static Icon shiftSlide() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(thin());
+            graphics.draw(new Line2D.Double(size * 0.24, size * 0.72, size * 0.76, size * 0.3));
+            graphics.draw(new Line2D.Double(size * 0.24, size * 0.58, size * 0.24, size * 0.86));
+            graphics.fill(Glyphs.noteHead(size * 0.2, size * 0.76, size * 0.22, false));
+            graphics.fill(Glyphs.noteHead(size * 0.8, size * 0.26, size * 0.22, false));
+        });
+    }
+
     public static Icon hammerOn() {
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
@@ -428,6 +439,16 @@ public final class Icons {
 
     public static Icon harmonic() {
         return new GlyphIcon(SIZE, NOTEHEAD_DIAMOND_WHITE);
+    }
+
+    /** El armonico natural, abreviado N.H. como en el manual (HarmonicType.NATURAL). */
+    public static Icon naturalHarmonic() {
+        return letter("NH");
+    }
+
+    /** El armonico artificial, abreviado A.H. como en el manual (HarmonicType.ARTIFICIAL). */
+    public static Icon artificialHarmonic() {
+        return letter("AH");
     }
 
     /** El trino, abreviado como en el manual. */
@@ -456,6 +477,14 @@ public final class Icons {
         return svgIcon("hand-click");
     }
 
+    /**
+     * El mismo dialogo de digitacion, para el boton de la mano derecha del manual: una mano
+     * distinta para que los dos botones no se vean identicos, aunque abran el mismo dialogo.
+     */
+    public static Icon fingeringOtherHand() {
+        return svgIcon("hand-two-fingers");
+    }
+
     public static Icon strokeDown() {
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
@@ -467,6 +496,23 @@ public final class Icons {
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
             graphics.draw(Glyphs.arrow(size * 0.5, size * 0.84, size * 0.16, size * 0.16));
+        });
+    }
+
+    /** La direccion de la pua hacia abajo: un caret chico, distinto del rasgueo entero. */
+    public static Icon pickstrokeDown() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(new BasicStroke(size / 9f));
+            graphics.draw(new Line2D.Double(size * 0.3, size * 0.3, size * 0.5, size * 0.7));
+            graphics.draw(new Line2D.Double(size * 0.5, size * 0.7, size * 0.7, size * 0.3));
+        });
+    }
+
+    public static Icon pickstrokeUp() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(new BasicStroke(size / 9f));
+            graphics.draw(new Line2D.Double(size * 0.3, size * 0.7, size * 0.5, size * 0.3));
+            graphics.draw(new Line2D.Double(size * 0.5, size * 0.3, size * 0.7, size * 0.7));
         });
     }
 

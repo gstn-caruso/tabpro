@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
+import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
@@ -286,7 +287,7 @@ public final class Commands {
         define("effect.legatoSlide", "Slide legato", () -> editor.setSlide(SlideType.LEGATO))
                 .withAccelerator("S").withIcon(Icons.slide());
         define("effect.shiftSlide", "Slide con ataque", () -> editor.setSlide(SlideType.SHIFT))
-                .withAccelerator("alt S");
+                .withAccelerator("alt S").withIcon(Icons.shiftSlide());
         define("effect.slideInFromBelow", "Entrando desde abajo", () -> editor.setSlide(SlideType.IN_FROM_BELOW));
         define("effect.slideInFromAbove", "Entrando desde arriba", () -> editor.setSlide(SlideType.IN_FROM_ABOVE));
         define("effect.slideOutDownwards", "Saliendo hacia abajo", () -> editor.setSlide(SlideType.OUT_DOWNWARDS));
@@ -318,6 +319,10 @@ public final class Commands {
         define("effect.graceNote", "Nota de adorno…", dialogs::graceNote)
                 .withAccelerator("G").withIcon(Icons.graceNote());
         define("effect.harmonics", "Armónicos…", dialogs::harmonics).withIcon(Icons.harmonic());
+        define("effect.naturalHarmonic", "Armónico natural", () -> editor.setHarmonic(HarmonicType.NATURAL))
+                .withIcon(Icons.naturalHarmonic());
+        define("effect.artificialHarmonic", "Armónico artificial",
+                () -> editor.setHarmonic(HarmonicType.ARTIFICIAL)).withIcon(Icons.artificialHarmonic());
         define("effect.tapping", "Tapping", editor::toggleTapping).withIcon(Icons.letter("T"));
         define("effect.slapping", "Slap", editor::toggleSlapping).withIcon(Icons.letter("S"));
         define("effect.popping", "Pop", editor::togglePopping).withIcon(Icons.letter("P"));
@@ -326,8 +331,10 @@ public final class Commands {
         define("effect.strokeDown", "Rasgueo hacia abajo", () -> editor.setStroke(Stroke.of(StrokeDirection.DOWN)))
                 .withAccelerator("ctrl D").withIcon(Icons.strokeDown());
         define("effect.strokeOptions", "Rasgueo…", dialogs::stroke);
-        define("effect.pickstrokeUp", "Púa hacia arriba", () -> editor.setPickstroke(PickstrokeDirection.UP));
-        define("effect.pickstrokeDown", "Púa hacia abajo", () -> editor.setPickstroke(PickstrokeDirection.DOWN));
+        define("effect.pickstrokeUp", "Púa hacia arriba", () -> editor.setPickstroke(PickstrokeDirection.UP))
+                .withIcon(Icons.pickstrokeUp());
+        define("effect.pickstrokeDown", "Púa hacia abajo", () -> editor.setPickstroke(PickstrokeDirection.DOWN))
+                .withIcon(Icons.pickstrokeDown());
         define("effect.wahOpen", "Wah abierto", () -> editor.setWah(Wah.OPEN));
         define("effect.wahClosed", "Wah cerrado", () -> editor.setWah(Wah.CLOSED));
         define("effect.wahOff", "Wah apagado", () -> editor.setWah(Wah.OFF));

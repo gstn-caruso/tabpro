@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.toolbar;
 
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
+import com.gstncaruso.tabpro.ui.icons.Icons;
 import com.gstncaruso.tabpro.ui.theme.Palette;
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
@@ -202,18 +203,19 @@ public final class ToolBars {
     private JToolBar effectsRow() {
         JToolBar bar = emptyBar();
         add(bar, "effect.deadNote", "effect.graceNote", "effect.ghostNote", "effect.accent",
-                "effect.heavyAccent", "effect.letRing", "effect.harmonics");
+                "effect.heavyAccent", "effect.letRing", "effect.naturalHarmonic", "effect.artificialHarmonic");
         bar.addSeparator();
-        add(bar, "effect.hammer", "effect.legatoSlide", "effect.bend", "effect.tremoloBar",
+        add(bar, "effect.hammer", "effect.legatoSlide", "effect.shiftSlide", "effect.bend", "effect.tremoloBar",
                 "effect.vibrato", "effect.wideVibrato");
         bar.addSeparator();
         add(bar, "effect.trill", "effect.tremoloPicking", "effect.palmMute", "effect.staccato");
         bar.addSeparator();
         add(bar, "effect.tapping", "effect.slapping", "effect.popping");
         bar.addSeparator();
-        add(bar, "effect.fadeIn");
+        add(bar, "effect.fadeIn", "effect.pickstrokeDown", "effect.pickstrokeUp");
         bar.addSeparator();
         add(bar, "note.chord", "effect.text", "note.mixTableChange", "note.fingering");
+        addWithIcon(bar, "note.fingering", Icons.fingeringOtherHand());
         bar.addSeparator();
         add(bar, "effect.strokeUp", "effect.strokeDown");
         return bar;
@@ -238,6 +240,17 @@ public final class ToolBars {
         for (String name : names) {
             bar.add(button(commands.get(name)));
         }
+    }
+
+    /**
+     * El manual trae, para el mismo comando, dos botones que difieren solo en el icono (la
+     * digitacion de cada mano abre el mismo dialogo): este agrega el boton con un icono propio
+     * en vez del que ya tiene el comando.
+     */
+    private void addWithIcon(JToolBar bar, String name, javax.swing.Icon icon) {
+        JButton button = button(commands.get(name));
+        button.setIcon(icon);
+        bar.add(button);
     }
 
     /** Un boton de barra: solo el icono, plano, con la ayuda y el atajo en el tooltip. */

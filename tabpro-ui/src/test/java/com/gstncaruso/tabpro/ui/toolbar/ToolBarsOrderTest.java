@@ -80,13 +80,13 @@ class ToolBarsOrderTest {
     void laFilaDeEfectosSigueElOrdenDeGuitarPro5() {
         assertOrder(toolBars.effectsToolBar,
                 "effect.deadNote", "effect.graceNote", "effect.ghostNote", "effect.accent",
-                "effect.heavyAccent", "effect.letRing", "effect.harmonics", SEP,
-                "effect.hammer", "effect.legatoSlide", "effect.bend", "effect.tremoloBar",
+                "effect.heavyAccent", "effect.letRing", "effect.naturalHarmonic", "effect.artificialHarmonic", SEP,
+                "effect.hammer", "effect.legatoSlide", "effect.shiftSlide", "effect.bend", "effect.tremoloBar",
                 "effect.vibrato", "effect.wideVibrato", SEP,
                 "effect.trill", "effect.tremoloPicking", "effect.palmMute", "effect.staccato", SEP,
                 "effect.tapping", "effect.slapping", "effect.popping", SEP,
-                "effect.fadeIn", SEP,
-                "note.chord", "effect.text", "note.mixTableChange", "note.fingering", SEP,
+                "effect.fadeIn", "effect.pickstrokeDown", "effect.pickstrokeUp", SEP,
+                "note.chord", "effect.text", "note.mixTableChange", "note.fingering", "note.fingering", SEP,
                 "effect.strokeUp", "effect.strokeDown");
     }
 
