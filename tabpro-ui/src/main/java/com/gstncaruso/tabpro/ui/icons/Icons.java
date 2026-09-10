@@ -292,6 +292,29 @@ public final class Icons {
         return letter("A");
     }
 
+    /** La plica hacia arriba, a la derecha de la cabeza como se escribe a mano. */
+    public static Icon stemUp() {
+        return icon((graphics, size) -> {
+            graphics.fill(Glyphs.noteHead(size * 0.32, size * 0.72, size * 0.26, false));
+            graphics.setStroke(thin());
+            graphics.draw(new Line2D.Double(size * 0.44, size * 0.68, size * 0.44, size * 0.18));
+        });
+    }
+
+    /** La plica hacia abajo, a la izquierda de la cabeza. */
+    public static Icon stemDown() {
+        return icon((graphics, size) -> {
+            graphics.fill(Glyphs.noteHead(size * 0.68, size * 0.32, size * 0.26, false));
+            graphics.setStroke(thin());
+            graphics.draw(new Line2D.Double(size * 0.56, size * 0.36, size * 0.56, size * 0.86));
+        });
+    }
+
+    /** La direccion de la plica vuelve a decidirla el automatismo del manual. */
+    public static Icon stemAutomatic() {
+        return letter("AU");
+    }
+
     // ---- efectos ----------------------------------------------------------
 
     public static Icon letter(String text) {
@@ -554,6 +577,22 @@ public final class Icons {
         return icon((graphics, size) -> {
             Glyphs.staff(graphics, size * 0.12, size * 0.16, size * 0.76, size * 0.06);
             Glyphs.staff(graphics, size * 0.12, size * 0.56, size * 0.76, size * 0.06);
+        });
+    }
+
+    /** El pentagrama solo, sin la tablatura debajo. */
+    public static Icon hideStandardNotation() {
+        return icon((graphics, size) -> Glyphs.staff(graphics, size * 0.1, size * 0.3, size * 0.8, size * 0.12));
+    }
+
+    /** Las lineas de la tablatura, una por cuerda. */
+    public static Icon hideTablature() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(thin());
+            for (int line = 0; line < 4; line++) {
+                double y = size * (0.26 + line * 0.16);
+                graphics.draw(new Line2D.Double(size * 0.1, y, size * 0.9, y));
+            }
         });
     }
 

@@ -270,9 +270,12 @@ public final class Commands {
                 .withIcon(Icons.preventBeamBreak());
         define("note.resetBeamBreak", "Barra automática", () -> editor.setBeamBreak(BeamBreak.AUTOMATIC))
                 .withIcon(Icons.resetBeamBreak());
-        define("note.stemUp", "Plica hacia arriba", () -> editor.setStemOverride(StemOverride.UP));
-        define("note.stemDown", "Plica hacia abajo", () -> editor.setStemOverride(StemOverride.DOWN));
-        define("note.stemAutomatic", "Plica automática", () -> editor.setStemOverride(StemOverride.AUTOMATIC));
+        define("note.stemUp", "Plica hacia arriba", () -> editor.setStemOverride(StemOverride.UP))
+                .withIcon(Icons.stemUp());
+        define("note.stemDown", "Plica hacia abajo", () -> editor.setStemOverride(StemOverride.DOWN))
+                .withIcon(Icons.stemDown());
+        define("note.stemAutomatic", "Plica automática", () -> editor.setStemOverride(StemOverride.AUTOMATIC))
+                .withIcon(Icons.stemAutomatic());
     }
 
     // ---- efectos ----------------------------------------------------------
@@ -405,8 +408,10 @@ public final class Commands {
                 .withAccelerator("ctrl G");
         define("view.dynamicNotes", "Notas con dinámica", view::toggleShowsDynamicNotes)
                 .withAccelerator("F11");
-        define("view.hideStandardNotation", "Ocultar el pentagrama", view::toggleStandardNotation);
-        define("view.hideTablature", "Ocultar la tablatura", view::toggleTablature);
+        define("view.hideStandardNotation", "Ocultar el pentagrama", view::toggleStandardNotation)
+                .withIcon(Icons.hideStandardNotation());
+        define("view.hideTablature", "Ocultar la tablatura", view::toggleTablature)
+                .withIcon(Icons.hideTablature());
         define("view.fretboard", "Diapasón", view::toggleFretboard).withAccelerator("ctrl 3")
                 .withIcon(Icons.fretboard());
         define("view.keyboard", "Teclado", view::toggleKeyboard).withAccelerator("ctrl 4")

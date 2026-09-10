@@ -71,7 +71,9 @@ class ToolBarsOrderTest {
                 "note.rest", SEP,
                 "note.tie", "note.soundDuration", SEP,
                 "bar.octave8va", "bar.octave8vb", "bar.octave15ma", "bar.octave15mb", SEP,
-                "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak");
+                "view.hideStandardNotation", "view.hideTablature", SEP,
+                "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak", SEP,
+                "note.stemUp", "note.stemDown", "note.stemAutomatic");
     }
 
     @Test

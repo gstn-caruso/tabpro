@@ -187,7 +187,11 @@ public final class ToolBars {
         bar.addSeparator();
         add(bar, "bar.octave8va", "bar.octave8vb", "bar.octave15ma", "bar.octave15mb");
         bar.addSeparator();
+        add(bar, "view.hideStandardNotation", "view.hideTablature");
+        bar.addSeparator();
         add(bar, "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak");
+        bar.addSeparator();
+        add(bar, "note.stemUp", "note.stemDown", "note.stemAutomatic");
         return bar;
     }
 
