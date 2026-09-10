@@ -5,12 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * Un archivo TEF3 minimo y valido, armado a mano: no hay ninguna muestra real de TablEdit en el
- * repositorio (tampoco la usa {@code tabpro-format}, que arma los suyos con el mismo criterio en
- * su propio {@code TabEditFixtures} de test, package-private y en otro modulo, así que no se
- * puede reusar desde aca). Este es el mismo layout binario que entiende el lector real
- * ({@code TabEditByteReader}), reducido a una pista de guitarra en afinacion estandar con un
- * compas de 4/4.
+ * A minimal, valid TEF3 file, built by hand: there is no real TablEdit sample in the repository.
+ * This is the same binary layout that the real reader ({@code TabEditByteReader}) understands,
+ * reduced to one guitar track in standard tuning with a single 4/4 measure.
  */
 final class TabEditMinimalFixture {
 

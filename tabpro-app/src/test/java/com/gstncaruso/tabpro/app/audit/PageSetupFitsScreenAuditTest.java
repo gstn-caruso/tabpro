@@ -20,12 +20,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Page Setup": el dialogo real de Configurar pagina (F8) nunca supera el area util de
- * la pantalla, y sus tres botones extra -Actualizar partitura, Guardar como configuracion por
- * defecto, Aplicar configuracion por defecto- quedan visibles fuera de cualquier scroll, igual
- * que Aceptar y Cancelar.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class PageSetupFitsScreenAuditTest {
@@ -60,7 +54,7 @@ class PageSetupFitsScreenAuditTest {
         }
     }
 
-    /** No alcanza con "showing": adentro de un scroll clippeado, el boton sigue teniendo peer. */
+    /** isShowing() is not enough: inside a clipped scroll pane, the button still has a peer. */
     private static void assertWithinTheDialog(JDialog dialog, JButton button, String label) {
         assertNotNull(button, "no encontre el boton real '" + label + "'");
         Rectangle onScreen = new Rectangle(button.getLocationOnScreen(), button.getSize());

@@ -14,15 +14,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Auditoria visual 2, hallazgo 2: {@code Editor.moveCursor()} no reseteaba el ancla de la
- * seleccion, asi que cualquier navegacion pura la dejaba resaltada para siempre en vez de
- * colapsarla; y "Seleccionar todo" (Ctrl+A) tampoco se veia porque {@code ScoreCanvas} pintaba
- * su propia seleccion, armada solo desde el mouse, nunca la del {@code Editor}. Este test cierra
- * los dos hallazgos con las teclas reales -Ctrl+A y una flecha sin Shift- despachadas sobre el
- * lienzo real, mirando lo mismo que {@code PageScorePainter} usa para pintar:
- * {@code ScoreCanvas#selection()}.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class SelectionPaintingAuditTest {

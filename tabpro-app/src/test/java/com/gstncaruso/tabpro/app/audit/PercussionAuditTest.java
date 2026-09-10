@@ -14,13 +14,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Percussion" (linea 1670 del texto extraido): Ver > Asistente de percusion, sin atajo.
- * Solo sirve parado en una pista de percusion; en cualquier otra, el manual describe un aviso en
- * vez del asistente. Los dos caminos reales abren su propio dialogo (los dos son, por adentro,
- * un JOptionPane): se comprueba que cada uno abre alguno, sin repetir aca el contenido del
- * asistente, que ya tiene su propia clase (PercussionAssistant, con sus tests unitarios).
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class PercussionAuditTest {

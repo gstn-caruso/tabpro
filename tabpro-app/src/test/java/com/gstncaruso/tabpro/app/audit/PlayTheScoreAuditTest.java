@@ -19,14 +19,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Play the Score" (linea 2087 del texto extraido): Espacio arranca y frena la
- * reproduccion, Ctrl+Espacio la arranca desde el principio, F9 abre el loop / entrenador de
- * velocidad. Como Transport no se puede mirar desde afuera de MainFrame, el Player que el test
- * inyecta es el testigo: si Espacio de verdad dispara la reproduccion, tiene que llegar a
- * Player.play(...); esta partitura no depende de MIDI real (Player.NONE-like en newFrame no
- * sirve aca porque termina la reproduccion sola en el mismo llamado).
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class PlayTheScoreAuditTest {
