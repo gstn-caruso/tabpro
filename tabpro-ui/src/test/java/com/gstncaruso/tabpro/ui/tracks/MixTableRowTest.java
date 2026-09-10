@@ -188,7 +188,7 @@ class MixTableRowTest {
         Editor editor = twoTrackEditor();
         MixTableRow row = new MixTableRow(editor, new MixTableModel(), 0);
         row.setSize(row.getPreferredSize());
-        layOut(row);
+        forceLayoutOfEntireTreeWithoutARealWindow(row);
 
         JSpinner probe = new JSpinner(
                 new SpinnerNumberModel(Channel.CHANNELS_PER_PORT, 1, Channel.CHANNELS_PER_PORT, 1));
@@ -209,7 +209,7 @@ class MixTableRowTest {
                 Instruments.names().stream().max(Comparator.comparingInt(String::length)).orElseThrow();
         row.instrumentField().setSelectedItem(longest);
         row.setSize(row.getPreferredSize());
-        layOut(row);
+        forceLayoutOfEntireTreeWithoutARealWindow(row);
 
         JComboBox<String> probe = new JComboBox<>(new String[] {longest});
         int needed = probe.getPreferredSize().width;
@@ -225,12 +225,11 @@ class MixTableRowTest {
         return editor;
     }
 
-    /** Sin ventana no hay nadie que valide el arbol, asi que se lo recorre a mano. */
-    private static void layOut(Component component) {
+    private static void forceLayoutOfEntireTreeWithoutARealWindow(Component component) {
         if (component instanceof Container container) {
             container.doLayout();
             for (Component child : container.getComponents()) {
-                layOut(child);
+                forceLayoutOfEntireTreeWithoutARealWindow(child);
             }
         }
     }
