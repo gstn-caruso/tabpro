@@ -453,6 +453,75 @@ Ship the user interface in both Spanish and English.
    `scripts/prepare-release.sh` rewrites), this plan, the audits and the LEEME
    files.
 
+### Phase 4 design (from the UI text inventory, 2026-09-10)
+
+What the inventory found:
+- `ui/actions/Commands` defines every command with a stable id (`file.new`)
+  next to its Spanish label; `MenuBar` and `ToolBars` read from it.
+- `ui/dialogs/style/Labels` is the single place that turns a domain type into
+  Spanish text.
+- Spanish display text lives inside the domain too: `ScaleLibrary` and
+  `TuningLibrary` use the Spanish name as the only identifier, `PercussionKit`
+  maps GM numbers to Spanish names, `Wah.label()` is painted on the score, and
+  `ScoreInfo`, `ScoreDocument` and `StatusInfo` each carry "Sin título".
+  `ChordType`, `Dynamic`, `HarmonicType`, `OctaveMark` and the GM `Instruments`
+  are already language neutral.
+- Some text becomes score data: `TrackDto.tuningName` is persisted in `.tabpro`
+  files, six importers name tracks "Pista N", and the `PageElement` header and
+  footer defaults are stored once inserted.
+- `DialogShell` hardcodes Aceptar/Cancelar/Cerrar. About 11 places call
+  `JOptionPane` directly and about 7 use `JFileChooser`; both follow the JVM
+  locale today. The JDK ships Spanish Swing resources (`basic_es`).
+- Some exception messages reach the user: five catch sites in `MainFrame`, plus
+  the ASCII and MIDI import/export dialogs, some of them concatenated
+  (`"No se pudo imprimir: " + e.getMessage()`).
+- `MnemonicAssigner` derives mnemonics from the label text, and `MenuBarTest`
+  checks the real menu bar for collisions. Accelerators are key codes, so they
+  do not depend on the language.
+- `AccentedLiteralsTest` scans Java literals, and the 26 audit tests find
+  components by their Spanish text.
+
+Decisions:
+- **Bundles by area** in tabpro-ui under `com/gstncaruso/tabpro/ui/i18n/`: one
+  English base file and one `_es` file per area, in UTF-8. The infrastructure PR
+  creates every area file empty, so extraction PRs only append to their own
+  files and can run in parallel without conflicts. Keys are dotted and named by
+  intent. Placeholders use `MessageFormat`.
+- **`Texts`** is the only reader of the bundles. It loads them with
+  `ResourceBundle.Control.getNoFallbackControl(FORMAT_PROPERTIES)`, so a
+  Spanish JVM default can never leak into English. The process language is set
+  once at startup. Until the switch PR it stays pinned to Spanish, which makes
+  every extraction PR a `refactor` with no visible change and lets the existing
+  tests keep asserting Spanish.
+- **The domain loses its display text:** scales, tunings and percussion get a
+  language-neutral id, and `Labels` maps ids to keys. `.tabpro` files that
+  store a Spanish `tuningName` keep opening with the same tuning.
+- **Error dialogs** map the failure to a key in the UI. The exception's own
+  message stays internal, and phase 3 leaves user-facing messages alone until
+  this phase replaces them.
+- **Switch PR (`feat`):** a `Language` (Automatic / Español / English) stored
+  under a new key, resolved as `es*` → Spanish and anything else → English.
+  Preferences gets the option with a note that it applies after a restart.
+  `App.main` installs the language and calls `Locale.setDefault` before
+  `Theme.install()`, so `JOptionPane` and `JFileChooser` follow it. The PR also
+  adds a key-parity test between the two bundles, an English mnemonic-collision
+  test, `AccentedLiteralsTest` rescoped to the `_es` files, and a guardian that
+  no Spanish UI literal remains in main code.
+
+Slices, in order (4.2 to 4.8 can run two at a time once 4.1 has merged):
+
+| Slice | Content |
+|---|---|
+| 4.1 | `Texts`, the empty area bundles, `DialogShell` buttons |
+| 4.2 | `Commands`, `MenuBar`, `ToolBars` |
+| 4.3 | `Labels`, plus display text out of core (scales, tunings, percussion, wah, untitled) |
+| 4.4 | dialogs, first half |
+| 4.5 | dialogs, second half |
+| 4.6 | status bar, score painters, page, print, instruments, harmony, tracks, browser, sound |
+| 4.7 | `MainFrame`, the `JOptionPane` call sites, error dialogs |
+| 4.8 | default track names in importers, page element defaults |
+| 4.9 | the switch (`feat`) |
+
 ### How to resume without context
 
 Read this section and the table below, then take the first row that is not
@@ -467,7 +536,7 @@ their changes touch the same lines.
 
 | Item | Branch | PR | State |
 |---|---|---|---|
-| Stage plan | `docs/plan-english-codebase-and-i18n` | — | in progress |
+| Stage plan | `docs/plan-english-codebase-and-i18n`, `docs/plan-i18n-design` | #192 | merged |
 | 1 · core comments | `refactor/core-comments` | — | in progress |
 | 1 · format comments | `refactor/format-comments` | — | in progress |
 | 1 · midi comments | `refactor/midi-comments` | — | in progress |
@@ -475,9 +544,9 @@ their changes touch the same lines.
 | 1 · ui/dialogs comments | `refactor/ui-dialogs-comments` | — | in progress |
 | 1 · ui/score and neighbors comments | `refactor/ui-score-comments` | — | in progress |
 | 1 · rest of ui comments | `refactor/ui-rest-comments` | — | in progress |
-| 1 · build and CI files in English | `ci/build-files-in-english` | — | in progress |
+| 1 · build and CI files in English | `ci/build-files-in-english` | #193 | merged |
 | 1 · cross-scope renames | — | — | pending |
 | 2 · identifiers and test names, per module | — | — | pending |
 | 3 · internal messages | — | — | pending |
-| 4 · i18n infrastructure, extraction, switch | — | — | pending (inventory in progress) |
+| 4 · i18n slices 4.1–4.9 (see design above) | — | — | pending |
 | 5 · docs in English | — | — | pending |
