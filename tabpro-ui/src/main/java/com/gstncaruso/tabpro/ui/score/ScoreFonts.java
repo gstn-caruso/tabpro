@@ -2,8 +2,8 @@ package com.gstncaruso.tabpro.ui.score;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 /** Las fuentes unicas de la partitura, una por rol, para que ningun painter arme la suya. */
 final class ScoreFonts {
@@ -81,8 +81,8 @@ final class ScoreFonts {
     }
 
     private static String resolveFamily(List<String> preference, String fallback) {
-        Set<String> installed =
-                Set.of(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+        List<String> installed =
+                Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
         for (String candidate : preference) {
             if (installed.contains(candidate)) {
                 return candidate;
