@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import javax.sound.midi.Synthesizer;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -38,56 +37,16 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 class FixtureCorpusSmokeTest {
 
+    private static final Duration TIEMPO_MAXIMO_POR_ARCHIVO = Duration.ofSeconds(30);
+
     private final ScoreExchange exchange = new CombinedExchange(
             new NotationExchange(),
             new SoundExchange(new WaveRenderer(FixtureCorpusSmokeTest::noHaceFaltaUnSintetizadorReal)));
     private final JsonScoreFiles tabproFiles = new JsonScoreFiles();
 
-    @Test
-    void unGuitarProSimpleAbrePorElCaminoRealDeImportacion() {
-        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
-
-        Score score = abrir(path);
-
-        assertNotNull(score, () -> path.getFileName() + ": abre por el camino real de importacion");
-        assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
-    }
-
-    @Test
-    void unPowerTabSimpleAbrePorElCaminoRealDeImportacion() {
-        Path path = repoFile("tabpro-format/src/test/resources/powertab/guitars.ptb");
-
-        Score score = abrir(path);
-
-        assertNotNull(score, () -> path.getFileName() + ": abre por el camino real de importacion");
-        assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
-    }
-
-    @Test
-    void unTabproPropioAbrePorElCaminoRealDeImportacion() {
-        Path path = repoFile("tabpro-format/src/test/resources/v1-one-measure.tabpro");
-
-        Score score = abrir(path);
-
-        assertNotNull(score, () -> path.getFileName() + ": abre por el camino real de importacion");
-        assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
-    }
-
-    @Test
-    void unMusicXmlSimpleAbrePorElCaminoRealDeImportacion() {
-        Path path = repoFile("tabpro-format/src/test/resources/musicxml/armadura-en-fa.musicxml");
-
-        Score score = abrir(path);
-
-        assertNotNull(score, () -> path.getFileName() + ": abre por el camino real de importacion");
-        assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
-    }
-
-    private static final Duration TIEMPO_MAXIMO_POR_ARCHIVO = Duration.ofSeconds(30);
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("fixturesDelCorpus")
-    void unGuitarProCompletaTodoElPipelineDeLaRedPermanente(Path path, @TempDir Path tempDir) {
+    void unFixtureDelCorpusCompletaTodoElPipelineDeLaRedPermanente(Path path, @TempDir Path tempDir) {
         assertTimeoutPreemptively(TIEMPO_MAXIMO_POR_ARCHIVO, () -> ejecutarPipeline(path, tempDir),
                 () -> path.getFileName() + ": no completo el pipeline en "
                         + TIEMPO_MAXIMO_POR_ARCHIVO.toSeconds() + "s");
