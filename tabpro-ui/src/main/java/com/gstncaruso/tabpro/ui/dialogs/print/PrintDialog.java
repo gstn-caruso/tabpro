@@ -12,9 +12,9 @@ public final class PrintDialog {
     private PrintDialog() {
     }
 
-    public static Optional<PrintSettings> ask(Component parent, int sheetCount) {
+    public static Optional<PrintSettings> ask(Component parent, int sheetCount, ScorePrinting printing) {
         PrintPanel panel = new PrintPanel(sheetCount);
-        panel.configureButton().addActionListener(event -> ScorePrinting.configurePrinterPage());
+        panel.configureButton().addActionListener(event -> printing.configurePrinterPage());
 
         boolean accepted = DialogShell.ask(parent, "Imprimir", panel, "Imprimir");
         return accepted ? Optional.of(panel.toPrintSettings()) : Optional.empty();
