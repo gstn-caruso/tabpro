@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
+import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
@@ -211,6 +212,10 @@ public final class Commands {
         define("note.repeatToEndOfBar", "Copiar el beat hasta el final del compás",
                 editor::repeatBeatToTheEndOfTheMeasure).withAccelerator("C");
         define("note.dynamics", "Dinámica…", dialogs::dynamics);
+        for (Dynamic dynamic : Dynamic.values()) {
+            define("note.dynamic." + dynamic.name(), dynamic.symbol(), () -> editor.setDynamic(dynamic))
+                    .withIcon(Icons.italicLetter(dynamic.symbol()));
+        }
         define("note.soundDuration", "Duración del sonido…", dialogs::soundDuration)
                 .withIcon(Icons.soundDuration());
         define("note.fingering", "Digitación…", dialogs::fingering).withIcon(Icons.fingering());
