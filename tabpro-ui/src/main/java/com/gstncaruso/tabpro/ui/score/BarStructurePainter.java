@@ -8,7 +8,9 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.core.notation.Clef;
+import com.gstncaruso.tabpro.ui.theme.Contrast;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
@@ -143,8 +145,20 @@ final class BarStructurePainter {
 
     private static void paintMarker(Graphics2D g, int x, int staffTop, Marker marker) {
         g.setFont(ScoreFonts.SECTION_MARK_FONT);
-        g.setColor(ScoreColors.of(marker.color()));
-        g.drawString(marker.name(), x, staffTop - 26);
+        FontMetrics metrics = g.getFontMetrics();
+        Color markerColor = ScoreColors.of(marker.color());
+        int textBaseline = staffTop - 26;
+
+        int squareSize = metrics.getAscent();
+        int squareTop = textBaseline - metrics.getAscent() - 4 - squareSize;
+        g.setColor(markerColor);
+        g.fillRect(x, squareTop, squareSize, squareSize);
+        if (Contrast.ratio(markerColor, ScoreColors.BACKGROUND) < Contrast.GRAPHICAL_MINIMUM_RATIO) {
+            g.setColor(ScoreColors.INK);
+            g.drawRect(x, squareTop, squareSize - 1, squareSize - 1);
+        }
+        g.setColor(markerColor);
+        g.drawString(marker.name(), x, textBaseline);
     }
 
     private static void paintDirectionSymbol(Graphics2D g, int left, int right, int staffTop, DirectionSymbol symbol) {

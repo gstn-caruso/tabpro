@@ -20,6 +20,9 @@ class ScoreColorsPaperContrastTest {
                 opaque,
                 pair("etiqueta (LABEL) / hoja", ScoreColors.LABEL, Contrast.TEXT_MINIMUM_RATIO),
                 pair("tinta atenuada (MUTED_INK) / hoja", ScoreColors.MUTED_INK, Contrast.TEXT_MINIMUM_RATIO),
+                pair("numero de compas (MEASURE_NUMBER) / hoja", ScoreColors.MEASURE_NUMBER,
+                        Contrast.TEXT_MINIMUM_RATIO),
+                pair("tempo (TEMPO) / hoja", ScoreColors.TEMPO, Contrast.TEXT_MINIMUM_RATIO),
                 pair("voz inactiva (VOICE_INACTIVE) / hoja", ScoreColors.VOICE_INACTIVE,
                         Contrast.TEXT_MINIMUM_RATIO),
                 pair("linea del pentagrama (STAFF_LINE) / hoja", ScoreColors.STAFF_LINE,
@@ -36,13 +39,19 @@ class ScoreColorsPaperContrastTest {
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
                 pair("borde de compas incompleto (INCOMPLETE_MEASURE) / hoja", ScoreColors.INCOMPLETE_MEASURE,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
-                pair("borde de seleccion (ACCENT) / hoja", ScoreColors.ACCENT, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                pair("borde de seleccion (SELECTION_BORDER) / hoja", ScoreColors.SELECTION_BORDER,
+                        Contrast.GRAPHICAL_MINIMUM_RATIO),
+                translucentOverPaper("tinta sobre el relleno de seleccion (PAGE_INK) / relleno de seleccion",
+                        ScoreColors.SELECTION, Contrast.TEXT_MINIMUM_RATIO),
                 translucent("nota correspondiente (CORRESPONDING_NOTE) / hoja", ScoreColors.CORRESPONDING_NOTE,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("encabezado de pagina (PAGE_INK) / hoja", ScoreColors.PAGE_INK, ScoreColors.PAGE_PAPER,
                         Contrast.TEXT_MINIMUM_RATIO),
                 new Pair("pie de pagina atenuado (PAGE_MUTED) / hoja", ScoreColors.PAGE_MUTED, ScoreColors.PAGE_PAPER,
-                        Contrast.TEXT_MINIMUM_RATIO)));
+                        Contrast.TEXT_MINIMUM_RATIO),
+                pair("color por defecto del marcador (Marker.DEFAULT_COLOR) / hoja",
+                        ScoreColors.of(com.gstncaruso.tabpro.core.model.bars.Marker.DEFAULT_COLOR),
+                        Contrast.GRAPHICAL_MINIMUM_RATIO)));
     }
 
     private static Pair pair(String description, java.awt.Color color, double minimumRatio) {
@@ -53,5 +62,11 @@ class ScoreColorsPaperContrastTest {
         java.awt.Color onSheet = ScoreColors.onPaper(color);
         return new Pair(description, PaletteCheck.compositeOver(onSheet, ScoreColors.PAGE_PAPER),
                 ScoreColors.PAGE_PAPER, minimumRatio);
+    }
+
+    /** La tinta que escribe sobre un relleno translucido, no el relleno contra la hoja. */
+    private static Pair translucentOverPaper(String description, java.awt.Color fill, double minimumRatio) {
+        java.awt.Color composedFill = PaletteCheck.compositeOver(ScoreColors.onPaper(fill), ScoreColors.PAGE_PAPER);
+        return new Pair(description, ScoreColors.onPaper(ScoreColors.INK), composedFill, minimumRatio);
     }
 }

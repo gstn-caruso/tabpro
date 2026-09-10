@@ -69,6 +69,11 @@ class TrackTest {
     }
 
     @Test
+    void aStandardGuitarTrackDoesNotShowStringNamesByDefault() {
+        assertFalse(Track.standardGuitar("Guitarra").settings().display().tuningLegend());
+    }
+
+    @Test
     void aStandardBassTrackIsTunedFourStringsBelowTheGuitar() {
         Track track = Track.standardBass("Bajo");
         assertEquals(Tuning.standardBass(), track.tuning());

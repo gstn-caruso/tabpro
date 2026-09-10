@@ -6,7 +6,7 @@
 
   <groupId>com.gstncaruso.tabpro</groupId>
   <artifactId>tabpro-parent</artifactId>
-  <version>0.45.0</version>
+  <version>0.48.0</version>
   <packaging>pom</packaging>
 
   <name>Tabpro</name>

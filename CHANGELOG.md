@@ -1,3 +1,33 @@
+## [0.48.0](https://github.com/gstn-caruso/tabpro/compare/v0.47.0...v0.48.0) (2026-09-10)
+
+### Features
+
+* **score:** la distancia entre pentagrama y tablatura es la medida en Guitar Pro 5 ([#149](https://github.com/gstn-caruso/tabpro/issues/149)) ([6bb33b7](https://github.com/gstn-caruso/tabpro/commit/6bb33b7db199b5c9969e306d5928cc744a0465d6))
+
+## [0.47.0](https://github.com/gstn-caruso/tabpro/compare/v0.46.2...v0.47.0) (2026-09-10)
+
+### Features
+
+* **score:** el tempo inicial se escribe sobre el primer compás, y tempo y números de compás van en rojo como en Guitar Pro 5 ([#148](https://github.com/gstn-caruso/tabpro/issues/148)) ([0eb6fc6](https://github.com/gstn-caruso/tabpro/commit/0eb6fc6a79b16d09111e1f3fc76cd2a4e82d1dfe))
+
+## [0.46.2](https://github.com/gstn-caruso/tabpro/compare/v0.46.1...v0.46.2) (2026-09-10)
+
+### Bug Fixes
+
+* **score:** los nombres de cuerda junto al TAB vienen apagados por defecto, como en Guitar Pro 5 ([#147](https://github.com/gstn-caruso/tabpro/issues/147)) ([3a6a44a](https://github.com/gstn-caruso/tabpro/commit/3a6a44ac20996411b76648043ffbb07ff47d4495))
+
+## [0.46.1](https://github.com/gstn-caruso/tabpro/compare/v0.46.0...v0.46.1) (2026-09-10)
+
+### Bug Fixes
+
+* **toolbar:** el combo de zoom conserva su ancho en vez de estirarse en la barra ([#146](https://github.com/gstn-caruso/tabpro/issues/146)) ([8e5c534](https://github.com/gstn-caruso/tabpro/commit/8e5c534db6e5cc87300b8a463763e7498f70e7ee))
+
+## [0.46.0](https://github.com/gstn-caruso/tabpro/compare/v0.45.0...v0.46.0) (2026-09-10)
+
+### Features
+
+* **markers:** editar el marcador vigente en el compás del cursor, desde el menú y la barra ([#144](https://github.com/gstn-caruso/tabpro/issues/144)) ([27b5435](https://github.com/gstn-caruso/tabpro/commit/27b5435d6f235376da7397e6e1077ded106fc63d))
+
 ## [0.45.0](https://github.com/gstn-caruso/tabpro/compare/v0.44.0...v0.45.0) (2026-09-10)
 
 ### Features

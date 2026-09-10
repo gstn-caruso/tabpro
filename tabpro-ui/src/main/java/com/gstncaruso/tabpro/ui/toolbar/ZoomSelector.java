@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import com.gstncaruso.tabpro.ui.score.ZoomHolder;
+import java.awt.Dimension;
 import java.util.OptionalInt;
 import javax.swing.JComboBox;
 
@@ -24,6 +25,11 @@ public final class ZoomSelector extends JComboBox<String> {
         addActionListener(event -> applyEnteredZoom());
         zoomHolder.onZoomChange(this::refresh);
         refresh();
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        return getPreferredSize();
     }
 
     private static String tooltipFrom(Commands commands) {

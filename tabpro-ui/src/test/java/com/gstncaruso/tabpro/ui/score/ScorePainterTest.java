@@ -25,11 +25,15 @@ import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.core.model.effects.NoteEffects;
+import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
 import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -229,6 +233,42 @@ class ScorePainterTest {
     }
 
     @Test
+    void writesTheScoresTempoAboveTheFirstMeasure() {
+        Painted painted = paint(Score.blank(), new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        Rectangle beat = painted.layout().beatBounds(0, 0, 0);
+        int staffTop = painted.layout().staffTop(0, 0);
+        Rectangle above = new Rectangle(
+                beat.x, staffTop - ScoreLayout.STAFF_HEADROOM, beat.width, ScoreLayout.STAFF_HEADROOM);
+
+        assertTrue(painted.hasColorIn(above, ScoreColors.TEMPO),
+                "el tempo global de la partitura tiene que verse arriba del primer compas");
+    }
+
+    @Test
+    void theInitialTempoDoesNotDuplicateAnExplicitChangeOnTheFirstBeat() {
+        Measure withExplicitChange = measureOf(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3)),
+                Beat.of(Duration.quarter(), new Note(1, 5)));
+        ParameterChange explicitTempo = ParameterChange.nothing().changing(SoundParameter.TEMPO, 90);
+        withExplicitChange = withExplicitChange.withBeat(0,
+                withExplicitChange.beat(0).withEffects(BeatEffects.none().withParameterChange(explicitTempo)));
+        Score score = new Score("", 120, List.of(
+                new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(withExplicitChange))));
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        ScorePainter.paint(lienzo, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        long tempoGlyphs = lienzo.textosDibujados().stream()
+                .filter(texto -> MusicFont.metNoteQuarterUp().equals(texto.texto()))
+                .count();
+        assertEquals(1, tempoGlyphs, "el compas 1 solo tiene que mostrar un tempo, el del cambio explicito");
+    }
+
+    @Test
     void paintsEveryTrackInItsOwnBand() {
         Score score = new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
         Painted painted = paint(score, new Cursor(0, 0, 0, 1), Playhead.silent());
@@ -363,6 +403,75 @@ class ScorePainterTest {
         assertDoesNotThrow(() -> paint(score, new Cursor(0, 0, 0, 1), Playhead.silent()));
     }
 
+    /**
+     * El manual (p14: «Bridge», «Outro») dibuja un cuadradito solido con el color del marcador
+     * arriba de su nombre. tabpro solo escribia el texto.
+     */
+    @Test
+    void aSectionMarkerDrawsASquareInItsOwnColorAboveItsName() {
+        Color markerColor = new Color(0x00, 0xAA, 0x00);
+        Measure marked = measureOf(Beat.of(Duration.quarter(), new Note(1, 0)))
+                .mappingAttributes(attrs -> attrs.withMarker(new com.gstncaruso.tabpro.core.model.bars.Marker(
+                        "Intro", new com.gstncaruso.tabpro.core.model.ScoreColor(
+                                markerColor.getRed(), markerColor.getGreen(), markerColor.getBlue()))));
+        Painted painted = paint(scoreWith(marked), new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        int x = painted.layout().measureX(0);
+        int staffTop = painted.layout().staffTop(0, 0);
+        FontMetrics metrics = painted.image().createGraphics().getFontMetrics(ScoreFonts.SECTION_MARK_FONT);
+        int textTop = (staffTop - 26) - metrics.getAscent();
+        Rectangle aboveTheName = new Rectangle(
+                x - 2, textTop - metrics.getAscent() - 4, metrics.getAscent() + 6, metrics.getAscent());
+
+        assertTrue(painted.hasColorIn(aboveTheName, markerColor),
+                "el marcador tiene que dibujar un cuadrado solido con su propio color arriba del nombre");
+    }
+
+    @Test
+    void aSectionMarkerSquareGetsAnInkOutlineWhenItsColorDoesNotContrastWithTheBackground() {
+        Color lowContrastColor = new Color(0x35, 0x37, 0x3B);
+        Painted painted = paintWithMarkerColor(lowContrastColor);
+
+        Rectangle square = markerSquareBounds(painted);
+        Color edge = new Color(painted.image().getRGB(square.x, square.y));
+        Color interior = new Color(painted.image().getRGB(
+                square.x + square.width / 2, square.y + square.height / 2));
+
+        assertNotEquals(edge.getRGB(), interior.getRGB(),
+                "un marcador que no contrasta con el fondo necesita un borde de tinta alrededor del cuadrado");
+    }
+
+    @Test
+    void aSectionMarkerSquareHasNoExtraOutlineWhenItsColorAlreadyContrasts() {
+        Color highContrastColor = new Color(0x00, 0xAA, 0x00);
+        Painted painted = paintWithMarkerColor(highContrastColor);
+
+        Rectangle square = markerSquareBounds(painted);
+        Color edge = new Color(painted.image().getRGB(square.x, square.y));
+        Color interior = new Color(painted.image().getRGB(
+                square.x + square.width / 2, square.y + square.height / 2));
+
+        assertEquals(edge.getRGB(), interior.getRGB(),
+                "un marcador que ya contrasta con el fondo no necesita un borde extra");
+    }
+
+    private static Painted paintWithMarkerColor(Color color) {
+        Measure marked = measureOf(Beat.of(Duration.quarter(), new Note(1, 0)))
+                .mappingAttributes(attrs -> attrs.withMarker(new com.gstncaruso.tabpro.core.model.bars.Marker(
+                        "Intro", new com.gstncaruso.tabpro.core.model.ScoreColor(
+                                color.getRed(), color.getGreen(), color.getBlue()))));
+        return paint(scoreWith(marked), new Cursor(0, 0, 0, 1), Playhead.silent());
+    }
+
+    private static Rectangle markerSquareBounds(Painted painted) {
+        int x = painted.layout().measureX(0);
+        int staffTop = painted.layout().staffTop(0, 0);
+        FontMetrics metrics = painted.image().createGraphics().getFontMetrics(ScoreFonts.SECTION_MARK_FONT);
+        int squareSize = metrics.getAscent();
+        int squareBottom = (staffTop - 26) - metrics.getAscent() - 4;
+        return new Rectangle(x, squareBottom - squareSize, squareSize, squareSize);
+    }
+
     @Test
     void survivesLyricsAndAChordDiagram() {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(
@@ -480,6 +589,61 @@ class ScorePainterTest {
     }
 
     @Test
+    void theSelectionFillIsGuitarPro5sYellowNotTheOldTranslucentBlue() {
+        Measure full = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Score score = scoreWith(full);
+        com.gstncaruso.tabpro.core.editing.Selection selection =
+                com.gstncaruso.tabpro.core.editing.Selection.ofMeasures(0, 0, 0);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH);
+        BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        ScorePainter.paint(
+                g, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent(), java.util.Optional.of(selection));
+        g.dispose();
+
+        Rectangle bounds = layout.measureBounds(0, 0);
+        int interiorX = bounds.x + bounds.width / 2;
+        int interiorY = bounds.y + bounds.height / 2;
+        Color expectedFill = com.gstncaruso.tabpro.ui.theme.PaletteCheck.compositeOver(
+                new Color(0xFF, 0xFF, 0x00, 0x50), ScoreColors.BACKGROUND);
+
+        assertEquals(expectedFill.getRGB(), image.getRGB(interiorX, interiorY),
+                "el manual mide la seleccion de Guitar Pro 5 en amarillo #FFFF00, no en azul");
+    }
+
+    @Test
+    void theSelectionBorderIsSolidYellowLikeGuitarPro5NotTheAccentBlue() {
+        Measure full = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Score score = scoreWith(full);
+        com.gstncaruso.tabpro.core.editing.Selection selection =
+                com.gstncaruso.tabpro.core.editing.Selection.ofMeasures(0, 0, 0);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH);
+        BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        ScorePainter.paint(
+                g, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent(), java.util.Optional.of(selection));
+        g.dispose();
+
+        Rectangle bounds = layout.measureBounds(0, 0);
+        int y = bounds.y + bounds.height / 2;
+        Color edge = new Color(image.getRGB(bounds.x, y));
+
+        assertTrue(edge.getRed() > 180 && edge.getGreen() > 180 && edge.getBlue() < 60,
+                "el borde de la seleccion tiene que ser amarillo solido (rojo y verde altos, azul bajo), "
+                        + "no el azul de ACCENT: " + edge);
+    }
+
+    @Test
     void aContiguousMultiBeatSelectionIsOutlinedAsOneAreaWithoutInternalLines() {
         Measure full = new Measure(TimeSignature.fourFour(), List.of(
                 Beat.of(Duration.quarter(), new Note(1, 0)),
@@ -523,6 +687,31 @@ class ScorePainterTest {
 
         assertTrue(withoutTheFirst.looksLike(alone),
                 "apagar una pista tiene que dar la misma hoja que no tenerla");
+    }
+
+    @Test
+    void doesNotDrawTheTuningLegendByDefault() {
+        Track guitar = Track.standardGuitar("Guitarra");
+        Track withLegendOff = guitar.mappingSettings(
+                settings -> settings.withDisplay(settings.display().withTuningLegend(false)));
+
+        Painted byDefault = paint(new Score("", 120, List.of(guitar)), new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted off = paint(new Score("", 120, List.of(withLegendOff)), new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        assertTrue(byDefault.looksLike(off), "una pista nueva no tiene que mostrar los nombres de cuerda");
+    }
+
+    @Test
+    void drawsTheTuningLegendWhenTheTrackAsksForIt() {
+        Track guitar = Track.standardGuitar("Guitarra");
+        Track withLegendOn = guitar.mappingSettings(
+                settings -> settings.withDisplay(settings.display().withTuningLegend(true)));
+
+        Painted withoutLegend = paint(new Score("", 120, List.of(guitar)), new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted withLegend = paint(new Score("", 120, List.of(withLegendOn)), new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        assertFalse(withoutLegend.looksLike(withLegend),
+                "tildar la casilla de afinacion tiene que dibujar los nombres de cuerda");
     }
 
     @Test
@@ -701,6 +890,17 @@ class ScorePainterTest {
                 }
             }
             return columns;
+        }
+
+        boolean hasColorIn(Rectangle area, Color color) {
+            for (int x = area.x; x < area.x + area.width; x++) {
+                for (int y = area.y; y < area.y + area.height; y++) {
+                    if (isInside(x, y) && image.getRGB(x, y) == color.getRGB()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         boolean hasInkNear(int x, int y, int radius) {
