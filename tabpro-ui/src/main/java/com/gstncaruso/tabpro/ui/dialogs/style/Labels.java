@@ -6,7 +6,6 @@ import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Tuning;
-import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.ui.instruments.FretboardDisplayMode;
 import com.gstncaruso.tabpro.ui.instruments.FretboardType;
@@ -29,7 +28,6 @@ public final class Labels {
         return switch (value) {
             case Chord chord -> chord.name();
             case ChordType chordType -> chordTypeLabel(chordType);
-            case ChordComplexity chordComplexity -> chordComplexityLabel(chordComplexity);
             case BarrePreference barrePreference -> barrePreferenceLabel(barrePreference);
             case PitchClass pitchClass -> pitchClass.name() + " (" + pitchClass.solfegeName() + ")";
             case Scale scale -> scale.name();
@@ -76,14 +74,6 @@ public final class Labels {
 
     private static String chordTypeLabel(ChordType value) {
         return value == ChordType.MAJOR ? "M" : value.suffix();
-    }
-
-    private static String chordComplexityLabel(ChordComplexity value) {
-        return switch (value) {
-            case SIMPLE -> "Simple";
-            case MEDIUM -> "Media";
-            case COMPLEX -> "Todas";
-        };
     }
 
 }

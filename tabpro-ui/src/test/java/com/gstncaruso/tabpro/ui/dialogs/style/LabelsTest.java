@@ -95,6 +95,7 @@ class LabelsTest {
 
         assertFalse(label.isBlank());
         assertNotEquals(value.name(), label);
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text("domain.ChordComplexity." + value.name()).isBlank());
     }
 
     @Test
