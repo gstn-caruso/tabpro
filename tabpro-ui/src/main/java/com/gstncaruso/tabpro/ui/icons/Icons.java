@@ -22,10 +22,7 @@ public final class Icons {
     // ---- archivo ----------------------------------------------------------
 
     public static Icon newScore() {
-        return icon((graphics, size) -> {
-            page(graphics, size);
-            plus(graphics, size * 0.68, size * 0.7, size * 0.18);
-        });
+        return svgIcon("file-plus");
     }
 
     public static Icon open() {
@@ -636,5 +633,9 @@ public final class Icons {
 
     private static Icon icon(ToolIcon.Drawing drawing) {
         return new ToolIcon(SIZE, drawing);
+    }
+
+    private static Icon svgIcon(String name) {
+        return new SvgIcon("/icons/tabler/" + name + ".svg", SIZE);
     }
 }
