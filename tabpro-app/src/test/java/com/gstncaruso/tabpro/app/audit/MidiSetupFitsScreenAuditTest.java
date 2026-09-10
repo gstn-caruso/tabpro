@@ -33,12 +33,12 @@ class MidiSetupFitsScreenAuditTest {
         MainFrame frame = newFrame(editor, devicesWithAValidSensitivity());
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Configuración MIDI…");
-            assertNotNull(item, "no encontre 'Configuración MIDI…' en el menu real");
+            assertNotNull(item, "could not find 'Configuración MIDI…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 Dimension screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getSize();
                 assertTrue(dialog.getHeight() <= screen.height,
-                        "el dialogo real (" + dialog.getHeight() + "px) no puede ser mas alto que la pantalla ("
+                        "the real dialog (" + dialog.getHeight() + "px) cannot be taller than the screen ("
                                 + screen.height + "px)");
 
                 assertWithinTheDialog(dialog, findButton(dialog, "Aceptar"), "Aceptar");
@@ -67,15 +67,15 @@ class MidiSetupFitsScreenAuditTest {
         MainFrame frame = newFrame(editor, devicesWithAValidSensitivity());
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Configuración MIDI…");
-            assertNotNull(item, "no encontre 'Configuración MIDI…' en el menu real");
+            assertNotNull(item, "could not find 'Configuración MIDI…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 assertNotNull(findButton(dialog, "Aceptar"),
-                        "el dialogo real tiene que decir 'Aceptar' aunque el Look and Feel "
-                                + "resuelva sus textos a otro idioma");
+                        "the real dialog must say 'Aceptar' even if the Look and Feel "
+                                + "resolves its texts to another language");
                 assertNotNull(findButton(dialog, "Cancelar"),
-                        "el dialogo real tiene que decir 'Cancelar' aunque el Look and Feel "
-                                + "resuelva sus textos a otro idioma");
+                        "the real dialog must say 'Cancelar' even if the Look and Feel "
+                                + "resolves its texts to another language");
                 findButton(dialog, "Cancelar").doClick();
             });
         } finally {
@@ -96,11 +96,11 @@ class MidiSetupFitsScreenAuditTest {
 
     /** isShowing() is not enough: inside a clipped scroll pane, the button still has a peer. */
     private static void assertWithinTheDialog(JDialog dialog, JButton button, String label) {
-        assertNotNull(button, "no encontre el boton real '" + label + "'");
+        assertNotNull(button, "could not find the real button '" + label + "'");
         Rectangle onScreen = new Rectangle(button.getLocationOnScreen(), button.getSize());
         Rectangle dialogOnScreen = new Rectangle(dialog.getLocationOnScreen(), dialog.getSize());
         assertTrue(dialogOnScreen.contains(onScreen),
-                label + " (" + onScreen + ") tiene que quedar dentro del dialogo real (" + dialogOnScreen
-                        + "), no tapado por un scroll");
+                label + " (" + onScreen + ") must stay inside the real dialog (" + dialogOnScreen
+                        + "), not covered by a scroll");
     }
 }
