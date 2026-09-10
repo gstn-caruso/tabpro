@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -92,6 +93,32 @@ class MidiImportPanelTest {
         panel.listen();
 
         assertEquals(List.of(), player.played());
+    }
+
+    @Test
+    void listeningPlaysTheTimelineOfTheSelectedTrackThroughThePlayer() {
+        Timeline timeline = new Timeline(120, 480, List.of());
+        MidiImportPanel panel = new MidiImportPanel(
+                List.of(track(3, "Guitarra"), track(7, "Bajo")), player,
+                indices -> indices.equals(List.of(3)) ? timeline : fail("indices inesperados: " + indices));
+        panel.trackList().setSelectedIndex(0);
+
+        panel.listen();
+
+        assertEquals(List.of(timeline), player.played());
+    }
+
+    @Test
+    void listeningWithSeveralTracksSelectedAsksForTheirCombinedTimeline() {
+        Timeline timeline = new Timeline(120, 480, List.of());
+        MidiImportPanel panel = new MidiImportPanel(
+                List.of(track(3, "Guitarra"), track(7, "Bajo")), player,
+                indices -> indices.equals(List.of(3, 7)) ? timeline : fail("indices inesperados: " + indices));
+        panel.selectAllTracks();
+
+        panel.listen();
+
+        assertEquals(List.of(timeline), player.played());
     }
 
     @Test
