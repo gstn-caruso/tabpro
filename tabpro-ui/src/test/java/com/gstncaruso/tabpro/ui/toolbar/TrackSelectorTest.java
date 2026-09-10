@@ -92,6 +92,27 @@ class TrackSelectorTest {
         assertEquals(1, editor.cursor().measure());
     }
 
+    @Test
+    void clickEnLaFlechaSiguienteAvanzaALaProximaPista() {
+        editor.addTrack(Track.standardBass("Bajo"));
+        editor.selectTrack(0);
+        TrackSelector selector = new TrackSelector(editor, commands);
+
+        selector.nextButton().doClick();
+
+        assertEquals(1, editor.cursor().track());
+    }
+
+    @Test
+    void clickEnLaFlechaAnteriorRetrocedeALaPistaAnterior() {
+        editor.addTrack(Track.standardBass("Bajo"));
+
+        TrackSelector selector = new TrackSelector(editor, commands);
+        selector.previousButton().doClick();
+
+        assertEquals(0, editor.cursor().track());
+    }
+
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
         InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
