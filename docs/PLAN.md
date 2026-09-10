@@ -285,15 +285,34 @@ PR que lo usa.
 | C4 · contraste en la mesa de mezcla y los cuatro mástiles | `fix/contraste-en-la-mesa-y-los-mastiles` | #126 | mergeado |
 | C5 · Preferencias > Accesibilidad (letra, alto contraste, sin animaciones) | `feat/preferencias-de-accesibilidad` | #123 | mergeado |
 | D · README y capturas con el tema real | `docs/readme-y-capturas-de-la-etapa-visual` | #131 | mergeado |
+| B4 · selector de pista por número (fila 1) | `feat/selector-de-pista-por-numero` | #136 | mergeado |
+| B4 · combo de zoom editable con el porcentaje | `feat/combo-de-zoom-como-gp5` | #140 | mergeado |
+| B4 · editar el marcador del cursor desde menú y barra | `feat/editar-el-marcador-del-cursor` | #144 | mergeado |
+| C4 · la cejilla en la paleta de cada mástil | `fix/la-cejilla-cumple-el-contraste-en-cada-mastil` | #135 | mergeado |
+| A · impresión verificable hasta el `PrinterJob` (costura `Printing`) | `refactor/impresion-con-costura-para-el-printer-job` | #137 | mergeado |
+| D · auditoría visual zona por zona contra la captura de GP5 (diez diferencias medidas) | — | — | hecha, no se commitea |
+| D · diapasón con veta y trastes metálicos, teclado con punto y bisel | `feat/diapason-y-teclado-como-gp5` | #138 | mergeado |
+| D · barra de estado con los seis paneles hundidos de GP5 | `feat/barra-de-estado-como-gp5` | #139 | mergeado |
+| D · mesa de mezcla con deslizadores, números planos y columnas de GP5 | `feat/mesa-de-mezcla-como-gp5` | #141 | mergeado |
+| D · vista global con regla de compases, marcadores en rojo y cabecera 1,3× | `feat/vista-global-como-gp5` | #142 | mergeado |
+| D · bandas de título con ✕ en diapasón y teclado | `feat/paneles-de-diapason-y-teclado-con-titulo` | #143 | mergeado |
+| D · README y capturas de la segunda tanda | `docs/readme-y-capturas-de-la-segunda-tanda` | — | en curso |
+| D · auditoría de la partitura contra los ejemplos de notación del manual | — | — | en curso |
 
-Lo que queda anotado para después: editar un marcador puntual desde la barra
-(hoy sólo hay lista), digitación de mano derecha como botón aparte (el diálogo
-único ya cubre las dos manos), tres íconos de la captura de GP5 que no se
-distinguen, la cejilla sobre el mástil clásico sin contraste AA, `doubleBar` y
-`tuplet` en Java2D por ser sub-píxel en Bravura, y `ScorePrinting` llamando a
-`PrinterJob.getPrinterJob()` sin costura (diálogo nativo, no verificable).
+Lo que queda anotado para después: digitación de mano derecha como botón
+aparte (el diálogo único ya cubre las dos manos), tres íconos de la captura de
+GP5 que no se distinguen, `doubleBar` y `tuplet` en Java2D por ser sub-píxel en
+Bravura, y los valores predefinidos del combo de zoom, que el manual no lista.
 
-**Lo que enseñó esta tanda:** el `AcceleratorGuard` de la etapa anterior era él
+**Lo que enseñó esta tanda:**
+Dos PRs se lastimaron por comandos encadenados sin condición: uno se mergeó con
+el CI rojo y a otro se le borró la branch remota con el CI rojo (GitHub cierra
+el PR). El merge y el borrado se gatean con el exit code de `gh pr checks` y
+con el estado MERGED. Y dos ramas que borran o renombran un color compartido
+(`KNOB_BODY`) chocan semánticamente aunque git no vea conflicto: el CI del PR
+es el que lo dice, y por eso se mira antes de mergear.
+
+**Lo que enseñó la primera tanda:** el `AcceleratorGuard` de la etapa anterior era él
 mismo una interfaz que mentía: ponía una acción vacía en vez de sacarle la tecla
 al `JScrollPane`, y su test verificaba que el scroll ya no la atendiera, no que
 el atajo funcionara después. La auditoría de uso real lo encontró porque despacha
