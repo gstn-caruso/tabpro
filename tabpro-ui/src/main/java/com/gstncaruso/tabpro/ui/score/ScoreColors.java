@@ -15,6 +15,10 @@ public final class ScoreColors {
     public static final Color BORDER = new Color(0x71, 0x77, 0x80);
     /** El tinte claro del bisel hundido en los paneles de la barra de estado. */
     public static final Color BEVEL_SHADE = new Color(0x7E, 0x83, 0x8B);
+    /** El fondo de la banda de titulo del diapason y del teclado, mas clara que el resto del panel. */
+    public static final Color TITLE_BAR = new Color(0x7A, 0x80, 0x89);
+    /** El texto y el icono de cerrar sobre {@link #TITLE_BAR}, que es clara y pide tinta oscura. */
+    public static final Color TITLE_BAR_INK = new Color(0x0C, 0x0D, 0x0E);
 
     public static final Color STAFF_LINE = new Color(0x72, 0x76, 0x7F);
     public static final Color BAR_LINE = new Color(0x7E828A);

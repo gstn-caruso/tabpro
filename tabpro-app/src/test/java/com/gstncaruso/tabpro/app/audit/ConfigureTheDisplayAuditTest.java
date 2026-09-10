@@ -16,6 +16,7 @@ import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import com.gstncaruso.tabpro.ui.score.ViewMode;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import com.gstncaruso.tabpro.ui.tracks.TrackPanel;
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -101,6 +102,58 @@ class ConfigureTheDisplayAuditTest {
     }
 
     @Test
+    void laCruzDeLaBarraDelDiapasonHaceLoMismoQueVerDiapason() throws Exception {
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        try {
+            ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
+            BeatViews beatViews = findComponent(frame.getContentPane(), BeatViews.class);
+            JButton close = AuditSupport.findButtonByAccessibleName(frame.getContentPane(), "Cerrar diapasón");
+            assertNotNull(close, "no encontre la ✕ real del diapason");
+            assertEquals(true, AuditSupport.requestFocusAndAwait(close, 2000),
+                    "no pude poner el foco en la ✕ real antes de clickearla");
+            boolean antes = beatViews.isFretboardVisible();
+            java.util.concurrent.CountDownLatch focusBackOnTheScore = focusGainedLatch(canvas);
+
+            SwingUtilities.invokeAndWait(close::doClick);
+
+            assertEquals(!antes, beatViews.isFretboardVisible(),
+                    "la ✕ real tiene que hacer lo mismo que Ver > Diapasón");
+            assertEquals(true,
+                    focusBackOnTheScore.await(2, java.util.concurrent.TimeUnit.SECONDS),
+                    "la ✕ real tiene que devolver el foco a la partitura, igual que el comando del menu");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
+    void laCruzDeLaBarraDelTecladoHaceLoMismoQueVerTeclado() throws Exception {
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        try {
+            ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
+            BeatViews beatViews = findComponent(frame.getContentPane(), BeatViews.class);
+            JButton close = AuditSupport.findButtonByAccessibleName(frame.getContentPane(), "Cerrar teclado");
+            assertNotNull(close, "no encontre la ✕ real del teclado");
+            assertEquals(true, AuditSupport.requestFocusAndAwait(close, 2000),
+                    "no pude poner el foco en la ✕ real antes de clickearla");
+            boolean antes = beatViews.isKeyboardVisible();
+            java.util.concurrent.CountDownLatch focusBackOnTheScore = focusGainedLatch(canvas);
+
+            SwingUtilities.invokeAndWait(close::doClick);
+
+            assertEquals(!antes, beatViews.isKeyboardVisible(),
+                    "la ✕ real tiene que hacer lo mismo que Ver > Teclado");
+            assertEquals(true,
+                    focusBackOnTheScore.await(2, java.util.concurrent.TimeUnit.SECONDS),
+                    "la ✕ real tiene que devolver el foco a la partitura, igual que el comando del menu");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
     void modoPaginaPorElMenuCambiaElViewModeRealDelCanvas() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
@@ -118,5 +171,17 @@ class ConfigureTheDisplayAuditTest {
         } finally {
             AuditSupport.dispose(frame);
         }
+    }
+
+    /** Se cuenta abajo apenas ese componente gana el foco de verdad, sin sondear con sleep. */
+    private static java.util.concurrent.CountDownLatch focusGainedLatch(java.awt.Component component) {
+        java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+        component.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent event) {
+                latch.countDown();
+            }
+        });
+        return latch;
     }
 }

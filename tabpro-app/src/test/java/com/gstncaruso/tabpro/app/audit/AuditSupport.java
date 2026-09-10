@@ -427,6 +427,26 @@ final class AuditSupport {
         return null;
     }
 
+    /** El JButton real cuyo nombre accesible es ese, para botones sin texto propio (solo icono). */
+    static JButton findButtonByAccessibleName(Container root, String name) {
+        if (root instanceof JButton button && name.equals(button.getAccessibleContext().getAccessibleName())) {
+            return button;
+        }
+        for (Component child : root.getComponents()) {
+            if (child instanceof JButton button
+                    && name.equals(button.getAccessibleContext().getAccessibleName())) {
+                return button;
+            }
+            if (child instanceof Container container) {
+                JButton found = findButtonByAccessibleName(container, name);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
     /** El JMenuItem real cuya Action tiene esa etiqueta exacta, buscando en toda la barra. */
     static JMenuItem findMenuItem(JMenuBar menuBar, String label) {
         for (int i = 0; i < menuBar.getMenuCount(); i++) {

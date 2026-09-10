@@ -168,6 +168,8 @@ public final class MainFrame extends JFrame {
         Document documentActions = new Document();
         commands = new Commands(
                 editor, documentActions, new Windows(), new Playback(), new View(), themes.names());
+        beatViews.setOnCloseFretboard(() -> commands.get("view.fretboard").actionPerformed(null));
+        beatViews.setOnCloseKeyboard(() -> commands.get("view.keyboard").actionPerformed(null));
         toolBars = new ToolBars(editor, commands, canvas);
         boolean effectsToolBarVisible = preferences.effectsToolBarVisible();
         toolBars.setEffectsToolBarVisible(effectsToolBarVisible);
