@@ -32,21 +32,15 @@ import com.gstncaruso.tabpro.core.model.effects.Trill;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Los efectos que se arman con varias notas o con el compas entero: bends,
- * slides, ligados, trino, tremolo picking, rasgueo, notas de adorno, fade in
- * y triplet feel, todos vistos a traves del Timeline.
- */
 class TrackRendererEffectsTest {
 
     private static final Duration QUARTER = Duration.quarter();
 
-    /** Lo que dura la nota de adorno de estas pruebas: una fusa. */
     private static final long GRACE_TICKS = new Duration(NoteValue.THIRTY_SECOND, false).ticks();
 
     @Test
     void unBendCurvaLaAlturaSegunSuFormaEnTodaLaNota() {
-        Bend bend = Bend.of(BendType.BEND, 4); // sube un tono
+        Bend bend = Bend.of(BendType.BEND, 4);
         Note bent = new Note(1, 0).withBend(bend);
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, bent));
 
@@ -153,7 +147,7 @@ class TrackRendererEffectsTest {
 
         assertEquals(2, notes.size());
         ScheduledNote lowestFirst = notes.stream().min((a, b) -> Long.compare(a.startTick(), b.startTick())).get();
-        assertEquals(new Pitch(40), lowestFirst.pitch()); // cuerda 6, mas grave
+        assertEquals(new Pitch(40), lowestFirst.pitch());
         assertTrue(notes.get(0).startTick() != notes.get(1).startTick());
     }
 
@@ -191,11 +185,6 @@ class TrackRendererEffectsTest {
         assertEquals(0, main.startTick());
     }
 
-    /**
-     * La transicion de la nota de adorno decide como se llega desde el adorno
-     * hasta la nota: sin transicion son dos ataques sueltos, y con cualquiera de
-     * las otras tres es un solo ataque que se estira hasta la nota principal.
-     */
     @Test
     void unaNotaDeAdornoSinTransicionSonDosAtaquesSueltos() {
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, gracedNote(GraceTransition.NONE)));

@@ -10,10 +10,6 @@ import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El triplet feel toca las corcheas (o semicorcheas) con swing sin cambiar
- * lo escrito: la primera del par se estira, la segunda se acorta.
- */
 class SwingTimingTest {
 
     private static final Duration EIGHTH = new Duration(NoteValue.EIGHTH, false);
