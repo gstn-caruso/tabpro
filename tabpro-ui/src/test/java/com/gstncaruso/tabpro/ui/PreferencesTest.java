@@ -31,19 +31,19 @@ class PreferencesTest {
 
     @Test
     void theLastFileOpenedComesFirst() {
-        preferences.remember(Path.of("/tmp/una.tabpro"));
-        preferences.remember(Path.of("/tmp/otra.tabpro"));
+        preferences.remember(Path.of("/tmp/first.tabpro"));
+        preferences.remember(Path.of("/tmp/second.tabpro"));
 
-        assertEquals(List.of(Path.of("/tmp/otra.tabpro"), Path.of("/tmp/una.tabpro")), preferences.recentFiles());
+        assertEquals(List.of(Path.of("/tmp/second.tabpro"), Path.of("/tmp/first.tabpro")), preferences.recentFiles());
     }
 
     @Test
     void openingTheSameFileTwiceDoesNotListItTwice() {
-        preferences.remember(Path.of("/tmp/una.tabpro"));
-        preferences.remember(Path.of("/tmp/otra.tabpro"));
-        preferences.remember(Path.of("/tmp/una.tabpro"));
+        preferences.remember(Path.of("/tmp/first.tabpro"));
+        preferences.remember(Path.of("/tmp/second.tabpro"));
+        preferences.remember(Path.of("/tmp/first.tabpro"));
 
-        assertEquals(List.of(Path.of("/tmp/una.tabpro"), Path.of("/tmp/otra.tabpro")), preferences.recentFiles());
+        assertEquals(List.of(Path.of("/tmp/first.tabpro"), Path.of("/tmp/second.tabpro")), preferences.recentFiles());
     }
 
     @Test

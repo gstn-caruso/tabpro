@@ -44,7 +44,7 @@ public final class MidiSetupDialog {
 
         public Setup {
             if (ports.size() != PORT_COUNT) {
-                throw new IllegalArgumentException("hacen falta " + PORT_COUNT + " puertos: " + ports.size());
+                throw new IllegalArgumentException(PORT_COUNT + " ports are needed: " + ports.size());
             }
             ports = List.copyOf(ports);
         }

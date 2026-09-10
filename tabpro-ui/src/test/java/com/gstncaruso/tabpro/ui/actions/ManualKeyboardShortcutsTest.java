@@ -102,7 +102,7 @@ class ManualKeyboardShortcutsTest {
         assertAll(manual.stream().map(shortcut -> () -> assertEquals(
                 KeyStroke.getKeyStroke(shortcut.accelerator()),
                 commands.get(shortcut.command()).accelerator(),
-                "el manual pide " + shortcut.accelerator() + " para " + shortcut.command())));
+                "the manual asks for " + shortcut.accelerator() + " for " + shortcut.command())));
     }
 
     @SuppressWarnings("unchecked")

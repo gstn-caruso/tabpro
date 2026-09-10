@@ -42,7 +42,7 @@ public final class ScoreSearch {
                     .sorted(Comparator.comparing(Path::toString))
                     .toList();
         } catch (IOException e) {
-            throw new UncheckedIOException("no se pudo recorrer " + folder, e);
+            throw new UncheckedIOException("could not walk " + folder, e);
         }
     }
 }

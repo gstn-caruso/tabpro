@@ -56,11 +56,11 @@ class MidiSetupPreferencesTest {
 
     @Test
     void remembersTheDeviceOfEachPortIndependently() {
-        preferences.setOutputDevice(1, "Interfaz A");
-        preferences.setOutputDevice(4, "Interfaz B");
+        preferences.setOutputDevice(1, "Interface A");
+        preferences.setOutputDevice(4, "Interface B");
 
-        assertEquals("Interfaz A", preferences.outputDevice(1));
-        assertEquals("Interfaz B", preferences.outputDevice(4));
+        assertEquals("Interface A", preferences.outputDevice(1));
+        assertEquals("Interface B", preferences.outputDevice(4));
         assertEquals("", preferences.outputDevice(2));
         assertEquals("", preferences.outputDevice(3));
     }
@@ -85,17 +85,17 @@ class MidiSetupPreferencesTest {
 
     @Test
     void loadsThePatchFromTheRememberedFile(@org.junit.jupiter.api.io.TempDir Path tempDir) throws IOException {
-        Path patchFile = tempDir.resolve("mi-patch.txt");
-        Files.writeString(patchFile, "Requinto criollo");
+        Path patchFile = tempDir.resolve("my-patch.txt");
+        Files.writeString(patchFile, "Homemade requinto");
         preferences.setPatchPath(3, patchFile.toString());
 
-        assertEquals("Requinto criollo", preferences.patch(3).nameOf(0));
+        assertEquals("Homemade requinto", preferences.patch(3).nameOf(0));
         assertEquals(patchFile.toString(), preferences.patchPath(3));
     }
 
     @Test
     void aMissingPatchFileFallsBackToGeneralMidiInsteadOfFailing() {
-        preferences.setPatchPath(1, "/no/existe/este/archivo.txt");
+        preferences.setPatchPath(1, "/does/not/exist/this/file.txt");
 
         assertEquals(Instruments.nameOf(5), preferences.patch(1).nameOf(5));
     }
@@ -126,8 +126,8 @@ class MidiSetupPreferencesTest {
 
     @Test
     void rememberTheInputDevice() {
-        preferences.setInputDevice("Teclado MIDI");
+        preferences.setInputDevice("MIDI keyboard");
 
-        assertEquals("Teclado MIDI", preferences.inputDevice());
+        assertEquals("MIDI keyboard", preferences.inputDevice());
     }
 }

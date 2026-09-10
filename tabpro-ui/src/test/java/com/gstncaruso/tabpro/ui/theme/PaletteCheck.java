@@ -28,11 +28,11 @@ public final class PaletteCheck {
             double ratio = Contrast.ratio(pair.foreground(), pair.background());
             if (ratio < pair.minimumRatio()) {
                 failures.add(String.format(
-                        "%s: %.2f (necesita >= %.1f)", pair.description(), ratio, pair.minimumRatio()));
+                        "%s: %.2f (needs >= %.1f)", pair.description(), ratio, pair.minimumRatio()));
             }
         }
         assertTrue(
                 failures.isEmpty(),
-                () -> failures.size() + " par(es) no llegan al contraste minimo:\n" + String.join("\n", failures));
+                () -> failures.size() + " pair(s) do not reach the minimum contrast:\n" + String.join("\n", failures));
     }
 }

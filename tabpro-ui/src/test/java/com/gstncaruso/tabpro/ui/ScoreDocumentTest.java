@@ -63,7 +63,7 @@ class ScoreDocumentTest {
     void saveAsRemembersThePath() {
         FakeScoreFiles files = new FakeScoreFiles();
         ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files, testPreferences());
-        Path path = Path.of("cancion.tabpro");
+        Path path = Path.of("song.tabpro");
 
         document.saveAs(path);
 
@@ -75,7 +75,7 @@ class ScoreDocumentTest {
     void saveReusesTheRememberedPath() {
         FakeScoreFiles files = new FakeScoreFiles();
         ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files, testPreferences());
-        Path path = Path.of("cancion.tabpro");
+        Path path = Path.of("song.tabpro");
         document.saveAs(path);
 
         boolean saved = document.save();
@@ -87,8 +87,8 @@ class ScoreDocumentTest {
     @Test
     void openReplacesTheScoreAndRemembersThePath() {
         FakeScoreFiles files = new FakeScoreFiles();
-        Path path = Path.of("cancion.tabpro");
-        Score savedScore = Score.blank().withTitle("Canción guardada");
+        Path path = Path.of("song.tabpro");
+        Score savedScore = Score.blank().withTitle("Saved song");
         files.scores.put(path, savedScore);
         Editor editor = new Editor(Score.blank());
         ScoreDocument document = new ScoreDocument(editor, files, testPreferences());
@@ -104,7 +104,7 @@ class ScoreDocumentTest {
         FakeScoreFiles files = new FakeScoreFiles();
         Editor editor = new Editor(Score.blank());
         ScoreDocument document = new ScoreDocument(editor, files, testPreferences());
-        document.saveAs(Path.of("cancion.tabpro"));
+        document.saveAs(Path.of("song.tabpro"));
 
         document.newScore();
 
@@ -135,20 +135,20 @@ class ScoreDocumentTest {
         FakeScoreFiles files = new FakeScoreFiles();
         ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files, testPreferences());
 
-        document.saveAs(Path.of("carpeta", "cancion.tabpro"));
+        document.saveAs(Path.of("folder", "song.tabpro"));
 
-        assertEquals("cancion.tabpro", document.displayName());
+        assertEquals("song.tabpro", document.displayName());
     }
 
     @Test
     void aFailedOpenKeepsThePreviousPath() {
         FakeScoreFiles files = new FakeScoreFiles();
-        Path savedPath = Path.of("cancion.tabpro");
+        Path savedPath = Path.of("song.tabpro");
         Editor editor = new Editor(Score.blank());
         ScoreDocument document = new ScoreDocument(editor, files, testPreferences());
         document.saveAs(savedPath);
 
-        assertThrows(ScoreFileException.class, () -> document.open(Path.of("no-existe.tabpro")));
+        assertThrows(ScoreFileException.class, () -> document.open(Path.of("does-not-exist.tabpro")));
 
         assertEquals(Optional.of(savedPath), document.path());
         assertEquals(Score.blank(), editor.score());
@@ -177,7 +177,7 @@ class ScoreDocumentTest {
     void savingClearsTheUnsavedChanges() {
         Editor editor = new Editor(Score.blank());
         ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
-        document.saveAs(Path.of("/tmp/prueba.tabpro"));
+        document.saveAs(Path.of("/tmp/test.tabpro"));
 
         editor.setFret(5);
         document.save();
@@ -187,13 +187,13 @@ class ScoreDocumentTest {
 
     @Test
     void theWindowTitleShowsTheFileTheChangesAndTheScore() {
-        Editor editor = new Editor(Score.blank().withTitle("Mi canción"));
+        Editor editor = new Editor(Score.blank().withTitle("My song"));
         ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
 
         editor.setFret(5);
 
         assertTrue(document.windowTitle().startsWith(ScoreDocument.UNTITLED + " *"));
-        assertTrue(document.windowTitle().contains("Mi canción"));
+        assertTrue(document.windowTitle().contains("My song"));
     }
 
     @Test
@@ -201,7 +201,7 @@ class ScoreDocumentTest {
         Preferences preferences = testPreferences();
         Editor editor = new Editor(Score.blank());
         FakeScoreFiles files = new FakeScoreFiles();
-        Path path = Path.of("/tmp/prueba.tabpro");
+        Path path = Path.of("/tmp/test.tabpro");
         files.scores.put(path, Score.blank());
         ScoreDocument document = new ScoreDocument(editor, files, preferences);
 
@@ -215,7 +215,7 @@ class ScoreDocumentTest {
         Preferences preferences = testPreferences();
         Editor editor = new Editor(Score.blank());
         FakeScoreFiles files = new FakeScoreFiles();
-        Path path = Path.of("/tmp/prueba.tabpro");
+        Path path = Path.of("/tmp/test.tabpro");
         files.scores.put(path, Score.blank());
         ScoreDocument document = new ScoreDocument(editor, files, preferences);
 
@@ -229,7 +229,7 @@ class ScoreDocumentTest {
         Editor editor = new Editor(Score.blank());
         ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
 
-        document.adopt(Score.blank().withTitle("Importada"));
+        document.adopt(Score.blank().withTitle("Imported"));
 
         assertTrue(document.path().isEmpty());
         assertTrue(document.hasUnsavedChanges());

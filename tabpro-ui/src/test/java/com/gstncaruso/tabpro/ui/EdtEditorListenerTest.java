@@ -37,7 +37,7 @@ class EdtEditorListenerTest {
 
         SwingUtilities.invokeAndWait(() -> EdtEditorListener.onEdt(() -> delivered[0] = true).editorChanged());
 
-        assertTrue(delivered[0], "en el EDT, la entrega tiene que ser en el acto");
+        assertTrue(delivered[0], "on the EDT, delivery has to be immediate");
     }
 
     @Test
@@ -53,7 +53,7 @@ class EdtEditorListenerTest {
         background.start();
         background.join();
 
-        assertTrue(delivered.await(2, TimeUnit.SECONDS), "la notificacion tiene que llegar igual, en el EDT");
-        assertTrue(wasOnEdt[0], "una notificacion de otro hilo tiene que entregarse en el EDT, no en el que llamo");
+        assertTrue(delivered.await(2, TimeUnit.SECONDS), "the notification still has to arrive, on the EDT");
+        assertTrue(wasOnEdt[0], "a notification from another thread has to be delivered on the EDT, not the caller's");
     }
 }

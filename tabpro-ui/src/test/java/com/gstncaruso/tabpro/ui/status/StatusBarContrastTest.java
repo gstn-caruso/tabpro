@@ -12,7 +12,7 @@ class StatusBarContrastTest {
     @Test
     void theBevelOfEveryPanelReadsOverTheStatusBar() {
         PaletteCheck.assertEveryPairReads(List.of(
-                new Pair("tinte del bisel hundido (BEVEL_SHADE) / barra de estado", ScoreColors.BEVEL_SHADE,
+                new Pair("sunken bevel tint (BEVEL_SHADE) / status bar", ScoreColors.BEVEL_SHADE,
                         ScoreColors.SURFACE, Contrast.GRAPHICAL_MINIMUM_RATIO)));
     }
 }

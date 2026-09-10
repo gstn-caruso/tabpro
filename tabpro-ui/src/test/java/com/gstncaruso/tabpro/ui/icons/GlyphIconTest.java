@@ -21,7 +21,7 @@ class GlyphIconTest {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> new GlyphIcon(18));
 
-        assertTrue(error.getMessage().contains("glifo"), error.getMessage());
+        assertTrue(error.getMessage().contains("glyph"), error.getMessage());
     }
 
     @Test
@@ -47,9 +47,9 @@ class GlyphIconTest {
 
         BufferedImage image = paint(icon);
 
-        assertTrue(hasAPixelOfTheThemeColor(image), "no pinto nada");
-        assertTrue(hasAPixelOfTheThemeColorAbove(image, 9), "no pinto el renglon de arriba");
-        assertTrue(hasAPixelOfTheThemeColorBelow(image, 9), "no pinto el renglon de abajo");
+        assertTrue(hasAPixelOfTheThemeColor(image), "painted nothing");
+        assertTrue(hasAPixelOfTheThemeColorAbove(image, 9), "did not paint the row above");
+        assertTrue(hasAPixelOfTheThemeColorBelow(image, 9), "did not paint the row below");
     }
 
     private static boolean hasAPixelOfTheThemeColorAbove(BufferedImage image, int y) {

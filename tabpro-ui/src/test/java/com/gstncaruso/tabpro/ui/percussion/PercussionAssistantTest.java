@@ -21,7 +21,7 @@ class PercussionAssistantTest {
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
-        Editor editor = new Editor(new Score("Prueba", 120, java.util.List.of(Track.percussion("Batería"))));
+        Editor editor = new Editor(new Score("Test", 120, java.util.List.of(Track.percussion("Batería"))));
 
         AccessibilityAssertions.assertNoViolations(new PercussionAssistant(editor, new RecordingPlayer()));
     }
@@ -56,7 +56,7 @@ class PercussionAssistantTest {
 
         assertEquals(java.util.List.of(new RecordingPlayer.Sounded(new Pitch(38), Track.PERCUSSION_PROGRAM)),
                 player.sounded());
-        assertTrue(editor.currentBeat().isRest(), "un clic simple no escribe nada");
+        assertTrue(editor.currentBeat().isRest(), "a single click does not write anything");
     }
 
     @Test
@@ -80,9 +80,9 @@ class PercussionAssistantTest {
         Dimension assistantSize = assistant.getPreferredSize();
 
         assertTrue(assistantSize.width >= naturalGridSize.width,
-                "el asistente pide menos ancho que el que necesitan las cuatro columnas");
+                "the assistant asks for less width than the four columns need");
         assertTrue(assistantSize.height >= naturalGridSize.height,
-                "el asistente pide menos alto que el que necesitan las filas de la grilla");
+                "the assistant asks for less height than the grid rows need");
     }
 
     @Test
@@ -107,7 +107,7 @@ class PercussionAssistantTest {
                 return i;
             }
         }
-        throw new IllegalArgumentException("sonido no encontrado: " + sound);
+        throw new IllegalArgumentException("sound not found: " + sound);
     }
 
     private static final int CELL_HEIGHT = 20;

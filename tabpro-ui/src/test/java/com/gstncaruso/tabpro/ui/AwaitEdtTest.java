@@ -14,6 +14,6 @@ class AwaitEdtTest {
 
         AwaitEdt.flush();
 
-        assertTrue(ran[0], "flush tiene que esperar a que el EDT procese lo que ya estaba encolado");
+        assertTrue(ran[0], "flush has to wait for the EDT to process what was already queued");
     }
 }

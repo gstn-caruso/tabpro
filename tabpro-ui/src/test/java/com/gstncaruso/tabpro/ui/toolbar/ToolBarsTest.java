@@ -92,7 +92,7 @@ class ToolBarsTest {
             toolBars.component(), toolBars.effectsComponent(),
         }) {
             for (AbstractButton button : buttonsOf(row)) {
-                assertNotNull(button.getIcon(), button.getAccessibleContext().getAccessibleName() + " sin icono");
+                assertNotNull(button.getIcon(), button.getAccessibleContext().getAccessibleName() + " has no icon");
             }
         }
     }
@@ -119,13 +119,13 @@ class ToolBarsTest {
                 new FakeZoomHolder());
         JToggleButton button = toggleButtonNamed(anotherToolBar.structureToolBar, "Banco de sonido");
 
-        assertTrue(button.isSelected(), "tiene que arrancar mostrando que el banco esta prendido");
+        assertTrue(button.isSelected(), "has to start showing that the sound font is on");
 
         button.doClick();
         assertFalse(button.isSelected());
 
         button.getAction().actionPerformed(null);
-        assertTrue(button.isSelected(), "un disparo ajeno al boton (F2, el menu) tiene que sincronizarlo igual");
+        assertTrue(button.isSelected(), "a trigger from outside the button (F2, the menu) has to sync it just the same");
 
         assertEquals(2, called.stream().filter("toggleSoundFont"::equals).count());
     }
@@ -136,7 +136,7 @@ class ToolBarsTest {
                 return toggle;
             }
         }
-        throw new AssertionError("no encontre un boton conmutable llamado " + name);
+        throw new AssertionError("found no toggle button named " + name);
     }
 
     private java.util.List<AbstractButton> buttonsOf(Container root) {

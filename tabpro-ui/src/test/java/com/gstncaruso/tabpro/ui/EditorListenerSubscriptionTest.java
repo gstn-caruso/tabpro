@@ -70,7 +70,7 @@ class EditorListenerSubscriptionTest {
     void subscribesThroughTheEdtAdapter(Subscription subscription) {
         assertTrue(
                 subscription.argument().startsWith(ADAPTER_CALL),
-                () -> subscription + " tiene que suscribirse a traves de EdtEditorListener.onEdt(...)");
+                () -> subscription + " has to subscribe through EdtEditorListener.onEdt(...)");
     }
 
     record Subscription(Path file, String argument) {

@@ -22,8 +22,8 @@ class MidiSetupDialogTest {
         JPanel panel = panelWithFourEmptyPorts();
 
         assertTrue(panel.getPreferredSize().height <= LAPTOP_SCREEN_HEIGHT,
-                "el formulario (" + panel.getPreferredSize().height + "px) tiene que entrar en "
-                        + LAPTOP_SCREEN_HEIGHT + "px sin scrollear");
+                "the form (" + panel.getPreferredSize().height + "px) has to fit within "
+                        + LAPTOP_SCREEN_HEIGHT + "px without scrolling");
     }
 
     private static JPanel panelWithFourEmptyPorts() {
