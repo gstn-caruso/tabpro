@@ -8,7 +8,7 @@ public record Bend(BendType type, List<BendPoint> points) {
 
     public Bend {
         if (points.size() < 2) {
-            throw new IllegalArgumentException("una curva necesita al menos dos puntos");
+            throw new IllegalArgumentException("a curve needs at least two points");
         }
         List<BendPoint> sorted = new ArrayList<>(points);
         sorted.sort(Comparator.comparingInt(BendPoint::position));

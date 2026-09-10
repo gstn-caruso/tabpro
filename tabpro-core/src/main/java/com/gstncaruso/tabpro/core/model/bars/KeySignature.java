@@ -16,7 +16,7 @@ public record KeySignature(int accidentals, Mode mode) {
 
     public KeySignature {
         if (accidentals < -7 || accidentals > 7) {
-            throw new IllegalArgumentException("la armadura va de -7 a 7 alteraciones: " + accidentals);
+            throw new IllegalArgumentException("the key signature ranges from -7 to 7 accidentals: " + accidentals);
         }
     }
 

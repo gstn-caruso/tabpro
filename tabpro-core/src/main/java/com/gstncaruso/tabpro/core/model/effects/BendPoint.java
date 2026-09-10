@@ -10,13 +10,13 @@ public record BendPoint(int position, int quarterTones, int vibrato) {
 
     public BendPoint {
         if (position < 0 || position > LAST_POSITION) {
-            throw new IllegalArgumentException("position debe estar entre 0 y " + LAST_POSITION + ": " + position);
+            throw new IllegalArgumentException("position must be between 0 and " + LAST_POSITION + ": " + position);
         }
         if (quarterTones < -MAX_QUARTER_TONES || quarterTones > MAX_QUARTER_TONES) {
-            throw new IllegalArgumentException("quarterTones fuera de rango: " + quarterTones);
+            throw new IllegalArgumentException("quarterTones out of range: " + quarterTones);
         }
         if (vibrato < 0 || vibrato > MAX_VIBRATO) {
-            throw new IllegalArgumentException("vibrato debe estar entre 0 y " + MAX_VIBRATO + ": " + vibrato);
+            throw new IllegalArgumentException("vibrato must be between 0 and " + MAX_VIBRATO + ": " + vibrato);
         }
     }
 

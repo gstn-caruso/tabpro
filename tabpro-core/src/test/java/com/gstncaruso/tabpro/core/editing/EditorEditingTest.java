@@ -26,7 +26,7 @@ class EditorEditingTest {
 
     @Test
     void startsWithTheGivenScore() {
-        Score score = Score.blank().withTitle("Mi cancion");
+        Score score = Score.blank().withTitle("My song");
         Editor editor = new Editor(score);
         assertEquals(score, editor.score());
     }
@@ -114,7 +114,7 @@ class EditorEditingTest {
 
         assertTrue(editor.currentBeat().isRest());
         assertEquals(Duration.of(NoteValue.EIGHTH), editor.currentBeat().duration(),
-                "el beat insertado tiene que usar la figura por defecto, no copiar la del beat actual");
+                "the inserted beat has to use the default note value, not copy the current beat's");
         assertEquals(first, editor.score().track(0).measure(0).beat(1));
     }
 
@@ -221,8 +221,8 @@ class EditorEditingTest {
     @Test
     void changesTheTitle() {
         Editor editor = new Editor(Score.blank());
-        editor.setTitle("Mi cancion");
-        assertEquals("Mi cancion", editor.score().title());
+        editor.setTitle("My song");
+        assertEquals("My song", editor.score().title());
     }
 
     private Editor editorWithMeasure(Measure measure) {

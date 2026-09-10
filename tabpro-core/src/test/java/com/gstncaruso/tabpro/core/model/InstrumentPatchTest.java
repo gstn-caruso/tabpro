@@ -35,18 +35,18 @@ class InstrumentPatchTest {
     void oneHundredTwentyEightLinesNameEveryProgram() {
         InstrumentPatch patch = InstrumentPatch.parse(oneHundredTwentyEightNames());
 
-        assertEquals("Instrumento 0", patch.nameOf(0));
-        assertEquals("Instrumento 127", patch.nameOf(127));
+        assertEquals("Instrument 0", patch.nameOf(0));
+        assertEquals("Instrument 127", patch.nameOf(127));
     }
 
     @Test
     void linesPastProgramOneTwentySevenAreIgnored() {
         StringBuilder text = new StringBuilder(oneHundredTwentyEightNames());
-        text.append("\nInstrumento fantasma");
+        text.append("\nInstrument ghost");
 
         InstrumentPatch patch = InstrumentPatch.parse(text.toString());
 
-        assertEquals("Instrumento 127", patch.nameOf(127));
+        assertEquals("Instrument 127", patch.nameOf(127));
         assertThrows(IllegalArgumentException.class, () -> patch.nameOf(128));
     }
 
@@ -81,7 +81,7 @@ class InstrumentPatchTest {
             if (program > 0) {
                 text.append('\n');
             }
-            text.append("Instrumento ").append(program);
+            text.append("Instrument ").append(program);
         }
         return text.toString();
     }

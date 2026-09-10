@@ -20,7 +20,7 @@ public record Track(
 
     public Track {
         if (measures.isEmpty()) {
-            throw new IllegalArgumentException("una pista necesita al menos un compás");
+            throw new IllegalArgumentException("a track needs at least one bar");
         }
         measures = List.copyOf(measures);
     }

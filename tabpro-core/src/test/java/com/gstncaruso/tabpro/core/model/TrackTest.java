@@ -12,7 +12,7 @@ class TrackTest {
 
     @Test
     void aStandardGuitarTrackHasStandardTuningAndOneEmptyMeasure() {
-        Track track = Track.standardGuitar("Guitarra");
+        Track track = Track.standardGuitar("Guitar");
         assertEquals(Tuning.standard(), track.tuning());
         assertEquals(Channel.playing(25), track.channel());
         assertEquals(1, track.measures().size());
@@ -21,7 +21,7 @@ class TrackTest {
 
     @Test
     void replacesAMeasure() {
-        Track track = Track.standardGuitar("Guitarra");
+        Track track = Track.standardGuitar("Guitar");
         Measure newMeasure = Measure.empty(TimeSignature.fourFour(), Duration.quarter().longer());
         Track replaced = track.withMeasure(0, newMeasure);
         assertEquals(newMeasure, replaced.measure(0));
@@ -32,7 +32,7 @@ class TrackTest {
         Measure first = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 0))));
         Measure second = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 1))));
         Measure inserted = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 9))));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(first, second));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(first, second));
         Track result = track.withMeasureInsertedAt(1, inserted);
         assertEquals(List.of(first, inserted, second), result.measures());
     }
@@ -41,7 +41,7 @@ class TrackTest {
     void appendsAMeasure() {
         Measure first = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 0))));
         Measure appended = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 9))));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(first));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(first));
         Track result = track.withMeasureInsertedAt(track.measures().size(), appended);
         assertEquals(List.of(first, appended), result.measures());
     }
@@ -50,7 +50,7 @@ class TrackTest {
     void removesAMeasure() {
         Measure first = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 0))));
         Measure second = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 1))));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(first, second));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(first, second));
         Track result = track.withoutMeasureAt(0);
         assertEquals(List.of(second), result.measures());
     }
@@ -59,7 +59,7 @@ class TrackTest {
     void removingTheOnlyMeasureLeavesAnEmptyOne() {
         TimeSignature threeFour = new TimeSignature(3, 4);
         Measure onlyMeasure = new Measure(threeFour, List.of(Beat.of(Duration.quarter().longer(), new Note(1, 5))));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(onlyMeasure));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(onlyMeasure));
         Track result = track.withoutMeasureAt(0);
         assertEquals(1, result.measures().size());
         Measure resultMeasure = result.measure(0);
@@ -70,30 +70,30 @@ class TrackTest {
 
     @Test
     void aStandardGuitarTrackDoesNotShowStringNamesByDefault() {
-        assertFalse(Track.standardGuitar("Guitarra").settings().display().tuningLegend());
+        assertFalse(Track.standardGuitar("Guitar").settings().display().tuningLegend());
     }
 
     @Test
     void aStandardBassTrackIsTunedFourStringsBelowTheGuitar() {
-        Track track = Track.standardBass("Bajo");
+        Track track = Track.standardBass("Bass");
         assertEquals(Tuning.standardBass(), track.tuning());
         assertEquals(4, track.tuning().stringCount());
     }
 
     @Test
     void changesItsChannelAndItsName() {
-        Track track = Track.standardGuitar("Guitarra");
+        Track track = Track.standardGuitar("Guitar");
 
         assertEquals(80, track.withChannel(track.channel().withVolume(80)).channel().volume());
-        assertEquals("Ritmica", track.withName("Ritmica").name());
-        assertEquals(track.measures(), track.withName("Ritmica").measures());
+        assertEquals("Rhythm", track.withName("Rhythm").name());
+        assertEquals(track.measures(), track.withName("Rhythm").measures());
     }
 
     @Test
     void knowsWhichOfItsMeasuresCarryNotes() {
         Measure sounding = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 3))));
         Measure silent = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(sounding, silent));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(sounding, silent));
 
         assertTrue(track.hasNotesIn(0));
         assertFalse(track.hasNotesIn(1));
@@ -101,7 +101,7 @@ class TrackTest {
 
     @Test
     void hasNoNotesBeyondItsLastMeasure() {
-        Track track = Track.standardGuitar("Guitarra");
+        Track track = Track.standardGuitar("Guitar");
 
         assertFalse(track.hasNotesIn(7));
         assertFalse(track.hasNotesIn(-1));
@@ -110,7 +110,7 @@ class TrackTest {
     @Test
     void countsItsMeasures() {
         Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure, measure));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure, measure));
 
         assertEquals(2, track.measureCount());
     }
@@ -118,42 +118,42 @@ class TrackTest {
     @Test
     void rejectsATrackWithoutMeasures() {
         assertThrows(IllegalArgumentException.class,
-                () -> new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of()));
+                () -> new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of()));
     }
 
     @Test
     void aGuitarTrackAcceptsFretZero() {
-        assertTrue(Track.standardGuitar("Guitarra").acceptsTypedNumber(0));
+        assertTrue(Track.standardGuitar("Guitar").acceptsTypedNumber(0));
     }
 
     @Test
     void aGuitarTrackAcceptsTheHighestFret() {
-        assertTrue(Track.standardGuitar("Guitarra").acceptsTypedNumber(Tuning.MAX_FRET));
+        assertTrue(Track.standardGuitar("Guitar").acceptsTypedNumber(Tuning.MAX_FRET));
     }
 
     @Test
     void aGuitarTrackRejectsAFretPastTheHighest() {
-        assertFalse(Track.standardGuitar("Guitarra").acceptsTypedNumber(Tuning.MAX_FRET + 1));
+        assertFalse(Track.standardGuitar("Guitar").acceptsTypedNumber(Tuning.MAX_FRET + 1));
     }
 
     @Test
     void aPercussionTrackRejectsASoundBelowTheLowest() {
-        assertFalse(Track.percussion("Bateria").acceptsTypedNumber(PercussionKit.LOWEST_SOUND - 1));
+        assertFalse(Track.percussion("Drums").acceptsTypedNumber(PercussionKit.LOWEST_SOUND - 1));
     }
 
     @Test
     void aPercussionTrackAcceptsTheLowestSound() {
-        assertTrue(Track.percussion("Bateria").acceptsTypedNumber(PercussionKit.LOWEST_SOUND));
+        assertTrue(Track.percussion("Drums").acceptsTypedNumber(PercussionKit.LOWEST_SOUND));
     }
 
     @Test
     void aPercussionTrackAcceptsTheHighestSound() {
-        assertTrue(Track.percussion("Bateria").acceptsTypedNumber(PercussionKit.HIGHEST_SOUND));
+        assertTrue(Track.percussion("Drums").acceptsTypedNumber(PercussionKit.HIGHEST_SOUND));
     }
 
     @Test
     void aPercussionTrackRejectsASoundPastTheHighest() {
-        assertFalse(Track.percussion("Bateria").acceptsTypedNumber(PercussionKit.HIGHEST_SOUND + 1));
+        assertFalse(Track.percussion("Drums").acceptsTypedNumber(PercussionKit.HIGHEST_SOUND + 1));
     }
 
     @Test
@@ -189,7 +189,7 @@ class TrackTest {
 
     @Test
     void aRegularGuitarDoesNotDoubleAnyString() {
-        Track guitar = Track.standardGuitar("Guitarra");
+        Track guitar = Track.standardGuitar("Guitar");
 
         assertTrue(guitar.twelveStringDoublingInterval(1).isEmpty());
         assertTrue(guitar.twelveStringDoublingInterval(6).isEmpty());
@@ -212,7 +212,7 @@ class TrackTest {
     }
 
     private static Track twelveStringGuitar() {
-        return Track.standardGuitar("Guitarra").mappingSettings(settings -> settings.withTwelveString(true));
+        return Track.standardGuitar("Guitar").mappingSettings(settings -> settings.withTwelveString(true));
     }
 
     private static Track banjoWithFifthStringOption() {

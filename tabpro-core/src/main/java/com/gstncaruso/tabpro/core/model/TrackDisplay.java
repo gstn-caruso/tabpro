@@ -18,7 +18,7 @@ public record TrackDisplay(
 
     public TrackDisplay {
         if (!standardNotation && !tablature) {
-            throw new IllegalArgumentException("una pista tiene que mostrar pentagrama o tablatura");
+            throw new IllegalArgumentException("a track has to show standard notation or tablature");
         }
     }
 

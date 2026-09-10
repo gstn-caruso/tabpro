@@ -18,13 +18,13 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
 
     public Score {
         if (tempo <= 0) {
-            throw new IllegalArgumentException("tempo debe ser > 0: " + tempo);
+            throw new IllegalArgumentException("tempo must be > 0: " + tempo);
         }
         if (tracks.isEmpty()) {
-            throw new IllegalArgumentException("una partitura necesita al menos una pista");
+            throw new IllegalArgumentException("a score needs at least one track");
         }
         if (tracks.size() > MAX_TRACKS) {
-            throw new IllegalArgumentException("una partitura admite hasta " + MAX_TRACKS + " pistas");
+            throw new IllegalArgumentException("a score allows up to " + MAX_TRACKS + " pistas");
         }
         tracks = List.copyOf(tracks);
     }
@@ -104,7 +104,7 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
 
     public Score withoutTrackAt(int index) {
         if (tracks.size() == 1) {
-            throw new IllegalStateException("una partitura necesita al menos una pista");
+            throw new IllegalStateException("a score needs at least one track");
         }
         List<Track> updated = new ArrayList<>(tracks);
         updated.remove(index);

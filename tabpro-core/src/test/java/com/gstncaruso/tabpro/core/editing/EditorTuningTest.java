@@ -51,7 +51,7 @@ class EditorTuningTest {
         Track bass = editor.score().track(0);
         assertEquals(4, bass.stringCount());
         Beat beat = editor.currentBeat();
-        assertEquals(3, beat.notes().size(), "las tres notas del acorde entraban en el bajo: ninguna se pierde");
+        assertEquals(3, beat.notes().size(), "all three notes of the chord fit on the bass: none is lost");
         Set<Integer> pitches = beat.notes().stream()
                 .map(note -> bass.tuning().pitchOf(note).midiNumber())
                 .collect(Collectors.toSet());
@@ -64,9 +64,9 @@ class EditorTuningTest {
         moveDown(editor, 5);
         editor.setFret(0);
 
-        editor.setTuning(0, Tuning.of("Ukelele en Do", 69, 64, 60, 67));
+        editor.setTuning(0, Tuning.of("Ukulele in C", 69, 64, 60, 67));
 
-        assertTrue(editor.currentBeat().notes().isEmpty(), "el Mi2 queda por debajo de la cuerda mas grave del ukelele");
+        assertTrue(editor.currentBeat().notes().isEmpty(), "E2 falls below the lowest string of the ukulele");
     }
 
     @Test
@@ -77,7 +77,7 @@ class EditorTuningTest {
         editor.setTuning(0, Tuning.standardBass());
 
         assertTrue(editor.currentBeat().notes().isEmpty(),
-                "84 no entra en ninguna cuerda del bajo aunque se use el traste maximo");
+                "84 does not fit on any string of the bass even using the highest fret");
     }
 
     @Test

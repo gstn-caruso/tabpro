@@ -15,10 +15,10 @@ public record ChordDiagram(String name, int baseFret, List<Integer> frets, List<
 
     public ChordDiagram {
         if (baseFret < 1) {
-            throw new IllegalArgumentException("baseFret debe ser >= 1: " + baseFret);
+            throw new IllegalArgumentException("baseFret must be >= 1: " + baseFret);
         }
         if (frets.isEmpty()) {
-            throw new IllegalArgumentException("un diagrama necesita al menos una cuerda");
+            throw new IllegalArgumentException("a diagram needs at least one string");
         }
         frets = List.copyOf(frets);
         fingering = Collections.unmodifiableList(new ArrayList<>(fingering));

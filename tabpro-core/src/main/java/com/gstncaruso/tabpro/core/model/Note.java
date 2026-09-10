@@ -16,10 +16,10 @@ public record Note(int string, int fret, boolean tied, NoteEffects effects) {
 
     public Note {
         if (string < 1) {
-            throw new IllegalArgumentException("string debe ser >= 1: " + string);
+            throw new IllegalArgumentException("string must be >= 1: " + string);
         }
         if (fret < 0 || fret > MAX_FRET) {
-            throw new IllegalArgumentException("fret debe estar entre 0 y " + MAX_FRET + ": " + fret);
+            throw new IllegalArgumentException("fret must be between 0 and " + MAX_FRET + ": " + fret);
         }
     }
 

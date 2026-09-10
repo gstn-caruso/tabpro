@@ -34,7 +34,7 @@ public final class InstrumentPatch {
 
     public String nameOf(int program) {
         if (program < 0 || program >= Instruments.COUNT) {
-            throw new IllegalArgumentException("program debe estar entre 0 y " + (Instruments.COUNT - 1) + ": " + program);
+            throw new IllegalArgumentException("program must be between 0 and " + (Instruments.COUNT - 1) + ": " + program);
         }
         if (program < names.size() && !names.get(program).isBlank()) {
             return names.get(program);

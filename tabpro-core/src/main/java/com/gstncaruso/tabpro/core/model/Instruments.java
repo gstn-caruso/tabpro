@@ -145,7 +145,7 @@ public final class Instruments {
 
     public static String nameOf(int program) {
         if (program < 0 || program >= COUNT) {
-            throw new IllegalArgumentException("program debe estar entre 0 y " + (COUNT - 1) + ": " + program);
+            throw new IllegalArgumentException("program must be between 0 and " + (COUNT - 1) + ": " + program);
         }
         return NAMES.get(program);
     }

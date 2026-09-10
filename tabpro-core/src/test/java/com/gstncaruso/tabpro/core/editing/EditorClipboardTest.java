@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class EditorClipboardTest {
 
     private final Editor editor = new Editor(
-            new Score("Prueba", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo"))));
+            new Score("Test", 120, List.of(Track.standardGuitar("Guitar"), Track.standardBass("Bass"))));
 
     @Test
     void copyingWithoutSelectionTakesTheCurrentBar() {

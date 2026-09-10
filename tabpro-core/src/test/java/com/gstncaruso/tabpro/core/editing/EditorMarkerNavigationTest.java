@@ -19,13 +19,13 @@ class EditorMarkerNavigationTest {
     @BeforeEach
     void scoreWithMarkersOnTheFirstAndFourthMeasure() {
         Measure empty = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
-        Track guitar = Track.standardGuitar("Guitarra");
+        Track guitar = Track.standardGuitar("Guitar");
         editor = new Editor(new Score("", 120, List.of(new Track(
-                "Guitarra", guitar.tuning(), guitar.channel(), List.of(empty, empty, empty, empty, empty)))));
+                "Guitar", guitar.tuning(), guitar.channel(), List.of(empty, empty, empty, empty, empty)))));
         editor.moveTo(0, 0, 1);
         editor.setMarker(Marker.named("Intro"));
         editor.moveTo(3, 0, 1);
-        editor.setMarker(Marker.named("Estribillo"));
+        editor.setMarker(Marker.named("Chorus"));
         editor.moveTo(0, 0, 1);
     }
 

@@ -18,7 +18,7 @@ public record ScoreColor(int red, int green, int blue) {
 
     private static void requireByte(int value, String name) {
         if (value < 0 || value > 255) {
-            throw new IllegalArgumentException(name + " debe estar entre 0 y 255: " + value);
+            throw new IllegalArgumentException(name + " must be between 0 and 255: " + value);
         }
     }
 }
