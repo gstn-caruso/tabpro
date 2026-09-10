@@ -105,4 +105,10 @@ class PreferencesTest {
     void metronomeStartsOffByDefault() {
         assertFalse(preferences.metronomeEnabled());
     }
+
+    /** Preferencias [F12] > Accesibilidad: la fuente base de la interfaz, hoy fija en 12pt. */
+    @Test
+    void interfaceFontSizeStartsAtTwelvePoints() {
+        assertEquals(12, preferences.interfaceFontSize());
+    }
 }
