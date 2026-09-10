@@ -113,6 +113,16 @@ class MeasureGridTest {
         assertEquals(new MeasureGrid.Cell(0, 1), grid.caret());
     }
 
+    @Test
+    void theDownArrowKeyMovesTheCaretToTheNextTrack() {
+        Editor editor = editorWithTwoTracksAndThreeMeasures();
+        MeasureGrid grid = new MeasureGrid(editor);
+
+        pressShortcut(grid, KeyStroke.getKeyStroke("DOWN"));
+
+        assertEquals(new MeasureGrid.Cell(1, 0), grid.caret());
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
