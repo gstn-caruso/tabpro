@@ -354,11 +354,7 @@ class ScoreCanvasTest {
         horizontal.setViewMode(ViewMode.SCREEN_HORIZONTAL);
         JScrollPane pane = paneShowing(horizontal);
 
-        // Frena el EDT antes de que el hilo de fondo encole su aviso, para que quede detras en
-        // la cola: sin esto, en una corrida real (con otros tests moviendo el mismo EDT) el
-        // aviso podria despacharse entre el join() y la asercion, y la prueba seria un flake.
-        CountDownLatch releaseEdt = new CountDownLatch(1);
-        SwingUtilities.invokeLater(() -> await(releaseEdt));
+        CountDownLatch releaseEdt = blockTheEdtQueueUntilReleased();
 
         Thread background = new Thread(manyMeasures::moveToLastMeasure);
         background.start();
@@ -372,6 +368,17 @@ class ScoreCanvasTest {
 
         assertTrue(pane.getViewport().getViewPosition().x > 0,
                 "una vez que el EDT proceso la cola, el scroll real tiene que haber llegado");
+    }
+
+    /**
+     * Encola en el EDT una tarea que no vuelve hasta que se cuente abajo el latch devuelto:
+     * cualquier aviso que otro hilo encole despues queda esperando detras, asi la prueba puede
+     * mirar el estado de antes de que ese aviso se procese sin que sea una carrera.
+     */
+    private static CountDownLatch blockTheEdtQueueUntilReleased() {
+        CountDownLatch releaseEdt = new CountDownLatch(1);
+        SwingUtilities.invokeLater(() -> await(releaseEdt));
+        return releaseEdt;
     }
 
     private static void await(CountDownLatch latch) {
