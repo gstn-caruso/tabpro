@@ -70,6 +70,25 @@ class AccidentalPaintingTest {
                 "el si bemol de la armadura tiene que llevar el glifo del bemol");
     }
 
+    @Test
+    void aNoteReturningToTheKeyAfterASharpIsMarkedWithTheNaturalGlyph() {
+        Note sharped = new Note(3, 3);
+        Note backToNatural = new Note(3, 2);
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), sharped), Beat.of(Duration.quarter(), backToNatural)));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
+        Score score = new Score("", 120, List.of(track));
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        StaffPainter.paintMeasure(lienzo, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
+
+        int step = StaffPainter.positionOf(track, Clef.TREBLE, backToNatural, 0).step();
+        int y = layout.stepY(0, 0, step);
+        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.accidentalNatural(), new Rectangle(0, y - 2, WIDTH, 4)),
+                "la nota que vuelve a la armadura tiene que llevar el glifo del becuadro");
+    }
+
     private static ScoreLayout layoutFor(KeySignature key) {
         Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));

@@ -340,13 +340,7 @@ final class StaffPainter {
     }
 
     private static void paintNatural(Graphics2D g, double x, double y, Color ink) {
-        g.setColor(ink);
-        g.setStroke(new BasicStroke(1.1f));
-        double half = SPACE * 0.26;
-        g.draw(new Line2D.Double(x - half, y - SPACE * 0.85, x - half, y + SPACE * 0.5));
-        g.draw(new Line2D.Double(x + half, y - SPACE * 0.5, x + half, y + SPACE * 0.85));
-        g.draw(new Line2D.Double(x - half, y + SPACE * 0.3, x + half, y + SPACE * 0.5));
-        g.draw(new Line2D.Double(x - half, y - SPACE * 0.5, x + half, y - SPACE * 0.3));
+        paintAccidentalGlyph(g, MusicFont.accidentalNatural(), x, y, ink);
     }
 
     /** Los arcos de ligadura de prolongacion, entre golpes consecutivos de la misma cuerda. */
