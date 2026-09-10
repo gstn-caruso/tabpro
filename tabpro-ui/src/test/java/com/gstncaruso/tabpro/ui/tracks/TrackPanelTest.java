@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.AwaitEdt;
 import org.junit.jupiter.api.Test;
 
 class TrackPanelTest {
@@ -23,6 +24,7 @@ class TrackPanelTest {
         TrackPanel panel = new TrackPanel(editor);
 
         panel.addBass();
+        AwaitEdt.flush();
 
         assertEquals(2, panel.rows().size());
         assertEquals("Bajo", editor.score().track(1).name());
@@ -44,8 +46,10 @@ class TrackPanelTest {
         Editor editor = new Editor(Score.blank());
         TrackPanel panel = new TrackPanel(editor);
         panel.addBass();
+        AwaitEdt.flush();
 
         panel.removeSelectedTrack();
+        AwaitEdt.flush();
 
         assertEquals(1, panel.rows().size());
         assertEquals(1, editor.score().trackCount());

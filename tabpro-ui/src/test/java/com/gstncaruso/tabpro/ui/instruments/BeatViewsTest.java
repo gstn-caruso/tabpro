@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.ui.AwaitEdt;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Component;
@@ -360,6 +361,7 @@ class BeatViewsTest {
         editor.addTrack(Track.standardBass("Bajo"));
         editor.setFret(4);
         views.showPlayhead(Playhead.silent().advancedTo(new BeatPosition(1, 0, 0)));
+        AwaitEdt.flush();
 
         assertEquals(editor.currentBeat(), BeatViews.beatToShow(editor, Playhead.silent()));
     }

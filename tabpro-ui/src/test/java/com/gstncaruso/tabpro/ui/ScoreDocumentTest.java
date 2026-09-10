@@ -26,6 +26,7 @@ class ScoreDocumentTest {
 
     @AfterEach
     void clearsTheScratchNode() throws java.util.prefs.BackingStoreException {
+        AwaitEdt.flush();
         if (scratch != null) {
             scratch.removeNode();
         }

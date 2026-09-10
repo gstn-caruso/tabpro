@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.core.playback.Player;
+import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
@@ -61,7 +62,7 @@ public final class BeatViews extends JPanel {
         add(keyboardBox);
 
         installWriting(new InstrumentEditing(editor, player));
-        editor.addListener(this::refresh);
+        editor.addListener(EdtEditorListener.onEdt(this::refresh));
         refresh();
     }
 
