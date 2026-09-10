@@ -73,8 +73,8 @@ public final class ScalesDialog {
             scales.setToolTipText("Escala");
             PitchClasses.chromatic().forEach(tonicsModel::addElement);
             ScaleLibrary.all().forEach(scalesModel::addElement);
-            chosen.tonic().ifPresent(tonic -> tonics.setSelectedValue(tonic, true));
-            chosen.scale().ifPresent(scale -> scales.setSelectedValue(scale, true));
+            tonics.setSelectedValue(chosen.tonic().orElseGet(() -> PitchClass.of("C")), true);
+            scales.setSelectedValue(chosen.scale().orElseGet(ScaleLibrary::major), true);
 
             setLayout(new BorderLayout(10, 10));
             add(chooserZone(), BorderLayout.NORTH);
