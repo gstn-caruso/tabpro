@@ -121,4 +121,15 @@ class FormPanelTest {
         assertTrue(SwingUtilities.isDescendingFrom(deEstilo, style));
         assertFalse(SwingUtilities.isDescendingFrom(deEstilo, notation));
     }
+
+    @Test
+    void dosSeccionesSeguidasSinFilasQuedanComoCajasSeparadas() {
+        FormPanel panel = new FormPanel();
+
+        panel.addSection("Encabezado");
+        panel.addSection("Pie de pagina");
+
+        assertEquals("Encabezado", sectionTitled(panel, "Encabezado").getAccessibleContext().getAccessibleName());
+        assertEquals("Pie de pagina", sectionTitled(panel, "Pie de pagina").getAccessibleContext().getAccessibleName());
+    }
 }
