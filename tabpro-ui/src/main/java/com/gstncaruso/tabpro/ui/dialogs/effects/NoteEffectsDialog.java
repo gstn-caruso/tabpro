@@ -28,8 +28,8 @@ public final class NoteEffectsDialog {
     public static final String GRACE_NOTE = "Nota de adorno";
     public static final String STROKE = "Rasgueo";
     public static final String TRILL = "Trino";
-    public static final String TREMOLO_PICKING = "Tremolo de pua";
-    public static final String HARMONICS = "Armonicos";
+    public static final String TREMOLO_PICKING = "Trémolo de púa";
+    public static final String HARMONICS = "Armónicos";
 
     public static void show(Component parent, Editor editor) {
         show(parent, editor, BEND);
@@ -61,8 +61,8 @@ public final class NoteEffectsDialog {
         tabs.addTab("Nota de adorno", graceTab);
         tabs.addTab("Rasgueo", strokeTab);
         tabs.addTab("Trino", trillTab);
-        tabs.addTab("Tremolo de pua", tremoloPickingTab);
-        tabs.addTab("Armonicos", harmonicTab);
+        tabs.addTab("Trémolo de púa", tremoloPickingTab);
+        tabs.addTab("Armónicos", harmonicTab);
 
         selectTab(tabs, openOn);
 
