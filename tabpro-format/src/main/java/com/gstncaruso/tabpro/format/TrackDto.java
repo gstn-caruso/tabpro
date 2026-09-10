@@ -40,6 +40,7 @@ public record TrackDto(
         Boolean showTuning,
         Boolean showRhythm,
         String diagrams,
+        Boolean diagramsBelowStandardNotation,
         List<MeasureDto> measures) {
 
     public static TrackDto from(Track track) {
@@ -73,6 +74,7 @@ public record TrackDto(
                 display.tuningLegend(),
                 display.rhythmOnTablature(),
                 display.diagrams().name(),
+                display.diagramsBelowStandardNotation(),
                 track.measures().stream().map(MeasureDto::from).toList());
     }
 
@@ -113,7 +115,7 @@ public record TrackDto(
                 orElse(showTuning, false),
                 orElse(showRhythm, false),
                 Enums.read(DiagramPlacement.class, diagrams, DiagramPlacement.ABOVE_THE_STAFF),
-                false);
+                orElse(diagramsBelowStandardNotation, false));
         return new TrackSettings(
                 color == null ? Track.colorFor(index) : ScoreColor.rgb(color),
                 orElse(capo, 0),

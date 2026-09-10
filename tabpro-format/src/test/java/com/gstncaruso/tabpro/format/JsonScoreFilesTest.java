@@ -106,6 +106,18 @@ class JsonScoreFilesTest {
     }
 
     @Test
+    void savesAndLoadsDiagramsBelowStandardNotation(@TempDir Path tempDir) {
+        Track guitar = Track.standardGuitar("Guitarra").mappingSettings(
+                settings -> settings.withDisplay(settings.display().withDiagramsBelowStandardNotation(true)));
+        Score score = new Score("Prueba", 120, List.of(guitar));
+        Path path = tempDir.resolve("score.tabpro");
+
+        scoreFiles.save(score, path);
+
+        assertEquals(score, scoreFiles.load(path));
+    }
+
+    @Test
     void rejectsAnUnsupportedFormatVersion(@TempDir Path tempDir) throws IOException, URISyntaxException {
         String validContent = Files.readString(Path.of(getClass().getResource("/v1-one-measure.tabpro").toURI()));
         String unsupportedContent = validContent.replaceFirst("\"format\": 1", "\"format\": 99");
