@@ -397,3 +397,87 @@ al renderizar, no desde el componente. Un conmutable que no lee el estado real a
 construirse miente igual que una preferencia sin lector. Y una captura del
 `MainFrame` sin `Theme.install()` muestra Metal, no la app: el harness construye
 la ventana sin tema y hay que instalarlo como hace `App.main()`.
+
+## Stage: English codebase and i18n (started 2026-09-10)
+
+This section, and everything written after it, is in English. The older
+sections get translated in phase 5.
+
+### Goal
+
+Delete every comment that is not an external contract. Move the comments that
+remain, identifiers, test names, internal messages, docs and commits to English.
+Ship the user interface in both Spanish and English.
+
+### Decisions (2026-09-10)
+
+- **Comments that stay** document a contract with something outside our code:
+  file formats and protocols (GP3/4/5, PowerTab, TabEdit, MIDI, MusicXML, PDF,
+  BMP, WAVE, SMuFL), plus JDK, Swing, FlatLaf, Gervill, OS or CI behavior that
+  forces a line that would otherwise look odd. Those comments get translated to
+  English. Javadoc on our own types goes, even on public ones.
+- **Lost intent:** if a deleted comment said something the name did not, and a
+  rename is obvious, the rename goes in the same structural commit. No Extract
+  Method.
+- **In English:** the comments that remain, identifiers and test method names,
+  exception and log messages that never reach the user, docs (README, this
+  plan, audits, LEEME), and every commit and PR description from now on. The
+  CHANGELOG already released stays as it is.
+- **Never renamed:** persisted `java.util.prefs` keys, files written to disk
+  (the recovery file), `.tabpro` JSON fields and resource paths. The JUnit tag
+  `integracion` does get renamed in phase 2, together with the poms and CI.
+- **i18n:** the base bundle is English, and `es_*` system locales get Spanish.
+  Any other system language falls back to English. Preferences offers
+  Language (Automatic / Español / English), applied on restart.
+- **Flow unchanged:** workers write the code in their own worktrees, one PR per
+  module and change type, and a PR merges only when `gh pr checks` is green.
+
+### Phases and order
+
+1. **Comments** (`refactor`, `build`, `ci`; no release). Seven parallel scopes
+   that share no files: core, format, midi, app, ui/dialogs,
+   ui/score+instruments+harmony+tracks+page+print, and the rest of ui. Build and
+   CI files are an eighth scope. Obvious renames whose references cross a scope
+   are collected and applied in one follow-up PR.
+2. **Identifiers and test names in English** (`test`, `refactor`; no release),
+   per module, after phase 1 merges. The `integracion` tag is renamed here.
+3. **Internal messages in English** (`refactor`): exception and log text that
+   never reaches the user. Text that does reach the user moves to the bundles in
+   phase 4.
+4. **i18n.** First the infrastructure, with the locale pinned to Spanish. Then
+   extraction by area, writing both bundles. Last, the switch: locale
+   resolution, Preferences > Language, and English as the base. Only that last
+   PR is a `feat`, so it is the only one that releases and no version ships a
+   half-translated UI.
+5. **Docs in English** (`docs`): README (keeping the version mentions that
+   `scripts/prepare-release.sh` rewrites), this plan, the audits and the LEEME
+   files.
+
+### How to resume without context
+
+Read this section and the table below, then take the first row that is not
+merged. If the row is not started, brief a `worker` with its goal, branch,
+scope, the decisions above and the trailer. If the worker finished, open the PR
+with what changed and why, chain `gh pr checks N && gh pr merge N --squash`,
+delete the remote branch only once the PR shows MERGED, and update this table.
+Phases 2 to 5 start only after the previous phase has fully merged, because
+their changes touch the same lines.
+
+### State
+
+| Item | Branch | PR | State |
+|---|---|---|---|
+| Stage plan | `docs/plan-english-codebase-and-i18n` | — | in progress |
+| 1 · core comments | `refactor/core-comments` | — | in progress |
+| 1 · format comments | `refactor/format-comments` | — | in progress |
+| 1 · midi comments | `refactor/midi-comments` | — | in progress |
+| 1 · app comments | `refactor/app-comments` | — | in progress |
+| 1 · ui/dialogs comments | `refactor/ui-dialogs-comments` | — | in progress |
+| 1 · ui/score and neighbors comments | `refactor/ui-score-comments` | — | in progress |
+| 1 · rest of ui comments | `refactor/ui-rest-comments` | — | in progress |
+| 1 · build and CI files in English | `ci/build-files-in-english` | — | in progress |
+| 1 · cross-scope renames | — | — | pending |
+| 2 · identifiers and test names, per module | — | — | pending |
+| 3 · internal messages | — | — | pending |
+| 4 · i18n infrastructure, extraction, switch | — | — | pending (inventory in progress) |
+| 5 · docs in English | — | — | pending |
