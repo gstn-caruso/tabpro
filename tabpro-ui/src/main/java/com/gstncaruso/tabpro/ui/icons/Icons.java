@@ -334,7 +334,7 @@ public final class Icons {
     }
 
     public static Icon nextBar() {
-        return icon((graphics, size) -> skip(graphics, size, false, false));
+        return svgIcon("player-track-next");
     }
 
     public static Icon lastBar() {
