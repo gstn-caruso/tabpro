@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class GuitarProByteReaderTest {
 
     @Test
-    void leeEnterosLittleEndianConSigno() {
+    void readsSignedLittleEndianIntegers() {
         GuitarProFileWriter writer = new GuitarProFileWriter().writeInt(-1).writeInt(305419896);
         GuitarProByteReader reader = new GuitarProByteReader(writer.bytes());
 
@@ -21,7 +21,7 @@ class GuitarProByteReaderTest {
     }
 
     @Test
-    void leeBytesConYSinSigno() {
+    void readsSignedAndUnsignedBytes() {
         GuitarProFileWriter writer = new GuitarProFileWriter().writeUnsignedByte(200).writeSignedByte(-56);
         GuitarProByteReader reader = new GuitarProByteReader(writer.bytes());
 
@@ -30,14 +30,14 @@ class GuitarProByteReaderTest {
     }
 
     @Test
-    void leeShortsConSigno() {
+    void readsSignedShorts() {
         GuitarProByteReader reader = new GuitarProByteReader(new GuitarProFileWriter().writeShort(-2).bytes());
 
         assertEquals(-2, reader.readShort());
     }
 
     @Test
-    void leeUnDoubleEnBigEndian() {
+    void readsADoubleInBigEndian() {
         GuitarProByteReader reader =
                 new GuitarProByteReader(new GuitarProFileWriter().writeDoubleBigEndian(0.75).bytes());
 
@@ -45,7 +45,7 @@ class GuitarProByteReaderTest {
     }
 
     @Test
-    void leeUnColorIgnorandoElCuartoByte() {
+    void readsAColorIgnoringTheFourthByte() {
         ScoreColor color = new ScoreColor(10, 20, 30);
         GuitarProByteReader reader = new GuitarProByteReader(new GuitarProFileWriter().writeColor(color).bytes());
 
@@ -53,7 +53,7 @@ class GuitarProByteReaderTest {
     }
 
     @Test
-    void leeUnStringDeTamanoFijoConSuRelleno() {
+    void readsAFixedSizeStringWithItsPadding() {
         GuitarProByteReader reader =
                 new GuitarProByteReader(new GuitarProFileWriter().writeFixedString("Guitarra", 40).bytes());
 
@@ -62,7 +62,7 @@ class GuitarProByteReaderTest {
     }
 
     @Test
-    void leeUnStringConPrefijoEnteroSinByteExtra() {
+    void readsAnIntPrefixedStringWithoutAnExtraByte() {
         GuitarProByteReader reader =
                 new GuitarProByteReader(new GuitarProFileWriter().writeIntPrefixedString("hola mundo").bytes());
 
@@ -70,7 +70,7 @@ class GuitarProByteReaderTest {
     }
 
     @Test
-    void leeUnStringConPrefijoEnteroYByteDeLargoRedundante() {
+    void readsALengthPrefixedStringWithARedundantLengthByte() {
         GuitarProByteReader reader = new GuitarProByteReader(
                 new GuitarProFileWriter().writeLengthPrefixedString("Cancion de prueba").bytes());
 
@@ -78,7 +78,7 @@ class GuitarProByteReaderTest {
     }
 
     @Test
-    void saltaLaCantidadDeBytesPedida() {
+    void skipsTheRequestedNumberOfBytes() {
         GuitarProByteReader reader =
                 new GuitarProByteReader(new GuitarProFileWriter().writeInt(1).writeInt(2).bytes());
 
@@ -88,7 +88,7 @@ class GuitarProByteReaderTest {
     }
 
     @Test
-    void informaSiQuedanBytesPorLeer() {
+    void reportsWhetherBytesAreLeftToRead() {
         GuitarProByteReader reader = new GuitarProByteReader(new GuitarProFileWriter().writeUnsignedByte(1).bytes());
 
         assertTrue(reader.hasMore());
@@ -97,7 +97,7 @@ class GuitarProByteReaderTest {
     }
 
     @Test
-    void unArchivoTruncadoFallaConMensajeClaro() {
+    void aTruncatedFileFailsWithAClearMessage() {
         GuitarProByteReader reader = new GuitarProByteReader(new byte[] {1, 2});
 
         ScoreFileException exception = assertThrows(ScoreFileException.class, reader::readInt);

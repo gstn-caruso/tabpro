@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class GuitarProByteWriterTest {
 
     @Test
-    void escribeYReleeEnterosLittleEndianConSigno() {
+    void writesAndRereadsSignedLittleEndianIntegers() {
         GuitarProByteWriter writer = new GuitarProByteWriter().writeInt(-1).writeInt(305419896);
         GuitarProByteReader reader = new GuitarProByteReader(writer.bytes());
 
@@ -19,7 +19,7 @@ class GuitarProByteWriterTest {
     }
 
     @Test
-    void escribeYReleeBytesConYSinSigno() {
+    void writesAndRereadsSignedAndUnsignedBytes() {
         GuitarProByteWriter writer = new GuitarProByteWriter().writeUnsignedByte(200).writeSignedByte(-56);
         GuitarProByteReader reader = new GuitarProByteReader(writer.bytes());
 
@@ -28,7 +28,7 @@ class GuitarProByteWriterTest {
     }
 
     @Test
-    void escribeYReleeUnBooleano() {
+    void writesAndRereadsABoolean() {
         GuitarProByteReader reader =
                 new GuitarProByteReader(new GuitarProByteWriter().writeBoolean(true).writeBoolean(false).bytes());
 
@@ -37,7 +37,7 @@ class GuitarProByteWriterTest {
     }
 
     @Test
-    void escribeYReleeUnDoubleEnBigEndian() {
+    void writesAndRereadsADoubleInBigEndian() {
         GuitarProByteReader reader =
                 new GuitarProByteReader(new GuitarProByteWriter().writeDoubleBigEndian(0.75).bytes());
 
@@ -45,7 +45,7 @@ class GuitarProByteWriterTest {
     }
 
     @Test
-    void escribeYReleeUnColorIgnorandoElCuartoByte() {
+    void writesAndRereadsAColorIgnoringTheFourthByte() {
         ScoreColor color = new ScoreColor(10, 20, 30);
         GuitarProByteReader reader = new GuitarProByteReader(new GuitarProByteWriter().writeColor(color).bytes());
 
@@ -53,7 +53,7 @@ class GuitarProByteWriterTest {
     }
 
     @Test
-    void escribeYReleeUnaArmadura() {
+    void writesAndRereadsAKeySignature() {
         KeySignature keySignature = new KeySignature(-3, Mode.MINOR);
         GuitarProByteReader reader =
                 new GuitarProByteReader(new GuitarProByteWriter().writeKeySignature(keySignature).bytes());
@@ -62,7 +62,7 @@ class GuitarProByteWriterTest {
     }
 
     @Test
-    void escribeYReleeUnStringDeTamanoFijoConSuRelleno() {
+    void writesAndRereadsAFixedSizeStringWithItsPadding() {
         GuitarProByteReader reader =
                 new GuitarProByteReader(new GuitarProByteWriter().writeFixedString("Guitarra", 40).bytes());
 
@@ -71,15 +71,15 @@ class GuitarProByteWriterTest {
     }
 
     @Test
-    void unStringDeTamanoFijoMasLargoQueElBloqueSeTrunca() {
-        String largo = "Un nombre de pista demasiado largo para entrar";
-        GuitarProByteReader reader = new GuitarProByteReader(new GuitarProByteWriter().writeFixedString(largo, 10).bytes());
+    void aFixedSizeStringLongerThanTheBlockIsTruncated() {
+        String longName = "Un nombre de pista demasiado largo para entrar";
+        GuitarProByteReader reader = new GuitarProByteReader(new GuitarProByteWriter().writeFixedString(longName, 10).bytes());
 
-        assertEquals(largo.substring(0, 10), reader.readFixedString(10));
+        assertEquals(longName.substring(0, 10), reader.readFixedString(10));
     }
 
     @Test
-    void escribeYReleeUnStringConPrefijoEnteroSinByteExtra() {
+    void writesAndRereadsAnIntPrefixedStringWithoutAnExtraByte() {
         GuitarProByteReader reader =
                 new GuitarProByteReader(new GuitarProByteWriter().writeIntPrefixedString("hola mundo").bytes());
 
@@ -87,7 +87,7 @@ class GuitarProByteWriterTest {
     }
 
     @Test
-    void escribeYReleeUnStringConPrefijoEnteroYByteDeLargoRedundante() {
+    void writesAndRereadsALengthPrefixedStringWithARedundantLengthByte() {
         GuitarProByteReader reader = new GuitarProByteReader(
                 new GuitarProByteWriter().writeLengthPrefixedString("Cancion de prueba").bytes());
 
@@ -95,7 +95,7 @@ class GuitarProByteWriterTest {
     }
 
     @Test
-    void escribeYReleeLaVersion() {
+    void writesAndRereadsTheVersion() {
         GuitarProByteReader reader =
                 new GuitarProByteReader(new GuitarProByteWriter().writeVersion("FICHIER GUITAR PRO v4.06").bytes());
 
