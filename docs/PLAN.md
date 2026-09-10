@@ -348,7 +348,13 @@ partitura; la cuarta, el corpus; la quinta, en curso, los diálogos.
 | F · la grilla de percusión fija su tamaño de celda (flaky bajo la suite paralela) | `test/la-grilla-de-percusion-sin-flakiness` | #181 | mergeado |
 | H · ningún diálogo supera la pantalla; Configurar página y MIDI enteros; MIDI sin `JOptionPane` dependiente del locale | `fix/configurar-pagina-y-midi-entran-en-pantalla` | #182 | mergeado |
 | H · palanca con sus seis tipos y códigos GP5 exactos; opciones de let ring/palm mute/dinámica con título y foco propios | `fix/palanca-con-sus-tipos-y-opciones-por-pestana` | #183 | mergeado |
-| F · guardián: todo test que mute el look and feel lleva `@Isolated` | `test/los-tests-que-instalan-un-tema-corren-aislados` | #184 | en CI |
+| F · guardián: todo test que mute el look and feel lleva `@Isolated` | `test/los-tests-que-instalan-un-tema-corren-aislados` | #184 | mergeado |
+| F · red de humo permanente: cada fixture del repo se abre, renderiza, exporta y reabre en cada CI | `test/humo-permanente-sobre-los-fixtures` | #186 | mergeado |
+| I · auditoría de rendimiento con partituras de 100/300/600 compases (cinco hotspots medidos) | — | — | hecha, no se commitea |
+| I · la partitura pinta sólo hojas y sistemas a la vista; layout memoizado (modo Página: 28 s → 10 ms) | `perf/la-partitura-pinta-solo-lo-visible` | #187 | mergeado |
+| I · mover el cursor repinta sólo su zona; el `Editor` avisa qué cambió (407 ms → 19 ms por flecha) | `perf/mover-el-cursor-repinta-solo-lo-que-cambio` | #188 | mergeado |
+| I · cada hoja itera sólo sus compases; acordes bajo el título cacheados | `perf/el-export-pinta-solo-los-compases-de-cada-hoja` | #189 | mergeado |
+| I · el PDF y la imagen codifican cada hoja en bloque (el 90 % del tiempo de export) | `perf/el-pdf-y-la-imagen-codifican-cada-hoja-en-bloque` | — | en curso |
 | G · «Forzar barras horizontales» (pide barras inclinadas, pieza grande de render) | — | — | anotado |
 
 Lo que queda anotado para después: digitación de mano derecha como botón
@@ -357,9 +363,10 @@ GP5 que no se distinguen, `doubleBar` y `tuplet` en Java2D por ser sub-píxel en
 Bravura, los valores predefinidos del combo de zoom (el manual no los lista), y
 la fuente del dígito de traste, que la resolución del manual no permite afirmar.
 
-**Estado (2026-09-11):** 72 PRs de la etapa (#112–#184) en `main`, CI verde,
-~2970 tests. Seis auditorías con oráculo externo agotadas: uso real, ventana,
-partitura, corpus real, diálogos y la pasada fresca tras los 61 PRs. Tres auditorías hechas, todas con oráculo externo: uso
+**Estado (2026-09-11):** 77 PRs de la etapa (#112–#189) en `main`, CI verde,
+~5750 tests contando los parametrizados. Siete auditorías con oráculo externo:
+uso real, ventana, partitura, corpus real, diálogos, pasada fresca y
+rendimiento (en cierre). Tres auditorías hechas, todas con oráculo externo: uso
 real de los 15 capítulos del manual (harness que corre en el CI bajo Xvfb),
 visual zona por zona y de la partitura contra las capturas del manual, medidas
 en píxeles. Lo que las tres encontraron está cerrado o anotado arriba.
