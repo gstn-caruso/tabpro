@@ -11,7 +11,10 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.Icon;
 
-/** El juego de iconos de las barras de herramientas, dibujado con Java2D. */
+/**
+ * El juego de iconos de las barras de herramientas: las acciones genericas vienen de un SVG
+ * de Tabler Icons y los simbolos propios de la notacion musical se dibujan con Java2D.
+ */
 public final class Icons {
 
     public static final int SIZE = 18;
