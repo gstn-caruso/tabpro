@@ -14,34 +14,38 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties;
 import com.gstncaruso.tabpro.ui.dialogs.info.NewScoreDefaults;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
+@ResourceLock(RealPreferencesTests.LOCK)
 class ScoreDocumentTest {
 
-    private java.util.prefs.Preferences scratch;
+    private final List<java.util.prefs.Preferences> scratchNodes = new ArrayList<>();
 
     @AfterEach
-    void clearsTheScratchNode() throws java.util.prefs.BackingStoreException {
+    void clearsTheScratchNodes() throws java.util.prefs.BackingStoreException {
         AwaitEdt.flush();
-        if (scratch != null) {
-            scratch.removeNode();
+        for (java.util.prefs.Preferences node : scratchNodes) {
+            node.removeNode();
         }
     }
 
     @Test
     void startsWithABlankScoreAndNoPath() {
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
 
         assertTrue(document.path().isEmpty());
     }
 
     @Test
     void describesAnUntitledDocument() {
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
 
         assertEquals(ScoreDocument.UNTITLED, document.displayName());
     }
@@ -49,7 +53,7 @@ class ScoreDocumentTest {
     @Test
     void saveWithoutAPathAsksForOne() {
         FakeScoreFiles files = new FakeScoreFiles();
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files);
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files, testPreferences());
 
         assertFalse(document.save());
         assertEquals(0, files.saveCount);
@@ -58,7 +62,7 @@ class ScoreDocumentTest {
     @Test
     void saveAsRemembersThePath() {
         FakeScoreFiles files = new FakeScoreFiles();
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files);
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files, testPreferences());
         Path path = Path.of("cancion.tabpro");
 
         document.saveAs(path);
@@ -70,7 +74,7 @@ class ScoreDocumentTest {
     @Test
     void saveReusesTheRememberedPath() {
         FakeScoreFiles files = new FakeScoreFiles();
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files);
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files, testPreferences());
         Path path = Path.of("cancion.tabpro");
         document.saveAs(path);
 
@@ -87,7 +91,7 @@ class ScoreDocumentTest {
         Score savedScore = Score.blank().withTitle("Canción guardada");
         files.scores.put(path, savedScore);
         Editor editor = new Editor(Score.blank());
-        ScoreDocument document = new ScoreDocument(editor, files);
+        ScoreDocument document = new ScoreDocument(editor, files, testPreferences());
 
         document.open(path);
 
@@ -99,7 +103,7 @@ class ScoreDocumentTest {
     void newForgetsThePath() {
         FakeScoreFiles files = new FakeScoreFiles();
         Editor editor = new Editor(Score.blank());
-        ScoreDocument document = new ScoreDocument(editor, files);
+        ScoreDocument document = new ScoreDocument(editor, files, testPreferences());
         document.saveAs(Path.of("cancion.tabpro"));
 
         document.newScore();
@@ -116,14 +120,15 @@ class ScoreDocumentTest {
      */
     @Test
     void newScoreUsaLoQueHayGuardadoEnPropiedadesPorDefecto() {
-        scratch = java.util.prefs.Preferences.userRoot()
+        java.util.prefs.Preferences defaultsNode = java.util.prefs.Preferences.userRoot()
                 .node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
-        DefaultScoreProperties defaultProperties = new DefaultScoreProperties(scratch);
+        scratchNodes.add(defaultsNode);
+        DefaultScoreProperties defaultProperties = new DefaultScoreProperties(defaultsNode);
         defaultProperties.save(new NewScoreDefaults(
                 90, new TimeSignature(3, 4), KeySignature.cMajor(), "", ""));
         Editor editor = new Editor(Score.blank());
         ScoreDocument document = new ScoreDocument(
-                editor, new FakeScoreFiles(), new Preferences(), () -> defaultProperties.get().newScore());
+                editor, new FakeScoreFiles(), testPreferences(), () -> defaultProperties.get().newScore());
 
         document.newScore();
 
@@ -134,7 +139,7 @@ class ScoreDocumentTest {
     @Test
     void describesTheDocumentByItsFileName() {
         FakeScoreFiles files = new FakeScoreFiles();
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files);
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files, testPreferences());
 
         document.saveAs(Path.of("carpeta", "cancion.tabpro"));
 
@@ -146,7 +151,7 @@ class ScoreDocumentTest {
         FakeScoreFiles files = new FakeScoreFiles();
         Path savedPath = Path.of("cancion.tabpro");
         Editor editor = new Editor(Score.blank());
-        ScoreDocument document = new ScoreDocument(editor, files);
+        ScoreDocument document = new ScoreDocument(editor, files, testPreferences());
         document.saveAs(savedPath);
 
         assertThrows(ScoreFileException.class, () -> document.open(Path.of("no-existe.tabpro")));
@@ -237,9 +242,10 @@ class ScoreDocumentTest {
     }
 
     private Preferences testPreferences() {
-        scratch = java.util.prefs.Preferences.userRoot()
+        java.util.prefs.Preferences node = java.util.prefs.Preferences.userRoot()
                 .node("com/gstncaruso/tabpro/test/" + java.util.UUID.randomUUID());
-        return new Preferences(scratch);
+        scratchNodes.add(node);
+        return new Preferences(node);
     }
 
     private static final class FakeScoreFiles implements ScoreFiles {
