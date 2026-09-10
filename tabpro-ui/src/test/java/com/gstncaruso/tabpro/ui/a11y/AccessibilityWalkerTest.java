@@ -125,6 +125,19 @@ class AccessibilityWalkerTest {
     }
 
     @Test
+    void unaEtiquetaVinculadaConSetLabelForCuentaComoTextoVisibleParaUnBotonSinTexto() {
+        JPanel panel = new JPanel();
+        JLabel etiqueta = new JLabel("Color");
+        JButton boton = new JButton();
+        boton.setText(null);
+        etiqueta.setLabelFor(boton);
+        panel.add(etiqueta);
+        panel.add(boton);
+
+        assertTrue(walker.walk(panel).isEmpty());
+    }
+
+    @Test
     void unComboSinEtiquetaVinculadaEsUnaViolacionDeNombreYDeTooltip() {
         JPanel panel = new JPanel();
         panel.add(new JComboBox<String>(new String[] {"Do"}));

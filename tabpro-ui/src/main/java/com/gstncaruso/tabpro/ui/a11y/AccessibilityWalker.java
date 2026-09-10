@@ -91,13 +91,13 @@ public final class AccessibilityWalker {
     }
 
     private boolean hasVisibleText(Component component) {
+        if (isLabeledByVisibleText(component)) {
+            return true;
+        }
         if (component instanceof AbstractButton button) {
             return isNotBlank(button.getText());
         }
-        if (component instanceof JLabel label) {
-            return isNotBlank(label.getText());
-        }
-        return isLabeledByVisibleText(component);
+        return component instanceof JLabel label && isNotBlank(label.getText());
     }
 
     private boolean isLabeledByVisibleText(Component component) {

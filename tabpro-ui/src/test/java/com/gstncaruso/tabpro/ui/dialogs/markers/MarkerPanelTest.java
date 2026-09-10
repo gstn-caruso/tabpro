@@ -4,9 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.model.ScoreColor;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import org.junit.jupiter.api.Test;
 
 class MarkerPanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new MarkerPanel(new Marker("Solo", ScoreColor.rgb(0))));
+    }
 
     @Test
     void startsWithTheGivenMarker() {
