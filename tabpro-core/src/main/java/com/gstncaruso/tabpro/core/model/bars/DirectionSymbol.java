@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model.bars;
 
-/** Los destinos que se marcan en un compas para que un salto pueda apuntarles. */
 public enum DirectionSymbol {
     CODA("Coda"),
     DOUBLE_CODA("Doble coda"),

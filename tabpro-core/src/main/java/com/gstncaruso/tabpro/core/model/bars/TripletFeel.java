@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model.bars;
 
-/** La sincopa que se toca aunque no se escriba: el swing de corcheas o de semicorcheas. */
 public enum TripletFeel {
     NONE("Ninguno"),
     EIGHTH("Corcheas con swing"),

@@ -3,7 +3,6 @@ package com.gstncaruso.tabpro.core.model.bars;
 import java.util.List;
 import java.util.Optional;
 
-/** Todo lo que un compas dice ademas de sus notas: armadura, repeticiones, direcciones. */
 public record MeasureAttributes(
         KeySignature keySignature,
         TripletFeel tripletFeel,
@@ -17,7 +16,6 @@ public record MeasureAttributes(
         LineBreak lineBreak,
         OctaveMark octaveMark) {
 
-    /** Cuantas veces distintas puede pasar la repeticion por un final alternativo. */
     public static final int MAX_ALTERNATE_ENDINGS = 8;
 
     private static final MeasureAttributes PLAIN = new MeasureAttributes(
@@ -47,7 +45,6 @@ public record MeasureAttributes(
         return !alternateEndings.isEmpty();
     }
 
-    /** Si la vuelta numero tal de la repeticion tiene que tocar este compas. */
     public boolean playedOnPass(int pass) {
         return !hasAlternateEndings() || alternateEndings.contains(pass);
     }
