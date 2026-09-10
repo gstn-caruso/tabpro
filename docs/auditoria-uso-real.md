@@ -9,10 +9,10 @@ real y su `Action`, el `KeyEvent` real despachado sobre el `ScoreCanvas` real (n
 (detectado por `WINDOW_OPENED`, sin `Robot`). El harness vive en
 `tabpro-app/src/test/java/com/gstncaruso/tabpro/app/audit/`, tagueado `@Tag("integracion")`.
 
-Código auditado: rama `docs/auditoria-uso-real-print-e-import-export` sobre `main` = `609e7d0`,
-versión 0.35.0. Harness: 15 clases, 89 tests, todos verdes juntos (`mvn -B -pl tabpro-tests -am
+Código auditado: rama `refactor/impresion-con-costura-para-el-printer-job` sobre `main`, versión
+0.39.1. Harness: 15 clases, 98 tests, todos verdes juntos (`mvn -B -pl tabpro-tests -am
 test -Dtests.headless=false -Dtests.excluded.groups=ninguno -Dgroups=integracion`).
-`mvn -B verify` por defecto: **BUILD SUCCESS, 2543 tests, ~6 s** (idéntico antes y después).
+`mvn -B verify` por defecto: **BUILD SUCCESS, 2665 tests, ~6 s** (idéntico antes y después).
 
 ---
 
@@ -33,9 +33,9 @@ test -Dtests.headless=false -Dtests.excluded.groups=ninguno -Dgroups=integracion
 | Percussion (1670) | 2 | 0 | 0 | 0 |
 | Configure the Sound (1945) | 1 | 0 | 1 | 0 |
 | Tools for the Guitarist (2665) | 2 | 0 | 0 | 0 |
-| Print a Score (2207) | 3 | 0 | 0 | 1 |
+| Print a Score (2207) | 4 | 0 | 0 | 0 |
 | Import / Export a Score (2293 / 2506) | 17 | 0 | 0 | 0 |
-| **Total** | **67** | **7** | **1** | **1** |
+| **Total** | **68** | **7** | **1** | **0** |
 
 (La fila "Keyboard Shortcuts" no cuenta aparte el test de barrido exhaustivo
 `lasUnicasCincoTeclasQueElScrollPaneYElSplitPaneYaOcupabanSonLasDocumentadas`, que no verifica un
@@ -138,38 +138,33 @@ las únicas dos apariciones son la interfaz y la implementación.
 **Tamaño:** chico.
 
 **Print a Score e Import / Export a Score no agregan hallazgos nuevos.** Los dos capítulos que
-quedaban sin cubrir (`PrintAuditTest`, `ImportExportAuditTest`) dieron **OK** en los veinte casos
+quedaban sin cubrir (`PrintAuditTest`, `ImportExportAuditTest`) dieron **OK** en los casos
 ejercitados: Archivo > Imprimir y Configurar página abren los diálogos reales de tabpro con sus
 controles reales y lo elegido queda aplicado; Abrir/Guardar/Guardar como/Abrir reciente y los seis
 formatos ajenos que el manual nombra (MIDI, ASCII, MusicXML, PowerTab, TablEdit, Guitar Pro) más
 WAVE/Imagen/PDF escriben o leen un archivo real que el lector o escritor correspondiente reconoce.
-Lo único que quedó sin poder confirmarse de verdad es el propio `PrinterJob`, detallado abajo.
 
----
+**El `PrinterJob` real, que hasta la versión 0.39.1 no tenía costura, ya se puede verificar de
+punta a punta.** `ScorePrinting` recibía el `PrinterJob` llamando a `PrinterJob.getPrinterJob()`
+directamente (`print` y `configurePrinterPage`), así que ningún test podía darle a `MainFrame` un
+`PrinterJob` falso, y apretar "Imprimir" o "Configurar…" de verdad habría abierto una ventana
+**nativa** del sistema operativo -no un `JDialog` de Swing- con riesgo real de dejar la suite
+colgada. Ahora `ScorePrinting` recibe por constructor un `Printing`
+(`tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/print/Printing.java`): la interfaz chica que
+necesita del `PrinterJob` (`setJobName`, `setPrintable`, `printDialog`, `print`, `defaultPage`,
+`pageDialog`), con `SystemPrinting` como implementación real en producción
+(`MainFrame`/`App` la arman) y `RecordingPrinting` como falsa en los tests, sin cambiar el
+comportamiento de la app. Con esa costura:
 
-## NO VERIFICABLE
-
-### El `PrinterJob` real, dentro de Print a Score (línea 2207)
-`ScorePrinting.print` (`tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/print/ScorePrinting.java:35`)
-y `ScorePrinting.configurePrinterPage` (línea 54) llaman a `PrinterJob.getPrinterJob()`
-directamente: no hay ningún puerto ni costura de por medio, así que un test no puede darle a
-`MainFrame` un `PrinterJob` falso. Ese objeto real abre, además, un diálogo **nativo** del sistema
-operativo (no un `JDialog` de Swing) apenas se le pide `job.printDialog()` o `job.pageDialog(...)`,
-y depende de que la máquina tenga algún servicio de impresión instalado
-(`PrinterJob.getPrinterJob().getPrintService()`), algo que no se verificó que exista en este
-entorno ni en el de CI. Por eso `PrintAuditTest` ejercita todo el camino real hasta ese punto —el
-menú, el atajo Ctrl+P, el diálogo real de tabpro (`PrintPanel`) con sus controles reales
-reflejando la cantidad real de hojas de la partitura— y siempre cierra con "Cancelar" antes de
-llegar al `PrinterJob`: apretar "Imprimir" de verdad, o el botón "Configurar…" del diálogo (que
-llama a `configurePrinterPage`), habría significado abrir una ventana nativa que ningún test puede
-atender seguro, con riesgo real de dejar la suite colgada.
-
-Lo que **sí** quedó verificado de ese mismo camino: el render que recibe el `Printable`
-(`ScorePages`) según la escala y el rango elegidos ya lo cubre `ScorePrintingTest`
-(`tabpro-ui/src/test/.../print/ScorePrintingTest.java`, comparando el render en memoria contra una
-imagen exportada a disco), y `PrintAuditTest` confirma que esos mismos valores (rango de páginas,
-escala fija o "Ajustar a la hoja") se arman de verdad a partir de los controles reales del
-diálogo — sólo falta el tramo final, adentro del `PrinterJob`, que no tiene costura.
+- `ScorePrintingTest` (`tabpro-ui/src/test/.../print/ScorePrintingTest.java`) prueba con la falsa
+  que el `Printable` que llega al `PrinterJob` es el que pinta la partitura real, que cancelar el
+  diálogo de imprimir nunca llega a `printing.print()`, y que el `PageFormat` elegido en
+  Configurar se conserva para la próxima impresión (antes se descartaba sin usar).
+- `PrintAuditTest` inyecta un `Printing` falso en el `MainFrame` de prueba (mismo patrón que
+  `ScoreFiles`/`Player`/`Devices`) y ahora aprieta "Imprimir" **de verdad** -ya no hace falta
+  cerrar con "Cancelar"-: prueba que el rango de páginas elegido en el diálogo real de tabpro
+  llega tal cual al `Printable` que recibe el `PrinterJob` (falso), y que ese `Printable` sigue
+  pintando la partitura real.
 
 ---
 
@@ -177,8 +172,9 @@ diálogo — sólo falta el tramo final, adentro del `PrinterJob`, que no tiene 
 
 `tabpro-app/src/test/java/com/gstncaruso/tabpro/app/audit/`:
 
-- `AuditSupport.java`: fábrica de `MainFrame` real (con `ScoreFiles`/`Player`/`Devices` falsos
-  inyectables, más un `newFrame(Editor, ScoreFiles, ScoreExchange)` para los tests que necesitan
+- `AuditSupport.java`: fábrica de `MainFrame` real (con `ScoreFiles`/`Player`/`Devices`/`Printing`
+  falsos inyectables -este último, `RecordingPrinting`, es el `PrinterJob` falso que usa
+  `PrintAuditTest`-, más un `newFrame(Editor, ScoreFiles, ScoreExchange)` para los tests que necesitan
   un `ScoreFiles`/`ScoreExchange` real -Abrir/Guardar/Importar/Exportar-), recorrido del árbol de
   componentes real (`findComponent`, `findComponents`, `findMenuItem` -con la variante que busca
   dentro de un `JMenu` puntual, para cuando la misma etiqueta existe tanto en Importar como en
