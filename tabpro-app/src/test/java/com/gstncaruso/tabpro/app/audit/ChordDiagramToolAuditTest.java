@@ -21,7 +21,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class ChordDiagramToolAuditTest {
 
     @Test
-    void acordePorElAtajoAAbreElDialogoRealYElRadioDePosicionesLlegaAlBeat() throws Exception {
+    void chordByTheAShortcutOpensTheRealDialogAndThePositionRadioReachesTheBeat() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
