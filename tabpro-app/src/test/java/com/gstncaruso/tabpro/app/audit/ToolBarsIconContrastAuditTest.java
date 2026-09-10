@@ -33,7 +33,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class ToolBarsIconContrastAuditTest {
 
     @Test
-    void elIconoDeLaFilaDeDocumentoLeeContraSuFondoReal() throws Exception {
+    void theDocumentRowIconReadsAgainstItsRealBackground() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -45,7 +45,7 @@ class ToolBarsIconContrastAuditTest {
     }
 
     @Test
-    void elIconoDeLaFilaDeEfectosLeeContraSuFondoReal() throws Exception {
+    void theEffectsRowIconReadsAgainstItsRealBackground() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -57,7 +57,7 @@ class ToolBarsIconContrastAuditTest {
     }
 
     @Test
-    void laEtiquetaDeTempoLeeContraSuFondoReal() throws Exception {
+    void theTempoLabelReadsAgainstItsRealBackground() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {

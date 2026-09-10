@@ -28,7 +28,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class MidiSetupFitsScreenAuditTest {
 
     @Test
-    void configuracionMidiEntraEnPantallaConAceptarYCancelarSiempreVisibles() throws Exception {
+    void midiSetupFitsOnScreenWithAcceptAndCancelAlwaysVisible() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor, devicesWithAValidSensitivity());
         try {
@@ -57,7 +57,7 @@ class MidiSetupFitsScreenAuditTest {
      * without depending on the environment, by overriding those two UIManager keys.
      */
     @Test
-    void configuracionMidiMuestraAceptarYCancelarAunqueElLookAndFeelLosTraduzcaAOtroIdioma() throws Exception {
+    void midiSetupShowsAcceptAndCancelEvenIfTheLookAndFeelTranslatesThemToAnotherLanguage() throws Exception {
         Object originalOk = UIManager.get("OptionPane.okButtonText");
         Object originalCancel = UIManager.get("OptionPane.cancelButtonText");
         UIManager.getDefaults().put("OptionPane.okButtonText", "OK");

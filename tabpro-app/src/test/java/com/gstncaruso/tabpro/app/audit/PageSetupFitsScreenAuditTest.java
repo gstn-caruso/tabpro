@@ -25,7 +25,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class PageSetupFitsScreenAuditTest {
 
     @Test
-    void configurarPaginaEntraEnPantallaConLosTresBotonesDelManualSiempreVisibles() throws Exception {
+    void pageSetupFitsOnScreenWithTheThreeManualButtonsAlwaysVisible() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
