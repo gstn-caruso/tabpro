@@ -124,6 +124,8 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
         ActionMap actionMap = getActionMap();
         bindFocusExit(inputMap, actionMap, "ctrl F6",
                 () -> KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent(this));
+        bindFocusExit(inputMap, actionMap, "ctrl shift F6",
+                () -> KeyboardFocusManager.getCurrentKeyboardFocusManager().focusPreviousComponent(this));
     }
 
     private void bindFocusExit(InputMap inputMap, ActionMap actionMap, String keyStroke, Runnable action) {
