@@ -99,4 +99,29 @@ class MnemonicWalkerTest {
 
         assertTrue(walker.walkForm(outer).isEmpty());
     }
+
+    private static final class Formulario extends JPanel implements MnemonicScope {
+    }
+
+    @Test
+    void dosFormulariosAnidadosPuedenCompartirLetraSinQueSeaUnChoque() {
+        Formulario exterior = new Formulario();
+        JTextField artista = new JTextField();
+        JLabel artistaLabel = new JLabel("Artista");
+        artistaLabel.setLabelFor(artista);
+        artistaLabel.setDisplayedMnemonic('A');
+        exterior.add(artistaLabel);
+        exterior.add(artista);
+
+        Formulario interior = new Formulario();
+        JTextField armadura = new JTextField();
+        JLabel armaduraLabel = new JLabel("Armadura");
+        armaduraLabel.setLabelFor(armadura);
+        armaduraLabel.setDisplayedMnemonic('A');
+        interior.add(armaduraLabel);
+        interior.add(armadura);
+        exterior.add(interior);
+
+        assertTrue(walker.walkForm(exterior).isEmpty());
+    }
 }

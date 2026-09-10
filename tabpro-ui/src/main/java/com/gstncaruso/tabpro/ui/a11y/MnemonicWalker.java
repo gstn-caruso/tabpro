@@ -31,19 +31,32 @@ public final class MnemonicWalker {
         return violationsOf(entries);
     }
 
+    /**
+     * Un formulario anidado ({@link MnemonicScope}) es su propio ambito: dos formularios
+     * distintos pueden compartir letra sin que sea un choque, porque cada uno la asigno sin
+     * saber del otro.
+     */
     public List<Violation> walkForm(Container form) {
-        List<Entry> entries = new ArrayList<>();
-        collectLabeledFields(form, entries);
-        return violationsOf(entries);
+        List<Entry> ownEntries = new ArrayList<>();
+        List<Violation> violations = new ArrayList<>();
+        collectLabeledFields(form, ownEntries, violations);
+        violations.addAll(violationsOf(ownEntries));
+        return violations;
     }
 
-    private void collectLabeledFields(Component component, List<Entry> entries) {
+    private void collectLabeledFields(Component component, List<Entry> scope, List<Violation> violations) {
         if (component instanceof JLabel label && label.getLabelFor() != null) {
-            entries.add(new Entry(label.getText(), label.getDisplayedMnemonic()));
+            scope.add(new Entry(label.getText(), label.getDisplayedMnemonic()));
         }
         if (component instanceof Container container) {
             for (Component child : container.getComponents()) {
-                collectLabeledFields(child, entries);
+                if (child instanceof MnemonicScope) {
+                    List<Entry> childScope = new ArrayList<>();
+                    collectLabeledFields(child, childScope, violations);
+                    violations.addAll(violationsOf(childScope));
+                } else {
+                    collectLabeledFields(child, scope, violations);
+                }
             }
         }
     }

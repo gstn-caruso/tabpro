@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.style;
 
 import com.gstncaruso.tabpro.ui.a11y.MnemonicAssigner;
+import com.gstncaruso.tabpro.ui.a11y.MnemonicScope;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -12,7 +13,7 @@ import javax.swing.JPanel;
  * Un formulario de etiquetas alineadas a la izquierda y campos a la derecha, con
  * el mismo aire en todas las ventanas del manual.
  */
-public class FormPanel extends JPanel {
+public class FormPanel extends JPanel implements MnemonicScope {
 
     private final GridBagLayout layout = new GridBagLayout();
     private final MnemonicAssigner labelMnemonics = new MnemonicAssigner();
