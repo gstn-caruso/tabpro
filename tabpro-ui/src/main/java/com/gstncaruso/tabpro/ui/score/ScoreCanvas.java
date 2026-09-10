@@ -12,7 +12,6 @@ import com.gstncaruso.tabpro.ui.tab.KeyboardEditing;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -131,7 +130,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
         bindFocusExit(inputMap, actionMap, "ctrl F6",
                 () -> focusTraversal.next(this));
         bindFocusExit(inputMap, actionMap, "ctrl shift F6",
-                () -> KeyboardFocusManager.getCurrentKeyboardFocusManager().focusPreviousComponent(this));
+                () -> focusTraversal.previous(this));
     }
 
     private void bindFocusExit(InputMap inputMap, ActionMap actionMap, String keyStroke, Runnable action) {

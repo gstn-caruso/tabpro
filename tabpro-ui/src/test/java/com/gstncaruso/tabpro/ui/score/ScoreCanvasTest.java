@@ -70,17 +70,13 @@ class ScoreCanvasTest {
     }
 
     @Test
-    void ctrlShiftF6PideAlAdministradorDeFocoQueVayaAlComponenteAnterior() {
-        RecordingFocusManager recorder = new RecordingFocusManager();
-        java.awt.KeyboardFocusManager previous = java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        java.awt.KeyboardFocusManager.setCurrentKeyboardFocusManager(recorder);
-        try {
-            pressShortcut(canvas, javax.swing.KeyStroke.getKeyStroke("ctrl shift F6"));
+    void ctrlShiftF6LePideALaCosturaDeFocoQueVayaAlComponenteAnterior() {
+        RecordingFocusTraversal recorder = new RecordingFocusTraversal();
+        ScoreCanvas canvasWithRecordedFocus = new ScoreCanvas(editor, new TrackVisibility(), recorder);
 
-            assertEquals(canvas, recorder.previousRequestedFrom);
-        } finally {
-            java.awt.KeyboardFocusManager.setCurrentKeyboardFocusManager(previous);
-        }
+        pressShortcut(canvasWithRecordedFocus, javax.swing.KeyStroke.getKeyStroke("ctrl shift F6"));
+
+        assertEquals(canvasWithRecordedFocus, recorder.previousRequestedFrom);
     }
 
     private static void pressShortcut(javax.swing.JComponent component, javax.swing.KeyStroke keyStroke) {
@@ -101,21 +97,6 @@ class ScoreCanvasTest {
         @Override
         public void previous(java.awt.Component component) {
             previousRequestedFrom = component;
-        }
-    }
-
-    private static final class RecordingFocusManager extends java.awt.DefaultKeyboardFocusManager {
-        private java.awt.Component nextRequestedFrom;
-        private java.awt.Component previousRequestedFrom;
-
-        @Override
-        public void focusNextComponent(java.awt.Component aComponent) {
-            nextRequestedFrom = aComponent;
-        }
-
-        @Override
-        public void focusPreviousComponent(java.awt.Component aComponent) {
-            previousRequestedFrom = aComponent;
         }
     }
 
