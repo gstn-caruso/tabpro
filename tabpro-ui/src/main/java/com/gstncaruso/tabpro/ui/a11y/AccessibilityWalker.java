@@ -55,10 +55,10 @@ public final class AccessibilityWalker {
 
     private void check(Component component, String path, List<Violation> violations) {
         if (!hasAccessibleName(component)) {
-            violations.add(new Violation(path, "sin nombre accesible"));
+            violations.add(new Violation(path, "missing accessible name"));
         }
         if (!hasTooltip(component) && !hasVisibleText(component)) {
-            violations.add(new Violation(path, "sin tooltip y sin texto visible"));
+            violations.add(new Violation(path, "missing tooltip and visible text"));
         }
         violations.addAll(rawDomainTextViolations(component, path));
     }
@@ -88,7 +88,7 @@ public final class AccessibilityWalker {
                     typedRenderer.getListCellRendererComponent(rendererContext, item, index, false, false);
             String renderedText = rendered instanceof JLabel label ? label.getText() : null;
             if (isNotBlank(renderedText) && matchesRawToString(item, renderedText)) {
-                violations.add(new Violation(path, "toString() crudo: " + renderedText));
+                violations.add(new Violation(path, "raw toString(): " + renderedText));
             }
         }
         return violations;
@@ -121,7 +121,7 @@ public final class AccessibilityWalker {
         try {
             return component.getAccessor().invoke(item);
         } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException("No se pudo leer " + component.getName() + " de " + item, e);
+            throw new IllegalStateException("Could not read " + component.getName() + " from " + item, e);
         }
     }
 

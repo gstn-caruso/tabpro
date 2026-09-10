@@ -117,7 +117,7 @@ class MenuBarTest {
     void noItemOfAnyMenuClashesWithAnotherInTheSameMenu() {
         List<Violation> violations = mnemonicViolationsOfEveryItem(new MenuBar(commands).build());
 
-        assertTrue(violations.stream().noneMatch(v -> v.reason().equals("mnemónico repetido")));
+        assertTrue(violations.stream().noneMatch(v -> v.reason().equals("duplicate mnemonic")));
     }
 
     @Test
@@ -125,7 +125,7 @@ class MenuBarTest {
         List<Violation> violations = mnemonicViolationsOfEveryItem(new MenuBar(commands).build());
 
         Set<String> withoutMnemonic = violations.stream()
-                .filter(v -> v.reason().equals("sin mnemónico"))
+                .filter(v -> v.reason().equals("missing mnemonic"))
                 .map(Violation::path)
                 .collect(java.util.stream.Collectors.toCollection(HashSet::new));
 

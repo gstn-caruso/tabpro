@@ -19,7 +19,7 @@ public final class AccessibilityAssertions {
 
     private static List<Violation> mnemonicClashesOf(Container root) {
         return new MnemonicWalker().walkForm(root).stream()
-                .filter(violation -> violation.reason().equals("mnemónico repetido"))
+                .filter(violation -> violation.reason().equals("duplicate mnemonic"))
                 .toList();
     }
 }

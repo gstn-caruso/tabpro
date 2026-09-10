@@ -26,7 +26,7 @@ class MnemonicWalkerTest {
         JMenuBar bar = new JMenuBar();
         bar.add(new JMenu("Archivo"));
 
-        assertTrue(walker.walkMenuBar(bar).stream().anyMatch(v -> v.reason().equals("sin mnemónico")));
+        assertTrue(walker.walkMenuBar(bar).stream().anyMatch(v -> v.reason().equals("missing mnemonic")));
     }
 
     @Test
@@ -54,7 +54,7 @@ class MnemonicWalkerTest {
 
         List<Violation> violations = walker.walkMenuBar(bar);
 
-        assertEquals(2, violations.stream().filter(v -> v.reason().equals("mnemónico repetido")).count());
+        assertEquals(2, violations.stream().filter(v -> v.reason().equals("duplicate mnemonic")).count());
     }
 
     @Test
@@ -62,7 +62,7 @@ class MnemonicWalkerTest {
         JMenu menu = new JMenu("Archivo");
         menu.add(new JMenuItem("Nuevo"));
 
-        assertTrue(walker.walkMenu(menu).stream().anyMatch(v -> v.reason().equals("sin mnemónico")));
+        assertTrue(walker.walkMenu(menu).stream().anyMatch(v -> v.reason().equals("missing mnemonic")));
     }
 
     @Test
@@ -74,7 +74,7 @@ class MnemonicWalkerTest {
         form.add(label);
         form.add(field);
 
-        assertTrue(walker.walkForm(form).stream().anyMatch(v -> v.reason().equals("sin mnemónico")));
+        assertTrue(walker.walkForm(form).stream().anyMatch(v -> v.reason().equals("missing mnemonic")));
     }
 
     @Test

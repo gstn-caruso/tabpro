@@ -35,7 +35,7 @@ class AccessibilityWalkerTest {
 
         List<Violation> violations = walker.walk(panel);
 
-        assertEquals(1, violations.stream().filter(v -> v.reason().equals("sin nombre accesible")).count());
+        assertEquals(1, violations.stream().filter(v -> v.reason().equals("missing accessible name")).count());
     }
 
     @Test
@@ -70,7 +70,7 @@ class AccessibilityWalkerTest {
         List<Violation> violations = walker.walk(panel);
 
         assertEquals(1, violations.size());
-        assertEquals("sin tooltip y sin texto visible", violations.get(0).reason());
+        assertEquals("missing tooltip and visible text", violations.get(0).reason());
     }
 
     @Test
@@ -82,7 +82,7 @@ class AccessibilityWalkerTest {
 
         List<Violation> violations = walker.walk(panel);
 
-        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("sin nombre accesible")));
+        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("missing accessible name")));
     }
 
     @Test
@@ -107,7 +107,7 @@ class AccessibilityWalkerTest {
 
         List<Violation> violations = walker.walk(panel);
 
-        assertEquals(2, violations.stream().filter(v -> v.reason().equals("sin nombre accesible")).count());
+        assertEquals(2, violations.stream().filter(v -> v.reason().equals("missing accessible name")).count());
     }
 
     @Test
@@ -154,8 +154,8 @@ class AccessibilityWalkerTest {
         List<Violation> violations = walker.walk(panel);
 
         assertEquals(2, violations.size());
-        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("sin nombre accesible")));
-        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("sin tooltip y sin texto visible")));
+        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("missing accessible name")));
+        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("missing tooltip and visible text")));
     }
 
     @Test
@@ -179,7 +179,7 @@ class AccessibilityWalkerTest {
 
         List<Violation> violations = walker.walk(bar);
 
-        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("sin nombre accesible")));
+        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("missing accessible name")));
     }
 
     @Test
@@ -234,7 +234,7 @@ class AccessibilityWalkerTest {
         List<Violation> violations = walker.walk(panel);
 
         assertEquals(1, violations.size());
-        assertEquals("toString() crudo: QUARTER", violations.get(0).reason());
+        assertEquals("raw toString(): QUARTER", violations.get(0).reason());
     }
 
     @Test
@@ -249,7 +249,7 @@ class AccessibilityWalkerTest {
         List<Violation> violations = walker.walk(panel);
 
         assertEquals(1, violations.size());
-        assertTrue(violations.get(0).reason().startsWith("toString() crudo: Scale["));
+        assertTrue(violations.get(0).reason().startsWith("raw toString(): Scale["));
     }
 
     private record PaperFormat(String label, int width, int height) {
@@ -316,7 +316,7 @@ class AccessibilityWalkerTest {
         List<Violation> violations = walker.walk(panel);
 
         assertEquals(1, violations.size());
-        assertEquals("toString() crudo: QUARTER", violations.get(0).reason());
+        assertEquals("raw toString(): QUARTER", violations.get(0).reason());
     }
 
     @Test
@@ -331,6 +331,6 @@ class AccessibilityWalkerTest {
         List<Violation> violations = walker.walk(panel);
 
         assertEquals(1, violations.size());
-        assertEquals("toString() crudo: QUARTER", violations.get(0).reason());
+        assertEquals("raw toString(): QUARTER", violations.get(0).reason());
     }
 }

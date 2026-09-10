@@ -61,7 +61,7 @@ public final class MnemonicWalker {
         Map<Integer, List<String>> byMnemonic = new LinkedHashMap<>();
         for (Entry entry : entries) {
             if (entry.mnemonic() == 0) {
-                violations.add(new Violation(entry.text(), "sin mnemónico"));
+                violations.add(new Violation(entry.text(), "missing mnemonic"));
                 continue;
             }
             byMnemonic.computeIfAbsent(entry.mnemonic(), key -> new ArrayList<>()).add(entry.text());
@@ -69,7 +69,7 @@ public final class MnemonicWalker {
         for (List<String> texts : byMnemonic.values()) {
             if (texts.size() > 1) {
                 for (String text : texts) {
-                    violations.add(new Violation(text, "mnemónico repetido"));
+                    violations.add(new Violation(text, "duplicate mnemonic"));
                 }
             }
         }
