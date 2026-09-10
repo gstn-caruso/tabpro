@@ -19,4 +19,11 @@ class MeasureBeatsRatioTextTest {
 
         assertEquals("4.000 : 4.000", MeasureBeatsRatioText.of(measure));
     }
+
+    @Test
+    void aLoneQuarterRestIsOneOverFour() {
+        Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
+
+        assertEquals("1.000 : 4.000", MeasureBeatsRatioText.of(measure));
+    }
 }
