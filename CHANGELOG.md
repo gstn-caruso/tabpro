@@ -1,3 +1,9 @@
+## [0.46.0](https://github.com/gstn-caruso/tabpro/compare/v0.45.0...v0.46.0) (2026-09-10)
+
+### Features
+
+* **markers:** editar el marcador vigente en el compás del cursor, desde el menú y la barra ([#144](https://github.com/gstn-caruso/tabpro/issues/144)) ([27b5435](https://github.com/gstn-caruso/tabpro/commit/27b5435d6f235376da7397e6e1077ded106fc63d))
+
 ## [0.45.0](https://github.com/gstn-caruso/tabpro/compare/v0.44.0...v0.45.0) (2026-09-10)
 
 ### Features
