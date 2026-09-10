@@ -44,7 +44,7 @@ public final class ScoreColors {
     /** El compas que no suma lo que su medida pide, salvo el que se esta editando. */
     public static final Color INCOMPLETE_MEASURE = new Color(0xE5484D);
     /** El rectangulo que resalta una seleccion multiple. */
-    public static final Color SELECTION = new Color(0x35, 0x74, 0xF0, 0xD1);
+    public static final Color SELECTION = new Color(0x35, 0x74, 0xF0, 0x50);
     /** El rectangulo gris que marca, en la otra notacion, la nota que corresponde al cursor. */
     public static final Color CORRESPONDING_NOTE = new Color(0x9D, 0xA1, 0xA8, 0xAF);
     /** La voz que no se esta editando, cuando se pide dibujarla atenuada. */
