@@ -1,3 +1,9 @@
+## [0.46.2](https://github.com/gstn-caruso/tabpro/compare/v0.46.1...v0.46.2) (2026-09-10)
+
+### Bug Fixes
+
+* **score:** los nombres de cuerda junto al TAB vienen apagados por defecto, como en Guitar Pro 5 ([#147](https://github.com/gstn-caruso/tabpro/issues/147)) ([3a6a44a](https://github.com/gstn-caruso/tabpro/commit/3a6a44ac20996411b76648043ffbb07ff47d4495))
+
 ## [0.46.1](https://github.com/gstn-caruso/tabpro/compare/v0.46.0...v0.46.1) (2026-09-10)
 
 ### Bug Fixes
