@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
@@ -68,6 +69,20 @@ class PercussionAssistantTest {
         click(list, indexOf(list, 49), 2);
 
         assertEquals(java.util.Optional.of(new Note(3, 49)), editor.currentBeat().noteOn(3));
+    }
+
+    @Test
+    void elAsistenteReservaLugarParaLasCuatroColumnasSinRecortarlas() {
+        Editor editor = new Editor(new Score("t", 120, java.util.List.of(Track.percussion("Bateria"))));
+        PercussionAssistant assistant = new PercussionAssistant(editor, new RecordingPlayer());
+        Dimension naturalGridSize = assistant.soundPalette().soundList().getPreferredSize();
+
+        Dimension assistantSize = assistant.getPreferredSize();
+
+        assertTrue(assistantSize.width >= naturalGridSize.width,
+                "el asistente pide menos ancho que el que necesitan las cuatro columnas");
+        assertTrue(assistantSize.height >= naturalGridSize.height,
+                "el asistente pide menos alto que el que necesitan las filas de la grilla");
     }
 
     @Test
