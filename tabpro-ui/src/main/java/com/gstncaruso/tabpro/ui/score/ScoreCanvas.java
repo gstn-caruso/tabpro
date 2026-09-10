@@ -12,7 +12,6 @@ import com.gstncaruso.tabpro.ui.tab.KeyboardEditing;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -40,6 +39,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
 
     private final Editor editor;
     private final TrackVisibility visibleTracks;
+    private final FocusTraversal focusTraversal;
     private final java.util.List<Runnable> paginationListeners = new java.util.ArrayList<>();
     private final java.util.List<Consumer<ScoreLayout.Hit>> clickListeners = new java.util.ArrayList<>();
     private VisibleNotations visibleNotations = VisibleNotations.both();
@@ -59,8 +59,13 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
     }
 
     public ScoreCanvas(Editor editor, TrackVisibility visibleTracks) {
+        this(editor, visibleTracks, FocusTraversal.usingKeyboardFocusManager());
+    }
+
+    ScoreCanvas(Editor editor, TrackVisibility visibleTracks, FocusTraversal focusTraversal) {
         this.editor = editor;
         this.visibleTracks = visibleTracks;
+        this.focusTraversal = focusTraversal;
         visibleTracks.onChange(() -> {
             revalidate();
             repaint();
@@ -123,9 +128,9 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
         InputMap inputMap = getInputMap(WHEN_FOCUSED);
         ActionMap actionMap = getActionMap();
         bindFocusExit(inputMap, actionMap, "ctrl F6",
-                () -> KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent(this));
+                () -> focusTraversal.next(this));
         bindFocusExit(inputMap, actionMap, "ctrl shift F6",
-                () -> KeyboardFocusManager.getCurrentKeyboardFocusManager().focusPreviousComponent(this));
+                () -> focusTraversal.previous(this));
     }
 
     private void bindFocusExit(InputMap inputMap, ActionMap actionMap, String keyStroke, Runnable action) {
