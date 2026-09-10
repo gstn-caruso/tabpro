@@ -326,21 +326,13 @@ final class StaffPainter {
     }
 
     private static void paintSharp(Graphics2D g, double x, double y, Color ink) {
+        paintAccidentalGlyph(g, MusicFont.accidentalSharp(), x, y, ink);
+    }
+
+    private static void paintAccidentalGlyph(Graphics2D g, String glyph, double x, double y, Color ink) {
         g.setColor(ink);
-        g.setStroke(new BasicStroke(1.2f));
-        Path2D sharp = new Path2D.Double();
-        sharp.moveTo(x + SPACE * 0.18, y - SPACE * 0.85);
-        sharp.lineTo(x + SPACE * 0.18, y + SPACE * 0.75);
-        sharp.moveTo(x + SPACE * 0.52, y - SPACE * 0.95);
-        sharp.lineTo(x + SPACE * 0.52, y + SPACE * 0.65);
-        g.draw(sharp);
-        g.setStroke(new BasicStroke(1.9f));
-        Path2D bars = new Path2D.Double();
-        bars.moveTo(x, y - SPACE * 0.16);
-        bars.lineTo(x + SPACE * 0.72, y - SPACE * 0.38);
-        bars.moveTo(x, y + SPACE * 0.44);
-        bars.lineTo(x + SPACE * 0.72, y + SPACE * 0.22);
-        g.draw(bars);
+        g.setFont(MusicFont.sizedTo(SPACE));
+        g.drawString(glyph, (float) x, (float) y);
     }
 
     private static void paintFlat(Graphics2D g, double x, double y, Color ink) {
