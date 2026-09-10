@@ -28,6 +28,21 @@ public final class PageScorePainter {
     /** Ancho de columna que usa el Modo Pantalla Horizontal para no envolver nunca en sistemas. */
     private static final int UNWRAPPED_WIDTH = 1_000_000;
 
+    /**
+     * El ultimo layout calculado, por hilo: un ciclo de pintado entero (getPreferredSize +
+     * paintComponent) pide el layout varias veces para el mismo {@link Score} y el mismo
+     * {@link ScoreViewport} sin que nada haya cambiado. Por hilo -no un solo cache global- para
+     * que exportar en un hilo de fondo nunca pise el layout que esta usando el EDT.
+     */
+    private static final ThreadLocal<CachedLayout> LAST_LAYOUT = new ThreadLocal<>();
+
+    private record CachedLayout(Score score, ScoreViewport viewport, ScoreLayout layout) {
+
+        boolean matches(Score score, ScoreViewport viewport) {
+            return this.score == score && this.viewport.equals(viewport);
+        }
+    }
+
     private PageScorePainter() {
     }
 
@@ -159,12 +174,18 @@ public final class PageScorePainter {
     }
 
     static ScoreLayout layoutFor(Score score, ScoreViewport viewport) {
+        CachedLayout cached = LAST_LAYOUT.get();
+        if (cached != null && cached.matches(score, viewport)) {
+            return cached.layout();
+        }
         ViewMode mode = viewport.mode();
         int width = mode.showsPaper()
                 ? viewport.sheet().layoutWidth()
                 : (mode.scrollsHorizontally() ? UNWRAPPED_WIDTH : Math.max(200, viewport.width()));
-        return ScoreLayout.of(
+        ScoreLayout layout = ScoreLayout.of(
                 score, width, viewport.visibleTracks(), viewport.visibleNotations(), viewport.showsDynamicNotes());
+        LAST_LAYOUT.set(new CachedLayout(score, viewport, layout));
+        return layout;
     }
 
     private static void paintSheet(

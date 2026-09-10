@@ -3,6 +3,8 @@ package com.gstncaruso.tabpro.ui.score;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
@@ -42,6 +44,47 @@ class PageScorePainterTest {
 
     private static final int VIEWPORT_WIDTH = 900;
     private static final double ONE_PIXEL_OF_REDONDEO = 1.0;
+
+    /**
+     * {@code canvasSize}, {@code paint}, {@code pageCount}, {@code paginationOf} y
+     * {@code paintPage} llaman cada uno a {@code layoutFor} por su cuenta: en un solo ciclo de
+     * pintado (getPreferredSize + paintComponent) se calcula el mismo layout mas de una vez sin
+     * que nada haya cambiado. Dos llamadas seguidas con la misma partitura y el mismo viewport
+     * tienen que devolver el mismo objeto, no dos layouts iguales pero recalculados.
+     */
+    @Test
+    void layoutIsMemoizedForTheSameScoreAndViewport() {
+        Score score = scoreWithMeasures(10);
+        ScoreViewport viewport = ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
+
+        ScoreLayout first = PageScorePainter.layoutFor(score, viewport);
+        ScoreLayout second = PageScorePainter.layoutFor(score, viewport);
+
+        assertSame(first, second, "el mismo score y viewport tienen que reusar el layout ya calculado");
+    }
+
+    @Test
+    void layoutIsRecalculatedWhenTheScoreChanges() {
+        ScoreViewport viewport = ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
+
+        ScoreLayout first = PageScorePainter.layoutFor(Score.blank(), viewport);
+        ScoreLayout second = PageScorePainter.layoutFor(Score.blank(), viewport);
+
+        assertNotSame(first, second,
+                "dos scores distintos, aunque iguales en contenido, no pueden compartir el cache");
+    }
+
+    @Test
+    void layoutIsRecalculatedWhenTheViewportChanges() {
+        Score score = scoreWithMeasures(10);
+        ScoreViewport atWholeZoom = ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
+        ScoreViewport atHalfZoom = ScoreViewport.of(ViewMode.PAGE, new Zoom(50), VIEWPORT_WIDTH);
+
+        ScoreLayout first = PageScorePainter.layoutFor(score, atWholeZoom);
+        ScoreLayout second = PageScorePainter.layoutFor(score, atHalfZoom);
+
+        assertNotSame(first, second, "cambiar el zoom invalida el layout cacheado");
+    }
 
     @Test
     void pageModeIsAsWideAsTheChosenPaper() {
