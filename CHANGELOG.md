@@ -1,3 +1,9 @@
+## [0.50.1](https://github.com/gstn-caruso/tabpro/compare/v0.50.0...v0.50.1) (2026-09-10)
+
+### Bug Fixes
+
+* **score:** la partitura recibe las notificaciones del Editor en el EDT y no scrollea con un viewport sin layout ([#156](https://github.com/gstn-caruso/tabpro/issues/156)) ([f4a1894](https://github.com/gstn-caruso/tabpro/commit/f4a18940a53b5f654b97f7b74ea8d438d0088b61))
+
 ## [0.50.0](https://github.com/gstn-caruso/tabpro/compare/v0.49.1...v0.50.0) (2026-09-10)
 
 ### Features
