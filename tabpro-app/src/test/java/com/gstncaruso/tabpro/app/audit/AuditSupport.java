@@ -90,6 +90,120 @@ final class AuditSupport {
         return built[0];
     }
 
+    /** Como newFrame, pero con unos Devices que el test puede inspeccionar despues. */
+    static MainFrame newFrame(Editor editor, com.gstncaruso.tabpro.ui.actions.Ports.Devices devices) throws Exception {
+        MainFrame[] built = new MainFrame[1];
+        SwingUtilities.invokeAndWait(() -> {
+            MainFrame frame = new MainFrame(
+                    editor, new NoScoreFiles(), new SilentPlayer(),
+                    com.gstncaruso.tabpro.ui.theme.ThemeSwitch.NONE, devices,
+                    com.gstncaruso.tabpro.core.files.ScoreExchange.NONE,
+                    com.gstncaruso.tabpro.ui.actions.Ports.Microphone.NONE);
+            frame.pack();
+            frame.setVisible(true);
+            built[0] = frame;
+        });
+        return built[0];
+    }
+
+    /** Un Devices sin MIDI real, salvo el banco de sonido: registra si lo prendieron/apagaron. */
+    static final class RecordingDevices implements com.gstncaruso.tabpro.ui.actions.Ports.Devices {
+        private boolean soundFontActive;
+        private int toggleCount;
+
+        @Override
+        public java.util.List<String> outputs() {
+            return java.util.List.of();
+        }
+
+        @Override
+        public String output(int port) {
+            return "";
+        }
+
+        @Override
+        public void useOutput(int port, String name) {
+        }
+
+        @Override
+        public void playTestNote(String deviceName) {
+        }
+
+        @Override
+        public java.util.List<String> inputs() {
+            return java.util.List.of();
+        }
+
+        @Override
+        public String input() {
+            return "";
+        }
+
+        @Override
+        public void useInput(String name) {
+        }
+
+        @Override
+        public boolean isCapturing() {
+            return false;
+        }
+
+        @Override
+        public void startCapture(com.gstncaruso.tabpro.ui.actions.Ports.CapturedNote listener) {
+        }
+
+        @Override
+        public void stopCapture() {
+        }
+
+        @Override
+        public int sensitivityMillis() {
+            return 0;
+        }
+
+        @Override
+        public void useSensitivityMillis(int millis) {
+        }
+
+        @Override
+        public boolean limitsPitchVariation(int port) {
+            return false;
+        }
+
+        @Override
+        public void useLimitPitchVariation(int port, boolean limit) {
+        }
+
+        @Override
+        public java.util.Optional<String> soundFontFile() {
+            return java.util.Optional.empty();
+        }
+
+        @Override
+        public void chooseSoundFontFile(java.util.Optional<String> path) {
+        }
+
+        @Override
+        public boolean soundFontActive() {
+            return soundFontActive;
+        }
+
+        @Override
+        public void toggleSoundFont() {
+            toggleCount++;
+            soundFontActive = !soundFontActive;
+        }
+
+        @Override
+        public String soundFontStatus() {
+            return "";
+        }
+
+        int toggleCount() {
+            return toggleCount;
+        }
+    }
+
     /**
      * No termina la reproduccion sola -al reves del Player de {@link #newFrame(Editor)}-: se
      * queda "sonando" hasta que el propio Transport la frene, para poder mirar desde afuera si
