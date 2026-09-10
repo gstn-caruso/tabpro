@@ -7,13 +7,11 @@ import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import java.awt.Component;
 import javax.swing.JTabbedPane;
 
-/** La ventana de propiedades del compas: medida, armadura, triplet feel, repeticion y direcciones. */
 public final class MeasurePropertiesDialog {
 
     private MeasurePropertiesDialog() {
     }
 
-    /** Los nombres de las solapas, para que cada comando del menu abra la suya. */
     public static final String TIME_SIGNATURE = "Medida";
     public static final String KEY_SIGNATURE = "Armadura";
     public static final String TRIPLET_FEEL = "Triplet feel";
@@ -62,7 +60,6 @@ public final class MeasurePropertiesDialog {
         editor.setDirectionJump(directionsPanel.toJump());
     }
 
-    /** Abre la ventana ya parada en la solapa que pidio el menu. */
     private static void selectTab(JTabbedPane tabs, String title) {
         int index = tabs.indexOfTab(title);
         if (index >= 0) {

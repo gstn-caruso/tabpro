@@ -2,11 +2,6 @@ package com.gstncaruso.tabpro.ui.dialogs.preferences;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
 
-/**
- * Las preferencias generales del editor. Esta ventana solo construye y
- * entrega el valor para que quien la abra decida donde guardarlo; los seis
- * se guardan de verdad en com.gstncaruso.tabpro.ui.Preferences.
- */
 public record Preferences(
         NoteValue defaultNoteValue,
         boolean autoScrollDuringPlayback,
@@ -25,10 +20,6 @@ public record Preferences(
                 NoteValue.QUARTER, true, true, true, 20, false, DEFAULT_INTERFACE_FONT_SIZE, false, false);
     }
 
-    /**
-     * Preexistente a Accesibilidad: la fuente, el alto contraste y las animaciones quedan en su
-     * valor por defecto.
-     */
     public Preferences(
             NoteValue defaultNoteValue,
             boolean autoScrollDuringPlayback,
@@ -58,7 +49,6 @@ public record Preferences(
                 highContrastEnabled, animationsDisabled);
     }
 
-    /** El manual: forzar la vista multipista al usar la pantalla horizontal. */
     public Preferences withForceMultitrackInHorizontalMode(boolean forceMultitrackInHorizontalMode) {
         return new Preferences(defaultNoteValue, autoScrollDuringPlayback, showBassInChordName,
                 undoEnabled, autosaveEvery, forceMultitrackInHorizontalMode, interfaceFontSize,
@@ -71,21 +61,18 @@ public record Preferences(
                 highContrastEnabled, animationsDisabled);
     }
 
-    /** Preferencias [F12] > Accesibilidad: la fuente base de la interfaz, la aplica Theme. */
     public Preferences withInterfaceFontSize(int interfaceFontSize) {
         return new Preferences(defaultNoteValue, autoScrollDuringPlayback, showBassInChordName,
                 undoEnabled, autosaveEvery, forceMultitrackInHorizontalMode, interfaceFontSize,
                 highContrastEnabled, animationsDisabled);
     }
 
-    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
     public Preferences withHighContrastEnabled(boolean highContrastEnabled) {
         return new Preferences(defaultNoteValue, autoScrollDuringPlayback, showBassInChordName,
                 undoEnabled, autosaveEvery, forceMultitrackInHorizontalMode, interfaceFontSize,
                 highContrastEnabled, animationsDisabled);
     }
 
-    /** Preferencias [F12] > Accesibilidad: apaga las animaciones de FlatLaf y las propias. */
     public Preferences withAnimationsDisabled(boolean animationsDisabled) {
         return new Preferences(defaultNoteValue, autoScrollDuringPlayback, showBassInChordName,
                 undoEnabled, autosaveEvery, forceMultitrackInHorizontalMode, interfaceFontSize,

@@ -8,10 +8,6 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import org.junit.jupiter.api.Test;
 
-/**
- * Lo que se fija en la solapa "Propiedades por defecto" de Informacion de la partitura tiene
- * que llegar de verdad a la partitura que crea Archivo > Nuevo.
- */
 class NewScoreDefaultsTest {
 
     @Test

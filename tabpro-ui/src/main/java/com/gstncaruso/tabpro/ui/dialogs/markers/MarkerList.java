@@ -6,7 +6,6 @@ import com.gstncaruso.tabpro.core.model.bars.Marker;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Los marcadores de la partitura, en el orden en que caen los compases. */
 public final class MarkerList {
 
     private MarkerList() {
@@ -22,7 +21,6 @@ public final class MarkerList {
         return List.copyOf(found);
     }
 
-    /** Un marcador y el compas, contado desde 0, donde esta puesto. */
     public record Positioned(int measureIndex, Marker marker) {
 
         public String label() {

@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
-/** Let ring, palm mute y dinamica, aplicados a las cuerdas elegidas en un rango de compases. */
 public final class StringOptionsPanel extends FormPanel {
 
     private final List<JCheckBox> strings = new ArrayList<>();
@@ -90,7 +89,6 @@ public final class StringOptionsPanel extends FormPanel {
         return dynamic;
     }
 
-    /** El control que corresponde a esa opcion: donde arranca el foco cuando el menu la pide. */
     public JComboBox<?> comboFor(StringOptionsDialog.Option option) {
         return switch (option) {
             case LET_RING -> letRing;

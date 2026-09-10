@@ -12,11 +12,6 @@ import java.util.Optional;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-/**
- * La ventana de "ASCII Import" del manual: pegar o escribir la tablatura, corregirla si hace
- * falta, y traerla sobre la pista activa. Tambien deja abrir un archivo de texto o imprimir lo
- * que hay en la zona de texto antes de importar.
- */
 public final class AsciiImportDialog {
 
     private AsciiImportDialog() {

@@ -5,10 +5,6 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import java.util.prefs.Preferences;
 
-/**
- * Los valores por defecto de la proxima partitura nueva, guardados entre sesiones en
- * java.util.prefs, igual que DefaultPageSetup.
- */
 public final class DefaultScoreProperties {
 
     private static final String TEMPO = "tempo";

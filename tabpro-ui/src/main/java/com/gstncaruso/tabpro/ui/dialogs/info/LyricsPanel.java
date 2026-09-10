@@ -13,11 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-/**
- * La letra de la cancion sobre una pista elegida, hasta cinco lineas cada una con
- * su compas inicial. Explica la sintaxis de silabas: espacio o guion separan,
- * mas une, y lo que va entre corchetes no se dibuja.
- */
 public final class LyricsPanel extends FormPanel {
 
     private final JComboBox<String> trackChooser;
@@ -91,7 +86,6 @@ public final class LyricsPanel extends FormPanel {
         trackChooser.setSelectedIndex(index);
     }
 
-    /** Cambia una linea puntual, para poblar el formulario o para probarlo. */
     public void setLine(int index, LyricLine line) {
         lines.get(index).apply(line);
     }

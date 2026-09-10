@@ -9,10 +9,6 @@ import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * Un bend o una palanca: el tipo base, la altura de un cuarto a tres tonos, y la
- * grilla donde se afina la curva a mano.
- */
 public final class BendPanel extends FormPanel {
 
     private final List<BendType> availableTypes;
@@ -25,7 +21,6 @@ public final class BendPanel extends FormPanel {
         this(initial, BendType.bendTypes());
     }
 
-    /** Como {@link #BendPanel(Bend)}, pero restringido a los tipos que le pasan (bend o palanca). */
     public BendPanel(Bend initial, List<BendType> availableTypes) {
         this.availableTypes = availableTypes;
         type = new JComboBox<>(availableTypes.toArray(new BendType[0]));
@@ -63,7 +58,6 @@ public final class BendPanel extends FormPanel {
         return (Integer) height.getValue();
     }
 
-    /** Clic en la grilla, expuesto para probar la decision sin simular el mouse. */
     public void clickAt(int position, int quarterTones) {
         curve.clickAt(position, quarterTones);
         grid.repaint();

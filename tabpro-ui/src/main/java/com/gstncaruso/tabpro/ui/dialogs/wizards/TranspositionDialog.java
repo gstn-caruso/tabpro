@@ -5,7 +5,6 @@ import com.gstncaruso.tabpro.core.editing.wizards.Transposition;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import java.awt.Component;
 
-/** El asistente Transponer del menu Herramientas. */
 public final class TranspositionDialog {
 
     private TranspositionDialog() {

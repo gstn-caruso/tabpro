@@ -7,7 +7,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 
-/** El contenido de una pestana de linea: su compas inicial y un bloque de texto multilinea con la sintaxis de silabas. */
 final class LyricLineRow extends FormPanel {
 
     private static final int TEXT_ROWS = 12;

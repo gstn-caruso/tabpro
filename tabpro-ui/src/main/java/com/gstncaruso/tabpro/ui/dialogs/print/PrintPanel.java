@@ -10,10 +10,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * La ventana de Imprimir del manual: arriba que hojas salen -toda la partitura o un rango-, abajo
- * de que tamano salen, con la escala en porcentaje o ajustandola sola al papel de la impresora.
- */
 public final class PrintPanel extends FormPanel {
 
     private final int sheetCount;
@@ -57,7 +53,6 @@ public final class PrintPanel extends FormPanel {
         return new JSpinner(new SpinnerNumberModel(value, 1, Math.max(1, sheetCount), 1));
     }
 
-    /** El rango solo se edita si se pidio un rango, y la escala solo si no se ajusta sola. */
     private void refreshWhatIsEnabled() {
         fromSheet.setEnabled(aRange.isSelected());
         toSheet.setEnabled(aRange.isSelected());
@@ -75,7 +70,6 @@ public final class PrintPanel extends FormPanel {
                 (Integer) scalePercent.getValue(), fitToPage.isSelected(), centeredDocument.isSelected());
     }
 
-    /** Para poder armar la ventana ya pidiendo un rango, y para los tests. */
     public void printOnly(int fromSheet, int toSheet) {
         aRange.setSelected(true);
         this.fromSheet.setValue(Math.clamp(fromSheet, 1, sheetCount));
@@ -106,9 +100,6 @@ public final class PrintPanel extends FormPanel {
         return fromSheet.isEnabled();
     }
 
-    /** El boton Configure del manual, para elegir el papel de la impresora (no el de la
-     * partitura, que es {@code Configurar pagina [F8]}); quien arma la ventana le engancha
-     * la accion real, asi este panel no depende de un dialogo real de impresion para probarse. */
     public JButton configureButton() {
         return configureButton;
     }

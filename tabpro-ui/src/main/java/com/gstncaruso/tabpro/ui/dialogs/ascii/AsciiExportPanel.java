@@ -12,10 +12,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * La ventana de export de ASCII del manual: la vista previa de la pista activa, cuantas
- * columnas entran en cada renglon, y los botones Imprimir y Exportar.
- */
 public final class AsciiExportPanel extends JPanel {
 
     private static final int MIN_COLUMNS_PER_LINE = 10;
@@ -72,7 +68,6 @@ public final class AsciiExportPanel extends JPanel {
         return exportButton;
     }
 
-    /** Recalcula la vista previa apenas cambia la cantidad de columnas por linea. */
     public void onColumnsChanged(Runnable listener) {
         columnsPerLine.addChangeListener(event -> listener.run());
     }

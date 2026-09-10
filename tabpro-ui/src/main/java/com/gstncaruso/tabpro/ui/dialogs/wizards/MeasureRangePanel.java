@@ -5,7 +5,6 @@ import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/** Desde que compas hasta que compas trabaja un asistente, contando desde 1. */
 public final class MeasureRangePanel extends FormPanel {
 
     private final JSpinner from;

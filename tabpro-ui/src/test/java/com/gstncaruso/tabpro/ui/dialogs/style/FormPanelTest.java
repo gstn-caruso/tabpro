@@ -16,11 +16,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import org.junit.jupiter.api.Test;
 
-/**
- * Cada fila del formulario etiqueta su campo con JLabel#setLabelFor, para que el nombre
- * accesible del campo salga solo del texto de la etiqueta (Swing lo deriva via
- * LABELED_BY_PROPERTY).
- */
 class FormPanelTest {
 
     @Test

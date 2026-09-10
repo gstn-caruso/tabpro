@@ -9,7 +9,6 @@ import java.awt.Component;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
-/** La ventana de Nota > Dinamica: de muy suave a muy fuerte, para la nota o el acorde. */
 public final class DynamicsDialog {
 
     private DynamicsDialog() {
@@ -30,7 +29,6 @@ public final class DynamicsDialog {
         }
     }
 
-    /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
     static Fields buildFields(Dynamic current) {
         JComboBox<Dynamic> dynamics = new JComboBox<>(Dynamic.values());
         dynamics.setRenderer(new LabeledListCellRenderer());

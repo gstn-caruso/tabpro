@@ -10,25 +10,21 @@ import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import java.awt.Component;
 import java.util.Set;
 
-/** El asistente de opciones por cuerda: let ring, palm mute y dinamica sobre un rango de compases. */
 public final class StringOptionsDialog {
 
     private StringOptionsDialog() {
     }
 
-    /** Cual de las tres opciones pidio el menu: decide el titulo y donde arranca el foco. */
     public enum Option { LET_RING, PALM_MUTE, DYNAMIC }
 
     public static void show(Component parent, Editor editor) {
         open(parent, editor, Option.LET_RING);
     }
 
-    /** Como {@link #show(Component, Editor)}, pero arranca con el foco en el combo de palm mute. */
     public static void showFocusedOnPalmMute(Component parent, Editor editor) {
         open(parent, editor, Option.PALM_MUTE);
     }
 
-    /** Como {@link #show(Component, Editor)}, pero arranca con el foco en el combo de dinamica. */
     public static void showFocusedOnDynamic(Component parent, Editor editor) {
         open(parent, editor, Option.DYNAMIC);
     }

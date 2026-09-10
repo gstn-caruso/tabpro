@@ -4,7 +4,6 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import java.awt.Component;
 
-/** La ventana de Pegar. */
 public final class PasteDialog {
 
     private PasteDialog() {

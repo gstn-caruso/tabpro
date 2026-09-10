@@ -13,10 +13,6 @@ import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-/**
- * La ventana de Pista > Agregar: que clase de pista, con que afinacion y en que
- * lugar de la lista, como describe "Add Tracks".
- */
 public final class AddTrackDialog {
 
     private AddTrackDialog() {
@@ -38,7 +34,6 @@ public final class AddTrackDialog {
         }
     }
 
-    /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
     static Fields buildFields(int nextTrackNumber) {
         JTextField name = new JTextField("Pista " + nextTrackNumber, 16);
         JRadioButton instrumental = new JRadioButton("Instrumental", true);
@@ -73,7 +68,6 @@ public final class AddTrackDialog {
             JRadioButton beforeCurrent) {
     }
 
-    /** Una guitarra o un bajo, segun cuantas cuerdas tenga la afinacion elegida. */
     private static Track trackWith(String name, Tuning tuning) {
         Track base = tuning.stringCount() <= 4 ? Track.standardBass(name) : Track.standardGuitar(name);
         return base.withTuning(tuning);

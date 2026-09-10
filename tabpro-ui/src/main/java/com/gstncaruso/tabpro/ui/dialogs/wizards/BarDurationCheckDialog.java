@@ -12,7 +12,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-/** El asistente Verificar duracion de compases [F4]: la lista de los que no cierran. */
 public final class BarDurationCheckDialog {
 
     private BarDurationCheckDialog() {
@@ -23,7 +22,6 @@ public final class BarDurationCheckDialog {
         DialogShell.show(parent, "Verificar duración de compases", buildContent(findings));
     }
 
-    /** Arma el contenido de la ventana sin abrir ningun dialogo, para poder probarlo. */
     static JPanel buildContent(List<BarDurationCheck.Finding> findings) {
         JPanel content = new JPanel(new BorderLayout(0, DialogStyle.GAP_S));
         DialogStyle.padded(content);

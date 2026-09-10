@@ -6,10 +6,6 @@ import java.awt.GridLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-/**
- * Un formulario de etiquetas alineadas a la izquierda y campos a la derecha, con
- * el mismo aire en todas las ventanas del manual.
- */
 public class FormPanel extends JPanel implements MnemonicScope {
 
     private final MnemonicAssigner labelMnemonics = new MnemonicAssigner();
@@ -22,25 +18,21 @@ public class FormPanel extends JPanel implements MnemonicScope {
         currentRows = sections;
     }
 
-    /** Una fila con etiqueta a la izquierda y un campo que ocupa el resto del ancho. */
     public FormPanel addRow(String label, JComponent field) {
         currentRows.addRow(label, field);
         return this;
     }
 
-    /** Una fila con un campo mas un componente al lado, por ejemplo un boton de escuchar. */
     public FormPanel addRow(String label, JComponent field, JComponent trailing) {
         currentRows.addRow(label, field, trailing);
         return this;
     }
 
-    /** Un componente que ocupa las dos columnas, como un area de texto o una lista. */
     public FormPanel addFullWidthRow(JComponent component) {
         currentRows.addFullWidthRow(component);
         return this;
     }
 
-    /** El titulo de un nuevo grupo de campos dentro del mismo formulario. */
     public FormPanel addSection(String title) {
         JPanel section = DialogStyle.section(title);
         sections.addFullWidthRow(section);
@@ -48,16 +40,10 @@ public class FormPanel extends JPanel implements MnemonicScope {
         return this;
     }
 
-    /**
-     * Una seccion que el caller ubica donde quiera (por ejemplo, al lado de otra con
-     * {@link #addSideBySide}) en vez de apilarla en el flujo vertical normal. Comparte los
-     * mnemonicos del formulario para no repetir letra con el resto de las filas.
-     */
     public Section newDetachedSection(String title) {
         return new Section(DialogStyle.section(title));
     }
 
-    /** Dos secciones detached, una al lado de la otra, mitad del ancho cada una. */
     public FormPanel addSideBySide(Section left, Section right) {
         JPanel row = new JPanel(new GridLayout(1, 2, DialogStyle.GAP_M, 0));
         row.setOpaque(false);
@@ -66,7 +52,6 @@ public class FormPanel extends JPanel implements MnemonicScope {
         return addFullWidthRow(row);
     }
 
-    /** Una seccion con borde titulado propio, separada del flujo vertical del formulario. */
     public final class Section {
 
         private final JPanel panel;

@@ -7,10 +7,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-/**
- * Los datos generales de la partitura: titulo, autores, derechos e instrucciones.
- * Se puede leer y llenar sin mostrarse, para poder probarlo sin abrir ventanas.
- */
 public final class ScoreInfoPanel extends FormPanel {
 
     private final JTextField title = new JTextField(DialogStyle.TEXT_FIELD_COLUMNS);
@@ -46,7 +42,6 @@ public final class ScoreInfoPanel extends FormPanel {
         return new JScrollPane(area);
     }
 
-    /** Llena los campos con los datos de una partitura ya cargada. */
     public void apply(ScoreInfo info) {
         title.setText(info.title());
         subtitle.setText(info.subtitle());

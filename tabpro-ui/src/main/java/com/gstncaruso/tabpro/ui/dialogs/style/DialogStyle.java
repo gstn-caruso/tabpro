@@ -10,11 +10,6 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
-/**
- * Los numeros y helpers que comparten todas las ventanas del manual, para que se
- * vean iguales: plano, con aire, sin bordes 3D. Nunca fija colores propios, solo
- * lee las claves del look and feel activo (UIManager) para respetar el tema oscuro.
- */
 public final class DialogStyle {
 
     public static final int GAP_XS = 4;
@@ -30,7 +25,6 @@ public final class DialogStyle {
     private DialogStyle() {
     }
 
-    /** Una caja de grupo, con el titulo sentado sobre el borde como en Guitar Pro 5. */
     public static JPanel section(String title) {
         JPanel section = new JPanel();
         section.setBorder(BorderFactory.createCompoundBorder(
@@ -66,12 +60,10 @@ public final class DialogStyle {
         return base.deriveFont(Font.BOLD);
     }
 
-    /** Aire uniforme alrededor del contenido de una ventana. */
     public static void padded(JComponent component) {
         component.setBorder(BorderFactory.createEmptyBorder(GAP_L, GAP_L, GAP_L, GAP_L));
     }
 
-    /** Un boton plano: sin foco pintado ni relieve, con aire adentro. */
     public static JButton flatButton(String text) {
         JButton button = new JButton(text);
         button.setFocusPainted(false);

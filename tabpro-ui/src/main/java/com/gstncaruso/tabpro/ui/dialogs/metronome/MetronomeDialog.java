@@ -5,7 +5,6 @@ import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import java.awt.Component;
 import java.util.Optional;
 
-/** La ventana del Metronomo: activarlo y configurarlo. */
 public final class MetronomeDialog {
 
     private MetronomeDialog() {

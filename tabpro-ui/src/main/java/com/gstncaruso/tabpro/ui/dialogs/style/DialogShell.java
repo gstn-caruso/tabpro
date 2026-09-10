@@ -12,19 +12,13 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-/**
- * Envuelve un panel de contenido con una barra Aceptar/Cancelar y lo muestra como
- * dialogo modal. No sabe nada del modelo que edita cada ventana: solo pinta.
- */
 public final class DialogShell {
 
-    /** Barra de titulo y bordes del sistema operativo, mas un margen de aire contra el borde de pantalla. */
     static final int WINDOW_CHROME_HEIGHT = 80;
 
     private DialogShell() {
     }
 
-    /** Lo que le queda al contenido despues de restarle a la pantalla la barra de botones y el chrome de la ventana. */
     static int availableContentHeight(int screenHeight, int southHeight) {
         return screenHeight - southHeight - WINDOW_CHROME_HEIGHT;
     }
@@ -37,7 +31,6 @@ public final class DialogShell {
         return ask(parent, title, content, acceptLabel, null);
     }
 
-    /** Como {@link #ask(Component, String, JComponent)}, pero arranca con el foco en {@code initialFocus}. */
     public static boolean ask(Component parent, String title, JComponent content, JComponent initialFocus) {
         return ask(parent, title, content, "Aceptar", initialFocus);
     }
@@ -47,11 +40,6 @@ public final class DialogShell {
         return ask(parent, title, content, null, acceptLabel, initialFocus);
     }
 
-    /**
-     * Como {@link #ask(Component, String, JComponent, String, JComponent)}, pero con una fila de
-     * botones propios de la ventana (por ejemplo "Actualizar partitura" en Configurar pagina) que
-     * queda, igual que Aceptar y Cancelar, siempre visible fuera de cualquier scroll.
-     */
     public static boolean ask(
             Component parent, String title, JComponent content, JComponent extraButtons,
             String acceptLabel, JComponent initialFocus) {
@@ -108,11 +96,6 @@ public final class DialogShell {
         return fitToAvailableHeight(content, availableHeight);
     }
 
-    /**
-     * La regla general: un dialogo nunca es mas alto que el area util de la pantalla. El alto
-     * disponible se recibe como parametro (nunca leido de {@code GraphicsEnvironment} aca adentro)
-     * para poder probarlo sin depender de un display real.
-     */
     static JComponent fitToAvailableHeight(JComponent content, int availableHeight) {
         if (content.getPreferredSize().height <= availableHeight) {
             return content;
@@ -126,16 +109,10 @@ public final class DialogShell {
         return scroll;
     }
 
-    /** Para ventanas sin Cancelar, como los reportes de un asistente: solo Cerrar. */
     public static void show(Component parent, String title, JComponent content) {
         show(parent, title, closer -> content);
     }
 
-    /**
-     * Como {@link #show(Component, String, JComponent)}, pero el contenido se arma con acceso a
-     * un cierre propio: sirve para botones internos (un "Ir a" que ademas de moverse, cierra la
-     * ventana) sin depender solo del boton "Cerrar" de la barra.
-     */
     public static void show(Component parent, String title, java.util.function.Function<Runnable, JComponent> content) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title, Dialog.ModalityType.APPLICATION_MODAL);
         javax.swing.JButton close = DialogStyle.flatButton("Cerrar");

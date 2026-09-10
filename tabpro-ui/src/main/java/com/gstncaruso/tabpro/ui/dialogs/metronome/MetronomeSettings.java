@@ -1,9 +1,5 @@
 package com.gstncaruso.tabpro.ui.dialogs.metronome;
 
-/**
- * Como suena el metronomo. El tempo no vive aca: es de la partitura entera y se
- * edita a traves del Editor, no de esta ventana.
- */
 public record MetronomeSettings(boolean active, int volume) {
 
     public static final int MIN_VOLUME = 0;

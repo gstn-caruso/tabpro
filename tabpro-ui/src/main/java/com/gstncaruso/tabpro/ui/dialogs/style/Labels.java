@@ -20,10 +20,6 @@ import com.gstncaruso.tabpro.ui.page.Orientation;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import java.util.List;
 
-/**
- * El unico punto que traduce un tipo del dominio a su texto en castellano: ningun combo
- * ni lista de tabpro debe apoyarse en el toString() de un enum o de un record.
- */
 public final class Labels {
 
     private Labels() {
@@ -57,7 +53,6 @@ public final class Labels {
                 + Math.round(format.heightMillimetres()) + " mm)";
     }
 
-    /** Las letras de las cuerdas de graves a agudas, como el manual escribe "EADGBE". */
     private static String stringLetters(Tuning tuning) {
         StringBuilder letters = new StringBuilder();
         List<Pitch> strings = tuning.strings();
@@ -75,7 +70,6 @@ public final class Labels {
         };
     }
 
-    /** El sufijo con que el manual nombra el tipo de acorde: "M" para el mayor, "m7", "sus4"... */
     private static String chordTypeLabel(ChordType value) {
         return value == ChordType.MAJOR ? "M" : value.suffix();
     }

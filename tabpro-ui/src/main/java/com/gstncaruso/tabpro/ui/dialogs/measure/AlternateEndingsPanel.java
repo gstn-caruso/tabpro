@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JCheckBox;
 
-/** En que vueltas de la repeticion se toca este compas. */
 public final class AlternateEndingsPanel extends FormPanel {
 
     private final List<JCheckBox> passes = new ArrayList<>();
@@ -24,7 +23,6 @@ public final class AlternateEndingsPanel extends FormPanel {
         addRow("Finales alternativos", row);
     }
 
-    /** Marca o desmarca una vuelta puntual, para poblar el formulario o para probarlo. */
     public void setChecked(int pass, boolean checked) {
         passes.get(pass - 1).setSelected(checked);
     }

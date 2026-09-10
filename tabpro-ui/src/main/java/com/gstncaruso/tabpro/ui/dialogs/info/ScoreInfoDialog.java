@@ -7,7 +7,6 @@ import java.awt.Component;
 import java.util.List;
 import javax.swing.JTabbedPane;
 
-/** La ventana de Informacion de la partitura [F5], con su solapa de letra. */
 public final class ScoreInfoDialog {
 
     private ScoreInfoDialog() {

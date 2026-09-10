@@ -4,7 +4,6 @@ import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import javax.swing.JComboBox;
 
-/** El armonico: cual de los cinco tipos que reconoce la tablatura. */
 public final class HarmonicPanel extends FormPanel {
 
     private final JComboBox<HarmonicType> type = new JComboBox<>(HarmonicType.values());

@@ -20,7 +20,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
-/** La ventana de Configurar pagina [F8]: papel, orientacion, margenes, tamano, encabezado y pie. */
 public final class PageSetupPanel extends FormPanel {
 
     private static final int LABEL_WIDTH = 130;
@@ -104,7 +103,6 @@ public final class PageSetupPanel extends FormPanel {
         return banner;
     }
 
-    /** El casillero de un elemento del encabezado o del pie, con el texto que le toca. */
     private static final class BannerRow extends JPanel {
 
         private final PageElement element;

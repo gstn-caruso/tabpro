@@ -14,10 +14,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
-/**
- * La lista de marcadores como tabla (Posicion/Nombre) con Agregar/Editar/Borrar/Ir a al costado:
- * la vista de gestion de Guitar Pro 5, separada del editor de un marcador ({@link MarkerPanel}).
- */
 public final class MarkersTableDialog {
 
     private MarkersTableDialog() {
@@ -89,7 +85,6 @@ public final class MarkersTableDialog {
         return content;
     }
 
-    /** Abre {@link MarkerPanel} como su propio dialogo modal, y aplica el resultado si se acepta. */
     private static boolean editMarker(Component parent, Editor editor, Marker initial, int measureIndex, String title) {
         MarkerPanel form = new MarkerPanel(initial);
         while (DialogShell.ask(parent, title, form)) {

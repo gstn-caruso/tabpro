@@ -9,7 +9,6 @@ import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** El asistente Organizador de compases: reacomoda los beats para que cada compas cierre su medida. */
 public final class BarArrangerDialog {
 
     private BarArrangerDialog() {
@@ -28,7 +27,6 @@ public final class BarArrangerDialog {
                 : BarArranger.runOnTrack(score, trackIndex));
     }
 
-    /** Arma el contenido y el campo que hay que releer si se acepta; sin abrir ningun dialogo. */
     static Fields buildFields() {
         JPanel content = new JPanel(new BorderLayout(0, DialogStyle.GAP_S));
         DialogStyle.padded(content);

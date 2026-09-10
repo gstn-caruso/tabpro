@@ -5,10 +5,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * La repeticion del compas: si abre un ciclo y, si lo cierra, cuantas vueltas toca
- * antes de seguir.
- */
 public final class RepeatPanel extends FormPanel {
 
     private final boolean initialRepeatOpen;
@@ -31,7 +27,6 @@ public final class RepeatPanel extends FormPanel {
         repeatOpen.setSelected(selected);
     }
 
-    /** Si hay que avisarle al editor, porque toggleRepeatOpen() alterna en vez de fijar. */
     public boolean repeatOpenChanged() {
         return repeatOpenSelected() != initialRepeatOpen;
     }

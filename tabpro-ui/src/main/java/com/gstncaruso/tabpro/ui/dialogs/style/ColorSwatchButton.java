@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 
-/** Un boton que muestra un color y lo deja cambiar con el selector del sistema. */
 public final class ColorSwatchButton extends JButton {
 
     private ScoreColor color;

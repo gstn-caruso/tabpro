@@ -14,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-/** La ayuda que el manual pone en F1: la lista de atajos, agrupada como su capitulo Reference. */
 public final class HelpDialog {
 
     private static final int VISIBLE_HEIGHT = 460;

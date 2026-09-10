@@ -6,7 +6,6 @@ import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/** El numerador y el denominador de la medida del compas. */
 public final class TimeSignaturePanel extends FormPanel {
 
     private static final Integer[] BEAT_UNITS = {1, 2, 4, 8, 16, 32, 64};

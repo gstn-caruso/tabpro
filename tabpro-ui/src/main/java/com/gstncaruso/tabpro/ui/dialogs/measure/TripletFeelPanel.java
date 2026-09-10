@@ -4,7 +4,6 @@ import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import javax.swing.JComboBox;
 
-/** La sincopa que se toca aunque no se escriba, desde este compas en adelante. */
 public final class TripletFeelPanel extends FormPanel {
 
     private final JComboBox<TripletFeel> tripletFeel = new JComboBox<>(TripletFeel.values());

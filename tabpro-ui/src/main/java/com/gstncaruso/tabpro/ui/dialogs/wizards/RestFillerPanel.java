@@ -3,7 +3,6 @@ package com.gstncaruso.tabpro.ui.dialogs.wizards;
 import com.gstncaruso.tabpro.core.editing.wizards.MeasureRange;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 
-/** Completar o reducir con silencios los compases del rango elegido. */
 public final class RestFillerPanel extends FormPanel {
 
     private final MeasureRangePanel range;

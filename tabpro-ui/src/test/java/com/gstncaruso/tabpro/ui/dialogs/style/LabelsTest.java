@@ -27,10 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-/**
- * El unico punto que traduce un tipo del dominio a su texto en castellano para
- * mostrarlo en un combo o una lista: ningun combo debe apoyarse en toString().
- */
 class LabelsTest {
 
     @Test
