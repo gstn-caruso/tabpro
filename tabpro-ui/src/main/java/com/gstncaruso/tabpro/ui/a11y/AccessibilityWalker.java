@@ -9,6 +9,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
@@ -36,11 +37,20 @@ public final class AccessibilityWalker {
         if (isStandardAtomicControl(component)) {
             return;
         }
-        if (component instanceof Container container) {
-            for (Component child : container.getComponents()) {
-                visit(child, path + " > " + child.getClass().getSimpleName(), violations);
-            }
+        for (Component child : childrenOf(component)) {
+            visit(child, path + " > " + child.getClass().getSimpleName(), violations);
         }
+    }
+
+    /** Los items de un JMenu viven en su JPopupMenu, no entre sus hijos AWT normales. */
+    private Component[] childrenOf(Component component) {
+        if (component instanceof JMenu menu) {
+            return menu.getMenuComponents();
+        }
+        if (component instanceof Container container) {
+            return container.getComponents();
+        }
+        return new Component[0];
     }
 
     private void check(Component component, String path, List<Violation> violations) {
@@ -59,7 +69,7 @@ public final class AccessibilityWalker {
     }
 
     private boolean isStandardAtomicControl(Component component) {
-        return component instanceof AbstractButton
+        return (component instanceof AbstractButton && !(component instanceof JMenu))
                 || component instanceof JComboBox
                 || component instanceof JSpinner
                 || component instanceof JTextField

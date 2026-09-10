@@ -7,6 +7,9 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import org.junit.jupiter.api.Test;
 
@@ -152,6 +155,28 @@ class AccessibilityWalkerTest {
         panel.add(perilla);
 
         assertTrue(walker.walk(panel).isEmpty());
+    }
+
+    @Test
+    void unItemDeMenuSinTextoDentroDeUnJMenuEsUnaViolacion() {
+        JMenuBar bar = new JMenuBar();
+        JMenu menu = new JMenu("Archivo");
+        menu.add(new JMenuItem());
+        bar.add(menu);
+
+        List<Violation> violaciones = walker.walk(bar);
+
+        assertTrue(violaciones.stream().anyMatch(v -> v.reason().equals("sin nombre accesible")));
+    }
+
+    @Test
+    void unItemDeMenuConTextoDentroDeUnJMenuNoTieneViolaciones() {
+        JMenuBar bar = new JMenuBar();
+        JMenu menu = new JMenu("Archivo");
+        menu.add(new JMenuItem("Nuevo"));
+        bar.add(menu);
+
+        assertTrue(walker.walk(bar).isEmpty());
     }
 
     @Test
