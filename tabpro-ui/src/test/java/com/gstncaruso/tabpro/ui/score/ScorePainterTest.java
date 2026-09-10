@@ -405,26 +405,43 @@ class ScorePainterTest {
 
     /**
      * El manual (p14: «Bridge», «Outro») dibuja un cuadradito solido con el color del marcador
-     * arriba de su nombre. tabpro solo escribia el texto.
+     * junto a su nombre. tabpro lo ponia arriba del texto, en la misma franja donde escribe el
+     * nombre de la pista -algo que GP5 no hace ahi-, y el cuadrado terminaba pisandolo. Ahora
+     * comparte renglon con el texto del marcador, a su izquierda.
      */
     @Test
-    void aSectionMarkerDrawsASquareInItsOwnColorAboveItsName() {
+    void aSectionMarkerDrawsASquareInItsOwnColorBesideItsName() {
         Color markerColor = new Color(0x00, 0xAA, 0x00);
-        Measure marked = measureOf(Beat.of(Duration.quarter(), new Note(1, 0)))
-                .mappingAttributes(attrs -> attrs.withMarker(new com.gstncaruso.tabpro.core.model.bars.Marker(
-                        "Intro", new com.gstncaruso.tabpro.core.model.ScoreColor(
-                                markerColor.getRed(), markerColor.getGreen(), markerColor.getBlue()))));
-        Painted painted = paint(scoreWith(marked), new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted painted = paintWithMarkerColor(markerColor);
 
-        int x = painted.layout().measureX(0);
-        int staffTop = painted.layout().staffTop(0, 0);
-        FontMetrics metrics = painted.image().createGraphics().getFontMetrics(ScoreFonts.SECTION_MARK_FONT);
-        int textTop = (staffTop - 26) - metrics.getAscent();
-        Rectangle aboveTheName = new Rectangle(
-                x - 2, textTop - metrics.getAscent() - 4, metrics.getAscent() + 6, metrics.getAscent());
+        Rectangle square = markerSquareBounds(painted);
 
-        assertTrue(painted.hasColorIn(aboveTheName, markerColor),
-                "el marcador tiene que dibujar un cuadrado solido con su propio color arriba del nombre");
+        assertEquals(markerColor.getRGB(),
+                painted.image().getRGB(square.x + square.width / 2, square.y + square.height / 2),
+                "el marcador tiene que dibujar un cuadrado solido con su propio color junto al nombre");
+    }
+
+    @Test
+    void theSectionMarkerSquareSharesBaselineWithItsText() {
+        Color markerColor = new Color(0x00, 0xAA, 0x00);
+        Painted painted = paintWithMarkerColor(markerColor);
+
+        Rectangle square = markerSquareBounds(painted);
+        int textBaseline = painted.layout().staffTop(0, 0) - 16;
+
+        assertTrue(painted.hasColorIn(new Rectangle(square.x, textBaseline - 1, square.width, 1), markerColor),
+                "el cuadrado tiene que apoyar su base en la linea de base del texto del marcador");
+    }
+
+    @Test
+    void theSectionMarkerSquareDoesNotOverlapTheTrackName() {
+        Color markerColor = new Color(0xCC, 0x00, 0x00);
+        Painted painted = paintWithMarkerColor(markerColor);
+
+        Rectangle trackName = trackNameBounds(painted, "Guitarra");
+
+        assertFalse(painted.hasColorIn(trackName, markerColor),
+                "el cuadrado del marcador no puede pisar el nombre de la pista");
     }
 
     @Test
@@ -468,8 +485,16 @@ class ScorePainterTest {
         int staffTop = painted.layout().staffTop(0, 0);
         FontMetrics metrics = painted.image().createGraphics().getFontMetrics(ScoreFonts.SECTION_MARK_FONT);
         int squareSize = metrics.getAscent();
-        int squareBottom = (staffTop - 26) - metrics.getAscent() - 4;
-        return new Rectangle(x, squareBottom - squareSize, squareSize, squareSize);
+        int textBaseline = staffTop - 16;
+        return new Rectangle(x, textBaseline - squareSize, squareSize, squareSize);
+    }
+
+    private static Rectangle trackNameBounds(Painted painted, String trackName) {
+        int x = painted.layout().measureX(0);
+        FontMetrics metrics = painted.image().createGraphics().getFontMetrics(ScoreFonts.TRACK_LABEL_FONT);
+        int baseline = painted.layout().trackTop(0, 0) + ScoreLayout.TRACK_LABEL_HEIGHT - 4;
+        return new Rectangle(x, baseline - metrics.getAscent(),
+                metrics.stringWidth(trackName), metrics.getAscent() + metrics.getDescent());
     }
 
     @Test
