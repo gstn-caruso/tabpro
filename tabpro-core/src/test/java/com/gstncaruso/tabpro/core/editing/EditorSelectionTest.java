@@ -24,4 +24,9 @@ class EditorSelectionTest {
 
         assertTrue(editor.selection().isEmpty());
     }
+
+    @Test
+    void thereIsNoSelectionBeforeAnythingSelectsAnything() {
+        assertTrue(editor.selection().isEmpty());
+    }
 }
