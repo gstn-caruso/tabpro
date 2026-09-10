@@ -169,13 +169,13 @@ class TransportTest {
         transport.addListener(() -> notifications[0]++);
 
         transport.toggle();
-        assertEquals(1, notifications[0], "empezar a sonar es un cambio");
+        assertEquals(1, notifications[0], "starting to play is a change");
 
         player.emitBeat(new BeatPosition(0, 0, 0));
-        assertEquals(2, notifications[0], "cada beat mueve el cursor de reproducción");
+        assertEquals(2, notifications[0], "every beat moves the playback cursor");
 
         player.emitFinished();
-        assertEquals(3, notifications[0], "terminar tambien es un cambio");
+        assertEquals(3, notifications[0], "finishing is also a change");
 
         transport.toggle();
         assertEquals(4, notifications[0]);
@@ -252,7 +252,7 @@ class TransportTest {
 
         transport.toggle();
 
-        assertEquals(60, player.lastTimeline.tempoBpm(), "la mitad de 120");
+        assertEquals(60, player.lastTimeline.tempoBpm(), "half of 120");
     }
 
     @Test
@@ -264,7 +264,7 @@ class TransportTest {
         slowingTransport.toggle();
 
         assertEquals(90, player.lastTimeline.tempoBpm(),
-                "arrancar en el medio recupera el tempo que dejó el cambio anterior");
+                "starting mid-way recovers the tempo the previous change left");
     }
 
     @Test
@@ -375,9 +375,9 @@ class TransportTest {
 
         transportWithTwoBars.stepForward();
 
-        assertEquals(1, editorWithTwoBars.cursor().measure(), "tiene que saltar al compas siguiente");
+        assertEquals(1, editorWithTwoBars.cursor().measure(), "has to jump to the next measure");
         assertEquals(Long.valueOf(Duration.quarter().ticks() * 4), player.lastSeekTick);
-        assertTrue(transportWithTwoBars.isPlaying(), "no se tiene que frenar");
+        assertTrue(transportWithTwoBars.isPlaying(), "must not stop");
     }
 
     @Test
@@ -389,9 +389,9 @@ class TransportTest {
 
         transportWithTwoBars.stepBack();
 
-        assertEquals(0, editorWithTwoBars.cursor().measure(), "tiene que saltar al compas anterior");
+        assertEquals(0, editorWithTwoBars.cursor().measure(), "has to jump to the previous measure");
         assertEquals(Long.valueOf(0), player.lastSeekTick);
-        assertTrue(transportWithTwoBars.isPlaying(), "no se tiene que frenar");
+        assertTrue(transportWithTwoBars.isPlaying(), "must not stop");
     }
 
     @Test

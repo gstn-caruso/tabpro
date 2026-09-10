@@ -46,15 +46,15 @@ class ScoreMixSplitTest {
         layOut();
         int heightBefore = mixTable.getHeight();
         assertTrue(heightBefore > 0 && heightBefore < 700 / 2,
-                "la mesa deberia ser una franja chica, midio " + heightBefore);
+                "the mix table should be a small strip, measured " + heightBefore);
 
         split.toggleView();
         layOut();
 
         int heightAfter = mixTable.getHeight();
         assertTrue(Math.abs(heightBefore - heightAfter) <= 3,
-                "la franja de la mesa deberia mantenerse, media " + heightBefore + " y paso a " + heightAfter);
-        assertTrue(heightAfter < 700 / 2, "la mesa no deberia ocupar la mitad de la ventana, midio " + heightAfter);
+                "the mix table's strip should stay put, measured " + heightBefore + " and became " + heightAfter);
+        assertTrue(heightAfter < 700 / 2, "the mix table should not take up half the window, measured " + heightAfter);
     }
 
     private void layOutAt(int width, int height) {
