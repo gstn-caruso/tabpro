@@ -78,6 +78,7 @@ public final class MeasureGrid extends JComponent implements AccessibleControl {
         InputMap inputMap = getInputMap(WHEN_FOCUSED);
         ActionMap actionMap = getActionMap();
         bindCaretMove(inputMap, actionMap, "RIGHT", 0, 1);
+        bindCaretMove(inputMap, actionMap, "LEFT", 0, -1);
     }
 
     private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int trackDelta, int measureDelta) {
