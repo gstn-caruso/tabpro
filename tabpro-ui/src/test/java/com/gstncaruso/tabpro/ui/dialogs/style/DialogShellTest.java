@@ -33,7 +33,7 @@ class DialogShellTest {
         JScrollPane scroll = assertInstanceOf(JScrollPane.class, fitted);
         assertSame(content, scroll.getViewport().getView());
         assertTrue(scroll.getPreferredSize().height <= 400,
-                "el alto preferido del scroll no puede superar el disponible");
+                "the scroll's preferred height cannot exceed the available height");
     }
 
     @Test
