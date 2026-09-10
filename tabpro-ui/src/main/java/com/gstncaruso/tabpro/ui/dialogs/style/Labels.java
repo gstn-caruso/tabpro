@@ -4,7 +4,6 @@ import com.gstncaruso.tabpro.core.harmony.Chord;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
-import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
@@ -28,7 +27,6 @@ public final class Labels {
 
     public static String of(Object value) {
         return switch (value) {
-            case NoteValue noteValue -> noteValueLabel(noteValue);
             case Chord chord -> chord.name();
             case ChordType chordType -> chordTypeLabel(chordType);
             case ChordComplexity chordComplexity -> chordComplexityLabel(chordComplexity);
@@ -88,15 +86,4 @@ public final class Labels {
         };
     }
 
-    private static String noteValueLabel(NoteValue value) {
-        return switch (value) {
-            case WHOLE -> "Redonda";
-            case HALF -> "Blanca";
-            case QUARTER -> "Negra";
-            case EIGHTH -> "Corchea";
-            case SIXTEENTH -> "Semicorchea";
-            case THIRTY_SECOND -> "Fusa";
-            case SIXTY_FOURTH -> "Semifusa";
-        };
-    }
 }
