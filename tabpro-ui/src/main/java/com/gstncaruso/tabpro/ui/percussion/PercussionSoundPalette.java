@@ -15,10 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-/**
- * La zona (1) del asistente de percusion: los numeros de sonido de la placa GM.
- * Un clic los escucha, un doble clic los agrega al beat en la linea del cursor.
- */
 public final class PercussionSoundPalette extends JPanel {
 
     private static final int COLUMNS = 4;
@@ -63,7 +59,6 @@ public final class PercussionSoundPalette extends JPanel {
         add(scroll, BorderLayout.CENTER);
     }
 
-    /** La lista en si, para los tests: no hace falta para usar el panel. */
     JList<Integer> soundList() {
         return list;
     }

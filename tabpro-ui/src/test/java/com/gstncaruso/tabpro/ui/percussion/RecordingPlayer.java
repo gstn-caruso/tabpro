@@ -7,7 +7,6 @@ import com.gstncaruso.tabpro.core.playback.Timeline;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Un reproductor que en vez de sonar anota las notas sueltas que le pidieron. */
 final class RecordingPlayer implements Player {
 
     private final List<Sounded> sounded = new ArrayList<>();
