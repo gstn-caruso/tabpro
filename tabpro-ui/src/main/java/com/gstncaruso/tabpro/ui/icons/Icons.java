@@ -378,7 +378,7 @@ public final class Icons {
     }
 
     public static Icon zoomOut() {
-        return icon((graphics, size) -> magnifier(graphics, size, -1));
+        return svgIcon("zoom-out");
     }
 
     public static Icon zoomReset() {
