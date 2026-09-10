@@ -201,6 +201,17 @@ class KeyboardViewTest {
         assertEquals(OptionalInt.of(KeyboardView.LOWEST + 1), view.caretKey());
     }
 
+    @Test
+    void theLeftArrowKeyMovesTheCaretToThePreviousSemitone() {
+        KeyboardView view = sized();
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+
+        pressShortcut(view, KeyStroke.getKeyStroke("LEFT"));
+
+        assertEquals(OptionalInt.of(KeyboardView.LOWEST + 1), view.caretKey());
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
