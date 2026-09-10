@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleValue;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
@@ -61,6 +63,17 @@ class LevelSliderTest {
 
         pressShortcut(slider, KeyStroke.getKeyStroke("END"));
         assertEquals(127, slider.getValue());
+    }
+
+    @Test
+    void exposesItsCurrentValueToAssistiveTechnology() {
+        LevelSlider slider = new LevelSlider(0, 127, 64, Color.ORANGE, Color.GRAY);
+
+        assertEquals(AccessibleRole.SLIDER, slider.getAccessibleContext().getAccessibleRole());
+        AccessibleValue accessibleValue = (AccessibleValue) slider.getAccessibleContext();
+        assertEquals(64, accessibleValue.getCurrentAccessibleValue().intValue());
+        assertEquals(0, accessibleValue.getMinimumAccessibleValue().intValue());
+        assertEquals(127, accessibleValue.getMaximumAccessibleValue().intValue());
     }
 
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {

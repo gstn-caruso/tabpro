@@ -3,6 +3,9 @@ package com.gstncaruso.tabpro.ui.tracks;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleValue;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -82,5 +85,47 @@ public final class LevelSlider extends JComponent implements AccessibleControl {
 
     private int clamp(int candidate) {
         return Math.max(min, Math.min(max, candidate));
+    }
+
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        if (accessibleContext == null) {
+            accessibleContext = new AccessibleLevelSlider();
+        }
+        return accessibleContext;
+    }
+
+    private final class AccessibleLevelSlider extends AccessibleJComponent implements AccessibleValue {
+        @Override
+        public AccessibleRole getAccessibleRole() {
+            return AccessibleRole.SLIDER;
+        }
+
+        @Override
+        public AccessibleValue getAccessibleValue() {
+            return this;
+        }
+
+        @Override
+        public Number getCurrentAccessibleValue() {
+            return value;
+        }
+
+        @Override
+        public boolean setCurrentAccessibleValue(Number number) {
+            setValue(number.intValue());
+            onUserChange.run();
+            return true;
+        }
+
+        @Override
+        public Number getMinimumAccessibleValue() {
+            return min;
+        }
+
+        @Override
+        public Number getMaximumAccessibleValue() {
+            return max;
+        }
     }
 }
