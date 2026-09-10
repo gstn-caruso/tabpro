@@ -68,7 +68,7 @@ checkout compartido; `docs/` lo maneja esta sesión; y quien vaya a tocar
 | Etapa | Estado |
 |---|---|
 | 0. Limpieza del árbol (PR #41 y #42 mergeados, worktrees y branches podadas) | ✅ hecho |
-| 1. Auditoría del manual contra el código | ✅ hecho — ver [auditoria-manual.md](auditoria-manual.md) |
+| 1. Auditoría del manual contra el código | ✅ hecho — ver [audit-manual.md](audit-manual.md) |
 | 1b. Auditoría de las tablas de atajos que quedaron fuera del recorte | ✅ re-auditado 2026-09-06 — ver abajo |
 | 2. Versionado automático con semantic-release | ✅ hecho — publicó la v0.9.0 sola |
 | 3. Implementación de los huecos, un PR por hueco | 🔜 en curso |
@@ -111,7 +111,7 @@ catálogo).
   del manual, se dejan.
 - **Feature faltante, no atajo:** `Enter` como "agregar nota en notación
   estándar" no existe — ya estaba anotado en
-  [auditoria-manual.md](auditoria-manual.md) ("Enter no agrega una nota en
+  [audit-manual.md](audit-manual.md) ("Enter no agrega una nota en
   notación estándar — AUSENTE · grande"). tabpro solo escribe por dígitos de
   traste.
 - **Bug real encontrado y arreglado — no en el catálogo, en la plomería:**
@@ -239,7 +239,7 @@ que el manual describe y todavía no funciona *al usarlo*, el aspecto visual
 - **Cómo se encuentra lo que falla:** una auditoría de **uso real** — cada
   acción del manual ejercitada por el camino del usuario (menú, atajo, botón,
   diálogo) verificando el efecto observable — y no otra lectura estática del
-  código. Informe en `docs/auditoria-uso-real.md`, harness bajo el tag
+  código. Informe en `docs/audit-real-use.md`, harness bajo el tag
   `integracion`.
 - **Flujo:** autónomo (DIY) y en loop. El principal planifica, briefea, abre el
   PR, espera el CI y mergea. El agente `worker` (`~/.claude/agents/worker.md`:
