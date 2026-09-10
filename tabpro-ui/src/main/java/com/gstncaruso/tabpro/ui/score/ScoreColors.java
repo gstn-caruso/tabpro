@@ -27,6 +27,11 @@ public final class ScoreColors {
     public static final Color MUTED_INK = new Color(0x9E, 0xA0, 0xA6);
     /** El coral solido con el que Guitar Pro 5 escribe siempre el numero de compas. */
     public static final Color MEASURE_NUMBER = new Color(0xFF, 0x65, 0x63);
+    /**
+     * El mismo coral de {@link #MEASURE_NUMBER}, oscurecido sin tocar el tono: a pleno brillo no
+     * llega al 4.5:1 que pide WCAG para texto contra el papel claro del Modo Pagina.
+     */
+    private static final Color MEASURE_NUMBER_ON_PAPER = new Color(0xD6, 0x03, 0x00);
 
     public static final Color ACCENT = new Color(0x3574F0);
     /** El relleno del deslizador de volumen en la mesa de mezcla, como el naranja de Guitar Pro. */
@@ -126,6 +131,7 @@ public final class ScoreColors {
         onPaper.put(INK, PAGE_INK);
         onPaper.put(LABEL, mirrored(LABEL));
         onPaper.put(MUTED_INK, mirrored(MUTED_INK));
+        onPaper.put(MEASURE_NUMBER, MEASURE_NUMBER_ON_PAPER);
         onPaper.put(STAFF_LINE, mirrored(STAFF_LINE));
         onPaper.put(BAR_LINE, mirrored(BAR_LINE));
         onPaper.put(VOICE_INACTIVE, mirrored(VOICE_INACTIVE));

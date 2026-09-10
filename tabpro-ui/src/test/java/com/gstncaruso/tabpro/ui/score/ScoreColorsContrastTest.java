@@ -31,6 +31,8 @@ class ScoreColorsContrastTest {
                         Contrast.TEXT_MINIMUM_RATIO),
                 new Pair("tinta atenuada (MUTED_INK) / fondo", ScoreColors.MUTED_INK, ScoreColors.BACKGROUND,
                         Contrast.TEXT_MINIMUM_RATIO),
+                new Pair("numero de compas (MEASURE_NUMBER) / fondo", ScoreColors.MEASURE_NUMBER,
+                        ScoreColors.BACKGROUND, Contrast.TEXT_MINIMUM_RATIO),
                 new Pair("voz inactiva (VOICE_INACTIVE) / fondo", ScoreColors.VOICE_INACTIVE, ScoreColors.BACKGROUND,
                         Contrast.TEXT_MINIMUM_RATIO),
                 new Pair("etiqueta (LABEL) / panel de pistas", ScoreColors.LABEL, ScoreColors.SURFACE,
