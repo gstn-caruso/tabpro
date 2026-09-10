@@ -5,7 +5,6 @@ import com.gstncaruso.tabpro.core.model.Instruments;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Que programas matchean lo que se escribio en el buscador, con los nombres del patch elegido. */
 public final class InstrumentSearch {
 
     private InstrumentSearch() {

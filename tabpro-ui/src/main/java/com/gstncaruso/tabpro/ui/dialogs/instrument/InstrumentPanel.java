@@ -12,7 +12,6 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-/** El sonido de la pista, buscable por nombre -el de General MIDI, o el del patch elegido en MIDI Setup. */
 public final class InstrumentPanel extends JPanel {
 
     private final InstrumentPatch patch;
