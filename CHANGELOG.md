@@ -1,3 +1,9 @@
+## [0.59.0](https://github.com/gstn-caruso/tabpro/compare/v0.58.6...v0.59.0) (2026-09-10)
+
+### Features
+
+* **effects:** la palanca tiene sus seis tipos propios, y cada comando de opciones abre su asistente con título y foco ([#183](https://github.com/gstn-caruso/tabpro/issues/183)) ([de431ad](https://github.com/gstn-caruso/tabpro/commit/de431adcdd694359714dbc251be90374236019b0))
+
 ## [0.58.6](https://github.com/gstn-caruso/tabpro/compare/v0.58.5...v0.58.6) (2026-09-10)
 
 ### Bug Fixes
