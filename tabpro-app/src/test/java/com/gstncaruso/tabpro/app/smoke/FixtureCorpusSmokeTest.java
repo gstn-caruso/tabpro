@@ -44,6 +44,16 @@ class FixtureCorpusSmokeTest {
         assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
     }
 
+    @Test
+    void unMusicXmlSimpleAbrePorElCaminoRealDeImportacion() {
+        Path path = repoFile("tabpro-format/src/test/resources/musicxml/armadura-en-fa.musicxml");
+
+        Score score = abrir(path);
+
+        assertNotNull(score, () -> path.getFileName() + ": abre por el camino real de importacion");
+        assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
+    }
+
     private Score abrir(Path path) {
         String nombre = path.getFileName().toString();
         if (nombre.endsWith(".gp3") || nombre.endsWith(".gp4") || nombre.endsWith(".gp5")) {
@@ -51,6 +61,9 @@ class FixtureCorpusSmokeTest {
         }
         if (nombre.endsWith(".ptb")) {
             return exchange.importPowerTab(path);
+        }
+        if (nombre.endsWith(".musicxml")) {
+            return exchange.importMusicXml(path);
         }
         throw new UnsupportedOperationException("todavia no resuelve la extension de " + nombre);
     }
