@@ -1,3 +1,9 @@
+## [0.50.0](https://github.com/gstn-caruso/tabpro/compare/v0.49.1...v0.50.0) (2026-09-10)
+
+### Features
+
+* **toolbar:** el botón de digitación de mano derecha, como en Guitar Pro 5 ([#154](https://github.com/gstn-caruso/tabpro/issues/154)) ([e30f804](https://github.com/gstn-caruso/tabpro/commit/e30f804ca45813f4268f863d19c8ad422de05ea7))
+
 ## [0.49.1](https://github.com/gstn-caruso/tabpro/compare/v0.49.0...v0.49.1) (2026-09-10)
 
 ### Bug Fixes
