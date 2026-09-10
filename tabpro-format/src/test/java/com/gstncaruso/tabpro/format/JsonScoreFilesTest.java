@@ -207,14 +207,6 @@ class JsonScoreFilesTest {
         assertEquals(6, channel.effectChannel());
     }
 
-    /**
-     * TrackDto siempre escribia el numero de canal, incluso el 1 por defecto, y hasta este
-     * cambio MidiSequences lo ignoraba y repartia sus propios canales por orden de pista. Todo
-     * archivo guardado hasta ahora con varias pistas las tiene, entonces, todas en el canal 1 --
-     * la firma inconfundible de un valor que nunca sono. La firma es fuerte: nadie configura a
-     * mano varias pistas en el mismo canal. Se reconstruye con el mismo calculo que hacia
-     * MidiSequences (2n/2n+1, salteando la percusion), asi que suena identico a como sonaba.
-     */
     @Test
     void aFileWhereEveryTrackSharesTheSameChannelGetsTheChannelsItUsedToSound() throws URISyntaxException {
         Path path = Path.of(getClass().getResource("/v4-three-tracks-all-on-channel-one.tabpro").toURI());
@@ -229,11 +221,6 @@ class JsonScoreFilesTest {
         assertEquals(6, loaded.track(2).channel().effectChannel());
     }
 
-    /**
-     * Si los canales ya difieren entre si -por ejemplo porque el archivo viene de importar un
-     * Guitar Pro real con canales propios- el usuario (o el importador) los eligio a proposito,
-     * y no hay que reacomodarlos.
-     */
     @Test
     void aFileWhereTracksAlreadyHaveDifferentChannelsIsLeftUntouched() throws URISyntaxException {
         Path path = Path.of(getClass().getResource("/v4-two-tracks-with-different-channels.tabpro").toURI());
@@ -259,11 +246,6 @@ class JsonScoreFilesTest {
         assertEquals(11, loaded.effectChannel());
     }
 
-    /**
-     * La perdida que encontro la revision: un compas marcado 8va se guardaba y, al volver a
-     * abrir el archivo, la marca habia desaparecido sin ningun aviso porque AttributesDto no
-     * tenia campo para ella.
-     */
     @Test
     void anOctaveMarkSurvivesSavingAndLoading(@TempDir Path tempDir) {
         Score score = scoreWithOctaveMark(OctaveMark.OTTAVA_ALTA);
@@ -275,11 +257,6 @@ class JsonScoreFilesTest {
         assertEquals(OctaveMark.OTTAVA_ALTA, loaded.track(0).measure(0).attributes().octaveMark());
     }
 
-    /**
-     * El default de {@link OctaveMark} tambien es {@code NONE}, asi que sin este otro compas el
-     * test de arriba podria pasar por casualidad aunque el campo nunca se leyera: hace falta
-     * probar tambien que un compas sin marca vuelve como NONE y no como cualquier otra cosa.
-     */
     @Test
     void aMeasureWithoutAnOctaveMarkLoadsAsNone(@TempDir Path tempDir) {
         Score score = scoreWithOctaveMark(OctaveMark.NONE);
@@ -300,11 +277,6 @@ class JsonScoreFilesTest {
         return new Score("Prueba", 120, List.of(track));
     }
 
-    /**
-     * El mismo tipo de perdida que la marca de octava (ver arriba), pero para el corte de barra
-     * a mano que agrega BeamBreak: si BeatDto no lo escribe, forzar un corte se guarda y
-     * desaparece sin aviso al volver a abrir el archivo.
-     */
     @Test
     void aBeamBreakSurvivesSavingAndLoading(@TempDir Path tempDir) {
         Score score = scoreWithBeamBreak(BeamBreak.FORCED);
@@ -316,10 +288,6 @@ class JsonScoreFilesTest {
         assertEquals(BeamBreak.FORCED, loaded.track(0).measure(0).beat(0).effects().beamBreak());
     }
 
-    /**
-     * El default de {@link BeamBreak} tambien es AUTOMATIC, asi que sin este otro beat el test
-     * de arriba podria pasar por casualidad aunque el campo nunca se leyera.
-     */
     @Test
     void aBeatWithoutABeamBreakLoadsAsAutomatic(@TempDir Path tempDir) {
         Score score = scoreWithBeamBreak(BeamBreak.AUTOMATIC);

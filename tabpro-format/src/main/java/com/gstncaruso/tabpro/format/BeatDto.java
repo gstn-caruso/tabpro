@@ -111,7 +111,6 @@ public record BeatDto(
                 .orElseThrow(() -> new ScoreFileException("value no es un denominador de figura valido: " + denominator));
     }
 
-    /** El cambio de parametros: solo se listan los que efectivamente cambian. */
     public record ParameterChangeDto(
             java.util.Map<String, Integer> values, Integer transitionBeats, Boolean everyTrack) {
 
