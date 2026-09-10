@@ -24,8 +24,10 @@ public final class TrackSelector extends JPanel {
         previousButton = new JButton(commands.get("track.previous"));
         nextButton = new JButton(commands.get("track.next"));
         for (int trackIndex = 0; trackIndex < editor.score().trackCount(); trackIndex++) {
+            int selectedTrackIndex = trackIndex;
             JToggleButton button = new JToggleButton();
             button.setSelected(trackIndex == editor.cursor().track());
+            button.addActionListener(event -> editor.selectTrack(selectedTrackIndex));
             trackButtons.add(button);
         }
         previousButton.setEnabled(editor.cursor().track() > 0);

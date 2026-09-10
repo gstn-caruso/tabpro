@@ -78,6 +78,20 @@ class TrackSelectorTest {
         assertFalse(selector.nextButton().isEnabled());
     }
 
+    @Test
+    void clickEnUnNumeroMueveElCursorAEsaPistaSinCambiarDeCompas() {
+        editor.addTrack(Track.standardBass("Bajo"));
+        editor.insertMeasure();
+        editor.selectTrack(0);
+        editor.moveToNextMeasure();
+        TrackSelector selector = new TrackSelector(editor, commands);
+
+        selector.trackButtons().get(1).doClick();
+
+        assertEquals(1, editor.cursor().track());
+        assertEquals(1, editor.cursor().measure());
+    }
+
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
         InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
