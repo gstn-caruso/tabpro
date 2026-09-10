@@ -4,9 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import org.junit.jupiter.api.Test;
 
 class MnemonicWalkerTest {
@@ -60,5 +63,17 @@ class MnemonicWalkerTest {
         menu.add(new JMenuItem("Nuevo"));
 
         assertTrue(walker.walkMenu(menu).stream().anyMatch(v -> v.reason().equals("sin mnemónico")));
+    }
+
+    @Test
+    void unaEtiquetaDeFormularioSinMnemonicoEsUnHallazgo() {
+        JPanel form = new JPanel();
+        JTextField field = new JTextField();
+        JLabel label = new JLabel("Título");
+        label.setLabelFor(field);
+        form.add(label);
+        form.add(field);
+
+        assertTrue(walker.walkForm(form).stream().anyMatch(v -> v.reason().equals("sin mnemónico")));
     }
 }

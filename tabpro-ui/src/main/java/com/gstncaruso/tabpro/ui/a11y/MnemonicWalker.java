@@ -1,10 +1,12 @@
 package com.gstncaruso.tabpro.ui.a11y;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -27,6 +29,23 @@ public final class MnemonicWalker {
             }
         }
         return violationsOf(entries);
+    }
+
+    public List<Violation> walkForm(Container form) {
+        List<Entry> entries = new ArrayList<>();
+        collectLabeledFields(form, entries);
+        return violationsOf(entries);
+    }
+
+    private void collectLabeledFields(Component component, List<Entry> entries) {
+        if (component instanceof JLabel label && label.getLabelFor() != null) {
+            entries.add(new Entry(label.getText(), label.getDisplayedMnemonic()));
+        }
+        if (component instanceof Container container) {
+            for (Component child : container.getComponents()) {
+                collectLabeledFields(child, entries);
+            }
+        }
     }
 
     private List<Violation> violationsOf(List<Entry> entries) {
