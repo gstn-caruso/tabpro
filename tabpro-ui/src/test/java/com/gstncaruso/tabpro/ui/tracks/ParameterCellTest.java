@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.Track;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import org.junit.jupiter.api.Test;
@@ -70,6 +71,17 @@ class ParameterCellTest {
         cell.numberField().setValue(55);
 
         assertEquals(55, editor.currentTrack().channel().chorus());
+    }
+
+    @Test
+    void elNombreAccesibleDelKnobYDelNumeroIncluyenElParametroYLaPista() {
+        Editor editor = new Editor(Score.blank());
+        editor.addTrack(Track.standardBass("Bajo"));
+        MixTableModel model = new MixTableModel();
+        ParameterCell cell = new ParameterCell(editor, model, MixParameter.VOLUME, 1);
+
+        assertEquals("Volumen de Bajo", cell.knob().getAccessibleContext().getAccessibleName());
+        assertEquals("Volumen de Bajo", cell.numberField().getAccessibleContext().getAccessibleName());
     }
 
     private static MouseEvent pressAt(Component target, int y) {
