@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.swing.Action;
@@ -691,9 +692,15 @@ final class AuditSupport {
      */
     static void withDialog(Runnable trigger, Consumer<JDialog> onOpen) throws Exception {
         CountDownLatch opened = new CountDownLatch(1);
+        AtomicReference<Throwable> failure = new AtomicReference<>();
         AWTEventListener listener = event -> {
             if (event.getID() == WindowEvent.WINDOW_OPENED && event.getSource() instanceof JDialog dialog) {
-                onOpen.accept(dialog);
+                try {
+                    onOpen.accept(dialog);
+                } catch (Throwable thrown) {
+                    failure.set(thrown);
+                    dialog.dispose();
+                }
                 opened.countDown();
             }
         };
@@ -706,6 +713,20 @@ final class AuditSupport {
         } finally {
             Toolkit.getDefaultToolkit().removeAWTEventListener(listener);
         }
+        rethrowIfCaptured(failure.get());
+    }
+
+    private static void rethrowIfCaptured(Throwable thrown) {
+        if (thrown == null) {
+            return;
+        }
+        if (thrown instanceof RuntimeException runtimeException) {
+            throw runtimeException;
+        }
+        if (thrown instanceof Error error) {
+            throw error;
+        }
+        throw new AssertionError(thrown);
     }
 
     /**
