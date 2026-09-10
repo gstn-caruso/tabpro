@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.toolbar;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
@@ -174,6 +175,20 @@ class TrackSelectorTest {
         TrackSelector selector = new TrackSelector(editor, commands);
 
         assertNotNull(selector.trackButtons().get(0).getIcon());
+    }
+
+    @Test
+    void lasFlechasMuestranSoloElIconoConNombreAccesibleYTooltip() {
+        TrackSelector selector = new TrackSelector(editor, commands);
+
+        assertNotNull(selector.previousButton().getIcon());
+        assertNotNull(selector.nextButton().getIcon());
+        assertNull(selector.previousButton().getText());
+        assertNull(selector.nextButton().getText());
+        assertEquals("Pista anterior", selector.previousButton().getAccessibleContext().getAccessibleName());
+        assertEquals("Pista siguiente", selector.nextButton().getAccessibleContext().getAccessibleName());
+        assertFalse(selector.previousButton().getToolTipText().isBlank());
+        assertFalse(selector.nextButton().getToolTipText().isBlank());
     }
 
     @SuppressWarnings("unchecked")

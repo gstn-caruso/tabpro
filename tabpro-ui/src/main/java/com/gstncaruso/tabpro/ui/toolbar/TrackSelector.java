@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.toolbar;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.util.ArrayList;
@@ -28,8 +29,8 @@ public final class TrackSelector extends JPanel {
         setOpaque(false);
         numbers.setLayout(new BoxLayout(numbers, BoxLayout.X_AXIS));
         numbers.setOpaque(false);
-        previousButton = new JButton(commands.get("track.previous"));
-        nextButton = new JButton(commands.get("track.next"));
+        previousButton = arrowButton(commands.get("track.previous"));
+        nextButton = arrowButton(commands.get("track.next"));
         add(previousButton);
         add(numbers);
         add(nextButton);
@@ -71,6 +72,14 @@ public final class TrackSelector extends JPanel {
         }
         previousButton.setEnabled(active > 0);
         nextButton.setEnabled(active < editor.score().trackCount() - 1);
+    }
+
+    private static JButton arrowButton(Command command) {
+        JButton button = new JButton(command);
+        button.setText(null);
+        button.setToolTipText(command.description());
+        button.getAccessibleContext().setAccessibleName(command.label());
+        return button;
     }
 
     List<JToggleButton> trackButtons() {
