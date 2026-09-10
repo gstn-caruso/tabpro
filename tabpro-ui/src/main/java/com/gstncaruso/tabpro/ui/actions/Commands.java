@@ -136,34 +136,40 @@ public final class Commands {
     }
 
     private void defineBarCommands() {
-        define("bar.insert", "Insertar un compás", editor::insertMeasure)
+        define("bar.insert", Texts.get("menus.bar.insert"), editor::insertMeasure)
                 .withAccelerator("ctrl INSERT").withIcon(Icons.insertBar());
-        define("bar.delete", "Borrar el compás", editor::deleteMeasure).withIcon(Icons.deleteBar());
-        define("bar.keySignature", "Armadura…", dialogs::keySignature).withIcon(Icons.keySignature());
-        define("bar.timeSignature", "Medida del compás…", dialogs::timeSignature).withIcon(Icons.timeSignature());
-        define("bar.tripletFeel", "Triplet feel…", dialogs::tripletFeel).withIcon(Icons.tripletFeel());
-        define("bar.doubleBar", "Doble barra", editor::toggleDoubleBar).withIcon(Icons.doubleBar());
-        define("bar.repeatOpen", "Repetición: abrir", editor::toggleRepeatOpen).withIcon(Icons.repeatOpen());
-        define("bar.repeatClose", "Repetición: cerrar…", dialogs::repeatClose).withIcon(Icons.repeatClose());
-        define("bar.alternateEndings", "Finales alternativos…", dialogs::alternateEndings)
+        define("bar.delete", Texts.get("menus.bar.delete"), editor::deleteMeasure).withIcon(Icons.deleteBar());
+        define("bar.keySignature", Texts.get("menus.bar.keySignature"), dialogs::keySignature)
+                .withIcon(Icons.keySignature());
+        define("bar.timeSignature", Texts.get("menus.bar.timeSignature"), dialogs::timeSignature)
+                .withIcon(Icons.timeSignature());
+        define("bar.tripletFeel", Texts.get("menus.bar.tripletFeel"), dialogs::tripletFeel)
+                .withIcon(Icons.tripletFeel());
+        define("bar.doubleBar", Texts.get("menus.bar.doubleBar"), editor::toggleDoubleBar)
+                .withIcon(Icons.doubleBar());
+        define("bar.repeatOpen", Texts.get("menus.bar.repeatOpen"), editor::toggleRepeatOpen)
+                .withIcon(Icons.repeatOpen());
+        define("bar.repeatClose", Texts.get("menus.bar.repeatClose"), dialogs::repeatClose)
+                .withIcon(Icons.repeatClose());
+        define("bar.alternateEndings", Texts.get("menus.bar.alternateEndings"), dialogs::alternateEndings)
                 .withIcon(Icons.alternateEndings());
-        define("bar.directions", "Direcciones musicales…", dialogs::musicalDirections);
-        define("bar.forceLineBreak", "Forzar salto de línea",
+        define("bar.directions", Texts.get("menus.bar.directions"), dialogs::musicalDirections);
+        define("bar.forceLineBreak", Texts.get("menus.bar.forceLineBreak"),
                 () -> editor.setLineBreak(LineBreak.FORCED, view.isMultitrack())).withIcon(Icons.forceLineBreak());
-        define("bar.preventLineBreak", "Impedir salto de línea",
+        define("bar.preventLineBreak", Texts.get("menus.bar.preventLineBreak"),
                 () -> editor.setLineBreak(LineBreak.PREVENTED, view.isMultitrack()))
                 .withIcon(Icons.preventLineBreak());
-        define("bar.resetLineBreak", "Reiniciar la organización",
+        define("bar.resetLineBreak", Texts.get("menus.bar.resetLineBreak"),
                 () -> editor.setLineBreak(LineBreak.AUTOMATIC, view.isMultitrack()));
-        define("bar.octave8va", "8va (suena una octava más arriba de lo escrito)",
+        define("bar.octave8va", Texts.get("menus.bar.octave8va"),
                 () -> editor.setOctaveMark(OctaveMark.OTTAVA_ALTA)).withIcon(Icons.octave8va());
-        define("bar.octave8vb", "8vb (suena una octava más abajo de lo escrito)",
+        define("bar.octave8vb", Texts.get("menus.bar.octave8vb"),
                 () -> editor.setOctaveMark(OctaveMark.OTTAVA_BASSA)).withIcon(Icons.octave8vb());
-        define("bar.octave15ma", "15ma (suena dos octavas más arriba de lo escrito)",
+        define("bar.octave15ma", Texts.get("menus.bar.octave15ma"),
                 () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_ALTA)).withIcon(Icons.octave15ma());
-        define("bar.octave15mb", "15mb (suena dos octavas más abajo de lo escrito)",
+        define("bar.octave15mb", Texts.get("menus.bar.octave15mb"),
                 () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_BASSA)).withIcon(Icons.octave15mb());
-        define("bar.octaveNone", "Sin marca de octava", () -> editor.setOctaveMark(OctaveMark.NONE));
+        define("bar.octaveNone", Texts.get("menus.bar.octaveNone"), () -> editor.setOctaveMark(OctaveMark.NONE));
     }
 
     private void defineTrackCommands() {
