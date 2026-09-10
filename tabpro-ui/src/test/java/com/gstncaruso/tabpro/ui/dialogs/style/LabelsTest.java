@@ -19,6 +19,7 @@ import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.StemOverride;
+import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
@@ -338,6 +339,20 @@ class LabelsTest {
     @EnumSource(GraceTransition.class)
     void everyGraceTransitionHasSpanishAndEnglishText(GraceTransition value) {
         String key = "domain.GraceTransition." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheStrokeDirection() {
+        assertEquals("Hacia arriba", Labels.of(StrokeDirection.UP));
+    }
+
+    @ParameterizedTest
+    @EnumSource(StrokeDirection.class)
+    void everyStrokeDirectionHasSpanishAndEnglishText(StrokeDirection value) {
+        String key = "domain.StrokeDirection." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
