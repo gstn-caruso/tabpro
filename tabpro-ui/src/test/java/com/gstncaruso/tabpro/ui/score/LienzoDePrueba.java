@@ -68,6 +68,11 @@ public final class LienzoDePrueba extends Graphics2D {
         return ordenes.stream().anyMatch(orden -> orden.color().equals(color) && orden.tocaA(region));
     }
 
+    /** Si ese texto exacto se escribio tocando la region dada. */
+    public boolean escribeTextoEnRegion(String texto, Rectangle region) {
+        return ordenes.stream().anyMatch(orden -> texto.equals(orden.texto()) && orden.tocaA(region));
+    }
+
     /** Si dentro de esa region se dibujo exactamente lo mismo -mismo orden, forma, color y texto- que en otro lienzo. */
     public boolean coincideEnRegionCon(LienzoDePrueba otro, Rectangle region) {
         return ordenesEnRegion(region).equals(otro.ordenesEnRegion(region));

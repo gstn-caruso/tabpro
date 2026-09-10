@@ -88,11 +88,12 @@ final class StaffPainter {
     static void paintClef(Graphics2D g, ScoreLayout layout, Clef clef, int trackIndex, int measureIndex) {
         double x = layout.measureX(measureIndex) + 4.0;
         g.setColor(ScoreColors.INK);
-        g.setStroke(CLEF);
         if (clef == Clef.TREBLE) {
-            g.draw(trebleClef(x, layout.staffLineY(trackIndex, measureIndex, 1)));
+            g.setFont(MusicFont.sizedTo(SPACE));
+            g.drawString(MusicFont.trebleClef(), (float) x, layout.staffLineY(trackIndex, measureIndex, 1));
             return;
         }
+        g.setStroke(CLEF);
         double fLineY = layout.staffLineY(trackIndex, measureIndex, 3);
         g.draw(bassClef(x, fLineY));
         double dotX = x + 1.85 * SPACE;
@@ -760,53 +761,6 @@ final class StaffPainter {
 
     private static void fill(Graphics2D g, Shape shape) {
         g.fill(shape);
-    }
-
-    private static Shape trebleClef(double x, double gLineY) {
-        double u = SPACE;
-        double cx = x + 1.35 * u;
-        Path2D clef = new Path2D.Double();
-
-        clef.moveTo(cx + 0.50 * u, gLineY - 4.20 * u);
-        clef.curveTo(
-                cx + 1.02 * u, gLineY - 4.00 * u,
-                cx + 0.98 * u, gLineY - 3.10 * u,
-                cx + 0.42 * u, gLineY - 2.50 * u);
-        clef.curveTo(
-                cx - 0.08 * u, gLineY - 1.95 * u,
-                cx - 0.08 * u, gLineY - 0.30 * u,
-                cx + 0.04 * u, gLineY + 0.90 * u);
-        clef.curveTo(
-                cx + 0.16 * u, gLineY + 1.90 * u,
-                cx + 0.38 * u, gLineY + 2.35 * u,
-                cx - 0.12 * u, gLineY + 2.78 * u);
-        clef.curveTo(
-                cx - 0.50 * u, gLineY + 3.08 * u,
-                cx - 0.92 * u, gLineY + 2.52 * u,
-                cx - 0.72 * u, gLineY + 2.10 * u);
-
-        clef.append(spiral(cx, gLineY, 1.18 * u, 0.16 * u, -80, 1.6), false);
-        return clef;
-    }
-
-    /** La voluta de la clave de sol: una espiral que se cierra sobre la linea de sol. */
-    private static Path2D spiral(
-            double cx, double cy, double outerRadius, double innerRadius, double startDegrees, double turns) {
-        Path2D path = new Path2D.Double();
-        int steps = 80;
-        for (int step = 0; step <= steps; step++) {
-            double progress = (double) step / steps;
-            double angle = Math.toRadians(startDegrees) - progress * turns * 2 * Math.PI;
-            double radius = outerRadius + progress * (innerRadius - outerRadius);
-            double px = cx + radius * Math.cos(angle);
-            double py = cy + radius * Math.sin(angle);
-            if (step == 0) {
-                path.moveTo(px, py);
-            } else {
-                path.lineTo(px, py);
-            }
-        }
-        return path;
     }
 
     private static Shape bassClef(double x, double fLineY) {
