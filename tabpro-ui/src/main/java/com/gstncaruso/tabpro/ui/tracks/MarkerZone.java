@@ -17,6 +17,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.function.UnaryOperator;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
 import javax.swing.AbstractAction;
@@ -38,6 +39,7 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     private final Editor editor;
     private int caret;
     private boolean showsFocusRing;
+    UnaryOperator<String> markerNamePrompt = this::promptForMarkerName;
 
     public MarkerZone(Editor editor) {
         this.editor = editor;
@@ -83,6 +85,18 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
         ActionMap actionMap = getActionMap();
         bindCaretMove(inputMap, actionMap, "RIGHT", 1);
         bindCaretMove(inputMap, actionMap, "LEFT", -1);
+        bindCaretActivation(inputMap, actionMap, "ENTER");
+    }
+
+    private void bindCaretActivation(InputMap inputMap, ActionMap actionMap, String keyStroke) {
+        String name = "markerzone.activate." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editMarkerAt(caret);
+            }
+        });
     }
 
     private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int delta) {
@@ -179,7 +193,7 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     private void editMarkerAt(int measureIndex) {
         Marker current = editor.score().attributesOf(measureIndex).marker().orElse(null);
         String initial = current == null ? "" : current.name();
-        String chosen = promptForMarkerName(initial);
+        String chosen = markerNamePrompt.apply(initial);
         if (chosen == null || chosen.isBlank()) {
             return;
         }
@@ -188,8 +202,7 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
         editor.setMarker(marker);
     }
 
-    /** Aislado en su propio metodo para que un test pueda contestar sin abrir un dialogo real. */
-    String promptForMarkerName(String initial) {
+    private String promptForMarkerName(String initial) {
         return JOptionPane.showInputDialog(this, "Nombre del marcador", initial);
     }
 

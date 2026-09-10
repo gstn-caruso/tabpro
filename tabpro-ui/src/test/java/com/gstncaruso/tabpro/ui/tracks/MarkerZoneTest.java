@@ -104,4 +104,18 @@ class MarkerZoneTest {
         }
         return false;
     }
+
+    @Test
+    void enterEditsTheMarkerAtTheCaretJustLikeADoubleClick() {
+        Editor editor = new Editor(Score.blank());
+        editor.insertMeasure();
+        editor.insertMeasure();
+        MarkerZone zone = new MarkerZone(editor);
+        zone.markerNamePrompt = initial -> "Estribillo";
+        pressShortcut(zone, KeyStroke.getKeyStroke("RIGHT"));
+
+        pressShortcut(zone, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals("Estribillo", editor.score().attributesOf(1).marker().orElseThrow().name());
+    }
 }
