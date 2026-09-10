@@ -10,6 +10,8 @@ import javax.swing.JComponent;
  */
 public final class ScaleDegreesView extends JComponent {
 
+    private static final int SIDE_MARGIN = 20;
+
     private List<ScaleTone> tones = List.of();
 
     public void show(List<ScaleTone> tones) {
@@ -27,5 +29,14 @@ public final class ScaleDegreesView extends JComponent {
 
     public String intervalLabel(int index) {
         return tones.get(index).interval().label();
+    }
+
+    /** La posicion horizontal de la columna de ese grado, parejas entre si como en el manual. */
+    public int degreeX(int index) {
+        return SIDE_MARGIN + (int) Math.round(index * columnGap());
+    }
+
+    private double columnGap() {
+        return degreeCount() <= 1 ? 0 : (double) (getWidth() - 2 * SIDE_MARGIN) / (degreeCount() - 1);
     }
 }

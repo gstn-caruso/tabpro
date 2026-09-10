@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.harmony;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.harmony.Interval;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
@@ -30,5 +31,19 @@ class ScaleDegreesViewTest {
         assertEquals("1", view.intervalLabel(0));
         assertEquals("D", view.noteLabel(1));
         assertEquals("2", view.intervalLabel(1));
+    }
+
+    @Test
+    void lasColumnasQuedanParejasYEnOrdenCreciente() {
+        ScaleDegreesView view = new ScaleDegreesView();
+        view.setSize(420, 70);
+        view.show(List.of(
+                new ScaleTone(PitchClass.of("C"), Interval.ROOT, 1),
+                new ScaleTone(PitchClass.of("D"), Interval.MAJOR_SECOND, 2),
+                new ScaleTone(PitchClass.of("E"), Interval.MAJOR_THIRD, 3)));
+
+        assertEquals(view.degreeX(1) - view.degreeX(0), view.degreeX(2) - view.degreeX(1));
+        assertTrue(view.degreeX(0) < view.degreeX(1));
+        assertTrue(view.degreeX(1) < view.degreeX(2));
     }
 }
