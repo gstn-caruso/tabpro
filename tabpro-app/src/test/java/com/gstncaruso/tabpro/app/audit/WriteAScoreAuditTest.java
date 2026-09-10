@@ -28,7 +28,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class WriteAScoreAuditTest {
 
     @Test
-    void elDigitoDelTrasteEscribeLaNotaEnElModeloReal() throws Exception {
+    void theFretDigitWritesTheNoteInTheRealModel() throws Exception {
         Editor editor = AuditSupport.blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -47,15 +47,15 @@ class WriteAScoreAuditTest {
     }
 
     @Test
-    void lasFlechasMuevenElCursorRealDelModelo() throws Exception {
+    void theArrowsMoveTheRealCursorOfTheModel() throws Exception {
         Editor editor = editorWithMeasures(1);
         MainFrame frame = newFrame(editor);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
 
-            int cuerdaInicial = editor.cursor().string();
+            int initialString = editor.cursor().string();
             pressKey(canvas, KeyStroke.getKeyStroke("DOWN"));
-            assertNotEquals(cuerdaInicial, editor.cursor().string(),
+            assertNotEquals(initialString, editor.cursor().string(),
                     "la flecha Abajo, despachada de verdad sobre el lienzo, tiene que mover la cuerda del cursor");
 
             pressKey(canvas, KeyStroke.getKeyStroke("RIGHT"));
@@ -66,7 +66,7 @@ class WriteAScoreAuditTest {
     }
 
     @Test
-    void elBackspaceCrudoBorraLaNotaSinPasarPorUnComando() throws Exception {
+    void rawBackspaceDeletesTheNoteWithoutGoingThroughACommand() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -87,7 +87,7 @@ class WriteAScoreAuditTest {
      * {@code KeyboardEditing} binding instead.
      */
     @Test
-    void tabCrudoCambiaDeNotacionSinMoverElCursor() throws Exception {
+    void rawTabChangesNotationWithoutMovingTheCursor() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -95,44 +95,44 @@ class WriteAScoreAuditTest {
             assertNotNull(canvas.getInputMap(javax.swing.JComponent.WHEN_FOCUSED)
                     .get(KeyStroke.getKeyStroke("TAB")), "KeyboardEditing tiene que declarar el binding de Tab");
 
-            var notacionInicial = editor.cursor().notation();
-            int compasInicial = editor.cursor().measure();
-            int beatInicial = editor.cursor().beat();
-            int cuerdaInicial = editor.cursor().string();
+            var initialNotation = editor.cursor().notation();
+            int initialBar = editor.cursor().measure();
+            int initialBeat = editor.cursor().beat();
+            int initialString = editor.cursor().string();
             pressKey(canvas, KeyStroke.getKeyStroke("TAB"));
 
-            assertNotEquals(notacionInicial, editor.cursor().notation(),
+            assertNotEquals(initialNotation, editor.cursor().notation(),
                     "Tab, despachado de verdad sobre el lienzo, tiene que alternar tablatura/pentagrama");
-            assertEquals(compasInicial, editor.cursor().measure(), "Tab no tiene que mover el cursor de compas");
-            assertEquals(beatInicial, editor.cursor().beat(), "Tab no tiene que mover el cursor de beat");
-            assertEquals(cuerdaInicial, editor.cursor().string(), "Tab no tiene que mover el cursor de cuerda");
+            assertEquals(initialBar, editor.cursor().measure(), "Tab no tiene que mover el cursor de compas");
+            assertEquals(initialBeat, editor.cursor().beat(), "Tab no tiene que mover el cursor de beat");
+            assertEquals(initialString, editor.cursor().string(), "Tab no tiene que mover el cursor de cuerda");
         } finally {
             AuditSupport.dispose(frame);
         }
     }
 
     @Test
-    void silencioPorMenuYPorAtajoRDejanElMismoBeat() throws Exception {
+    void restByMenuAndByRShortcutLeaveTheSameBeat() throws Exception {
         assertAcceleratorMatchesMenu("Silencio", AuditSupport::editorWithANote);
     }
 
     @Test
-    void puntilloPorMenuYPorAtajoPuntoCoinciden() throws Exception {
+    void dottedByMenuAndByDotShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Puntillo", AuditSupport::editorWithANote);
     }
 
     @Test
-    void ligarLaNotaPorMenuYPorAtajoLCoinciden() throws Exception {
+    void tyingTheNoteByMenuAndByLShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Ligar la nota", AuditSupport::editorWithANote);
     }
 
     @Test
-    void tresilloPorMenuYPorAtajoBarraCoinciden() throws Exception {
+    void tripletByMenuAndBySlashShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Tresillo", AuditSupport::editorWithANote);
     }
 
     @Test
-    void insertarUnCompasPorMenuYPorAtajoCtrlInsertCoinciden() throws Exception {
+    void insertingABarByMenuAndByCtrlInsertShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Insertar un compás", AuditSupport::blankEditor);
     }
 
@@ -142,7 +142,7 @@ class WriteAScoreAuditTest {
      * the key keeps propagating up to the real "First measure" shortcut.
      */
     @Test
-    void ctrlHomePorMenuYPorAtajoMuevenElCursorAlPrimerCompas() throws Exception {
+    void ctrlHomeByMenuAndByShortcutMoveTheCursorToTheFirstBar() throws Exception {
         assertAcceleratorMatchesMenu("Primer compás", () -> {
             Editor editor = editorWithMeasures(3);
             editor.moveToLastMeasure();
@@ -152,17 +152,17 @@ class WriteAScoreAuditTest {
 
     /** Same mechanism as Ctrl+Home, with the JScrollPane's built-in "scrollEnd". */
     @Test
-    void ctrlFinPorMenuYPorAtajoMuevenElCursorAlUltimoCompas() throws Exception {
+    void ctrlEndByMenuAndByShortcutMoveTheCursorToTheLastBar() throws Exception {
         assertAcceleratorMatchesMenu("Último compás", () -> editorWithMeasures(3));
     }
 
     @Test
-    void voz2PorMenuYPorAtajoCtrl2Coinciden() throws Exception {
+    void voice2ByMenuAndByCtrl2ShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Voz 2 (bajos)", AuditSupport::editorWithANote);
     }
 
     @Test
-    void borrarElBeatPorMenuYPorAtajoCtrlDeleteCoinciden() throws Exception {
+    void deletingTheBeatByMenuAndByCtrlDeleteShortcutMatch() throws Exception {
         assertAcceleratorMatchesMenu("Borrar el beat", () -> {
             Editor editor = editorWithANote();
             editor.insertBeat();
@@ -172,14 +172,14 @@ class WriteAScoreAuditTest {
     }
 
     @Test
-    void elValorDeFiguraNegraSePuedeElegirDesdeElBotonRealDeLaBarra() throws Exception {
+    void theQuarterNoteValueCanBeChosenFromTheRealToolbarButton() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
-            var boton = findButtonByActionName(frame.getContentPane(), "Negra");
-            assertNotNull(boton, "no encontre en la barra real el boton de figura Negra");
+            var button = findButtonByActionName(frame.getContentPane(), "Negra");
+            assertNotNull(button, "no encontre en la barra real el boton de figura Negra");
 
-            SwingUtilities.invokeAndWait(boton::doClick);
+            SwingUtilities.invokeAndWait(button::doClick);
 
             assertEquals(com.gstncaruso.tabpro.core.model.NoteValue.QUARTER, editor.currentBeat().duration().value(),
                     "el boton real de la barra tiene que dejar la figura en negra en el modelo");
@@ -189,7 +189,7 @@ class WriteAScoreAuditTest {
     }
 
     @Test
-    void elValorDeFiguraTambienEstaEnElMenuNota() throws Exception {
+    void theNoteValueIsAlsoInTheNoteMenu() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
