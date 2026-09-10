@@ -6,9 +6,15 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import org.junit.jupiter.api.Test;
 
 class GraceNotePanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new GraceNotePanel(GraceNote.before(0)));
+    }
 
     @Test
     void startsWithTheGivenGraceNote() {

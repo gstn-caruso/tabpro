@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.effects;
 
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
+import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -8,6 +9,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -17,7 +20,7 @@ import javax.swing.UIManager;
  * BendCurveEditor; esto solo traduce pixeles a posiciones de la grilla y dibuja
  * la curva resultante.
  */
-public final class BendGridPanel extends JComponent {
+public final class BendGridPanel extends JComponent implements AccessibleControl {
 
     private static final int MIN_QUARTER_TONES = -BendPoint.MAX_QUARTER_TONES;
     private static final int MAX_QUARTER_TONES = BendPoint.MAX_QUARTER_TONES;
@@ -28,6 +31,8 @@ public final class BendGridPanel extends JComponent {
     public BendGridPanel(BendCurveEditor editor) {
         this.editor = editor;
         setPreferredSize(new Dimension(360, 180));
+        setToolTipText("Grilla del bend");
+        getAccessibleContext().setAccessibleName("Grilla del bend");
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent event) {
@@ -102,5 +107,18 @@ public final class BendGridPanel extends JComponent {
     private Color curveColor() {
         Color base = UIManager.getColor("Component.focusColor");
         return base != null ? base : Color.ORANGE;
+    }
+
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        if (accessibleContext == null) {
+            accessibleContext = new AccessibleJComponent() {
+                @Override
+                public AccessibleRole getAccessibleRole() {
+                    return AccessibleRole.CANVAS;
+                }
+            };
+        }
+        return accessibleContext;
     }
 }

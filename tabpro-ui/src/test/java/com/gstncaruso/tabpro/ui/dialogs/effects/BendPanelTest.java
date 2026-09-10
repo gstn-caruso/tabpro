@@ -5,10 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class BendPanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new BendPanel(Bend.of(BendType.BEND, 4)));
+    }
 
     @Test
     void startsWithTheGivenBend() {
