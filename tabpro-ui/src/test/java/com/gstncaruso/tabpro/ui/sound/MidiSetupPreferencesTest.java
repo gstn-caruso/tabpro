@@ -19,7 +19,7 @@ class MidiSetupPreferencesTest {
     private final MidiSetupPreferences preferences = new MidiSetupPreferences(scratch);
 
     @AfterEach
-    void limpiarElNodoDePrueba() throws BackingStoreException {
+    void clearsTheScratchNode() throws BackingStoreException {
         scratch.removeNode();
     }
 
