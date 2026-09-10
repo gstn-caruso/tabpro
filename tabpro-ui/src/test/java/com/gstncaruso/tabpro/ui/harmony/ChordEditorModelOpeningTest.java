@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 class ChordEditorModelOpeningTest {
 
     @Test
-    void unBeatVacioArrancaConLaSeleccionInicial() {
+    void anEmptyBeatStartsWithTheInitialSelection() {
         ChordEditorModel model = ChordEditorModel.forBeat(Beat.rest(Duration.quarter()), Tuning.standard());
 
         assertEquals(PitchClass.of("C"), model.selection().root());
@@ -28,7 +28,7 @@ class ChordEditorModelOpeningTest {
     }
 
     @Test
-    void unBeatConNotasYSinAcordeCargaEsasNotasEnElDiagramaPrincipal() {
+    void aBeatWithNotesAndNoChordLoadsThoseNotesIntoTheMainDiagram() {
         Beat beat = Beat.of(Duration.quarter(), new Note(6, 0), new Note(5, 2), new Note(4, 2));
 
         ChordEditorModel model = ChordEditorModel.forBeat(beat, Tuning.standard());
@@ -39,7 +39,7 @@ class ChordEditorModelOpeningTest {
     }
 
     @Test
-    void unBeatConNotasQueFormanUnAcordeConocidoNoQuedaEnModoPersonalizado() {
+    void aBeatWithNotesFormingAKnownChordDoesNotEndUpInCustomMode() {
         Beat beat = Beat.of(
                 Duration.quarter(),
                 new Note(6, 0), new Note(5, 2), new Note(4, 2),
@@ -52,7 +52,7 @@ class ChordEditorModelOpeningTest {
     }
 
     @Test
-    void unBeatConNotasQueNoFormanNingunAcordeConocidoQuedaEnModoPersonalizado() {
+    void aBeatWithNotesFormingNoKnownChordEndsUpInCustomMode() {
         Beat beat = Beat.of(Duration.quarter(), new Note(6, 0), new Note(5, 1));
 
         ChordEditorModel model = ChordEditorModel.forBeat(beat, Tuning.standard());
@@ -62,9 +62,9 @@ class ChordEditorModelOpeningTest {
     }
 
     @Test
-    void unBeatQueYaTieneAcordeLoCargaTalCual() {
-        ChordDiagram existente = ChordDiagram.named("Am7", List.of(0, 1, 0, 2, 0, -1));
-        Beat beat = Beat.rest(Duration.quarter()).withEffects(BeatEffects.none().withChord(existente));
+    void aBeatThatAlreadyHasAChordLoadsItAsIs() {
+        ChordDiagram existingDiagram = ChordDiagram.named("Am7", List.of(0, 1, 0, 2, 0, -1));
+        Beat beat = Beat.rest(Duration.quarter()).withEffects(BeatEffects.none().withChord(existingDiagram));
 
         ChordEditorModel model = ChordEditorModel.forBeat(beat, Tuning.standard());
 
@@ -74,7 +74,7 @@ class ChordEditorModelOpeningTest {
     }
 
     @Test
-    void aceptarEscribeElAcordeEnElBeat() {
+    void acceptingWritesTheChordIntoTheBeat() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), editor.currentTrack().tuning());
         model.selectRoot(PitchClass.of("G"));
@@ -86,7 +86,7 @@ class ChordEditorModelOpeningTest {
     }
 
     @Test
-    void siElBeatNoTeniaNotasAceptarLasEscribe() {
+    void ifTheBeatHadNoNotesAcceptingWritesThem() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), editor.currentTrack().tuning());
         model.selectType(com.gstncaruso.tabpro.core.harmony.ChordType.MINOR);
@@ -97,19 +97,19 @@ class ChordEditorModelOpeningTest {
     }
 
     @Test
-    void siElBeatYaTeniaNotasAceptarNoLasToca() {
+    void ifTheBeatAlreadyHadNotesAcceptingDoesNotTouchThem() {
         Editor editor = new Editor(Score.blank());
         editor.setFret(5);
-        Note notaOriginal = editor.currentBeat().noteOn(editor.cursor().string()).orElseThrow();
+        Note originalNote = editor.currentBeat().noteOn(editor.cursor().string()).orElseThrow();
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), editor.currentTrack().tuning());
 
         model.applyTo(editor);
 
-        assertEquals(Optional.of(notaOriginal), editor.currentBeat().noteOn(notaOriginal.string()));
+        assertEquals(Optional.of(originalNote), editor.currentBeat().noteOn(originalNote.string()));
     }
 
     @Test
-    void aceptarDejaElCursorDondeEstaba() {
+    void acceptingLeavesTheCursorWhereItWas() {
         Editor editor = new Editor(Score.blank());
         editor.moveTo(0, 0, 3);
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), editor.currentTrack().tuning());
