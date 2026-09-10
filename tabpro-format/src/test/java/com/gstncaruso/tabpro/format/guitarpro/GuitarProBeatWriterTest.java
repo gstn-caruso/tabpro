@@ -10,10 +10,6 @@ import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import org.junit.jupiter.api.Test;
 
-/**
- * El byte de estado del beat y la mascara de cuerdas, tal como los pide el formato:
- * vacio es 0, normal es 1 y silencio es 2, y la mascara va siempre, aunque este en cero.
- */
 class GuitarProBeatWriterTest {
 
     private static final int HAS_STATUS = 0x40;
@@ -23,13 +19,8 @@ class GuitarProBeatWriterTest {
     private static final int NO_STRINGS = 0x00;
     private static final int ONLY_FIRST_STRING = 0x40;
 
-    /** Guitar Pro escribe en -1 el parametro que el cambio no toca. */
     private static final int UNSET = -1;
 
-    /**
-     * Donde arranca el cambio de parametros: banderas, estado, figura y despues el
-     * instrumento, que es el primero de sus valores.
-     */
     private static final int MIX_TABLE_AT = 3;
 
     private final GuitarProBeatWriter writer = new GuitarProBeatWriter();
@@ -54,11 +45,6 @@ class GuitarProBeatWriterTest {
         assertEquals(4, bytes.length, "un silencio son exactamente cuatro bytes");
     }
 
-    /**
-     * El archivo espera el volumen y el paneo del cambio de parametros en los dieciseis
-     * pasos de la perilla, igual que en la tabla de canales: escribir el valor de MIDI
-     * tal cual deja un cambio que ningun Guitar Pro entiende.
-     */
     @Test
     void elCambioDeParametrosEscribeLasPerillasEnSusPasos() {
         ParameterChange change = ParameterChange.nothing()

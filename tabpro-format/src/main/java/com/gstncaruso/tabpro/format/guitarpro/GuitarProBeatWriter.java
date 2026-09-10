@@ -11,9 +11,8 @@ import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 
 /**
- * Escribe un beat: su figura, su grupo irregular, sus efectos y las notas que suenan. El
- * espejo de {@link GuitarProBeatReader}, solo para GP4 (sin la segunda voz ni el vibrato
- * ancho, que solo existen en otras generaciones del formato).
+ * The mirror of {@link GuitarProBeatReader}, but only for GP4: it writes neither the
+ * second voice nor the wide vibrato, since those only exist in other format generations.
  */
 final class GuitarProBeatWriter {
 
@@ -25,7 +24,7 @@ final class GuitarProBeatWriter {
     private static final int HAS_TUPLET = 0x20;
     private static final int HAS_STATUS = 0x40;
 
-    /** El estado del beat: 0 es un compas vacio, 1 una figura normal y 2 un silencio. */
+    /** The beat status: 0 is an empty measure, 1 a normal note value, and 2 a rest. */
     private static final int STATUS_NORMAL = 0x01;
     private static final int STATUS_REST = 0x02;
 
@@ -33,7 +32,7 @@ final class GuitarProBeatWriter {
     private static final int HAS_TREMOLO_BAR_OR_SLAP = 0x20;
     private static final int HAS_STROKE = 0x40;
 
-    /** La cuerda 1 del archivo es la mas aguda y ocupa el bit mas alto de la mascara. */
+    /** String 1 in the file is the highest-pitched one and occupies the top bit of the mask. */
     private static final int HIGHEST_STRING_BIT = 0x40;
 
     private final GuitarProNoteWriter noteWriter = new GuitarProNoteWriter();
@@ -149,7 +148,7 @@ final class GuitarProBeatWriter {
         writer.writeUnsignedByte(stroke.direction() == StrokeDirection.UP ? code : 0);
     }
 
-    /** Solo cuatro figuras tienen codigo propio; el resto (negra, blanca, redonda) cae en negra. */
+    /** Only four note values have their own code; the rest (quarter, half, whole) fall back to quarter. */
     private static int strokeSpeedCode(NoteValue speed) {
         return switch (speed) {
             case SIXTY_FOURTH -> 1;
@@ -183,15 +182,15 @@ final class GuitarProBeatWriter {
         return change.changes(parameter) ? change.valueOf(parameter).orElseThrow() : -1;
     }
 
-    /** El archivo espera las perillas de la mesa en sus dieciseis pasos, no en los 0 a 127 de MIDI. */
+    /** The file expects mixing-table knobs in their sixteen steps, not in MIDI's 0 to 127. */
     private static int knobOrUnset(ParameterChange change, SoundParameter parameter) {
         int midi = valueOrUnset(change, parameter);
         return midi < 0 ? midi : GuitarProMixerLevel.ofMidi(midi).step();
     }
 
     /**
-     * La mascara de cuerdas va en todo beat, tambien en el silencio, donde queda en cero:
-     * quien lee la espera siempre, y saltearla le corre un byte a todo lo que sigue.
+     * The string mask goes in every beat, including a rest, where it stays zero: a
+     * reader always expects it, and skipping it would shift everything that follows.
      */
     private void writeNotes(GuitarProByteWriter writer, Beat beat) {
         int mask = 0;

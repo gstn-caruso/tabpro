@@ -7,10 +7,6 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import org.junit.jupiter.api.Test;
 
-/**
- * Las primitivas de escritura son el espejo de {@link GuitarProByteReader}: lo que una
- * escribe, la otra lo tiene que leer igual.
- */
 class GuitarProByteWriterTest {
 
     @Test
@@ -74,7 +70,6 @@ class GuitarProByteWriterTest {
         assertEquals(41, reader.position());
     }
 
-    /** Un nombre mas largo que el bloque no puede desbordarlo: se trunca. */
     @Test
     void unStringDeTamanoFijoMasLargoQueElBloqueSeTrunca() {
         String largo = "Un nombre de pista demasiado largo para entrar";
