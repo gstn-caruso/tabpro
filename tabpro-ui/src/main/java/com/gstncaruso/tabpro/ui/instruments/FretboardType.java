@@ -31,7 +31,7 @@ public enum FretboardType {
                     new Color(0x0F4ECB),
                     Color.WHITE,
                     new Color(0x515967),
-                    InstrumentColors.NUT)),
+                    new Color(0x564F43))),
     BASIC("Basica", new Color(0x5B5F66), new Color(0xB1B3B7), InlayStyle.DIAMONDS, 0.9,
             new FretboardPalette(
                     new Color(0xB7B2AD),

@@ -124,6 +124,7 @@ class ScoreColorsContrastTest {
                 new Pair("nota marcada / " + neck, type.markColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("nota de contexto / " + neck, type.contextColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("anillo de foco / " + neck, type.hoverColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("caret / " + neck, type.hoverColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO));
+                new Pair("caret / " + neck, type.hoverColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("cejilla / " + neck, type.nutColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO));
     }
 }
