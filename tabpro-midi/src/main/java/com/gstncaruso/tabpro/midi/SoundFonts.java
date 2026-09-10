@@ -42,7 +42,7 @@ public final class SoundFonts {
         try {
             return Optional.of(MidiSystem.getSoundbank(file.toFile()));
         } catch (InvalidMidiDataException | IOException e) {
-            System.err.println("No se pudo leer el banco de sonido " + file + ": " + e.getMessage());
+            System.err.println("Could not read the sound bank " + file + ": " + e.getMessage());
             return Optional.empty();
         }
     }
