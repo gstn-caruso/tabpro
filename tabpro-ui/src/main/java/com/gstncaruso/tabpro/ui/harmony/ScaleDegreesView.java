@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.harmony;
 
 import com.gstncaruso.tabpro.core.harmony.ScaleTone;
 import java.util.List;
+import javax.accessibility.AccessibleContext;
 import javax.swing.JComponent;
 
 /**
@@ -14,9 +15,35 @@ public final class ScaleDegreesView extends JComponent {
 
     private List<ScaleTone> tones = List.of();
 
+    public ScaleDegreesView() {
+        setToolTipText("Grados de la escala");
+        getAccessibleContext().setAccessibleName("Grados de la escala");
+    }
+
     public void show(List<ScaleTone> tones) {
         this.tones = List.copyOf(tones);
+        getAccessibleContext().setAccessibleDescription(describeDegrees());
         repaint();
+    }
+
+    private String describeDegrees() {
+        StringBuilder description = new StringBuilder();
+        for (int index = 0; index < degreeCount(); index++) {
+            if (index > 0) {
+                description.append(", ");
+            }
+            description.append(noteLabel(index)).append(' ').append(intervalLabel(index));
+        }
+        return description.toString();
+    }
+
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        if (accessibleContext == null) {
+            accessibleContext = new AccessibleJComponent() {
+            };
+        }
+        return accessibleContext;
     }
 
     public int degreeCount() {

@@ -46,4 +46,17 @@ class ScaleDegreesViewTest {
         assertTrue(view.degreeX(0) < view.degreeX(1));
         assertTrue(view.degreeX(1) < view.degreeX(2));
     }
+
+    @Test
+    void tieneNombreAccesibleFijoYUnaDescripcionQueEnumeraLosGrados() {
+        ScaleDegreesView view = new ScaleDegreesView();
+
+        assertEquals("Grados de la escala", view.getAccessibleContext().getAccessibleName());
+
+        view.show(List.of(
+                new ScaleTone(PitchClass.of("C"), Interval.ROOT, 1),
+                new ScaleTone(PitchClass.of("D"), Interval.MAJOR_SECOND, 2)));
+
+        assertEquals("C 1, D 2", view.getAccessibleContext().getAccessibleDescription());
+    }
 }
