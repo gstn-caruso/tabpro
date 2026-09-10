@@ -4,13 +4,11 @@ import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.page.DefaultPageSetup;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.util.Optional;
 import java.util.function.Consumer;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 /**
  * La ventana de Configurar pagina [F8]. Ademas de Aceptar y Cancelar trae los tres botones del
@@ -31,11 +29,17 @@ public final class PageSetupDialog {
             Component parent, PageSetup current, Consumer<PageSetup> refresh, DefaultPageSetup defaults) {
         PageSetupPanel panel = new PageSetupPanel(current);
 
-        boolean accepted = DialogShell.ask(parent, "Configurar pagina", scrollable(withButtons(panel, refresh, defaults)));
+        boolean accepted = DialogShell.ask(
+                parent, "Configurar pagina", panel, extraButtons(panel, refresh, defaults), "Aceptar", null);
         return accepted ? Optional.of(panel.toPageSetup()) : Optional.empty();
     }
 
-    private static JPanel withButtons(PageSetupPanel panel, Consumer<PageSetup> refresh, DefaultPageSetup defaults) {
+    /**
+     * Los tres botones extra del manual, aparte de Aceptar y Cancelar: quedan siempre visibles
+     * fuera de cualquier scroll (regla general de {@link DialogShell}), nunca adentro del
+     * formulario que puede llegar a scrollear en una pantalla chica.
+     */
+    private static JPanel extraButtons(PageSetupPanel panel, Consumer<PageSetup> refresh, DefaultPageSetup defaults) {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, DialogStyle.GAP_S));
         buttons.setOpaque(false);
         buttons.add(button("Actualizar partitura", () -> refresh.accept(panel.toPageSetup())));
@@ -44,28 +48,12 @@ public final class PageSetupDialog {
             panel.apply(defaults.get());
             refresh.accept(panel.toPageSetup());
         }));
-
-        JPanel content = new JPanel(new BorderLayout());
-        content.setOpaque(false);
-        content.add(panel, BorderLayout.CENTER);
-        content.add(buttons, BorderLayout.SOUTH);
-        return content;
+        return buttons;
     }
 
     private static javax.swing.JButton button(String label, Runnable action) {
         javax.swing.JButton button = DialogStyle.flatButton(label);
         button.addActionListener(event -> action.run());
         return button;
-    }
-
-    /** La ventana es alta -son ocho casilleros- asi que se deja scrollear en pantallas chicas. */
-    private static JScrollPane scrollable(JPanel content) {
-        JScrollPane scroll = new JScrollPane(content);
-        scroll.setBorder(null);
-        scroll.getVerticalScrollBar().setUnitIncrement(16);
-        scroll.setPreferredSize(new java.awt.Dimension(
-                content.getPreferredSize().width + 24,
-                Math.min(content.getPreferredSize().height + 4, 620)));
-        return scroll;
     }
 }
