@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import javax.sound.midi.Synthesizer;
 import org.junit.jupiter.api.Test;
@@ -81,13 +82,33 @@ class FixtureCorpusSmokeTest {
     }
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("fixturesDeGuitarPro")
+    @MethodSource("fixturesDelCorpus")
     void unGuitarProCompletaTodoElPipelineDeLaRedPermanente(Path path, @TempDir Path tempDir) {
         ejecutarPipeline(path, tempDir);
     }
 
+    static Stream<Path> fixturesDelCorpus() throws IOException {
+        return Stream.concat(fixturesDeGuitarPro(), fixturesDePowerTab());
+    }
+
     static Stream<Path> fixturesDeGuitarPro() throws IOException {
         return fixturesCon(repoFile("tabpro-format/src/test/resources/guitarpro"), ".gp3", ".gp4", ".gp5");
+    }
+
+    private static final Map<String, String> POWERTAB_CON_LIMITACION_CONOCIDA = Map.of(
+            "guitar_ins.ptb",
+            "reasigna el pentagrama 0 a otra guitarra a mitad de la pieza, ScoreFileException a proposito"
+                    + " (PowerTabFileTest.aGuitarReassignmentIsReportedInsteadOfGuessed)",
+            "merge_multibar_rests.ptb",
+            "usa un silencio de varios compases comprimido (multibar rest), ScoreFileException a proposito"
+                    + " (PowerTabFileTest.aMultibarRestIsReportedInsteadOfGuessed)",
+            "positions.ptb",
+            "usa un silencio de varios compases comprimido (multibar rest), ScoreFileException a proposito"
+                    + " (PowerTabFileTest.aMultibarRestIsReportedInsteadOfGuessed)");
+
+    static Stream<Path> fixturesDePowerTab() throws IOException {
+        return fixturesCon(repoFile("tabpro-format/src/test/resources/powertab"), ".ptb")
+                .filter(path -> !POWERTAB_CON_LIMITACION_CONOCIDA.containsKey(path.getFileName().toString()));
     }
 
     private static Stream<Path> fixturesCon(Path directorio, String... extensiones) throws IOException {
