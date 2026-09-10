@@ -8,6 +8,8 @@ import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.MainFrame;
+import com.gstncaruso.tabpro.ui.print.Printing;
+import com.gstncaruso.tabpro.ui.print.SystemPrinting;
 import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Container;
@@ -101,7 +103,24 @@ final class AuditSupport {
                     editor, new NoScoreFiles(), new SilentPlayer(),
                     com.gstncaruso.tabpro.ui.theme.ThemeSwitch.NONE, devices,
                     com.gstncaruso.tabpro.core.files.ScoreExchange.NONE,
-                    com.gstncaruso.tabpro.ui.actions.Ports.Microphone.NONE);
+                    com.gstncaruso.tabpro.ui.actions.Ports.Microphone.NONE, new SystemPrinting());
+            frame.pack();
+            frame.setVisible(true);
+            built[0] = frame;
+        });
+        return built[0];
+    }
+
+    /** Como newFrame, pero con un Printing que el test puede inspeccionar despues. */
+    static MainFrame newFrame(Editor editor, Printing printing) throws Exception {
+        MainFrame[] built = new MainFrame[1];
+        SwingUtilities.invokeAndWait(() -> {
+            MainFrame frame = new MainFrame(
+                    editor, new NoScoreFiles(), new SilentPlayer(),
+                    com.gstncaruso.tabpro.ui.theme.ThemeSwitch.NONE,
+                    com.gstncaruso.tabpro.ui.actions.Ports.Devices.NONE,
+                    com.gstncaruso.tabpro.core.files.ScoreExchange.NONE,
+                    com.gstncaruso.tabpro.ui.actions.Ports.Microphone.NONE, printing);
             frame.pack();
             frame.setVisible(true);
             built[0] = frame;
@@ -121,7 +140,7 @@ final class AuditSupport {
             MainFrame frame = new MainFrame(
                     editor, files, new SilentPlayer(),
                     com.gstncaruso.tabpro.ui.theme.ThemeSwitch.NONE, com.gstncaruso.tabpro.ui.actions.Ports.Devices.NONE,
-                    exchange, com.gstncaruso.tabpro.ui.actions.Ports.Microphone.NONE);
+                    exchange, com.gstncaruso.tabpro.ui.actions.Ports.Microphone.NONE, new SystemPrinting());
             frame.pack();
             frame.setVisible(true);
             built[0] = frame;
@@ -137,7 +156,7 @@ final class AuditSupport {
                     editor, new NoScoreFiles(), new SilentPlayer(),
                     themes, com.gstncaruso.tabpro.ui.actions.Ports.Devices.NONE,
                     com.gstncaruso.tabpro.core.files.ScoreExchange.NONE,
-                    com.gstncaruso.tabpro.ui.actions.Ports.Microphone.NONE);
+                    com.gstncaruso.tabpro.ui.actions.Ports.Microphone.NONE, new SystemPrinting());
             frame.pack();
             frame.setVisible(true);
             built[0] = frame;
