@@ -3,9 +3,9 @@ package com.gstncaruso.tabpro.format.tabledit;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 
 /**
- * Lee y valida el encabezado de 256 bytes de un archivo TEF3. TablEdit exige
- * revisar varios campos fijos para confirmar el formato antes de confiar en el
- * resto del archivo: no hay una sola marca magica, sino un puñado de ellas.
+ * Reads and validates the 256-byte header of a TEF3 file. TablEdit requires checking
+ * several fixed fields to confirm the format before trusting the rest of the file:
+ * there is no single magic marker, but a handful of them.
  */
 final class TabEditHeaderReader {
 
@@ -40,9 +40,9 @@ final class TabEditHeaderReader {
     }
 
     /**
-     * TablEdit no tiene una sola marca magica: hay que revisar la version mayor,
-     * un bloque que siempre es cero, el texto "tbed" y un par de campos fijos
-     * de formato. Si alguno no coincide, arriesgar una lectura seria adivinar.
+     * TablEdit has no single magic marker: the major version, a block that is always
+     * zero, the text "tbed", and a couple of fixed format fields all have to be
+     * checked. If any of them does not match, risking a read would be guessing.
      */
     private static void requireValidHeader(byte[] header) {
         if (header[OFFSET_MAJOR_VERSION] == 3

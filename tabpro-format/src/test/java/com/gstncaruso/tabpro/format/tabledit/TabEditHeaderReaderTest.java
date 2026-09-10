@@ -8,11 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import org.junit.jupiter.api.Test;
 
-/**
- * El encabezado de 256 bytes de un archivo TEF3: si no trae las marcas que
- * TablEdit exige, no es un archivo de este formato y no hay que arriesgar una
- * lectura a ciegas.
- */
 class TabEditHeaderReaderTest {
 
     private final TabEditHeaderReader reader = new TabEditHeaderReader();
@@ -36,11 +31,16 @@ class TabEditHeaderReaderTest {
     void reconoceLasBanderasDeSeccionesOpcionalesPresentes() {
         TabEditFileWriter writer = TabEditFixtures.minimalHeader(120);
         byte[] bytes = writer.bytes();
-        writeIntAt(bytes, 84, 1); // posOfTextEvents
-        writeIntAt(bytes, 88, 1); // posOfChords
-        writeIntAt(bytes, 128, 1); // posOfReadingList
-        writeIntAt(bytes, 132, 1); // posOfUrl
-        writeIntAt(bytes, 140, 1); // posOfCopyright
+        int posOfTextEvents = 84;
+        int posOfChords = 88;
+        int posOfReadingList = 128;
+        int posOfUrl = 132;
+        int posOfCopyright = 140;
+        writeIntAt(bytes, posOfTextEvents, 1);
+        writeIntAt(bytes, posOfChords, 1);
+        writeIntAt(bytes, posOfReadingList, 1);
+        writeIntAt(bytes, posOfUrl, 1);
+        writeIntAt(bytes, posOfCopyright, 1);
 
         TabEditHeader header = reader.read(new TabEditByteReader(bytes));
 
