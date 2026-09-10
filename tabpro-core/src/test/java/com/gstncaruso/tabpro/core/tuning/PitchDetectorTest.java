@@ -74,7 +74,7 @@ class PitchDetectorTest {
 
         int cents = detector.detect(sine(quarterToneUp)).centsFrom(target);
 
-        assertTrue(cents > 15 && cents < 35, "leyó " + cents + " centésimas");
+        assertTrue(cents > 15 && cents < 35, "read " + cents + " cents");
     }
 
     @Test

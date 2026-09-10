@@ -7,10 +7,10 @@ public record LoopRange(int fromMeasure, int toMeasure) {
 
     public LoopRange {
         if (fromMeasure < 0) {
-            throw new IllegalArgumentException("fromMeasure debe ser >= 0: " + fromMeasure);
+            throw new IllegalArgumentException("fromMeasure must be >= 0: " + fromMeasure);
         }
         if (toMeasure < fromMeasure) {
-            throw new IllegalArgumentException("toMeasure no puede ser anterior a fromMeasure");
+            throw new IllegalArgumentException("toMeasure cannot come before fromMeasure");
         }
     }
 

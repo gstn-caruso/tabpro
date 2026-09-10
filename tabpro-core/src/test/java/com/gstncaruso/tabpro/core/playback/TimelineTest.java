@@ -34,7 +34,7 @@ class TimelineTest {
     @Test
     void schedulesASingleNoteAtTickZeroWithItsDuration() {
         Score score = Score.blank().withTrack(0,
-                Track.standardGuitar("Guitarra").withMeasure(0,
+                Track.standardGuitar("Guitar").withMeasure(0,
                         new Measure(TimeSignature.fourFour(),
                                 List.of(Beat.of(Duration.quarter(), new Note(1, 0))))));
 
@@ -49,7 +49,7 @@ class TimelineTest {
     @Test
     void usesTheTuningToResolvePitches() {
         Score score = Score.blank().withTrack(0,
-                Track.standardGuitar("Guitarra").withMeasure(0,
+                Track.standardGuitar("Guitar").withMeasure(0,
                         new Measure(TimeSignature.fourFour(),
                                 List.of(Beat.of(Duration.quarter(), new Note(6, 3))))));
 
@@ -61,7 +61,7 @@ class TimelineTest {
     @Test
     void schedulesChordNotesAtTheSameTick() {
         Score score = Score.blank().withTrack(0,
-                Track.standardGuitar("Guitarra").withMeasure(0,
+                Track.standardGuitar("Guitar").withMeasure(0,
                         new Measure(TimeSignature.fourFour(),
                                 List.of(Beat.of(Duration.quarter(), new Note(1, 0), new Note(2, 1))))));
 
@@ -74,7 +74,7 @@ class TimelineTest {
 
     @Test
     void advancesTicksAcrossBeatsAndMeasures() {
-        Track track = Track.standardGuitar("Guitarra")
+        Track track = Track.standardGuitar("Guitar")
                 .withMeasure(0, new Measure(TimeSignature.fourFour(),
                         List.of(Beat.of(Duration.quarter(), new Note(1, 0)),
                                 Beat.of(Duration.quarter(), new Note(1, 1)))))
@@ -92,7 +92,7 @@ class TimelineTest {
 
     @Test
     void schedulesABeatMarkerPerBeatIncludingRests() {
-        Track track = Track.standardGuitar("Guitarra")
+        Track track = Track.standardGuitar("Guitar")
                 .withMeasure(0, new Measure(TimeSignature.fourFour(),
                         List.of(Beat.of(Duration.quarter(), new Note(1, 0)),
                                 Beat.rest(Duration.quarter()))));
@@ -131,7 +131,7 @@ class TimelineTest {
     @Test
     void aMutedTrackKeepsItsNotesButIsScheduledSilent() {
         Score score = Score.blank().withTrack(0,
-                Track.standardGuitar("Guitarra").withMeasure(0,
+                Track.standardGuitar("Guitar").withMeasure(0,
                         new Measure(TimeSignature.fourFour(),
                                 List.of(Beat.of(Duration.quarter(), new Note(1, 0))))));
         Track muted = score.track(0).withChannel(score.track(0).channel().toggledMute());
@@ -145,7 +145,7 @@ class TimelineTest {
 
     @Test
     void aTrackThatIsNotSoloIsScheduledSilentWhileAnotherPlaysSolo() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bajo"));
+        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
         Track soloed = score.track(1).withChannel(score.track(1).channel().toggledSolo());
 
         Timeline timeline = Timeline.of(score.withTrack(1, soloed));
@@ -156,7 +156,7 @@ class TimelineTest {
 
     @Test
     void keepsOneTimelinePerTrack() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bajo"));
+        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
 
         assertEquals(2, Timeline.of(score).tracks().size());
     }
@@ -230,7 +230,7 @@ class TimelineTest {
 
     @Test
     void theBassVoiceAlsoSounds() {
-        Track track = Track.standardGuitar("Guitarra").withMeasure(0,
+        Track track = Track.standardGuitar("Guitar").withMeasure(0,
                 new Measure(TimeSignature.fourFour(), MeasureAttributes.plain(), List.of(
                         new Voice(List.of(Beat.of(Duration.quarter(), new Note(1, 0)))),
                         new Voice(List.of(Beat.of(Duration.quarter(), new Note(6, 0)))))));
@@ -245,7 +245,7 @@ class TimelineTest {
 
     @Test
     void aPercussionTrackUsesTheTabNumberAsTheSound() {
-        Track track = Track.percussion("Bateria").withMeasure(0,
+        Track track = Track.percussion("Drums").withMeasure(0,
                 new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), new Note(1, 38)))));
         Score score = Score.blank().withTrack(0, track);
 
@@ -320,7 +320,7 @@ class TimelineTest {
 
     @Test
     void tickOfFindsTheTickOfABeatInTheMiddleOfTheScore() {
-        Track track = Track.standardGuitar("Guitarra")
+        Track track = Track.standardGuitar("Guitar")
                 .withMeasure(0, new Measure(TimeSignature.fourFour(),
                         List.of(Beat.of(Duration.quarter(), new Note(1, 0)),
                                 Beat.of(Duration.quarter(), new Note(1, 1)))))
@@ -354,7 +354,7 @@ class TimelineTest {
 
     private Score scoreWithLeadBeats(Beat... beatsInOrder) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beatsInOrder));
-        Track track = Track.standardGuitar("Guitarra").withMeasure(0, measure);
+        Track track = Track.standardGuitar("Guitar").withMeasure(0, measure);
         return Score.blank().withTrack(0, track);
     }
 }

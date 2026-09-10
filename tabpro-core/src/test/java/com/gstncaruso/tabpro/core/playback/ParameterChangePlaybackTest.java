@@ -69,8 +69,8 @@ class ParameterChangePlaybackTest {
 
         List<ScheduledParameter> scheduled = Timeline.of(score).tracks().get(0).parameters();
 
-        assertTrue(scheduled.size() > 1, "una transición no se resuelve de un salto");
-        assertTrue(scheduled.getFirst().tick() > 0, "el valor viejo todavía manda cuando empieza la transición");
+        assertTrue(scheduled.size() > 1, "a transition does not resolve in a single jump");
+        assertTrue(scheduled.getFirst().tick() > 0, "the old value still rules when the transition starts");
         assertEquals(new ScheduledParameter(2 * PULSE, SoundParameter.VOLUME, 20), scheduled.getLast());
     }
 
@@ -81,7 +81,7 @@ class ParameterChangePlaybackTest {
         List<ScheduledParameter> scheduled = Timeline.of(score).tracks().get(0).parameters();
 
         assertTrue(scheduled.contains(new ScheduledParameter(PULSE, SoundParameter.VOLUME, 60)),
-                "de 100 a 20 en dos pulsos, al primer pulso tiene que ir por 60");
+                "from 100 to 20 over two beats, the first beat has to be at 60");
     }
 
     @Test
@@ -90,7 +90,7 @@ class ParameterChangePlaybackTest {
 
         TempoMap tempo = Timeline.of(score).tempo();
 
-        assertEquals(90, tempo.bpmAt(PULSE), "de 120 a 60 en dos pulsos, al primer pulso va por 90");
+        assertEquals(90, tempo.bpmAt(PULSE), "from 120 to 60 over two beats, the first beat is at 90");
         assertEquals(60, tempo.bpmAt(2 * PULSE));
     }
 
@@ -103,7 +103,7 @@ class ParameterChangePlaybackTest {
         List<ScheduledParameter> scheduled = Timeline.of(scoreOf(guitarWith(measure))).tracks().get(0).parameters();
 
         assertTrue(scheduled.contains(new ScheduledParameter(2 * PULSE + PULSE / 2, SoundParameter.VOLUME, 60)),
-                "de 40 a 80 en un pulso, a mitad de camino tiene que ir por 60");
+                "from 40 to 80 over one beat, halfway through it has to be at 60");
     }
 
     @Test
@@ -115,7 +115,7 @@ class ParameterChangePlaybackTest {
 
         for (int index = 1; index < scheduled.size(); index++) {
             assertTrue(scheduled.get(index - 1).tick() <= scheduled.get(index).tick(),
-                    "los valores salen en el orden en que suenan");
+                    "values come out in the order they sound");
         }
     }
 
@@ -240,7 +240,7 @@ class ParameterChangePlaybackTest {
     }
 
     private static Track guitarWith(Measure... measures) {
-        return new Track("Guitarra", Tuning.standard(), Channel.playing(Track.GUITAR_PROGRAM), List.of(measures));
+        return new Track("Guitar", Tuning.standard(), Channel.playing(Track.GUITAR_PROGRAM), List.of(measures));
     }
 
     private static Track bassWith(Measure... measures) {

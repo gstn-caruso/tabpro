@@ -9,7 +9,7 @@ public record RelativeTempo(double factor) {
 
     public RelativeTempo {
         if (factor < MIN || factor > MAX) {
-            throw new IllegalArgumentException("el tempo relativo va de " + MIN + " a " + MAX + ": " + factor);
+            throw new IllegalArgumentException("the relative tempo ranges from " + MIN + " to " + MAX + ": " + factor);
         }
     }
 

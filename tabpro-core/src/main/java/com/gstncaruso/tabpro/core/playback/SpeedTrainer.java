@@ -4,13 +4,13 @@ public record SpeedTrainer(int startTempo, int endTempo, int incrementPerLap) {
 
     public SpeedTrainer {
         if (startTempo <= 0) {
-            throw new IllegalArgumentException("startTempo debe ser > 0: " + startTempo);
+            throw new IllegalArgumentException("startTempo must be > 0: " + startTempo);
         }
         if (endTempo < startTempo) {
-            throw new IllegalArgumentException("endTempo no puede ser menor que startTempo");
+            throw new IllegalArgumentException("endTempo cannot be less than startTempo");
         }
         if (incrementPerLap <= 0) {
-            throw new IllegalArgumentException("incrementPerLap debe ser > 0: " + incrementPerLap);
+            throw new IllegalArgumentException("incrementPerLap must be > 0: " + incrementPerLap);
         }
     }
 

@@ -21,7 +21,7 @@ public record PitchTrajectory(List<Point> points) {
 
     public PitchTrajectory {
         if (points.isEmpty()) {
-            throw new IllegalArgumentException("una curva necesita al menos un punto");
+            throw new IllegalArgumentException("a curve needs at least one point");
         }
         List<Point> sorted = new ArrayList<>(points);
         sorted.sort(Comparator.comparingLong(Point::tick));

@@ -43,8 +43,8 @@ class TempoMapTest {
     void theRealTimeOfATickIsTheSumOfTheStretchesItCrosses() {
         TempoMap map = TempoMap.steady(120).changingTo(2 * QUARTER, 60);
 
-        assertEquals(1.0, map.secondsAt(2 * QUARTER), 1e-9, "dos negras a 120 duran un segundo");
-        assertEquals(3.0, map.secondsAt(4 * QUARTER), 1e-9, "y dos negras mas a 60 suman dos segundos");
+        assertEquals(1.0, map.secondsAt(2 * QUARTER), 1e-9, "two quarter notes at 120 last one second");
+        assertEquals(3.0, map.secondsAt(4 * QUARTER), 1e-9, "and two more quarter notes at 60 add up to two seconds");
     }
 
     @Test
