@@ -41,6 +41,7 @@ public record TrackDto(
         Boolean showRhythm,
         String diagrams,
         Boolean diagramsBelowStandardNotation,
+        Boolean forceChannels11to16,
         List<MeasureDto> measures) {
 
     public static TrackDto from(Track track) {
@@ -75,6 +76,7 @@ public record TrackDto(
                 display.rhythmOnTablature(),
                 display.diagrams().name(),
                 display.diagramsBelowStandardNotation(),
+                settings.forceChannels11to16(),
                 track.measures().stream().map(MeasureDto::from).toList());
     }
 
@@ -124,7 +126,7 @@ public record TrackDto(
                 isSet(twelveString),
                 isSet(banjoFifthString),
                 display,
-                false);
+                isSet(forceChannels11to16));
     }
 
     private static int orElse(Integer value, int fallback) {
