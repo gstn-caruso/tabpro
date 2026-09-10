@@ -1,3 +1,9 @@
+## [0.37.1](https://github.com/gstn-caruso/tabpro/compare/v0.37.0...v0.37.1) (2026-09-10)
+
+### Bug Fixes
+
+* **ui:** la perilla, la fila elegida de la mesa y los mástiles acústico, clásico y básico cumplen el contraste ([#126](https://github.com/gstn-caruso/tabpro/issues/126)) ([b11e8d2](https://github.com/gstn-caruso/tabpro/commit/b11e8d2c318cfb2c4586ab009d1c287136f9daf8))
+
 ## [0.37.0](https://github.com/gstn-caruso/tabpro/compare/v0.36.0...v0.37.0) (2026-09-10)
 
 ### Features
