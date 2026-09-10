@@ -1,3 +1,9 @@
+## [0.58.4](https://github.com/gstn-caruso/tabpro/compare/v0.58.3...v0.58.4) (2026-09-10)
+
+### Bug Fixes
+
+* **view:** diapasón y teclado arrancan cerrados y recuerdan su estado, y Escalas abre con Do mayor ([#179](https://github.com/gstn-caruso/tabpro/issues/179)) ([fc8b5de](https://github.com/gstn-caruso/tabpro/commit/fc8b5de72035c63271a62e7753375dd73a8f5b5e))
+
 ## [0.58.3](https://github.com/gstn-caruso/tabpro/compare/v0.58.2...v0.58.3) (2026-09-10)
 
 ### Bug Fixes
