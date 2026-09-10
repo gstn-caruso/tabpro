@@ -1,3 +1,9 @@
+## [0.58.0](https://github.com/gstn-caruso/tabpro/compare/v0.57.0...v0.58.0) (2026-09-10)
+
+### Features
+
+* **score:** las barras de unión se inclinan según las cabezas de nota, con «Forzar barras horizontales» por pista ([#174](https://github.com/gstn-caruso/tabpro/issues/174)) ([681a219](https://github.com/gstn-caruso/tabpro/commit/681a21960230a352b2a8d9cf2f9503db01d1f04d))
+
 ## [0.57.0](https://github.com/gstn-caruso/tabpro/compare/v0.56.0...v0.57.0) (2026-09-10)
 
 ### Features
