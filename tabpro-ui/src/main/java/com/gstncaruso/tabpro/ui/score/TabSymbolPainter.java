@@ -31,6 +31,13 @@ final class TabSymbolPainter {
     private static final int ROW_HEIGHT = 11;
     private static final int ROW_GAP = 1;
 
+    /**
+     * Cuanto aire deja la fila mas cercana al TAB antes del digito de traste de la primera
+     * cuerda: la mitad del paso entre cuerdas, igual que el rectangulo que {@link TabPainter}
+     * reserva para ese digito.
+     */
+    private static final int FRET_DIGIT_CLEARANCE = ScoreLayout.STRING_SPACING / 2;
+
     private TabSymbolPainter() {
     }
 
@@ -50,19 +57,20 @@ final class TabSymbolPainter {
         VerticalStack stack = new VerticalStack(ROW_GAP);
         for (String label : labelsFor(beat)) {
             int offset = stack.claim(ROW_HEIGHT);
-            paintLabel(g, label, centerX, tabTop - 3 - offset);
+            paintLabel(g, label, centerX, tabTop - FRET_DIGIT_CLEARANCE - offset);
         }
         beat.effects().stroke().ifPresent(stroke -> {
             int offset = stack.claim(ROW_HEIGHT);
-            paintStrumArrow(g, centerX, tabTop - 3 - offset, stroke.direction().startsAtTheLowestString(), stroke.rasgueado());
+            paintStrumArrow(g, centerX, tabTop - FRET_DIGIT_CLEARANCE - offset,
+                    stroke.direction().startsAtTheLowestString(), stroke.rasgueado());
         });
         beat.effects().pickstroke().ifPresent(direction -> {
             int offset = stack.claim(ROW_HEIGHT);
-            paintPickstroke(g, centerX, tabTop - 3 - offset, direction);
+            paintPickstroke(g, centerX, tabTop - FRET_DIGIT_CLEARANCE - offset, direction);
         });
         beat.effects().text().ifPresent(text -> {
             int offset = stack.claim(ROW_HEIGHT);
-            paintFreeText(g, text, centerX, tabTop - 3 - offset);
+            paintFreeText(g, text, centerX, tabTop - FRET_DIGIT_CLEARANCE - offset);
         });
     }
 
@@ -110,25 +118,25 @@ final class TabSymbolPainter {
         return beat.notes().stream().flatMap(note -> note.effects().harmonic().stream()).findFirst();
     }
 
-    private static void paintLabel(Graphics2D g, String text, int centerX, int baselineY) {
+    private static void paintLabel(Graphics2D g, String text, int centerX, int rowBottom) {
         g.setFont(text.length() > 3 ? ScoreFonts.EFFECT_TEXT_FONT : ScoreFonts.EFFECT_SYMBOL_FONT);
         g.setColor(ScoreColors.LABEL);
         FontMetrics metrics = g.getFontMetrics();
-        g.drawString(text, centerX - metrics.stringWidth(text) / 2, baselineY);
+        g.drawString(text, centerX - metrics.stringWidth(text) / 2, rowBottom - metrics.getDescent());
     }
 
-    private static void paintFreeText(Graphics2D g, String text, int centerX, int baselineY) {
+    private static void paintFreeText(Graphics2D g, String text, int centerX, int rowBottom) {
         g.setFont(ScoreFonts.EFFECT_TEXT_FONT);
         g.setColor(ScoreColors.INK);
         FontMetrics metrics = g.getFontMetrics();
-        g.drawString(text, centerX - metrics.stringWidth(text) / 2, baselineY);
+        g.drawString(text, centerX - metrics.stringWidth(text) / 2, rowBottom - metrics.getDescent());
     }
 
-    private static void paintStrumArrow(Graphics2D g, int centerX, int y, boolean downwards, boolean rasgueado) {
+    private static void paintStrumArrow(Graphics2D g, int centerX, int rowBottom, boolean downwards, boolean rasgueado) {
         g.setColor(ScoreColors.LABEL);
         g.setStroke(new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        int top = y - 8;
-        int bottom = y;
+        int top = rowBottom - 8;
+        int bottom = rowBottom;
         int arrowY = downwards ? bottom : top;
         int tipY = downwards ? top : bottom;
         g.draw(new Line2D.Double(centerX, top, centerX, bottom));
@@ -139,15 +147,15 @@ final class TabSymbolPainter {
         g.draw(head);
         if (rasgueado) {
             g.setFont(ScoreFonts.EFFECT_SYMBOL_FONT);
-            g.drawString("R", centerX + 5, y - 2);
+            g.drawString("R", centerX + 5, rowBottom - 2);
         }
     }
 
-    private static void paintPickstroke(Graphics2D g, int centerX, int y, PickstrokeDirection direction) {
+    private static void paintPickstroke(Graphics2D g, int centerX, int rowBottom, PickstrokeDirection direction) {
         String glyph = direction == PickstrokeDirection.DOWN ? MusicFont.stringsDownBow() : MusicFont.stringsUpBow();
         g.setColor(ScoreColors.LABEL);
         g.setFont(MusicFont.sizedTo(2));
         FontMetrics metrics = g.getFontMetrics();
-        g.drawString(glyph, centerX - metrics.stringWidth(glyph) / 2, y);
+        g.drawString(glyph, centerX - metrics.stringWidth(glyph) / 2, rowBottom - metrics.getDescent());
     }
 }
