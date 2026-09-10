@@ -23,18 +23,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.IntFunction;
 
-/**
- * Convierte una pista en su linea de tiempo: recorre el orden real de los
- * compases y hace sonar las dos voces, resolviendo ligaduras, ligados,
- * slides, armonicos, trino, tremolo picking, rasgueo, notas de adorno, el
- * pedal de wah-wah y el triplet feel del compas.
- */
 final class TrackRenderer {
 
-    /** Cuanto tarda un slide indefinido en llegar a destino: una semicorchea. */
     private static final long SLIDE_RAMP_TICKS = new Duration(NoteValue.SIXTEENTH, false).ticks();
 
-    /** Cuanto se aparta la altura en un slide que entra o sale sin nota de destino. */
     private static final double SLIDE_INOUT_SEMITONES = 3.0;
 
     private static final double VIBRATO_DEPTH_SEMITONES = 0.4;
@@ -161,7 +153,6 @@ final class TrackRenderer {
                 .orElse(false);
     }
 
-    /** Estira la nota que quedo abierta en la cuerda en lugar de volver a atacarla. */
     private void extendOpenNote(
             VoiceCursor cursor, int string, long extraTicks, Pitch newPitch, boolean jumps, boolean glides) {
         int index = cursor.openIndexOf(string);
@@ -216,12 +207,6 @@ final class TrackRenderer {
         });
     }
 
-    /**
-     * Como se llega desde el adorno hasta la nota. Cualquier transicion se toca
-     * de un solo ataque: el ligado salta de altura y el slide y el bend se
-     * deslizan. Sin transicion son dos ataques sueltos, y de una nota muerta no
-     * hay de donde deslizarse.
-     */
     private static Optional<Legato> legatoOf(GraceNote grace) {
         if (grace.dead()) {
             return Optional.empty();
@@ -247,7 +232,6 @@ final class TrackRenderer {
         return note.effects().bend().map(bend -> PitchTrajectory.of(bend, durationTicks)).orElse(PitchTrajectory.flat());
     }
 
-    /** El slide sin nota de destino define su propia curva; el que apunta a la siguiente nota se resuelve al fundirla. */
     private PitchTrajectory slideShapeOf(Note note, long soundTicks) {
         return note.effects().slide()
                 .filter(slide -> !slide.towardsTheNextNote())
@@ -284,15 +268,11 @@ final class TrackRenderer {
                 : PitchTrajectory.flat();
     }
 
-    /** Como sigue una nota a la que ya venia sonando en su cuerda, sin volver a atacarla. */
     private enum Legato {
-        /** La altura se desliza hasta la nueva, como en un slide o en un bend. */
         GLIDING,
-        /** La altura salta de golpe, como en un ligado. */
         JUMPING
     }
 
-    /** El estado de una voz mientras se la recorre: que nota sigue abierta en cada cuerda. */
     private static final class VoiceCursor {
         private final Map<Integer, Integer> openIndexByString = new HashMap<>();
         private final Map<Integer, Legato> pendingLegatoByString = new HashMap<>();

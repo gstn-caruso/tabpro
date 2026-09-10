@@ -1,9 +1,5 @@
 package com.gstncaruso.tabpro.core.playback;
 
-/**
- * El tempo relativo con que se puede escuchar la partitura sin tocar el
- * tempo guardado en el archivo: de x0.25 a x2.
- */
 public record RelativeTempo(double factor) {
 
     public static final double MIN = 0.25;

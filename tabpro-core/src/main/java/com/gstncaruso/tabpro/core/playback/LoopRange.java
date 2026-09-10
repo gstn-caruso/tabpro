@@ -3,10 +3,6 @@ package com.gstncaruso.tabpro.core.playback;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * El rango de compases de un loop de practica: se toca una y otra vez para
- * automatizar un pasaje dificil.
- */
 public record LoopRange(int fromMeasure, int toMeasure) {
 
     public LoopRange {
@@ -26,7 +22,6 @@ public record LoopRange(int fromMeasure, int toMeasure) {
         return toMeasure - fromMeasure + 1;
     }
 
-    /** El orden de reproduccion de repetir este rango esa cantidad de vueltas. */
     public PlayOrder asPlayOrder(int laps) {
         List<Integer> sequence = new ArrayList<>();
         for (int lap = 0; lap < laps; lap++) {

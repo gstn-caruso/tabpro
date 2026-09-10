@@ -5,17 +5,12 @@ import com.gstncaruso.tabpro.core.model.TimeSignature;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * El metronomo: activable, con su propio sonido de percusion GM y su propio
- * volumen, marcando cada pulso del compas (acentuado el primero) a lo largo
- * de todo lo que realmente se va a tocar.
- */
 public record Metronome(boolean enabled, int volume) {
 
-    /** Wood Block agudo, para el primer pulso del compas. */
+    /** General MIDI percussion key 76, Hi Wood Block. */
     public static final int ACCENTED_SOUND = 76;
 
-    /** Wood Block grave, para el resto de los pulsos. */
+    /** General MIDI percussion key 77, Low Wood Block. */
     public static final int BEAT_SOUND = 77;
 
     public static final int MIN_VOLUME = 0;
@@ -51,7 +46,6 @@ public record Metronome(boolean enabled, int volume) {
         return clicksFor(score, PlayOrder.of(score));
     }
 
-    /** Los clicks para un orden de reproduccion propio: un rango, un loop, una posicion. */
     public List<MetronomeClick> clicksFor(Score score, PlayOrder order) {
         if (!enabled) {
             return List.of();

@@ -13,18 +13,8 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 
-/**
- * El orden real en que hay que tocar los compases de una partitura: de
- * corrido, salvo que haya repeticiones, finales alternativos o direcciones
- * musicales (Da Capo, Segno, Coda, Fine) que digan lo contrario.
- */
 public record PlayOrder(List<Integer> measureIndexes) {
 
-    /**
-     * Un limite de seguridad: ninguna partitura real necesita mas pasos que
-     * esto. Si una partitura mal armada intenta pedir mas, se corta aca en
-     * vez de colgarse en un bucle infinito.
-     */
     public static final int MAX_STEPS = 20_000;
 
     public PlayOrder {
@@ -35,7 +25,6 @@ public record PlayOrder(List<Integer> measureIndexes) {
         return new PlayOrder(sequenceOf(score));
     }
 
-    /** Un orden que no toca nada. */
     public static PlayOrder nothing() {
         return new PlayOrder(List.of());
     }
@@ -48,12 +37,6 @@ public record PlayOrder(List<Integer> measureIndexes) {
         return measureIndexes.isEmpty();
     }
 
-    /**
-     * Lo que suena antes de que le llegue el turno a ese compas. Es como se
-     * recuperan los cambios de parametro anteriores cuando la reproduccion
-     * arranca en el medio: lo anterior es lo anterior en el orden en que suena
-     * la partitura, no en el que esta escrita.
-     */
     public PlayOrder before(int measure) {
         for (int step = 0; step < size(); step++) {
             if (measureAt(step) == measure) {
@@ -123,7 +106,6 @@ public record PlayOrder(List<Integer> measureIndexes) {
         return played;
     }
 
-    /** A donde salta este compas, si tiene una direccion sin usar y su destino existe. */
     private static OptionalInt destinationOf(
             Score score, MeasureAttributes attributes, int index, Set<Integer> jumpsAlreadyTaken) {
         if (attributes.jump().isEmpty() || jumpsAlreadyTaken.contains(index)) {

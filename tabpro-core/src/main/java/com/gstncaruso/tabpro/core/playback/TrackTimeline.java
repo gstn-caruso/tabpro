@@ -8,10 +8,8 @@ public record TrackTimeline(
         List<ScheduledNote> notes, List<ScheduledBeat> beats, List<ScheduledWah> wah,
         List<ScheduledParameter> parameters) {
 
-    /** El puerto de salida de una pista que todavia no eligio uno: el primero, tal como usa una pista nueva. */
     private static final int DEFAULT_PORT = 1;
 
-    /** El canal y el canal de efectos de una pista que todavia no configuro los suyos, como trae una pista nueva. */
     private static final int DEFAULT_CHANNEL = 1;
     private static final int DEFAULT_EFFECT_CHANNEL = 2;
 
@@ -45,7 +43,6 @@ public record TrackTimeline(
         this(program, volume, pan, false, DEFAULT_PORT, notes, beats, List.of());
     }
 
-    /** La misma pista con los cambios de parametro que le tocan. */
     TrackTimeline with(List<ScheduledParameter> parameters) {
         return new TrackTimeline(program, volume, pan, chorus, reverb, phaser, tremolo,
                 percussion, port, channel, effectChannel, notes, beats, wah, parameters);
