@@ -13,10 +13,13 @@ import com.gstncaruso.tabpro.core.model.TrackSettings;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Optional;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class FretboardViewTest {
@@ -274,6 +277,21 @@ class FretboardViewTest {
                 -1, -1, 0, false));
 
         assertEquals(Optional.empty(), view.hoveredNote());
+    }
+
+    @Test
+    void theRightArrowKeyMovesTheCaretToTheNextFret() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals(Optional.of(new Note(1, 1)), view.caretNote());
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 
     private static BeatLocation locationOf(Track track, Beat beat) {

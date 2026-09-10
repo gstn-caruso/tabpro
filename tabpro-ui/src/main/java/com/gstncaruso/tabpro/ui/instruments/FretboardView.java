@@ -14,6 +14,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -23,7 +24,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 
 /**
  * El mastil: las notas del beat marcadas donde se pisan, mas lo que sume el modo
@@ -49,6 +54,8 @@ public final class FretboardView extends JComponent implements AccessibleControl
     private Handedness handedness = Handedness.RIGHT_HANDED;
     private Optional<Scale> scale = Optional.empty();
     private Optional<Note> hovered = Optional.empty();
+    private int caretString = 1;
+    private int caretFret = 0;
 
     public FretboardView() {
         setOpaque(true);
@@ -59,6 +66,35 @@ public final class FretboardView extends JComponent implements AccessibleControl
         setToolTipText("Diapasón");
         getAccessibleContext().setAccessibleName("Diapasón");
         trackTheMouse();
+        installKeyboardShortcuts();
+    }
+
+    private void installKeyboardShortcuts() {
+        InputMap inputMap = getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = getActionMap();
+        bindCaretMove(inputMap, actionMap, "RIGHT", 0, 1);
+    }
+
+    private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int stringDelta, int fretDelta) {
+        String name = "fretboard.caret." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                caretString = clampBetween(1, stringCount(), caretString + stringDelta);
+                caretFret = clampBetween(0, fretCount(), caretFret + fretDelta);
+                repaint();
+            }
+        });
+    }
+
+    private static int clampBetween(int lowest, int highest, int candidate) {
+        return Math.max(lowest, Math.min(highest, candidate));
+    }
+
+    /** La nota que hay bajo el caret de teclado ahora mismo. */
+    public Optional<Note> caretNote() {
+        return Optional.of(new Note(caretString, caretFret));
     }
 
     @Override
