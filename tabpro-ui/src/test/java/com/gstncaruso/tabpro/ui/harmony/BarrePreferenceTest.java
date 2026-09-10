@@ -17,34 +17,34 @@ import org.junit.jupiter.api.Test;
 class BarrePreferenceTest {
 
     @Test
-    void cualquieraAceptaTodo() {
-        for (ChordDiagram diagrama : diagramasDeFa()) {
-            assertTrue(BarrePreference.ANY.accepts(diagrama));
+    void anyAcceptsEverything() {
+        for (ChordDiagram diagram : fDiagrams()) {
+            assertTrue(BarrePreference.ANY.accepts(diagram));
         }
     }
 
     @Test
-    void forzarCejillaSoloAceptaLosQueLaNecesitan() {
-        List<ChordDiagram> diagramas = diagramasDeFa();
+    void forcingBarreOnlyAcceptsTheOnesThatNeedIt() {
+        List<ChordDiagram> diagrams = fDiagrams();
 
         assertTrue(
-                diagramas.stream().anyMatch(ChordDiagram::requiresBarre),
+                diagrams.stream().anyMatch(ChordDiagram::requiresBarre),
                 "hace falta al menos un diagrama con cejilla para probar esto");
-        for (ChordDiagram diagrama : diagramas) {
-            assertEquals(diagrama.requiresBarre(), BarrePreference.FORCE.accepts(diagrama));
+        for (ChordDiagram diagram : diagrams) {
+            assertEquals(diagram.requiresBarre(), BarrePreference.FORCE.accepts(diagram));
         }
     }
 
     @Test
-    void prohibirCejillaSoloAceptaLosQueNoLaNecesitan() {
-        for (ChordDiagram diagrama : diagramasDeFa()) {
-            assertFalse(BarrePreference.FORBID.accepts(diagrama) && diagrama.requiresBarre());
+    void forbiddingBarreOnlyAcceptsTheOnesThatDoNotNeedIt() {
+        for (ChordDiagram diagram : fDiagrams()) {
+            assertFalse(BarrePreference.FORBID.accepts(diagram) && diagram.requiresBarre());
         }
     }
 
-    private static List<ChordDiagram> diagramasDeFa() {
-        Chord fa = Chord.of(PitchClass.of("F"), ChordType.MAJOR);
+    private static List<ChordDiagram> fDiagrams() {
+        Chord fChord = Chord.of(PitchClass.of("F"), ChordType.MAJOR);
         return ChordDiagramGenerator.generate(
-                fa, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX);
+                fChord, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX);
     }
 }
