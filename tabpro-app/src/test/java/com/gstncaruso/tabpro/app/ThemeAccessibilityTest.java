@@ -1,9 +1,12 @@
 package com.gstncaruso.tabpro.app;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import com.formdev.flatlaf.FlatSystemProperties;
 import java.awt.Color;
 import javax.swing.UIManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
 
@@ -16,6 +19,11 @@ import org.junit.jupiter.api.parallel.Isolated;
 class ThemeAccessibilityTest {
 
     private final Theme theme = new Theme();
+
+    @AfterEach
+    void restoreAnimations() {
+        System.clearProperty(FlatSystemProperties.ANIMATION);
+    }
 
     @Test
     void changingTheFontSizeUpdatesTheDefaultFontInTheUIManager() {
@@ -51,5 +59,12 @@ class ThemeAccessibilityTest {
         theme.useHighContrast(false);
 
         assertEquals(Theme.paletteFor(Theme.LIGHT).background(), UIManager.getColor("tabpro.background"));
+    }
+
+    @Test
+    void disablingAnimationsSetsTheFlatLafSystemProperty() {
+        theme.useAnimations(false);
+
+        assertFalse(FlatSystemProperties.getBoolean(FlatSystemProperties.ANIMATION, true));
     }
 }

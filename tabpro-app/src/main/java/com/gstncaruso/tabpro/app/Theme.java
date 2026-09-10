@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.app;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.FlatSystemProperties;
 import com.gstncaruso.tabpro.ui.theme.ThemeSwitch;
 import java.awt.Color;
 import java.awt.Font;
@@ -94,6 +95,11 @@ public final class Theme implements ThemeSwitch {
         highContrast = enabled;
         paintActivePalette();
         FlatLaf.updateUI();
+    }
+
+    @Override
+    public void useAnimations(boolean enabled) {
+        System.setProperty(FlatSystemProperties.ANIMATION, String.valueOf(enabled));
     }
 
     /** El alto contraste manda sobre el tema oscuro/claro elegido mientras esta prendido. */

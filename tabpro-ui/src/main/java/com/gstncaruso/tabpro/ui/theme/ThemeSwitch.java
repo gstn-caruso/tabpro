@@ -32,6 +32,10 @@ public interface ThemeSwitch {
         @Override
         public void useHighContrast(boolean enabled) {
         }
+
+        @Override
+        public void useAnimations(boolean enabled) {
+        }
     };
 
     List<String> names();
@@ -45,4 +49,7 @@ public interface ThemeSwitch {
 
     /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
     void useHighContrast(boolean enabled);
+
+    /** Preferencias [F12] > Accesibilidad: "Sin animaciones" apaga las de FlatLaf. */
+    void useAnimations(boolean enabled);
 }
