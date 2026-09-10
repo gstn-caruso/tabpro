@@ -36,7 +36,7 @@ class ScoreCanvasTest {
     private final ScoreCanvas canvas = new ScoreCanvas(editor);
 
     @Test
-    void noQuedaSinNombreNiTooltipAccesible() {
+    void hasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(canvas);
     }
 
@@ -46,22 +46,22 @@ class ScoreCanvasTest {
     }
 
     @Test
-    void avisaCuandoElZoomCambia() {
-        boolean[] avisado = {false};
-        canvas.onZoomChange(() -> avisado[0] = true);
+    void notifiesWhenTheZoomChanges() {
+        boolean[] notified = {false};
+        canvas.onZoomChange(() -> notified[0] = true);
 
         canvas.zoomIn();
 
-        assertTrue(avisado[0]);
+        assertTrue(notified[0]);
     }
 
     @Test
-    void desactivaSusTeclasDeFocoParaQueTabLlegueAlEditorDeTeclado() {
+    void disablesItsFocusKeysSoTabReachesTheKeyboardEditor() {
         assertFalse(canvas.getFocusTraversalKeysEnabled());
     }
 
     @Test
-    void ctrlF6LePideALaCosturaDeFocoQueVayaAlSiguienteComponente() {
+    void ctrlF6AsksTheFocusTraversalToGoToTheNextComponent() {
         RecordingFocusTraversal recorder = new RecordingFocusTraversal();
         ScoreCanvas canvasWithRecordedFocus = new ScoreCanvas(editor, new TrackVisibility(), recorder);
 
@@ -71,7 +71,7 @@ class ScoreCanvasTest {
     }
 
     @Test
-    void ctrlShiftF6LePideALaCosturaDeFocoQueVayaAlComponenteAnterior() {
+    void ctrlShiftF6AsksTheFocusTraversalToGoToThePreviousComponent() {
         RecordingFocusTraversal recorder = new RecordingFocusTraversal();
         ScoreCanvas canvasWithRecordedFocus = new ScoreCanvas(editor, new TrackVisibility(), recorder);
 
