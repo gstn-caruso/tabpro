@@ -6,9 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.Optional;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
@@ -145,6 +148,44 @@ class MeasureGridTest {
 
         assertEquals(1, editor.cursor().track());
         assertEquals(1, editor.cursor().measure());
+    }
+
+    @Test
+    void paintsAVisibleCaretRingWhenItGetsFocus() {
+        Editor editor = editorWithTwoTracksAndThreeMeasures();
+        MeasureGrid grid = new MeasureGrid(editor);
+        grid.setSize(grid.getPreferredSize());
+        BufferedImage withoutFocus = paint(grid);
+
+        gainFocus(grid);
+        BufferedImage withFocus = paint(grid);
+
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+    }
+
+    private static void gainFocus(MeasureGrid grid) {
+        for (var listener : grid.getFocusListeners()) {
+            listener.focusGained(new FocusEvent(grid, FocusEvent.FOCUS_GAINED));
+        }
+    }
+
+    private static BufferedImage paint(MeasureGrid grid) {
+        BufferedImage image = new BufferedImage(grid.getWidth(), grid.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = image.createGraphics();
+        grid.paint(g);
+        g.dispose();
+        return image;
+    }
+
+    private static boolean differsSomewhere(BufferedImage a, BufferedImage b) {
+        for (int x = 0; x < a.getWidth(); x++) {
+            for (int y = 0; y < a.getHeight(); y++) {
+                if (a.getRGB(x, y) != b.getRGB(x, y)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
