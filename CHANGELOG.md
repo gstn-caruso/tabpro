@@ -1,3 +1,9 @@
+## [0.59.2](https://github.com/gstn-caruso/tabpro/compare/v0.59.1...v0.59.2) (2026-09-10)
+
+### Performance Improvements
+
+* **score:** la partitura pinta sólo las hojas y sistemas que están a la vista, y el layout se calcula una vez por pintado ([#187](https://github.com/gstn-caruso/tabpro/issues/187)) ([262f917](https://github.com/gstn-caruso/tabpro/commit/262f91704756d8ed3b5d3f87e6c084f88ce24625))
+
 ## [0.59.1](https://github.com/gstn-caruso/tabpro/compare/v0.59.0...v0.59.1) (2026-09-10)
 
 ### Bug Fixes
