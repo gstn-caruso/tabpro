@@ -1,6 +1,6 @@
 package com.gstncaruso.tabpro.format.powertab;
 
-/** Lee un "guitar in": sistema, pentagrama, posicion y la mascara de guitarras activas en el. */
+/** Reads a "guitar in": system, staff, position, and the mask of guitars active on it. */
 final class PowerTabGuitarInReader {
 
     PowerTabGuitarIn read(PowerTabByteReader reader) {
@@ -8,12 +8,10 @@ final class PowerTabGuitarInReader {
         int staff = reader.readUnsignedByte();
         int position = reader.readUnsignedByte();
         int data = reader.readUnsignedShort();
-        // Al reves de lo intuitivo: uno esperaria que la mascara "principal" (la del
-        // pentagrama) fuera el byte bajo. En guitarin.cpp GetStaffGuitars() devuelve
-        // HIBYTE(m_data) y GetRhythmSlashGuitars() devuelve LOBYTE(m_data) — lo
-        // confirma el propio constructor, que arma el dato como
-        // MAKEWORD(rhythmSlashGuitars, staffGuitars). La primera version de este
-        // lector los tenia al reves (probado contra fixtures reales, no adivinado).
+        // Counter-intuitively, one would expect the "main" mask (the staff's) to be the
+        // low byte. In guitarin.cpp GetStaffGuitars() returns HIBYTE(m_data) and
+        // GetRhythmSlashGuitars() returns LOBYTE(m_data) -- confirmed by the constructor
+        // itself, which builds the datum as MAKEWORD(rhythmSlashGuitars, staffGuitars).
         int staffGuitarsMask = (data >>> 8) & 0xFF;
         return new PowerTabGuitarIn(system, staff, position, staffGuitarsMask);
     }
