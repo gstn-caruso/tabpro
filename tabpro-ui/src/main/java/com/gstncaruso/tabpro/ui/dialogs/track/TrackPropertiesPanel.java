@@ -7,18 +7,23 @@ import com.gstncaruso.tabpro.core.model.TrackSettings;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.ColorSwatchButton;
+import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import java.awt.GridLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 /**
  * Todo lo que define una pista: nombre, color, afinacion, trastes, cejilla y que
- * partes de la partitura dibuja. Se puede leer sin mostrarse.
+ * partes de la partitura dibuja. Se puede leer sin mostrarse. Dos columnas anchas,
+ * como "Properties of the track" del manual: afinacion y diapason a la izquierda,
+ * notacion, estilo y canales a la derecha.
  */
-public final class TrackPropertiesPanel extends FormPanel {
+public final class TrackPropertiesPanel extends JPanel {
 
     private final JTextField name = new JTextField();
     private final ColorSwatchButton color;
@@ -63,21 +68,35 @@ public final class TrackPropertiesPanel extends FormPanel {
         });
         keepAtLeastOneStaffVisible();
 
-        addRow("Nombre", name);
-        addRow("Color", color);
-        addSection("Afinacion");
-        addFullWidthRow(tuningEditor);
-        addSection("Diapason");
-        addRow("Trastes", fretCount);
-        addRow("Cejilla", capo);
-        addFullWidthRow(twelveString);
-        addFullWidthRow(banjoFifthString);
-        addSection("Que se dibuja");
-        addFullWidthRow(standardNotation);
-        addFullWidthRow(tablature);
-        addFullWidthRow(tuningLegend);
-        addFullWidthRow(rhythmOnTablature);
-        addRow("Diagramas de acordes", diagramPlacement);
+        setLayout(new GridLayout(1, 2, DialogStyle.GAP_M, 0));
+        add(leftColumn());
+        add(rightColumn());
+    }
+
+    private FormPanel leftColumn() {
+        FormPanel column = new FormPanel();
+        column.addRow("Nombre", name);
+        column.addRow("Color", color);
+        column.addSection("Afinacion");
+        column.addFullWidthRow(tuningEditor);
+        column.addSection("Diapason");
+        column.addRow("Trastes", fretCount);
+        column.addRow("Cejilla", capo);
+        column.addFullWidthRow(twelveString);
+        column.addFullWidthRow(banjoFifthString);
+        return column;
+    }
+
+    private FormPanel rightColumn() {
+        FormPanel column = new FormPanel();
+        column.addSection("Notacion");
+        column.addFullWidthRow(standardNotation);
+        column.addFullWidthRow(tablature);
+        column.addSection("Estilo");
+        column.addFullWidthRow(tuningLegend);
+        column.addFullWidthRow(rhythmOnTablature);
+        column.addRow("Diagramas de acordes", diagramPlacement);
+        return column;
     }
 
     /** El pentagrama y la tablatura no pueden estar los dos apagados a la vez. */
