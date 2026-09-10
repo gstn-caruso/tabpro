@@ -118,6 +118,21 @@ class FixtureCorpusSmokeTest {
         return exchange.importGuitarPro(gp4Path);
     }
 
+    @Test
+    void unGuitarProSimpleSeExportaAMidiYSeReabre(@TempDir Path tempDir) {
+        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
+        Score score = abrir(path);
+
+        Score reabierto = exportarYReabrirMidi(score, tempDir.resolve("reexportado.mid"));
+
+        assertNotNull(reabierto, () -> path.getFileName() + ": el export a MIDI se reabre");
+    }
+
+    private Score exportarYReabrirMidi(Score score, Path midiPath) {
+        exchange.exportMidi(score, midiPath);
+        return exchange.importMidi(midiPath);
+    }
+
     private Score abrir(Path path) {
         String nombre = path.getFileName().toString();
         if (nombre.endsWith(".gp3") || nombre.endsWith(".gp4") || nombre.endsWith(".gp5")) {
