@@ -264,6 +264,15 @@ class KeyboardViewTest {
         return false;
     }
 
+    @Test
+    void theAccessibleDescriptionNamesTheKeyUnderTheCaret() {
+        KeyboardView view = sized();
+
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals("A#0", view.getAccessibleContext().getAccessibleDescription());
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
