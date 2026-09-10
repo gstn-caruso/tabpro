@@ -76,13 +76,13 @@ final class ParameterChangePainter {
         int left = centerX - (QUARTER_NOTE_WIDTH + metrics.stringWidth(label)) / 2;
         paintQuarterNote(g, left, baselineY);
         g.setFont(ScoreFonts.TEMPO_FONT);
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.TEMPO);
         g.drawString(label, left + QUARTER_NOTE_WIDTH, baselineY);
     }
 
     /** La negra a la que se refiere el numero. */
     private static void paintQuarterNote(Graphics2D g, int x, int baselineY) {
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.TEMPO);
         g.setFont(MusicFont.sizedTo(2));
         g.drawString(MusicFont.metNoteQuarterUp(), x, baselineY);
     }

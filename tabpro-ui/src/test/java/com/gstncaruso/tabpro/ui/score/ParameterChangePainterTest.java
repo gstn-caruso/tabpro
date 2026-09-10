@@ -85,6 +85,19 @@ class ParameterChangePainterTest {
     }
 
     @Test
+    void aTempoChangeIsWrittenInTheTempoColorInsteadOfPlainInk() {
+        Measure measure = changingAt(0, change(SoundParameter.TEMPO, 90));
+        Track track = guitarWith(measure);
+        ScoreLayout layout = ScoreLayout.of(scoreWith(measure), WIDTH, VisibleTracks.all());
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        ParameterChangePainter.paintMeasure(lienzo, layout, track, 0, 0);
+
+        assertTrue(lienzo.dibujaColor(ScoreColors.TEMPO), "el tempo se escribe en rojo, como en GP5");
+        assertFalse(lienzo.dibujaColor(ScoreColors.INK), "el tempo no deja tinta plana");
+    }
+
+    @Test
     void aChangeThatTouchesTempoAndPanShowsBothThings() {
         ParameterChange both = change(SoundParameter.TEMPO, 90).changing(SoundParameter.PAN, 20);
         Painted painted = paint(scoreWith(changingAt(1, both)));

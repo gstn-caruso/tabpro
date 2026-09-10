@@ -60,6 +60,9 @@ public final class ScoreColors {
 
     /** El rectangulito rojo que anuncia un cambio de parametro sin simbolo musical propio. */
     public static final Color PARAMETER_CHANGE = new Color(0xD32F3B);
+    /** El rojo con el que Guitar Pro 5 escribe la negra y el numero del tempo, inicial o a mitad
+     * de partitura. Mismo valor que {@link #MEASURE_NUMBER}, nombrado aparte porque es otro concepto. */
+    public static final Color TEMPO = new Color(0xFF, 0x65, 0x63);
     /** El compas que no suma lo que su medida pide, salvo el que se esta editando. */
     public static final Color INCOMPLETE_MEASURE = new Color(0xE5484D);
     /** El rectangulo que resalta una seleccion multiple. */
