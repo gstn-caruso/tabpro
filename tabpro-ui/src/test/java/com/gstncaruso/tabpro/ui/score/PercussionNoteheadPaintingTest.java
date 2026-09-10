@@ -25,9 +25,17 @@ class PercussionNoteheadPaintingTest {
     /** 42 = "Hi-hat cerrado": shapeFor lo mapea a CROSS. */
     private static final int HI_HAT_CLOSED = 42;
 
+    /** 54 = "Pandereta": shapeFor lo mapea a DIAMOND. */
+    private static final int TAMBOURINE = 54;
+
     @Test
     void aCymbalSoundGetsTheXBlackNoteheadGlyph() {
         assertGlyphAt(HI_HAT_CLOSED, MusicFont.noteheadXBlack());
+    }
+
+    @Test
+    void aTambourineSoundGetsTheDiamondBlackNoteheadGlyph() {
+        assertGlyphAt(TAMBOURINE, MusicFont.noteheadDiamondBlack());
     }
 
     private static void assertGlyphAt(int sound, String glyph) {
