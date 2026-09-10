@@ -47,6 +47,8 @@ public final class Icons {
     private static final String ARTIC_STACCATO_ABOVE = "";
     /** SMuFL U+E0A4 "noteheadBlack": la cabeza rellena de negra. */
     private static final String NOTEHEAD_BLACK = "";
+    /** SMuFL U+E262 "accidentalSharp": el sostenido. */
+    private static final String ACCIDENTAL_SHARP = "";
 
     private Icons() {
     }
@@ -145,10 +147,7 @@ public final class Icons {
     }
 
     public static Icon keySignature() {
-        return icon((graphics, size) -> {
-            graphics.setFont(big(size));
-            graphics.drawString("♯", (float) (size * 0.3), (float) (size * 0.78));
-        });
+        return new GlyphIcon(SIZE, ACCIDENTAL_SHARP + ACCIDENTAL_SHARP);
     }
 
     public static Icon timeSignature() {
