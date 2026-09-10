@@ -83,8 +83,7 @@ public final class StatusBar extends JPanel {
     public void refresh() {
         StatusInfo info = StatusInfo.of(editor, pagination.get());
         page.setText("Pág. " + info.pageNumber() + "/" + info.pageCount());
-        position.setText(
-                "Compás " + info.measureNumber() + "/" + info.measureCount() + " · Pista " + info.trackNumber());
+        position.setText(String.format("%03d : %03d", info.measureNumber(), info.measureCount()));
         completeness.setText(info.measureDurationText() + " (" + info.completeness().label() + ")");
         completeness.setForeground(
                 info.completeness() == MeasureCompleteness.COMPLETE ? ScoreColors.LABEL : ScoreColors.WARNING);
