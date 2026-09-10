@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -12,6 +13,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -28,6 +31,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 /** El teclado, con las teclas del beat en el que estas parado hundidas. */
 public final class KeyboardView extends JComponent implements AccessibleControl {
@@ -52,6 +56,7 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
     private int caretKey = LOWEST;
     private IntConsumer onCaretActivated = key -> {
     };
+    private boolean showsFocusRing;
 
     public KeyboardView() {
         setOpaque(true);
@@ -63,6 +68,23 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         getAccessibleContext().setAccessibleName("Teclado");
         trackTheMouse();
         installKeyboardShortcuts();
+        installFocusRing();
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
     }
 
     private void installKeyboardShortcuts() {
@@ -247,6 +269,22 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         paintKeys(g, marks, true);
         paintKeys(g, marks, false);
         paintHover(g);
+        if (showsFocusRing) {
+            paintCaret(g);
+        }
+    }
+
+    private void paintCaret(Graphics2D g) {
+        keyBounds(caretKey).ifPresent(bounds -> {
+            g.setColor(focusRingColor());
+            g.setStroke(new BasicStroke(2f));
+            g.drawRect(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2);
+        });
+    }
+
+    private Color focusRingColor() {
+        Color fromLookAndFeel = UIManager.getColor("Component.focusColor");
+        return fromLookAndFeel != null ? fromLookAndFeel : InstrumentColors.HOVER;
     }
 
     private void paintKeys(Graphics2D g, KeyMarks marks, boolean white) {

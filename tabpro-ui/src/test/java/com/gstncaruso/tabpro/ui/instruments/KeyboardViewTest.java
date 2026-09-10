@@ -16,6 +16,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -233,6 +234,34 @@ class KeyboardViewTest {
         pressShortcut(view, KeyStroke.getKeyStroke("SPACE"));
 
         assertEquals(List.of(KeyboardView.LOWEST), activated);
+    }
+
+    @Test
+    void paintsAVisibleCaretRingWhenItGetsFocus() {
+        KeyboardView view = sized();
+        BufferedImage withoutFocus = paint(view);
+
+        gainFocus(view);
+        BufferedImage withFocus = paint(view);
+
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+    }
+
+    private static void gainFocus(KeyboardView view) {
+        for (var listener : view.getFocusListeners()) {
+            listener.focusGained(new FocusEvent(view, FocusEvent.FOCUS_GAINED));
+        }
+    }
+
+    private static boolean differsSomewhere(BufferedImage a, BufferedImage b) {
+        for (int x = 0; x < a.getWidth(); x++) {
+            for (int y = 0; y < a.getHeight(); y++) {
+                if (a.getRGB(x, y) != b.getRGB(x, y)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
