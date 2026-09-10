@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.print;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -96,6 +97,20 @@ class ScorePrintingTest {
         // todo negro de un solo color (por escribir un TYPE_INT_ARGB tal cual, que ImageIO ni
         // siquiera logra escribir), esto lo detecta sin acoplarse a los colores exactos del tema.
         assertTrue(distinctColorsOf(leida).size() > 1, "la imagen no puede salir de un solo color");
+    }
+
+    @Tag("integracion")
+    @Test
+    void elBmpExportadoEsIdenticoAlQueEscribeBmpDocument(@TempDir Path tempDir) throws IOException {
+        Score score = scoreWithMeasures(4);
+        Path path = tempDir.resolve("partitura.bmp");
+
+        ScorePrinting.exportImage(score, A4, path, ViewMode.PAGE, Zoom.whole());
+
+        java.io.ByteArrayOutputStream esperado = new java.io.ByteArrayOutputStream();
+        BmpDocument.writeTo(ScoreSheets.render(score, Zoom.whole(), A4), esperado);
+        assertArrayEquals(esperado.toByteArray(), Files.readAllBytes(path),
+                "el bmp exportado tiene que ser el que escribe BmpDocument, no otro codec");
     }
 
     @Test

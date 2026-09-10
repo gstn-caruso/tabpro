@@ -114,11 +114,14 @@ final class PdfDocument {
     }
 
     private static byte[] rgbBytesOf(BufferedImage image) {
-        byte[] rgb = new byte[image.getWidth() * image.getHeight() * 3];
+        int width = image.getWidth();
+        byte[] rgb = new byte[width * image.getHeight() * 3];
+        int[] row = new int[width];
         int at = 0;
         for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                int pixel = image.getRGB(x, y);
+            image.getRGB(0, y, width, 1, row, 0, width);
+            for (int x = 0; x < width; x++) {
+                int pixel = row[x];
                 rgb[at++] = (byte) ((pixel >> 16) & 0xFF);
                 rgb[at++] = (byte) ((pixel >> 8) & 0xFF);
                 rgb[at++] = (byte) (pixel & 0xFF);

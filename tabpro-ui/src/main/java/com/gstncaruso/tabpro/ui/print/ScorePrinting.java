@@ -77,8 +77,21 @@ public final class ScorePrinting {
      * excepcion: {@code ImageIO.write} devuelve {@code false} (sin escribir nada) cuando ningun
      * escritor instalado puede codificar esa imagen en ese formato, y eso no puede pasar
      * desapercibido.
+     *
+     * <p>Para BMP, si la imagen no tiene canal alfa -el caso real de toda partitura exportada-, se
+     * escribe con {@link BmpDocument} en vez de con ImageIO: mismo formato, mucho mas rapido porque
+     * pide los pixeles en bloque. Con transparencia real, ImageIO sigue a cargo -y sigue fallando
+     * igual que antes, porque BMP no la soporta.
      */
     static void writeImage(BufferedImage image, String format, Path path) {
+        if (format.equals("bmp") && BmpDocument.canEncode(image)) {
+            try (java.io.OutputStream out = java.nio.file.Files.newOutputStream(path)) {
+                BmpDocument.writeTo(image, out);
+            } catch (IOException e) {
+                throw new UncheckedIOException("no se pudo escribir " + path, e);
+            }
+            return;
+        }
         boolean escrita;
         try {
             escrita = ImageIO.write(image, format, path.toFile());
