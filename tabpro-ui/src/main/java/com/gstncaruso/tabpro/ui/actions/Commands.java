@@ -173,23 +173,27 @@ public final class Commands {
     }
 
     private void defineTrackCommands() {
-        define("track.add", "Agregar una pista…", dialogs::addTrack)
+        define("track.add", Texts.get("menus.track.add"), dialogs::addTrack)
                 .withAccelerator("ctrl shift INSERT").withIcon(Icons.addTrack());
-        define("track.addGuitar", "Agregar una guitarra", () -> editor.addTrack(Track.standardGuitar("Guitarra")));
-        define("track.addBass", "Agregar un bajo", () -> editor.addTrack(Track.standardBass("Bajo")));
-        define("track.addPercussion", "Agregar percusión", () -> editor.addTrack(Track.percussion("Batería")));
-        define("track.delete", "Borrar la pista", editor::removeCurrentTrack)
+        define("track.addGuitar", Texts.get("menus.track.addGuitar"),
+                () -> editor.addTrack(Track.standardGuitar("Guitarra")));
+        define("track.addBass", Texts.get("menus.track.addBass"),
+                () -> editor.addTrack(Track.standardBass("Bajo")));
+        define("track.addPercussion", Texts.get("menus.track.addPercussion"),
+                () -> editor.addTrack(Track.percussion("Batería")));
+        define("track.delete", Texts.get("menus.track.delete"), editor::removeCurrentTrack)
                 .withAccelerator("ctrl shift DELETE").withIcon(Icons.trackDelete());
-        define("track.moveUp", "Subir la pista", () -> editor.moveCurrentTrack(-1))
+        define("track.moveUp", Texts.get("menus.track.moveUp"), () -> editor.moveCurrentTrack(-1))
                 .withAccelerator("ctrl alt UP").withIcon(Icons.trackMoveUp());
-        define("track.moveDown", "Bajar la pista", () -> editor.moveCurrentTrack(1))
+        define("track.moveDown", Texts.get("menus.track.moveDown"), () -> editor.moveCurrentTrack(1))
                 .withAccelerator("ctrl alt DOWN").withIcon(Icons.trackMoveDown());
-        define("track.properties", "Propiedades de la pista…", dialogs::trackProperties)
+        define("track.properties", Texts.get("menus.track.properties"), dialogs::trackProperties)
                 .withAccelerator("F6").withIcon(Icons.trackProperties());
-        define("track.instrument", "Instrumento…", dialogs::instrument).withAccelerator("F7");
-        define("track.previous", "Pista anterior", editor::moveToPreviousTrack)
+        define("track.instrument", Texts.get("menus.track.instrument"), dialogs::instrument)
+                .withAccelerator("F7");
+        define("track.previous", Texts.get("menus.track.previous"), editor::moveToPreviousTrack)
                 .withAccelerator("ctrl UP").withIcon(Icons.chevronLeft());
-        define("track.next", "Pista siguiente", editor::moveToNextTrack)
+        define("track.next", Texts.get("menus.track.next"), editor::moveToNextTrack)
                 .withAccelerator("ctrl DOWN").withIcon(Icons.chevronRight());
     }
 
