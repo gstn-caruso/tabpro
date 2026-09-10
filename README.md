@@ -19,13 +19,15 @@ un instrumento MIDI conectado.
 
 **Una partitura tiene todas las pistas que quieras**, cada una con su afinación,
 su cantidad de cuerdas, su capo y su instrumento. Podés verlas todas juntas o de
-a una, y apagar desde la mesa de mezcla las que molestan. Si le cambiás la
-cantidad de cuerdas a una pista, las notas se transponen a la afinación nueva en
-vez de perderse: una línea de banjo se convierte en una de guitarra.
+a una —saltando entre ellas con el selector numerado de la barra— y apagar desde
+la mesa de mezcla las que molestan. Si le cambiás la cantidad de cuerdas a una
+pista, las notas se transponen a la afinación nueva en vez de perderse: una
+línea de banjo se convierte en una de guitarra.
 
 **La partitura se ve como sale impresa.** Hay modo página con su hoja, márgenes,
 encabezado y pie; modo pergamino sin cortes; y dos modos de pantalla que usan
-todo el espacio disponible. Con zoom del 30% al 200%.
+todo el espacio disponible. Con zoom del 30% al 200%, en un combo editable de la
+barra con los valores predefinidos del manual.
 
 ![La partitura tal como se imprime](docs/capturas/hoja.png)
 
@@ -62,9 +64,9 @@ adorno, digitación de las dos manos, texto libre y diagramas de acordes.
 
 Y la estructura del compás: repeticiones con su conteo, finales alternativos,
 doble barra, direcciones musicales (Coda, Segno, Fine y los catorce saltos),
-marcadores, octavas (8va, 8vb, 15ma y 15mb, que cambian dónde se escribe la nota
-sin tocar cómo suena), y saltos de línea forzados o impedidos para maquetar la
-hoja.
+marcadores —se editan desde el compás del cursor, sin abrir la lista completa—,
+octavas (8va, 8vb, 15ma y 15mb, que cambian dónde se escribe la nota sin tocar
+cómo suena), y saltos de línea forzados o impedidos para maquetar la hoja.
 
 ## El diapasón y el teclado
 
@@ -74,7 +76,10 @@ Marcan las notas del beat y escriben al clic. Se ajustan solos a la afinación, 
 capo y a la cantidad de cuerdas de la pista activa. Muestran el beat solo, el
 compás, el próximo beat, el último diagrama de acorde o la escala elegida —y para
 las notas de la escala podés ver el nombre, el intervalo o el grado. Cuatro tipos
-de diapasón, zurdo o diestro, y la nota que está bajo el mouse.
+de diapasón, zurdo o diestro, y la nota que está bajo el mouse. El diapasón
+tiene veta de madera y trastes metálicos; el teclado, teclas con bisel y la
+nota marcada con un punto. Cada uno se cierra con la ✕ de su propia banda de
+título.
 
 También podés colorear las cabezas de nota según su intensidad, para leer la
 dinámica de un vistazo, elegir qué barras de herramientas ves y cuáles no, e
@@ -86,10 +91,12 @@ intercambiar de lugar la partitura y la mesa de mezcla.
 
 Puerto, los dos canales de la pista —el suyo y el de sus efectos, para que un bend
 no le corra la afinación a las notas limpias—, instrumento General MIDI —o kit de
-batería, si la pista es de percusión—, volumen, paneo, chorus, reverb, phaser,
-trémolo, silenciar y solo. Todo editable mientras suena. Al lado, la vista global:
-una fila de color por pista, un cuadradito por compás y la zona de marcadores,
-para saltar a cualquier parte de un clic.
+batería, si la pista es de percusión—, volumen y paneo con deslizador y caja
+numérica, chorus, reverb, phaser y trémolo como número plano, y silenciar y solo
+junto al número de cada pista. Todo editable mientras suena. Al lado, la vista
+global: una fila de color por pista, la regla de compases, los marcadores en
+rojo y un cuadradito plateado en cada compás sin notas, para saltar a cualquier
+parte de un clic.
 
 ## Las herramientas
 
@@ -112,14 +119,17 @@ de los compases.
 ## Accesibilidad
 
 **Todo se maneja sin mouse.** Los menús y los formularios se navegan por
-mnemónico (`Alt` + la letra subrayada); las perillas de la mesa de mezcla, el
-diapasón, el teclado, la grilla de la vista global, los marcadores, el
+mnemónico (`Alt` + la letra subrayada); los deslizadores de la mesa de mezcla,
+el diapasón, el teclado, la grilla de la vista global, los marcadores, el
 asistente de percusión, los bends y el afinador se operan por teclado y
 muestran el foco. Desde la partitura, `Ctrl+F6` le cede el foco al resto de la
 ventana.
 
 **Todo control tiene nombre y descripción accesibles**, además de su tooltip,
-para que un lector de pantalla lo anuncie aunque no lleve texto.
+para que un lector de pantalla lo anuncie aunque no lleve texto. La barra de
+estado, abajo de todo, separa página, posición, estado y duración del compás,
+pista, y título y autor en seis paneles con relieve propio, cada uno con su
+nombre.
 
 **Las dos paletas, clara y oscura, cumplen el contraste WCAG AA.**
 `Preferencias > Accesibilidad` suma tamaño de letra ajustable, alto contraste
