@@ -187,6 +187,10 @@ comportamiento de la app. Con esa costura:
   ahí mismo se tocan sus controles reales. Cuando un comando abre más de un diálogo en cadena
   (import de MIDI, import/export de ASCII, export de WAVE), el mismo `onOpen` de `withDialog` se
   invoca una vez por cada ventana real que aparece, en el orden en que Swing las va abriendo.
+  `withDialog` garantiza además que un `onOpen` que tira, o que se olvida de cerrar el diálogo,
+  nunca deja la suite colgada esperando un `setVisible(true)` que no va a volver: captura
+  cualquier error real del callback, cierra el diálogo y lo relanza desde el hilo del test
+  (`AuditSupportWithDialogTest`, `@Tag("integracion")`, cubre los tres casos).
 - `TabEditMinimalFixture.java`: un archivo TEF3 mínimo armado a mano, con el mismo layout binario
   que entiende el lector real (`TabEditByteReader`), para el import de TablEdit -que no tiene
   ninguna muestra real en el repositorio (tampoco la tiene `tabpro-format`, que arma la suya
