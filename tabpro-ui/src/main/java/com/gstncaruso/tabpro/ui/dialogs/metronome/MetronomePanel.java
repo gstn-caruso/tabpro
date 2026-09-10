@@ -6,7 +6,6 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/** Activar el metronomo y ajustar su tempo y su volumen. */
 public final class MetronomePanel extends FormPanel {
 
     private final JCheckBox active = new JCheckBox("Metrónomo activado");
