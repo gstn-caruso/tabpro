@@ -53,7 +53,7 @@ class PageScorePainterTest {
         ScoreLayout first = PageScorePainter.layoutFor(score, viewport);
         ScoreLayout second = PageScorePainter.layoutFor(score, viewport);
 
-        assertSame(first, second, "el mismo score y viewport tienen que reusar el layout ya calculado");
+        assertSame(first, second, "the same score and viewport have to reuse the already-computed layout");
     }
 
     @Test
@@ -64,7 +64,7 @@ class PageScorePainterTest {
         ScoreLayout second = PageScorePainter.layoutFor(Score.blank(), viewport);
 
         assertNotSame(first, second,
-                "dos scores distintos, aunque iguales en contenido, no pueden compartir el cache");
+                "two different scores, even with equal content, cannot share the cache");
     }
 
     @Test
@@ -76,7 +76,7 @@ class PageScorePainterTest {
         ScoreLayout first = PageScorePainter.layoutFor(score, atWholeZoom);
         ScoreLayout second = PageScorePainter.layoutFor(score, atHalfZoom);
 
-        assertNotSame(first, second, "cambiar el zoom invalida el layout cacheado");
+        assertNotSame(first, second, "changing the zoom invalidates the cached layout");
     }
 
     @Test
@@ -87,7 +87,7 @@ class PageScorePainterTest {
         var first = PageScorePainter.diagramsUnderTheTitleFor(score, viewport);
         var second = PageScorePainter.diagramsUnderTheTitleFor(score, viewport);
 
-        assertSame(first, second, "el mismo score y viewport tienen que reusar la lista ya calculada");
+        assertSame(first, second, "the same score and viewport have to reuse the already-computed list");
     }
 
     @Test
@@ -104,7 +104,7 @@ class PageScorePainterTest {
         Dimension landscape = PageScorePainter.canvasSize(
                 Score.blank(), pageViewport(paperOf(PaperFormat.A4, Orientation.LANDSCAPE)));
 
-        assertTrue(landscape.width > portrait.width, "una hoja acostada es mas ancha");
+        assertTrue(landscape.width > portrait.width, "a landscape sheet is wider");
     }
 
     @Test
@@ -114,7 +114,7 @@ class PageScorePainterTest {
         Dimension narrow = PageScorePainter.canvasSize(score, pageViewport(withMargins(10)));
         Dimension wide = PageScorePainter.canvasSize(score, pageViewport(withMargins(60)));
 
-        assertTrue(wide.height > narrow.height, "con margenes gordos la partitura ocupa mas hojas");
+        assertTrue(wide.height > narrow.height, "with fat margins the score takes up more sheets");
     }
 
     @Test
@@ -124,8 +124,8 @@ class PageScorePainterTest {
         Dimension full = PageScorePainter.canvasSize(score, pageViewport(sized(100)));
         Dimension half = PageScorePainter.canvasSize(score, pageViewport(sized(50)));
 
-        assertTrue(half.height < full.height, "al 50% entra el doble de musica por hoja");
-        assertEquals(full.width, half.width, "el tamano de la partitura no cambia el papel");
+        assertTrue(half.height < full.height, "at 50% twice as much music fits per sheet");
+        assertEquals(full.width, half.width, "the score's size does not change the paper");
     }
 
     @Test
@@ -152,7 +152,7 @@ class PageScorePainterTest {
         Dimension onePage = PageScorePainter.canvasSize(Score.blank(), ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
         Dimension manyPages = PageScorePainter.canvasSize(score, ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
 
-        assertTrue(manyPages.height > onePage.height * 2, "una partitura larga ocupa varias hojas");
+        assertTrue(manyPages.height > onePage.height * 2, "a long score takes up several sheets");
     }
 
     @Test
@@ -162,14 +162,14 @@ class PageScorePainterTest {
         Dimension parchment = PageScorePainter.canvasSize(score, ScoreViewport.of(ViewMode.PARCHMENT, Zoom.whole(), VIEWPORT_WIDTH));
         Dimension paged = PageScorePainter.canvasSize(score, ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
 
-        assertTrue(parchment.height < paged.height, "el pergamino no reserva aire de mas de una hoja completa");
+        assertTrue(parchment.height < paged.height, "parchment does not reserve more room than a single full sheet");
     }
 
     @Test
     void paintsEveryViewModeWithoutThrowing() {
         Score score = scoreWithLyricsAndInfo();
         for (ViewMode mode : ViewMode.values()) {
-            assertDoesNotThrow(() -> paint(score, mode, Zoom.whole()), "modo " + mode + " no deberia fallar");
+            assertDoesNotThrow(() -> paint(score, mode, Zoom.whole()), "mode " + mode + " should not fail");
         }
     }
 
@@ -184,7 +184,7 @@ class PageScorePainterTest {
                 score, ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH),
                 sheet.contentLeft() + 60, sheet.contentTop() + 20);
 
-        assertTrue(hit.isPresent(), "un clic dentro del area de la hoja tiene que encontrar algo");
+        assertTrue(hit.isPresent(), "a click inside the sheet area has to find something");
         assertEquals(0, hit.get().measure());
         assertTrue(size.height > 0);
     }
@@ -197,7 +197,7 @@ class PageScorePainterTest {
         Optional<ScoreLayout.Hit> hit = PageScorePainter.hitTest(
                 score, ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH), 60, 5);
 
-        assertTrue(hit.isEmpty(), "el encabezado no tiene compases");
+        assertTrue(hit.isEmpty(), "the header has no measures");
     }
 
     @Test
@@ -216,7 +216,7 @@ class PageScorePainterTest {
         Score score = scoreWithMeasures(200);
         ScoreViewport viewport = pageViewport(PageSetup.defaults());
         int total = PageScorePainter.pageCount(score, viewport);
-        assertTrue(total >= 3, "hace falta al menos tres hojas para este test");
+        assertTrue(total >= 3, "at least three sheets are needed for this test");
 
         PageMetrics sheet = PageMetrics.of(PageSetup.defaults());
         int stride = sheet.pageHeight() + PageMetrics.PAGE_GAP;
@@ -229,11 +229,11 @@ class PageScorePainterTest {
         Set<String> footersPainted = footersPaintedIn(canvas);
 
         assertFalse(footersPainted.contains(footerOf(1, total)),
-                "la primera hoja, fuera del clip, no tiene que pintarse");
+                "the first sheet, outside the clip, must not be painted");
         assertFalse(footersPainted.contains(footerOf(3, total)),
-                "la tercera hoja, fuera del clip, no tiene que pintarse");
+                "the third sheet, outside the clip, must not be painted");
         assertTrue(footersPainted.contains(footerOf(2, total)),
-                "la hoja del medio, adentro del clip, si se tiene que pintar");
+                "the middle sheet, inside the clip, does have to be painted");
     }
 
     private static String footerOf(int pageNumber, int totalPages) {
@@ -245,7 +245,7 @@ class PageScorePainterTest {
         Score score = scoreWithMeasures(200);
         ScoreViewport viewport = pageViewport(PageSetup.defaults());
         Pagination pagination = PageScorePainter.paginationOf(score, viewport);
-        assertTrue(pagination.pageCount() >= 3, "hace falta al menos tres hojas para este test");
+        assertTrue(pagination.pageCount() >= 3, "at least three sheets are needed for this test");
 
         int measureOnlyOnTheFirstPage = pagination.firstMeasureOfPage().get(0) + 1;
         int measureOnlyOnTheThirdPage = pagination.firstMeasureOfPage().get(2) + 1;
@@ -256,10 +256,10 @@ class PageScorePainterTest {
 
         Set<Integer> painted = measureNumbersPaintedIn(canvas);
         assertFalse(painted.contains(measureOnlyOnTheFirstPage),
-                "la hoja del medio no tiene que tocar un compas que solo esta en la primera");
+                "the middle sheet must not touch a measure that is only on the first");
         assertFalse(painted.contains(measureOnlyOnTheThirdPage),
-                "la hoja del medio no tiene que tocar un compas que solo esta en la tercera");
-        assertFalse(painted.isEmpty(), "la hoja del medio tiene que pintar sus propios compases");
+                "the middle sheet must not touch a measure that is only on the third");
+        assertFalse(painted.isEmpty(), "the middle sheet has to paint its own measures");
     }
 
     private static Set<Integer> measureNumbersPaintedIn(RecordingCanvas canvas) {
@@ -277,7 +277,7 @@ class PageScorePainterTest {
 
     @Test
     void turningOffAnElementOfTheHeaderChangesWhatTheSheetShows() {
-        Score score = Score.blank().withInfo(ScoreInfo.titled("Cancion de prueba"));
+        Score score = Score.blank().withInfo(ScoreInfo.titled("Test song"));
         PageSetup showingTheTitle = PageSetup.defaults();
         PageSetup hidingTheTitle = new PageSetup(
                 PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, 100,
@@ -286,20 +286,20 @@ class PageScorePainterTest {
         assertFalse(
                 renderOnCanvas(score, showingTheTitle).matchesInRegion(
                         renderOnCanvas(score, hidingTheTitle), headerRegionOf(showingTheTitle)),
-                "destildar el titulo tiene que sacarlo de la hoja");
+                "unchecking the title has to remove it from the sheet");
     }
 
     @Test
     void theHeaderSaysWhatTheSetupSaysAndNotWhatTheScoreInformationSays() {
         PageSetup fixedHeading = new PageSetup(
                 PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, 100,
-                onlyTheTitleSaying("Cancionero de la casa"), PageBanner.footer());
+                onlyTheTitleSaying("House Songbook"), PageBanner.footer());
 
         RecordingCanvas one = renderOnCanvas(Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
         RecordingCanvas another = renderOnCanvas(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
 
         assertTrue(one.matchesInRegion(another, headerRegionOf(fixedHeading)),
-                "el encabezado es el texto configurado, no el titulo de la partitura");
+                "the header is the configured text, not the score's title");
     }
 
     @Test
@@ -307,7 +307,7 @@ class PageScorePainterTest {
         RecordingCanvas canvas = renderOnCanvas(scoreWithAParameterChange(), PageSetup.defaults());
 
         assertTrue(canvas.drawsColorInRegion(ScoreColors.PARAMETER_CHANGE, musicRegionOf(PageSetup.defaults())),
-                "el cambio de parametro se anuncia en rojo");
+                "the parameter change is announced in red");
     }
 
     @Test
@@ -317,7 +317,7 @@ class PageScorePainterTest {
                 Playhead.silent().advancedTo(new com.gstncaruso.tabpro.core.playback.BeatPosition(0, 0, 0)));
 
         assertTrue(canvas.drawsColorInRegion(ScoreColors.PLAYING, musicRegionOf(PageSetup.defaults())),
-                "la linea de reproduccion tiene que verse verde en la hoja");
+                "the playback line has to look green on the sheet");
     }
 
     @Test
@@ -325,7 +325,7 @@ class PageScorePainterTest {
         RecordingCanvas canvas = renderOnCanvas(scoreWithAParameterChange(), PageSetup.defaults());
 
         assertTrue(canvas.drawsColorInRegion(ScoreColors.CURSOR, musicRegionOf(PageSetup.defaults())),
-                "el cursor de edicion tiene que verse rojo en la hoja");
+                "the edit cursor has to look red on the sheet");
     }
 
     @Test
@@ -333,8 +333,8 @@ class PageScorePainterTest {
         RecordingCanvas canvas = renderOnCanvas(scoreWithAParameterChange(), PageSetup.defaults());
         Rectangle music = musicRegionOf(PageSetup.defaults());
 
-        assertTrue(canvas.drawsColorInRegion(ScoreColors.PAGE_INK, music), "la partitura se escribe con la tinta de la hoja");
-        assertFalse(canvas.drawsColorInRegion(ScoreColors.INK, music), "y no con la tinta clara de la pantalla");
+        assertTrue(canvas.drawsColorInRegion(ScoreColors.PAGE_INK, music), "the score is written with the sheet's ink");
+        assertFalse(canvas.drawsColorInRegion(ScoreColors.INK, music), "and not with the screen's light ink");
     }
 
     @Test
@@ -343,9 +343,9 @@ class PageScorePainterTest {
         BufferedImage both = render(scoreWithChordPlacement(DiagramPlacement.BOTH), PageSetup.defaults());
 
         assertTrue(sameSheet(musicOf(aboveOnly), musicOf(both)),
-                "el diagrama arriba del pentagrama no tiene que cambiar entre ABOVE_THE_STAFF y BOTH");
+                "the diagram above the staff must not change between ABOVE_THE_STAFF and BOTH");
         assertFalse(sameSheet(headerOf(aboveOnly), headerOf(both)),
-                "BOTH tiene que agregar el diagrama tambien en el encabezado");
+                "BOTH has to add the diagram in the header too");
     }
 
     @Test
@@ -354,9 +354,9 @@ class PageScorePainterTest {
         BufferedImage underTheTitle = render(scoreWithChordPlacement(DiagramPlacement.UNDER_THE_TITLE), PageSetup.defaults());
 
         assertTrue(sameSheet(musicOf(hidden), musicOf(underTheTitle)),
-                "ninguno de los dos muestra el diagrama arriba del pentagrama");
+                "neither of the two shows the diagram above the staff");
         assertFalse(sameSheet(headerOf(hidden), headerOf(underTheTitle)),
-                "UNDER_THE_TITLE tiene que mostrar el diagrama en el encabezado, HIDDEN no");
+                "UNDER_THE_TITLE has to show the diagram in the header, HIDDEN does not");
     }
 
     private static Score scoreWithChordPlacement(DiagramPlacement placement) {
@@ -484,7 +484,7 @@ class PageScorePainterTest {
 
     private static Score scoreWithLyricsAndInfo() {
         Score score = Score.blank().withInfo(
-                ScoreInfo.titled("Cancion de prueba").withArtist("Alguien").withCopyright("(c) 2026"));
+                ScoreInfo.titled("Test song").withArtist("Someone").withCopyright("(c) 2026"));
         return score.withLyrics(
                 com.gstncaruso.tabpro.core.model.Lyrics.none().onTrack(0)
                         .withLine(0, com.gstncaruso.tabpro.core.model.LyricLine.empty()
