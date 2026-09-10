@@ -28,6 +28,14 @@ public final class MarkersDialog {
 
     /** Arma el contenido de la ventana sin abrir ningun dialogo, para poder probarlo. */
     static JPanel buildContent(Editor editor) {
+        return build(editor).panel();
+    }
+
+    /** El panel armado junto con la lista que lo alimenta, para poder posicionarla desde afuera. */
+    private record Content(JPanel panel, JList<MarkerList.Positioned> list) {
+    }
+
+    private static Content build(Editor editor) {
         MarkerPanel form = new MarkerPanel(Marker.named("Marcador"));
         DefaultListModel<MarkerList.Positioned> model = new DefaultListModel<>();
         JList<MarkerList.Positioned> list = new JList<>(model);
@@ -63,7 +71,7 @@ public final class MarkersDialog {
         content.add(form, BorderLayout.NORTH);
         content.add(new JScrollPane(list), BorderLayout.CENTER);
         content.add(buttons, BorderLayout.SOUTH);
-        return content;
+        return new Content(content, list);
     }
 
     private static void refresh(DefaultListModel<MarkerList.Positioned> model, Editor editor) {
