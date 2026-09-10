@@ -26,18 +26,7 @@ public final class Icons {
     }
 
     public static Icon open() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            Path2D folder = new Path2D.Double();
-            folder.moveTo(size * 0.12, size * 0.78);
-            folder.lineTo(size * 0.12, size * 0.26);
-            folder.lineTo(size * 0.42, size * 0.26);
-            folder.lineTo(size * 0.52, size * 0.38);
-            folder.lineTo(size * 0.88, size * 0.38);
-            folder.lineTo(size * 0.88, size * 0.78);
-            folder.closePath();
-            graphics.draw(folder);
-        });
+        return svgIcon("folder-open");
     }
 
     public static Icon save() {
