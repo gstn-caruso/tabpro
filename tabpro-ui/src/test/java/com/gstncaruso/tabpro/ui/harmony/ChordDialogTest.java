@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Component;
@@ -52,5 +53,21 @@ class ChordDialogTest {
                 .getListCellRendererComponent(new JList<>(), ChordType.MINOR_SEVENTH, 0, false, false);
 
         assertEquals("m7", ((JLabel) rendered).getText());
+    }
+
+    @Test
+    void elComboDePosicionesMuestraLaComplejidadEnCastellano() {
+        Editor editor = new Editor(Score.blank());
+        ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
+        ChordLibrary library = new ChordLibrary(scratch);
+
+        ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
+
+        @SuppressWarnings("unchecked")
+        JComboBox<ChordComplexity> complexities = Combos.firstWithItemType(panel, ChordComplexity.class);
+        Component rendered = complexities.getRenderer()
+                .getListCellRendererComponent(new JList<>(), ChordComplexity.COMPLEX, 0, false, false);
+
+        assertEquals("Todas", ((JLabel) rendered).getText());
     }
 }

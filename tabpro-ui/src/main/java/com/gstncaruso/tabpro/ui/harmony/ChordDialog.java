@@ -89,6 +89,7 @@ public final class ChordDialog {
                 basses.addItem(pitchClass);
             });
             types.setRenderer(new LabeledListCellRenderer());
+            complexities.setRenderer(new LabeledListCellRenderer());
             name.getAccessibleContext().setAccessibleName("Nombre del acorde");
             name.setToolTipText("Nombre del acorde");
             baseFret.getAccessibleContext().setAccessibleName("Traste base");

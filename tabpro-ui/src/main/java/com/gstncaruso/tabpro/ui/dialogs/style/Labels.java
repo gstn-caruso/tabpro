@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.dialogs.style;
 
 import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 
 /**
  * El unico punto que traduce un tipo del dominio a su texto en castellano: ningun combo
@@ -16,6 +17,7 @@ public final class Labels {
         return switch (value) {
             case NoteValue noteValue -> noteValueLabel(noteValue);
             case ChordType chordType -> chordTypeLabel(chordType);
+            case ChordComplexity chordComplexity -> chordComplexityLabel(chordComplexity);
             default -> throw new IllegalArgumentException("Sin etiqueta para " + value);
         };
     }
@@ -23,6 +25,14 @@ public final class Labels {
     /** El sufijo con que el manual nombra el tipo de acorde: "M" para el mayor, "m7", "sus4"... */
     private static String chordTypeLabel(ChordType value) {
         return value == ChordType.MAJOR ? "M" : value.suffix();
+    }
+
+    private static String chordComplexityLabel(ChordComplexity value) {
+        return switch (value) {
+            case SIMPLE -> "Simple";
+            case MEDIUM -> "Media";
+            case COMPLEX -> "Todas";
+        };
     }
 
     private static String noteValueLabel(NoteValue value) {
