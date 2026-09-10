@@ -43,6 +43,11 @@ class FlagPaintingTest {
         assertFlagAt(NoteValue.EIGHTH, StemOverride.DOWN, MusicFont.flag8thDown());
     }
 
+    @Test
+    void aSixteenthNoteWithAnUpwardsStemGetsTheSixteenthUpFlagAtItsTip() {
+        assertFlagAt(NoteValue.SIXTEENTH, StemOverride.UP, MusicFont.flag16thUp());
+    }
+
     private static void assertFlagAt(NoteValue value, StemOverride override, String glyph) {
         Beat beat = Beat.of(new Duration(value, false), NOTE).withEffects(BeatEffects.none().withStemOverride(override));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
