@@ -143,25 +143,23 @@ class WriteAScoreAuditTest {
     }
 
     /**
-     * HALLAZGO (ver docs/auditoria-uso-real.md, "Write a Score"): esto es justo lo que
-     * AcceleratorGuard deberia arreglar -el JScrollPane que envuelve la partitura trae de
-     * fabrica un "scrollHome" para Ctrl+Home-, pero en vez de sacarle la tecla al JScrollPane le
-     * pone una accion que no hace nada: Swing la encuentra, la da por atendida y el atajo real
-     * de "Primer compás" nunca se llega a mirar.
+     * El JScrollPane que envuelve la partitura trae de fabrica un "scrollHome" para Ctrl+Home:
+     * AcceleratorGuard lo deja sin accion registrada (processKeyBinding devuelve false), asi que
+     * la tecla sigue subiendo hasta el atajo real de "Primer compás".
      */
     @Test
-    void ctrlHomeQuedaMudoAunqueElMenuPrimerCompasFunciona() throws Exception {
-        AuditSupport.assertAcceleratorIsSwallowedBeforeReachingTheMenu("Primer compás", () -> {
+    void ctrlHomePorMenuYPorAtajoMuevenElCursorAlPrimerCompas() throws Exception {
+        assertAcceleratorMatchesMenu("Primer compás", () -> {
             Editor editor = editorWithMeasures(3);
             editor.moveToLastMeasure();
             return editor;
         });
     }
 
-    /** HALLAZGO: mismo mecanismo que Ctrl+Home, con el "scrollEnd" de fabrica del JScrollPane. */
+    /** Mismo mecanismo que Ctrl+Home, con el "scrollEnd" de fabrica del JScrollPane. */
     @Test
-    void ctrlFinQuedaMudoAunqueElMenuUltimoCompasFunciona() throws Exception {
-        AuditSupport.assertAcceleratorIsSwallowedBeforeReachingTheMenu("Último compás", () -> editorWithMeasures(3));
+    void ctrlFinPorMenuYPorAtajoMuevenElCursorAlUltimoCompas() throws Exception {
+        assertAcceleratorMatchesMenu("Último compás", () -> editorWithMeasures(3));
     }
 
     @Test
