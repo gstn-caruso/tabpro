@@ -20,6 +20,7 @@ final class GlobalUiMutationScan {
     private static final Pattern SWITCHES_THE_LOOK_AND_FEEL = Pattern.compile("UIManager\\.setLookAndFeel\\(");
     private static final Pattern THEME_VARIABLE = Pattern.compile("\\bTheme\\s+(\\w+)\\s*[=;]");
     private static final Pattern ISOLATED = Pattern.compile("@Isolated\\b");
+    private static final Pattern DECLARES_A_TEST = Pattern.compile("@(Test|ParameterizedTest)\\b");
 
     private GlobalUiMutationScan() {
     }
@@ -27,12 +28,17 @@ final class GlobalUiMutationScan {
     static List<Path> unisolatedMutators(Path root) {
         try (Stream<Path> files = Files.walk(root)) {
             return files.filter(path -> path.toString().endsWith(".java"))
+                    .filter(GlobalUiMutationScan::isATestClass)
                     .filter(GlobalUiMutationScan::mutatesGlobalUiState)
                     .filter(path -> !isIsolated(path))
                     .toList();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private static boolean isATestClass(Path file) {
+        return DECLARES_A_TEST.matcher(withoutComments(read(file))).find();
     }
 
     private static boolean mutatesGlobalUiState(Path file) {

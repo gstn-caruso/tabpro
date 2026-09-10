@@ -31,6 +31,7 @@ class GlobalUiMutationScanTest {
     void aTestThatInstallsTheThemeWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
         Path culprit = write(root, "InstallsTheTheme.java", """
                 class InstallsTheTheme {
+                    @Test
                     void installs() {
                         Theme.install();
                     }
@@ -51,6 +52,7 @@ class GlobalUiMutationScanTest {
         write(root, "InstallsTheThemeIsolated.java", """
                 @Isolated
                 class InstallsTheThemeIsolated {
+                    @Test
                     void installs() {
                         Theme.install();
                     }
@@ -64,6 +66,7 @@ class GlobalUiMutationScanTest {
     void aTestThatChangesTheInterfaceFontSizeWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
         Path culprit = write(root, "ChangesTheFontSize.java", """
                 class ChangesTheFontSize {
+                    @Test
                     void changes() {
                         theme.useFontSize(16);
                     }
@@ -77,6 +80,7 @@ class GlobalUiMutationScanTest {
     void aTestThatTogglesHighContrastWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
         Path culprit = write(root, "TogglesHighContrast.java", """
                 class TogglesHighContrast {
+                    @Test
                     void toggles() {
                         theme.useHighContrast(true);
                     }
@@ -90,6 +94,7 @@ class GlobalUiMutationScanTest {
     void aTestThatSetsUpFlatLafWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
         Path culprit = write(root, "SetsUpFlatLaf.java", """
                 class SetsUpFlatLaf {
+                    @Test
                     void setsUp() {
                         FlatDarkLaf.setup();
                     }
@@ -103,6 +108,7 @@ class GlobalUiMutationScanTest {
     void aTestThatUpdatesTheFlatLafUiWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
         Path culprit = write(root, "UpdatesTheFlatLafUi.java", """
                 class UpdatesTheFlatLafUi {
+                    @Test
                     void updates() {
                         FlatLaf.updateUI();
                     }
@@ -116,6 +122,7 @@ class GlobalUiMutationScanTest {
     void aTestThatWritesToUiManagerWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
         Path culprit = write(root, "WritesToUiManager.java", """
                 class WritesToUiManager {
+                    @Test
                     void writes() {
                         UIManager.put("defaultFont", font);
                     }
@@ -129,6 +136,7 @@ class GlobalUiMutationScanTest {
     void aTestThatSwitchesTheLookAndFeelWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
         Path culprit = write(root, "SwitchesTheLookAndFeel.java", """
                 class SwitchesTheLookAndFeel {
+                    @Test
                     void switches() throws Exception {
                         UIManager.setLookAndFeel(new FlatDarkLaf());
                     }
@@ -144,6 +152,7 @@ class GlobalUiMutationScanTest {
                 class AppliesARealTheme {
                     private final Theme theme = new Theme();
 
+                    @Test
                     void applies() {
                         theme.apply(Theme.LIGHT);
                     }
@@ -157,6 +166,7 @@ class GlobalUiMutationScanTest {
     void aPanelThatAppliesAValueIsNotFlagged(@TempDir Path root) throws IOException {
         write(root, "AppliesAValueToAPanel.java", """
                 class AppliesAValueToAPanel {
+                    @Test
                     void applies() {
                         panel.apply(new Preferences());
                     }
@@ -170,6 +180,7 @@ class GlobalUiMutationScanTest {
     void aClassWithSeveralMutationsIsFlaggedOnlyOnce(@TempDir Path root) throws IOException {
         Path culprit = write(root, "MutatesSeveralThings.java", """
                 class MutatesSeveralThings {
+                    @Test
                     void mutates() {
                         Theme.install();
                         UIManager.put("defaultFont", font);
@@ -187,7 +198,21 @@ class GlobalUiMutationScanTest {
                 class MentionsTheThemeInAComment {
                     // "Sin animaciones" apaga las de FlatLaf: FlatLaf.updateUI() se llama aca.
                     /* Theme.install() se documenta en el manual, no se invoca aca. */
+                    @Test
                     void innocent() {
+                    }
+                }
+                """);
+
+        assertTrue(GlobalUiMutationScan.unisolatedMutators(root).isEmpty());
+    }
+
+    @Test
+    void aHelperThatIsNotItselfATestClassIsNotFlagged(@TempDir Path root) throws IOException {
+        write(root, "SwingHelper.java", """
+                final class SwingHelper {
+                    static void installTheme() {
+                        Theme.install();
                     }
                 }
                 """);
