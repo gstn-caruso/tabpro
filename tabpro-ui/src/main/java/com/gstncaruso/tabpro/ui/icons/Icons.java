@@ -56,13 +56,7 @@ public final class Icons {
     }
 
     public static Icon cut() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Line2D.Double(size * 0.28, size * 0.14, size * 0.68, size * 0.66));
-            graphics.draw(new Line2D.Double(size * 0.72, size * 0.14, size * 0.32, size * 0.66));
-            graphics.draw(new Ellipse2D.Double(size * 0.16, size * 0.66, size * 0.22, size * 0.22));
-            graphics.draw(new Ellipse2D.Double(size * 0.62, size * 0.66, size * 0.22, size * 0.22));
-        });
+        return svgIcon("scissors");
     }
 
     public static Icon copy() {
