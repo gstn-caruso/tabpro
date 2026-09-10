@@ -388,6 +388,34 @@ class FretboardViewTest {
         assertEquals("F", view.getAccessibleContext().getAccessibleDescription());
     }
 
+    @Test
+    void theNeckShowsAWoodGrainPattern() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        BufferedImage image = paint(view);
+
+        int x = view.fretCenterX(2);
+        boolean sawTheGrain = false;
+        for (int y = view.stringY(1) + 3; y <= view.stringY(2) - 3; y++) {
+            if (image.getRGB(x, y) != FretboardType.ELECTRIC.woodColor().getRGB()) {
+                sawTheGrain = true;
+                break;
+            }
+        }
+        assertTrue(sawTheGrain, "el mastil tiene que mostrar veta, no un color plano");
+    }
+
+    @Test
+    void theWoodGrainNeverChangesBetweenRepaints() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+
+        BufferedImage first = paint(view);
+        BufferedImage second = paint(view);
+
+        assertTrue(!differsSomewhere(first, second), "la veta tiene que ser reproducible, no aleatoria");
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
