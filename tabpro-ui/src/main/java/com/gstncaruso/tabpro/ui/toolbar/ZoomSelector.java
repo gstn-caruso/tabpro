@@ -30,7 +30,9 @@ public final class ZoomSelector extends JComboBox<String> {
 
     private static OptionalInt parsedPercentOf(String text) {
         try {
-            return OptionalInt.of(Integer.parseInt(text.strip().replace("%", "")));
+            int percent = Integer.parseInt(text.strip().replace("%", ""));
+            return percent >= Zoom.MIN_PERCENT && percent <= Zoom.MAX_PERCENT
+                    ? OptionalInt.of(percent) : OptionalInt.empty();
         } catch (NumberFormatException notANumber) {
             return OptionalInt.empty();
         }
