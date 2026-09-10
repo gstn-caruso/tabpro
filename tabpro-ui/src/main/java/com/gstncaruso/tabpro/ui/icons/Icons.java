@@ -304,14 +304,7 @@ public final class Icons {
     // ---- sonido -----------------------------------------------------------
 
     public static Icon play() {
-        return icon((graphics, size) -> {
-            Path2D triangle = new Path2D.Double();
-            triangle.moveTo(size * 0.28, size * 0.18);
-            triangle.lineTo(size * 0.84, size * 0.5);
-            triangle.lineTo(size * 0.28, size * 0.82);
-            triangle.closePath();
-            graphics.fill(triangle);
-        });
+        return svgIcon("player-play");
     }
 
     public static Icon stop() {
