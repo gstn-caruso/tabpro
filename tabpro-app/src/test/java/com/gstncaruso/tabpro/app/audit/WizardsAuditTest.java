@@ -28,20 +28,20 @@ class WizardsAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Transponer…");
-            assertNotNull(item, "no encontre 'Transponer…' en el menu real");
+            assertNotNull(item, "could not find 'Transponer…' in the real menu");
 
             Score before = editor.score();
 
             withDialog(item::doClick, dialog -> {
                 JSpinner semitones = findComponent(dialog, JSpinner.class);
-                assertNotNull(semitones, "no encontre el spinner real de semitonos");
+                assertNotNull(semitones, "could not find the real semitones spinner");
                 semitones.setValue(2);
 
                 findButton(dialog, "Transponer").doClick();
             });
 
             assertNotEquals(before, editor.score(),
-                    "los 2 semitonos elegidos en el spinner real tienen que transponer la partitura real");
+                    "the 2 semitones chosen in the real spinner must transpose the real score");
         } finally {
             AuditSupport.dispose(frame);
         }
