@@ -14,7 +14,9 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties;
 import com.gstncaruso.tabpro.ui.dialogs.info.NewScoreDefaults;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
@@ -22,13 +24,13 @@ import org.junit.jupiter.api.Test;
 
 class ScoreDocumentTest {
 
-    private java.util.prefs.Preferences scratch;
+    private final List<java.util.prefs.Preferences> scratchNodes = new ArrayList<>();
 
     @AfterEach
-    void clearsTheScratchNode() throws java.util.prefs.BackingStoreException {
+    void clearsTheScratchNodes() throws java.util.prefs.BackingStoreException {
         AwaitEdt.flush();
-        if (scratch != null) {
-            scratch.removeNode();
+        for (java.util.prefs.Preferences node : scratchNodes) {
+            node.removeNode();
         }
     }
 
@@ -116,9 +118,10 @@ class ScoreDocumentTest {
      */
     @Test
     void newScoreUsaLoQueHayGuardadoEnPropiedadesPorDefecto() {
-        scratch = java.util.prefs.Preferences.userRoot()
+        java.util.prefs.Preferences defaultsNode = java.util.prefs.Preferences.userRoot()
                 .node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
-        DefaultScoreProperties defaultProperties = new DefaultScoreProperties(scratch);
+        scratchNodes.add(defaultsNode);
+        DefaultScoreProperties defaultProperties = new DefaultScoreProperties(defaultsNode);
         defaultProperties.save(new NewScoreDefaults(
                 90, new TimeSignature(3, 4), KeySignature.cMajor(), "", ""));
         Editor editor = new Editor(Score.blank());
@@ -237,9 +240,10 @@ class ScoreDocumentTest {
     }
 
     private Preferences testPreferences() {
-        scratch = java.util.prefs.Preferences.userRoot()
+        java.util.prefs.Preferences node = java.util.prefs.Preferences.userRoot()
                 .node("com/gstncaruso/tabpro/test/" + java.util.UUID.randomUUID());
-        return new Preferences(scratch);
+        scratchNodes.add(node);
+        return new Preferences(node);
     }
 
     private static final class FakeScoreFiles implements ScoreFiles {
