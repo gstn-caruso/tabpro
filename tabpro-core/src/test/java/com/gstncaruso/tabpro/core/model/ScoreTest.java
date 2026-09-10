@@ -185,4 +185,11 @@ class ScoreTest {
     void rejectsAScoreWithoutTracks() {
         assertThrows(IllegalArgumentException.class, () -> new Score("", 120, List.of()));
     }
+
+    @Test
+    void hasNoMarkerInEffectWhenTheScoreHasNone() {
+        Score score = Score.blank();
+
+        assertTrue(score.measureOfMarkerInEffectAt(0).isEmpty());
+    }
 }

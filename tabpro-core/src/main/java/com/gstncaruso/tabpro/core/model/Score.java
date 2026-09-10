@@ -60,6 +60,10 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
         return first.attributesOf(clamped);
     }
 
+    public java.util.OptionalInt measureOfMarkerInEffectAt(int measureIndex) {
+        return java.util.OptionalInt.empty();
+    }
+
     public TimeSignature timeSignatureOf(int measureIndex) {
         Track first = track(0);
         int clamped = Math.clamp(measureIndex, 0, first.measureCount() - 1);
