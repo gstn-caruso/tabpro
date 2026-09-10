@@ -130,7 +130,20 @@ public final class MixTableRow extends JPanel {
         name.setForeground(sounds ? ScoreColors.INK : ScoreColors.MUTED_INK);
         number.setForeground(sounds ? ScoreColors.LABEL : ScoreColors.MUTED_INK);
         icon.repaint();
+        refreshAccessibleNames(track.name());
         syncing = false;
+    }
+
+    private void refreshAccessibleNames(String trackName) {
+        visible.getAccessibleContext().setAccessibleName("Mostrar pista " + trackName);
+        mute.getAccessibleContext().setAccessibleName("Silenciar " + trackName);
+        solo.getAccessibleContext().setAccessibleName("Solo " + trackName);
+        port.getAccessibleContext().setAccessibleName("Puerto de " + trackName);
+        port.setToolTipText("Puerto de " + trackName);
+        channel.getAccessibleContext().setAccessibleName("Canal MIDI de " + trackName);
+        effectChannel.getAccessibleContext().setAccessibleName("Canal de efectos de " + trackName);
+        instrument.getAccessibleContext().setAccessibleName("Instrumento de " + trackName);
+        instrument.setToolTipText("Instrumento de " + trackName);
     }
 
     JLabel numberLabel() {
@@ -159,6 +172,14 @@ public final class MixTableRow extends JPanel {
 
     JComboBox<String> instrumentField() {
         return instrument;
+    }
+
+    JToggleButton muteToggle() {
+        return mute;
+    }
+
+    JToggleButton soloToggle() {
+        return solo;
     }
 
     List<ParameterCell> parameterCells() {
