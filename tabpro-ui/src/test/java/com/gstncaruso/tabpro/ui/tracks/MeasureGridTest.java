@@ -123,6 +123,17 @@ class MeasureGridTest {
         assertEquals(new MeasureGrid.Cell(1, 0), grid.caret());
     }
 
+    @Test
+    void theUpArrowKeyMovesTheCaretToThePreviousTrack() {
+        Editor editor = editorWithTwoTracksAndThreeMeasures();
+        editor.selectTrack(1);
+        MeasureGrid grid = new MeasureGrid(editor);
+
+        pressShortcut(grid, KeyStroke.getKeyStroke("UP"));
+
+        assertEquals(new MeasureGrid.Cell(0, 0), grid.caret());
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
