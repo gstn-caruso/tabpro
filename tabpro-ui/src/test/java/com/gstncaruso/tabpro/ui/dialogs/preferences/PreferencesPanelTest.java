@@ -121,4 +121,14 @@ class PreferencesPanelTest {
 
         assertTrue(panel.toPreferences().highContrastEnabled());
     }
+
+    /** Preferencias [F12] > Accesibilidad: apaga las de FlatLaf y las propias de tabpro. */
+    @Test
+    void offersToTurnAnimationsOff() {
+        Preferences preferences = Preferences.defaults().withAnimationsDisabled(true);
+
+        PreferencesPanel panel = new PreferencesPanel(preferences);
+
+        assertTrue(panel.toPreferences().animationsDisabled());
+    }
 }

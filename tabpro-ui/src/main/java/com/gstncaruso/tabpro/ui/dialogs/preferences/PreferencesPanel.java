@@ -20,6 +20,7 @@ public final class PreferencesPanel extends FormPanel {
     private final JSpinner autosaveEvery = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
     private final JSpinner interfaceFontSize = new JSpinner(new SpinnerNumberModel(12, 10, 20, 1));
     private final JCheckBox highContrast = new JCheckBox("Alto contraste");
+    private final JCheckBox disableAnimations = new JCheckBox("Sin animaciones");
 
     public PreferencesPanel(Preferences initial) {
         addRow("Figura por defecto al insertar", defaultNoteValue);
@@ -31,6 +32,7 @@ public final class PreferencesPanel extends FormPanel {
         addSection("Accesibilidad");
         addRow("Tamano de letra de la interfaz", interfaceFontSize);
         addFullWidthRow(highContrast);
+        addFullWidthRow(disableAnimations);
         apply(initial);
     }
 
@@ -43,6 +45,7 @@ public final class PreferencesPanel extends FormPanel {
         forceMultitrack.setSelected(preferences.forceMultitrackInHorizontalMode());
         interfaceFontSize.setValue(preferences.interfaceFontSize());
         highContrast.setSelected(preferences.highContrastEnabled());
+        disableAnimations.setSelected(preferences.animationsDisabled());
     }
 
     public Preferences toPreferences() {
@@ -54,6 +57,7 @@ public final class PreferencesPanel extends FormPanel {
                 (Integer) autosaveEvery.getValue(),
                 forceMultitrack.isSelected(),
                 (Integer) interfaceFontSize.getValue(),
-                highContrast.isSelected());
+                highContrast.isSelected(),
+                disableAnimations.isSelected());
     }
 }
