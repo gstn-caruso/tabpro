@@ -24,7 +24,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class PlayTheScoreAuditTest {
 
     @Test
-    void espacioPorElAtajoArrancaLaReproduccionRealYElSegundoEspacioLaFrena() throws Exception {
+    void spaceByTheShortcutStartsRealPlaybackAndTheSecondSpaceStopsIt() throws Exception {
         Editor editor = editorWithANote();
         AuditSupport.RecordingPlayer player = new AuditSupport.RecordingPlayer();
         MainFrame frame = AuditSupport.newFrame(editor, player);
@@ -52,7 +52,7 @@ class PlayTheScoreAuditTest {
     }
 
     @Test
-    void ctrlEspacioPorElAtajoReproduceDesdeElPrincipio() throws Exception {
+    void ctrlSpaceByTheShortcutPlaysFromTheBeginning() throws Exception {
         Editor editor = editorWithANote();
         editor.insertMeasure();
         editor.moveToLastMeasure();
@@ -75,7 +75,7 @@ class PlayTheScoreAuditTest {
     }
 
     @Test
-    void f9AbreElDialogoRealDeLoopYEntrenadorDeVelocidad() throws Exception {
+    void f9OpensTheRealLoopAndSpeedTrainerDialog() throws Exception {
         Editor editor = editorWithANote();
         editor.insertMeasure();
         MainFrame frame = AuditSupport.newFrame(editor);
@@ -86,9 +86,9 @@ class PlayTheScoreAuditTest {
             assertNotNull(item, "no encontre 'Loop / Entrenador de velocidad…' en el menu real");
             assertEquals(KeyStroke.getKeyStroke("F9"), item.getAccelerator());
 
-            boolean abrioUnDialogo = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("F9"), 800);
+            boolean openedADialog = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("F9"), 800);
 
-            assertTrue(abrioUnDialogo, "F9, despachado de verdad sobre el lienzo, tiene que abrir el dialogo real");
+            assertTrue(openedADialog, "F9, despachado de verdad sobre el lienzo, tiene que abrir el dialogo real");
         } finally {
             AuditSupport.dispose(frame);
         }

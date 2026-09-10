@@ -19,7 +19,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class PercussionAuditTest {
 
     @Test
-    void elAsistenteDePercusionAbreUnDialogoRealParadoEnUnaPistaDePercusion() throws Exception {
+    void thePercussionWizardOpensARealDialogOnAPercussionTrack() throws Exception {
         Editor editor = blankEditor();
         editor.addTrack(Track.percussion("Batería"));
         editor.selectTrack(1);
@@ -35,7 +35,7 @@ class PercussionAuditTest {
     }
 
     @Test
-    void elAsistenteDePercusionAvisaEnVezDeAbrirseEnUnaPistaQueNoEsDePercusion() throws Exception {
+    void thePercussionWizardWarnsInsteadOfOpeningOnATrackThatIsNotPercussion() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
