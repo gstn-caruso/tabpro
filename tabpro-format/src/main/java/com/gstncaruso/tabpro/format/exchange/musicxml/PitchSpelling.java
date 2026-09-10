@@ -3,10 +3,10 @@ package com.gstncaruso.tabpro.format.exchange.musicxml;
 import com.gstncaruso.tabpro.core.model.Pitch;
 
 /**
- * Como se escribe una altura MIDI en MusicXML (step/alter/octave) y como se lee de vuelta.
- * MusicXML no necesita la armadura para esto: cada nota lleva su propia alteracion explicita:
- * la armadura solo decide si, a igualdad de sonido, se prefiere escribir con sostenidos o con
- * bemoles.
+ * How a MIDI pitch is written in MusicXML (step/alter/octave) and how it is read back.
+ * MusicXML does not need the key signature for this: every note carries its own explicit
+ * alteration; the key signature only decides whether, for the same pitch, sharps or flats are
+ * preferred.
  */
 final class PitchSpelling {
 

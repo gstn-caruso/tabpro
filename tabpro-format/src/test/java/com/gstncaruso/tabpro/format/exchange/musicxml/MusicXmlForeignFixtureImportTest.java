@@ -15,13 +15,6 @@ import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * {@link MusicXmlRoundTripTest} solo prueba que el exportador y el importador se den la
- * razon entre ellos: si los dos entienden mal el mismo elemento, el viaje de ida y vuelta
- * sale perfecto igual. Estos fixtures estan escritos a mano, con la forma en que MuseScore,
- * Finale o Sibelius emiten MusicXML de verdad -nunca con {@link MusicXmlScoreExporter}-, para
- * que el importador se mida contra el estandar y no contra si mismo.
- */
 class MusicXmlForeignFixtureImportTest {
 
     private final MusicXmlScoreImporter importer = new MusicXmlScoreImporter();

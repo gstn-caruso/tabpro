@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Donde hay que anotar el corchete de un grupo irregular: al principio y al final de cada
- * corrida seguida de beats con el mismo grupo (Duration.tuplet()). Un beat sin grupo no lleva
- * marca.
+ * Where the bracket of a tuplet needs to be marked: at the start and end of each run of
+ * consecutive beats with the same group (Duration.tuplet()). A beat with no group carries no
+ * mark.
  */
 final class TupletRuns {
 

@@ -15,12 +15,6 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * ASCII tab has no way to notate a rest, so a note followed by a rest looks identical to a
- * longer note: the manual warns about this ambiguity, and there is no way to avoid it by
- * reading the spacing alone. That is why the round trip that is guaranteed lossless is one for
- * a track without rests, with durations that are multiples of an eighth note.
- */
 class AsciiTabRoundTripTest {
 
     private final AsciiTabExporter exporter = new AsciiTabExporter();
