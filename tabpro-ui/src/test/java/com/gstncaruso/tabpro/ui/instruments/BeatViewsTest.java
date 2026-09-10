@@ -13,8 +13,11 @@ import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class BeatViewsTest {
@@ -176,6 +179,24 @@ class BeatViewsTest {
         clickKey(views, 64);
 
         assertEquals(1, editor.currentBeat().notes().size());
+    }
+
+    @Test
+    void pressingEnterOnTheFretboardWritesTheNoteUnderTheCaretLikeAClickWould() {
+        Editor editor = new Editor(Score.blank());
+        BeatViews views = new BeatViews(editor, new RecordingPlayer());
+        FretboardView fretboard = views.fretboard();
+        fretboard.setSize(900, FretboardView.PREFERRED_HEIGHT);
+        pressShortcut(fretboard, KeyStroke.getKeyStroke("RIGHT"));
+
+        pressShortcut(fretboard, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals(List.of(new Note(1, 1)), editor.currentBeat().notes());
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 
     /** El gesto real: un clic en el centro de esa tecla del piano. */

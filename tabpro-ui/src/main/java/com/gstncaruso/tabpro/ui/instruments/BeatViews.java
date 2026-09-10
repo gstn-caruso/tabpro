@@ -189,6 +189,11 @@ public final class BeatViews extends JPanel {
                 });
             }
         });
+        fretboard.onCaretActivated(note -> {
+            if (showsTheCursorBeat(editor, playhead)) {
+                writeFretNote(editing, note);
+            }
+        });
     }
 
     private void writeFretNote(InstrumentEditing editing, Note note) {
