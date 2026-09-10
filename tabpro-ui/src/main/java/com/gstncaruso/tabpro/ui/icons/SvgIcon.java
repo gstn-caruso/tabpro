@@ -18,7 +18,7 @@ public final class SvgIcon implements Icon {
     public SvgIcon(String resourcePath, int size) {
         URL resource = SvgIcon.class.getResource(resourcePath);
         if (resource == null) {
-            throw new IllegalArgumentException("No existe el recurso SVG: " + resourcePath);
+            throw new IllegalArgumentException("SVG resource does not exist: " + resourcePath);
         }
         this.document = new SVGLoader().load(resource);
         this.size = size;

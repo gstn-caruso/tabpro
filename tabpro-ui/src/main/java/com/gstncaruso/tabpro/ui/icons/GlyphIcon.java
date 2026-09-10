@@ -24,7 +24,7 @@ public final class GlyphIcon implements Icon {
 
     public GlyphIcon(int size, String... rows) {
         if (rows.length == 0) {
-            throw new IllegalArgumentException("GlyphIcon necesita al menos un renglón de glifos");
+            throw new IllegalArgumentException("GlyphIcon needs at least one row of glyphs");
         }
         this.size = size;
         Font measuringFont = BravuraFont.base().deriveFont(MEASURING_FONT_SIZE);
@@ -39,7 +39,7 @@ public final class GlyphIcon implements Icon {
 
     public static Icon overlaid(int size, String... glyphs) {
         if (glyphs.length == 0) {
-            throw new IllegalArgumentException("GlyphIcon necesita al menos un renglón de glifos");
+            throw new IllegalArgumentException("GlyphIcon needs at least one row of glyphs");
         }
         Font measuringFont = BravuraFont.base().deriveFont(MEASURING_FONT_SIZE);
         requireEveryGlyphDisplayable(measuringFont, glyphs);
@@ -72,7 +72,7 @@ public final class GlyphIcon implements Icon {
                 char glyph = row.charAt(index);
                 if (!font.canDisplay(glyph)) {
                     throw new IllegalArgumentException(
-                            "Bravura no tiene el glifo U+%04X".formatted((int) glyph));
+                            "Bravura does not have the glyph U+%04X".formatted((int) glyph));
                 }
             }
         }

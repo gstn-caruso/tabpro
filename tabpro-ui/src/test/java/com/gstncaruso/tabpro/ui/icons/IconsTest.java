@@ -26,8 +26,8 @@ class IconsTest {
     void theFactoryReturnsAnIconOfTheDeclaredSize(Method factory) throws ReflectiveOperationException {
         Icon icon = invoke(factory);
 
-        assertEquals(Icons.SIZE, icon.getIconWidth(), factory.getName() + " ancho");
-        assertEquals(Icons.SIZE, icon.getIconHeight(), factory.getName() + " alto");
+        assertEquals(Icons.SIZE, icon.getIconWidth(), factory.getName() + " width");
+        assertEquals(Icons.SIZE, icon.getIconHeight(), factory.getName() + " height");
     }
 
     @ParameterizedTest
@@ -42,7 +42,7 @@ class IconsTest {
         icon.paintIcon(probe, canvas, 0, 0);
         canvas.dispose();
 
-        assertTrue(hasAPixelOfTheThemeColor(image), factory.getName() + " no pinto del color del tema");
+        assertTrue(hasAPixelOfTheThemeColor(image), factory.getName() + " did not paint with the theme color");
     }
 
     @Test
@@ -61,7 +61,7 @@ class IconsTest {
         try {
             return (Icon) factory.invoke(null, representativeArgumentsFor(factory));
         } catch (InvocationTargetException e) {
-            throw new AssertionError(factory.getName() + " fallo al invocarse", e.getCause());
+            throw new AssertionError(factory.getName() + " failed to invoke", e.getCause());
         }
     }
 
@@ -81,7 +81,7 @@ class IconsTest {
         if (parameterType == String.class) {
             return "PM";
         }
-        throw new IllegalArgumentException("No hay argumento representativo para " + parameterType);
+        throw new IllegalArgumentException("No representative argument for " + parameterType);
     }
 
     private static boolean hasAPixelOfTheThemeColor(BufferedImage image) {
