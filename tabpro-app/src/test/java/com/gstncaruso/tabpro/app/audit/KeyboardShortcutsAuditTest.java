@@ -8,8 +8,8 @@ import static com.gstncaruso.tabpro.app.audit.AuditSupport.findComponent;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findMenuItem;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.newFrame;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
@@ -82,7 +82,7 @@ class KeyboardShortcutsAuditTest {
     }
 
     @Test
-    void f6NoAbreLasPropiedadesDeLaPistaConLaPartituraEnfocada() throws Exception {
+    void f6AbreLasPropiedadesDeLaPistaConLaPartituraEnfocada() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -94,16 +94,16 @@ class KeyboardShortcutsAuditTest {
 
             boolean abrioUnDialogo = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("F6"), 800);
 
-            assertFalse(abrioUnDialogo,
-                    "HALLAZGO: F6 con la partitura enfocada no abre 'Propiedades de la pista', "
-                            + "aunque el menu Pista > Propiedades si funciona (mismo mecanismo que Ctrl+Home)");
+            assertTrue(abrioUnDialogo,
+                    "F6 con la partitura enfocada tiene que abrir 'Propiedades de la pista', "
+                            + "igual que el menu Pista > Propiedades");
         } finally {
             AuditSupport.dispose(frame);
         }
     }
 
     @Test
-    void f8NoAbreConfigurarPaginaConLaPartituraEnfocada() throws Exception {
+    void f8AbreConfigurarPaginaConLaPartituraEnfocada() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -115,17 +115,17 @@ class KeyboardShortcutsAuditTest {
 
             boolean abrioUnDialogo = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("F8"), 800);
 
-            assertFalse(abrioUnDialogo,
-                    "HALLAZGO: F8 con la partitura enfocada no abre 'Configurar página', "
-                            + "aunque el menu Archivo > Configurar página si funciona");
+            assertTrue(abrioUnDialogo,
+                    "F8 con la partitura enfocada tiene que abrir 'Configurar página', "
+                            + "igual que el menu Archivo > Configurar página");
         } finally {
             AuditSupport.dispose(frame);
         }
     }
 
     @Test
-    void ctrlTabQuedaMudoAunqueElMenuMarcadorSiguienteFunciona() throws Exception {
-        AuditSupport.assertAcceleratorIsSwallowedBeforeReachingTheMenu("Marcador siguiente", () -> {
+    void ctrlTabPorMenuYPorAtajoMuevenElCursorAlMarcadorSiguiente() throws Exception {
+        assertAcceleratorMatchesMenu("Marcador siguiente", () -> {
             Editor editor = editorWithMeasures(2);
             editor.moveTo(1, 0, editor.cursor().string());
             editor.setMarker(Marker.named("Solo"));

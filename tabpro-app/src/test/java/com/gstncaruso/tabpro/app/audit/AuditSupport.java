@@ -477,50 +477,6 @@ final class AuditSupport {
         }
     }
 
-    /**
-     * HALLAZGO documentado como test verde: el comando funciona por menu (se comprueba antes de
-     * afirmar nada), pero su atajo -despachado de verdad sobre el lienzo- no mueve el modelo un
-     * pelo. Sirve para los casos en que AcceleratorGuard neutraliza al ancestro que le robaba la
-     * tecla poniendole una accion que no hace nada, en vez de sacarle la tecla del mapa: el
-     * barrido de Swing encuentra esa accion vacia, la da por atendida y nunca llega al
-     * WHEN_IN_FOCUSED_WINDOW donde vive el atajo real.
-     */
-    static void assertAcceleratorIsSwallowedBeforeReachingTheMenu(String menuItemLabel, Supplier<Editor> setup)
-            throws Exception {
-        Editor viaMenu = setup.get();
-        MainFrame menuFrame = newFrame(viaMenu);
-        try {
-            JMenuItem item = findMenuItem(menuFrame.getJMenuBar(), menuItemLabel);
-            assertNotNull(item, "no encontre en el menu real el item \"" + menuItemLabel + "\"");
-            KeyStroke accelerator = item.getAccelerator();
-            assertNotNull(accelerator, "\"" + menuItemLabel + "\" no tiene acelerador en el menu real");
-
-            ModelSnapshot before = snapshot(viaMenu);
-            SwingUtilities.invokeAndWait(item::doClick);
-            ModelSnapshot afterMenu = snapshot(viaMenu);
-            assertNotEquals(before, afterMenu,
-                    "\"" + menuItemLabel + "\" por menu no cambio nada: el comando en si no sirve de referencia");
-
-            Editor viaKey = setup.get();
-            MainFrame keyFrame = newFrame(viaKey);
-            try {
-                var canvas = findComponent(keyFrame.getContentPane(), com.gstncaruso.tabpro.ui.score.ScoreCanvas.class);
-                assertNotNull(canvas, "no encontre el ScoreCanvas real en la ventana");
-                ModelSnapshot beforeKey = snapshot(viaKey);
-                pressKey(canvas, accelerator);
-                ModelSnapshot afterKey = snapshot(viaKey);
-
-                assertEquals(beforeKey, afterKey,
-                        "HALLAZGO: se esperaba que \"" + menuItemLabel + "\" ya no quedara mudo por teclado; "
-                                + "si este assert empieza a fallar, revisar si AcceleratorGuard se arreglo");
-            } finally {
-                dispose(keyFrame);
-            }
-        } finally {
-            dispose(menuFrame);
-        }
-    }
-
     /** Todos los JMenuItem de la barra, para las auditorias que recorren el menu entero. */
     static List<JMenuItem> allMenuItems(JMenuBar menuBar) {
         List<JMenuItem> items = new ArrayList<>();
