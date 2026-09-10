@@ -84,11 +84,7 @@ final class PowerTabNoteReader {
         return effects;
     }
 
-    /**
-     * A PowerTab slide can carry both a "sliding in from" and a "sliding out to" at
-     * once; the tabpro model only stores one per note, so the outgoing one (more
-     * specific) wins over the incoming one.
-     */
+    /** A PowerTab slide can carry both a "sliding in from" and a "sliding out to" at once. */
     private NoteEffects withSlide(NoteEffects effects, int symbol) {
         int slideOutType = (symbol >>> 8) & 0xFF;
         int slideIntoType = (symbol >>> 16) & 0xFF;
@@ -111,9 +107,9 @@ final class PowerTabNoteReader {
     }
 
     /**
-     * A PowerTab bend distinguishes 8 variants (holding the peak point or not); the
-     * tabpro model knows 5 curve shapes. The "held" variants are approximated to the
-     * base shape, and the duration and the drawing points have nowhere to go in the model.
+     * A PowerTab bend distinguishes 8 variants (holding the peak point or not). The
+     * "held" variants are approximated to the base shape, and the duration and the
+     * drawing points have nowhere to go in the model.
      */
     private static Bend bendOf(int symbol) {
         int type = (symbol >>> 20) & 0xF;

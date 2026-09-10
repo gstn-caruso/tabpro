@@ -51,24 +51,9 @@ import java.util.Optional;
  * delimited by their barlines; each staff stores all its positions in a single array,
  * indexed by the same position numbering the barlines use.
  *
- * <p>The file carries two independent "scores" (guitar and bass); tabpro does not do
- * the measure-by-measure merge that PowerTab Editor 2.0 does between them, so each one
- * comes in with its own measures, as separate tracks. If the song only uses one, the
- * other arrives empty and adds no tracks.
- *
  * <p>The number of staves in a score need not match the number of guitars defined:
  * PowerTab assigns guitars to staves with "guitar in" (a guitar may play on no staff,
- * or a staff may have no explicit assignment). One track comes out of each staff; which
- * guitar plays it is resolved by its first "guitar in" and, if there is none, by the
- * simple rule that staff N uses guitar N.
- *
- * <p>Scope of this first version: structure (measures, tracks, tuning), notes and their
- * durations, and a reasonable set of per-note effects (tie, harmonics, slide, bend,
- * trill). What is not supported is declared with a clear exception instead of guessing:
- * compressed multi-measure rests, rhythm slashes, systems with a different staff count
- * within the same score, and reassigning a staff to another guitar partway through the
- * piece. A guitar that is defined but has no staff assigned anywhere in the score
- * generates no track: it plays nothing, so no music is lost.
+ * or a staff may have no explicit assignment).
  */
 public final class PowerTabFile {
 
@@ -137,14 +122,6 @@ public final class PowerTabFile {
         return tracks;
     }
 
-    /**
-     * Which guitar plays on each staff, according to the first "guitar in" that
-     * mentions it (the lowest set bit of its mask). If none mentions it, the simple
-     * rule that staff N plays guitar N is used. If that guitar does not exist either
-     * (incomplete metadata: happens in hand-built test files), the first guitar defined
-     * is used instead of failing -- that only changes the name, tuning, and channel
-     * attributed to the staff, never the notes it carries.
-     */
     private static int[] resolveGuitarPerStaff(PowerTabScore score, int staffCount) {
         int[] guitarOfStaff = new int[staffCount];
         java.util.Arrays.fill(guitarOfStaff, -1);
@@ -228,11 +205,6 @@ public final class PowerTabFile {
         return voice.isUnused() ? Voice.restingFor(Duration.quarter()) : voice;
     }
 
-    /**
-     * The guitar's tuning normally has as many notes as the staff declares strings;
-     * when it does not match (happens in some hand-built test files), it is adjusted
-     * to the staff, which is what actually bounds the string numbers the notes carry.
-     */
     private static Tuning tuningOf(PowerTabGuitar guitar, int stringCount) {
         List<Integer> notes = guitar.tuningMidiNotes();
         Tuning tuning = notes.isEmpty()
@@ -243,8 +215,7 @@ public final class PowerTabFile {
 
     /**
      * PowerTab does not distinguish an effects channel separate from the main channel
-     * (unlike Guitar Pro): the same number is used for both, which is how tabpro models
-     * "a single channel per track".
+     * (unlike Guitar Pro): the same number is used for both.
      */
     private static Channel channelOf(PowerTabGuitar guitar, int staffIndex) {
         int number = Math.clamp(staffIndex + 1, 1, Channel.CHANNELS_PER_PORT);
