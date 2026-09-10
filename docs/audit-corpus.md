@@ -1,50 +1,49 @@
-# Auditoría de corpus — tabpro contra archivos reales
+# Corpus audit — tabpro against real files
 
-Las auditorías anteriores (`auditoria-manual.md`, `auditoria-uso-real.md`) verificaron el código
-contra el manual y contra el camino real del usuario, pero con muy pocos archivos ajenos de
-verdad: `tabpro-format` trae 10 fixtures propios de Guitar Pro, 17 de PowerTab y 5 de MusicXML.
-Desde la última vez que se probó contra un corpus externo (PyGuitarPro, 60/61 archivos), cambió
-mucho el pintado de la partitura (tipografía Bravura, glifos, tempo, marcadores, selección),
-las barras, la mesa de mezcla y la vista global. Esta auditoría vuelve a bajar el corpus de tests
-de **PyGuitarPro** (LGPL, por eso nunca se commitea: vive en el scratchpad de la sesión) y lo
-suma a los fixtures propios, para encontrar qué se rompe con archivos reales: excepciones,
-cuelgues, páginas que no renderizan, exportaciones que no reabren.
+The previous audits (`audit-manual.md`, `audit-real-use.md`) checked the code against the manual
+and against the real user path, but with very few genuinely foreign files: `tabpro-format` ships
+10 of its own Guitar Pro fixtures, 17 PowerTab and 5 MusicXML. Since the last time it was tested
+against an external corpus (PyGuitarPro, 60/61 files), a lot changed in how the score is painted
+(Bravura typeface, glyphs, tempo, markers, selection), the toolbars, the mixer and the global
+view. This audit downloads the **PyGuitarPro** test corpus again (LGPL, which is why it is never
+committed: it lives in the session's scratchpad) and adds it to the project's own fixtures, to
+find what breaks with real files: exceptions, hangs, pages that fail to render, exports that
+fail to reopen.
 
-Código auditado: rama `main`, versión 0.49.1. Corpus: 49 Guitar Pro (39 de PyGuitarPro + 10
-propios, `.gp3`/`.gp4`/`.gp5`), 17 PowerTab (propios) y 5 MusicXML (propios) — 71 archivos.
+Audited code: `main` branch, version 0.49.1. Corpus: 49 Guitar Pro (39 from PyGuitarPro + 10 of
+our own, `.gp3`/`.gp4`/`.gp5`), 17 PowerTab (our own) and 5 MusicXML (our own) — 71 files.
 
-## Método
+## Method
 
-1. **Paso automático, sin ventana** (`CorpusAuditTest`, descartable, borrado antes de este commit):
-   por cada archivo, en un `assertTimeoutPreemptively` de 60 s —
-   - lo abre por el `ScoreExchange` real (`CombinedExchange(NotationExchange, SoundExchange)`,
-     el mismo que usa `Archivo > Importar`): `importGuitarPro`/`importPowerTab`/`importMusicXml`
-     según la carpeta de origen;
-   - renderiza todas sus páginas en modo Página (`ScoreSheets.renderPages`) y una vez en modo
-     Pergamino (`ScoreSheets.render(..., ViewMode.PARCHMENT, ...)`), fuera de pantalla;
-   - lo exporta a `.gp4`, MIDI y MusicXML a un directorio temporal y reabre cada export con el
-     lector correspondiente;
-   - lo guarda como `.tabpro` (`JsonScoreFiles`) y lo recarga, comparando el `Score` con `equals`.
-   - Corrida: `mvn -B -pl tabpro-tests -am test -Dtests.excluded.groups=ninguno
-     -Dgroups=integracion -Dtest=CorpusAuditTest` — **71/71 casos ejecutados en 2,1 s**
-     (sin contar el arranque de Maven/JVM).
+1. **Automated pass, no window** (`CorpusAuditTest`, disposable, deleted before this commit): for
+   each file, inside a 60 s `assertTimeoutPreemptively` —
+   - opens it through the real `ScoreExchange` (`CombinedExchange(NotationExchange,
+     SoundExchange)`, the same one `Archivo > Importar` uses): `importGuitarPro` /
+     `importPowerTab` / `importMusicXml` depending on the source folder;
+   - renders every page in Page mode (`ScoreSheets.renderPages`) and once in Parchment mode
+     (`ScoreSheets.render(..., ViewMode.PARCHMENT, ...)`), off screen;
+   - exports it to `.gp4`, MIDI and MusicXML into a temp directory and reopens each export with
+     the matching reader;
+   - saves it as `.tabpro` (`JsonScoreFiles`) and reloads it, comparing the `Score` with `equals`.
+   - Run: `mvn -B -pl tabpro-tests -am test -Dtests.excluded.groups=ninguno
+     -Dgroups=integration -Dtest=CorpusAuditTest` — **71/71 cases executed in 2.1 s**
+     (not counting Maven/JVM startup).
 
-2. **Paso con ventana real** (`GuiSmokeAuditTest`, descartable, borrado antes de este commit):
-   `Theme.install()` + `AuditSupport.newFrame` con un `RecordingPlayer` (no frena solo) y un
-   `EventQueue` propio empujado sobre la cola real de AWT (para atrapar excepciones que escapan
-   del pintado, no solo las que dispara el propio test), sobre cinco archivos variados
-   (multipista + muchos compases, percusión + segunda voz + repetición con finales alternativos,
-   dos voces, repeticiones, direcciones): recorre las cuatro vistas del menú Ver, mueve el cursor
-   al último compás y reproduce dos segundos. **Sólo se pudo correr 1 de los 5 casos** — ver
-   Hallazgo 2.
+2. **Pass with a real window** (`GuiSmokeAuditTest`, disposable, deleted before this commit):
+   `Theme.install()` + `AuditSupport.newFrame` with a `RecordingPlayer` (it does not stop on its
+   own) and its own `EventQueue` pushed onto AWT's real queue (to catch exceptions that escape
+   painting, not just the ones the test itself throws), over five varied files (multitrack +
+   many measures, percussion + second voice + repeat with alternate endings, two voices, repeats,
+   directions): it walks the four views in the View menu, moves the cursor to the last measure
+   and plays for two seconds. **Only 1 of the 5 cases could be run** — see Finding 2.
 
-## Tabla — paso automático (71/71 archivos)
+## Table — automated pass (71/71 files)
 
-Todas las columnas booleanas son sobre el mismo archivo ya abierto; `-1`/`false` en un archivo
-que no abrió significa que los pasos siguientes ni se intentaron. `tabproIgual` compara el
-`Score` recargado con `equals()`. `ms` es el tiempo del pipeline completo por archivo (paso 1).
+All boolean columns are about the same already-opened file; `-1`/`false` on a file that failed
+to open means the following steps were not even attempted. `tabproEqual` compares the reloaded
+`Score` with `equals()`. `ms` is the full pipeline time per file (step 1).
 
-| archivo | formato | abre | pistas | compases | renderiza | gp4 | midi | musicxml | tabpro | tabpro= | ms |
+| file | format | opens | tracks | measures | renders | gp4 | midi | musicxml | tabpro | tabproEqual | ms |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 001_Funky_Guy.gp5 | gp5 | true | 2 | 2 | true | true | true | true | true | true | 194 |
 | Accent-force.gp3 | gp3 | true | 1 | 1 | true | true | true | true | true | true | 13 |
@@ -118,16 +117,16 @@ que no abrió significa que los pasos siguientes ni se intentaron. `tabproIgual`
 | tablatura-en-drop-d.musicxml | musicxml | true | 1 | 1 | true | true | true | true | true | true | 6 |
 | tresillo-de-corcheas.musicxml | musicxml | true | 1 | 1 | true | true | true | true | true | true | 6 |
 
-Resumen: **49/49 Guitar Pro** y **5/5 MusicXML** pasan los cinco pasos enteros. **14/17 PowerTab**
-pasan; los otros 3 son el Hallazgo 1. Ninguno de los 68 archivos que abrieron encontró un problema
-al renderizar, exportar/reabrir GP4, MIDI o MusicXML, ni en la ida y vuelta a `.tabpro`.
+Summary: **49/49 Guitar Pro** and **5/5 MusicXML** pass all five steps in full. **14/17
+PowerTab** pass; the other 3 are Finding 1. None of the 68 files that opened ran into a problem
+when rendering, exporting/reopening GP4, MIDI or MusicXML, or on the round trip to `.tabpro`.
 
-## Hallazgos
+## Findings
 
-### Hallazgo 1 — Tres `.ptb` no abren (limitación ya conocida, no es un bug nuevo)
+### Finding 1 — Three `.ptb` files fail to open (already-known limitation, not a new bug)
 
-`guitar_ins.ptb`, `merge_multibar_rests.ptb` y `positions.ptb` (fixtures propios de
-`tabpro-format/src/test/resources/powertab/`) tiran `ScoreFileException` al abrir:
+`guitar_ins.ptb`, `merge_multibar_rests.ptb` and `positions.ptb` (fixtures of our own in
+`tabpro-format/src/test/resources/powertab/`) throw `ScoreFileException` on open:
 
 ```
 com.gstncaruso.tabpro.core.files.ScoreFileException: esta partitura reasigna el pentagrama 0 a
@@ -141,21 +140,21 @@ compases comprimido (multibar rest), que todavia no soportamos
     ... (merge_multibar_rests.ptb y positions.ptb)
 ```
 
-No es un hallazgo nuevo: `PowerTabFileTest` (`tabpro-format`) ya tiene
-`aMultibarRestIsReportedInsteadOfGuessed` y `aGuitarReassignmentIsReportedInsteadOfGuessed`
-que verifican exactamente esto — el lector reporta en vez de adivinar, a propósito. Se
-lista igual porque es lo que le pasa a un usuario real que intenta abrir estos tres archivos:
-sale un cartel de error, no un cuelgue ni una lectura corrupta. No requiere fixture nuevo.
+Not a new finding: `PowerTabFileTest` (`tabpro-format`) already has
+`aMultibarRestIsReportedInsteadOfGuessed` and `aGuitarReassignmentIsReportedInsteadOfGuessed`,
+which check exactly this — the reader reports instead of guessing, on purpose. It is listed here
+anyway because it is what happens to a real user who tries to open these three files: an error
+message comes up, not a hang or a corrupted read. No new fixture is needed.
 
-### Hallazgo 2 — `IllegalArgumentException` al mover el cursor tras cambiar de vista, y la corrida completa se cuelga
+### Finding 2 — `IllegalArgumentException` when moving the cursor after switching views, and the whole run hangs
 
-**Archivo:** `Directions.gp5` (PyGuitarPro; 1 pista, 19 compases, con símbolos Coda/Segno).
-**Paso:** `GuiSmokeAuditTest` — con la ventana real visible, tras recorrer Pergamino → Pantalla
-vertical → Pantalla horizontal → **Modo página** (menú Ver), `editor.moveToLastMeasure()` para
-ir al último compás dispara, **de forma sincrónica sobre el mismo hilo que la llamó** (no el
-EDT): `Editor.moveCursor` → `Editor.notifyListeners` → `ScoreCanvas.editorChanged` (línea 406)
-→ `JViewport.scrollRectToVisible` → intenta crear un buffer de doble buffering de **0×0 píxeles**
-y explota:
+**File:** `Directions.gp5` (PyGuitarPro; 1 track, 19 measures, with Coda/Segno symbols).
+**Step:** `GuiSmokeAuditTest` — with the real window visible, after walking Parchment → Vertical
+screen → Horizontal screen → **Page mode** (View menu), `editor.moveToLastMeasure()` to go to the
+last measure fires, **synchronously on the same thread that called it** (not the EDT):
+`Editor.moveCursor` → `Editor.notifyListeners` → `ScoreCanvas.editorChanged` (line 406) →
+`JViewport.scrollRectToVisible` → it tries to create a **0×0-pixel** double-buffering buffer and
+blows up:
 
 ```
 java.lang.IllegalArgumentException: Width (0) and height (0) cannot be <= 0
@@ -173,59 +172,61 @@ java.lang.IllegalArgumentException: Width (0) and height (0) cannot be <= 0
     at com.gstncaruso.tabpro.core.editing.Editor.moveToLastMeasure(Editor.java:710)
 ```
 
-**Sospecha:** `com.gstncaruso.tabpro.ui.score.ScoreCanvas.java:406` (el `scrollRectToVisible` no
-se defiende de un viewport con tamaño 0 — plausible justo después de un cambio de modo de vista,
-mientras el layout todavía no asentó el tamaño real). Un caso menor: en el harness,
-`moveToLastMeasure()` se llamó directo desde el hilo del test en vez de por una tecla real
-despachada (que sí pasaría por el EDT) — el hallazgo puede estar amplificado por eso, pero el
-`scrollRectToVisible` sin guarda contra tamaño 0 es real y vale la pena blindarlo igual.
+**Suspected cause:** `com.gstncaruso.tabpro.ui.score.ScoreCanvas.java:406` (the
+`scrollRectToVisible` call does not guard against a viewport with size 0 — plausible right after
+a view-mode switch, while the layout has not yet settled on the real size). One minor caveat: in
+the harness, `moveToLastMeasure()` was called directly from the test thread instead of through a
+real dispatched key (which would go through the EDT) — the finding may be amplified by that, but
+the unguarded `scrollRectToVisible` against a zero size is real and worth shielding anyway.
 
-**Agravante, mismo mecanismo documentado en `docs/auditoria-uso-real.md` (nota sobre
-`withDialog`/EDT):** después de esta excepción, el fork entero de Maven quedó colgado (no
-terminó solo, hubo que matarlo con `kill` externo a los ~20 minutos: "*The forked VM terminated
-without properly saying goodbye*", exit 143). Una segunda corrida, en una JVM nueva y **sin
-incluir el caso que ya había fallado** (sólo los otros 4 archivos: `Demo v5.gp5`,
-`tabpro-features.gp5`, `Voices.gp5`, `Repeat.gp5`), **también se colgó** y se mató con
-`timeout 300` + `kill` externo. Como ninguna corrida escribió el reporte de Surefire para esta
-clase (`tabpro-tests/target/surefire-reports/` sólo tiene el de `CorpusAuditTest`), no se sabe
-si el cuelgue fue el mismo archivo/paso u otro: el `assertTimeoutPreemptively` no sirve acá —
-si el bloqueo es una espera real de AWT/Swing (o más abajo, de Xlib) y no un simple hilo lento,
-ninguna clase de `Timeout` de JUnit lo puede cortar desde adentro de la misma JVM.
-**Sólo se pudo auditar 1 de los 5 archivos elegidos para la ventana real**; los otros cuatro
-quedan pendientes de una corrida con timeout externo por proceso (`timeout` de shell) alrededor
-de cada archivo por separado, no de la clase entera.
+**Aggravating factor, same mechanism documented in `docs/audit-real-use.md` (note about
+`withDialog`/EDT):** after this exception, the whole Maven fork hung (it did not finish on its
+own; it had to be killed with an external `kill` after ~20 minutes: "*The forked VM terminated
+without properly saying goodbye*", exit 143). A second run, in a fresh JVM and **excluding the
+case that had already failed** (only the other 4 files: `Demo v5.gp5`, `tabpro-features.gp5`,
+`Voices.gp5`, `Repeat.gp5`), **also hung** and was killed with `timeout 300` + an external `kill`.
+Since neither run wrote a Surefire report for this class (`tabpro-tests/target/surefire-reports/`
+only has the one for `CorpusAuditTest`), it is not known whether the hang was the same file/step
+or a different one: `assertTimeoutPreemptively` is no use here — if the block is a real AWT/Swing
+wait (or lower down, an Xlib one) and not just a slow thread, no JUnit `Timeout` mechanism can cut
+it off from inside the same JVM.
+**Only 1 of the 5 files chosen for the real window could be audited**; the other four remain
+pending a run with an external per-process timeout (shell `timeout`) around each file separately,
+not around the whole class.
 
-**Tamaño estimado del fix:** acotado — un guard en `ScoreCanvas.editorChanged` (o en el punto
-donde arma el rectángulo para `scrollRectToVisible`) que no pida scroll si el viewport todavía
-mide 0×0. El cuelgue en sí (agravante) es más caro de diagnosticar: hace falta reproducirlo con
-un thread dump (`jstack`) en el momento exacto, no con `assertTimeoutPreemptively`.
+**Estimated size of the fix:** contained — a guard in `ScoreCanvas.editorChanged` (or at the
+point where it builds the rectangle for `scrollRectToVisible`) that skips the scroll request if
+the viewport is still 0×0. The hang itself (the aggravating factor) is more expensive to
+diagnose: it needs to be reproduced with a thread dump (`jstack`) at the exact moment, not with
+`assertTimeoutPreemptively`.
 
-**Cerrado en `fix/las-notificaciones-del-editor-llegan-por-el-edt`:**
-`ScoreCanvas.editorChanged` ahora salta el `scrollRectToVisible` si el rectángulo del cursor o
-`getVisibleRect()` están vacíos (viewport todavía en 0×0), con test (`ScoreCanvasTest`,
-probado con la maqueta que reproducía el `IllegalArgumentException` de más arriba: sin el guard,
-el `JViewport` real terminaba con una posición de scroll sin sentido en vez de tirar en un test
-headless — el `IllegalArgumentException` en sí sólo sale con ventana real, porque
-`RepaintManager` sólo intenta el buffer de doble buffering cuando el componente está *showing*).
-Como defensa en profundidad, se sumó `EdtEditorListener` (`tabpro-ui`): un adaptador que entrega
-en el acto si ya está en el EDT, o difiere con `invokeLater` si no — todos los componentes Swing
-podrían engancharse al `Editor` a través de él, pero sólo `ScoreCanvas` quedó conectado en este
-cambio, porque `TrackPanel`/`StatusBar`/`TrackSelector`/etc. cachean estado dentro de su
-`refresh()`/`editorChanged()` (patrón *push*) y sus tests existentes mutan el `Editor` y aseveran
-en el mismo statement, desde el hilo del test — nunca el EDT —: diferir esa entrega los rompería.
-Extender el adaptador a esos componentes es un cambio más grande (reescribir esos tests para
-bombear el EDT) que queda pendiente, fuera del alcance acotado de este fix.
+**Closed in `fix/las-notificaciones-del-editor-llegan-por-el-edt`:**
+`ScoreCanvas.editorChanged` now skips `scrollRectToVisible` if the cursor rectangle or
+`getVisibleRect()` are empty (viewport still 0×0), with a test (`ScoreCanvasTest`, tested with the
+mock that reproduced the `IllegalArgumentException` above: without the guard, the real
+`JViewport` ended up with a nonsensical scroll position instead of throwing in a headless test —
+the `IllegalArgumentException` itself only shows up with a real window, because `RepaintManager`
+only attempts the double-buffering buffer when the component is *showing*). As defense in depth,
+`EdtEditorListener` was added (`tabpro-ui`): an adapter that delivers immediately if already on
+the EDT, or defers with `invokeLater` if not — every Swing component could hook into the `Editor`
+through it, but only `ScoreCanvas` was wired up in this change, because
+`TrackPanel`/`StatusBar`/`TrackSelector`/etc. cache state inside their `refresh()`/
+`editorChanged()` (a *push* pattern) and their existing tests mutate the `Editor` and assert in
+the same statement, from the test thread — never the EDT —: deferring that delivery would break
+them. Extending the adapter to those components is a bigger change (rewriting those tests to pump
+the EDT) that remains pending, outside the contained scope of this fix.
 
-El humo con ventana real (`ViewSwitchThenCursorMoveAuditTest`, `tabpro-app`, con una partitura
-propia con Coda/Segno) recorre las cuatro vistas y mueve el cursor al último compás desde el
-hilo del test, igual que el harness original: no tira y no cuelga, ni sólo ni corriendo con las
-otras 103 pruebas del grupo `integracion` en paralelo.
+The smoke test with a real window (`ViewSwitchThenCursorMoveAuditTest`, `tabpro-app`, with a score
+of our own that has Coda/Segno) walks the four views and moves the cursor to the last measure
+from the test thread, the same as the original harness: it neither throws nor hangs, alone or
+running alongside the other 103 tests in the `integration` group in parallel.
 
-**Sobre el cuelgue:** no se pudo reproducir con el harness reconstruido (ni en aislamiento ni en
-la corrida completa del grupo `integracion`, varias veces). La hipótesis con más evidencia es la
-que ya documentó `docs/auditoria-uso-real.md`: un `AWTEventListener` global (`Toolkit`) sin
-`@ResourceLock(AuditSupport.SWING_LOCK)` en una clase que corre en paralelo con otra que sí abre
-diálogos reales dejaba encolada la suite entera ("se reprodujo una vez, sin el lock"). El
-`GuiSmokeAuditTest` descartable pudo haber corrido sin ese lock -no quedó en el repositorio para
-confirmarlo-, lo que también explicaría que la segunda corrida (con otro conjunto de archivos)
-se colgara igual: la colisión es con *otra* clase de la suite, no con el archivo bajo prueba.
+**About the hang:** it could not be reproduced with the rebuilt harness (neither in isolation nor
+in the full run of the `integration` group, several times). The hypothesis with the most evidence
+is the one `docs/audit-real-use.md` already documented: a global `AWTEventListener` (`Toolkit`)
+with no `@ResourceLock(AuditSupport.SWING_LOCK)` in a class running in parallel with another that
+does open real dialogs left the whole suite queued up ("reproduced once, without the lock"). The
+disposable `GuiSmokeAuditTest` may have run without that lock — it was not kept in the repository
+to confirm — which would also explain why the second run (with a different set of files) hung the
+same way: the collision is with *another* class in the suite, not with the file under test.
+</content>
