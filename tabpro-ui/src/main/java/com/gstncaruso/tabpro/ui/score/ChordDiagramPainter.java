@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.score;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.core.model.TrackDisplay;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import java.awt.BasicStroke;
 import java.awt.FontMetrics;
@@ -25,12 +26,15 @@ final class ChordDiagramPainter {
     private static final int VISIBLE_FRETS = 4;
     /** Separacion horizontal entre diagramas cuando se dibujan en fila, en el encabezado. */
     private static final int ROW_GAP = 30;
+    /** Separacion entre la grilla del diagrama y el pentagrama, arriba o abajo. */
+    private static final int STAFF_GAP = 12;
 
     private ChordDiagramPainter() {
     }
 
     static void paintMeasure(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
-        if (!track.settings().display().diagrams().showsOnTheScore()) {
+        TrackDisplay display = track.settings().display();
+        if (!display.diagrams().showsOnTheScore()) {
             return;
         }
         Measure measure = track.measure(measureIndex);
@@ -41,7 +45,9 @@ final class ChordDiagramPainter {
                     .filter(ChordDiagram::shown)
                     .ifPresent(chord -> {
                         Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, index);
-                        int gridBottom = layout.staffTop(trackIndex, measureIndex) - 12;
+                        int gridBottom = display.diagramsBelowStandardNotation()
+                                ? layout.staffBottom(trackIndex, measureIndex) + STAFF_GAP + VISIBLE_FRETS * FRET_GAP
+                                : layout.staffTop(trackIndex, measureIndex) - STAFF_GAP;
                         paintDiagram(g, bounds.x + bounds.width / 2, gridBottom, chord);
                     });
         }
