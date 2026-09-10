@@ -193,6 +193,7 @@ class LabelsTest {
 
         assertFalse(label.isBlank());
         assertNotEquals(value.name(), label);
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text("domain.ScaleType." + value.name()).isBlank());
     }
 
     @Test

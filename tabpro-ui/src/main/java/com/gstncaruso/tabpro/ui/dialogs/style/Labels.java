@@ -12,7 +12,6 @@ import com.gstncaruso.tabpro.ui.instruments.FretboardType;
 import com.gstncaruso.tabpro.ui.instruments.KeyboardDisplayMode;
 import com.gstncaruso.tabpro.ui.instruments.NoteNameMode;
 import com.gstncaruso.tabpro.ui.instruments.ScaleLabelMode;
-import com.gstncaruso.tabpro.ui.instruments.ScaleType;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import java.util.List;
@@ -31,7 +30,6 @@ public final class Labels {
             case Scale scale -> scale.name();
             case Tuning tuning -> tuning.name() + " (" + stringLetters(tuning) + ")";
             case Dynamic dynamic -> dynamic.symbol();
-            case ScaleType scaleType -> scaleType.label();
             case FretboardDisplayMode fretboardDisplayMode -> fretboardDisplayMode.label();
             case NoteNameMode noteNameMode -> noteNameMode.label();
             case ScaleLabelMode scaleLabelMode -> scaleLabelMode.label();
