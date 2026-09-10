@@ -48,9 +48,17 @@ public final class Theme implements ThemeSwitch {
         return current;
     }
 
+    static Palette paletteFor(String name) {
+        return PALETTES.getOrDefault(name, PALETTES.get(DARK));
+    }
+
+    static Color accent() {
+        return ACCENT;
+    }
+
     @Override
     public void apply(String name) {
-        Palette palette = PALETTES.getOrDefault(name, PALETTES.get(DARK));
+        Palette palette = paletteFor(name);
         if (LIGHT.equals(name)) {
             FlatLightLaf.setup();
         } else {
@@ -113,7 +121,7 @@ public final class Theme implements ThemeSwitch {
         return base == null ? new Font(Font.SANS_SERIF, Font.PLAIN, 12) : base.deriveFont(12f);
     }
 
-    private record Palette(
+    record Palette(
             Color background, Color panel, Color raisedPanel, Color separator,
             Color text, Color mutedText, Color paper, Color ink) {
     }
