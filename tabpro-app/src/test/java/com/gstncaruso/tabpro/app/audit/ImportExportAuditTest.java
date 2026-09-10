@@ -466,6 +466,27 @@ class ImportExportAuditTest {
     }
 
     @Test
+    void exportarTablaturaAsciiPorElMenuMuestraElTrasteDeLaNotaEnLaVistaPrevia() throws Exception {
+        Editor editor = editorWithANote();
+        MainFrame frame = newFrame(editor);
+        try {
+            JMenu exportMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Exportar");
+            JMenuItem item = AuditSupport.findMenuItem(exportMenu, "Tablatura ASCII…");
+            assertNotNull(item, "no encontre 'Tablatura ASCII…' dentro de Exportar");
+
+            withDialog(item::doClick, dialog -> {
+                JTextArea preview = findComponent(dialog, JTextArea.class);
+                assertNotNull(preview, "no encontre la vista previa real del export de ASCII");
+                assertTrue(preview.getText().contains("3"),
+                        "la vista previa tiene que mostrar el traste real de la nota: " + preview.getText());
+                findButton(dialog, "Cerrar").doClick();
+            });
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
     void exportarMusicXmlPorElMenuEscribeUnArchivoQueElImportadorRealLeeIgual(@TempDir Path tempDir) throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
