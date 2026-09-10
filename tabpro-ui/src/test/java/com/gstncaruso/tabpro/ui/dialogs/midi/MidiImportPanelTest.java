@@ -73,6 +73,15 @@ class MidiImportPanelTest {
     }
 
     @Test
+    void selectingAllTracksSelectsEveryTrackInTheList() {
+        MidiImportPanel panel = new MidiImportPanel(List.of(track(3, "Guitarra"), track(7, "Bajo")));
+
+        panel.selectAllTracks();
+
+        assertEquals(List.of(3, 7), panel.selectedTrackIndices());
+    }
+
+    @Test
     void reloadingTheTrackListReplacesItsContent() {
         MidiImportPanel panel = new MidiImportPanel(List.of(track(0, "Guitarra")));
 

@@ -3,12 +3,15 @@ package com.gstncaruso.tabpro.ui.dialogs.midi;
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.util.List;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -35,6 +38,7 @@ public final class MidiImportPanel extends JPanel {
     private final JCheckBox transpose = new JCheckBox("Transportar una octava para abajo");
     private final JCheckBox twoChannelsPerTrack = new JCheckBox("Usar 2 canales por pista", true);
     private final JComboBox<String> precisionChoice = new JComboBox<>(precisionLabels());
+    private final JButton selectAll = iconButton(Icons.selectAllTracks(), "Marcar todas las pistas");
 
     public MidiImportPanel(List<MidiTrackInfo> tracks) {
         super(new BorderLayout(0, DialogStyle.GAP_S));
@@ -45,6 +49,7 @@ public final class MidiImportPanel extends JPanel {
         trackList.setToolTipText("Pistas del archivo MIDI");
         showTracks(tracks);
         precisionChoice.setSelectedItem(figureName(NoteValue.SIXTEENTH));
+        selectAll.addActionListener(event -> selectAllTracks());
 
         JLabel precisionLabel = new JLabel("Precisión");
         precisionLabel.setLabelFor(precisionChoice);
@@ -55,8 +60,28 @@ public final class MidiImportPanel extends JPanel {
         bottom.add(precisionLabel);
         bottom.add(precisionChoice);
 
+        JPanel trackListTools = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_XS, 0));
+        trackListTools.add(selectAll);
+
+        add(trackListTools, BorderLayout.NORTH);
         add(new JScrollPane(trackList), BorderLayout.CENTER);
         add(bottom, BorderLayout.SOUTH);
+    }
+
+    /** El manual: marcar todas las pistas del archivo de un clic, antes de importarlas. */
+    public void selectAllTracks() {
+        int lastIndex = trackList.getModel().getSize() - 1;
+        if (lastIndex >= 0) {
+            trackList.setSelectionInterval(0, lastIndex);
+        }
+    }
+
+    private static JButton iconButton(Icon icon, String accessibleNameAndTooltip) {
+        JButton button = new JButton(icon);
+        button.setFocusPainted(false);
+        button.getAccessibleContext().setAccessibleName(accessibleNameAndTooltip);
+        button.setToolTipText(accessibleNameAndTooltip);
+        return button;
     }
 
     /** Cambia el archivo elegido: "abrir otro archivo" del manual. */
