@@ -5,6 +5,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -17,6 +18,7 @@ final class GlobalUiMutationScan {
     private static final Pattern UPDATES_THE_FLATLAF_UI = Pattern.compile("FlatLaf\\.updateUI\\(");
     private static final Pattern WRITES_TO_UI_MANAGER = Pattern.compile("UIManager\\.put\\(");
     private static final Pattern SWITCHES_THE_LOOK_AND_FEEL = Pattern.compile("UIManager\\.setLookAndFeel\\(");
+    private static final Pattern THEME_VARIABLE = Pattern.compile("\\bTheme\\s+(\\w+)\\s*[=;]");
     private static final Pattern ISOLATED = Pattern.compile("@Isolated\\b");
 
     private GlobalUiMutationScan() {
@@ -41,7 +43,19 @@ final class GlobalUiMutationScan {
                 || SETS_UP_FLATLAF.matcher(code).find()
                 || UPDATES_THE_FLATLAF_UI.matcher(code).find()
                 || WRITES_TO_UI_MANAGER.matcher(code).find()
-                || SWITCHES_THE_LOOK_AND_FEEL.matcher(code).find();
+                || SWITCHES_THE_LOOK_AND_FEEL.matcher(code).find()
+                || appliesARealTheme(code);
+    }
+
+    private static boolean appliesARealTheme(String code) {
+        Matcher declarations = THEME_VARIABLE.matcher(code);
+        while (declarations.find()) {
+            String variable = declarations.group(1);
+            if (Pattern.compile("\\b" + Pattern.quote(variable) + "\\.apply\\(").matcher(code).find()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isIsolated(Path file) {

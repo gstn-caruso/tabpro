@@ -138,6 +138,34 @@ class GlobalUiMutationScanTest {
         assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
     }
 
+    @Test
+    void aTestThatAppliesARealThemeWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "AppliesARealTheme.java", """
+                class AppliesARealTheme {
+                    private final Theme theme = new Theme();
+
+                    void applies() {
+                        theme.apply(Theme.LIGHT);
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
+    @Test
+    void aPanelThatAppliesAValueIsNotFlagged(@TempDir Path root) throws IOException {
+        write(root, "AppliesAValueToAPanel.java", """
+                class AppliesAValueToAPanel {
+                    void applies() {
+                        panel.apply(new Preferences());
+                    }
+                }
+                """);
+
+        assertTrue(GlobalUiMutationScan.unisolatedMutators(root).isEmpty());
+    }
+
     private static Path write(Path root, String fileName, String content) throws IOException {
         Path file = root.resolve(fileName);
         Files.writeString(file, content);
