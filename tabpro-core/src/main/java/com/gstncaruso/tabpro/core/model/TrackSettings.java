@@ -26,8 +26,7 @@ public record TrackSettings(
     }
 
     public static TrackSettings percussion(ScoreColor color) {
-        return new TrackSettings(color, 0, DEFAULT_FRET_COUNT, true, false, false,
-                TrackDisplay.standard().withTuningLegend(false));
+        return new TrackSettings(color, 0, DEFAULT_FRET_COUNT, true, false, false, TrackDisplay.standard());
     }
 
     public TrackSettings withColor(ScoreColor color) {

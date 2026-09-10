@@ -9,7 +9,7 @@ public record TrackDisplay(
         DiagramPlacement diagrams) {
 
     private static final TrackDisplay DEFAULT =
-            new TrackDisplay(true, true, true, false, DiagramPlacement.ABOVE_THE_STAFF);
+            new TrackDisplay(true, true, false, false, DiagramPlacement.ABOVE_THE_STAFF);
 
     public static TrackDisplay standard() {
         return DEFAULT;

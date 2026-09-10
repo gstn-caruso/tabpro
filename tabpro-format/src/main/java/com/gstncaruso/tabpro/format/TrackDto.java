@@ -110,7 +110,7 @@ public record TrackDto(
         TrackDisplay display = new TrackDisplay(
                 orElse(showStandardNotation, true),
                 orElse(showTablature, true),
-                orElse(showTuning, true),
+                orElse(showTuning, false),
                 orElse(showRhythm, false),
                 Enums.read(DiagramPlacement.class, diagrams, DiagramPlacement.ABOVE_THE_STAFF));
         return new TrackSettings(

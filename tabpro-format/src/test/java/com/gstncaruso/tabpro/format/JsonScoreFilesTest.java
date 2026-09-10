@@ -84,6 +84,15 @@ class JsonScoreFilesTest {
     }
 
     @Test
+    void aVersionOneFileDoesNotShowStringNames() throws URISyntaxException {
+        Path path = Path.of(getClass().getResource("/v1-one-measure.tabpro").toURI());
+
+        Track track = scoreFiles.load(path).track(0);
+
+        assertFalse(track.settings().display().tuningLegend());
+    }
+
+    @Test
     void savesAndLoadsTheMixerOfEveryTrack(@TempDir Path tempDir) {
         Track guitar = Track.standardGuitar("Guitarra")
                 .withChannel(Channel.playing(30).withVolume(80).withPan(20).toggledSolo());
