@@ -8,9 +8,9 @@ import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
@@ -34,7 +34,7 @@ import javax.swing.UIManager;
  */
 public final class MarkerZone extends JComponent implements AccessibleControl {
 
-    public static final int HEIGHT = 12;
+    public static final int HEIGHT = TrackPanel.HEADER_HEIGHT / 2;
 
     private final Editor editor;
     private int caret;
@@ -167,27 +167,26 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
         return fromLookAndFeel != null ? fromLookAndFeel : ScoreColors.ACCENT;
     }
 
+    /** Como en Guitar Pro 5: el nombre del marcador se lee en rojo sobre la cabecera de la grilla. */
     private void paintSegment(Graphics2D g, MarkerSegments.Segment segment) {
-        Rectangle bounds = new Rectangle(
-                segment.fromMeasure() * MeasureGrid.CELL_WIDTH,
-                0,
-                (segment.toMeasureExclusive() - segment.fromMeasure()) * MeasureGrid.CELL_WIDTH,
-                HEIGHT);
-        Color color = colorOf(segment.marker());
-        g.setColor(color);
-        g.fillRect(bounds.x, bounds.y + 1, bounds.width - 1, bounds.height - 2);
-        g.setColor(readableInkOver(color));
-        g.drawString(segment.marker().name(), bounds.x + 3, HEIGHT - 4);
+        int x = segment.fromMeasure() * MeasureGrid.CELL_WIDTH;
+        int width = (segment.toMeasureExclusive() - segment.fromMeasure()) * MeasureGrid.CELL_WIDTH;
+        g.setColor(ScoreColors.WARNING);
+        g.drawString(truncated(segment.marker().name(), width - 3, g.getFontMetrics()), x + 3, HEIGHT - 4);
     }
 
-    private Color colorOf(Marker marker) {
-        return new Color(marker.color().red(), marker.color().green(), marker.color().blue());
-    }
-
-    /** Texto negro o blanco segun que se lea mejor sobre el color del marcador. */
-    private Color readableInkOver(Color background) {
-        double brightness = (0.299 * background.getRed() + 0.587 * background.getGreen() + 0.114 * background.getBlue()) / 255;
-        return brightness > 0.6 ? Color.BLACK : Color.WHITE;
+    /** Corta el nombre del marcador con puntos suspensivos si no entra en el ancho del segmento. */
+    static String truncated(String name, int maxWidth, FontMetrics metrics) {
+        if (metrics.stringWidth(name) <= maxWidth) {
+            return name;
+        }
+        for (int length = name.length() - 1; length > 0; length--) {
+            String candidate = name.substring(0, length) + "…";
+            if (metrics.stringWidth(candidate) <= maxWidth) {
+                return candidate;
+            }
+        }
+        return "…";
     }
 
     private void editMarkerAt(int measureIndex) {

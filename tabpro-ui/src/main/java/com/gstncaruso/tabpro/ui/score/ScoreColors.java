@@ -13,7 +13,8 @@ public final class ScoreColors {
     public static final Color SURFACE = new Color(0x2B2D30);
     public static final Color SURFACE_HIGHLIGHT = new Color(0x35373B);
     public static final Color BORDER = new Color(0x71, 0x77, 0x80);
-    public static final Color KNOB_BODY = new Color(0x7E838B);
+    /** El tinte claro del bisel hundido en los paneles de la barra de estado. */
+    public static final Color BEVEL_SHADE = new Color(0x7E, 0x83, 0x8B);
     /** El fondo de la banda de titulo del diapason y del teclado, mas clara que el resto del panel. */
     public static final Color TITLE_BAR = new Color(0x7A, 0x80, 0x89);
     /** El texto y el icono de cerrar sobre {@link #TITLE_BAR}, que es clara y pide tinta oscura. */
@@ -26,6 +27,10 @@ public final class ScoreColors {
     public static final Color MUTED_INK = new Color(0x9E, 0xA0, 0xA6);
 
     public static final Color ACCENT = new Color(0x3574F0);
+    /** El relleno del deslizador de volumen en la mesa de mezcla, como el naranja de Guitar Pro. */
+    public static final Color VOLUME_LEVEL = new Color(0xE0, 0x7A, 0x3D);
+    /** El deslizador de paneo, pintado de punta a punta: solo se mueve la caja del valor. */
+    public static final Color PAN_LEVEL = new Color(0xC7, 0xB5, 0x3A);
     /**
      * La linea vertical fina y roja del cursor de edicion, como en Guitar Pro. Un rojo saturado y
      * a pleno brillo para que no se confunda con los otros dos rojos de la partitura -el apagado
@@ -43,6 +48,8 @@ public final class ScoreColors {
     public static final Color PLAYING = new Color(0x24, 0xA2, 0x5A);
     public static final Color PLAYING_MEASURE = new Color(0xE5484D);
     public static final Color WARNING = new Color(0xE5A44A);
+    /** El compas sin notas en la vista general de la mesa de mezcla, plateado como en Guitar Pro 5. */
+    public static final Color EMPTY_MEASURE = new Color(0xB8, 0xBC, 0xC2);
 
     /** El rectangulito rojo que anuncia un cambio de parametro sin simbolo musical propio. */
     public static final Color PARAMETER_CHANGE = new Color(0xD32F3B);

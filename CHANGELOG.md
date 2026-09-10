@@ -1,3 +1,22 @@
+## [0.44.0](https://github.com/gstn-caruso/tabpro/compare/v0.43.0...v0.44.0) (2026-09-10)
+
+### Features
+
+* **tracks:** la vista global tiene la regla de compases, los marcadores en rojo y la cabecera de Guitar Pro 5 ([#142](https://github.com/gstn-caruso/tabpro/issues/142)) ([32017ab](https://github.com/gstn-caruso/tabpro/commit/32017abca6aa25561cf02f3c2a474d6df8307986))
+
+## [0.43.0](https://github.com/gstn-caruso/tabpro/compare/v0.42.0...v0.43.0) (2026-09-10)
+
+### Features
+
+* **tracks:** la mesa de mezcla tiene los deslizadores, los números planos y las columnas de Guitar Pro 5 ([#141](https://github.com/gstn-caruso/tabpro/issues/141)) ([f89e946](https://github.com/gstn-caruso/tabpro/commit/f89e946438eb44e273a6c7c4b9276180f377c129))
+
+## [0.42.0](https://github.com/gstn-caruso/tabpro/compare/v0.41.0...v0.42.0) (2026-09-10)
+
+### Features
+
+* **status:** la barra de estado tiene los seis paneles hundidos de Guitar Pro 5 ([#139](https://github.com/gstn-caruso/tabpro/issues/139)) ([e4682d7](https://github.com/gstn-caruso/tabpro/commit/e4682d73eb88750f462d747fdb8ce520b340e6ab))
+* **toolbar:** el zoom es un combo editable con el porcentaje visible, como en Guitar Pro 5 ([#140](https://github.com/gstn-caruso/tabpro/issues/140)) ([9815fcb](https://github.com/gstn-caruso/tabpro/commit/9815fcbab09992a96d533afb222bfaaeb88de79e))
+
 ## [0.41.0](https://github.com/gstn-caruso/tabpro/compare/v0.40.0...v0.41.0) (2026-09-10)
 
 ### Features

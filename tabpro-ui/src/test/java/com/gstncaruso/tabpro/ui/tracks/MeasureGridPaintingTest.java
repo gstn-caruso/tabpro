@@ -38,6 +38,17 @@ class MeasureGridPaintingTest {
     }
 
     @Test
+    void aMeasureWithoutNotesIsPaintedSilverLikeInGuitarPro5() {
+        Editor editor = editorWithTwoTracksAndThreeMeasures();
+        MeasureGrid grid = new MeasureGrid(editor);
+
+        BufferedImage painted = paint(grid);
+
+        assertEquals(ScoreColors.EMPTY_MEASURE.getRGB(), centerOf(painted, grid, 0, 1),
+                "un compas sin notas se pinta plata");
+    }
+
+    @Test
     void theMarkGoesWhereverTheCursorGoes() {
         Editor editor = editorWithTwoTracksAndThreeMeasures();
         MeasureGrid grid = new MeasureGrid(editor);
@@ -58,6 +69,12 @@ class MeasureGridPaintingTest {
     private static int topEdgeOf(BufferedImage painted, MeasureGrid grid, int track, int measure) {
         Rectangle cell = grid.cellBounds(track, measure);
         return painted.getRGB(cell.x + cell.width / 2, cell.y + 1);
+    }
+
+    /** El pixel del medio de esa celda. */
+    private static int centerOf(BufferedImage painted, MeasureGrid grid, int track, int measure) {
+        Rectangle cell = grid.cellBounds(track, measure);
+        return painted.getRGB(cell.x + cell.width / 2, cell.y + cell.height / 2);
     }
 
     private static BufferedImage paint(MeasureGrid grid) {

@@ -1,41 +1,11 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 class MixTableModelTest {
-
-    @Test
-    void everyParameterStartsAsAKnob() {
-        MixTableModel model = new MixTableModel();
-
-        for (MixParameter parameter : MixParameter.values()) {
-            assertEquals(DisplayMode.KNOB, model.displayModeOf(parameter));
-        }
-    }
-
-    @Test
-    void clickingAColumnHeaderTogglesOnlyThatColumn() {
-        MixTableModel model = new MixTableModel();
-
-        model.toggleDisplayMode(MixParameter.PAN);
-
-        assertEquals(DisplayMode.NUMBER, model.displayModeOf(MixParameter.PAN));
-        assertEquals(DisplayMode.KNOB, model.displayModeOf(MixParameter.VOLUME));
-    }
-
-    @Test
-    void toggingTwiceGoesBackToTheKnob() {
-        MixTableModel model = new MixTableModel();
-
-        model.toggleDisplayMode(MixParameter.VOLUME);
-        model.toggleDisplayMode(MixParameter.VOLUME);
-
-        assertEquals(DisplayMode.KNOB, model.displayModeOf(MixParameter.VOLUME));
-    }
 
     @Test
     void everyTrackIsVisibleInTheMultitrackViewByDefault() {
