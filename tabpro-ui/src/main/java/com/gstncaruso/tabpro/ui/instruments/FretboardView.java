@@ -75,6 +75,11 @@ public final class FretboardView extends JComponent implements AccessibleControl
         trackTheMouse();
         installKeyboardShortcuts();
         installFocusRing();
+        updateCaretAccessibleDescription();
+    }
+
+    private void updateCaretAccessibleDescription() {
+        getAccessibleContext().setAccessibleDescription(labelFor(new FretPosition(caretString, caretFret)));
     }
 
     private void installFocusRing() {
@@ -128,6 +133,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
             public void actionPerformed(ActionEvent e) {
                 caretString = clampBetween(1, stringCount(), caretString + stringDelta);
                 caretFret = clampBetween(0, fretCount(), caretFret + fretDelta);
+                updateCaretAccessibleDescription();
                 repaint();
             }
         });
