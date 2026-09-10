@@ -23,7 +23,7 @@ class TabEditBeatAssemblerTest {
     private final TabEditBeatAssembler assembler = new TabEditBeatAssembler();
 
     @Test
-    void cuatroNegrasSeguidasLlenanElCompasSinRelleno() {
+    void fourConsecutiveQuarterNotesFillTheBarWithoutPadding() {
         List<TabEditEvent> events = new ArrayList<>();
         for (int gridPosition = 0; gridPosition < 16; gridPosition += 4) {
             events.add(noteAt(0, gridPosition, gridPosition / 4, NoteValue.QUARTER, VoicePart.LEAD));
@@ -37,7 +37,7 @@ class TabEditBeatAssemblerTest {
     }
 
     @Test
-    void unHuecoEnLaGrillaSeRellenaConUnSilencio() {
+    void aGapInTheGridIsFilledWithARest() {
         List<TabEditEvent> events = List.of(
                 noteAt(0, 0, 5, NoteValue.QUARTER, VoicePart.LEAD),
                 noteAt(0, 12, 7, NoteValue.QUARTER, VoicePart.LEAD));
@@ -51,7 +51,7 @@ class TabEditBeatAssemblerTest {
     }
 
     @Test
-    void variasNotasEnLaMismaPosicionFormanUnAcorde() {
+    void severalNotesAtTheSamePositionFormAChord() {
         List<TabEditEvent> events = List.of(
                 noteAt(0, 0, 0, NoteValue.QUARTER, VoicePart.LEAD, 1),
                 noteAt(0, 0, 2, NoteValue.QUARTER, VoicePart.LEAD, 2));
@@ -62,7 +62,7 @@ class TabEditBeatAssemblerTest {
     }
 
     @Test
-    void laVozSecundariaQuedaSinUsarSiNoTraeEventos() {
+    void theSecondaryVoiceIsUnusedWhenItBringsNoEvents() {
         List<TabEditEvent> events = List.of(noteAt(0, 0, 0, NoteValue.QUARTER, VoicePart.LEAD));
 
         Measure measure = assembler.assembleTrack(0, List.of(FOUR_FOUR), events).get(0);
@@ -71,7 +71,7 @@ class TabEditBeatAssemblerTest {
     }
 
     @Test
-    void laVozSecundariaSeArmaIgualQueLaPrincipal() {
+    void theSecondaryVoiceIsAssembledJustLikeThePrimaryOne() {
         List<TabEditEvent> events = List.of(
                 noteAt(0, 0, 0, NoteValue.QUARTER, VoicePart.LEAD),
                 noteAt(0, 0, 5, NoteValue.QUARTER, VoicePart.BASS));
@@ -82,7 +82,7 @@ class TabEditBeatAssemblerTest {
     }
 
     @Test
-    void unCompasSinEventosQuedaComoUnSoloSilencioCompleto() {
+    void aBarWithoutEventsBecomesASingleFullRest() {
         Measure measure = assembler.assembleTrack(0, List.of(FOUR_FOUR), List.of()).get(0);
 
         assertEquals(1, measure.beats().size());
@@ -91,7 +91,7 @@ class TabEditBeatAssemblerTest {
     }
 
     @Test
-    void unaNotaLigadaLlegaLigadaHastaElModeloFinal() {
+    void aTiedNoteArrivesTiedInTheFinalModel() {
         List<TabEditEvent> events = List.of(noteAt(0, 0, 0, NoteValue.QUARTER, VoicePart.LEAD, 1, true));
 
         Measure measure = assembler.assembleTrack(0, List.of(FOUR_FOUR), events).get(0);
@@ -100,7 +100,7 @@ class TabEditBeatAssemblerTest {
     }
 
     @Test
-    void tapSlapYFadeInDeLaNotaQuedanEnElBeatEntero() {
+    void tapSlapAndFadeInOfTheNoteStayOnTheWholeBeat() {
         TabEditPosition position = new TabEditPosition(0, 0, 0, 0);
         Duration duration = new Duration(NoteValue.QUARTER, false);
         Note note = new Note(1, 3, false, NoteEffects.none());
