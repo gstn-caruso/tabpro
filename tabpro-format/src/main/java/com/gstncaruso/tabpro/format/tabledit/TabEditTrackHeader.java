@@ -3,8 +3,8 @@ package com.gstncaruso.tabpro.format.tabledit;
 import java.util.List;
 
 /**
- * El encabezado de una pista: su afinacion (numero MIDI por cuerda, cuerda 1
- * la mas aguda, igual que Guitar Pro), su nombre y su instrumento.
+ * A track's header: its tuning (MIDI number per string, string 1 the highest-pitched,
+ * same as Guitar Pro), its name, and its instrument.
  */
 record TabEditTrackHeader(
         String name,
