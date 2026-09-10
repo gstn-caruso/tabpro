@@ -42,9 +42,9 @@ class ClippingJsonTest {
 
     @Test
     void aDifferentFormatVersionIsNotAClipping() {
-        String otroFormato =
+        String differentFormat =
                 "{\"kind\":\"tabpro-clipping\",\"format\":999,\"measuresByTrack\":[],\"beats\":[],\"stringCount\":6}";
 
-        assertTrue(json.decode(otroFormato).isEmpty());
+        assertTrue(json.decode(differentFormat).isEmpty());
     }
 }

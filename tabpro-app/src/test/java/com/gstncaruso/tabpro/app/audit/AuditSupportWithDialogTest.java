@@ -11,30 +11,30 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class AuditSupportWithDialogTest {
 
     @Test
-    void elCallbackQueTiraNoDejaElDialogoAbiertoYRelanzaElErrorReal() {
-        IllegalStateException relanzada = assertThrows(IllegalStateException.class, () -> withDialog(
+    void aCallbackThatThrowsDoesNotLeaveTheDialogOpenAndRethrowsTheRealError() {
+        IllegalStateException rethrown = assertThrows(IllegalStateException.class, () -> withDialog(
                 AuditSupportWithDialogTest::openRealModalDialog,
                 dialog -> {
                     throw new IllegalStateException("el boton que busco no existe en este dialogo");
                 }));
 
-        assertEquals("el boton que busco no existe en este dialogo", relanzada.getMessage());
+        assertEquals("el boton que busco no existe en este dialogo", rethrown.getMessage());
     }
 
     @Test
-    void elDialogoQueNuncaAbreFallaConTimeoutEnVezDeColgarse() {
+    void aDialogThatNeverOpensFailsWithATimeoutInsteadOfHanging() {
         AssertionError error = assertThrows(AssertionError.class, () -> withDialog(() -> { }, dialog -> { }));
 
         assertTrue(error.getMessage().contains("WINDOW_OPENED"));
     }
 
     @Test
-    void elCallbackQueOlvidaCerrarElDialogoFallaEnVezDeColgarse() {
+    void aCallbackThatForgetsToCloseTheDialogFailsInsteadOfHanging() {
         AssertionError error = assertThrows(AssertionError.class, () -> withDialog(
                 AuditSupportWithDialogTest::openRealModalDialog, dialog -> { }));
 

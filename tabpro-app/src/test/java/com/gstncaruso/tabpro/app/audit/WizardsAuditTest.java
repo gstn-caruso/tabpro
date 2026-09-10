@@ -18,29 +18,29 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class WizardsAuditTest {
 
     @Test
-    void transponerPorElMenuCambiaLaPartituraRealSegunElSpinnerDeSemitonos() throws Exception {
+    void transposingThroughTheMenuChangesTheRealScoreAccordingToTheSemitonesSpinner() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Transponer…");
             assertNotNull(item, "no encontre 'Transponer…' en el menu real");
 
-            Score antes = editor.score();
+            Score before = editor.score();
 
             withDialog(item::doClick, dialog -> {
-                JSpinner semitonos = findComponent(dialog, JSpinner.class);
-                assertNotNull(semitonos, "no encontre el spinner real de semitonos");
-                semitonos.setValue(2);
+                JSpinner semitones = findComponent(dialog, JSpinner.class);
+                assertNotNull(semitones, "no encontre el spinner real de semitonos");
+                semitones.setValue(2);
 
                 findButton(dialog, "Transponer").doClick();
             });
 
-            assertNotEquals(antes, editor.score(),
+            assertNotEquals(before, editor.score(),
                     "los 2 semitonos elegidos en el spinner real tienen que transponer la partitura real");
         } finally {
             AuditSupport.dispose(frame);

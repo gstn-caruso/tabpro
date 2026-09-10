@@ -47,12 +47,12 @@ import org.junit.jupiter.api.parallel.ResourceLock;
  * chosen) and then closes with Cancel, the only way to exercise the path without risking the
  * process waiting on a native window that nobody will handle.
  */
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class PrintAuditTest {
 
     @Test
-    void imprimirPorElMenuAbreElDialogoRealConLasHojasDeLaPartituraReal() throws Exception {
+    void printingThroughTheMenuOpensTheRealDialogWithTheScoresSheets() throws Exception {
         Editor editor = editorWithMeasures(60);
         MainFrame frame = newFrame(editor);
         try {
@@ -93,7 +93,7 @@ class PrintAuditTest {
     }
 
     @Test
-    void alApretarImprimirLlegaAlPrinterJobFalsoConElRangoYLaPartituraRealElegidos() throws Exception {
+    void pressingPrintReachesTheFakePrinterJobWithTheChosenRangeAndRealScore() throws Exception {
         Editor editor = editorWithMeasures(60);
         AuditSupport.RecordingPrinting printing = new AuditSupport.RecordingPrinting();
         MainFrame frame = newFrame(editor, printing);
@@ -101,11 +101,11 @@ class PrintAuditTest {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Imprimir…");
             int sheetCount = ScorePrinting.pageCount(editor.score(), DefaultPageSetup.userSetup().get());
             assertTrue(sheetCount > 1, "hace falta una partitura de varias hojas para elegir un rango angosto");
-            int desde = 2;
+            int from = 2;
 
             withDialog(item::doClick, dialog -> {
                 PrintPanel panel = findComponent(dialog, PrintPanel.class);
-                panel.printOnly(desde, sheetCount);
+                panel.printOnly(from, sheetCount);
                 findButton(dialog, "Imprimir").doClick();
             });
 
@@ -113,15 +113,15 @@ class PrintAuditTest {
             assertNotNull(printing.jobName());
             assertNotNull(printing.printable(), "tiene que llegar el Printable real de la partitura");
 
-            int paginasEnElRango = sheetCount - desde + 1;
-            PrintResult ultimaDelRango = printOnLargeCanvas(printing.printable(), paginasEnElRango - 1);
-            assertEquals(Printable.PAGE_EXISTS, ultimaDelRango.pageResult(),
+            int pagesInRange = sheetCount - from + 1;
+            PrintResult lastInRange = printOnLargeCanvas(printing.printable(), pagesInRange - 1);
+            assertEquals(Printable.PAGE_EXISTS, lastInRange.pageResult(),
                     "la ultima pagina del rango elegido tiene que existir");
-            assertTrue(hasInk(ultimaDelRango.canvas()),
+            assertTrue(hasInk(lastInRange.canvas()),
                     "el Printable recibido tiene que pintar la partitura real, no quedar en blanco");
 
-            PrintResult fueraDelRango = printOnLargeCanvas(printing.printable(), paginasEnElRango);
-            assertEquals(Printable.NO_SUCH_PAGE, fueraDelRango.pageResult(),
+            PrintResult outsideRange = printOnLargeCanvas(printing.printable(), pagesInRange);
+            assertEquals(Printable.NO_SUCH_PAGE, outsideRange.pageResult(),
                     "el rango elegido en el dialogo real tiene que ser el que llega al Printable, no la partitura entera");
         } finally {
             AuditSupport.dispose(frame);
@@ -163,7 +163,7 @@ class PrintAuditTest {
     }
 
     @Test
-    void alTildarDocumentoCentradoElPrintableRealCorreLaHojaLaMitadDelSobranteHorizontal() throws Exception {
+    void checkingCenteredDocumentShiftsTheRealPrintableSheetByHalfTheHorizontalSlack() throws Exception {
         Editor editor = editorWithMeasures(4);
         AuditSupport.RecordingPrinting printing = new AuditSupport.RecordingPrinting();
         MainFrame frame = newFrame(editor, printing);
@@ -171,8 +171,8 @@ class PrintAuditTest {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Imprimir…");
 
             withDialog(item::doClick, dialog -> findButton(dialog, "Imprimir").doClick());
-            Printable sinCentrar = printing.printable();
-            assertNotNull(sinCentrar, "tiene que llegar el Printable real de la partitura");
+            Printable uncentered = printing.printable();
+            assertNotNull(uncentered, "tiene que llegar el Printable real de la partitura");
 
             withDialog(item::doClick, dialog -> {
                 PrintPanel panel = findComponent(dialog, PrintPanel.class);
@@ -185,20 +185,20 @@ class PrintAuditTest {
                         "tildar el casillero real 'Documento centrado' tiene que llegar a las opciones reales");
                 findButton(dialog, "Imprimir").doClick();
             });
-            Printable centrado = printing.printable();
-            assertNotNull(centrado, "tiene que llegar el Printable real, ya centrado");
+            Printable centered = printing.printable();
+            assertNotNull(centered, "tiene que llegar el Printable real, ya centrado");
 
             PageSetup setup = DefaultPageSetup.userSetup().get();
             Dimension sheet = ScoreSheets.pageSize(Zoom.whole(), setup);
-            int sobranteHorizontal = 200;
+            int horizontalSlack = 200;
 
-            int columnaSinCentrar = firstInkColumnOf(printOnPaper(
-                    sinCentrar, sheet.width + sobranteHorizontal, sheet.height));
-            int columnaCentrada = firstInkColumnOf(printOnPaper(
-                    centrado, sheet.width + sobranteHorizontal, sheet.height));
+            int uncenteredColumn = firstInkColumnOf(printOnPaper(
+                    uncentered, sheet.width + horizontalSlack, sheet.height));
+            int centeredColumn = firstInkColumnOf(printOnPaper(
+                    centered, sheet.width + horizontalSlack, sheet.height));
 
             assertTrue(
-                    Math.abs((columnaCentrada - columnaSinCentrar) - sobranteHorizontal / 2) <= 5,
+                    Math.abs((centeredColumn - uncenteredColumn) - horizontalSlack / 2) <= 5,
                     "con 'Documento centrado' tildado desde el dialogo real, el PrinterJob falso tiene que "
                             + "recibir la hoja corrida la mitad del sobrante horizontal");
         } finally {
@@ -239,23 +239,23 @@ class PrintAuditTest {
     }
 
     @Test
-    void ctrlPConLaPartituraEnfocadaAbreElMismoDialogoRealQueElMenu() throws Exception {
+    void ctrlPWithTheScoreFocusedOpensTheSameRealDialogAsTheMenu() throws Exception {
         Editor editor = editorWithMeasures(4);
         MainFrame frame = newFrame(editor);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             assertNotNull(canvas, "no encontre el ScoreCanvas real");
 
-            boolean abrioUnDialogo = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("ctrl P"), 2000);
+            boolean openedADialog = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("ctrl P"), 2000);
 
-            assertTrue(abrioUnDialogo, "Ctrl+P con la partitura enfocada tiene que abrir el dialogo real de Imprimir");
+            assertTrue(openedADialog, "Ctrl+P con la partitura enfocada tiene que abrir el dialogo real de Imprimir");
         } finally {
             AuditSupport.dispose(frame);
         }
     }
 
     @Test
-    void configurarPaginaPorElMenuAbreElDialogoRealYElTamanoElegidoQuedaAplicado() throws Exception {
+    void pageSetupThroughTheMenuOpensTheRealDialogAndTheChosenSizeStaysApplied() throws Exception {
         Editor editor = editorWithMeasures(4);
         MainFrame frame = newFrame(editor);
         try {

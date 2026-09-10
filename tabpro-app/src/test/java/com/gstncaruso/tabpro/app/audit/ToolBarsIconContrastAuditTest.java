@@ -28,12 +28,12 @@ import org.junit.jupiter.api.parallel.ResourceLock;
  * MainFrame extends JFrame, so building a real one requires a non-headless toolkit (see
  * AuditSupport); that is why this is an audit test instead of an ordinary one.
  */
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ToolBarsIconContrastAuditTest {
 
     @Test
-    void elIconoDeLaFilaDeDocumentoLeeContraSuFondoReal() throws Exception {
+    void theDocumentRowIconReadsAgainstItsRealBackground() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -45,7 +45,7 @@ class ToolBarsIconContrastAuditTest {
     }
 
     @Test
-    void elIconoDeLaFilaDeEfectosLeeContraSuFondoReal() throws Exception {
+    void theEffectsRowIconReadsAgainstItsRealBackground() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -57,7 +57,7 @@ class ToolBarsIconContrastAuditTest {
     }
 
     @Test
-    void laEtiquetaDeTempoLeeContraSuFondoReal() throws Exception {
+    void theTempoLabelReadsAgainstItsRealBackground() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {

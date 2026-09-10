@@ -14,12 +14,12 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class SelectionPaintingAuditTest {
 
     @Test
-    void ctrlAPintaLaSeleccionDeTodaLaPartituraEnElLienzoReal() throws Exception {
+    void ctrlAPaintsTheSelectionOfTheWholeScoreOnTheRealCanvas() throws Exception {
         Editor editor = editorWithMeasures(2);
         MainFrame frame = newFrame(editor);
         try {
@@ -35,7 +35,7 @@ class SelectionPaintingAuditTest {
     }
 
     @Test
-    void unaFlechaSinShiftLimpiaLaSeleccionQueDejoCtrlA() throws Exception {
+    void anArrowWithoutShiftClearsTheSelectionCtrlALeft() throws Exception {
         Editor editor = editorWithMeasures(2);
         MainFrame frame = newFrame(editor);
         try {

@@ -24,14 +24,14 @@ class SystemClipboardStorageTest {
 
     @Test
     void readsTheTextOfAPlainTextTransferable() {
-        Transferable textoSuelto = new StringSelection("cualquier texto copiado de otro lado");
+        Transferable plainText = new StringSelection("cualquier texto copiado de otro lado");
 
-        assertEquals(Optional.of("cualquier texto copiado de otro lado"), SystemClipboardStorage.textOf(textoSuelto));
+        assertEquals(Optional.of("cualquier texto copiado de otro lado"), SystemClipboardStorage.textOf(plainText));
     }
 
     @Test
     void anImageTransferableHasNoText() {
-        assertEquals(Optional.empty(), SystemClipboardStorage.textOf(unaImagen()));
+        assertEquals(Optional.empty(), SystemClipboardStorage.textOf(anImage()));
     }
 
     @Test
@@ -53,7 +53,7 @@ class SystemClipboardStorageTest {
                 Optional.of(5), editor.score().track(0).measure(1).beat(0).noteOn(1).map(note -> note.fret()));
     }
 
-    private static Transferable unaImagen() {
+    private static Transferable anImage() {
         return new Transferable() {
             @Override
             public DataFlavor[] getTransferDataFlavors() {

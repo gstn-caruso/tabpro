@@ -21,12 +21,12 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ViewSwitchThenCursorMoveAuditTest {
 
     @Test
-    void lasCuatroVistasYMoverElCursorAlUltimoCompasNoCuelganNiTiran() throws Exception {
+    void theFourViewsAndMovingTheCursorToTheLastBarNeitherHangNorThrow() throws Exception {
         Editor editor = editorWithDirections();
         MainFrame frame = newFrame(editor);
         try {

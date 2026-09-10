@@ -23,12 +23,12 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class FingeringRightHandAuditTest {
 
     @Test
-    void elBotonDeManoDerechaAbreElDialogoRealConElFocoEnSuPropioCampo() throws Exception {
+    void theRightHandButtonOpensTheRealDialogWithFocusOnItsOwnField() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {

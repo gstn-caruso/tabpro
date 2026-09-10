@@ -160,7 +160,7 @@ class SoundFontBankTest {
         assertNotNull(synth);
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void freshSynthesizerNeverOpensARealTimeLineWhenLoadingARealBank() throws Exception {
         Path real = firstInstalledOrSkip();
@@ -190,7 +190,7 @@ class SoundFontBankTest {
                 });
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void aRealFileLoadsIndependentlyOnEachPortItIsAskedFor() {
         Path real = firstInstalledOrSkip();
@@ -203,7 +203,7 @@ class SoundFontBankTest {
         assertEquals("Sonando con " + real.getFileName(), bank.status());
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void toggleTurnsOffEveryOpenPortAtOnce() {
         Path real = firstInstalledOrSkip();

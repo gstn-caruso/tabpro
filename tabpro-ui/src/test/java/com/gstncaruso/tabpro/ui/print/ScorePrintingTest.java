@@ -78,7 +78,7 @@ class ScorePrintingTest {
                 "el PageFormat elegido en Configurar tiene que ser el que se usa en la proxima impresion");
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void exportaUnBmpDeVerdadEnModoPagina(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(4);
@@ -96,7 +96,7 @@ class ScorePrintingTest {
         assertTrue(distinctColorsOf(leida).size() > 1, "la imagen no puede salir de un solo color");
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void elBmpExportadoEsIdenticoAlQueEscribeBmpDocument(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(4);
@@ -122,7 +122,7 @@ class ScorePrintingTest {
         assertFalse(Files.exists(path), "no tiene que quedar un archivo a medio escribir");
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void pngFueraDelModoPaginaSeExportaSinProblema(@TempDir Path tempDir) {
         Score score = scoreWithMeasures(4);
@@ -133,7 +133,7 @@ class ScorePrintingTest {
         assertTrue(Files.exists(path), "la restriccion es solo para bmp");
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void exportaLaImagenConElZoomQueTieneLaVentana(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(4);
@@ -152,7 +152,7 @@ class ScorePrintingTest {
                 "la misma partitura al 100% y al 200% no puede dar el mismo alto en pixeles");
     }
 
-    @Tag("integracion")
+    @Tag("integration")
     @Test
     void exportaLaImagenConElModoPergaminoSinSaltosDePagina(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(16);

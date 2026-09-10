@@ -14,12 +14,12 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class PercussionAuditTest {
 
     @Test
-    void elAsistenteDePercusionAbreUnDialogoRealParadoEnUnaPistaDePercusion() throws Exception {
+    void thePercussionWizardOpensARealDialogOnAPercussionTrack() throws Exception {
         Editor editor = blankEditor();
         editor.addTrack(Track.percussion("Batería"));
         editor.selectTrack(1);
@@ -35,7 +35,7 @@ class PercussionAuditTest {
     }
 
     @Test
-    void elAsistenteDePercusionAvisaEnVezDeAbrirseEnUnaPistaQueNoEsDePercusion() throws Exception {
+    void thePercussionWizardWarnsInsteadOfOpeningOnATrackThatIsNotPercussion() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {

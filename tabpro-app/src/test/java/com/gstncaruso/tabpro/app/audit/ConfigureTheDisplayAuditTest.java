@@ -24,26 +24,26 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ConfigureTheDisplayAuditTest {
 
     @Test
-    void acercarYAlejarPorLosAtajosCtrlMasYCtrlMenosCambianElZoomReal() throws Exception {
+    void zoomingInAndOutByTheCtrlPlusAndCtrlMinusShortcutsChangesTheRealZoom() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
-            Zoom inicial = canvas.zoom();
+            Zoom initial = canvas.zoom();
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl EQUALS"));
-            Zoom acercado = canvas.zoom();
-            assertNotEquals(inicial, acercado, "Ctrl+ tiene que acercar el zoom real del lienzo");
+            Zoom zoomedIn = canvas.zoom();
+            assertNotEquals(initial, zoomedIn, "Ctrl+ tiene que acercar el zoom real del lienzo");
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl MINUS"));
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl MINUS"));
-            Zoom alejado = canvas.zoom();
-            assertNotEquals(acercado, alejado, "Ctrl- tiene que alejar el zoom real del lienzo");
+            Zoom zoomedOut = canvas.zoom();
+            assertNotEquals(zoomedIn, zoomedOut, "Ctrl- tiene que alejar el zoom real del lienzo");
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl 0"));
             assertEquals(Zoom.whole(), canvas.zoom(), "Ctrl+0 tiene que volver el zoom real al 100%");
@@ -53,7 +53,7 @@ class ConfigureTheDisplayAuditTest {
     }
 
     @Test
-    void mesaDeMezclaPorElMenuEscondeYMuestraElTrackPanelReal() throws Exception {
+    void theMixingConsoleThroughTheMenuHidesAndShowsTheRealTrackPanel() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -77,18 +77,18 @@ class ConfigureTheDisplayAuditTest {
     }
 
     @Test
-    void diapasonPorElAtajoCtrl3MuestraElBeatViewsReal() throws Exception {
+    void theFretboardByTheCtrl3ShortcutShowsTheRealBeatViews() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             BeatViews beatViews = findComponent(frame.getContentPane(), BeatViews.class);
             assertNotNull(beatViews, "no encontre el BeatViews real");
-            boolean antes = beatViews.isFretboardVisible();
+            boolean before = beatViews.isFretboardVisible();
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl 3"));
 
-            assertEquals(!antes, beatViews.isFretboardVisible(),
+            assertEquals(!before, beatViews.isFretboardVisible(),
                     "Ctrl+3, despachado de verdad, tiene que alternar el diapason real");
         } finally {
             AuditSupport.dispose(frame);
@@ -96,7 +96,7 @@ class ConfigureTheDisplayAuditTest {
     }
 
     @Test
-    void laVentanaArrancaConLosDosPanelesCerradosYCtrl3AbreElDiapasonReal() throws Exception {
+    void theWindowStartsWithBothPanelsClosedAndCtrl3OpensTheRealFretboard() throws Exception {
         com.gstncaruso.tabpro.ui.Preferences preferences = new com.gstncaruso.tabpro.ui.Preferences();
         preferences.setFretboardVisible(false);
         preferences.setKeyboardVisible(false);
@@ -121,7 +121,7 @@ class ConfigureTheDisplayAuditTest {
     }
 
     @Test
-    void elEstadoDeLosPanelesPersisteAlReabrirLaVentana() throws Exception {
+    void thePanelsStatePersistsWhenReopeningTheWindow() throws Exception {
         com.gstncaruso.tabpro.ui.Preferences preferences = new com.gstncaruso.tabpro.ui.Preferences();
         Editor firstEditor = blankEditor();
         MainFrame firstFrame = newFrame(firstEditor);
@@ -156,7 +156,7 @@ class ConfigureTheDisplayAuditTest {
     }
 
     @Test
-    void laCruzDeLaBarraDelDiapasonHaceLoMismoQueVerDiapason() throws Exception {
+    void theFretboardBarCloseButtonDoesTheSameAsViewFretboard() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -170,12 +170,12 @@ class ConfigureTheDisplayAuditTest {
             assertEquals(true, close.isShowing(), "el diapason tiene que estar abierto para poder cerrarlo con la ✕");
             assertEquals(true, AuditSupport.requestFocusAndAwait(close, 2000),
                     "no pude poner el foco en la ✕ real antes de clickearla");
-            boolean antes = beatViews.isFretboardVisible();
+            boolean before = beatViews.isFretboardVisible();
             java.util.concurrent.CountDownLatch focusBackOnTheScore = focusGainedLatch(canvas);
 
             SwingUtilities.invokeAndWait(close::doClick);
 
-            assertEquals(!antes, beatViews.isFretboardVisible(),
+            assertEquals(!before, beatViews.isFretboardVisible(),
                     "la ✕ real tiene que hacer lo mismo que Ver > Diapasón");
             assertEquals(true,
                     focusBackOnTheScore.await(2, java.util.concurrent.TimeUnit.SECONDS),
@@ -186,7 +186,7 @@ class ConfigureTheDisplayAuditTest {
     }
 
     @Test
-    void laCruzDeLaBarraDelTecladoHaceLoMismoQueVerTeclado() throws Exception {
+    void theKeyboardBarCloseButtonDoesTheSameAsViewKeyboard() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -200,12 +200,12 @@ class ConfigureTheDisplayAuditTest {
             assertEquals(true, close.isShowing(), "el teclado tiene que estar abierto para poder cerrarlo con la ✕");
             assertEquals(true, AuditSupport.requestFocusAndAwait(close, 2000),
                     "no pude poner el foco en la ✕ real antes de clickearla");
-            boolean antes = beatViews.isKeyboardVisible();
+            boolean before = beatViews.isKeyboardVisible();
             java.util.concurrent.CountDownLatch focusBackOnTheScore = focusGainedLatch(canvas);
 
             SwingUtilities.invokeAndWait(close::doClick);
 
-            assertEquals(!antes, beatViews.isKeyboardVisible(),
+            assertEquals(!before, beatViews.isKeyboardVisible(),
                     "la ✕ real tiene que hacer lo mismo que Ver > Teclado");
             assertEquals(true,
                     focusBackOnTheScore.await(2, java.util.concurrent.TimeUnit.SECONDS),
@@ -216,7 +216,7 @@ class ConfigureTheDisplayAuditTest {
     }
 
     @Test
-    void modoPaginaPorElMenuCambiaElViewModeRealDelCanvas() throws Exception {
+    void pageModeThroughTheMenuChangesTheRealCanvasViewMode() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {

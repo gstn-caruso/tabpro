@@ -24,12 +24,12 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class InsertParameterChangesAuditTest {
 
     @Test
-    void elMenuCambioDeParametrosAbreElDialogoRealYElVolumenElegidoLlegaAlModelo() throws Exception {
+    void theChangeParametersMenuOpensTheRealDialogAndTheChosenVolumeReachesTheModel() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -38,12 +38,12 @@ class InsertParameterChangesAuditTest {
             assertEquals(KeyStroke.getKeyStroke("F10"), item.getAccelerator());
 
             withDialog(item::doClick, dialog -> {
-                JCheckBox volumen = findCheckBox(dialog, "Volumen");
-                assertNotNull(volumen, "no encontre la casilla real de Volumen");
-                if (!volumen.isSelected()) {
-                    volumen.doClick();
+                JCheckBox volume = findCheckBox(dialog, "Volumen");
+                assertNotNull(volume, "no encontre la casilla real de Volumen");
+                if (!volume.isSelected()) {
+                    volume.doClick();
                 }
-                JSpinner spinner = findComponent(volumen.getParent(), JSpinner.class);
+                JSpinner spinner = findComponent(volume.getParent(), JSpinner.class);
                 assertNotNull(spinner, "no encontre el spinner real de Volumen");
                 spinner.setValue(50);
 
@@ -67,21 +67,21 @@ class InsertParameterChangesAuditTest {
      * instead of activating the menu bar.
      */
     @Test
-    void f10ConLaPartituraEnfocadaAbreElCambioDeParametrosEnVezDeActivarElMenu() throws Exception {
+    void f10WithTheScoreFocusedOpensChangeParametersInsteadOfActivatingTheMenu() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             KeyStroke f10 = KeyStroke.getKeyStroke("F10");
-            int seleccionAntes = frame.getJMenuBar().getSelectionModel().getSelectedIndex();
+            int selectionBefore = frame.getJMenuBar().getSelectionModel().getSelectedIndex();
 
-            boolean abrioUnDialogo = dispatchKeyAndDetectDialog(canvas, f10, 800);
+            boolean openedADialog = dispatchKeyAndDetectDialog(canvas, f10, 800);
 
-            int seleccionDespues = frame.getJMenuBar().getSelectionModel().getSelectedIndex();
-            assertEquals(-1, seleccionAntes);
-            assertTrue(abrioUnDialogo,
+            int selectionAfter = frame.getJMenuBar().getSelectionModel().getSelectedIndex();
+            assertEquals(-1, selectionBefore);
+            assertTrue(openedADialog,
                     "F10 con la partitura enfocada tiene que abrir 'Cambio de parámetros'");
-            assertEquals(-1, seleccionDespues,
+            assertEquals(-1, selectionAfter,
                     "F10 no tiene que activar la barra de menus para navegarla con las flechas");
         } finally {
             AuditSupport.dispose(frame);

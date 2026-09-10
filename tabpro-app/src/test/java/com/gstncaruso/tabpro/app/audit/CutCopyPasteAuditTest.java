@@ -16,12 +16,12 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class CutCopyPasteAuditTest {
 
     @Test
-    void copiarConCtrlCLlenaElPortapapelesRealDelEditor() throws Exception {
+    void copyingWithCtrlCFillsTheEditorsRealClipboard() throws Exception {
         Editor editor = blankEditor();
         editor.setFret(5);
         MainFrame frame = newFrame(editor);
@@ -39,7 +39,7 @@ class CutCopyPasteAuditTest {
     }
 
     @Test
-    void copiarYPegarConLosAtajosRealesEscribenLaMismaNotaEnOtroCompas() throws Exception {
+    void copyingAndPastingWithTheRealShortcutsWriteTheSameNoteInAnotherBar() throws Exception {
         Editor editor = blankEditor();
         editor.insertMeasure();
         editor.moveToLastMeasure();

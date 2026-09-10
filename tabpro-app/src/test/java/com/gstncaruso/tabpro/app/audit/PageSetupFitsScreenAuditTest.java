@@ -20,12 +20,12 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class PageSetupFitsScreenAuditTest {
 
     @Test
-    void configurarPaginaEntraEnPantallaConLosTresBotonesDelManualSiempreVisibles() throws Exception {
+    void pageSetupFitsOnScreenWithTheThreeManualButtonsAlwaysVisible() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {

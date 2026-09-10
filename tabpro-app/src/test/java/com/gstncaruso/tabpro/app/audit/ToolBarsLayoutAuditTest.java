@@ -28,12 +28,12 @@ import org.junit.jupiter.api.parallel.ResourceLock;
  * MainFrame extends JFrame, so building a real one requires a non-headless toolkit (see
  * AuditSupport); that is why this is an audit test instead of an ordinary one.
  */
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ToolBarsLayoutAuditTest {
 
     @Test
-    void laBarraDeEfectosQuedaEntreLaPartituraYLaMesaDeMezcla() throws Exception {
+    void theEffectsToolbarStaysBetweenTheScoreAndTheMixingConsole() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -61,7 +61,7 @@ class ToolBarsLayoutAuditTest {
     }
 
     @Test
-    void elMenuVerMenusYBarrasEscondeYMuestraLaFilaDeDocumentoReal() throws Exception {
+    void theViewMenusAndToolbarsMenuHidesAndShowsTheRealDocumentRow() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -84,7 +84,7 @@ class ToolBarsLayoutAuditTest {
     }
 
     @Test
-    void elMenuEfectosEscondeLaBarraRealYRecuerdaLaPreferencia() throws Exception {
+    void theEffectsMenuHidesTheRealToolbarAndRemembersThePreference() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         com.gstncaruso.tabpro.ui.Preferences preferences = new com.gstncaruso.tabpro.ui.Preferences();

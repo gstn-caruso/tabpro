@@ -13,12 +13,12 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-@Tag("integracion")
+@Tag("integration")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ToolsForTheGuitaristAuditTest {
 
     @Test
-    void escalasPorElMenuAbreElDialogoReal() throws Exception {
+    void scalesThroughTheMenuOpenTheRealDialog() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -32,7 +32,7 @@ class ToolsForTheGuitaristAuditTest {
     }
 
     @Test
-    void afinadorPorElMenuAbreElDialogoReal() throws Exception {
+    void tunerThroughTheMenuOpensTheRealDialog() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
