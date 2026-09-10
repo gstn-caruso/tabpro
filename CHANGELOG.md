@@ -1,3 +1,9 @@
+## [0.51.0](https://github.com/gstn-caruso/tabpro/compare/v0.50.2...v0.51.0) (2026-09-10)
+
+### Features
+
+* **print:** el casillero «Documento centrado» de Guitar Pro 5 centra la hoja en el papel ([#159](https://github.com/gstn-caruso/tabpro/issues/159)) ([d13cb4f](https://github.com/gstn-caruso/tabpro/commit/d13cb4f05de336ad7d4f1128b2618913ec6a04f4))
+
 ## [0.50.2](https://github.com/gstn-caruso/tabpro/compare/v0.50.1...v0.50.2) (2026-09-10)
 
 ### Bug Fixes
