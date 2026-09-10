@@ -36,7 +36,7 @@ import javax.swing.UIManager;
  * claro si es el compas donde esta parada la edicion, y toda la columna en rojo mientras ese
  * compas suena.
  */
-public final class MeasureGrid extends JComponent implements AccessibleControl {
+public class MeasureGrid extends JComponent implements AccessibleControl {
 
     public static final int CELL_WIDTH = 15;
     public static final int NUMBER_EVERY = 5;

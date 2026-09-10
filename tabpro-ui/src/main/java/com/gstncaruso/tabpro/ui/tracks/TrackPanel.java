@@ -36,9 +36,13 @@ public final class TrackPanel extends JPanel {
     }
 
     public TrackPanel(Editor editor, TrackVisibility visibleTracks) {
+        this(editor, visibleTracks, new GlobalView(editor));
+    }
+
+    TrackPanel(Editor editor, TrackVisibility visibleTracks, GlobalView globalView) {
         this.editor = editor;
         this.mixTable = new MixTable(editor, visibleTracks);
-        this.globalView = new GlobalView(editor);
+        this.globalView = globalView;
         setLayout(new BorderLayout());
         setBackground(ScoreColors.SURFACE);
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, ScoreColors.BORDER));

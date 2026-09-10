@@ -16,8 +16,12 @@ public final class GlobalView extends JPanel {
     private final MeasureGrid grid;
 
     public GlobalView(Editor editor) {
-        this.markerZone = new MarkerZone(editor);
-        this.grid = new MeasureGrid(editor);
+        this(new MarkerZone(editor), new MeasureGrid(editor));
+    }
+
+    GlobalView(MarkerZone markerZone, MeasureGrid grid) {
+        this.markerZone = markerZone;
+        this.grid = grid;
         setLayout(new BorderLayout());
         setBackground(ScoreColors.SURFACE);
         add(markerZone, BorderLayout.NORTH);
