@@ -9,7 +9,6 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.instruments.InstrumentEditing;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -110,7 +109,7 @@ public final class PercussionAssistant extends JPanel {
     private JComponent scrollable(PercussionSoundPalette palette) {
         JScrollPane scroll = new JScrollPane(palette);
         scroll.setBorder(BorderFactory.createEmptyBorder());
-        scroll.setPreferredSize(new Dimension(0, 160));
+        scroll.setPreferredSize(palette.getPreferredSize());
         return scroll;
     }
 
