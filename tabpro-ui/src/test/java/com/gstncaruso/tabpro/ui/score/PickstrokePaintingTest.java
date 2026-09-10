@@ -46,6 +46,6 @@ class PickstrokePaintingTest {
         int centerX = bounds.x + bounds.width / 2;
         int tabTop = layout.tabTop(0, 0);
         assertTrue(canvas.writesTextInRegion(glyph, new Rectangle(centerX - 10, tabTop - 20, 20, 20)),
-                "el pickstroke tiene que escribir el glifo de Bravura que corresponde a la direccion de la pua");
+                "the pickstroke has to write the Bravura glyph that matches the pick's direction");
     }
 }

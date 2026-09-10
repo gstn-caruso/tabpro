@@ -40,9 +40,9 @@ class BendLabelClearsTheStaffTest {
         Rectangle gapArea = new Rectangle(
                 plain.layout.measureX(0), plain.layout.staffBottom(0, 0),
                 plain.layout.measureWidth(0), ScoreLayout.STAFF_TO_TAB_GAP);
-        assertTrue(withBend.inkIn(gapArea) > plain.inkIn(gapArea), "el bend tiene que dibujar algo en la brecha");
+        assertTrue(withBend.inkIn(gapArea) > plain.inkIn(gapArea), "the bend has to draw something in the gap");
         assertEquals(plain.inkIn(staffArea), withBend.inkIn(staffArea),
-                "la curva y la etiqueta \"full\" del bend no pueden pintar tinta dentro del pentagrama");
+                "the bend's curve and its \"full\" label cannot paint ink inside the staff");
     }
 
     private static Measure measureWith(Note note) {

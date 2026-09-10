@@ -67,6 +67,6 @@ class RestPaintingTest {
 
         int y = layout.stepY(0, 0, step);
         assertTrue(canvas.writesTextInRegion(glyph, new Rectangle(0, y - 2, WIDTH, 4)),
-                "el silencio tiene que escribir el glifo de Bravura en su linea de referencia");
+                "the rest has to write the Bravura glyph on its reference line");
     }
 }

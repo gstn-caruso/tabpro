@@ -36,6 +36,6 @@ class CodaPaintingTest {
         int centerX = (left + right) / 2;
         int y = layout.staffTop(0, 0) - 16;
         assertTrue(canvas.writesTextInRegion(MusicFont.coda(), new Rectangle(centerX - 10, y - 10, 20, 20)),
-                "la coda tiene que escribir el glifo de Bravura arriba del sistema");
+                "the coda has to write the Bravura glyph above the staff system");
     }
 }

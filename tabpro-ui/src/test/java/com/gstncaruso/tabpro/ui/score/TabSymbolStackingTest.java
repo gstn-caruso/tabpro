@@ -38,7 +38,7 @@ class TabSymbolStackingTest {
                 plain.layout.measureWidth(0), ScoreLayout.STAFF_HEIGHT);
 
         assertEquals(plain.inkIn(staffArea), withSymbols.inkIn(staffArea),
-                "fade in, P.M. y let ring apilados no pueden pintar tinta dentro del pentagrama");
+                "fade in, P.M. and let ring stacked cannot paint ink inside the staff");
     }
 
     @Test
@@ -57,11 +57,11 @@ class TabSymbolStackingTest {
                 plain.layout.measureX(0), plain.layout.tabTop(0, 0) - 1,
                 plain.layout.measureWidth(0), 3);
 
-        assertTrue(withLabel.inkIn(gapArea) > plain.inkIn(gapArea), "P.M. tiene que dibujarse en la brecha");
+        assertTrue(withLabel.inkIn(gapArea) > plain.inkIn(gapArea), "P.M. has to draw itself in the gap");
         assertEquals(plain.inkIn(staffArea), withLabel.inkIn(staffArea),
-                "P.M. no puede pintar tinta dentro del pentagrama");
+                "P.M. cannot paint ink inside the staff");
         assertEquals(plain.inkIn(tabLineArea), withLabel.inkIn(tabLineArea),
-                "P.M. no puede pintar tinta sobre la primera linea de la tablatura");
+                "P.M. cannot paint ink over the first line of the tab");
     }
 
     private static Measure measureWith(Note note, BeatEffects effects) {

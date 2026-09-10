@@ -50,6 +50,6 @@ class NoteheadPaintingTest {
         int step = StaffPainter.positionOf(track, Clef.TREBLE, note, 0).step();
         int y = layout.stepY(0, 0, step);
         assertTrue(canvas.writesTextInRegion(glyph, new Rectangle(0, y - 2, WIDTH, 4)),
-                "la cabeza tiene que escribir el glifo de Bravura sobre la linea de la nota");
+                "the notehead has to write the Bravura glyph on the note's line");
     }
 }

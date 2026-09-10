@@ -15,6 +15,6 @@ class TabFretDigitProportionTest {
         double digitHeight = glyphs.getVisualBounds().getHeight();
         double ratio = digitHeight / ScoreLayout.STRING_SPACING;
 
-        assertTrue(ratio >= 0.85 && ratio <= 0.92, "ratio fue " + ratio);
+        assertTrue(ratio >= 0.85 && ratio <= 0.92, "ratio was " + ratio);
     }
 }

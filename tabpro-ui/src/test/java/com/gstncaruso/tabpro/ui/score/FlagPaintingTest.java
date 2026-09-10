@@ -68,6 +68,6 @@ class FlagPaintingTest {
         int tipY = up ? (int) Math.round(rootY - STEM_LENGTH) : (int) Math.round(rootY + STEM_LENGTH);
 
         assertTrue(canvas.writesTextInRegion(glyph, new Rectangle(0, tipY - 3, WIDTH, 6)),
-                "la bandera tiene que escribir el glifo de Bravura en la punta de la plica");
+                "the flag has to write the Bravura glyph at the tip of the stem");
     }
 }
