@@ -13,6 +13,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import org.junit.jupiter.api.Test;
 
@@ -83,6 +85,20 @@ class PdfDocumentTest {
     }
 
     @Test
+    void compressesTheImageAtDeflaterBestSpeedToPrioritizeExportSpeedOverFileSize() throws IOException {
+        BufferedImage image = page(64, 64);
+        PdfDocument pdf = new PdfDocument();
+        pdf.addPage(image);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        pdf.writeTo(out);
+
+        byte[] imageStream = imageStreamOf(out.toByteArray());
+        assertArrayEquals(deflateAt(rgbBytesOf(image), Deflater.BEST_SPEED), imageStream,
+                "el pdf tiene que comprimir con Deflater.BEST_SPEED, no con otro nivel");
+    }
+
+    @Test
     void theSheetIsAsBigAsThePaperItWasAskedFor() throws IOException {
         PdfDocument pdf = new PdfDocument(612, 792);
         pdf.addPage(page(40, 60));
@@ -126,6 +142,14 @@ class PdfDocumentTest {
             }
         }
         return rgb;
+    }
+
+    private static byte[] deflateAt(byte[] data, int level) throws IOException {
+        ByteArrayOutputStream compressed = new ByteArrayOutputStream();
+        try (DeflaterOutputStream deflater = new DeflaterOutputStream(compressed, new Deflater(level))) {
+            deflater.write(data);
+        }
+        return compressed.toByteArray();
     }
 
     private static byte[] imageStreamOf(byte[] pdfBytes) {
