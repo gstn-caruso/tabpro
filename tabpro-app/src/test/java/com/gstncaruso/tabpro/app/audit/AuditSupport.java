@@ -332,6 +332,31 @@ final class AuditSupport {
         }
     }
 
+    /**
+     * Despacha una tecla sin bloquear el hilo del test y dice si eso abrio una ventana real
+     * dentro del tiempo dado: para los atajos que deberian abrir un dialogo modal, sin arriesgar
+     * que el test quede colgado si el dialogo de verdad aparece y nadie lo cierra.
+     */
+    static boolean dispatchKeyAndDetectDialog(Component target, KeyStroke keyStroke, long timeoutMillis)
+            throws Exception {
+        CountDownLatch opened = new CountDownLatch(1);
+        AWTEventListener listener = event -> {
+            if (event.getID() == WindowEvent.WINDOW_OPENED && event.getSource() instanceof JDialog dialog) {
+                opened.countDown();
+                dialog.dispose();
+            }
+        };
+        Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);
+        try {
+            SwingUtilities.invokeLater(() -> target.dispatchEvent(new KeyEvent(
+                    target, KeyEvent.KEY_PRESSED, System.currentTimeMillis(),
+                    keyStroke.getModifiers(), keyStroke.getKeyCode(), KeyEvent.CHAR_UNDEFINED)));
+            return opened.await(timeoutMillis, TimeUnit.MILLISECONDS);
+        } finally {
+            Toolkit.getDefaultToolkit().removeAWTEventListener(listener);
+        }
+    }
+
     private static final class NoScoreFiles implements ScoreFiles {
         @Override
         public Score load(Path path) {
