@@ -1,3 +1,9 @@
+## [0.59.5](https://github.com/gstn-caruso/tabpro/compare/v0.59.4...v0.59.5) (2026-09-10)
+
+### Performance Improvements
+
+* **print:** el PDF y la imagen codifican cada hoja en bloque ([#191](https://github.com/gstn-caruso/tabpro/issues/191)) ([89deea1](https://github.com/gstn-caruso/tabpro/commit/89deea125616628c2fc47fea21d7ffb79caf4b41))
+
 ## [0.59.4](https://github.com/gstn-caruso/tabpro/compare/v0.59.3...v0.59.4) (2026-09-10)
 
 ### Performance Improvements
