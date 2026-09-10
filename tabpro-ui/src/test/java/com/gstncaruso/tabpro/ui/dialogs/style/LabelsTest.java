@@ -22,6 +22,7 @@ import com.gstncaruso.tabpro.ui.instruments.ScaleLabelMode;
 import com.gstncaruso.tabpro.ui.instruments.ScaleType;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 import com.gstncaruso.tabpro.ui.page.Orientation;
+import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -188,6 +189,21 @@ class LabelsTest {
     @ParameterizedTest
     @EnumSource(Orientation.class)
     void todaOrientacionTieneUnaEtiquetaQueNoEsSuName(Orientation value) {
+        String etiqueta = Labels.of(value);
+
+        assertFalse(etiqueta.isBlank());
+        assertNotEquals(value.name(), etiqueta);
+    }
+
+    @Test
+    void traduceElFormatoDePapelConSusDimensionesEnMilimetros() {
+        assertEquals("A4 (210 x 297 mm)", Labels.of(PaperFormat.A4));
+        assertEquals("Carta (216 x 279 mm)", Labels.of(PaperFormat.LETTER));
+    }
+
+    @ParameterizedTest
+    @EnumSource(PaperFormat.class)
+    void todoFormatoDePapelTieneUnaEtiquetaQueNoEsSuName(PaperFormat value) {
         String etiqueta = Labels.of(value);
 
         assertFalse(etiqueta.isBlank());

@@ -17,6 +17,7 @@ import com.gstncaruso.tabpro.ui.instruments.ScaleLabelMode;
 import com.gstncaruso.tabpro.ui.instruments.ScaleType;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 import com.gstncaruso.tabpro.ui.page.Orientation;
+import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import java.util.List;
 
 /**
@@ -46,8 +47,15 @@ public final class Labels {
             case FretboardType fretboardType -> fretboardType.label();
             case KeyboardDisplayMode keyboardDisplayMode -> keyboardDisplayMode.label();
             case Orientation orientation -> orientation.label();
+            case PaperFormat paperFormat -> paperFormatLabel(paperFormat);
             default -> throw new IllegalArgumentException("Sin etiqueta para " + value);
         };
+    }
+
+    /** Como el manual las lista: el nombre del formato con sus dimensiones, p.ej. "Legal (216 x 356 mm)". */
+    private static String paperFormatLabel(PaperFormat format) {
+        return format.label() + " (" + Math.round(format.widthMillimetres()) + " x "
+                + Math.round(format.heightMillimetres()) + " mm)";
     }
 
     /** Las letras de las cuerdas de graves a agudas, como el manual escribe "EADGBE". */
