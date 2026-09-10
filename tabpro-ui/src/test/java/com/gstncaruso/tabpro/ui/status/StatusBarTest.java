@@ -7,9 +7,17 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import org.junit.jupiter.api.Test;
 
 class StatusBarTest {
+
+    @Test
+    void ningunControlDeLaBarraDeEstadoQuedaSinNombreNiTooltipAccesible() {
+        StatusBar bar = new StatusBar(new Editor(Score.blank()));
+
+        AccessibilityAssertions.assertNoViolations(bar);
+    }
 
     @Test
     void showsThePageThePositionAndTheActiveTrack() {
