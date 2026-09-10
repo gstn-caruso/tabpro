@@ -29,6 +29,18 @@ final class ParameterChangePainter {
     private ParameterChangePainter() {
     }
 
+    /**
+     * El tempo global de la partitura ({@link com.gstncaruso.tabpro.core.model.Score#tempo}),
+     * que GP5 siempre escribe arriba del primer compas del primer sistema.
+     */
+    static void paintInitialTempo(
+            Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, int scoreTempo) {
+        Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, 0);
+        int centerX = bounds.x + bounds.width / 2;
+        int bottom = layout.staffTop(trackIndex, measureIndex) - STAFF_CLEARANCE;
+        paintTempo(g, scoreTempo, centerX, bottom - ROW_HEIGHT);
+    }
+
     static void paintMeasure(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
         Measure measure = track.measure(measureIndex);
         for (int beatIndex = 0; beatIndex < measure.beats().size(); beatIndex++) {

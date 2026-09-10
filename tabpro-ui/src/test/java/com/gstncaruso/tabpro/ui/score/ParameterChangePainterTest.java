@@ -98,6 +98,20 @@ class ParameterChangePainterTest {
     }
 
     @Test
+    void theScoresGlobalTempoIsWrittenAboveTheFirstMeasure() {
+        Measure measure = plainMeasure();
+        Track track = guitarWith(measure);
+        ScoreLayout layout = ScoreLayout.of(scoreWith(measure), WIDTH, VisibleTracks.all());
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        ParameterChangePainter.paintInitialTempo(lienzo, layout, track, 0, 0, 120);
+
+        int bottom = layout.staffTop(0, 0) - 16;
+        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.metNoteQuarterUp(), new Rectangle(0, bottom - 14, WIDTH, 16)),
+                "el tempo inicial tiene que escribir la negra de Bravura arriba del primer compas");
+    }
+
+    @Test
     void aChangeThatTouchesTempoAndPanShowsBothThings() {
         ParameterChange both = change(SoundParameter.TEMPO, 90).changing(SoundParameter.PAN, 20);
         Painted painted = paint(scoreWith(changingAt(1, both)));
