@@ -340,6 +340,31 @@ class ScoreCanvasTest {
                 "sin layout todavia (viewport 0x0) no hay que mover el scroll a un lugar sin sentido");
     }
 
+    /**
+     * Defensa en profundidad, mas alla del guard anterior: si algun dia algo mueve el cursor
+     * desde otro hilo, la reaccion del canvas (revalidate/repaint/scroll) tiene que llegar por
+     * el EDT, nunca en el acto sobre el hilo que llamo.
+     */
+    @Test
+    void deliversTheEditorNotificationOnTheEdtEvenWhenItCameFromAnotherThread() throws Exception {
+        Editor manyMeasures = editorWithManyMeasures(30);
+        ScoreCanvas horizontal = new ScoreCanvas(manyMeasures);
+        horizontal.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+        JScrollPane pane = paneShowing(horizontal);
+
+        Thread background = new Thread(manyMeasures::moveToLastMeasure);
+        background.start();
+        background.join();
+
+        assertEquals(0, pane.getViewport().getViewPosition().x,
+                "todavia no llego al EDT: el scroll de otro hilo no se puede haber aplicado ya");
+
+        javax.swing.SwingUtilities.invokeAndWait(() -> { });
+
+        assertTrue(pane.getViewport().getViewPosition().x > 0,
+                "una vez que el EDT proceso la cola, el scroll real tiene que haber llegado");
+    }
+
     /** Treinta compases en Pantalla Horizontal -que nunca envuelve- para que el ultimo quede
      * bien lejos del origen y un scroll de verdad haga falta para llegar a el. */
     private static ScoreCanvas canvasWithManyMeasuresScrolledHorizontally() {
