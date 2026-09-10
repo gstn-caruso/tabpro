@@ -18,7 +18,7 @@ public final class DirectionsPanel extends FormPanel {
         symbol.setRenderer((list, value, index, isSelected, hasFocus) ->
                 new javax.swing.JLabel(value == null ? "(Ninguno)" : Labels.of(value)));
         jump.setRenderer((list, value, index, isSelected, hasFocus) ->
-                new javax.swing.JLabel(value == null ? "(Ninguno)" : value.label()));
+                new javax.swing.JLabel(value == null ? "(Ninguno)" : Labels.of(value)));
 
         addRow("Símbolo", symbol);
         addRow("Salto", jump);

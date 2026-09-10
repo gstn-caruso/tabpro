@@ -3,33 +3,27 @@ package com.gstncaruso.tabpro.core.model.bars;
 import java.util.Optional;
 
 public enum DirectionJump {
-    DA_CAPO("Da Capo", null, null),
-    DA_CAPO_AL_CODA("Da Capo al Coda", null, DirectionSymbol.CODA),
-    DA_CAPO_AL_DOUBLE_CODA("Da Capo al Doble Coda", null, DirectionSymbol.DOUBLE_CODA),
-    DA_CAPO_AL_FINE("Da Capo al Fine", null, DirectionSymbol.FINE),
-    DA_SEGNO("Da Segno", DirectionSymbol.SEGNO, null),
-    DA_SEGNO_AL_CODA("Da Segno al Coda", DirectionSymbol.SEGNO, DirectionSymbol.CODA),
-    DA_SEGNO_AL_DOUBLE_CODA("Da Segno al Doble Coda", DirectionSymbol.SEGNO, DirectionSymbol.DOUBLE_CODA),
-    DA_SEGNO_AL_FINE("Da Segno al Fine", DirectionSymbol.SEGNO, DirectionSymbol.FINE),
-    DA_SEGNO_SEGNO("Da Segno Segno", DirectionSymbol.SEGNO_SEGNO, null),
-    DA_SEGNO_SEGNO_AL_CODA("Da Segno Segno al Coda", DirectionSymbol.SEGNO_SEGNO, DirectionSymbol.CODA),
-    DA_SEGNO_SEGNO_AL_DOUBLE_CODA("Da Segno Segno al Doble Coda", DirectionSymbol.SEGNO_SEGNO, DirectionSymbol.DOUBLE_CODA),
-    DA_SEGNO_SEGNO_AL_FINE("Da Segno Segno al Fine", DirectionSymbol.SEGNO_SEGNO, DirectionSymbol.FINE),
-    DA_CODA("Da Coda", DirectionSymbol.CODA, null),
-    DA_DOUBLE_CODA("Da Doble Coda", DirectionSymbol.DOUBLE_CODA, null);
+    DA_CAPO(null, null),
+    DA_CAPO_AL_CODA(null, DirectionSymbol.CODA),
+    DA_CAPO_AL_DOUBLE_CODA(null, DirectionSymbol.DOUBLE_CODA),
+    DA_CAPO_AL_FINE(null, DirectionSymbol.FINE),
+    DA_SEGNO(DirectionSymbol.SEGNO, null),
+    DA_SEGNO_AL_CODA(DirectionSymbol.SEGNO, DirectionSymbol.CODA),
+    DA_SEGNO_AL_DOUBLE_CODA(DirectionSymbol.SEGNO, DirectionSymbol.DOUBLE_CODA),
+    DA_SEGNO_AL_FINE(DirectionSymbol.SEGNO, DirectionSymbol.FINE),
+    DA_SEGNO_SEGNO(DirectionSymbol.SEGNO_SEGNO, null),
+    DA_SEGNO_SEGNO_AL_CODA(DirectionSymbol.SEGNO_SEGNO, DirectionSymbol.CODA),
+    DA_SEGNO_SEGNO_AL_DOUBLE_CODA(DirectionSymbol.SEGNO_SEGNO, DirectionSymbol.DOUBLE_CODA),
+    DA_SEGNO_SEGNO_AL_FINE(DirectionSymbol.SEGNO_SEGNO, DirectionSymbol.FINE),
+    DA_CODA(DirectionSymbol.CODA, null),
+    DA_DOUBLE_CODA(DirectionSymbol.DOUBLE_CODA, null);
 
-    private final String label;
     private final DirectionSymbol jumpsTo;
     private final DirectionSymbol stopsAt;
 
-    DirectionJump(String label, DirectionSymbol jumpsTo, DirectionSymbol stopsAt) {
-        this.label = label;
+    DirectionJump(DirectionSymbol jumpsTo, DirectionSymbol stopsAt) {
         this.jumpsTo = jumpsTo;
         this.stopsAt = stopsAt;
-    }
-
-    public String label() {
-        return label;
     }
 
     public Optional<DirectionSymbol> jumpsTo() {

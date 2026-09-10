@@ -177,7 +177,7 @@ final class BarStructurePainter {
     }
 
     private static void paintJump(Graphics2D g, int left, int right, int staffTop, DirectionJump jump) {
-        paintCenteredLabel(g, jump.label(), (left + right) / 2, staffTop - 12);
+        paintCenteredLabel(g, Labels.of(jump), (left + right) / 2, staffTop - 12);
     }
 
     private static void paintCenteredLabel(Graphics2D g, String text, int centerX, int y) {

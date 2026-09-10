@@ -15,6 +15,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
 import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
@@ -443,6 +444,20 @@ class LabelsTest {
     @EnumSource(DirectionSymbol.class)
     void everyDirectionSymbolHasSpanishAndEnglishText(DirectionSymbol value) {
         String key = "domain.DirectionSymbol." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheDirectionJump() {
+        assertEquals("Da Segno al Coda", Labels.of(DirectionJump.DA_SEGNO_AL_CODA));
+    }
+
+    @ParameterizedTest
+    @EnumSource(DirectionJump.class)
+    void everyDirectionJumpHasSpanishAndEnglishText(DirectionJump value) {
+        String key = "domain.DirectionJump." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
