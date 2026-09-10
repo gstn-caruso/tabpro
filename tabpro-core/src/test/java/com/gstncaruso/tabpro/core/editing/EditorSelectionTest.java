@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.core.editing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Score;
@@ -28,5 +29,15 @@ class EditorSelectionTest {
     @Test
     void thereIsNoSelectionBeforeAnythingSelectsAnything() {
         assertTrue(editor.selection().isEmpty());
+    }
+
+    @Test
+    void startingASelectionCoversOnlyTheCurrentBeat() {
+        editor.startSelection(false);
+
+        Selection selection = editor.selection().orElseThrow();
+
+        assertEquals(0, selection.fromBeat());
+        assertEquals(0, selection.toBeat());
     }
 }
