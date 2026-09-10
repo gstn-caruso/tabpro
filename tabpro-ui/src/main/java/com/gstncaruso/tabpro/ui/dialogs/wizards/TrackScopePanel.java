@@ -5,7 +5,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-/** Si un asistente trabaja sobre la pista activa o sobre todas. */
 public final class TrackScopePanel extends JPanel {
 
     private final JRadioButton currentTrack = new JRadioButton("Pista activa", true);

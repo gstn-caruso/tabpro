@@ -5,7 +5,6 @@ import com.gstncaruso.tabpro.core.editing.wizards.RestFiller;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import java.awt.Component;
 
-/** El asistente Completar/reducir compases con silencios. */
 public final class RestFillerDialog {
 
     private RestFillerDialog() {

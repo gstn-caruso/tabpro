@@ -8,7 +8,6 @@ import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** El asistente Digitacion automatica, sobre la pista activa. */
 public final class AutomaticFingeringDialog {
 
     private AutomaticFingeringDialog() {
@@ -25,7 +24,6 @@ public final class AutomaticFingeringDialog {
         editor.apply(score -> AutomaticFingering.run(score, trackIndex));
     }
 
-    /** Arma el contenido del dialogo; sin abrir ningun dialogo. */
     static JPanel buildContent(String trackName) {
         JPanel content = new JPanel();
         DialogStyle.padded(content);

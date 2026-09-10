@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.ui.dialogs.wizards;
 
 import com.gstncaruso.tabpro.core.editing.wizards.BarDurationCheck;
 
-/** Como se lee un compas que no cierra, para la lista del asistente. */
 public final class BarDurationReport {
 
     private BarDurationReport() {
