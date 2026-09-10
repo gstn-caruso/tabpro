@@ -14,7 +14,7 @@
   <packaging>jar</packaging>
 
   <name>Tabpro App</name>
-  <description>Aplicación de escritorio (interfaz gráfica) del editor de tablaturas.</description>
+  <description>Desktop application (GUI) of the tablature editor.</description>
   <url>https://github.com/gstn-caruso/tabpro</url>
 
   <dependencies>

@@ -18,11 +18,10 @@ jobs:
           distribution: temurin
           java-version: '25'
 
-      # El cache de setup-java keyea por el hash de los poms y no tiene fallback:
-      # como el release reescribe la version en los seis poms, cada version
-      # arrancaba con el repositorio vacio y volvia a bajar todo. Con restore-keys
-      # la version nueva parte de la anterior y solo baja lo que cambio.
-      - name: Cache del repositorio de Maven
+      # setup-java cache keys by pom hash with no fallback: as release rewrites the version in all six poms,
+      # each release would start with an empty repository and re-download everything. With restore-keys,
+      # the new version starts from the previous one and only downloads what changed.
+      - name: Cache the Maven repository
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
@@ -33,10 +32,10 @@ jobs:
       - name: Build and test
         run: mvn -B verify
 
-      - name: Instalar Xvfb
+      - name: Install Xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
-      - name: Tests de integracion
+      - name: Integration tests
         run: xvfb-run -a mvn -B test -Dtests.headless=false -Dgroups=integracion -Dtests.excluded.groups= -Dsurefire.failIfNoSpecifiedTests=false
 
   release:
@@ -58,11 +57,10 @@ jobs:
           distribution: temurin
           java-version: '25'
 
-      # El cache de setup-java keyea por el hash de los poms y no tiene fallback:
-      # como el release reescribe la version en los seis poms, cada version
-      # arrancaba con el repositorio vacio y volvia a bajar todo. Con restore-keys
-      # la version nueva parte de la anterior y solo baja lo que cambio.
-      - name: Cache del repositorio de Maven
+      # setup-java cache keys by pom hash with no fallback: as release rewrites the version in all six poms,
+      # each release would start with an empty repository and re-download everything. With restore-keys,
+      # the new version starts from the previous one and only downloads what changed.
+      - name: Cache the Maven repository
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
