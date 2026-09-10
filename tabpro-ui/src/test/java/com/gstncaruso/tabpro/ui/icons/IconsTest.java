@@ -23,7 +23,7 @@ class IconsTest {
 
     @ParameterizedTest
     @MethodSource("everyPublicFactory")
-    void laFabricaDevuelveUnIconoDelTamanoDeclarado(Method factory) throws ReflectiveOperationException {
+    void theFactoryReturnsAnIconOfTheDeclaredSize(Method factory) throws ReflectiveOperationException {
         Icon icon = invoke(factory);
 
         assertEquals(Icons.SIZE, icon.getIconWidth(), factory.getName() + " ancho");
@@ -32,7 +32,7 @@ class IconsTest {
 
     @ParameterizedTest
     @MethodSource("everyPublicFactory")
-    void laFabricaPintaConElForegroundDelComponente(Method factory) throws ReflectiveOperationException {
+    void theFactoryPaintsWithTheComponentsForeground(Method factory) throws ReflectiveOperationException {
         Icon icon = invoke(factory);
         JPanel probe = new JPanel();
         probe.setForeground(THEME_COLOR);
@@ -46,7 +46,7 @@ class IconsTest {
     }
 
     @Test
-    void hayAlMenosUnaFabricaParaProbar() {
+    void thereIsAtLeastOneFactoryToTest() {
         assertTrue(everyPublicFactory().size() > 0);
     }
 

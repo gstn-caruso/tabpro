@@ -15,7 +15,7 @@ class SvgIconTest {
     private static final String A_MINIMAL_SVG = "/icons/rect-en-color-actual.svg";
 
     @Test
-    void midePedidoElTamanoConElQueSeConstruye() {
+    void measuresTheRequestedSizeItIsBuiltWith() {
         SvgIcon icon = new SvgIcon(A_MINIMAL_SVG, 18);
 
         assertEquals(18, icon.getIconWidth());
@@ -23,7 +23,7 @@ class SvgIconTest {
     }
 
     @Test
-    void pintaConElForegroundDelComponenteQueLoPinta() {
+    void paintsWithTheForegroundOfTheComponentPaintingIt() {
         SvgIcon icon = new SvgIcon(A_MINIMAL_SVG, 18);
         JPanel probe = new JPanel();
         Color themeColor = new Color(10, 20, 30);
@@ -38,7 +38,7 @@ class SvgIconTest {
     }
 
     @Test
-    void reportaClaroSiElRecursoNoExiste() {
+    void clearlyReportsWhenTheResourceDoesNotExist() {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> new SvgIcon("/icons/no-existe.svg", 18));
 

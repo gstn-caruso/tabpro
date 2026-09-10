@@ -17,7 +17,7 @@ class GlyphIconTest {
     private static final String NOTEHEAD_BLACK = "";
 
     @Test
-    void necesitaAlMenosUnRenglonDeGlifos() {
+    void needsAtLeastOneRowOfGlyphs() {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> new GlyphIcon(18));
 
@@ -25,7 +25,7 @@ class GlyphIconTest {
     }
 
     @Test
-    void reportaClaroSiBravuraNoTieneElCodepointPedido() {
+    void clearlyReportsWhenBravuraLacksTheRequestedCodepoint() {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> new GlyphIcon(18, "A"));
 
@@ -33,7 +33,7 @@ class GlyphIconTest {
     }
 
     @Test
-    void unGlifoSoloSePintaDelForegroundYMideElTamanoPedido() {
+    void aSingleGlyphPaintsOnlyInTheForegroundAndMeasuresTheRequestedSize() {
         GlyphIcon icon = new GlyphIcon(18, NOTEHEAD_BLACK);
 
         assertEquals(18, icon.getIconWidth());
@@ -42,7 +42,7 @@ class GlyphIconTest {
     }
 
     @Test
-    void unRenglonChicoJuntoAUnoGrandeSiguePintandoLosDos() {
+    void aSmallRowNextToALargeOneStillPaintsBoth() {
         GlyphIcon icon = new GlyphIcon(18, "", NOTEHEAD_BLACK);
 
         BufferedImage image = paint(icon);
@@ -75,11 +75,11 @@ class GlyphIconTest {
     }
 
     @Test
-    void superponerElMismoGlifoDosVecesSePintaIgualQueUnaSolaVez() {
-        Icon unaVez = new GlyphIcon(18, NOTEHEAD_BLACK);
-        Icon superpuesto = GlyphIcon.overlaid(18, NOTEHEAD_BLACK, NOTEHEAD_BLACK);
+    void overlayingTheSameGlyphTwicePaintsTheSameAsOnce() {
+        Icon once = new GlyphIcon(18, NOTEHEAD_BLACK);
+        Icon overlaid = GlyphIcon.overlaid(18, NOTEHEAD_BLACK, NOTEHEAD_BLACK);
 
-        assertEquals(pixelsOf(paint(unaVez)), pixelsOf(paint(superpuesto)));
+        assertEquals(pixelsOf(paint(once)), pixelsOf(paint(overlaid)));
     }
 
     private static String pixelsOf(BufferedImage image) {
@@ -103,7 +103,7 @@ class GlyphIconTest {
     }
 
     @Test
-    void ningunPixelSeEscapaDelCuadradoNiConVariosRenglones() {
+    void noPixelEscapesTheSquareEvenWithSeveralRows() {
         GlyphIcon icon = new GlyphIcon(18, "", NOTEHEAD_BLACK);
         int padding = 6;
         JPanel probe = new JPanel();
