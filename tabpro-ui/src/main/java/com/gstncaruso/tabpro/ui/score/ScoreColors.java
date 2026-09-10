@@ -58,8 +58,10 @@ public final class ScoreColors {
     public static final Color TEMPO = new Color(0xFF, 0x65, 0x63);
     /** El compas que no suma lo que su medida pide, salvo el que se esta editando. */
     public static final Color INCOMPLETE_MEASURE = new Color(0xE5484D);
-    /** El rectangulo que resalta una seleccion multiple. */
-    public static final Color SELECTION = new Color(0x35, 0x74, 0xF0, 0x50);
+    /** El relleno de una seleccion multiple, amarillo como en Guitar Pro 5 (medido #FFFF00). */
+    public static final Color SELECTION = new Color(0xFF, 0xFF, 0x00, 0x50);
+    /** El contorno solido de la seleccion, del mismo amarillo que Guitar Pro 5. */
+    public static final Color SELECTION_BORDER = new Color(0xFF, 0xFF, 0x00);
     /** El rectangulo gris que marca, en la otra notacion, la nota que corresponde al cursor. */
     public static final Color CORRESPONDING_NOTE = new Color(0x9D, 0xA1, 0xA8, 0xAF);
     /** La voz que no se esta editando, cuando se pide dibujarla atenuada. */

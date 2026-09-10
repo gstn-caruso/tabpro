@@ -519,6 +519,61 @@ class ScorePainterTest {
     }
 
     @Test
+    void theSelectionFillIsGuitarPro5sYellowNotTheOldTranslucentBlue() {
+        Measure full = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Score score = scoreWith(full);
+        com.gstncaruso.tabpro.core.editing.Selection selection =
+                com.gstncaruso.tabpro.core.editing.Selection.ofMeasures(0, 0, 0);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH);
+        BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        ScorePainter.paint(
+                g, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent(), java.util.Optional.of(selection));
+        g.dispose();
+
+        Rectangle bounds = layout.measureBounds(0, 0);
+        int interiorX = bounds.x + bounds.width / 2;
+        int interiorY = bounds.y + bounds.height / 2;
+        Color expectedFill = com.gstncaruso.tabpro.ui.theme.PaletteCheck.compositeOver(
+                new Color(0xFF, 0xFF, 0x00, 0x50), ScoreColors.BACKGROUND);
+
+        assertEquals(expectedFill.getRGB(), image.getRGB(interiorX, interiorY),
+                "el manual mide la seleccion de Guitar Pro 5 en amarillo #FFFF00, no en azul");
+    }
+
+    @Test
+    void theSelectionBorderIsSolidYellowLikeGuitarPro5NotTheAccentBlue() {
+        Measure full = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Score score = scoreWith(full);
+        com.gstncaruso.tabpro.core.editing.Selection selection =
+                com.gstncaruso.tabpro.core.editing.Selection.ofMeasures(0, 0, 0);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH);
+        BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        ScorePainter.paint(
+                g, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent(), java.util.Optional.of(selection));
+        g.dispose();
+
+        Rectangle bounds = layout.measureBounds(0, 0);
+        int y = bounds.y + bounds.height / 2;
+        Color edge = new Color(image.getRGB(bounds.x, y));
+
+        assertTrue(edge.getRed() > 180 && edge.getGreen() > 180 && edge.getBlue() < 60,
+                "el borde de la seleccion tiene que ser amarillo solido (rojo y verde altos, azul bajo), "
+                        + "no el azul de ACCENT: " + edge);
+    }
+
+    @Test
     void aContiguousMultiBeatSelectionIsOutlinedAsOneAreaWithoutInternalLines() {
         Measure full = new Measure(TimeSignature.fourFour(), List.of(
                 Beat.of(Duration.quarter(), new Note(1, 0)),
