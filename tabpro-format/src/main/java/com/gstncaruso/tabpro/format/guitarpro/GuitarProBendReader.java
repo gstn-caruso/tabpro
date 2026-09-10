@@ -56,11 +56,7 @@ final class GuitarProBendReader {
                 -BendPoint.MAX_QUARTER_TONES, BendPoint.MAX_QUARTER_TONES);
     }
 
-    /**
-     * Los primeros cinco tipos son los que tabpro reconoce; los que usa la
-     * palanca (dip, dive, etc.) no tienen equivalente exacto y se aproximan
-     * al mas parecido.
-     */
+    /** Los codigos 1 a 5 son del bend; 6 a 11 son los propios de la palanca. */
     private static BendType bendTypeOf(int rawType) {
         return switch (rawType) {
             case 1 -> BendType.BEND;
@@ -68,9 +64,12 @@ final class GuitarProBendReader {
             case 3 -> BendType.BEND_RELEASE_BEND;
             case 4 -> BendType.PREBEND;
             case 5 -> BendType.PREBEND_RELEASE;
-            case 8 -> BendType.BEND_RELEASE;
-            case 9 -> BendType.PREBEND;
-            case 10, 11 -> BendType.BEND_RELEASE;
+            case 6 -> BendType.DIP;
+            case 7 -> BendType.DIVE;
+            case 8 -> BendType.RELEASE_UP;
+            case 9 -> BendType.INVERTED_DIP;
+            case 10 -> BendType.RETURN;
+            case 11 -> BendType.RELEASE_DOWN;
             default -> BendType.BEND;
         };
     }

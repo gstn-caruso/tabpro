@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /** La curva se escribe en las mismas unidades en que la lee el formato: 25 por cuarto de tono. */
@@ -34,5 +35,25 @@ class GuitarProBendWriterTest {
         reader.readUnsignedByte();
         assertEquals(BendPoint.LAST_POSITION, reader.readInt());
         assertEquals(WHOLE_TONE_RAW, reader.readInt());
+    }
+
+    @Test
+    void cadaTipoDeLaPalancaSeEscribeConSuPropioCodigo() {
+        Map<BendType, Integer> tremoloBarCodes = Map.of(
+                BendType.DIP, 6,
+                BendType.DIVE, 7,
+                BendType.RELEASE_UP, 8,
+                BendType.INVERTED_DIP, 9,
+                BendType.RETURN, 10,
+                BendType.RELEASE_DOWN, 11);
+
+        tremoloBarCodes.forEach((type, expectedCode) -> {
+            Bend bend = Bend.of(type, WHOLE_TONE_IN_QUARTER_TONES);
+            GuitarProByteWriter bytes = new GuitarProByteWriter();
+            writer.write(bytes, bend);
+
+            int actualCode = new GuitarProByteReader(bytes.bytes()).readSignedByte();
+            assertEquals(expectedCode, actualCode, "el tipo " + type + " tiene que escribirse con su propio codigo");
+        });
     }
 }
