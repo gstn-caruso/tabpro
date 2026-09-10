@@ -48,6 +48,18 @@ class ScorePrintingTest {
                 "el Printable recibido tiene que ser el que pinta esta partitura real (ver ScorePagesTest)");
     }
 
+    @Test
+    void siElDialogoDeImprimirSeCancelaNuncaLlegaAImprimirDeVerdad() throws PrinterException {
+        Score score = scoreWithMeasures(4);
+        RecordingPrinting printing = new RecordingPrinting();
+        printing.cancelPrintDialog();
+        ScorePrinting scorePrinting = new ScorePrinting(printing);
+
+        scorePrinting.print(score, A4, PrintSettings.everything(1), "mi-partitura.tab");
+
+        assertFalse(printing.printCalled(), "si se cancela el dialogo, no tiene que llegar a imprimir de verdad");
+    }
+
     @Tag("integracion")
     @Test
     void exportaUnBmpDeVerdadEnModoPagina(@TempDir Path tempDir) throws IOException {
