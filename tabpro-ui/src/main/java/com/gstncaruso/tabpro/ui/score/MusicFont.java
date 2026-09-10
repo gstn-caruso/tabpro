@@ -80,6 +80,8 @@ final class MusicFont {
     private static final int NOTEHEAD_X_BLACK = 0xE0A9;
     /** SMuFL U+E0DB "noteheadDiamondBlack": la cabeza en rombo de percusion, para panderetas y afines. */
     private static final int NOTEHEAD_DIAMOND_BLACK = 0xE0DB;
+    /** SMuFL U+ECA5 "metNoteQuarterUp": la negra chiquita del "figura = numero" de tempo. */
+    private static final int MET_NOTE_QUARTER_UP = 0xECA5;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -245,6 +247,11 @@ final class MusicFont {
     /** La cabeza en rombo de percusion, para panderetas y afines. */
     static String noteheadDiamondBlack() {
         return glyph(NOTEHEAD_DIAMOND_BLACK);
+    }
+
+    /** La negra chiquita del "figura = numero" de tempo. */
+    static String metNoteQuarterUp() {
+        return glyph(MET_NOTE_QUARTER_UP);
     }
 
     /**
