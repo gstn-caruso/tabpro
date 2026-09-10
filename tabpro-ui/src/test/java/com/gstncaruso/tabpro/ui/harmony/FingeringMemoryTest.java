@@ -19,7 +19,7 @@ class FingeringMemoryTest {
     private final FingeringMemory memory = new FingeringMemory(scratch);
 
     @AfterEach
-    void removesTheScratchNode() throws BackingStoreException {
+    void clearsTheScratchNode() throws BackingStoreException {
         scratch.removeNode();
     }
 

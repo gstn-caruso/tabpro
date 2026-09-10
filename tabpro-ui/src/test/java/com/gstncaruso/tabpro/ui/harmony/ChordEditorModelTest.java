@@ -26,7 +26,7 @@ class ChordEditorModelTest {
     private final ChordEditorModel model = new ChordEditorModel(Tuning.standard(), true, fingeringMemory);
 
     @AfterEach
-    void removesTheScratchNode() throws BackingStoreException {
+    void clearsTheScratchNode() throws BackingStoreException {
         scratch.removeNode();
     }
 
