@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
+import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
@@ -218,6 +219,20 @@ class LabelsTest {
     @EnumSource(TripletFeel.class)
     void everyTripletFeelHasSpanishAndEnglishText(TripletFeel value) {
         String key = "domain.TripletFeel." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheLineBreak() {
+        assertEquals("Forzar salto", Labels.of(LineBreak.FORCED));
+    }
+
+    @ParameterizedTest
+    @EnumSource(LineBreak.class)
+    void everyLineBreakHasSpanishAndEnglishText(LineBreak value) {
+        String key = "domain.LineBreak." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
