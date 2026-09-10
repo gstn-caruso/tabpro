@@ -181,6 +181,20 @@ class GlobalUiMutationScanTest {
         assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
     }
 
+    @Test
+    void aMutationMentionedOnlyInACommentIsNotFlagged(@TempDir Path root) throws IOException {
+        write(root, "MentionsTheThemeInAComment.java", """
+                class MentionsTheThemeInAComment {
+                    // "Sin animaciones" apaga las de FlatLaf: FlatLaf.updateUI() se llama aca.
+                    /* Theme.install() se documenta en el manual, no se invoca aca. */
+                    void innocent() {
+                    }
+                }
+                """);
+
+        assertTrue(GlobalUiMutationScan.unisolatedMutators(root).isEmpty());
+    }
+
     private static Path write(Path root, String fileName, String content) throws IOException {
         Path file = root.resolve(fileName);
         Files.writeString(file, content);
