@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import java.awt.Component;
 import java.util.Optional;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 
 /** La ventana de digitacion: que dedo pisa la cuerda y que dedo la toca. */
 public final class FingeringDialog {
@@ -37,10 +38,10 @@ public final class FingeringDialog {
                 .addRow("Mano izquierda", leftHand)
                 .addRow("Mano derecha", rightHand);
 
-        return new Fields(form, leftHand, rightHand);
+        return new Fields(form, leftHand, rightHand, leftHand);
     }
 
-    record Fields(FormPanel form, JComboBox<Object> leftHand, JComboBox<Object> rightHand) {
+    record Fields(FormPanel form, JComboBox<Object> leftHand, JComboBox<Object> rightHand, JComponent initialFocus) {
     }
 
     private static JComboBox<Object> fingers(
