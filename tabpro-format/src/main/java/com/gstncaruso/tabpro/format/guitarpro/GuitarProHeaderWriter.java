@@ -7,10 +7,9 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 
 /**
- * Escribe la cabecera de un archivo Guitar Pro 4: los datos de la partitura, la letra,
- * el tempo y la armadura inicial. GP4 no tiene page setup ni RSE, y el autor de la
- * musica no tiene campo propio: se pierde en la exportacion (lo avisa
- * {@link GuitarProExporter#warningsFor}).
+ * Writes the header of a Guitar Pro 4 file: the score info, the lyrics, the tempo, and
+ * the initial key signature. GP4 has no page setup or RSE, and the music author has no
+ * field of its own: it is lost on export ({@link GuitarProExporter#warningsFor} reports it).
  */
 final class GuitarProHeaderWriter {
 
@@ -29,7 +28,7 @@ final class GuitarProHeaderWriter {
         writer.writeLengthPrefixedString(info.artist());
         writer.writeLengthPrefixedString(info.album());
         writer.writeLengthPrefixedString(info.lyricsAuthor());
-        // GP4 no tiene un campo propio para el autor de la musica: se pierde.
+        // GP4 has no field of its own for the music author: it is lost.
         writer.writeLengthPrefixedString(info.copyright());
         writer.writeLengthPrefixedString(info.transcriber());
         writer.writeLengthPrefixedString(info.instructions());
@@ -58,12 +57,13 @@ final class GuitarProHeaderWriter {
     }
 
     /**
-     * La armadura inicial es el entero de alteraciones y nada mas. El modo mayor o menor
-     * solo existe en los cambios de armadura de cada compas, que traen dos bytes propios:
-     * el de la cabecera no lo tiene, y meterlo ahi inventa un valor que nadie reconoce.
+     * The initial key signature is the accidentals integer and nothing else. The major
+     * or minor mode only exists in each measure's key signature changes, which carry two
+     * bytes of their own: the header has none, and putting one there would invent a
+     * value nobody recognizes.
      */
     private void writeKeySignatureAndOctave(GuitarProByteWriter writer, KeySignature keySignature) {
         writer.writeInt(keySignature.accidentals());
-        writer.writeUnsignedByte(0); // octava: GP4 la trae pero el lector la descarta.
+        writer.writeUnsignedByte(0); // octave: GP4 carries it but the reader discards it.
     }
 }
