@@ -1,3 +1,9 @@
+## [0.37.0](https://github.com/gstn-caruso/tabpro/compare/v0.36.0...v0.37.0) (2026-09-10)
+
+### Features
+
+* **ui:** marcadores, percusión, bends y afinador por teclado, y la partitura cede el foco con Ctrl+F6 ([#125](https://github.com/gstn-caruso/tabpro/issues/125)) ([ff8c54e](https://github.com/gstn-caruso/tabpro/commit/ff8c54ea9a5813d5e0b23594827ebc09e39d4bef))
+
 ## [0.36.0](https://github.com/gstn-caruso/tabpro/compare/v0.35.0...v0.36.0) (2026-09-10)
 
 ### Features
