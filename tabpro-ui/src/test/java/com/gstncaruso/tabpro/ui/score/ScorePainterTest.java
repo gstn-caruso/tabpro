@@ -480,6 +480,38 @@ class ScorePainterTest {
     }
 
     @Test
+    void aContiguousMultiBeatSelectionIsOutlinedAsOneAreaWithoutInternalLines() {
+        Measure full = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Score score = scoreWith(full);
+        com.gstncaruso.tabpro.core.editing.Selection selection =
+                new com.gstncaruso.tabpro.core.editing.Selection(0, 0, 0, 0, 1, false);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH);
+        BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        ScorePainter.paint(
+                g, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent(), java.util.Optional.of(selection));
+        g.dispose();
+
+        Rectangle first = layout.beatBounds(0, 0, 0);
+        Rectangle second = layout.beatBounds(0, 0, 1);
+        int y = first.y + first.height / 2;
+        int interior = image.getRGB(first.x + first.width / 2, y);
+        int internalBoundary = image.getRGB(second.x, y);
+        int leftEdge = image.getRGB(first.x, y);
+        int rightEdge = image.getRGB(second.x + second.width - 1, y);
+
+        assertEquals(interior, internalBoundary,
+                "no tiene que haber una linea de borde entre los dos beats seleccionados y contiguos");
+        assertNotEquals(interior, leftEdge, "el borde izquierdo del area completa tiene que verse");
+        assertNotEquals(interior, rightEdge, "el borde derecho del area completa tiene que verse");
+    }
+
+    @Test
     void aTrackThatIsNotShownIsNotDrawnAtAll() {
         Track guitar = Track.standardGuitar("Guitarra");
         Score two = new Score("", 120, List.of(guitar, guitar));

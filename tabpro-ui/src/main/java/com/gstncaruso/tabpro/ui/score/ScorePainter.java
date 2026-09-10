@@ -18,6 +18,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -246,26 +248,33 @@ public final class ScorePainter {
 
     private static void paintSelection(Graphics2D g, ScoreLayout layout, Score score, Selection selection) {
         Track track = score.track(selection.track());
+        Map<Integer, Rectangle> areaPerSystem = new LinkedHashMap<>();
         for (int measure = selection.fromMeasure();
                 measure <= selection.toMeasure() && measure < track.measureCount(); measure++) {
+            int system = layout.systemOf(measure);
             // Un compas entero se pinta de punta a punta, no solo donde caen los beats de la voz
             // principal: el manual dice que las acciones valen para las dos voces, y el compas
             // siempre deja un margen (cabecera, padding) que ningun beat pisa.
             if (selection.wholeMeasures()) {
-                paintSelectedArea(g, layout.measureBounds(selection.track(), measure));
+                grow(areaPerSystem, system, layout.measureBounds(selection.track(), measure));
                 continue;
             }
             int beatCount = track.measure(measure).beats().size();
+            int top = layout.staffTop(selection.track(), measure);
+            int bottom = layout.tabBottom(selection.track(), measure);
             for (int beat = 0; beat < beatCount; beat++) {
                 if (!selection.covers(measure, beat)) {
                     continue;
                 }
                 Rectangle bounds = layout.beatBounds(selection.track(), measure, beat);
-                int top = layout.staffTop(selection.track(), measure);
-                paintSelectedArea(g, new Rectangle(
-                        bounds.x, top, bounds.width, layout.tabBottom(selection.track(), measure) - top));
+                grow(areaPerSystem, system, new Rectangle(bounds.x, top, bounds.width, bottom - top));
             }
         }
+        areaPerSystem.values().forEach(area -> paintSelectedArea(g, area));
+    }
+
+    private static void grow(Map<Integer, Rectangle> areaPerSystem, int system, Rectangle addition) {
+        areaPerSystem.merge(system, addition, Rectangle::union);
     }
 
     private static void paintSelectedArea(Graphics2D g, Rectangle bounds) {
