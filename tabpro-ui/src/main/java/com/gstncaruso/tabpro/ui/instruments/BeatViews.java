@@ -46,6 +46,8 @@ public final class BeatViews extends JPanel {
     private final JPanel fretboardBox;
     private final JPanel keyboardBox;
     private Playhead playhead = Playhead.silent();
+    private Runnable onCloseFretboard = () -> setFretboardVisible(false);
+    private Runnable onCloseKeyboard = () -> setKeyboardVisible(false);
 
     public BeatViews(Editor editor, Player player) {
         this.editor = editor;
@@ -54,9 +56,9 @@ public final class BeatViews extends JPanel {
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ScoreColors.BORDER));
 
         fretboardBox = titled("Diapasón", fretboard, FretboardView.PREFERRED_HEIGHT, fretboardToolbar(),
-                "Cerrar diapasón", () -> setFretboardVisible(false));
+                "Cerrar diapasón", () -> onCloseFretboard.run());
         keyboardBox = titled("Teclado", keyboard, KeyboardView.PREFERRED_HEIGHT, keyboardToolbar(),
-                "Cerrar teclado", () -> setKeyboardVisible(false));
+                "Cerrar teclado", () -> onCloseKeyboard.run());
         add(fretboardBox);
         add(keyboardBox);
 
@@ -100,6 +102,20 @@ public final class BeatViews extends JPanel {
         fretboardBox.setVisible(visible);
         revalidate();
         repaint();
+    }
+
+    /**
+     * Que dispara la ✕ de la banda de titulo del diapason: por defecto lo oculta, pero quien
+     * arma la ventana principal la reemplaza por el mismo comando de Ver > Diapasón, para que el
+     * item de menu, el boton de la barra y la preferencia queden sincronizados sin cableado extra.
+     */
+    public void setOnCloseFretboard(Runnable action) {
+        this.onCloseFretboard = java.util.Objects.requireNonNull(action);
+    }
+
+    /** El equivalente de {@link #setOnCloseFretboard} para la ✕ del teclado. */
+    public void setOnCloseKeyboard(Runnable action) {
+        this.onCloseKeyboard = java.util.Objects.requireNonNull(action);
     }
 
     public void setKeyboardVisible(boolean visible) {

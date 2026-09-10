@@ -57,6 +57,28 @@ class BeatViewsTest {
     }
 
     @Test
+    void theFretboardCloseButtonCanBeRewiredToTheSameCommandAsTheMenu() {
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        java.util.concurrent.atomic.AtomicBoolean invoked = new java.util.concurrent.atomic.AtomicBoolean(false);
+        views.setOnCloseFretboard(() -> invoked.set(true));
+
+        findButtonNamed(views, "Cerrar diapasón").orElseThrow().doClick();
+
+        assertTrue(invoked.get(), "el boton tiene que disparar el comando que le paso quien lo cablea");
+    }
+
+    @Test
+    void theKeyboardCloseButtonCanBeRewiredToTheSameCommandAsTheMenu() {
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        java.util.concurrent.atomic.AtomicBoolean invoked = new java.util.concurrent.atomic.AtomicBoolean(false);
+        views.setOnCloseKeyboard(() -> invoked.set(true));
+
+        findButtonNamed(views, "Cerrar teclado").orElseThrow().doClick();
+
+        assertTrue(invoked.get(), "el boton tiene que disparar el comando que le paso quien lo cablea");
+    }
+
+    @Test
     void theFretboardAndTheKeyboardEachHaveTheirOwnTitleBand() {
         BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
 
