@@ -37,6 +37,16 @@ class ScoreCanvasTest {
         assertTrue(canvas.isMultitrack());
     }
 
+    /**
+     * Tab es, de fabrica, una tecla de navegacion de foco para cualquier JComponent: si
+     * ScoreCanvas no la desactiva, AWT se queda con ella para mover el foco antes de que
+     * KeyboardEditing (que si tiene el binding de Tab) llegue a verla.
+     */
+    @Test
+    void desactivaSusTeclasDeFocoParaQueTabLlegueAlEditorDeTeclado() {
+        assertFalse(canvas.getFocusTraversalKeysEnabled());
+    }
+
     @Test
     void leavingTheMultitrackViewLeavesRoomForOneTrackOnly() {
         int everyTrack = canvas.getPreferredSize().height;

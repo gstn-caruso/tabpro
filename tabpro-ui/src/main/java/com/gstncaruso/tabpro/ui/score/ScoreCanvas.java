@@ -58,6 +58,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable {
         });
         setOpaque(true);
         setFocusable(true);
+        setFocusTraversalKeysEnabled(false);
         setBackground(ScoreColors.BACKGROUND);
         editor.addListener(this::editorChanged);
         new KeyboardEditing(editor, new FretDigits(System::currentTimeMillis)).install(this);
