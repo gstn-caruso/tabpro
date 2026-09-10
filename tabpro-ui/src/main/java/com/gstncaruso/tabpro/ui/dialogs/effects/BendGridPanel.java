@@ -7,11 +7,18 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -27,6 +34,9 @@ public final class BendGridPanel extends JComponent implements AccessibleControl
     private static final int ROWS = MAX_QUARTER_TONES - MIN_QUARTER_TONES;
 
     private final BendCurveEditor editor;
+    private int caretPosition;
+    private int caretQuarterTones;
+    private boolean showsFocusRing;
 
     public BendGridPanel(BendCurveEditor editor) {
         this.editor = editor;
@@ -43,6 +53,70 @@ public final class BendGridPanel extends JComponent implements AccessibleControl
                 } else {
                     editor.clickAt(position, quarterTones);
                 }
+                repaint();
+            }
+        });
+        installKeyboardShortcuts();
+        installFocusRing();
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
+    }
+
+    /** Donde esta parado el caret de teclado, en la misma escala de posicion que un clic. */
+    public int caretPosition() {
+        return caretPosition;
+    }
+
+    /** Cuantos cuartos de tono marca el caret de teclado, en la misma escala que un clic. */
+    public int caretQuarterTones() {
+        return caretQuarterTones;
+    }
+
+    private void installKeyboardShortcuts() {
+        InputMap inputMap = getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = getActionMap();
+        bindCaretMove(inputMap, actionMap, "RIGHT", 1, 0);
+        bindCaretMove(inputMap, actionMap, "LEFT", -1, 0);
+        bindCaretMove(inputMap, actionMap, "UP", 0, 1);
+        bindCaretMove(inputMap, actionMap, "DOWN", 0, -1);
+        bindCaretActivation(inputMap, actionMap, "ENTER", () -> editor.clickAt(caretPosition, caretQuarterTones));
+        bindCaretActivation(inputMap, actionMap, "SPACE", () -> editor.addVibratoAt(caretPosition));
+    }
+
+    private void bindCaretActivation(InputMap inputMap, ActionMap actionMap, String keyStroke, Runnable action) {
+        String name = "bendgrid.activate." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action.run();
+                repaint();
+            }
+        });
+    }
+
+    private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int positionDelta, int quarterTonesDelta) {
+        String name = "bendgrid.caret." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                caretPosition = Math.max(0, Math.min(BendPoint.LAST_POSITION, caretPosition + positionDelta));
+                caretQuarterTones = Math.max(MIN_QUARTER_TONES, Math.min(MAX_QUARTER_TONES, caretQuarterTones + quarterTonesDelta));
                 repaint();
             }
         });
@@ -88,6 +162,21 @@ public final class BendGridPanel extends JComponent implements AccessibleControl
                 g.drawOval(x - 5 - point.vibrato(), y - 5 - point.vibrato(), (5 + point.vibrato()) * 2, (5 + point.vibrato()) * 2);
             }
         }
+        if (showsFocusRing) {
+            paintCaretRing(g);
+        }
+    }
+
+    private void paintCaretRing(Graphics2D g) {
+        int x = xOf(caretPosition);
+        int y = yOf(caretQuarterTones);
+        g.setColor(focusRingColor());
+        g.drawOval(x - 6, y - 6, 12, 12);
+    }
+
+    private Color focusRingColor() {
+        Color base = UIManager.getColor("Component.focusColor");
+        return base != null ? base : curveColor();
     }
 
     private int xOf(int position) {

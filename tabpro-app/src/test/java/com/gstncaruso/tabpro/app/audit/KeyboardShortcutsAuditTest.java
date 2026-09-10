@@ -216,4 +216,27 @@ class KeyboardShortcutsAuditTest {
             return editor;
         });
     }
+
+    /**
+     * Tab ya esta reservado para alternar tablatura/pentagrama: Ctrl+F6 es la salida de foco de
+     * la partitura hacia el resto de la ventana (mesa de mezcla, instrumentos), con un
+     * KeyboardFocusManager real -no uno de prueba- y una ventana real con DISPLAY.
+     */
+    @Test
+    void ctrlF6SacaElFocoDeLaPartituraDeVerdad() throws Exception {
+        Editor editor = editorWithANote();
+        MainFrame frame = newFrame(editor);
+        try {
+            ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
+            assertTrue(AuditSupport.requestFocusAndAwait(canvas, 2000),
+                    "la partitura nunca gano el foco real para arrancar el test");
+
+            boolean perdioElFoco = AuditSupport.pressKeyAndAwaitFocusLost(canvas, KeyStroke.getKeyStroke("ctrl F6"), 2000);
+
+            assertTrue(perdioElFoco,
+                    "Ctrl+F6 con la partitura enfocada tiene que sacarle el foco de verdad");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
 }

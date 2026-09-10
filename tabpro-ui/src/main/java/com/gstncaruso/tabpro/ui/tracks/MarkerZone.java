@@ -12,12 +12,21 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.function.UnaryOperator;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 /**
  * La franja arriba de la grilla de compases: el nombre de cada marcador con su color, sobre los
@@ -28,6 +37,9 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     public static final int HEIGHT = 12;
 
     private final Editor editor;
+    private int caret;
+    private boolean showsFocusRing;
+    UnaryOperator<String> markerNamePrompt = this::promptForMarkerName;
 
     public MarkerZone(Editor editor) {
         this.editor = editor;
@@ -43,6 +55,65 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
                 }
             }
         });
+        installKeyboardShortcuts();
+        installFocusRing();
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
+    }
+
+    /** Donde esta parado el caret de teclado: no se confunde con el cursor real hasta Enter. */
+    public int caret() {
+        return caret;
+    }
+
+    private void installKeyboardShortcuts() {
+        InputMap inputMap = getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = getActionMap();
+        bindCaretMove(inputMap, actionMap, "RIGHT", 1);
+        bindCaretMove(inputMap, actionMap, "LEFT", -1);
+        bindCaretActivation(inputMap, actionMap, "ENTER");
+    }
+
+    private void bindCaretActivation(InputMap inputMap, ActionMap actionMap, String keyStroke) {
+        String name = "markerzone.activate." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editMarkerAt(caret);
+            }
+        });
+    }
+
+    private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int delta) {
+        String name = "markerzone.caret." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moveCaret(delta);
+            }
+        });
+    }
+
+    private void moveCaret(int delta) {
+        int lastMeasure = Math.max(0, editor.score().measureCount() - 1);
+        caret = Math.max(0, Math.min(lastMeasure, caret + delta));
+        repaint();
     }
 
     @Override
@@ -80,6 +151,20 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
         for (MarkerSegments.Segment segment : MarkerSegments.of(editor.score())) {
             paintSegment(g, segment);
         }
+        if (showsFocusRing) {
+            paintCaretRing(g);
+        }
+    }
+
+    private void paintCaretRing(Graphics2D g) {
+        int x = caret * MeasureGrid.CELL_WIDTH;
+        g.setColor(focusRingColor());
+        g.drawRect(x + 1, 1, MeasureGrid.CELL_WIDTH - 3, HEIGHT - 3);
+    }
+
+    private Color focusRingColor() {
+        Color fromLookAndFeel = UIManager.getColor("Component.focusColor");
+        return fromLookAndFeel != null ? fromLookAndFeel : ScoreColors.ACCENT;
     }
 
     private void paintSegment(Graphics2D g, MarkerSegments.Segment segment) {
@@ -108,13 +193,17 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     private void editMarkerAt(int measureIndex) {
         Marker current = editor.score().attributesOf(measureIndex).marker().orElse(null);
         String initial = current == null ? "" : current.name();
-        String chosen = JOptionPane.showInputDialog(this, "Nombre del marcador", initial);
+        String chosen = markerNamePrompt.apply(initial);
         if (chosen == null || chosen.isBlank()) {
             return;
         }
         Marker marker = current == null ? Marker.named(chosen.trim()) : new Marker(chosen.trim(), current.color());
         moveEditorTo(measureIndex);
         editor.setMarker(marker);
+    }
+
+    private String promptForMarkerName(String initial) {
+        return JOptionPane.showInputDialog(this, "Nombre del marcador", initial);
     }
 
     private void moveEditorTo(int measureIndex) {

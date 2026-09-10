@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.geom.Line2D;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
@@ -23,12 +25,45 @@ public final class DigitalTunerPanel extends JComponent implements AccessibleCon
 
     private Pitch target;
     private int deviationCents;
+    private boolean showsFocusRing;
 
     public DigitalTunerPanel(Pitch target) {
         this.target = target;
+        setFocusable(true);
         setPreferredSize(new Dimension(220, 140));
         setToolTipText("Afinador digital");
         getAccessibleContext().setAccessibleName("Afinador digital");
+        installFocusRing();
+        updateAccessibleDescription();
+    }
+
+    private void updateAccessibleDescription() {
+        getAccessibleContext().setAccessibleDescription(
+                PitchName.of(target).textWithOctave() + ", " + deviationDescription());
+    }
+
+    private String deviationDescription() {
+        if (deviationCents == 0) {
+            return "afinado";
+        }
+        String direction = deviationCents > 0 ? "agudo" : "grave";
+        return Math.abs(deviationCents) + " centésimas " + direction;
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
     }
 
     @Override
@@ -46,6 +81,7 @@ public final class DigitalTunerPanel extends JComponent implements AccessibleCon
 
     public void setTarget(Pitch target) {
         this.target = target;
+        updateAccessibleDescription();
         repaint();
     }
 
@@ -56,6 +92,7 @@ public final class DigitalTunerPanel extends JComponent implements AccessibleCon
     /** Cuantas centesimas de semitono esta desafinado: negativo grave, positivo agudo. */
     public void setDeviationCents(int cents) {
         this.deviationCents = Math.clamp(cents, -MAX_CENTS, MAX_CENTS);
+        updateAccessibleDescription();
         repaint();
     }
 
@@ -92,6 +129,20 @@ public final class DigitalTunerPanel extends JComponent implements AccessibleCon
         int tipX = pivotX + (int) Math.round(length * Math.sin(angle));
         int tipY = pivotY - (int) Math.round(length * Math.cos(angle));
         g.draw(new Line2D.Double(pivotX, pivotY, tipX, tipY));
+
+        if (showsFocusRing) {
+            paintFocusRing(g);
+        }
+    }
+
+    private void paintFocusRing(Graphics2D g) {
+        g.setColor(focusRingColor());
+        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+    }
+
+    private java.awt.Color focusRingColor() {
+        java.awt.Color fromLookAndFeel = UIManager.getColor("Component.focusColor");
+        return fromLookAndFeel != null ? fromLookAndFeel : java.awt.Color.ORANGE;
     }
 
     private java.awt.Color textColor() {

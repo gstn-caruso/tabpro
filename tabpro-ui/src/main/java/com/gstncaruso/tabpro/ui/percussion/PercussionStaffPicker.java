@@ -11,6 +11,10 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -19,7 +23,12 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 /**
  * La zona (2) del asistente de percusion: un pentagrama en miniatura donde cada
@@ -38,6 +47,8 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
 
     private boolean preferElectric;
     private Optional<PercussionLine> hovered = Optional.empty();
+    private PercussionLine caret = PercussionLine.values()[0];
+    private boolean showsFocusRing;
 
     /** Para geometria y tests: sin acciones al clickear. */
     public PercussionStaffPicker() {
@@ -58,6 +69,24 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
         getAccessibleContext().setAccessibleName("Pentagrama de percusión");
         trackTheMouse();
         installClicking(onPlay, onAdd);
+        installKeyboardShortcuts(onPlay, onAdd);
+        installFocusRing();
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
     }
 
     @Override
@@ -86,6 +115,49 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
                 });
             }
         });
+    }
+
+    /** Donde esta parado el caret de teclado: arranca en la primera linea del pentagrama. */
+    public PercussionLine caret() {
+        return caret;
+    }
+
+    private void installKeyboardShortcuts(IntConsumer onPlay, Consumer<PercussionLine> onAdd) {
+        InputMap inputMap = getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = getActionMap();
+        bindCaretMove(inputMap, actionMap, "DOWN", 1);
+        bindCaretMove(inputMap, actionMap, "UP", -1);
+        bindCaretActivation(inputMap, actionMap, "ENTER", () -> onPlay.accept(soundOf(caret)));
+        bindCaretActivation(inputMap, actionMap, "SPACE", () -> onAdd.accept(caret));
+    }
+
+    private void bindCaretActivation(InputMap inputMap, ActionMap actionMap, String keyStroke, Runnable action) {
+        String name = "percussionstaff.activate." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action.run();
+            }
+        });
+    }
+
+    private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int delta) {
+        String name = "percussionstaff.caret." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moveCaret(delta);
+            }
+        });
+    }
+
+    private void moveCaret(int delta) {
+        PercussionLine[] lines = PercussionLine.values();
+        int index = Math.max(0, Math.min(lines.length - 1, caret.ordinal() + delta));
+        caret = lines[index];
+        repaint();
     }
 
     public void setPreferElectric(boolean preferElectric) {
@@ -155,6 +227,23 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
 
         paintStaffLines(g);
         paintSounds(g);
+        if (showsFocusRing) {
+            paintCaretRing(g);
+        }
+    }
+
+    private void paintCaretRing(Graphics2D g) {
+        int x = getWidth() / 2;
+        int y = yOf(caret);
+        g.setColor(focusRingColor());
+        g.setStroke(new BasicStroke(2));
+        int radius = NOTE_RADIUS + 3;
+        g.drawOval(x - radius, y - radius, radius * 2, radius * 2);
+    }
+
+    private Color focusRingColor() {
+        Color fromLookAndFeel = UIManager.getColor("Component.focusColor");
+        return fromLookAndFeel != null ? fromLookAndFeel : ScoreColors.ACCENT;
     }
 
     private void paintStaffLines(Graphics2D g) {
