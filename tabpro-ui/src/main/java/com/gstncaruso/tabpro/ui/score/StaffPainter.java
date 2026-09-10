@@ -459,9 +459,21 @@ final class StaffPainter {
     }
 
     private static void paintFlags(Graphics2D g, Stem stem, int flags, Color ink) {
-        if (flags == 0) {
-            return;
+        switch (flags) {
+            case 0 -> {
+            }
+            case 1 -> paintFlagGlyph(g, stem, MusicFont.flag8thUp(), MusicFont.flag8thDown(), ink);
+            default -> paintGeometricFlags(g, stem, flags, ink);
         }
+    }
+
+    private static void paintFlagGlyph(Graphics2D g, Stem stem, String up, String down, Color ink) {
+        g.setColor(ink);
+        g.setFont(MusicFont.sizedTo(SPACE));
+        g.drawString(stem.up() ? up : down, (float) stem.x(), (float) stem.endY());
+    }
+
+    private static void paintGeometricFlags(Graphics2D g, Stem stem, int flags, Color ink) {
         double direction = stem.up() ? 1 : -1;
         g.setColor(ink);
         g.setStroke(new BasicStroke(1.6f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
