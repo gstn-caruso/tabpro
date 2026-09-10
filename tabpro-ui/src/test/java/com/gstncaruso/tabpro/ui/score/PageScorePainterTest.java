@@ -284,8 +284,8 @@ class PageScorePainterTest {
                 PageBanner.header().with(PageElement.TITLE, false, "[%title]"), PageBanner.footer());
 
         assertFalse(
-                renderConLienzo(score, showingTheTitle).matchesInRegion(
-                        renderConLienzo(score, hidingTheTitle), headerRegionOf(showingTheTitle)),
+                renderOnCanvas(score, showingTheTitle).matchesInRegion(
+                        renderOnCanvas(score, hidingTheTitle), headerRegionOf(showingTheTitle)),
                 "destildar el titulo tiene que sacarlo de la hoja");
     }
 
@@ -295,8 +295,8 @@ class PageScorePainterTest {
                 PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, 100,
                 onlyTheTitleSaying("Cancionero de la casa"), PageBanner.footer());
 
-        RecordingCanvas one = renderConLienzo(Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
-        RecordingCanvas another = renderConLienzo(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
+        RecordingCanvas one = renderOnCanvas(Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
+        RecordingCanvas another = renderOnCanvas(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
 
         assertTrue(one.matchesInRegion(another, headerRegionOf(fixedHeading)),
                 "el encabezado es el texto configurado, no el titulo de la partitura");
@@ -304,7 +304,7 @@ class PageScorePainterTest {
 
     @Test
     void theParameterChangeMarkIsRedOnPaperJustLikeOnScreen() {
-        RecordingCanvas canvas = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
+        RecordingCanvas canvas = renderOnCanvas(scoreWithAParameterChange(), PageSetup.defaults());
 
         assertTrue(canvas.drawsColorInRegion(ScoreColors.PARAMETER_CHANGE, musicRegionOf(PageSetup.defaults())),
                 "el cambio de parametro se anuncia en rojo");
@@ -312,7 +312,7 @@ class PageScorePainterTest {
 
     @Test
     void thePlayingLineIsTheSameGreenOnPaperAsOnScreen() {
-        RecordingCanvas canvas = renderConLienzo(
+        RecordingCanvas canvas = renderOnCanvas(
                 scoreWithAParameterChange(), PageSetup.defaults(),
                 Playhead.silent().advancedTo(new com.gstncaruso.tabpro.core.playback.BeatPosition(0, 0, 0)));
 
@@ -322,7 +322,7 @@ class PageScorePainterTest {
 
     @Test
     void theEditingCursorIsTheSameRedOnPaperAsOnScreen() {
-        RecordingCanvas canvas = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
+        RecordingCanvas canvas = renderOnCanvas(scoreWithAParameterChange(), PageSetup.defaults());
 
         assertTrue(canvas.drawsColorInRegion(ScoreColors.CURSOR, musicRegionOf(PageSetup.defaults())),
                 "el cursor de edicion tiene que verse rojo en la hoja");
@@ -330,7 +330,7 @@ class PageScorePainterTest {
 
     @Test
     void theScoreIsWrittenInDarkInkOnPaper() {
-        RecordingCanvas canvas = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
+        RecordingCanvas canvas = renderOnCanvas(scoreWithAParameterChange(), PageSetup.defaults());
         Rectangle music = musicRegionOf(PageSetup.defaults());
 
         assertTrue(canvas.drawsColorInRegion(ScoreColors.PAGE_INK, music), "la partitura se escribe con la tinta de la hoja");
@@ -404,11 +404,11 @@ class PageScorePainterTest {
         return banner;
     }
 
-    private static RecordingCanvas renderConLienzo(Score score, PageSetup setup) {
-        return renderConLienzo(score, setup, Playhead.silent());
+    private static RecordingCanvas renderOnCanvas(Score score, PageSetup setup) {
+        return renderOnCanvas(score, setup, Playhead.silent());
     }
 
-    private static RecordingCanvas renderConLienzo(Score score, PageSetup setup, Playhead playhead) {
+    private static RecordingCanvas renderOnCanvas(Score score, PageSetup setup, Playhead playhead) {
         ScoreViewport viewport = pageViewport(setup);
         RecordingCanvas canvas = new RecordingCanvas();
         PageScorePainter.paint(canvas, score, new Cursor(0, 0, 0, 1), playhead, Optional.empty(), viewport);
