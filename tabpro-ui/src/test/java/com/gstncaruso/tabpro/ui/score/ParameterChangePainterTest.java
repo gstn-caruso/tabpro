@@ -85,6 +85,46 @@ class ParameterChangePainterTest {
     }
 
     @Test
+    void aTempoChangeIsWrittenInTheTempoColorInsteadOfPlainInk() {
+        Measure measure = changingAt(0, change(SoundParameter.TEMPO, 90));
+        Track track = guitarWith(measure);
+        ScoreLayout layout = ScoreLayout.of(scoreWith(measure), WIDTH, VisibleTracks.all());
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        ParameterChangePainter.paintMeasure(lienzo, layout, track, 0, 0);
+
+        assertTrue(lienzo.dibujaColor(ScoreColors.TEMPO), "el tempo se escribe en rojo, como en GP5");
+        assertFalse(lienzo.dibujaColor(ScoreColors.INK), "el tempo no deja tinta plana");
+    }
+
+    @Test
+    void theScoresGlobalTempoIsWrittenAboveTheFirstMeasure() {
+        Measure measure = plainMeasure();
+        Track track = guitarWith(measure);
+        ScoreLayout layout = ScoreLayout.of(scoreWith(measure), WIDTH, VisibleTracks.all());
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        ParameterChangePainter.paintInitialTempo(lienzo, layout, track, 0, 0, 120);
+
+        int bottom = layout.staffTop(0, 0) - 16;
+        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.metNoteQuarterUp(), new Rectangle(0, bottom - 14, WIDTH, 16)),
+                "el tempo inicial tiene que escribir la negra de Bravura arriba del primer compas");
+    }
+
+    @Test
+    void theInitialTempoIsSkippedWhenTheFirstBeatAlreadyChangesTempo() {
+        Measure measure = changingAt(0, change(SoundParameter.TEMPO, 90));
+        Track track = guitarWith(measure);
+        ScoreLayout layout = ScoreLayout.of(scoreWith(measure), WIDTH, VisibleTracks.all());
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        ParameterChangePainter.paintInitialTempo(lienzo, layout, track, 0, 0, 120);
+
+        assertFalse(lienzo.dibujaColor(ScoreColors.TEMPO),
+                "el cambio de tempo del beat 0 ya lo escribe; el tempo inicial no se duplica");
+    }
+
+    @Test
     void aChangeThatTouchesTempoAndPanShowsBothThings() {
         ParameterChange both = change(SoundParameter.TEMPO, 90).changing(SoundParameter.PAN, 20);
         Painted painted = paint(scoreWith(changingAt(1, both)));

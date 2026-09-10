@@ -19,6 +19,7 @@ final class ParameterChangePainter {
 
     /** Cuanto se despegan del pentagrama, para no pisar las notas que asoman por arriba. */
     private static final int STAFF_CLEARANCE = 16;
+    private static final int INITIAL_TEMPO_CLEARANCE_ABOVE_A_FORCED_STEM = 14;
 
     private static final int MARK_WIDTH = 9;
     private static final int MARK_HEIGHT = 5;
@@ -27,6 +28,19 @@ final class ParameterChangePainter {
     private static final int ROW_GAP = 1;
 
     private ParameterChangePainter() {
+    }
+
+    static void paintInitialTempo(
+            Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, int scoreTempo) {
+        ParameterChange firstBeatChange = track.measure(measureIndex).beat(0).effects().parameterChange();
+        if (firstBeatChange.changes(SoundParameter.TEMPO)) {
+            return;
+        }
+        Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, 0);
+        int centerX = bounds.x + bounds.width / 2;
+        int bottom = layout.staffTop(trackIndex, measureIndex)
+                - STAFF_CLEARANCE - INITIAL_TEMPO_CLEARANCE_ABOVE_A_FORCED_STEM;
+        paintTempo(g, scoreTempo, centerX, bottom);
     }
 
     static void paintMeasure(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
@@ -76,13 +90,13 @@ final class ParameterChangePainter {
         int left = centerX - (QUARTER_NOTE_WIDTH + metrics.stringWidth(label)) / 2;
         paintQuarterNote(g, left, baselineY);
         g.setFont(ScoreFonts.TEMPO_FONT);
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.TEMPO);
         g.drawString(label, left + QUARTER_NOTE_WIDTH, baselineY);
     }
 
     /** La negra a la que se refiere el numero. */
     private static void paintQuarterNote(Graphics2D g, int x, int baselineY) {
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.TEMPO);
         g.setFont(MusicFont.sizedTo(2));
         g.drawString(MusicFont.metNoteQuarterUp(), x, baselineY);
     }

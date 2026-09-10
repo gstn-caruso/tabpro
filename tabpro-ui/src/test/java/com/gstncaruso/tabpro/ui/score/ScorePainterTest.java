@@ -25,11 +25,14 @@ import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.core.model.effects.NoteEffects;
+import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
 import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -226,6 +229,42 @@ class ScorePainterTest {
         assertTrue(
                 painted.hasInkNear(beat.x, nearSystemTop, 0),
                 "la linea tiene que cruzar tambien la pista de arriba, no solo la que suena");
+    }
+
+    @Test
+    void writesTheScoresTempoAboveTheFirstMeasure() {
+        Painted painted = paint(Score.blank(), new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        Rectangle beat = painted.layout().beatBounds(0, 0, 0);
+        int staffTop = painted.layout().staffTop(0, 0);
+        Rectangle above = new Rectangle(
+                beat.x, staffTop - ScoreLayout.STAFF_HEADROOM, beat.width, ScoreLayout.STAFF_HEADROOM);
+
+        assertTrue(painted.hasColorIn(above, ScoreColors.TEMPO),
+                "el tempo global de la partitura tiene que verse arriba del primer compas");
+    }
+
+    @Test
+    void theInitialTempoDoesNotDuplicateAnExplicitChangeOnTheFirstBeat() {
+        Measure withExplicitChange = measureOf(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3)),
+                Beat.of(Duration.quarter(), new Note(1, 5)));
+        ParameterChange explicitTempo = ParameterChange.nothing().changing(SoundParameter.TEMPO, 90);
+        withExplicitChange = withExplicitChange.withBeat(0,
+                withExplicitChange.beat(0).withEffects(BeatEffects.none().withParameterChange(explicitTempo)));
+        Score score = new Score("", 120, List.of(
+                new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(withExplicitChange))));
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        ScorePainter.paint(lienzo, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        long tempoGlyphs = lienzo.textosDibujados().stream()
+                .filter(texto -> MusicFont.metNoteQuarterUp().equals(texto.texto()))
+                .count();
+        assertEquals(1, tempoGlyphs, "el compas 1 solo tiene que mostrar un tempo, el del cambio explicito");
     }
 
     @Test
@@ -726,6 +765,17 @@ class ScorePainterTest {
                 }
             }
             return columns;
+        }
+
+        boolean hasColorIn(Rectangle area, Color color) {
+            for (int x = area.x; x < area.x + area.width; x++) {
+                for (int y = area.y; y < area.y + area.height; y++) {
+                    if (isInside(x, y) && image.getRGB(x, y) == color.getRGB()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         boolean hasInkNear(int x, int y, int radius) {
