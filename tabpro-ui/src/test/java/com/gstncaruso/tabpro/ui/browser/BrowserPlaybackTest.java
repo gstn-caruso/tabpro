@@ -18,10 +18,10 @@ import org.junit.jupiter.api.Test;
 
 class BrowserPlaybackTest {
 
-    private final Path first = Path.of("/tmp/primero.tabpro");
-    private final Path second = Path.of("/tmp/segundo.tabpro");
-    private final Score firstScore = new Score("primero", 100, List.of(Track.standardGuitar("Guitarra")));
-    private final Score secondScore = new Score("segundo", 110, List.of(Track.standardGuitar("Guitarra")));
+    private final Path first = Path.of("/tmp/first.tabpro");
+    private final Path second = Path.of("/tmp/second.tabpro");
+    private final Score firstScore = new Score("first", 100, List.of(Track.standardGuitar("Guitarra")));
+    private final Score secondScore = new Score("second", 110, List.of(Track.standardGuitar("Guitarra")));
     private final FakeScoreFiles files = new FakeScoreFiles();
     private final FakeSound sound = new FakeSound();
     private final FakeListener listener = new FakeListener();
@@ -61,7 +61,7 @@ class BrowserPlaybackTest {
 
         sound.finishCurrentFile();
 
-        assertEquals(1, sound.playCalls, "no hay siguiente archivo");
+        assertEquals(1, sound.playCalls, "there is no next file");
         assertTrue(listener.chainEnded);
     }
 
@@ -72,7 +72,7 @@ class BrowserPlaybackTest {
         playback.stop();
         sound.finishCurrentFile();
 
-        assertEquals(1, sound.playCalls, "parar a mano no deja que salte");
+        assertEquals(1, sound.playCalls, "stopping by hand prevents the jump");
         assertTrue(sound.stopped);
     }
 
@@ -87,7 +87,7 @@ class BrowserPlaybackTest {
 
     @Test
     void aFileThatFailsToLoadEndsTheChainInsteadOfBreaking() {
-        Path broken = Path.of("/tmp/roto.tabpro");
+        Path broken = Path.of("/tmp/broken.tabpro");
 
         playback.play(List.of(broken, second), broken, 4);
 
@@ -97,7 +97,7 @@ class BrowserPlaybackTest {
 
     @Test
     void aFileThatFailsToLoadTellsTheListenerWhichPathFailed() {
-        Path broken = Path.of("/tmp/roto.tabpro");
+        Path broken = Path.of("/tmp/broken.tabpro");
 
         playback.play(List.of(broken, second), broken, 4);
 
