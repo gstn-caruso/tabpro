@@ -57,6 +57,7 @@ public final class Potentiometer extends JComponent implements AccessibleControl
         bindStep(inputMap, actionMap, "RIGHT", 1);
         bindStep(inputMap, actionMap, "UP", 1);
         bindStep(inputMap, actionMap, "LEFT", -1);
+        bindStep(inputMap, actionMap, "DOWN", -1);
     }
 
     private void bindStep(InputMap inputMap, ActionMap actionMap, String keyStroke, int step) {

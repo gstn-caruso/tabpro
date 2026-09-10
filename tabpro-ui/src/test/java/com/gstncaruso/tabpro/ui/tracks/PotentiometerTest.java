@@ -99,6 +99,15 @@ class PotentiometerTest {
         assertEquals(63, knob.getValue());
     }
 
+    @Test
+    void theDownArrowKeyDecreasesTheValueByOneStep() {
+        Potentiometer knob = new Potentiometer(0, 127, 64);
+
+        pressShortcut(knob, KeyStroke.getKeyStroke("DOWN"));
+
+        assertEquals(63, knob.getValue());
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
