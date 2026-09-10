@@ -1,3 +1,9 @@
+## [0.46.1](https://github.com/gstn-caruso/tabpro/compare/v0.46.0...v0.46.1) (2026-09-10)
+
+### Bug Fixes
+
+* **toolbar:** el combo de zoom conserva su ancho en vez de estirarse en la barra ([#146](https://github.com/gstn-caruso/tabpro/issues/146)) ([8e5c534](https://github.com/gstn-caruso/tabpro/commit/8e5c534db6e5cc87300b8a463763e7498f70e7ee))
+
 ## [0.46.0](https://github.com/gstn-caruso/tabpro/compare/v0.45.0...v0.46.0) (2026-09-10)
 
 ### Features
