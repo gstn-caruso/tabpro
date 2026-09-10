@@ -22,13 +22,13 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 
 /**
- * Abre una partitura de Guitar Pro. El archivo guarda primero la cabecera, los
- * canales MIDI, las propiedades de los compases y las pistas, y recien despues
- * la matriz de compas por pista con sus beats.
+ * Opens a Guitar Pro score. The file stores first the header, the MIDI channels, the
+ * measure properties and the tracks, and only after that the measure-by-track matrix
+ * with its beats.
  */
 public final class GuitarProFile {
 
-    /** El largo fijo del bloque donde vive el nombre de la version. */
+    /** The fixed length of the block where the version name lives. */
     private static final int VERSION_BLOCK = 30;
 
     private final GuitarProHeaderReader headerReader = new GuitarProHeaderReader();
@@ -78,7 +78,6 @@ public final class GuitarProFile {
         return bars;
     }
 
-    /** Le pega a cada master bar el simbolo de destino o el salto que le apunta desde las direcciones. */
     private static List<GuitarProMasterBar> withDirections(
             List<GuitarProMasterBar> bars, GuitarProDirections directions) {
         List<GuitarProMasterBar> updated = new ArrayList<>(bars);
@@ -151,8 +150,9 @@ public final class GuitarProFile {
     }
 
     /**
-     * Cada compas de GP5 cierra con el salto de linea que lo separa del siguiente, salvo
-     * el ultimo de la ultima pista: ahi Guitar Pro corta el archivo sin escribirlo.
+     * Every GP5 measure closes with the line break that separates it from the next one,
+     * except the last one of the last track: there Guitar Pro truncates the file without
+     * writing it.
      */
     private static void skipLineBreak(GuitarProByteReader reader) {
         if (reader.hasMore()) {
@@ -169,7 +169,6 @@ public final class GuitarProFile {
         return new Voice(beats);
     }
 
-    /** La voz principal de un compas no puede quedar sin beats. */
     private static Voice usable(Voice voice) {
         return voice.isUnused() ? Voice.restingFor(Duration.quarter()) : voice;
     }
@@ -207,7 +206,6 @@ public final class GuitarProFile {
     }
 
     private static Tuning tuningOf(GuitarProTrackHeader header) {
-        // Una pista de percusion no tiene alturas: sus lineas son sonidos, no cuerdas.
         if (header.percussion()) {
             return com.gstncaruso.tabpro.core.model.PercussionKit.tuning();
         }
@@ -217,7 +215,6 @@ public final class GuitarProFile {
         return strings.isEmpty() ? Tuning.standard() : TuningLibrary.identify(strings);
     }
 
-    /** Una pista necesita al menos un compas, aunque el archivo no traiga ninguno. */
     private static List<Measure> usable(List<Measure> measures) {
         if (!measures.isEmpty()) {
             return measures;
