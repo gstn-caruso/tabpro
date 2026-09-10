@@ -1,7 +1,6 @@
 package com.gstncaruso.tabpro.ui.status;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -34,8 +33,7 @@ class StatusBarTest {
         Editor editor = new Editor(Score.blank());
         StatusBar bar = new StatusBar(editor);
 
-        assertTrue(bar.completenessText().contains("1/4"));
-        assertTrue(bar.completenessText().contains("corto"));
+        assertEquals("Compás corto", bar.completenessText());
     }
 
     @Test
