@@ -34,6 +34,13 @@
     <maven.compiler.release>25</maven.compiler.release>
     <junit.version>5.11.4</junit.version>
     <tests.excluded.groups>integracion</tests.excluded.groups>
+    <!--
+      La auditoria de uso real (tabpro-app/src/test/.../audit) instancia la ventana principal de
+      verdad para despachar eventos de teclado y de mouse reales: necesita un toolkit no headless
+      para tener foco y peers de verdad. Por defecto sigue en true (identico a como corria
+      siempre mvn -B verify); solo el grupo integracion se invoca con -Dtests.headless=false.
+    -->
+    <tests.headless>true</tests.headless>
     <flatlaf.version>3.7.2</flatlaf.version>
     <gson.version>2.14.0</gson.version>
     <jsvg.version>2.1.0</jsvg.version>
@@ -90,7 +97,17 @@
               compilar con C2 cuesta mas de lo que llega a devolver antes de que la maquina
               virtual termine.
             -->
-            <argLine>-Djava.awt.headless=true -XX:TieredStopAtLevel=1 --add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED</argLine>
+            <!--
+              java.util.prefs.userRoot y java.io.tmpdir aislados: MainFrame guarda Preferences
+              (archivos recientes, autoguardado, etc.) en java.util.prefs.Preferences.userRoot(),
+              y ScoreDocument busca su archivo de recuperacion en java.io.tmpdir +
+              "tabpro-recuperacion" -las mismas rutas que usa un tabpro instalado de verdad en
+              esta maquina-. La auditoria de uso real (tabpro-app/.../audit) instancia MainFrame
+              de verdad: sin esto, un archivo de recuperacion real que haya quedado de una sesion
+              real dispara un dialogo real (offerToRecover) en cada test, y las preferencias que
+              se lean o se escriban serian las reales de quien corre la suite.
+            -->
+            <argLine>-Djava.awt.headless=${tests.headless} -XX:TieredStopAtLevel=1 --add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED -Djava.util.prefs.userRoot=${project.build.directory}/test-prefs-root -Djava.io.tmpdir=${project.build.directory}</argLine>
             <excludedGroups>${tests.excluded.groups}</excludedGroups>
             <skipTests>true</skipTests>
             <properties>
