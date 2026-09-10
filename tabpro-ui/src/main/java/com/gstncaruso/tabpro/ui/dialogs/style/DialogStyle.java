@@ -1,11 +1,14 @@
 package com.gstncaruso.tabpro.ui.dialogs.style;
 
+import java.awt.Color;
 import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
 
 /**
  * Los numeros y helpers que comparten todas las ventanas del manual, para que se
@@ -25,12 +28,29 @@ public final class DialogStyle {
     private DialogStyle() {
     }
 
-    /** El titulo de una seccion dentro de una ventana con varios grupos de campos. */
-    public static JLabel sectionLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setFont(sectionFont());
-        label.setBorder(BorderFactory.createEmptyBorder(GAP_S, 0, GAP_XS, 0));
-        return label;
+    /** Una caja de grupo, con el titulo sentado sobre el borde como en Guitar Pro 5. */
+    public static JPanel section(String title) {
+        JPanel section = new JPanel();
+        section.setBorder(sectionBorder(title));
+        return section;
+    }
+
+    private static TitledBorder sectionBorder(String title) {
+        TitledBorder border = BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(sectionBorderColor()), title);
+        border.setTitleFont(sectionFont());
+        border.setTitleColor(sectionTitleColor());
+        return border;
+    }
+
+    private static Color sectionBorderColor() {
+        Color color = UIManager.getColor("Component.borderColor");
+        return color != null ? color : UIManager.getColor("Label.foreground");
+    }
+
+    private static Color sectionTitleColor() {
+        Color color = UIManager.getColor("tabpro.text");
+        return color != null ? color : UIManager.getColor("Label.foreground");
     }
 
     public static Font sectionFont() {

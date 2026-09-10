@@ -2,9 +2,11 @@ package com.gstncaruso.tabpro.ui.dialogs.style;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.junit.jupiter.api.Test;
 
@@ -54,5 +56,25 @@ class FormPanelTest {
             }
         }
         throw new AssertionError("no se encontro una etiqueta para " + field);
+    }
+
+    @Test
+    void unaSeccionTieneBordeTituladoConElTextoDado() {
+        FormPanel panel = new FormPanel();
+
+        panel.addSection("Notation");
+
+        JPanel section = sectionTitled(panel, "Notation");
+        assertEquals("Notation", section.getAccessibleContext().getAccessibleName());
+    }
+
+    private JPanel sectionTitled(FormPanel panel, String title) {
+        for (Component component : panel.getComponents()) {
+            if (component instanceof JPanel candidate
+                    && title.equals(candidate.getAccessibleContext().getAccessibleName())) {
+                return candidate;
+            }
+        }
+        throw new AssertionError("no se encontro una seccion titulada " + title);
     }
 }

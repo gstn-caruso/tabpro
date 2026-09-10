@@ -41,7 +41,9 @@ public class FormPanel extends JPanel implements MnemonicScope {
 
     /** El titulo de un nuevo grupo de campos dentro del mismo formulario. */
     public FormPanel addSection(String title) {
-        sections.addFullWidthRow(DialogStyle.sectionLabel(title));
+        JPanel section = DialogStyle.section(title);
+        sections.addFullWidthRow(section);
+        currentRows = new FormRows(section, labelMnemonics);
         return this;
     }
 }
