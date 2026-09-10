@@ -22,6 +22,7 @@ class ScoreColorsPaperContrastTest {
                 pair("tinta atenuada (MUTED_INK) / hoja", ScoreColors.MUTED_INK, Contrast.TEXT_MINIMUM_RATIO),
                 pair("numero de compas (MEASURE_NUMBER) / hoja", ScoreColors.MEASURE_NUMBER,
                         Contrast.TEXT_MINIMUM_RATIO),
+                pair("tempo (TEMPO) / hoja", ScoreColors.TEMPO, Contrast.TEXT_MINIMUM_RATIO),
                 pair("voz inactiva (VOICE_INACTIVE) / hoja", ScoreColors.VOICE_INACTIVE,
                         Contrast.TEXT_MINIMUM_RATIO),
                 pair("linea del pentagrama (STAFF_LINE) / hoja", ScoreColors.STAFF_LINE,
