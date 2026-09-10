@@ -457,23 +457,6 @@ public final class Icons {
 
     // ---- trazos compartidos -----------------------------------------------
 
-    /** La lupa del zoom: con mas, con menos, o vacia para volver al 100%. */
-    private static void magnifier(Graphics2D graphics, int size, int sign) {
-        graphics.setStroke(thin());
-        double diameter = size * 0.52;
-        graphics.draw(new Ellipse2D.Double(size * 0.12, size * 0.12, diameter, diameter));
-        graphics.draw(new Line2D.Double(size * 0.6, size * 0.6, size * 0.86, size * 0.86));
-        double centerX = size * 0.12 + diameter / 2;
-        double centerY = size * 0.12 + diameter / 2;
-        double arm = size * 0.13;
-        if (sign != 0) {
-            graphics.draw(new Line2D.Double(centerX - arm, centerY, centerX + arm, centerY));
-        }
-        if (sign > 0) {
-            graphics.draw(new Line2D.Double(centerX, centerY - arm, centerX, centerY + arm));
-        }
-    }
-
     private static void page(Graphics2D graphics, int size) {
         graphics.setStroke(thin());
         graphics.draw(new Rectangle2D.Double(size * 0.2, size * 0.1, size * 0.6, size * 0.8));
