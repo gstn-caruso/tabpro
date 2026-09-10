@@ -359,6 +359,7 @@ public final class Commands {
                 .withAccelerator("shift TAB").withIcon(Icons.markerPrevious());
         define("marker.next", "Marcador siguiente", editor::moveToNextMarker)
                 .withAccelerator("ctrl TAB").withIcon(Icons.markerNext());
+        editor.addListener(this::refreshEditMarkerCommand);
         refreshEditMarkerCommand();
     }
 

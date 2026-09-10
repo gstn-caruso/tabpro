@@ -284,6 +284,35 @@ class CommandsTest {
     }
 
     @Test
+    void editMarkerBecomesEnabledAfterInsertingAMarkerOnTheCursor() {
+        editor.setMarker(Marker.named("Intro"));
+
+        assertTrue(commands.get("marker.edit").isEnabled());
+    }
+
+    @Test
+    void editMarkerStaysEnabledPastTheMeasureWhereTheMarkerLives() {
+        Editor localEditor = new Editor(scoreWithMeasures(3));
+        Commands localCommands = new Commands(
+                localEditor, record(Ports.Document.class), record(Ports.Dialogs.class),
+                record(Ports.Playback.class), record(Ports.View.class));
+        localEditor.moveTo(0, 0, 1);
+        localEditor.setMarker(Marker.named("Intro"));
+
+        localEditor.moveTo(2, 0, 1);
+
+        assertTrue(localCommands.get("marker.edit").isEnabled());
+    }
+
+    private Score scoreWithMeasures(int count) {
+        Score score = Score.blank();
+        for (int i = 1; i < count; i++) {
+            score = score.withMeasureInsertedInEveryTrackAt(i);
+        }
+        return score;
+    }
+
+    @Test
     void askingForACommandThatDoesNotExistIsAMistake() {
         assertThrows(IllegalArgumentException.class, () -> commands.get("no.existe"));
     }
