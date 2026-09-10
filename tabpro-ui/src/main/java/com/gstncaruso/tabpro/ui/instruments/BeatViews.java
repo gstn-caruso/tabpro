@@ -264,6 +264,7 @@ public final class BeatViews extends JPanel {
 
     private <T> JComboBox<T> comboOf(String name, T[] values, java.util.function.Consumer<T> onChoice) {
         JComboBox<T> combo = new JComboBox<>(values);
+        combo.setRenderer(new LabeledListCellRenderer());
         combo.setFont(combo.getFont().deriveFont(10f));
         combo.getAccessibleContext().setAccessibleName(name);
         combo.setToolTipText(name);

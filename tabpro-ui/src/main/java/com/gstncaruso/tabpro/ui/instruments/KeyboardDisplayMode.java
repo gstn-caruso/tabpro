@@ -78,9 +78,4 @@ public enum KeyboardDisplayMode {
         }
         return keys;
     }
-
-    @Override
-    public String toString() {
-        return label;
-    }
 }

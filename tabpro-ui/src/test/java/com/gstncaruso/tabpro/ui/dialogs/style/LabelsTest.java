@@ -14,6 +14,11 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
+import com.gstncaruso.tabpro.ui.instruments.FretboardDisplayMode;
+import com.gstncaruso.tabpro.ui.instruments.FretboardType;
+import com.gstncaruso.tabpro.ui.instruments.KeyboardDisplayMode;
+import com.gstncaruso.tabpro.ui.instruments.NoteNameMode;
+import com.gstncaruso.tabpro.ui.instruments.ScaleLabelMode;
 import com.gstncaruso.tabpro.ui.instruments.ScaleType;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 import org.junit.jupiter.api.Test;
@@ -162,5 +167,14 @@ class LabelsTest {
 
         assertFalse(etiqueta.isBlank());
         assertNotEquals(value.name(), etiqueta);
+    }
+
+    @Test
+    void traduceLosModosDelDiapasonYElTeclado() {
+        assertEquals("Solo el beat", Labels.of(FretboardDisplayMode.ONLY_BEAT));
+        assertEquals("Sin nombres", Labels.of(NoteNameMode.NONE));
+        assertEquals("Nombre", Labels.of(ScaleLabelMode.NAME));
+        assertEquals("Electrica", Labels.of(FretboardType.ELECTRIC));
+        assertEquals("Solo el beat", Labels.of(KeyboardDisplayMode.ONLY_BEAT));
     }
 }

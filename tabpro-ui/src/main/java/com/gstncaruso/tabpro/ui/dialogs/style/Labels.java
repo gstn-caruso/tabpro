@@ -9,6 +9,11 @@ import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
+import com.gstncaruso.tabpro.ui.instruments.FretboardDisplayMode;
+import com.gstncaruso.tabpro.ui.instruments.FretboardType;
+import com.gstncaruso.tabpro.ui.instruments.KeyboardDisplayMode;
+import com.gstncaruso.tabpro.ui.instruments.NoteNameMode;
+import com.gstncaruso.tabpro.ui.instruments.ScaleLabelMode;
 import com.gstncaruso.tabpro.ui.instruments.ScaleType;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 import java.util.List;
@@ -34,6 +39,11 @@ public final class Labels {
             case Tuning tuning -> tuning.name() + " (" + stringLetters(tuning) + ")";
             case Dynamic dynamic -> dynamic.symbol();
             case ScaleType scaleType -> scaleType.label();
+            case FretboardDisplayMode fretboardDisplayMode -> fretboardDisplayMode.label();
+            case NoteNameMode noteNameMode -> noteNameMode.label();
+            case ScaleLabelMode scaleLabelMode -> scaleLabelMode.label();
+            case FretboardType fretboardType -> fretboardType.label();
+            case KeyboardDisplayMode keyboardDisplayMode -> keyboardDisplayMode.label();
             default -> throw new IllegalArgumentException("Sin etiqueta para " + value);
         };
     }
