@@ -117,4 +117,15 @@ class PercussionStaffPickerTest {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
+
+    @Test
+    void theUpArrowKeyMovesTheCaretToThePreviousLine() {
+        PercussionStaffPicker picker = sized();
+        pressShortcut(picker, KeyStroke.getKeyStroke("DOWN"));
+        pressShortcut(picker, KeyStroke.getKeyStroke("DOWN"));
+
+        pressShortcut(picker, KeyStroke.getKeyStroke("UP"));
+
+        assertEquals(PercussionLine.HI_HAT, picker.caret());
+    }
 }

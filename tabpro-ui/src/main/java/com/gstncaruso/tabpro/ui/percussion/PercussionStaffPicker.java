@@ -104,6 +104,7 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
         InputMap inputMap = getInputMap(WHEN_FOCUSED);
         ActionMap actionMap = getActionMap();
         bindCaretMove(inputMap, actionMap, "DOWN", 1);
+        bindCaretMove(inputMap, actionMap, "UP", -1);
     }
 
     private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int delta) {
