@@ -705,6 +705,18 @@ final class StaffPainter {
 
     private static void paintHookedRest(
             Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, double centerX, int hooks, Color ink) {
+        switch (hooks) {
+            case 1 -> paintRestGlyph(
+                    g, layout, trackIndex, measureIndex, centerX, MusicFont.rest8th(), MIDDLE_LINE_STEP, ink);
+            case 2 -> paintRestGlyph(
+                    g, layout, trackIndex, measureIndex, centerX, MusicFont.rest16th(), MIDDLE_LINE_STEP, ink);
+            default -> paintGeometricHookedRest(g, layout, trackIndex, measureIndex, centerX, hooks, ink);
+        }
+    }
+
+    /** Silencio de fusa/semifusa (3/4 ganchos): fuera de esta tanda de glifos de Bravura. */
+    private static void paintGeometricHookedRest(
+            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, double centerX, int hooks, Color ink) {
         double top = layout.stepY(trackIndex, measureIndex, 6 - (hooks - 1));
         double bottom = layout.stepY(trackIndex, measureIndex, 2);
         g.setColor(ink);
