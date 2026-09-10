@@ -48,7 +48,7 @@ public final class Labels {
     }
 
     private static String paperFormatLabelWithDimensions(PaperFormat format) {
-        return format.label() + " (" + Math.round(format.widthMillimetres()) + " x "
+        return domainLabel(format) + " (" + Math.round(format.widthMillimetres()) + " x "
                 + Math.round(format.heightMillimetres()) + " mm)";
     }
 

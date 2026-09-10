@@ -1,23 +1,17 @@
 package com.gstncaruso.tabpro.ui.page;
 
 public enum PaperFormat {
-    A4("A4", 210, 297),
-    A3("A3", 297, 420),
-    LETTER("Carta", 8.5 * 25.4, 11 * 25.4),
-    LEGAL("Oficio", 8.5 * 25.4, 14 * 25.4);
+    A4(210, 297),
+    A3(297, 420),
+    LETTER(8.5 * 25.4, 11 * 25.4),
+    LEGAL(8.5 * 25.4, 14 * 25.4);
 
-    private final String label;
     private final double widthMillimetres;
     private final double heightMillimetres;
 
-    PaperFormat(String label, double widthMillimetres, double heightMillimetres) {
-        this.label = label;
+    PaperFormat(double widthMillimetres, double heightMillimetres) {
         this.widthMillimetres = widthMillimetres;
         this.heightMillimetres = heightMillimetres;
-    }
-
-    public String label() {
-        return label;
     }
 
     public double widthMillimetres() {
