@@ -42,7 +42,7 @@ class StringOptionsPanelTest {
     }
 
     @Test
-    void cadaOpcionSeñalaSuPropioCombo() {
+    void everyOptionPointsToItsOwnCombo() {
         StringOptionsPanel panel = new StringOptionsPanel(6, 4);
 
         assertEquals(panel.letRingCombo(), panel.comboFor(StringOptionsDialog.Option.LET_RING));
