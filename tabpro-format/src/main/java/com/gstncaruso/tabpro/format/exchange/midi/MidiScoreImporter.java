@@ -114,9 +114,17 @@ public final class MidiScoreImporter {
     public List<Measure> importMeasures(
             Path path, List<Integer> midiTrackIndices, Tuning tuning, int fretCount, boolean transposeDownOneOctave,
             Optional<NoteValue> precision) {
+        return importMeasures(
+                path, midiTrackIndices, tuning, fretCount, transposeDownOneOctave, Optional.empty(), precision);
+    }
+
+    /** Lo mismo, pero cuantizando tambien la posicion de cada acorde a la grilla elegida. */
+    public List<Measure> importMeasures(
+            Path path, List<Integer> midiTrackIndices, Tuning tuning, int fretCount, boolean transposeDownOneOctave,
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize) {
         ParsedMidiFile file = parse(path);
-        RawMidiTrack raw = merge(tracksAt(file, midiTrackIndices));
-        return measuresOf(raw, file.grid(), tuning, fretCount, transposeDownOneOctave, precision);
+        RawMidiTrack raw = merge(tracksAt(file, midiTrackIndices)).withPositionsQuantizedTo(chordPositionQuantize);
+        return measuresOf(raw, file.grid(), tuning, fretCount, transposeDownOneOctave, noteDurationQuantize);
     }
 
     /** El "paso a paso" del manual: la o las pistas MIDI elegidas reemplazan los compases de target. */
@@ -127,8 +135,16 @@ public final class MidiScoreImporter {
     /** Lo mismo, pero cuantizando posicion y duracion con la precision elegida. */
     public Track importInto(
             Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision) {
+        return importInto(target, path, midiTrackIndices, transposeDownOneOctave, Optional.empty(), precision);
+    }
+
+    /** Lo mismo, pero cuantizando tambien la posicion de cada acorde a la grilla elegida. */
+    public Track importInto(
+            Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize) {
         List<Measure> measures = importMeasures(
-                path, midiTrackIndices, target.tuning(), target.settings().fretCount(), transposeDownOneOctave, precision);
+                path, midiTrackIndices, target.tuning(), target.settings().fretCount(), transposeDownOneOctave,
+                chordPositionQuantize, noteDurationQuantize);
         return target.withMeasures(measures);
     }
 

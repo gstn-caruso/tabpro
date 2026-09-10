@@ -452,6 +452,19 @@ class MidiScoreImporterTest {
         assertEquals(1, track.measure(1).beat(0).notes().size());
     }
 
+    @Test
+    void theStepByStepImportAlsoQuantizesTheChordPosition(@TempDir Path tempDir) throws Exception {
+        Path path = rawMidiFile(tempDir, "paso-a-paso.mid", new long[] {240, 64, 100});
+        Track existing = Track.standardGuitar("Guitarra");
+        int midiTrackIndex = importer.tracksIn(path).get(0).index();
+
+        Track merged = importer.importInto(
+                existing, path, List.of(midiTrackIndex), false, Optional.of(NoteValue.QUARTER), Optional.empty());
+
+        assertEquals(1, merged.measure(0).beat(0).notes().size(),
+                "la nota a 240 tics cuantiza al tiempo 1 con grilla de negra: tiene que caer en el primer beat");
+    }
+
     private static Path rawMidiFile(Path dir, String fileName, long[]... notes) throws Exception {
         Sequence sequence = new Sequence(Sequence.PPQ, (int) Duration.TICKS_PER_QUARTER);
         sequence.createTrack();
