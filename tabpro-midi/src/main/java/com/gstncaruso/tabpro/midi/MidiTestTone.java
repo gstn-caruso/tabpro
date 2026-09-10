@@ -22,13 +22,13 @@ public final class MidiTestTone {
     }
 
     public static void play(Receiver receiver, int program, long durationMillis, Runnable afterward) {
-        play(receiver, program, durationMillis, afterward, new RetardoDelReloj());
+        play(receiver, program, durationMillis, afterward, new ClockDelay());
     }
 
-    static void play(Receiver receiver, int program, long durationMillis, Runnable afterward, Retardo retardo) {
+    static void play(Receiver receiver, int program, long durationMillis, Runnable afterward, Delay delay) {
         send(receiver, ShortMessage.PROGRAM_CHANGE, program, 0);
         send(receiver, ShortMessage.NOTE_ON, TEST_PITCH, TEST_VELOCITY);
-        retardo.luegoDe(durationMillis, () -> {
+        delay.after(durationMillis, () -> {
             send(receiver, ShortMessage.NOTE_OFF, TEST_PITCH, 0);
             afterward.run();
         });

@@ -268,13 +268,13 @@ class MidiPlayerTest {
     @Test
     void seekingReachesEverySequencerNotJustThePrimaryPort() {
         player = new MidiPlayer(sequencer, port -> silentReceiver(), MidiPlayerTest::unconnectedSequencer);
-        TrackTimeline enElPuertoUno = new TrackTimeline(25, 100, 64, false, 1,
+        TrackTimeline onPortOne = new TrackTimeline(25, 100, 64, false, 1,
                 List.of(new ScheduledNote(0, 4L * Duration.TICKS_PER_QUARTER, new Pitch(60))),
                 List.of(new ScheduledBeat(0, 0, 0)), List.of());
-        TrackTimeline enElPuertoDos = new TrackTimeline(30, 100, 64, false, 2,
+        TrackTimeline onPortTwo = new TrackTimeline(30, 100, 64, false, 2,
                 List.of(new ScheduledNote(0, 4L * Duration.TICKS_PER_QUARTER, new Pitch(60))),
                 List.of(new ScheduledBeat(0, 0, 0)), List.of());
-        Timeline timeline = new Timeline(120, Duration.TICKS_PER_QUARTER, List.of(enElPuertoUno, enElPuertoDos));
+        Timeline timeline = new Timeline(120, Duration.TICKS_PER_QUARTER, List.of(onPortOne, onPortTwo));
         long target = 2L * Duration.TICKS_PER_QUARTER;
 
         player.play(timeline, noOpListener());
@@ -303,9 +303,9 @@ class MidiPlayerTest {
 
     @Test
     void tracksOfAnotherPortDoNotReachTheMainSequence() {
-        TrackTimeline enElPuertoUno = new TrackTimeline(25, 100, 64, false, 1, List.of(), List.of(), List.of());
-        TrackTimeline enElPuertoDos = new TrackTimeline(30, 100, 64, false, 2, List.of(), List.of(), List.of());
-        Timeline timeline = new Timeline(120, 960, List.of(enElPuertoUno, enElPuertoDos));
+        TrackTimeline onPortOne = new TrackTimeline(25, 100, 64, false, 1, List.of(), List.of(), List.of());
+        TrackTimeline onPortTwo = new TrackTimeline(30, 100, 64, false, 2, List.of(), List.of(), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(onPortOne, onPortTwo));
 
         player.play(timeline, noOpListener());
 
@@ -316,8 +316,8 @@ class MidiPlayerTest {
 
     @Test
     void aScoreWithoutTracksOnTheFirstPortStillPlaysWithoutFailing() {
-        TrackTimeline enElPuertoDos = new TrackTimeline(25, 100, 64, false, 2, List.of(), List.of(), List.of());
-        Timeline timeline = new Timeline(120, 960, List.of(enElPuertoDos));
+        TrackTimeline onPortTwo = new TrackTimeline(25, 100, 64, false, 2, List.of(), List.of(), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(onPortTwo));
 
         player.play(timeline, noOpListener());
 
@@ -328,9 +328,9 @@ class MidiPlayerTest {
     void withoutAnySoundFontBothPortsStillPlayThroughTheirOwnInternalSynth() {
         SoundFontBank bank = new SoundFontBank(Optional.empty(), FakeSynthesizer::new);
         MidiPlayer withBank = new MidiPlayer(sequencer, bank::receiverForPort, MidiPlayerTest::unconnectedSequencer);
-        TrackTimeline enElPuertoUno = new TrackTimeline(25, 100, 64, false, 1, List.of(), List.of(), List.of());
-        TrackTimeline enElPuertoDos = new TrackTimeline(30, 100, 64, false, 2, List.of(), List.of(), List.of());
-        Timeline timeline = new Timeline(120, 960, List.of(enElPuertoUno, enElPuertoDos));
+        TrackTimeline onPortOne = new TrackTimeline(25, 100, 64, false, 1, List.of(), List.of(), List.of());
+        TrackTimeline onPortTwo = new TrackTimeline(30, 100, 64, false, 2, List.of(), List.of(), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(onPortOne, onPortTwo));
 
         assertDoesNotThrow(() -> withBank.play(timeline, noOpListener()));
 

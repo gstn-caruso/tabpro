@@ -34,9 +34,9 @@ class MidiSequencesByPortTest {
 
     @Test
     void tracksGoIntoTheSequenceOfTheirOwnPort() {
-        TrackTimeline enElPuertoUno = new TrackTimeline(25, 100, 64, false, 1, List.of(), List.of(), List.of());
-        TrackTimeline enElPuertoTres = new TrackTimeline(30, 100, 64, false, 3, List.of(), List.of(), List.of());
-        Timeline timeline = new Timeline(120, 960, List.of(enElPuertoUno, enElPuertoTres));
+        TrackTimeline onPortOne = new TrackTimeline(25, 100, 64, false, 1, List.of(), List.of(), List.of());
+        TrackTimeline onPortThree = new TrackTimeline(30, 100, 64, false, 3, List.of(), List.of(), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(onPortOne, onPortThree));
 
         Map<Integer, Sequence> byPort = MidiSequences.sequencesByPort(timeline, Set.of());
 
@@ -47,22 +47,22 @@ class MidiSequencesByPortTest {
 
     @Test
     void eachPortUsesTheChannelsItsTracksConfiguredRegardlessOfTheOtherPorts() {
-        TrackTimeline primeraDelPuerto1 = new TrackTimeline(
+        TrackTimeline firstOnPortOne = new TrackTimeline(
                 25, 100, 64, 0, 0, 0, 0, false, 1, 1, 2, List.of(), List.of(), List.of(), List.of());
-        TrackTimeline segundaDelPuerto1 = new TrackTimeline(
+        TrackTimeline secondOnPortOne = new TrackTimeline(
                 26, 100, 64, 0, 0, 0, 0, false, 1, 3, 4, List.of(), List.of(), List.of(), List.of());
-        TrackTimeline unicaDelPuerto2 = new TrackTimeline(
+        TrackTimeline onlyOnPortTwo = new TrackTimeline(
                 30, 100, 64, 0, 0, 0, 0, false, 2, 1, 2, List.of(), List.of(), List.of(), List.of());
         Timeline timeline = new Timeline(
-                120, 960, List.of(primeraDelPuerto1, segundaDelPuerto1, unicaDelPuerto2));
+                120, 960, List.of(firstOnPortOne, secondOnPortOne, onlyOnPortTwo));
 
         Map<Integer, Sequence> byPort = MidiSequences.sequencesByPort(timeline, Set.of());
 
-        Track[] puerto1 = byPort.get(1).getTracks();
-        assertEquals(0, channelOf(puerto1[1]));
-        assertEquals(2, channelOf(puerto1[2]));
-        Track[] puerto2 = byPort.get(2).getTracks();
-        assertEquals(0, channelOf(puerto2[1]));
+        Track[] portOneTracks = byPort.get(1).getTracks();
+        assertEquals(0, channelOf(portOneTracks[1]));
+        assertEquals(2, channelOf(portOneTracks[2]));
+        Track[] portTwoTracks = byPort.get(2).getTracks();
+        assertEquals(0, channelOf(portTwoTracks[1]));
     }
 
     @Test
@@ -80,9 +80,9 @@ class MidiSequencesByPortTest {
     void limitingPitchVariationInsideSequencesByPortStillOnlyAffectsItsOwnPort() {
         PitchTrajectory bend = PitchTrajectory.ramp(0, 0.0, 960, 3.0);
         ScheduledNote note = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100), bend, false);
-        TrackTimeline limitado = new TrackTimeline(25, 100, 64, false, 1, List.of(note), List.of(), List.of());
-        TrackTimeline libre = new TrackTimeline(30, 100, 64, false, 2, List.of(note), List.of(), List.of());
-        Timeline timeline = new Timeline(120, 960, List.of(limitado, libre));
+        TrackTimeline limited = new TrackTimeline(25, 100, 64, false, 1, List.of(note), List.of(), List.of());
+        TrackTimeline free = new TrackTimeline(30, 100, 64, false, 2, List.of(note), List.of(), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(limited, free));
 
         Map<Integer, Sequence> byPort = MidiSequences.sequencesByPort(timeline, Set.of(1));
 

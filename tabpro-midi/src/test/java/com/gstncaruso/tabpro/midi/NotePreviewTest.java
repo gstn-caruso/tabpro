@@ -51,7 +51,7 @@ class NotePreviewTest {
     @Test
     void releasesTheNoteOnItsOwn() {
         RecordingReceiver receiver = new RecordingReceiver();
-        NotePreview preview = new NotePreview(receiver, (millis, accion) -> accion.run());
+        NotePreview preview = new NotePreview(receiver, (millis, action) -> action.run());
 
         preview.play(new Pitch(60), 25);
 
@@ -61,9 +61,9 @@ class NotePreviewTest {
     }
 
     @Test
-    void unaSecuenciaVaciaNoHaceSonarNada() {
+    void anEmptySequenceSoundsNothing() {
         RecordingReceiver receiver = new RecordingReceiver();
-        NotePreview preview = new NotePreview(receiver, (millis, accion) -> accion.run());
+        NotePreview preview = new NotePreview(receiver, (millis, action) -> action.run());
 
         preview.playSequence(List.of(), 25);
 
@@ -73,12 +73,12 @@ class NotePreviewTest {
     }
 
     @Test
-    void reproduceCadaNotaDeLaSecuenciaEnOrdenConSeparacionCreciente() {
+    void playsEachNoteOfTheSequenceInOrderWithGrowingSeparation() {
         RecordingReceiver receiver = new RecordingReceiver();
         List<Long> scheduledGaps = new ArrayList<>();
-        NotePreview preview = new NotePreview(receiver, (millis, accion) -> {
+        NotePreview preview = new NotePreview(receiver, (millis, action) -> {
             scheduledGaps.add(millis);
-            accion.run();
+            action.run();
         });
 
         preview.playSequence(List.of(new Pitch(60), new Pitch(62), new Pitch(64)), 25);

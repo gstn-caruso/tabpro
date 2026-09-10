@@ -14,51 +14,51 @@ import javax.sound.midi.VoiceStatus;
 
 final class FakeSynthesizer implements Synthesizer {
 
-    private final Soundbank bancoPorDefecto = new FakeSoundbank();
-    private Soundbank bancoActual = bancoPorDefecto;
-    private boolean abierto;
-    private boolean cerrado;
+    private final Soundbank defaultBank = new FakeSoundbank();
+    private Soundbank currentBank = defaultBank;
+    private boolean opened;
+    private boolean closed;
 
-    boolean estaAbierto() {
-        return abierto;
+    boolean wasOpened() {
+        return opened;
     }
 
-    boolean seCerro() {
-        return cerrado;
+    boolean wasClosed() {
+        return closed;
     }
 
-    Soundbank bancoCargado() {
-        return bancoActual;
+    Soundbank loadedBank() {
+        return currentBank;
     }
 
-    int instrumentosCargados() {
+    int loadedInstrumentCount() {
         return getLoadedInstruments().length;
     }
 
     @Override
     public void open() {
-        abierto = true;
+        opened = true;
     }
 
     @Override
     public void close() {
-        abierto = false;
-        cerrado = true;
+        opened = false;
+        closed = true;
     }
 
     @Override
     public boolean isOpen() {
-        return abierto;
+        return opened;
     }
 
     @Override
     public Soundbank getDefaultSoundbank() {
-        return bancoPorDefecto;
+        return defaultBank;
     }
 
     @Override
     public boolean loadAllInstruments(Soundbank soundbank) {
-        bancoActual = soundbank;
+        currentBank = soundbank;
         return true;
     }
 
@@ -68,7 +68,7 @@ final class FakeSynthesizer implements Synthesizer {
 
     @Override
     public Instrument[] getLoadedInstruments() {
-        return bancoActual.getInstruments();
+        return currentBank.getInstruments();
     }
 
     @Override
