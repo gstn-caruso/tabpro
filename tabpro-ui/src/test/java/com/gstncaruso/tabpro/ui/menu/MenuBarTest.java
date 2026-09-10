@@ -218,6 +218,19 @@ class MenuBarTest {
                 List.of("ppp", "pp", "p", "mp", "mf", "f", "ff", "fff")));
     }
 
+    /**
+     * Guitar Pro 5, manual pagina 14: el boton de digitacion de mano derecha va junto al de
+     * mano izquierda existente.
+     */
+    @Test
+    void elMenuNotaOfreceLaDigitacionDeManoDerechaJuntoALaExistente() {
+        JMenuBar bar = new MenuBar(commands).build();
+
+        Set<String> labels = itemLabels(menuNamed(bar, "Nota"));
+
+        assertTrue(labels.contains("Digitación (mano derecha)…"));
+    }
+
     private JMenu menuNamed(JMenuBar bar, String name) {
         for (int i = 0; i < bar.getMenuCount(); i++) {
             JMenu menu = bar.getMenu(i);
