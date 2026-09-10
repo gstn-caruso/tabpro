@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.core.notation.Clef;
+import com.gstncaruso.tabpro.ui.theme.Contrast;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -149,9 +150,14 @@ final class BarStructurePainter {
         int textBaseline = staffTop - 26;
 
         int squareSize = metrics.getAscent();
-        int squareBottom = textBaseline - metrics.getAscent() - 4;
+        int squareTop = textBaseline - metrics.getAscent() - 4 - squareSize;
         g.setColor(markerColor);
-        g.fillRect(x, squareBottom - squareSize, squareSize, squareSize);
+        g.fillRect(x, squareTop, squareSize, squareSize);
+        if (Contrast.ratio(markerColor, ScoreColors.BACKGROUND) < Contrast.GRAPHICAL_MINIMUM_RATIO) {
+            g.setColor(ScoreColors.INK);
+            g.drawRect(x, squareTop, squareSize - 1, squareSize - 1);
+        }
+        g.setColor(markerColor);
         g.drawString(marker.name(), x, textBaseline);
     }
 

@@ -428,6 +428,51 @@ class ScorePainterTest {
     }
 
     @Test
+    void aSectionMarkerSquareGetsAnInkOutlineWhenItsColorDoesNotContrastWithTheBackground() {
+        Color lowContrastColor = new Color(0x35, 0x37, 0x3B);
+        Painted painted = paintWithMarkerColor(lowContrastColor);
+
+        Rectangle square = markerSquareBounds(painted);
+        Color edge = new Color(painted.image().getRGB(square.x, square.y));
+        Color interior = new Color(painted.image().getRGB(
+                square.x + square.width / 2, square.y + square.height / 2));
+
+        assertNotEquals(edge.getRGB(), interior.getRGB(),
+                "un marcador que no contrasta con el fondo necesita un borde de tinta alrededor del cuadrado");
+    }
+
+    @Test
+    void aSectionMarkerSquareHasNoExtraOutlineWhenItsColorAlreadyContrasts() {
+        Color highContrastColor = new Color(0x00, 0xAA, 0x00);
+        Painted painted = paintWithMarkerColor(highContrastColor);
+
+        Rectangle square = markerSquareBounds(painted);
+        Color edge = new Color(painted.image().getRGB(square.x, square.y));
+        Color interior = new Color(painted.image().getRGB(
+                square.x + square.width / 2, square.y + square.height / 2));
+
+        assertEquals(edge.getRGB(), interior.getRGB(),
+                "un marcador que ya contrasta con el fondo no necesita un borde extra");
+    }
+
+    private static Painted paintWithMarkerColor(Color color) {
+        Measure marked = measureOf(Beat.of(Duration.quarter(), new Note(1, 0)))
+                .mappingAttributes(attrs -> attrs.withMarker(new com.gstncaruso.tabpro.core.model.bars.Marker(
+                        "Intro", new com.gstncaruso.tabpro.core.model.ScoreColor(
+                                color.getRed(), color.getGreen(), color.getBlue()))));
+        return paint(scoreWith(marked), new Cursor(0, 0, 0, 1), Playhead.silent());
+    }
+
+    private static Rectangle markerSquareBounds(Painted painted) {
+        int x = painted.layout().measureX(0);
+        int staffTop = painted.layout().staffTop(0, 0);
+        FontMetrics metrics = painted.image().createGraphics().getFontMetrics(ScoreFonts.SECTION_MARK_FONT);
+        int squareSize = metrics.getAscent();
+        int squareBottom = (staffTop - 26) - metrics.getAscent() - 4;
+        return new Rectangle(x, squareBottom - squareSize, squareSize, squareSize);
+    }
+
+    @Test
     void survivesLyricsAndAChordDiagram() {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(
                 Beat.of(Duration.quarter(), new Note(1, 0)).withEffects(
