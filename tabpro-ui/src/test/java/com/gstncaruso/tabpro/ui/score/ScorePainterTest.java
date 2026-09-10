@@ -33,6 +33,7 @@ import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -400,6 +401,30 @@ class ScorePainterTest {
         Score score = scoreWith(opens, firstEnding, closes);
 
         assertDoesNotThrow(() -> paint(score, new Cursor(0, 0, 0, 1), Playhead.silent()));
+    }
+
+    /**
+     * El manual (p14: «Bridge», «Outro») dibuja un cuadradito solido con el color del marcador
+     * arriba de su nombre. tabpro solo escribia el texto.
+     */
+    @Test
+    void aSectionMarkerDrawsASquareInItsOwnColorAboveItsName() {
+        Color markerColor = new Color(0x00, 0xAA, 0x00);
+        Measure marked = measureOf(Beat.of(Duration.quarter(), new Note(1, 0)))
+                .mappingAttributes(attrs -> attrs.withMarker(new com.gstncaruso.tabpro.core.model.bars.Marker(
+                        "Intro", new com.gstncaruso.tabpro.core.model.ScoreColor(
+                                markerColor.getRed(), markerColor.getGreen(), markerColor.getBlue()))));
+        Painted painted = paint(scoreWith(marked), new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        int x = painted.layout().measureX(0);
+        int staffTop = painted.layout().staffTop(0, 0);
+        FontMetrics metrics = painted.image().createGraphics().getFontMetrics(ScoreFonts.SECTION_MARK_FONT);
+        int textTop = (staffTop - 26) - metrics.getAscent();
+        Rectangle aboveTheName = new Rectangle(
+                x - 2, textTop - metrics.getAscent() - 4, metrics.getAscent() + 6, metrics.getAscent());
+
+        assertTrue(painted.hasColorIn(aboveTheName, markerColor),
+                "el marcador tiene que dibujar un cuadrado solido con su propio color arriba del nombre");
     }
 
     @Test
