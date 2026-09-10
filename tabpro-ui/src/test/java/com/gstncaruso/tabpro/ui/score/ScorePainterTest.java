@@ -382,6 +382,25 @@ class ScorePainterTest {
     }
 
     @Test
+    void anIncompleteMeasureThatIsNotBeingEditedIsOutlinedInItsWarningColour() {
+        Measure incomplete = measureOf(Beat.of(Duration.quarter(), new Note(1, 0)));
+        Measure complete = measureOf(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3)));
+        Score score = scoreWith(incomplete, complete);
+
+        Painted painted = paint(score, new Cursor(0, 1, 0, 1), Playhead.silent());
+
+        Rectangle bounds = painted.layout().measureBounds(0, 0);
+        int edge = painted.image().getRGB(bounds.x + bounds.width / 2, bounds.y);
+        int centre = painted.image().getRGB(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+        assertNotEquals(edge, centre,
+                "el borde de aviso tiene que verse distinto del tinte que cubre el resto del compas");
+    }
+
+    @Test
     void survivesAPercussionTrackAndAMultiBeatSelection() {
         Track kit = Track.percussion("Bateria").withMeasures(List.of(
                 new Measure(TimeSignature.fourFour(), List.of(
@@ -432,6 +451,64 @@ class ScorePainterTest {
 
         assertNotEquals(ScoreColors.BACKGROUND.getRGB(), image.getRGB(marginX, y),
                 "el margen izquierdo del compas tiene que quedar pintado tambien");
+    }
+
+    @Test
+    void theSelectionIsAlsoMarkedWithASolidBorder() {
+        Measure full = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Score score = scoreWith(full);
+        com.gstncaruso.tabpro.core.editing.Selection selection =
+                com.gstncaruso.tabpro.core.editing.Selection.ofMeasures(0, 0, 0);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH);
+        BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        ScorePainter.paint(
+                g, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent(), java.util.Optional.of(selection));
+        g.dispose();
+
+        Rectangle bounds = layout.measureBounds(0, 0);
+        int y = bounds.y + bounds.height / 2;
+        int edge = image.getRGB(bounds.x, y);
+        int centre = image.getRGB(bounds.x + bounds.width / 2, y);
+        assertNotEquals(edge, centre,
+                "la seleccion necesita un borde solido, distinto del relleno translucido");
+    }
+
+    @Test
+    void aContiguousMultiBeatSelectionIsOutlinedAsOneAreaWithoutInternalLines() {
+        Measure full = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Score score = scoreWith(full);
+        com.gstncaruso.tabpro.core.editing.Selection selection =
+                new com.gstncaruso.tabpro.core.editing.Selection(0, 0, 0, 0, 1, false);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH);
+        BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        ScorePainter.paint(
+                g, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent(), java.util.Optional.of(selection));
+        g.dispose();
+
+        Rectangle first = layout.beatBounds(0, 0, 0);
+        Rectangle second = layout.beatBounds(0, 0, 1);
+        int y = first.y + first.height / 2;
+        int interior = image.getRGB(first.x + first.width / 2, y);
+        int internalBoundary = image.getRGB(second.x, y);
+        int leftEdge = image.getRGB(first.x, y);
+        int rightEdge = image.getRGB(second.x + second.width - 1, y);
+
+        assertEquals(interior, internalBoundary,
+                "no tiene que haber una linea de borde entre los dos beats seleccionados y contiguos");
+        assertNotEquals(interior, leftEdge, "el borde izquierdo del area completa tiene que verse");
+        assertNotEquals(interior, rightEdge, "el borde derecho del area completa tiene que verse");
     }
 
     @Test

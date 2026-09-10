@@ -18,6 +18,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -224,6 +226,12 @@ public final class ScorePainter {
         g.fillRect(beat.x, top, 1, bottom - top);
     }
 
+    static final Color INCOMPLETE_MEASURE_TINT = new Color(
+            ScoreColors.INCOMPLETE_MEASURE.getRed(),
+            ScoreColors.INCOMPLETE_MEASURE.getGreen(),
+            ScoreColors.INCOMPLETE_MEASURE.getBlue(),
+            40);
+
     /** El compas que no suma lo que su medida pide se tine de rojo, salvo el que se esta editando. */
     private static void paintIncompleteMeasureBackground(
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, boolean beingEdited) {
@@ -232,34 +240,48 @@ public final class ScorePainter {
             return;
         }
         Rectangle bounds = layout.measureBounds(trackIndex, measureIndex);
-        Color warn = ScoreColors.INCOMPLETE_MEASURE;
-        g.setColor(new Color(warn.getRed(), warn.getGreen(), warn.getBlue(), 40));
+        g.setColor(INCOMPLETE_MEASURE_TINT);
         g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        g.setColor(ScoreColors.INCOMPLETE_MEASURE);
+        g.drawRect(bounds.x, bounds.y, bounds.width - 1, bounds.height - 1);
     }
 
     private static void paintSelection(Graphics2D g, ScoreLayout layout, Score score, Selection selection) {
         Track track = score.track(selection.track());
-        g.setColor(ScoreColors.SELECTION);
+        Map<Integer, Rectangle> areaPerSystem = new LinkedHashMap<>();
         for (int measure = selection.fromMeasure();
                 measure <= selection.toMeasure() && measure < track.measureCount(); measure++) {
+            int system = layout.systemOf(measure);
             // Un compas entero se pinta de punta a punta, no solo donde caen los beats de la voz
             // principal: el manual dice que las acciones valen para las dos voces, y el compas
             // siempre deja un margen (cabecera, padding) que ningun beat pisa.
             if (selection.wholeMeasures()) {
-                Rectangle bounds = layout.measureBounds(selection.track(), measure);
-                g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+                grow(areaPerSystem, system, layout.measureBounds(selection.track(), measure));
                 continue;
             }
             int beatCount = track.measure(measure).beats().size();
+            int top = layout.staffTop(selection.track(), measure);
+            int bottom = layout.tabBottom(selection.track(), measure);
             for (int beat = 0; beat < beatCount; beat++) {
                 if (!selection.covers(measure, beat)) {
                     continue;
                 }
                 Rectangle bounds = layout.beatBounds(selection.track(), measure, beat);
-                int top = layout.staffTop(selection.track(), measure);
-                g.fillRect(bounds.x, top, bounds.width, layout.tabBottom(selection.track(), measure) - top);
+                grow(areaPerSystem, system, new Rectangle(bounds.x, top, bounds.width, bottom - top));
             }
         }
+        areaPerSystem.values().forEach(area -> paintSelectedArea(g, area));
+    }
+
+    private static void grow(Map<Integer, Rectangle> areaPerSystem, int system, Rectangle addition) {
+        areaPerSystem.merge(system, addition, Rectangle::union);
+    }
+
+    private static void paintSelectedArea(Graphics2D g, Rectangle bounds) {
+        g.setColor(ScoreColors.SELECTION);
+        g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        g.setColor(ScoreColors.ACCENT);
+        g.drawRect(bounds.x, bounds.y, bounds.width - 1, bounds.height - 1);
     }
 
     /**

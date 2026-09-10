@@ -12,13 +12,13 @@ public final class ScoreColors {
     public static final Color BACKGROUND = new Color(0x1E1F22);
     public static final Color SURFACE = new Color(0x2B2D30);
     public static final Color SURFACE_HIGHLIGHT = new Color(0x35373B);
-    public static final Color BORDER = new Color(0x3C3F44);
+    public static final Color BORDER = new Color(0x71, 0x77, 0x80);
 
-    public static final Color STAFF_LINE = new Color(0x4E5157);
+    public static final Color STAFF_LINE = new Color(0x72, 0x76, 0x7F);
     public static final Color BAR_LINE = new Color(0x7E828A);
     public static final Color INK = new Color(0xE8EAED);
     public static final Color LABEL = new Color(0x9DA1A8);
-    public static final Color MUTED_INK = new Color(0x70747B);
+    public static final Color MUTED_INK = new Color(0x91, 0x94, 0x9A);
 
     public static final Color ACCENT = new Color(0x3574F0);
     /**
@@ -33,9 +33,9 @@ public final class ScoreColors {
      * pistas que no se estan editando, para que se vea continua de punta a punta del sistema sin
      * confundirse con el rojo pleno de la pista activa.
      */
-    public static final Color CURSOR_DIMMED = new Color(0xFF, 0x3B, 0x30, 0x80);
+    public static final Color CURSOR_DIMMED = new Color(0xFF, 0x3B, 0x30, 0xE5);
     /** La linea vertical fina que marca por donde va la reproduccion, como en Guitar Pro. */
-    public static final Color PLAYING = new Color(0x27, 0xAE, 0x60);
+    public static final Color PLAYING = new Color(0x24, 0xA2, 0x5A);
     public static final Color PLAYING_MEASURE = new Color(0xE5484D);
     public static final Color WARNING = new Color(0xE5A44A);
 
@@ -46,9 +46,9 @@ public final class ScoreColors {
     /** El rectangulo que resalta una seleccion multiple. */
     public static final Color SELECTION = new Color(0x35, 0x74, 0xF0, 0x50);
     /** El rectangulo gris que marca, en la otra notacion, la nota que corresponde al cursor. */
-    public static final Color CORRESPONDING_NOTE = new Color(0x9D, 0xA1, 0xA8, 0x60);
+    public static final Color CORRESPONDING_NOTE = new Color(0x9D, 0xA1, 0xA8, 0xAF);
     /** La voz que no se esta editando, cuando se pide dibujarla atenuada. */
-    public static final Color VOICE_INACTIVE = new Color(0x6B6E74);
+    public static final Color VOICE_INACTIVE = new Color(0x8C, 0x8F, 0x94);
 
     /** La hoja clara del Modo Pagina y del Modo Pergamino, sobre el fondo oscuro de la ventana. */
     public static final Color PAGE_PAPER = new Color(0xF6F6F2);

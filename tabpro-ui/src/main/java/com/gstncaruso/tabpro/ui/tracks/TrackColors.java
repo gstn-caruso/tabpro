@@ -12,10 +12,10 @@ import java.util.List;
 public final class TrackColors {
 
     private static final List<Color> PALETTE = List.of(
-            new Color(0x3574F0),
+            new Color(0x407CF1),
             new Color(0xE5A44A),
             new Color(0x46A758),
-            new Color(0xA45AE5),
+            new Color(0xA65EE6),
             new Color(0x2FB8C6),
             new Color(0xE56AA8),
             new Color(0xC2B33F));

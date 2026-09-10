@@ -8,7 +8,7 @@ import java.awt.Color;
  * mastil.
  */
 public enum FretboardType {
-    ELECTRIC("Electrica", new Color(0x3A2F28), new Color(0x54463C), InlayStyle.DOTS, 1.0),
+    ELECTRIC("Electrica", new Color(0x3A2F28), new Color(0x8D7665), InlayStyle.DOTS, 1.0),
     ACOUSTIC("Acustica", new Color(0x8A5A34), new Color(0xA9764C), InlayStyle.DOTS, 1.1),
     CLASSICAL("Clasica", new Color(0xC9A66B), new Color(0xDDBF8E), InlayStyle.NONE, 1.25),
     BASIC("Basica", new Color(0x5B5F66), new Color(0x74787F), InlayStyle.DIAMONDS, 0.9);

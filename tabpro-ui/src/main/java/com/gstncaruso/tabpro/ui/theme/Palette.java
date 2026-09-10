@@ -25,7 +25,7 @@ public final class Palette {
     }
 
     public static Color separator() {
-        return color("tabpro.separator", new Color(0x3C3F41));
+        return color("tabpro.separator", new Color(0x71777A));
     }
 
     public static Color text() {
@@ -33,7 +33,7 @@ public final class Palette {
     }
 
     public static Color mutedText() {
-        return color("tabpro.mutedText", new Color(0x8B8F96));
+        return color("tabpro.mutedText", new Color(0x9CA0A5));
     }
 
     public static Color accent() {

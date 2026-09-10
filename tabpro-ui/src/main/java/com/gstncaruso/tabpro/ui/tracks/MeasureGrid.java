@@ -38,11 +38,11 @@ public final class MeasureGrid extends JComponent implements AccessibleControl {
      */
     public static final int NUMBERS_HEIGHT = TrackPanel.HEADER_HEIGHT - MarkerZone.HEIGHT;
 
-    private static final Color PLAYING_TINT = new Color(
+    static final Color PLAYING_TINT = new Color(
             ScoreColors.PLAYING_MEASURE.getRed(),
             ScoreColors.PLAYING_MEASURE.getGreen(),
             ScoreColors.PLAYING_MEASURE.getBlue(),
-            60);
+            225);
 
     private final Editor editor;
     private OptionalInt playingMeasure = OptionalInt.empty();
