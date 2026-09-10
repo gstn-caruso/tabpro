@@ -33,6 +33,8 @@ public final class Icons {
     private static final String MET_NOTE_32ND_UP = "";
     /** SMuFL U+ECAD "metNote64thUp": la semifusa chiquita del "figura = numero" de tempo. */
     private static final String MET_NOTE_64TH_UP = "";
+    /** SMuFL U+E1E7 "augmentationDot": el puntillo que alarga una figura. */
+    private static final String AUGMENTATION_DOT = "";
 
     private Icons() {
     }
@@ -156,8 +158,7 @@ public final class Icons {
     }
 
     public static Icon dottedNote() {
-        return icon((graphics, size) ->
-                Glyphs.note(graphics, size * 0.32, size * 0.8, size * 0.34, NoteValue.QUARTER, true));
+        return new GlyphIcon(SIZE, MET_NOTE_QUARTER_UP + AUGMENTATION_DOT);
     }
 
     public static Icon rest() {
