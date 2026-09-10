@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -146,6 +147,20 @@ public final class Icons {
         });
     }
 
+    /** El pilcrow del manual: fuerza un salto de linea donde no lo pondria el automatismo. */
+    public static Icon forceLineBreak() {
+        return letter("¶");
+    }
+
+    /** El candado: impide que ese compas se mueva de renglon. */
+    public static Icon preventLineBreak() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(thin());
+            graphics.draw(new Arc2D.Double(size * 0.32, size * 0.16, size * 0.36, size * 0.36, 0, 180, Arc2D.OPEN));
+            graphics.fill(new RoundRectangle2D.Double(size * 0.26, size * 0.34, size * 0.48, size * 0.4, 6, 6));
+        });
+    }
+
     public static Icon doubleBar() {
         return icon((graphics, size) -> {
             Glyphs.staff(graphics, size * 0.1, size * 0.28, size * 0.8, size * 0.11);
@@ -164,6 +179,26 @@ public final class Icons {
 
     public static Icon marker() {
         return svgIcon("flag-3");
+    }
+
+    public static Icon markerList() {
+        return svgIcon("list-details");
+    }
+
+    public static Icon markerPrevious() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(thin());
+            graphics.draw(new Line2D.Double(size * 0.68, size * 0.28, size * 0.3, size * 0.5));
+            graphics.draw(new Line2D.Double(size * 0.3, size * 0.5, size * 0.68, size * 0.72));
+        });
+    }
+
+    public static Icon markerNext() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(thin());
+            graphics.draw(new Line2D.Double(size * 0.32, size * 0.28, size * 0.7, size * 0.5));
+            graphics.draw(new Line2D.Double(size * 0.7, size * 0.5, size * 0.32, size * 0.72));
+        });
     }
 
     // ---- figuras ----------------------------------------------------------
@@ -549,6 +584,10 @@ public final class Icons {
 
     public static Icon mixTable() {
         return svgIcon("adjustments");
+    }
+
+    public static Icon preferences() {
+        return svgIcon("settings");
     }
 
     public static Icon addTrack() {

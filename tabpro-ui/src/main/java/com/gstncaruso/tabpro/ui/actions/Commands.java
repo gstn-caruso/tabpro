@@ -147,9 +147,10 @@ public final class Commands {
                 .withIcon(Icons.alternateEndings());
         define("bar.directions", "Direcciones musicales…", dialogs::musicalDirections);
         define("bar.forceLineBreak", "Forzar salto de línea",
-                () -> editor.setLineBreak(LineBreak.FORCED, view.isMultitrack()));
+                () -> editor.setLineBreak(LineBreak.FORCED, view.isMultitrack())).withIcon(Icons.forceLineBreak());
         define("bar.preventLineBreak", "Impedir salto de línea",
-                () -> editor.setLineBreak(LineBreak.PREVENTED, view.isMultitrack()));
+                () -> editor.setLineBreak(LineBreak.PREVENTED, view.isMultitrack()))
+                .withIcon(Icons.preventLineBreak());
         define("bar.resetLineBreak", "Reiniciar la organización",
                 () -> editor.setLineBreak(LineBreak.AUTOMATIC, view.isMultitrack()));
         define("bar.octave8va", "8va (suena una octava más arriba de lo escrito)",
@@ -331,11 +332,11 @@ public final class Commands {
     private void defineMarkerCommands() {
         define("marker.insert", "Insertar un marcador…", dialogs::insertMarker)
                 .withAccelerator("shift INSERT").withIcon(Icons.marker());
-        define("marker.list", "Lista de marcadores…", dialogs::markerList);
+        define("marker.list", "Lista de marcadores…", dialogs::markerList).withIcon(Icons.markerList());
         define("marker.previous", "Marcador anterior", editor::moveToPreviousMarker)
-                .withAccelerator("shift TAB");
+                .withAccelerator("shift TAB").withIcon(Icons.markerPrevious());
         define("marker.next", "Marcador siguiente", editor::moveToNextMarker)
-                .withAccelerator("ctrl TAB");
+                .withAccelerator("ctrl TAB").withIcon(Icons.markerNext());
     }
 
     // ---- herramientas -----------------------------------------------------
@@ -420,7 +421,8 @@ public final class Commands {
             define("view.theme." + theme, theme, () -> view.useTheme(theme));
         }
         define("options.midiSetup", "Configuración MIDI…", dialogs::midiSetup);
-        define("options.preferences", "Preferencias…", dialogs::preferences).withAccelerator("F12");
+        define("options.preferences", "Preferencias…", dialogs::preferences)
+                .withAccelerator("F12").withIcon(Icons.preferences());
     }
 
     private void defineHelpCommands() {

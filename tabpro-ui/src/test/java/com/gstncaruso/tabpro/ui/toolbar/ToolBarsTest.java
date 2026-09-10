@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.toolbar;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
@@ -8,8 +9,11 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import java.awt.Component;
+import java.awt.Container;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import javax.swing.JButton;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -84,6 +88,35 @@ class ToolBarsTest {
     void ningunBotonQuedaSinNombreNiTooltipAccesible() {
         AccessibilityAssertions.assertNoViolations(toolBars.component());
         AccessibilityAssertions.assertNoViolations(toolBars.effectsComponent());
+    }
+
+    /**
+     * Un boton de barra sin icono se ve como un rectangulo vacio: nadie lo nota en la lista de
+     * comandos porque el nombre esta, pero en la barra real queda ciego. Este test recorre las
+     * cuatro filas de verdad, no confia en que cada PR se acuerde de mirarlas a ojo.
+     */
+    @Test
+    void ningunBotonDeNingunaDeLasCuatroFilasQuedaSinIcono() {
+        for (Container row : new Container[] {
+            toolBars.component(), toolBars.effectsComponent(),
+        }) {
+            for (JButton button : buttonsOf(row)) {
+                assertNotNull(button.getIcon(), button.getAccessibleContext().getAccessibleName() + " sin icono");
+            }
+        }
+    }
+
+    private java.util.List<JButton> buttonsOf(Container root) {
+        java.util.List<JButton> found = new java.util.ArrayList<>();
+        for (Component child : root.getComponents()) {
+            if (child instanceof JButton button) {
+                found.add(button);
+            }
+            if (child instanceof Container container) {
+                found.addAll(buttonsOf(container));
+            }
+        }
+        return found;
     }
 
     @SuppressWarnings("unchecked")
