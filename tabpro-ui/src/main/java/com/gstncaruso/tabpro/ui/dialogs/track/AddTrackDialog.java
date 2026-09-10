@@ -24,7 +24,24 @@ public final class AddTrackDialog {
     }
 
     public static void show(Component parent, Editor editor) {
-        JTextField name = new JTextField("Pista " + (editor.score().trackCount() + 1), 16);
+        Fields fields = buildFields(editor.score().trackCount() + 1);
+
+        if (!DialogShell.ask(parent, "Agregar una pista", fields.form())) {
+            return;
+        }
+        Track track = fields.percussion().isSelected()
+                ? Track.percussion(fields.name().getText())
+                : trackWith(fields.name().getText(), (Tuning) fields.tunings().getSelectedItem());
+        if (fields.beforeCurrent().isSelected()) {
+            editor.addTrackAt(editor.cursor().track(), track);
+        } else {
+            editor.addTrack(track);
+        }
+    }
+
+    /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
+    static Fields buildFields(int nextTrackNumber) {
+        JTextField name = new JTextField("Pista " + nextTrackNumber, 16);
         JRadioButton instrumental = new JRadioButton("Instrumental", true);
         JRadioButton percussion = new JRadioButton("Percusión");
         group(instrumental, percussion);
@@ -46,17 +63,15 @@ public final class AddTrackDialog {
                 .addRow("Posición", atTheEnd)
                 .addRow("", beforeCurrent);
 
-        if (!DialogShell.ask(parent, "Agregar una pista", form)) {
-            return;
-        }
-        Track track = percussion.isSelected()
-                ? Track.percussion(name.getText())
-                : trackWith(name.getText(), (Tuning) tunings.getSelectedItem());
-        if (beforeCurrent.isSelected()) {
-            editor.addTrackAt(editor.cursor().track(), track);
-        } else {
-            editor.addTrack(track);
-        }
+        return new Fields(form, name, percussion, tunings, beforeCurrent);
+    }
+
+    record Fields(
+            FormPanel form,
+            JTextField name,
+            JRadioButton percussion,
+            JComboBox<Tuning> tunings,
+            JRadioButton beforeCurrent) {
     }
 
     /** Una guitarra o un bajo, segun cuantas cuerdas tenga la afinacion elegida. */
