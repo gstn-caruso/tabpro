@@ -296,10 +296,8 @@ public final class MeasureGrid extends JComponent implements AccessibleControl {
             g.fillRect(cell.x + 1, cell.y + 1, cell.width - 2, cell.height - 2);
             g.setColor(ScoreColors.BORDER);
             g.drawRect(cell.x + 1, cell.y + 1, cell.width - 3, cell.height - 3);
-            if (track.hasNotesIn(measure)) {
-                g.setColor(colorOf(trackIndex));
-                g.fillRect(cell.x + 4, cell.y + 4, cell.width - 8, cell.height - 8);
-            }
+            g.setColor(track.hasNotesIn(measure) ? colorOf(trackIndex) : ScoreColors.EMPTY_MEASURE);
+            g.fillRect(cell.x + 4, cell.y + 4, cell.width - 8, cell.height - 8);
         }
     }
 
