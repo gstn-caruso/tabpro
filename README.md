@@ -216,6 +216,18 @@ notación uno, el sonido el otro— y `tabpro-app` las compone.
 - `tabpro-app` — `main`, el tema, el cableado —incluida la composición del
   intercambio— y el empaquetado.
 
+Los tests viven al lado del código que prueban, pero no corren ahí. Surefire
+levanta una máquina virtual por módulo y cada una vuelve a pagar el arranque y la
+carga de clases, que es lo que domina una suite corta: cinco módulos son cinco
+calentamientos para tests que, con las clases ya cargadas, corren en menos de
+medio segundo. `tabpro-tests` reúne los `test-classes` de los cinco y los corre de
+una sola vez, en una sola máquina virtual y con el JIT en C1.
+
+- `tabpro-tests` — no tiene código propio; sólo junta la suite y la corre.
+
+Como los tests de los cinco módulos corren ahí, `mvn test -pl <módulo>` no corre
+ninguno: la suite entera se corre desde la raíz.
+
 ```sh
 mvn verify
 ```
