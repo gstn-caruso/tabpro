@@ -7,21 +7,20 @@ import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
 
 /**
- * JScrollPane y JSplitPane traen atajos propios de fabrica (Ctrl+Home/Fin para el scroll, F6/F8
- * para navegar y redimensionar el split, Ctrl+Tab para cambiarle el foco): Swing los revisa
- * apenas encuentra, subiendo desde el componente enfocado, un antepasado que los tenga
- * registrados (WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) -- antes incluso de llegar al atajo de un
- * menu (WHEN_IN_FOCUSED_WINDOW). La partitura vive adentro de ambos, asi que si un atajo del
- * catalogo usa esa misma tecla, mientras la partitura tiene el foco -que es la situacion normal
- * al editar- ese atajo queda muerto sin que nada lo avise.
+ * JScrollPane and JSplitPane ship with their own shortcuts (Ctrl+Home/End for scrolling, F6/F8
+ * to navigate and resize the split, Ctrl+Tab to move its focus): Swing checks them as soon as it
+ * finds, walking up from the focused component, an ancestor that has them registered
+ * (WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) -- even before reaching a menu shortcut
+ * (WHEN_IN_FOCUSED_WINDOW). The score lives inside both, so if a catalog shortcut uses that same
+ * key, while the score holds focus -the normal situation while editing- that shortcut stays dead
+ * without anything reporting it.
  *
- * <p>Este barrido, en cada antepasado dado, deja sin resolver cualquier tecla que el catalogo ya
- * use ({@code inputMap.put(tecla, "none")}, la convencion de Swing para "no hay accion registrada
- * con este nombre"): {@code processKeyBinding} encuentra un binding pero ninguna Action para el,
- * asi que devuelve false y la tecla sigue subiendo hasta el atajo del menu. No toca nada
- * compartido entre instancias: cada componente Swing tiene su propio InputMap y ActionMap, asi
- * que un JScrollPane que no se le pasa a {@link #letCommandsWin} sigue con el comportamiento de
- * fabrica.
+ * <p>This sweep, on each given ancestor, leaves unresolved any key the catalog already uses
+ * ({@code inputMap.put(key, "none")}, Swing's convention for "no action registered under this
+ * name"): {@code processKeyBinding} finds a binding but no Action for it, so it returns false and
+ * the key keeps climbing up to the menu shortcut. It touches nothing shared between instances:
+ * each Swing component has its own InputMap and ActionMap, so a JScrollPane not passed to
+ * {@link #letCommandsWin} keeps the default behavior.
  */
 public final class AcceleratorGuard {
 
@@ -30,16 +29,14 @@ public final class AcceleratorGuard {
     private AcceleratorGuard() {
     }
 
-    /** Le saca a cada antepasado dado cualquier tecla que ya use un comando del catalogo. */
     public static void letCommandsWin(Commands commands, JComponent... ancestorsOfTheFocusedComponent) {
         blockEachAccelerator(commands, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, ancestorsOfTheFocusedComponent);
     }
 
     /**
-     * F10 sin modificador activa de fabrica la barra de menus (BasicMenuBarUI la instala en el
-     * WHEN_IN_FOCUSED_WINDOW propio del JMenuBar, para cualquier L&amp;F derivado de
-     * BasicLookAndFeel): le saca esa tecla a la barra para que el atajo real de Cambio de
-     * parametros pueda seguir subiendo.
+     * F10 without a modifier activates the menu bar out of the box (BasicMenuBarUI installs it on
+     * the JMenuBar's own WHEN_IN_FOCUSED_WINDOW, for any L&amp;F derived from BasicLookAndFeel):
+     * this strips that key from the bar so the matching catalog shortcut can keep climbing.
      */
     public static void letCommandsWinOverTheMenuBar(Commands commands, JMenuBar menuBar) {
         blockEachAccelerator(commands, JComponent.WHEN_IN_FOCUSED_WINDOW, menuBar);

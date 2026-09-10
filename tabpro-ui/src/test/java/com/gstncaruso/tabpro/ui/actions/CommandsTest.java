@@ -39,11 +39,6 @@ class CommandsTest {
             editor, record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
 
-    /**
-     * Armar el comando de sound.soundFont ya le pregunta al puerto su estado real para arrancar
-     * sincronizado (ver Commands.defineSoundCommands): esa pregunta no es lo que cada test quiere
-     * comprobar, asi que el rastro de "a quien le preguntaron" arranca limpio para cada uno.
-     */
     @BeforeEach
     void olvidaLoQuePreguntoElConstructor() {
         asked.clear();
@@ -76,10 +71,6 @@ class CommandsTest {
         assertEquals(List.of(), repetidos);
     }
 
-    /**
-     * El manual es explicito: "+ Divide the Duration of the Notes by 2" y
-     * "- Multiply the Duration of the Notes by 2". Es el atajo mas usado al escribir el ritmo.
-     */
     @Test
     void plusShortensTheFigureAndMinusLengthensIt() {
         commands.get("note.value.QUARTER").actionPerformed(event());
@@ -155,11 +146,6 @@ class CommandsTest {
         assertEquals(StemOverride.AUTOMATIC, editor.currentBeat().effects().stemOverride());
     }
 
-    /**
-     * El manual dice que el salto de linea vale solo para la pista activa o para la vista
-     * multipista, asi que el comando tiene que consultarle a la vista en cual de las dos esta
-     * antes de aplicarlo (el alcance en si lo prueba EditorBarsTest, en tabpro-core).
-     */
     @Test
     void theLineBreakCommandsAskTheViewWhetherTheMultitrackViewIsOn() {
         commands.get("bar.forceLineBreak").actionPerformed(event());
@@ -167,7 +153,6 @@ class CommandsTest {
         assertTrue(asked.contains("isMultitrack"));
     }
 
-    /** Ver > Notas con dinamica [F11] del manual: el comando le avisa a la vista. */
     @Test
     void theDynamicNotesCommandTogglesTheView() {
         commands.get("view.dynamicNotes").actionPerformed(event());
@@ -175,10 +160,6 @@ class CommandsTest {
         assertEquals(List.of("toggleShowsDynamicNotes"), asked);
     }
 
-    /**
-     * El manual agrupa cualquier n-tuplet igual que el tresillo (Managing the Triplets and
-     * n-Tuplets): quintillo, seisillo, septillo y los que sigan tienen que estar en el menu Nota.
-     */
     @Test
     void aTupletCommandGroupsTheCurrentBeatWithThatManyNotes() {
         commands.get("note.tuplet.5").actionPerformed(event());
@@ -205,11 +186,6 @@ class CommandsTest {
         assertTrue(editor.currentNote().orElseThrow().has(Ornament.PALM_MUTE));
     }
 
-    /**
-     * El manual describe seis tipos de slide (linea 1250 y siguientes: legato, con ataque, y los
-     * cuatro que entran o salen de un traste indefinido). Cada uno necesita su propio comando en
-     * el menu Efectos.
-     */
     @Test
     void everySlideTypeTheManualDescribesHasItsOwnCommand() {
         editor.setFret(5);
@@ -227,11 +203,6 @@ class CommandsTest {
         });
     }
 
-    /**
-     * Manual, "Dynamic" (linea 1000): las ocho dinamicas, de ppp a fff, son botones que fijan la
-     * dinamica de la nota bajo el cursor, el mismo camino que ya usa DynamicsDialog sin marcar
-     * "aplicar a todo el acorde". Un acorde de dos cuerdas confirma que solo tocan esa nota.
-     */
     @Test
     void everyDynamicCommandSetsTheNoteUnderTheCursorWithoutTouchingTheRestOfTheChord() {
         editor.setFret(5);
@@ -258,11 +229,6 @@ class CommandsTest {
         assertEquals(List.of("scoreInformation"), asked);
     }
 
-    /**
-     * Manual, "Configure the Sound" (linea 1945): el volumen y la actividad del metronomo se
-     * configuran en su propio dialogo, {@code MetronomeDialog}, ya implementado en
-     * {@code MainFrame.Windows.metronomeSettings()} pero sin ningun comando que lo llame.
-     */
     @Test
     void theMetronomeSettingsCommandAsksForItsWindow() {
         commands.get("sound.metronomeSettings").actionPerformed(event());
@@ -270,10 +236,6 @@ class CommandsTest {
         assertEquals(List.of("metronomeSettings"), asked);
     }
 
-    /**
-     * Guitar Pro 5, manual pagina 14: junto al boton de digitacion de mano izquierda hay uno de
-     * mano derecha, que abre el mismo dialogo con el foco en su campo.
-     */
     @Test
     void theFingeringRightHandCommandAsksForItsDialog() {
         commands.get("note.fingeringRightHand").actionPerformed(event());
@@ -341,7 +303,6 @@ class CommandsTest {
         return new ActionEvent(new Object(), ActionEvent.ACTION_PERFORMED, "test");
     }
 
-    /** Un doble que anota que le pidieron, para ver que el comando llegue a destino. */
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
         InvocationHandler handler = (proxy, method, args) -> {
