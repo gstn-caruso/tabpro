@@ -28,7 +28,7 @@ class NotePreviewTest {
         ShortMessage noteOn = receiver.firstOf(ShortMessage.NOTE_ON);
         assertEquals(NotePreview.CHANNEL, noteOn.getChannel());
         assertEquals(60, noteOn.getData1());
-        assertTrue(noteOn.getData2() > 0, "una nota sin velocity no suena");
+        assertTrue(noteOn.getData2() > 0, "a note without velocity does not sound");
 
         preview.close();
     }
@@ -43,7 +43,7 @@ class NotePreviewTest {
         assertEquals(
                 List.of(ShortMessage.PROGRAM_CHANGE, ShortMessage.NOTE_ON),
                 receiver.firstTwoCommands(),
-                "el programa tiene que llegar antes que la nota");
+                "the program has to arrive before the note");
 
         preview.close();
     }
@@ -116,7 +116,7 @@ class NotePreviewTest {
             return received.stream()
                     .filter(message -> message.getCommand() == command)
                     .findFirst()
-                    .orElseThrow(() -> new AssertionError("no llego ningun mensaje " + command));
+                    .orElseThrow(() -> new AssertionError("no message arrived " + command));
         }
 
         List<Integer> notesOn() {
