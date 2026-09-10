@@ -3,10 +3,9 @@ package com.gstncaruso.tabpro.format.guitarpro;
 import com.gstncaruso.tabpro.core.model.Channel;
 
 /**
- * Un valor de la mesa de mezcla de Guitar Pro -- volumen, paneo, chorus, reverb, phaser o
- * tremolo -- visto como lo que es en el archivo: uno de los dieciseis pasos de la perilla.
- * El modelo de tabpro los maneja en los 0 a 127 de MIDI, asi que hay que traducir en las
- * dos direcciones.
+ * A Guitar Pro mixing-table value -- volume, pan, chorus, reverb, phaser, or tremolo --
+ * seen as what it is in the file: one of the sixteen knob steps. The tabpro model
+ * handles them in MIDI's 0 to 127, so a translation is needed in both directions.
  */
 record GuitarProMixerLevel(int step) {
 
@@ -17,7 +16,7 @@ record GuitarProMixerLevel(int step) {
         step = Math.clamp(step, 0, STEPS);
     }
 
-    /** El paso al que hay que llevar la perilla para que suene asi de fuerte. */
+    /** The step the knob must be set to for it to sound this loud. */
     static GuitarProMixerLevel ofMidi(int midi) {
         return new GuitarProMixerLevel((midi + 1) / MIDI_PER_STEP);
     }
