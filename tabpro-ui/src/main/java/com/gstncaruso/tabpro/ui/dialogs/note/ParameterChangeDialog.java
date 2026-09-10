@@ -14,11 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * La ventana de Nota > Mesa de mezcla [F10]: cambiar instrumento, volumen,
- * paneo, efectos o tempo desde este beat en adelante, con una transicion de
- * tantos beats y para esta pista o para todas.
- */
 public final class ParameterChangeDialog {
 
     private ParameterChangeDialog() {
@@ -42,7 +37,6 @@ public final class ParameterChangeDialog {
         editor.setParameterChange(change.isEmpty() ? null : change);
     }
 
-    /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
     static Fields buildFields(ParameterChange current, Editor editor) {
         Map<SoundParameter, JCheckBox> enabled = new EnumMap<>(SoundParameter.class);
         Map<SoundParameter, JSpinner> values = new EnumMap<>(SoundParameter.class);
@@ -80,7 +74,6 @@ public final class ParameterChangeDialog {
             JCheckBox everyTrack) {
     }
 
-    /** El valor que ya tiene la pista, para no arrancar de cero. */
     private static int defaultOf(SoundParameter parameter, Editor editor) {
         var channel = editor.currentTrack().channel();
         return switch (parameter) {

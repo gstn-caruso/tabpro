@@ -9,7 +9,6 @@ import java.util.Optional;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
-/** La ventana de digitacion: que dedo pisa la cuerda y que dedo la toca. */
 public final class FingeringDialog {
 
     private static final String NONE = "Sin indicar";
@@ -21,7 +20,6 @@ public final class FingeringDialog {
         open(parent, editor, Hand.LEFT);
     }
 
-    /** Como {@link #show(Component, Editor)}, pero arranca con el foco en el campo de mano derecha. */
     public static void showFocusedOnRightHand(Component parent, Editor editor) {
         open(parent, editor, Hand.RIGHT);
     }
@@ -40,12 +38,10 @@ public final class FingeringDialog {
 
     enum Hand { LEFT, RIGHT }
 
-    /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
     static Fields buildFields(Optional<Finger> left, Optional<Finger> right) {
         return buildFields(left, right, Hand.LEFT);
     }
 
-    /** Como {@link #buildFields(Optional, Optional)}, pero elige donde arranca el foco inicial. */
     static Fields buildFields(Optional<Finger> left, Optional<Finger> right, Hand initialFocus) {
         JComboBox<Object> leftHand = fingers(left, Finger::leftHandSymbol);
         JComboBox<Object> rightHand = fingers(right, Finger::rightHandSymbol);
