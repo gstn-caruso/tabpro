@@ -21,7 +21,9 @@ import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
+@ResourceLock(RealPreferencesTests.LOCK)
 class ScoreDocumentTest {
 
     private final List<java.util.prefs.Preferences> scratchNodes = new ArrayList<>();

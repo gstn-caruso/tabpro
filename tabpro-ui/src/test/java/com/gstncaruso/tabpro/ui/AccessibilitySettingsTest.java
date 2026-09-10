@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 /** Preferencias [F12] > Accesibilidad: como se leen y se aplican, al arrancar y al aceptar. */
+@ResourceLock(RealPreferencesTests.LOCK)
 class AccessibilitySettingsTest {
 
     private final java.util.prefs.Preferences node =

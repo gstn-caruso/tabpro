@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
+@ResourceLock(RealPreferencesTests.LOCK)
 class PreferencesTest {
 
     private final java.util.prefs.Preferences node =
