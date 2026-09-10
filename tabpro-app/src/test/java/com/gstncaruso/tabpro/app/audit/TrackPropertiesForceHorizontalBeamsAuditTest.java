@@ -35,28 +35,28 @@ class TrackPropertiesForceHorizontalBeamsAuditTest {
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             assertFalse(editor.score().track(0).settings().display().forceHorizontalBeams(),
-                    "arranca sin forzar barras horizontales");
+                    "starts without forcing horizontal beams");
             BufferedImage before = renderingOf(canvas);
 
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Propiedades de la pista…");
-            assertNotNull(item, "no encontre 'Propiedades de la pista…' en el menu real");
+            assertNotNull(item, "could not find 'Propiedades de la pista…' in the real menu");
             assertEquals(KeyStroke.getKeyStroke("F6"), item.getAccelerator());
 
             withDialog(item::doClick, dialog -> {
                 JCheckBox checkbox = AuditSupport.findCheckBox(dialog, "Forzar barras horizontales");
-                assertNotNull(checkbox, "no encontre el casillero real de 'Forzar barras horizontales'");
-                assertFalse(checkbox.isSelected(), "el casillero arranca destildado");
+                assertNotNull(checkbox, "could not find the real 'Forzar barras horizontales' checkbox");
+                assertFalse(checkbox.isSelected(), "the checkbox starts unchecked");
 
                 checkbox.setSelected(true);
                 AuditSupport.findButton(dialog, "Aceptar").doClick();
             });
 
             assertTrue(editor.score().track(0).settings().display().forceHorizontalBeams(),
-                    "el casillero real, tildado y aceptado, tiene que llegar al modelo real de la pista");
+                    "the real checkbox, checked and accepted, must reach the track's real model");
 
             BufferedImage after = renderingOf(canvas);
             assertFalse(imagesLookTheSame(before, after),
-                    "con la barra ahora forzada a horizontal, el pentagrama real tiene que pintarse distinto");
+                    "with the beam now forced to horizontal, the real staff must render differently");
         } finally {
             AuditSupport.dispose(frame);
         }

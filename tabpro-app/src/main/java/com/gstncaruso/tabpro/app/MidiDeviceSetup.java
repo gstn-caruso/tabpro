@@ -59,7 +59,7 @@ final class MidiDeviceSetup implements Ports.Devices {
             device.open();
             MidiTestTone.play(device.getReceiver(), 0, MidiTestTone.DEFAULT_DURATION_MILLIS, device::close);
         } catch (MidiUnavailableException e) {
-            System.err.println("No se pudo probar la salida MIDI " + info.getName() + ": " + e.getMessage());
+            System.err.println("Could not test the MIDI output " + info.getName() + ": " + e.getMessage());
         }
     }
 
@@ -96,7 +96,7 @@ final class MidiDeviceSetup implements Ports.Devices {
             capture.start();
         } catch (MidiUnavailableException e) {
             capture = null;
-            System.err.println("No se pudo abrir la entrada MIDI: " + e.getMessage());
+            System.err.println("Could not open the MIDI input: " + e.getMessage());
         }
     }
 

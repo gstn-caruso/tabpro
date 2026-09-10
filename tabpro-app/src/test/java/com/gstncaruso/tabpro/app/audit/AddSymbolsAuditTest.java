@@ -45,12 +45,12 @@ class AddSymbolsAuditTest {
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Bend…");
-            assertNotNull(item, "no encontre 'Bend…' en el menu real");
+            assertNotNull(item, "could not find 'Bend…' in the real menu");
             assertEquals(javax.swing.KeyStroke.getKeyStroke("B"), item.getAccelerator());
 
             withDialog(() -> canvas.dispatchEvent(pressed(canvas, KeyEvent.VK_B)), dialog -> {
                 Container bendTab = tabContent(dialog, "Bend");
-                assertNotNull(bendTab, "no encontre la solapa Bend en el dialogo real");
+                assertNotNull(bendTab, "could not find the Bend tab in the real dialog");
 
                 JCheckBox active = findComponent(bendTab, JCheckBox.class);
                 assertNotNull(active);
@@ -71,11 +71,11 @@ class AddSymbolsAuditTest {
             });
 
             var bend = editor.currentNote().orElseThrow().effects().bend();
-            assertTrue(bend.isPresent(), "el bend elegido en el dialogo real tiene que llegar al modelo");
+            assertTrue(bend.isPresent(), "the bend chosen in the real dialog must reach the model");
             assertEquals(BendType.PREBEND, bend.get().type(),
-                    "el tipo elegido en el combo real del dialogo tiene que ser el que quedo en el modelo");
+                    "the type chosen in the real dialog's combo must be the one that ended up in the model");
             assertEquals(8, bend.get().peakQuarterTones(),
-                    "la altura elegida en el spinner real del dialogo tiene que ser la que quedo en el modelo");
+                    "the height chosen in the real dialog's spinner must be the one that ended up in the model");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -87,11 +87,11 @@ class AddSymbolsAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Palanca…");
-            assertNotNull(item, "no encontre 'Palanca…' en el menu real");
+            assertNotNull(item, "could not find 'Palanca…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 Container tremoloBarTab = tabContent(dialog, "Palanca");
-                assertNotNull(tremoloBarTab, "no encontre la solapa Palanca en el dialogo real");
+                assertNotNull(tremoloBarTab, "could not find the Palanca tab in the real dialog");
 
                 JCheckBox active = findComponent(tremoloBarTab, JCheckBox.class);
                 assertNotNull(active);
@@ -103,16 +103,16 @@ class AddSymbolsAuditTest {
                 JComboBox<BendType> type = (JComboBox<BendType>) findComponent(tremoloBarTab, JComboBox.class);
                 assertNotNull(type);
                 assertEquals(BendType.tremoloBarTypes(), comboValues(type),
-                        "la solapa Palanca tiene que ofrecer sus seis tipos propios, no los del Bend");
+                        "the Palanca tab must offer its own six types, not the Bend ones");
                 type.setSelectedItem(BendType.DIVE);
 
                 findButton(dialog, "Aceptar").doClick();
             });
 
             var tremoloBar = editor.currentBeat().effects().tremoloBar();
-            assertTrue(tremoloBar.isPresent(), "la palanca elegida en el dialogo real tiene que llegar al modelo");
+            assertTrue(tremoloBar.isPresent(), "the tremolo bar chosen in the real dialog must reach the model");
             assertEquals(BendType.DIVE, tremoloBar.get().type(),
-                    "el tipo elegido en el combo real de la palanca tiene que ser el que quedo en el modelo");
+                    "the type chosen in the real tremolo bar combo must be the one that ended up in the model");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -124,7 +124,7 @@ class AddSymbolsAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Trino…");
-            assertNotNull(item, "no encontre 'Trino…' en el menu real");
+            assertNotNull(item, "could not find 'Trino…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 Container trillTab = tabContent(dialog, "Trino");
@@ -142,9 +142,9 @@ class AddSymbolsAuditTest {
             });
 
             var trill = editor.currentNote().orElseThrow().effects().trill();
-            assertTrue(trill.isPresent(), "el trino elegido en el dialogo real tiene que llegar al modelo");
+            assertTrue(trill.isPresent(), "the trill chosen in the real dialog must reach the model");
             assertEquals(7, trill.map(Trill::fret).orElseThrow(),
-                    "el traste elegido en el spinner real tiene que ser el que quedo en el modelo");
+                    "the fret chosen in the real spinner must be the one that ended up in the model");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -156,7 +156,7 @@ class AddSymbolsAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Armónicos…");
-            assertNotNull(item, "no encontre 'Armónicos…' en el menu real");
+            assertNotNull(item, "could not find 'Armónicos…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 Container harmonicsTab = tabContent(dialog, "Armónicos");
@@ -176,7 +176,7 @@ class AddSymbolsAuditTest {
 
             var harmonic = editor.currentNote().orElseThrow().effects().harmonic();
             assertEquals(HarmonicType.ARTIFICIAL, harmonic.orElseThrow(),
-                    "el tipo de armonico elegido en el combo real tiene que ser el que quedo en el modelo");
+                    "the harmonic type chosen in the real combo must be the one that ended up in the model");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -203,19 +203,19 @@ class AddSymbolsAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), menuLabel);
-            assertNotNull(item, "no encontre '" + menuLabel + "' en el menu real");
+            assertNotNull(item, "could not find '" + menuLabel + "' in the real menu");
 
             JDialog dialog = awaitDialog(item::doClick, 5000);
             try {
                 assertEquals(expectedTitle, dialog.getTitle(),
-                        "cada comando de opciones tiene que abrir con su propio titulo");
+                        "each options command must open with its own title");
 
                 @SuppressWarnings("rawtypes")
                 List<JComboBox> combos = findComponents(dialog, JComboBox.class);
-                assertEquals(3, combos.size(), "el asistente real tiene que traer los tres combos: let ring, palm mute y dinamica");
+                assertEquals(3, combos.size(), "the real wizard must bring the three combos: let ring, palm mute and dynamics");
 
                 assertTrue(awaitFocusOwner(combos.get(expectedComboIndex), 2000),
-                        "el combo de '" + expectedTitle + "' tiene que arrancar con el foco real");
+                        "the '" + expectedTitle + "' combo must start with the real focus");
             } finally {
                 SwingUtilities.invokeAndWait(() -> findButton(dialog, "Cancelar").doClick());
             }
@@ -226,9 +226,9 @@ class AddSymbolsAuditTest {
 
     private static Container tabContent(JDialog dialog, String tabTitle) {
         JTabbedPane tabs = findComponent(dialog, JTabbedPane.class);
-        assertNotNull(tabs, "no encontre el JTabbedPane real de efectos de nota");
+        assertNotNull(tabs, "could not find the real JTabbedPane for note effects");
         int index = tabs.indexOfTab(tabTitle);
-        assertTrue(index >= 0, "no encontre la solapa \"" + tabTitle + "\"");
+        assertTrue(index >= 0, "could not find the tab \"" + tabTitle + "\"");
         return (Container) tabs.getComponentAt(index);
     }
 

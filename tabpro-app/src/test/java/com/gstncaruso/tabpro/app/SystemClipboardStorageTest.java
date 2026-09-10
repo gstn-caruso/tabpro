@@ -24,9 +24,9 @@ class SystemClipboardStorageTest {
 
     @Test
     void readsTheTextOfAPlainTextTransferable() {
-        Transferable plainText = new StringSelection("cualquier texto copiado de otro lado");
+        Transferable plainText = new StringSelection("some text copied from elsewhere");
 
-        assertEquals(Optional.of("cualquier texto copiado de otro lado"), SystemClipboardStorage.textOf(plainText));
+        assertEquals(Optional.of("some text copied from elsewhere"), SystemClipboardStorage.textOf(plainText));
     }
 
     @Test
@@ -39,7 +39,7 @@ class SystemClipboardStorageTest {
         // The pom's <argLine> forces -Djava.awt.headless=true: this suite really runs headless,
         // so this test exercises the actual degradation, not a simulation of it.
         Editor editor = new Editor(
-                new Score("Prueba", 120, List.of(Track.standardGuitar("Guitarra"))), new SystemClipboardStorage());
+                new Score("Test", 120, List.of(Track.standardGuitar("Guitarra"))), new SystemClipboardStorage());
         editor.setFret(5);
         editor.copy(false);
         editor.moveRight();

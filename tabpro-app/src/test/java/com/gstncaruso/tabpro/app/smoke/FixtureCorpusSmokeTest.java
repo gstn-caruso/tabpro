@@ -43,7 +43,7 @@ class FixtureCorpusSmokeTest {
     @MethodSource("corpusFixtures")
     void aCorpusFixtureCompletesTheWholePipelineOfThePermanentSafetyNet(Path path, @TempDir Path tempDir) {
         assertTimeoutPreemptively(MAXIMUM_TIME_PER_FILE, () -> runPipeline(path, tempDir),
-                () -> path.getFileName() + ": no completo el pipeline en "
+                () -> path.getFileName() + ": did not complete the pipeline in "
                         + MAXIMUM_TIME_PER_FILE.toSeconds() + "s");
     }
 
@@ -67,13 +67,13 @@ class FixtureCorpusSmokeTest {
 
     private static final Map<String, String> POWERTAB_WITH_KNOWN_LIMITATION = Map.of(
             "guitar_ins.ptb",
-            "reasigna el pentagrama 0 a otra guitarra a mitad de la pieza, ScoreFileException a proposito"
+            "reassigns staff 0 to another guitar halfway through the piece, ScoreFileException on purpose"
                     + " (PowerTabFileTest.aGuitarReassignmentIsReportedInsteadOfGuessed)",
             "merge_multibar_rests.ptb",
-            "usa un silencio de varios compases comprimido (multibar rest), ScoreFileException a proposito"
+            "uses a compressed multi-bar rest, ScoreFileException on purpose"
                     + " (PowerTabFileTest.aMultibarRestIsReportedInsteadOfGuessed)",
             "positions.ptb",
-            "usa un silencio de varios compases comprimido (multibar rest), ScoreFileException a proposito"
+            "uses a compressed multi-bar rest, ScoreFileException on purpose"
                     + " (PowerTabFileTest.aMultibarRestIsReportedInsteadOfGuessed)");
 
     static Stream<Path> powerTabFixtures() throws IOException {
@@ -99,27 +99,27 @@ class FixtureCorpusSmokeTest {
 
     private void runPipeline(Path path, Path tempDir) {
         Score score = open(path);
-        assertNotNull(score, () -> path.getFileName() + ": abre por el camino real de importacion");
-        assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
+        assertNotNull(score, () -> path.getFileName() + ": opens through the real import path");
+        assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": has at least one track");
 
         List<BufferedImage> pages = renderPages(score);
-        assertFalse(pages.isEmpty(), () -> path.getFileName() + ": renderiza al menos una pagina en modo Pagina");
+        assertFalse(pages.isEmpty(), () -> path.getFileName() + ": renders at least one page in Pagina mode");
 
         BufferedImage parchment = renderParchment(score);
         assertTrue(parchment.getWidth() > 0 && parchment.getHeight() > 0,
-                () -> path.getFileName() + ": renderiza en modo Pergamino");
+                () -> path.getFileName() + ": renders in Pergamino mode");
 
-        Score reopenedGp4 = exportAndReopenGp4(score, tempDir.resolve("reexportado.gp4"));
-        assertNotNull(reopenedGp4, () -> path.getFileName() + ": el export a .gp4 se reabre");
+        Score reopenedGp4 = exportAndReopenGp4(score, tempDir.resolve("reexported.gp4"));
+        assertNotNull(reopenedGp4, () -> path.getFileName() + ": the .gp4 export reopens");
 
-        Score reopenedMidi = exportAndReopenMidi(score, tempDir.resolve("reexportado.mid"));
-        assertNotNull(reopenedMidi, () -> path.getFileName() + ": el export a MIDI se reabre");
+        Score reopenedMidi = exportAndReopenMidi(score, tempDir.resolve("reexported.mid"));
+        assertNotNull(reopenedMidi, () -> path.getFileName() + ": the MIDI export reopens");
 
-        Score reopenedMusicXml = exportAndReopenMusicXml(score, tempDir.resolve("reexportado.musicxml"));
-        assertNotNull(reopenedMusicXml, () -> path.getFileName() + ": el export a MusicXML se reabre");
+        Score reopenedMusicXml = exportAndReopenMusicXml(score, tempDir.resolve("reexported.musicxml"));
+        assertNotNull(reopenedMusicXml, () -> path.getFileName() + ": the MusicXML export reopens");
 
-        Score reopenedTabpro = saveAsTabproAndReopen(score, tempDir.resolve("reexportado.tabpro"));
-        assertEquals(score, reopenedTabpro, () -> path.getFileName() + ": el guardado como .tabpro se reabre igual");
+        Score reopenedTabpro = saveAsTabproAndReopen(score, tempDir.resolve("reexported.tabpro"));
+        assertEquals(score, reopenedTabpro, () -> path.getFileName() + ": saving as .tabpro reopens the same");
     }
 
     private List<BufferedImage> renderPages(Score score) {
@@ -164,7 +164,7 @@ class FixtureCorpusSmokeTest {
         if (name.endsWith(".tabpro")) {
             return tabproFiles.load(path);
         }
-        throw new UnsupportedOperationException("todavia no resuelve la extension de " + name);
+        throw new UnsupportedOperationException("does not resolve the extension of " + name + " yet");
     }
 
     private static Path repoFile(String relativeFromRepoRoot) {
@@ -172,6 +172,6 @@ class FixtureCorpusSmokeTest {
     }
 
     private static Synthesizer noRealSynthesizerNeeded() {
-        throw new UnsupportedOperationException("este test no exporta WAVE, no deberia pedir sintetizador");
+        throw new UnsupportedOperationException("this test does not export WAVE, it should not ask for a synthesizer");
     }
 }

@@ -569,25 +569,25 @@ final class AuditSupport {
         MainFrame menuFrame = newFrame(viaMenu);
         try {
             JMenuItem item = findMenuItem(menuFrame.getJMenuBar(), menuItemLabel);
-            assertNotNull(item, "no encontre en el menu real el item \"" + menuItemLabel + "\"");
+            assertNotNull(item, "could not find the item \"" + menuItemLabel + "\" in the real menu");
             KeyStroke accelerator = item.getAccelerator();
-            assertNotNull(accelerator, "\"" + menuItemLabel + "\" no tiene acelerador en el menu real");
+            assertNotNull(accelerator, "\"" + menuItemLabel + "\" has no accelerator in the real menu");
 
             ModelSnapshot before = snapshot(viaMenu);
             SwingUtilities.invokeAndWait(item::doClick);
             ModelSnapshot afterMenu = snapshot(viaMenu);
             assertNotEquals(before, afterMenu,
-                    "\"" + menuItemLabel + "\" por menu no cambio nada, no sirve de referencia");
+                    "\"" + menuItemLabel + "\" via menu changed nothing, it is not a useful reference");
 
             Editor viaKey = setup.get();
             MainFrame keyFrame = newFrame(viaKey);
             try {
                 var canvas = findComponent(keyFrame.getContentPane(), com.gstncaruso.tabpro.ui.score.ScoreCanvas.class);
-                assertNotNull(canvas, "no encontre el ScoreCanvas real en la ventana");
+                assertNotNull(canvas, "could not find the real ScoreCanvas in the window");
                 pressKey(canvas, accelerator);
                 ModelSnapshot afterKey = snapshot(viaKey);
                 assertEquals(afterMenu, afterKey,
-                        "el atajo de \"" + menuItemLabel + "\" no produjo el mismo efecto que su menu");
+                        "the shortcut for \"" + menuItemLabel + "\" did not produce the same effect as its menu");
             } finally {
                 dispose(keyFrame);
             }
@@ -649,7 +649,7 @@ final class AuditSupport {
                     onOpen.accept(dialog);
                     if (dialog.isVisible()) {
                         throw new AssertionError(
-                                "el callback de withDialog dejo el dialogo abierto: llamale dispose() antes de terminar");
+                                "the withDialog callback left the dialog open: call dispose() before finishing");
                     }
                 } catch (Throwable thrown) {
                     failure.set(thrown);
@@ -662,7 +662,7 @@ final class AuditSupport {
         try {
             SwingUtilities.invokeAndWait(trigger::run);
             if (!opened.await(5, TimeUnit.SECONDS)) {
-                throw new AssertionError("el dialogo nunca abrio una ventana (WINDOW_OPENED)");
+                throw new AssertionError("the dialog never opened a window (WINDOW_OPENED)");
             }
         } finally {
             Toolkit.getDefaultToolkit().removeAWTEventListener(listener);
@@ -703,7 +703,7 @@ final class AuditSupport {
         try {
             SwingUtilities.invokeLater(trigger::run);
             if (!opened.await(timeoutMillis, TimeUnit.MILLISECONDS)) {
-                throw new AssertionError("el dialogo nunca abrio una ventana (WINDOW_OPENED)");
+                throw new AssertionError("the dialog never opened a window (WINDOW_OPENED)");
             }
             return captured[0];
         } finally {
@@ -798,12 +798,12 @@ final class AuditSupport {
     private static final class NoScoreFiles implements ScoreFiles {
         @Override
         public Score load(Path path) {
-            throw new UnsupportedOperationException("la auditoria no toca el disco");
+            throw new UnsupportedOperationException("the audit does not touch the disk");
         }
 
         @Override
         public void save(Score score, Path path) {
-            throw new UnsupportedOperationException("la auditoria no toca el disco");
+            throw new UnsupportedOperationException("the audit does not touch the disk");
         }
     }
 

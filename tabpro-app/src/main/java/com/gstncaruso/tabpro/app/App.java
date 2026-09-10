@@ -61,7 +61,7 @@ public class App {
             Sequencer sequencer = MidiSystem.getSequencer();
             return Optional.of(new MidiPlayer(sequencer, soundBank::receiverForPort));
         } catch (MidiUnavailableException e) {
-            System.err.println("MIDI no disponible, la reproducción quedará silenciada: " + e.getMessage());
+            System.err.println("MIDI unavailable, playback will stay silent: " + e.getMessage());
             return Optional.empty();
         }
     }
@@ -70,7 +70,7 @@ public class App {
         try {
             return soundBank.freshSynthesizer();
         } catch (MidiUnavailableException e) {
-            throw new IllegalStateException("No hay sintetizador disponible para exportar WAVE.", e);
+            throw new IllegalStateException("No synthesizer available to export WAVE.", e);
         }
     }
 

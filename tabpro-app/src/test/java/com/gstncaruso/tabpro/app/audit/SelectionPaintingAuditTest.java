@@ -28,7 +28,7 @@ class SelectionPaintingAuditTest {
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl A"));
 
             assertTrue(canvas.selection().isPresent(),
-                    "Ctrl+A, despachado de verdad sobre el lienzo, tiene que dejar algo para pintar");
+                    "Ctrl+A, really dispatched on the canvas, must leave something to paint");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -45,7 +45,7 @@ class SelectionPaintingAuditTest {
             pressKey(canvas, KeyStroke.getKeyStroke("RIGHT"));
 
             assertTrue(canvas.selection().isEmpty(),
-                    "una flecha sin Shift, despachada de verdad, tiene que limpiar lo que dejo Ctrl+A");
+                    "an arrow without Shift, really dispatched, must clear what Ctrl+A left");
         } finally {
             AuditSupport.dispose(frame);
         }

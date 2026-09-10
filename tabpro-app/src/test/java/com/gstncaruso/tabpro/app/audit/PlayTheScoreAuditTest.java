@@ -32,19 +32,19 @@ class PlayTheScoreAuditTest {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
 
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Reproducir / Detener");
-            assertNotNull(item, "no encontre 'Reproducir / Detener' en el menu real");
+            assertNotNull(item, "could not find 'Reproducir / Detener' in the real menu");
             assertEquals(KeyStroke.getKeyStroke("SPACE"), item.getAccelerator());
 
-            assertFalse(player.playCalled(), "todavia no se apreto nada");
+            assertFalse(player.playCalled(), "nothing was pressed yet");
 
             pressKey(canvas, KeyStroke.getKeyStroke("SPACE"));
             assertTrue(player.playCalled(),
-                    "Espacio, despachado de verdad sobre el lienzo, tiene que arrancar la reproduccion real");
+                    "Space, really dispatched on the canvas, must start real playback");
             assertTrue(player.isPlaying());
 
             pressKey(canvas, KeyStroke.getKeyStroke("SPACE"));
             assertTrue(player.stopCalled(),
-                    "el segundo Espacio tiene que frenar la reproduccion real que arranco el primero");
+                    "the second Space must stop the real playback started by the first one");
             assertFalse(player.isPlaying());
         } finally {
             AuditSupport.dispose(frame);
@@ -62,13 +62,13 @@ class PlayTheScoreAuditTest {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
 
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Reproducir desde el principio");
-            assertNotNull(item, "no encontre 'Reproducir desde el principio' en el menu real");
+            assertNotNull(item, "could not find 'Reproducir desde el principio' in the real menu");
             assertEquals(KeyStroke.getKeyStroke("ctrl SPACE"), item.getAccelerator());
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl SPACE"));
 
             assertTrue(player.playCalled(),
-                    "Ctrl+Espacio, despachado de verdad, tiene que arrancar la reproduccion real desde el principio");
+                    "Ctrl+Space, really dispatched, must start real playback from the beginning");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -83,12 +83,12 @@ class PlayTheScoreAuditTest {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
 
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Loop / Entrenador de velocidad…");
-            assertNotNull(item, "no encontre 'Loop / Entrenador de velocidad…' en el menu real");
+            assertNotNull(item, "could not find 'Loop / Entrenador de velocidad…' in the real menu");
             assertEquals(KeyStroke.getKeyStroke("F9"), item.getAccelerator());
 
             boolean openedADialog = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("F9"), 800);
 
-            assertTrue(openedADialog, "F9, despachado de verdad sobre el lienzo, tiene que abrir el dialogo real");
+            assertTrue(openedADialog, "F9, really dispatched on the canvas, must open the real dialog");
         } finally {
             AuditSupport.dispose(frame);
         }

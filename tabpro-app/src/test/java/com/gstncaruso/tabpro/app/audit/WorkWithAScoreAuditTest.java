@@ -35,7 +35,7 @@ class WorkWithAScoreAuditTest {
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Agregar una pista…");
-            assertNotNull(item, "no encontre 'Agregar una pista…' en el menu real");
+            assertNotNull(item, "could not find 'Agregar una pista…' in the real menu");
             assertEquals(KeyStroke.getKeyStroke("ctrl shift INSERT"), item.getAccelerator());
 
             int tracksBefore = editor.score().trackCount();
@@ -44,23 +44,23 @@ class WorkWithAScoreAuditTest {
                     System.currentTimeMillis(), KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK,
                     KeyEvent.VK_INSERT, KeyEvent.CHAR_UNDEFINED)), dialog -> {
                 JTextField name = findComponent(dialog, JTextField.class);
-                assertNotNull(name, "no encontre el campo de texto real del nombre");
-                name.setText("Batería nueva");
+                assertNotNull(name, "could not find the real name text field");
+                name.setText("New Drums");
 
                 JRadioButton percussion = AuditSupport.findRadioButton(dialog, "Percusión");
-                assertNotNull(percussion, "no encontre el radio button real de Percusión");
+                assertNotNull(percussion, "could not find the real Percusión radio button");
                 percussion.doClick();
 
                 findButton(dialog, "Aceptar").doClick();
             });
 
             assertEquals(tracksBefore + 1, editor.score().trackCount(),
-                    "el atajo real tiene que agregar una pista al modelo");
+                    "the real shortcut must add a track to the model");
             var newTrack = editor.score().track(editor.score().trackCount() - 1);
-            assertEquals("Batería nueva", newTrack.name(),
-                    "el nombre tecleado en el campo real tiene que ser el de la pista nueva");
+            assertEquals("New Drums", newTrack.name(),
+                    "what was typed in the real field must be the new track's name");
             assertTrue(newTrack.settings().percussion(),
-                    "el radio button real de Percusión tiene que dejar la pista como percusion");
+                    "the real Percusión radio button must leave the track as percussion");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -72,18 +72,18 @@ class WorkWithAScoreAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Propiedades de la pista…");
-            assertNotNull(item, "no encontre 'Propiedades de la pista…' en el menu real");
+            assertNotNull(item, "could not find 'Propiedades de la pista…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 JTextField name = findComponent(dialog, JTextField.class);
-                assertNotNull(name, "no encontre el campo de texto real del nombre de la pista");
-                name.setText("Guitarra renombrada");
+                assertNotNull(name, "could not find the real track name text field");
+                name.setText("Renamed Guitar");
 
                 findButton(dialog, "Aceptar").doClick();
             });
 
-            assertEquals("Guitarra renombrada", editor.score().track(0).name(),
-                    "el nombre tecleado en el campo real del dialogo tiene que quedar en el modelo");
+            assertEquals("Renamed Guitar", editor.score().track(0).name(),
+                    "what was typed in the real dialog's field must end up in the model");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -95,21 +95,21 @@ class WorkWithAScoreAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             assertFalse(editor.score().track(0).settings().display().tuningLegend(),
-                    "una pista nueva no muestra los nombres de cuerda por defecto");
+                    "a new track does not show the string names by default");
 
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Propiedades de la pista…");
-            assertNotNull(item, "no encontre 'Propiedades de la pista…' en el menu real");
+            assertNotNull(item, "could not find 'Propiedades de la pista…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 JCheckBox tuning = AuditSupport.findCheckBox(dialog, "Afinación");
-                assertNotNull(tuning, "no encontre la casilla real 'Afinación'");
+                assertNotNull(tuning, "could not find the real 'Afinación' checkbox");
                 tuning.doClick();
 
                 findButton(dialog, "Aceptar").doClick();
             });
 
             assertTrue(editor.score().track(0).settings().display().tuningLegend(),
-                    "tildar 'Afinación' en el dialogo real tiene que prender la leyenda en el modelo real");
+                    "checking 'Afinación' in the real dialog must turn on the real model's legend");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -121,21 +121,21 @@ class WorkWithAScoreAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             assertFalse(editor.score().track(0).settings().forceChannels11to16(),
-                    "una pista nueva no fuerza los canales 11 a 16 por defecto");
+                    "a new track does not force channels 11 to 16 by default");
 
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Propiedades de la pista…");
-            assertNotNull(item, "no encontre 'Propiedades de la pista…' en el menu real");
+            assertNotNull(item, "could not find 'Propiedades de la pista…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 JCheckBox forceChannels = AuditSupport.findCheckBox(dialog, "Forzar canales 11 a 16");
-                assertNotNull(forceChannels, "no encontre la casilla real 'Forzar canales 11 a 16'");
+                assertNotNull(forceChannels, "could not find the real 'Forzar canales 11 a 16' checkbox");
                 forceChannels.doClick();
 
                 findButton(dialog, "Aceptar").doClick();
             });
 
             assertTrue(editor.score().track(0).settings().forceChannels11to16(),
-                    "tildar 'Forzar canales 11 a 16' en el dialogo real tiene que prenderlo en el modelo real");
+                    "checking 'Forzar canales 11 a 16' in the real dialog must turn it on in the real model");
         } finally {
             AuditSupport.dispose(frame);
         }

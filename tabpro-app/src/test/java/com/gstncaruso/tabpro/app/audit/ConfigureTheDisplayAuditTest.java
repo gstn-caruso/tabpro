@@ -38,15 +38,15 @@ class ConfigureTheDisplayAuditTest {
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl EQUALS"));
             Zoom zoomedIn = canvas.zoom();
-            assertNotEquals(initial, zoomedIn, "Ctrl+ tiene que acercar el zoom real del lienzo");
+            assertNotEquals(initial, zoomedIn, "Ctrl+ must zoom in the real canvas zoom");
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl MINUS"));
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl MINUS"));
             Zoom zoomedOut = canvas.zoom();
-            assertNotEquals(zoomedIn, zoomedOut, "Ctrl- tiene que alejar el zoom real del lienzo");
+            assertNotEquals(zoomedIn, zoomedOut, "Ctrl- must zoom out the real canvas zoom");
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl 0"));
-            assertEquals(Zoom.whole(), canvas.zoom(), "Ctrl+0 tiene que volver el zoom real al 100%");
+            assertEquals(Zoom.whole(), canvas.zoom(), "Ctrl+0 must bring the real zoom back to 100%");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -58,19 +58,19 @@ class ConfigureTheDisplayAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             TrackPanel trackPanel = findComponent(frame.getContentPane(), TrackPanel.class);
-            assertNotNull(trackPanel, "no encontre el TrackPanel real");
-            assertEquals(true, trackPanel.isVisible(), "la mesa de mezcla arranca visible al abrir la ventana");
+            assertNotNull(trackPanel, "could not find the real TrackPanel");
+            assertEquals(true, trackPanel.isVisible(), "the mixing console starts visible when the window opens");
 
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Mesa de mezcla");
-            assertNotNull(item, "no encontre 'Mesa de mezcla' en el menu real");
+            assertNotNull(item, "could not find 'Mesa de mezcla' in the real menu");
 
             SwingUtilities.invokeAndWait(item::doClick);
             assertEquals(false, trackPanel.isVisible(),
-                    "el menu real tiene que esconder el TrackPanel real");
+                    "the real menu must hide the real TrackPanel");
 
             SwingUtilities.invokeAndWait(item::doClick);
             assertEquals(true, trackPanel.isVisible(),
-                    "el menu real tiene que volver a mostrar el TrackPanel real");
+                    "the real menu must show the real TrackPanel again");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -83,13 +83,13 @@ class ConfigureTheDisplayAuditTest {
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             BeatViews beatViews = findComponent(frame.getContentPane(), BeatViews.class);
-            assertNotNull(beatViews, "no encontre el BeatViews real");
+            assertNotNull(beatViews, "could not find the real BeatViews");
             boolean before = beatViews.isFretboardVisible();
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl 3"));
 
             assertEquals(!before, beatViews.isFretboardVisible(),
-                    "Ctrl+3, despachado de verdad, tiene que alternar el diapason real");
+                    "Ctrl+3, really dispatched, must toggle the real fretboard");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -106,14 +106,14 @@ class ConfigureTheDisplayAuditTest {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             BeatViews beatViews = findComponent(frame.getContentPane(), BeatViews.class);
             assertEquals(false, beatViews.isFretboardVisible(),
-                    "la ventana real tiene que arrancar con el diapason cerrado, como en Guitar Pro 5");
+                    "the real window must start with the fretboard closed, as in Guitar Pro 5");
             assertEquals(false, beatViews.isKeyboardVisible(),
-                    "la ventana real tiene que arrancar con el teclado cerrado, como en Guitar Pro 5");
+                    "the real window must start with the keyboard closed, as in Guitar Pro 5");
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl 3"));
 
             assertEquals(true, beatViews.isFretboardVisible(),
-                    "Ctrl+3, despachado de verdad, tiene que abrir el diapason real desde cerrado");
+                    "Ctrl+3, really dispatched, must open the real fretboard from closed");
         } finally {
             preferences.setFretboardVisible(false);
             AuditSupport.dispose(frame);
@@ -145,9 +145,9 @@ class ConfigureTheDisplayAuditTest {
         try {
             BeatViews secondBeatViews = findComponent(secondFrame.getContentPane(), BeatViews.class);
             assertEquals(false, secondBeatViews.isFretboardVisible(),
-                    "una ventana nueva tiene que respetar que el diapason quedo cerrado la vez anterior");
+                    "a new window must respect that the fretboard was left closed last time");
             assertEquals(false, secondBeatViews.isKeyboardVisible(),
-                    "una ventana nueva tiene que respetar que el teclado quedo cerrado la vez anterior");
+                    "a new window must respect that the keyboard was left closed last time");
         } finally {
             preferences.setFretboardVisible(false);
             preferences.setKeyboardVisible(false);
@@ -166,20 +166,20 @@ class ConfigureTheDisplayAuditTest {
                 pressKey(canvas, KeyStroke.getKeyStroke("ctrl 3"));
             }
             JButton close = AuditSupport.findButtonByAccessibleName(frame.getContentPane(), "Cerrar diapasón");
-            assertNotNull(close, "no encontre la ✕ real del diapason");
-            assertEquals(true, close.isShowing(), "el diapason tiene que estar abierto para poder cerrarlo con la ✕");
+            assertNotNull(close, "could not find the real fretboard ✕");
+            assertEquals(true, close.isShowing(), "the fretboard must be open to be able to close it with the ✕");
             assertEquals(true, AuditSupport.requestFocusAndAwait(close, 2000),
-                    "no pude poner el foco en la ✕ real antes de clickearla");
+                    "could not put focus on the real ✕ before clicking it");
             boolean before = beatViews.isFretboardVisible();
             java.util.concurrent.CountDownLatch focusBackOnTheScore = focusGainedLatch(canvas);
 
             SwingUtilities.invokeAndWait(close::doClick);
 
             assertEquals(!before, beatViews.isFretboardVisible(),
-                    "la ✕ real tiene que hacer lo mismo que Ver > Diapasón");
+                    "the real ✕ must do the same as Ver > Diapasón");
             assertEquals(true,
                     focusBackOnTheScore.await(2, java.util.concurrent.TimeUnit.SECONDS),
-                    "la ✕ real tiene que devolver el foco a la partitura, igual que el comando del menu");
+                    "the real ✕ must return focus to the score, same as the menu command");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -196,20 +196,20 @@ class ConfigureTheDisplayAuditTest {
                 pressKey(canvas, KeyStroke.getKeyStroke("ctrl 4"));
             }
             JButton close = AuditSupport.findButtonByAccessibleName(frame.getContentPane(), "Cerrar teclado");
-            assertNotNull(close, "no encontre la ✕ real del teclado");
-            assertEquals(true, close.isShowing(), "el teclado tiene que estar abierto para poder cerrarlo con la ✕");
+            assertNotNull(close, "could not find the real keyboard ✕");
+            assertEquals(true, close.isShowing(), "the keyboard must be open to be able to close it with the ✕");
             assertEquals(true, AuditSupport.requestFocusAndAwait(close, 2000),
-                    "no pude poner el foco en la ✕ real antes de clickearla");
+                    "could not put focus on the real ✕ before clicking it");
             boolean before = beatViews.isKeyboardVisible();
             java.util.concurrent.CountDownLatch focusBackOnTheScore = focusGainedLatch(canvas);
 
             SwingUtilities.invokeAndWait(close::doClick);
 
             assertEquals(!before, beatViews.isKeyboardVisible(),
-                    "la ✕ real tiene que hacer lo mismo que Ver > Teclado");
+                    "the real ✕ must do the same as Ver > Teclado");
             assertEquals(true,
                     focusBackOnTheScore.await(2, java.util.concurrent.TimeUnit.SECONDS),
-                    "la ✕ real tiene que devolver el foco a la partitura, igual que el comando del menu");
+                    "the real ✕ must return focus to the score, same as the menu command");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -221,15 +221,15 @@ class ConfigureTheDisplayAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
-            assertNotEquals(ViewMode.PAGE, canvas.viewMode(), "no arranca ya en modo pagina");
+            assertNotEquals(ViewMode.PAGE, canvas.viewMode(), "does not start in page mode already");
 
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Modo página");
-            assertNotNull(item, "no encontre 'Modo página' en el menu real");
+            assertNotNull(item, "could not find 'Modo página' in the real menu");
 
             SwingUtilities.invokeAndWait(item::doClick);
 
             assertEquals(ViewMode.PAGE, canvas.viewMode(),
-                    "el menu real tiene que dejar el canvas real en modo pagina");
+                    "the real menu must leave the real canvas in page mode");
         } finally {
             AuditSupport.dispose(frame);
         }

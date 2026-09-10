@@ -33,24 +33,24 @@ class AddLyricsAndMarkersAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Información de la partitura…");
-            assertNotNull(item, "no encontre 'Información de la partitura…' en el menu real");
+            assertNotNull(item, "could not find 'Información de la partitura…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 Container lyricsTab = tabContent(dialog, "Letra");
-                assertNotNull(lyricsTab, "no encontre la solapa real 'Letra'");
+                assertNotNull(lyricsTab, "could not find the real 'Letra' tab");
 
                 Container firstLineTab = tabContent(lyricsTab, "Línea 1");
-                assertNotNull(firstLineTab, "no encontre la pestaña real de la linea 1");
+                assertNotNull(firstLineTab, "could not find the real tab for line 1");
 
                 var areas = findComponents(firstLineTab, JTextArea.class);
-                assertTrue(areas.size() >= 1, "no encontre el area real de texto de la primer linea");
-                areas.get(0).setText("Hola mundo");
+                assertTrue(areas.size() >= 1, "could not find the real text area for the first line");
+                areas.get(0).setText("Hello world");
 
                 findButton(dialog, "Aceptar").doClick();
             });
 
-            assertEquals("Hola mundo", editor.score().lyrics().line(0).text(),
-                    "lo tecleado en el campo real de la primer linea tiene que quedar en el modelo");
+            assertEquals("Hello world", editor.score().lyrics().line(0).text(),
+                    "what was typed in the real field for the first line must end up in the model");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -62,22 +62,22 @@ class AddLyricsAndMarkersAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Insertar un marcador…");
-            assertNotNull(item, "no encontre 'Insertar un marcador…' en el menu real");
-            assertTrue(editor.score().attributesOf(0).marker().isEmpty(), "el compas arranca sin marcador");
+            assertNotNull(item, "could not find 'Insertar un marcador…' in the real menu");
+            assertTrue(editor.score().attributesOf(0).marker().isEmpty(), "the bar starts without a marker");
 
             withDialog(item::doClick, dialog -> {
                 JTextField name = AuditSupport.findComponent(dialog, JTextField.class);
-                assertNotNull(name, "no encontre el campo real de nombre del marcador");
-                name.setText("Estribillo");
+                assertNotNull(name, "could not find the real marker name field");
+                name.setText("Chorus");
 
                 findButton(dialog, "Insertar aquí").doClick();
                 findButton(dialog, "Cerrar").doClick();
             });
 
             var marker = editor.score().attributesOf(0).marker();
-            assertTrue(marker.isPresent(), "el boton real 'Insertar aquí' tiene que dejar un marcador en el modelo");
-            assertEquals("Estribillo", marker.get().name(),
-                    "el nombre tecleado en el campo real tiene que ser el del marcador");
+            assertTrue(marker.isPresent(), "the real 'Insertar aquí' button must leave a marker in the model");
+            assertEquals("Chorus", marker.get().name(),
+                    "what was typed in the real field must be the marker's name");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -90,21 +90,21 @@ class AddLyricsAndMarkersAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Editar el marcador…");
-            assertNotNull(item, "no encontre 'Editar el marcador…' en el menu real");
+            assertNotNull(item, "could not find 'Editar el marcador…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 JTextField name = AuditSupport.findComponent(dialog, JTextField.class);
-                assertNotNull(name, "no encontre el campo real de nombre del marcador");
-                name.setText("Estribillo");
+                assertNotNull(name, "could not find the real marker name field");
+                name.setText("Chorus");
 
                 findButton(dialog, "Guardar cambios").doClick();
                 findButton(dialog, "Cerrar").doClick();
             });
 
             var marker = editor.score().attributesOf(0).marker();
-            assertTrue(marker.isPresent(), "el boton real 'Guardar cambios' tiene que dejar el marcador en el modelo");
-            assertEquals("Estribillo", marker.get().name(),
-                    "el nombre editado en el campo real tiene que quedar en el modelo");
+            assertTrue(marker.isPresent(), "the real 'Guardar cambios' button must leave the marker in the model");
+            assertEquals("Chorus", marker.get().name(),
+                    "what was edited in the real field must end up in the model");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -117,11 +117,11 @@ class AddLyricsAndMarkersAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Lista de marcadores…");
-            assertNotNull(item, "no encontre 'Lista de marcadores…' en el menu real");
+            assertNotNull(item, "could not find 'Lista de marcadores…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 JTable table = AuditSupport.findComponent(dialog, JTable.class);
-                assertNotNull(table, "no encontre la tabla real de marcadores");
+                assertNotNull(table, "could not find the real markers table");
                 table.setRowSelectionInterval(0, 0);
 
                 findButton(dialog, "Borrar").doClick();
@@ -129,7 +129,7 @@ class AddLyricsAndMarkersAuditTest {
             });
 
             assertTrue(editor.score().attributesOf(0).marker().isEmpty(),
-                    "el boton real 'Borrar' tiene que quitar el marcador del modelo");
+                    "the real 'Borrar' button must remove the marker from the model");
         } finally {
             AuditSupport.dispose(frame);
         }

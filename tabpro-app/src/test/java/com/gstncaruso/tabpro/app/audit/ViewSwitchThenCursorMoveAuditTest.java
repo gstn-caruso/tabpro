@@ -36,7 +36,7 @@ class ViewSwitchThenCursorMoveAuditTest {
             clickMenu(frame, "Modo página");
 
             assertDoesNotThrow(editor::moveToLastMeasure,
-                    "mover el cursor justo despues de cambiar de vista no tiene que tirar");
+                    "moving the cursor right after switching views must not throw");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -44,7 +44,7 @@ class ViewSwitchThenCursorMoveAuditTest {
 
     private static void clickMenu(MainFrame frame, String label) throws Exception {
         JMenuItem item = findMenuItem(frame.getJMenuBar(), label);
-        assertNotNull(item, "no encontre '" + label + "' en el menu real");
+        assertNotNull(item, "could not find '" + label + "' in the real menu");
         SwingUtilities.invokeAndWait(item::doClick);
     }
 

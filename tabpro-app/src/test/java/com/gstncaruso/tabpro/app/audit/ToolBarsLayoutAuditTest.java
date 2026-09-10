@@ -41,20 +41,20 @@ class ToolBarsLayoutAuditTest {
             while (scoreArea != null && !(scoreArea.getLayout() instanceof BorderLayout)) {
                 scoreArea = scoreArea.getParent();
             }
-            assertNotNull(scoreArea, "no encontre el panel de la partitura armado con BorderLayout");
+            assertNotNull(scoreArea, "could not find the score panel built with BorderLayout");
 
             Component south = ((BorderLayout) scoreArea.getLayout()).getLayoutComponent(BorderLayout.SOUTH);
             assertTrue(south instanceof JToolBar,
-                    "abajo de la partitura tiene que haber una barra de herramientas real");
+                    "there must be a real toolbar below the score");
             assertNotNull(findButtonByActionName((Container) south, "Nota muerta"),
-                    "la barra de abajo de la partitura tiene que ser la de efectos, no otra");
+                    "the bar below the score must be the effects one, not another one");
 
             TrackPanel mixTable = findComponent(frame.getContentPane(), TrackPanel.class);
-            assertNotNull(mixTable, "no encontre la mesa de mezcla real");
+            assertNotNull(mixTable, "could not find the real mixing console");
             javax.swing.JSplitPane split = findComponent(frame.getContentPane(), javax.swing.JSplitPane.class);
-            assertNotNull(split, "no encontre el split que reparte la partitura y la mesa de mezcla");
+            assertNotNull(split, "could not find the split that divides the score and the mixing console");
             assertTrue(split.getBottomComponent() == mixTable,
-                    "la mesa de mezcla tiene que quedar en la otra mitad del split, despues de la partitura");
+                    "the mixing console must be in the other half of the split, after the score");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -66,18 +66,18 @@ class ToolBarsLayoutAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JToolBar documentBar = toolBarContaining(frame.getContentPane(), "Nuevo");
-            assertTrue(documentBar.isVisible(), "la fila de documento arranca visible");
+            assertTrue(documentBar.isVisible(), "the document row starts visible");
 
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Documento y edición");
-            assertNotNull(item, "no encontre 'Documento y edición' en Ver > Menus y barras");
+            assertNotNull(item, "could not find 'Documento y edición' in Ver > Menus y barras");
 
             SwingUtilities.invokeAndWait(item::doClick);
             assertEquals(false, documentBar.isVisible(),
-                    "el menu real tiene que esconder la fila de documento real");
+                    "the real menu must hide the real document row");
 
             SwingUtilities.invokeAndWait(item::doClick);
             assertEquals(true, documentBar.isVisible(),
-                    "el menu real tiene que volver a mostrar la fila de documento real");
+                    "the real menu must show the real document row again");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -90,15 +90,15 @@ class ToolBarsLayoutAuditTest {
         com.gstncaruso.tabpro.ui.Preferences preferences = new com.gstncaruso.tabpro.ui.Preferences();
         try {
             JToolBar effectsBar = toolBarContaining(frame.getContentPane(), "Nota muerta");
-            assertTrue(effectsBar.isVisible(), "la barra de efectos arranca visible");
+            assertTrue(effectsBar.isVisible(), "the effects bar starts visible");
 
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Efectos");
-            assertNotNull(item, "no encontre 'Efectos' en Ver > Menus y barras");
+            assertNotNull(item, "could not find 'Efectos' in Ver > Menus y barras");
 
             SwingUtilities.invokeAndWait(item::doClick);
-            assertEquals(false, effectsBar.isVisible(), "el menu real tiene que esconder la barra de efectos real");
+            assertEquals(false, effectsBar.isVisible(), "the real menu must hide the real effects bar");
             assertEquals(false, preferences.effectsToolBarVisible(),
-                    "esconderla desde el menu tiene que quedar guardado en las preferencias");
+                    "hiding it from the menu must be saved in the preferences");
 
             SwingUtilities.invokeAndWait(item::doClick);
             assertEquals(true, effectsBar.isVisible());
@@ -111,7 +111,7 @@ class ToolBarsLayoutAuditTest {
 
     private JToolBar toolBarContaining(Container root, String actionLabel) {
         JButton button = findButtonByActionName(root, actionLabel);
-        assertNotNull(button, "no encontre ningun boton real de accion \"" + actionLabel + "\"");
+        assertNotNull(button, "could not find any real action button \"" + actionLabel + "\"");
         Container parent = button.getParent();
         while (parent != null && !(parent instanceof JToolBar)) {
             parent = parent.getParent();

@@ -33,14 +33,14 @@ class WriteAScoreAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
-            assertNotNull(canvas, "no encontre el ScoreCanvas real en la ventana");
+            assertNotNull(canvas, "could not find the real ScoreCanvas in the window");
 
-            assertEquals(java.util.Optional.empty(), editor.currentNote(), "el compas arranca en silencio");
+            assertEquals(java.util.Optional.empty(), editor.currentNote(), "the bar starts silent");
 
             typeChar(canvas, '3');
 
             assertEquals(3, editor.currentNote().orElseThrow().fret(),
-                    "el digito '3' tecleado sobre el lienzo real tiene que dejar el traste 3 en el modelo");
+                    "the digit '3' typed on the real canvas must leave fret 3 in the model");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -56,10 +56,10 @@ class WriteAScoreAuditTest {
             int initialString = editor.cursor().string();
             pressKey(canvas, KeyStroke.getKeyStroke("DOWN"));
             assertNotEquals(initialString, editor.cursor().string(),
-                    "la flecha Abajo, despachada de verdad sobre el lienzo, tiene que mover la cuerda del cursor");
+                    "the Down arrow, really dispatched on the canvas, must move the cursor's string");
 
             pressKey(canvas, KeyStroke.getKeyStroke("RIGHT"));
-            assertEquals(1, editor.cursor().beat(), "la flecha Derecha tiene que avanzar al beat siguiente");
+            assertEquals(1, editor.cursor().beat(), "the Right arrow must advance to the next beat");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -75,7 +75,7 @@ class WriteAScoreAuditTest {
             assertNotEquals(java.util.Optional.empty(), editor.currentNote());
             pressKey(canvas, KeyStroke.getKeyStroke("BACK_SPACE"));
             assertEquals(java.util.Optional.empty(), editor.currentNote(),
-                    "Backspace, tecla cruda de KeyboardEditing, tiene que borrar la nota del cursor");
+                    "Backspace, raw KeyboardEditing key, must delete the cursor's note");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -93,7 +93,7 @@ class WriteAScoreAuditTest {
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             assertNotNull(canvas.getInputMap(javax.swing.JComponent.WHEN_FOCUSED)
-                    .get(KeyStroke.getKeyStroke("TAB")), "KeyboardEditing tiene que declarar el binding de Tab");
+                    .get(KeyStroke.getKeyStroke("TAB")), "KeyboardEditing must declare the Tab binding");
 
             var initialNotation = editor.cursor().notation();
             int initialBar = editor.cursor().measure();
@@ -102,10 +102,10 @@ class WriteAScoreAuditTest {
             pressKey(canvas, KeyStroke.getKeyStroke("TAB"));
 
             assertNotEquals(initialNotation, editor.cursor().notation(),
-                    "Tab, despachado de verdad sobre el lienzo, tiene que alternar tablatura/pentagrama");
-            assertEquals(initialBar, editor.cursor().measure(), "Tab no tiene que mover el cursor de compas");
-            assertEquals(initialBeat, editor.cursor().beat(), "Tab no tiene que mover el cursor de beat");
-            assertEquals(initialString, editor.cursor().string(), "Tab no tiene que mover el cursor de cuerda");
+                    "Tab, really dispatched on the canvas, must toggle tablature/staff");
+            assertEquals(initialBar, editor.cursor().measure(), "Tab must not move the bar cursor");
+            assertEquals(initialBeat, editor.cursor().beat(), "Tab must not move the beat cursor");
+            assertEquals(initialString, editor.cursor().string(), "Tab must not move the string cursor");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -177,12 +177,12 @@ class WriteAScoreAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             var button = findButtonByActionName(frame.getContentPane(), "Negra");
-            assertNotNull(button, "no encontre en la barra real el boton de figura Negra");
+            assertNotNull(button, "could not find the Negra note value button in the real bar");
 
             SwingUtilities.invokeAndWait(button::doClick);
 
             assertEquals(com.gstncaruso.tabpro.core.model.NoteValue.QUARTER, editor.currentBeat().duration().value(),
-                    "el boton real de la barra tiene que dejar la figura en negra en el modelo");
+                    "the real toolbar button must leave the note value as a quarter note in the model");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -194,12 +194,12 @@ class WriteAScoreAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Corchea");
-            assertNotNull(item, "no encontre en el menu real el item de figura Corchea");
+            assertNotNull(item, "could not find the Corchea note value item in the real menu");
 
             SwingUtilities.invokeAndWait(item::doClick);
 
             assertEquals(com.gstncaruso.tabpro.core.model.NoteValue.EIGHTH, editor.currentBeat().duration().value(),
-                    "el item real del menu Nota tiene que dejar la figura en corchea en el modelo");
+                    "the real Nota menu item must leave the note value as an eighth note in the model");
         } finally {
             AuditSupport.dispose(frame);
         }

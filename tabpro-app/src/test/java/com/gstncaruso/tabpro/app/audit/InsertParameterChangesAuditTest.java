@@ -34,17 +34,17 @@ class InsertParameterChangesAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Cambio de parámetros…");
-            assertNotNull(item, "no encontre 'Cambio de parámetros…' en el menu real");
+            assertNotNull(item, "could not find 'Cambio de parámetros…' in the real menu");
             assertEquals(KeyStroke.getKeyStroke("F10"), item.getAccelerator());
 
             withDialog(item::doClick, dialog -> {
                 JCheckBox volume = findCheckBox(dialog, "Volumen");
-                assertNotNull(volume, "no encontre la casilla real de Volumen");
+                assertNotNull(volume, "could not find the real Volumen checkbox");
                 if (!volume.isSelected()) {
                     volume.doClick();
                 }
                 JSpinner spinner = findComponent(volume.getParent(), JSpinner.class);
-                assertNotNull(spinner, "no encontre el spinner real de Volumen");
+                assertNotNull(spinner, "could not find the real Volumen spinner");
                 spinner.setValue(50);
 
                 findButton(dialog, "Aceptar").doClick();
@@ -52,9 +52,9 @@ class InsertParameterChangesAuditTest {
 
             var change = editor.currentBeat().effects().parameterChange();
             assertTrue(change.changes(SoundParameter.VOLUME),
-                    "la casilla real tildada tiene que quedar marcada en el modelo");
+                    "the real checked checkbox must end up checked in the model");
             assertEquals(50, change.valueOf(SoundParameter.VOLUME).orElseThrow(),
-                    "el valor elegido en el spinner real tiene que ser el que quedo en el modelo");
+                    "the value chosen in the real spinner must be the one that ended up in the model");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -80,9 +80,9 @@ class InsertParameterChangesAuditTest {
             int selectionAfter = frame.getJMenuBar().getSelectionModel().getSelectedIndex();
             assertEquals(-1, selectionBefore);
             assertTrue(openedADialog,
-                    "F10 con la partitura enfocada tiene que abrir 'Cambio de parámetros'");
+                    "F10 with the score focused must open 'Cambio de parámetros'");
             assertEquals(-1, selectionAfter,
-                    "F10 no tiene que activar la barra de menus para navegarla con las flechas");
+                    "F10 must not activate the menu bar for arrow-key navigation");
         } finally {
             AuditSupport.dispose(frame);
         }

@@ -33,7 +33,7 @@ class ConfigureTheSoundAuditTest {
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Banco de sonido");
-            assertNotNull(item, "no encontre 'Banco de sonido' en el menu real");
+            assertNotNull(item, "could not find 'Banco de sonido' in the real menu");
             assertEquals(KeyStroke.getKeyStroke("F2"), item.getAccelerator());
 
             boolean before = devices.soundFontActive();
@@ -42,8 +42,8 @@ class ConfigureTheSoundAuditTest {
             pressKey(canvas, KeyStroke.getKeyStroke("F2"));
 
             assertEquals(togglesBefore + 1, devices.toggleCount(),
-                    "F2, despachado de verdad sobre el lienzo, tiene que llegar al Devices real");
-            assertEquals(!before, devices.soundFontActive(), "F2 tiene que alternar el banco de sonido real");
+                    "F2, really dispatched on the canvas, must reach the real Devices");
+            assertEquals(!before, devices.soundFontActive(), "F2 must toggle the real sound bank");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -57,14 +57,14 @@ class ConfigureTheSoundAuditTest {
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             JToggleButton button = AuditSupport.findToggleButtonByActionName(frame.getContentPane(), "Banco de sonido");
-            assertNotNull(button, "no encontre el boton conmutable real de 'Banco de sonido'");
+            assertNotNull(button, "could not find the real toggle button for 'Banco de sonido'");
             assertEquals(devices.soundFontActive(), button.isSelected(),
-                    "el boton tiene que arrancar mostrando el estado real del banco de sonido");
+                    "the button must start showing the real sound bank state");
             boolean before = button.isSelected();
 
             pressKey(canvas, KeyStroke.getKeyStroke("F2"));
 
-            assertEquals(!before, button.isSelected(), "F2 tiene que sincronizar el boton conmutable real");
+            assertEquals(!before, button.isSelected(), "F2 must sync the real toggle button");
             assertEquals(devices.soundFontActive(), button.isSelected());
         } finally {
             AuditSupport.dispose(frame);
@@ -77,18 +77,18 @@ class ConfigureTheSoundAuditTest {
         MainFrame frame = AuditSupport.newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Configuración del metrónomo…");
-            assertNotNull(item, "no encontre 'Configuración del metrónomo…' en el menu real");
+            assertNotNull(item, "could not find 'Configuración del metrónomo…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 JSlider volume = findComponent(dialog, JSlider.class);
-                assertNotNull(volume, "no encontre el slider real de Volumen");
+                assertNotNull(volume, "could not find the real Volumen slider");
                 volume.setValue(42);
 
                 findButton(dialog, "Aceptar").doClick();
             });
 
             assertEquals(42, frame.transport().metronomeVolume(),
-                    "el volumen elegido en el slider real tiene que llegar al Transport real");
+                    "the volume chosen in the real slider must reach the real Transport");
         } finally {
             AuditSupport.dispose(frame);
         }

@@ -65,7 +65,7 @@ class KeyboardShortcutsAuditTest {
                     java.util.Set.of("Primer compás", "Último compás", "Propiedades de la pista…",
                             "Configurar página…", "Marcador siguiente"),
                     java.util.Set.copyOf(collisions),
-                    "las cinco colisiones documentadas no cambiaron; si esto falla hay una nueva (o una que se arreglo)");
+                    "the five documented collisions did not change; if this fails there is a new one (or one that got fixed)");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -85,8 +85,8 @@ class KeyboardShortcutsAuditTest {
             boolean openedADialog = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("F6"), 800);
 
             assertTrue(openedADialog,
-                    "F6 con la partitura enfocada tiene que abrir 'Propiedades de la pista', "
-                            + "igual que el menu Pista > Propiedades");
+                    "F6 with the score focused must open 'Propiedades de la pista', "
+                            + "same as the menu Pista > Propiedades");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -106,8 +106,8 @@ class KeyboardShortcutsAuditTest {
             boolean openedADialog = dispatchKeyAndDetectDialog(canvas, KeyStroke.getKeyStroke("F8"), 800);
 
             assertTrue(openedADialog,
-                    "F8 con la partitura enfocada tiene que abrir 'Configurar página', "
-                            + "igual que el menu Archivo > Configurar página");
+                    "F8 with the score focused must open 'Configurar página', "
+                            + "same as the menu Archivo > Configurar página");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -179,7 +179,7 @@ class KeyboardShortcutsAuditTest {
             AuditSupport.pressKey(canvas, KeyStroke.getKeyStroke("ctrl G"));
 
             assertEquals(!before, canvas.graysTheInactiveVoice(),
-                    "Ctrl+G, despachado de verdad sobre el lienzo, tiene que alternar el atenuado real");
+                    "Ctrl+G, really dispatched on the canvas, must toggle the real graying");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -215,12 +215,12 @@ class KeyboardShortcutsAuditTest {
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             assertTrue(AuditSupport.requestFocusAndAwait(canvas, 2000),
-                    "la partitura nunca gano el foco real para arrancar el test");
+                    "the score never gained the real focus to start the test");
 
             boolean lostFocus = AuditSupport.pressKeyAndAwaitFocusLost(canvas, KeyStroke.getKeyStroke("ctrl F6"), 2000);
 
             assertTrue(lostFocus,
-                    "Ctrl+F6 con la partitura enfocada tiene que sacarle el foco de verdad");
+                    "Ctrl+F6 with the score focused must really take its focus away");
         } finally {
             AuditSupport.dispose(frame);
         }
