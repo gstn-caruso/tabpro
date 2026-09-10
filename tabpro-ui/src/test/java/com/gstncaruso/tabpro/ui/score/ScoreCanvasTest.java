@@ -215,6 +215,23 @@ class ScoreCanvasTest {
     }
 
     /**
+     * Como en Guitar Pro 5 y en cualquier editor: un clic sin Shift limpia cualquier seleccion
+     * vieja, aunque no arrastre a ningun lado.
+     */
+    @Test
+    void clickingSomewhereClearsAnyActiveSelection() {
+        Editor twoMeasures = editorWithTwoMeasures();
+        twoMeasures.selectAll();
+        ScoreCanvas canvasWithTwoMeasures = new ScoreCanvas(twoMeasures);
+        ScoreLayout layout = ScoreLayout.of(twoMeasures.score(), 900);
+        Rectangle firstBeat = layout.beatBounds(0, 0, 0);
+
+        press(canvasWithTwoMeasures, centerX(firstBeat), centerY(firstBeat), false);
+
+        assertTrue(canvasWithTwoMeasures.selection().isEmpty());
+    }
+
+    /**
      * El manual, en Using the Mouse: "Note > 0 to 30 (clic derecho sobre la tablatura)". El
      * menu tiene que ofrecer los trastes de la cuerda donde cayo el clic.
      */
