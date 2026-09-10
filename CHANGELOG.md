@@ -1,3 +1,9 @@
+## [0.44.0](https://github.com/gstn-caruso/tabpro/compare/v0.43.0...v0.44.0) (2026-09-10)
+
+### Features
+
+* **tracks:** la vista global tiene la regla de compases, los marcadores en rojo y la cabecera de Guitar Pro 5 ([#142](https://github.com/gstn-caruso/tabpro/issues/142)) ([32017ab](https://github.com/gstn-caruso/tabpro/commit/32017abca6aa25561cf02f3c2a474d6df8307986))
+
 ## [0.43.0](https://github.com/gstn-caruso/tabpro/compare/v0.42.0...v0.43.0) (2026-09-10)
 
 ### Features
