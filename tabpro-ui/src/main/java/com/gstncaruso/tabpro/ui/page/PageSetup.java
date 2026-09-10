@@ -17,7 +17,7 @@ public record PageSetup(
     public PageSetup {
         if (scorePercent < MIN_SCORE_PERCENT || scorePercent > MAX_SCORE_PERCENT) {
             throw new IllegalArgumentException(
-                    "scorePercent debe estar entre " + MIN_SCORE_PERCENT + " y " + MAX_SCORE_PERCENT + ": " + scorePercent);
+                    "scorePercent must be between " + MIN_SCORE_PERCENT + " and " + MAX_SCORE_PERCENT + ": " + scorePercent);
         }
         header = header == null ? PageBanner.header() : header;
         footer = footer == null ? PageBanner.footer() : footer;

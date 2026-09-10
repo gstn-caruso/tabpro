@@ -21,7 +21,7 @@ public final class TrackColors {
 
     public static Color of(int trackIndex) {
         if (trackIndex < 0) {
-            throw new IllegalArgumentException("trackIndex debe ser >= 0: " + trackIndex);
+            throw new IllegalArgumentException("trackIndex must be >= 0: " + trackIndex);
         }
         return PALETTE.get(trackIndex % COUNT);
     }

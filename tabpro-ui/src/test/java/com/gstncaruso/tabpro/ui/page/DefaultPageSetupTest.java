@@ -51,7 +51,7 @@ class DefaultPageSetupTest {
         PageSetup mine = new PageSetup(
                 PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, 100,
                 PageBanner.header()
-                        .with(PageElement.TITLE, true, "[%title] en vivo")
+                        .with(PageElement.TITLE, true, "[%title] live")
                         .with(PageElement.ALBUM, false, "[%album]"),
                 PageBanner.footer().with(PageElement.PAGE_NUMBER, true, "[%page]/[%pages]"));
 
@@ -63,7 +63,7 @@ class DefaultPageSetupTest {
     @Test
     void aSetupSavedInGibberishGoesBackToTheOneTabproShipsWith() {
         stored.save(PageSetup.defaults());
-        scratch.put("paperFormat", "papel de calcar");
+        scratch.put("paperFormat", "tracing paper");
 
         assertEquals(PageSetup.defaults(), stored.get());
     }

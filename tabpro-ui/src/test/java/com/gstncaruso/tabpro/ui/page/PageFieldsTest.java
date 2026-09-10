@@ -11,7 +11,7 @@ class PageFieldsTest {
 
     private static final ScoreInfo SULTANS = ScoreInfo.empty()
             .withTitle("Sultans of Swing")
-            .withSubtitle("En vivo en Alchemy")
+            .withSubtitle("Live at Alchemy")
             .withArtist("Dire Straits")
             .withAlbum("Dire Straits")
             .withMusicAuthor("Mark Knopfler")
@@ -38,7 +38,7 @@ class PageFieldsTest {
     void everyFieldOfTheScoreInformationHasItsValue() {
         PageFields fields = fieldsOf(SULTANS);
 
-        assertEquals("En vivo en Alchemy", fields.fillIn("[%subtitle]"));
+        assertEquals("Live at Alchemy", fields.fillIn("[%subtitle]"));
         assertEquals("Dire Straits", fields.fillIn("[%artist]"));
         assertEquals("Dire Straits", fields.fillIn("[%album]"));
         assertEquals("Mark Knopfler", fields.fillIn("[%words]"));

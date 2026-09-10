@@ -35,7 +35,7 @@ final class PdfDocument {
 
     void writeTo(OutputStream out) throws IOException {
         if (pages.isEmpty()) {
-            throw new IOException("no hay ninguna página para escribir");
+            throw new IOException("there is no page to write");
         }
         ByteArrayOutputStream body = new ByteArrayOutputStream();
         List<Integer> offsets = new ArrayList<>();

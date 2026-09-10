@@ -54,6 +54,6 @@ public record PageBanner(List<BannerLine> lines) {
         return lines.stream()
                 .filter(line -> line.element() == element)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("esta franja no tiene " + element));
+                .orElseThrow(() -> new IllegalArgumentException("this strip has no " + element));
     }
 }
