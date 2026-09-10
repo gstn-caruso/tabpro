@@ -4,10 +4,9 @@ import com.gstncaruso.tabpro.core.model.Channel;
 import java.util.List;
 
 /**
- * Escribe la tabla de 64 canales MIDI (4 puertos por 16 canales) que trae la cabecera del
- * archivo. El lector siempre asume el puerto 1: por eso el escritor solo usa el numero de
- * canal (1 a 16) como indice, y el puerto de cualquier otro valor se pierde en la
- * exportacion.
+ * Writes the table of 64 MIDI channels (4 ports of 16 channels) carried by the file
+ * header. The reader always assumes port 1, so the writer only uses the channel number
+ * (1 to 16) as an index, and any other port value is lost on export.
  */
 final class GuitarProChannelWriter {
 
@@ -19,7 +18,6 @@ final class GuitarProChannelWriter {
         }
     }
 
-    /** Un arreglo de 64 canales por defecto, con el sonido de cada pista puesto en su lugar. */
     static List<Channel> tableFor(com.gstncaruso.tabpro.core.model.Score score) {
         Channel[] table = new Channel[CHANNEL_COUNT];
         for (int i = 0; i < CHANNEL_COUNT; i++) {
@@ -32,12 +30,12 @@ final class GuitarProChannelWriter {
         return List.of(table);
     }
 
-    /** El archivo guarda cada perilla de la mesa en sus dieciseis pasos, no en los 0 a 127 de MIDI. */
+    /** The file stores each mixing-table knob in its sixteen steps, not MIDI's 0 to 127. */
     private static void writeKnob(GuitarProByteWriter writer, int midi) {
         writer.writeUnsignedByte(GuitarProMixerLevel.ofMidi(midi).step());
     }
 
-    /** En que casillero del arreglo de 64 canales cae esta pista: el lector solo mira el numero, no el puerto. */
+    /** Which slot of the 64-channel array this track falls into: the reader only looks at the number, not the port. */
     static int slotFor(Channel channel) {
         return Math.clamp(channel.number(), 1, Channel.CHANNELS_PER_PORT) - 1;
     }

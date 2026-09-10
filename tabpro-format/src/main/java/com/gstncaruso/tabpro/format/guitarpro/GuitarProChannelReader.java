@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Lee la tabla de 64 canales MIDI (4 puertos por 16 canales) que trae la
- * cabecera del archivo. Guitar Pro guarda -1 en un byte cuando un parametro
- * no se toco; lo tratamos como su valor por defecto.
+ * Reads the table of 64 MIDI channels (4 ports of 16 channels) carried by the file
+ * header. Guitar Pro stores -1 in a byte when a parameter was left untouched; it is
+ * treated here as its default value.
  */
 final class GuitarProChannelReader {
 
@@ -35,7 +35,7 @@ final class GuitarProChannelReader {
         return new GuitarProChannel(clampedProgram, volume, pan, chorus, reverb, phaser, tremolo);
     }
 
-    /** Cada perilla viene en sus dieciseis pasos, no en los 0 a 127 que maneja el modelo. */
+    /** Each knob comes in its sixteen steps, not in the 0 to 127 range the model uses. */
     private int effectByte(int value, int whenUnset) {
         return value == UNSET ? whenUnset : new GuitarProMixerLevel(value).midi();
     }

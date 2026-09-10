@@ -8,16 +8,10 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * La otra mitad de la escala de la mesa: el archivo espera las perillas en sus dieciseis
- * pasos, asi que escribir el valor de MIDI tal cual deja un archivo que ningun Guitar Pro
- * entiende.
- */
 class GuitarProChannelWriterTest {
 
     private static final int CHANNEL_COUNT = Channel.PORT_COUNT * Channel.CHANNELS_PER_PORT;
 
-    /** El instrumento ocupa los cuatro bytes previos a la primera perilla. */
     private static final int PROGRAM_BYTES = 4;
 
     private final GuitarProChannelWriter writer = new GuitarProChannelWriter();
