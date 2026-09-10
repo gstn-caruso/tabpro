@@ -117,7 +117,7 @@ class MusicXmlRoundTripTest {
     }
 
     @Test
-    void unCambioDeArmaduraAMitadDePiezaSobreviveElViajeDeIdaYVuelta(@TempDir Path folder) throws Exception {
+    void aKeySignatureChangeInTheMiddleOfThePieceSurvivesTheRoundTrip(@TempDir Path folder) throws Exception {
         Score score = scoreWithMeasures(measureInC(), measureInC(), measureInC())
                 .withKeySignatureFrom(2, new KeySignature(2, Mode.MAJOR));
         Path file = folder.resolve("prueba.musicxml");
@@ -131,7 +131,7 @@ class MusicXmlRoundTripTest {
     }
 
     @Test
-    void unCambioDeCompasAMitadDePiezaSobreviveElViajeDeIdaYVuelta(@TempDir Path folder) throws Exception {
+    void aTimeSignatureChangeInTheMiddleOfThePieceSurvivesTheRoundTrip(@TempDir Path folder) throws Exception {
         Score score = scoreWithMeasures(measureInC(), measureInC(), measureInC())
                 .withTimeSignatureFrom(2, new TimeSignature(3, 4));
         Path file = folder.resolve("prueba.musicxml");
