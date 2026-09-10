@@ -212,6 +212,18 @@ class KeyboardViewTest {
         assertEquals(OptionalInt.of(KeyboardView.LOWEST + 1), view.caretKey());
     }
 
+    @Test
+    void theEnterKeyNotifiesTheKeyUnderTheCaret() {
+        KeyboardView view = sized();
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+        List<Integer> activated = new java.util.ArrayList<>();
+        view.onCaretActivated(activated::add);
+
+        pressShortcut(view, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals(List.of(KeyboardView.LOWEST + 1), activated);
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));

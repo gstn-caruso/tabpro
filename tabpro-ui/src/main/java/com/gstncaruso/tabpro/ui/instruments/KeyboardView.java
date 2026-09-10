@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.function.IntConsumer;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
 import javax.swing.AbstractAction;
@@ -49,6 +50,8 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
     private Optional<Scale> scale = Optional.empty();
     private OptionalInt hovered = OptionalInt.empty();
     private int caretKey = LOWEST;
+    private IntConsumer onCaretActivated = key -> {
+    };
 
     public KeyboardView() {
         setOpaque(true);
@@ -67,6 +70,23 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         ActionMap actionMap = getActionMap();
         bindCaretMove(inputMap, actionMap, "RIGHT", 1);
         bindCaretMove(inputMap, actionMap, "LEFT", -1);
+        bindCaretActivation(inputMap, actionMap, "ENTER");
+    }
+
+    private void bindCaretActivation(InputMap inputMap, ActionMap actionMap, String keyStroke) {
+        String name = "keyboard.activate." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onCaretActivated.accept(caretKey);
+            }
+        });
+    }
+
+    /** Lo que se llama, con la tecla bajo el caret, cuando Enter o Espacio lo activan. */
+    public void onCaretActivated(IntConsumer listener) {
+        this.onCaretActivated = listener;
     }
 
     private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int delta) {
