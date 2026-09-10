@@ -1,10 +1,12 @@
 package com.gstncaruso.tabpro.ui.toolbar;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import java.lang.reflect.InvocationHandler;
@@ -28,6 +30,20 @@ class TrackSelectorTest {
 
         assertEquals(1, selector.trackButtons().size());
         assertTrue(selector.trackButtons().get(0).isSelected());
+    }
+
+    @Test
+    void variasPistasSoloLaActivaQuedaSeleccionada() {
+        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardGuitar("Guitarra 2"));
+        editor.selectTrack(1);
+
+        TrackSelector selector = new TrackSelector(editor, commands);
+
+        assertEquals(3, selector.trackButtons().size());
+        assertFalse(selector.trackButtons().get(0).isSelected());
+        assertTrue(selector.trackButtons().get(1).isSelected());
+        assertFalse(selector.trackButtons().get(2).isSelected());
     }
 
     @SuppressWarnings("unchecked")
