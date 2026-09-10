@@ -76,7 +76,6 @@ public final class MidiScoreImporter {
                 path, selectedMidiTrackIndices, transposeDownOneOctave, Optional.empty(), precision, useTwoChannelsPerTrack);
     }
 
-    /** Lo mismo, pero cuantizando tambien la posicion de cada acorde a la grilla elegida. */
     public Score importQuick(
             Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
             Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
@@ -118,7 +117,6 @@ public final class MidiScoreImporter {
                 path, midiTrackIndices, tuning, fretCount, transposeDownOneOctave, Optional.empty(), precision);
     }
 
-    /** Lo mismo, pero cuantizando tambien la posicion de cada acorde a la grilla elegida. */
     public List<Measure> importMeasures(
             Path path, List<Integer> midiTrackIndices, Tuning tuning, int fretCount, boolean transposeDownOneOctave,
             Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize) {
@@ -138,7 +136,6 @@ public final class MidiScoreImporter {
         return importInto(target, path, midiTrackIndices, transposeDownOneOctave, Optional.empty(), precision);
     }
 
-    /** Lo mismo, pero cuantizando tambien la posicion de cada acorde a la grilla elegida. */
     public Track importInto(
             Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
             Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize) {
