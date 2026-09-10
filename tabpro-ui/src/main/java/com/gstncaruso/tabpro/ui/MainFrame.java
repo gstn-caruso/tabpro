@@ -527,7 +527,7 @@ public final class MainFrame extends JFrame {
                         updateTitle();
                         backToTheScore();
                     },
-                    chooser.getSelectedFile().toPath(), transport::previewTimeline);
+                    chooser.getSelectedFile().toPath(), player);
         }
 
         @Override

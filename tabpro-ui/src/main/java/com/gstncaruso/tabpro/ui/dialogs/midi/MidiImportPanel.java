@@ -2,12 +2,17 @@ package com.gstncaruso.tabpro.ui.dialogs.midi;
 
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.playback.BeatPosition;
+import com.gstncaruso.tabpro.core.playback.PlaybackListener;
+import com.gstncaruso.tabpro.core.playback.Player;
+import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.util.List;
+import java.util.function.Function;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
@@ -34,14 +39,29 @@ public final class MidiImportPanel extends JPanel {
         NoteValue.QUARTER, NoteValue.EIGHTH, NoteValue.SIXTEENTH, NoteValue.THIRTY_SECOND, NoteValue.SIXTY_FOURTH
     };
 
+    private static final PlaybackListener SILENT_LISTENER = new PlaybackListener() {
+        @Override
+        public void beatStarted(BeatPosition position) {
+        }
+
+        @Override
+        public void playbackFinished() {
+        }
+    };
+
     private final JList<MidiTrackInfo> trackList = new JList<>();
     private final JCheckBox transpose = new JCheckBox("Transportar una octava para abajo");
     private final JCheckBox twoChannelsPerTrack = new JCheckBox("Usar 2 canales por pista", true);
     private final JComboBox<String> precisionChoice = new JComboBox<>(precisionLabels());
     private final JButton selectAll = iconButton(Icons.selectAllTracks(), "Marcar todas las pistas");
+    private final JButton listen = iconButton(Icons.play(), "Escuchar la pista elegida");
+    private final Player player;
+    private final Function<List<Integer>, Timeline> trackTimeline;
 
-    public MidiImportPanel(List<MidiTrackInfo> tracks) {
+    public MidiImportPanel(List<MidiTrackInfo> tracks, Player player, Function<List<Integer>, Timeline> trackTimeline) {
         super(new BorderLayout(0, DialogStyle.GAP_S));
+        this.player = player;
+        this.trackTimeline = trackTimeline;
         DialogStyle.padded(this);
         trackList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         trackList.setCellRenderer(trackLabels());
@@ -50,6 +70,7 @@ public final class MidiImportPanel extends JPanel {
         showTracks(tracks);
         precisionChoice.setSelectedItem(figureName(NoteValue.SIXTEENTH));
         selectAll.addActionListener(event -> selectAllTracks());
+        listen.addActionListener(event -> listen());
 
         JLabel precisionLabel = new JLabel("Precisión");
         precisionLabel.setLabelFor(precisionChoice);
@@ -62,6 +83,7 @@ public final class MidiImportPanel extends JPanel {
 
         JPanel trackListTools = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_XS, 0));
         trackListTools.add(selectAll);
+        trackListTools.add(listen);
 
         add(trackListTools, BorderLayout.NORTH);
         add(new JScrollPane(trackList), BorderLayout.CENTER);
@@ -74,6 +96,18 @@ public final class MidiImportPanel extends JPanel {
         if (lastIndex >= 0) {
             trackList.setSelectionInterval(0, lastIndex);
         }
+    }
+
+    /**
+     * El manual: "it is possible to listen to them" -- reproduce, tal como suena en el archivo
+     * MIDI, la o las pistas marcadas en la lista. Sin ninguna marcada no hay nada que escuchar.
+     */
+    public void listen() {
+        List<Integer> selected = selectedTrackIndices();
+        if (selected.isEmpty()) {
+            return;
+        }
+        player.play(trackTimeline.apply(selected), SILENT_LISTENER);
     }
 
     private static JButton iconButton(Icon icon, String accessibleNameAndTooltip) {

@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.midi;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.model.NoteValue;
@@ -12,21 +13,23 @@ import org.junit.jupiter.api.Test;
 
 class MidiImportPanelTest {
 
+    private final RecordingPlayer player = new RecordingPlayer();
+
     @Test
     void ningunControlQuedaSinNombreNiTooltipAccesible() {
-        AccessibilityAssertions.assertNoViolations(new MidiImportPanel(List.of(track(0, "Guitarra"))));
+        AccessibilityAssertions.assertNoViolations(panel(List.of(track(0, "Guitarra"))));
     }
 
     @Test
     void startsWithNoTracksSelected() {
-        MidiImportPanel panel = new MidiImportPanel(List.of(track(0, "Guitarra"), track(1, "Bajo")));
+        MidiImportPanel panel = panel(List.of(track(0, "Guitarra"), track(1, "Bajo")));
 
         assertEquals(List.of(), panel.selectedTrackIndices());
     }
 
     @Test
     void reportsTheMidiIndicesOfTheSelectedTracksInListOrder() {
-        MidiImportPanel panel = new MidiImportPanel(List.of(track(3, "Guitarra"), track(7, "Bajo")));
+        MidiImportPanel panel = panel(List.of(track(3, "Guitarra"), track(7, "Bajo")));
 
         panel.trackList().setSelectedIndices(new int[] {0, 1});
 
@@ -35,7 +38,7 @@ class MidiImportPanelTest {
 
     @Test
     void selectingOnlyOneTrackReportsOnlyItsIndex() {
-        MidiImportPanel panel = new MidiImportPanel(List.of(track(3, "Guitarra"), track(7, "Bajo")));
+        MidiImportPanel panel = panel(List.of(track(3, "Guitarra"), track(7, "Bajo")));
 
         panel.trackList().setSelectedIndex(1);
 
@@ -44,28 +47,28 @@ class MidiImportPanelTest {
 
     @Test
     void defaultsToNotTransposingDownAnOctave() {
-        MidiImportPanel panel = new MidiImportPanel(List.of());
+        MidiImportPanel panel = panel(List.of());
 
         assertFalse(panel.transposeDownOneOctave());
     }
 
     @Test
     void defaultsToUsingTwoChannelsPerTrack() {
-        MidiImportPanel panel = new MidiImportPanel(List.of());
+        MidiImportPanel panel = panel(List.of());
 
         assertTrue(panel.useTwoChannelsPerTrack());
     }
 
     @Test
     void defaultsToSixteenthNotePrecision() {
-        MidiImportPanel panel = new MidiImportPanel(List.of());
+        MidiImportPanel panel = panel(List.of());
 
         assertEquals(NoteValue.SIXTEENTH, panel.precision());
     }
 
     @Test
     void choosingAnotherPrecisionChangesIt() {
-        MidiImportPanel panel = new MidiImportPanel(List.of());
+        MidiImportPanel panel = panel(List.of());
 
         panel.choosePrecision(NoteValue.THIRTY_SECOND);
 
@@ -74,7 +77,7 @@ class MidiImportPanelTest {
 
     @Test
     void selectingAllTracksSelectsEveryTrackInTheList() {
-        MidiImportPanel panel = new MidiImportPanel(List.of(track(3, "Guitarra"), track(7, "Bajo")));
+        MidiImportPanel panel = panel(List.of(track(3, "Guitarra"), track(7, "Bajo")));
 
         panel.selectAllTracks();
 
@@ -82,14 +85,28 @@ class MidiImportPanelTest {
     }
 
     @Test
+    void listeningWithNoTrackSelectedDoesNotAskForATimelineNorPlayAnything() {
+        MidiImportPanel panel = new MidiImportPanel(
+                List.of(track(3, "Guitarra")), player, indices -> fail("no debia pedir el timeline sin seleccion"));
+
+        panel.listen();
+
+        assertEquals(List.of(), player.played());
+    }
+
+    @Test
     void reloadingTheTrackListReplacesItsContent() {
-        MidiImportPanel panel = new MidiImportPanel(List.of(track(0, "Guitarra")));
+        MidiImportPanel panel = panel(List.of(track(0, "Guitarra")));
 
         panel.showTracks(List.of(track(5, "Bajo nuevo")));
 
         assertEquals(1, panel.trackList().getModel().getSize());
         assertEquals(5, panel.trackList().getModel().getElementAt(0).index());
         assertTrue(panel.selectedTrackIndices().isEmpty());
+    }
+
+    private MidiImportPanel panel(List<MidiTrackInfo> tracks) {
+        return new MidiImportPanel(tracks, player, indices -> fail("este test no escucha ninguna pista"));
     }
 
     private static MidiTrackInfo track(int index, String name) {
