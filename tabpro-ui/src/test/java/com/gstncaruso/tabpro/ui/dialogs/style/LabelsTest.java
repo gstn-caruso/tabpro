@@ -9,6 +9,8 @@ import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 import org.junit.jupiter.api.Test;
@@ -106,6 +108,21 @@ class LabelsTest {
 
             assertFalse(etiqueta.isBlank());
             assertNotEquals(scale.toString(), etiqueta);
+        }
+    }
+
+    @Test
+    void traduceLaAfinacionConSuNombreYElResumenDeCuerdas() {
+        assertEquals("Guitarra estandar (EADGBE)", Labels.of(TuningLibrary.standardGuitar()));
+    }
+
+    @Test
+    void todaAfinacionDeLaBibliotecaTieneUnaEtiquetaQueNoEsSuToString() {
+        for (Tuning tuning : TuningLibrary.guitars()) {
+            String etiqueta = Labels.of(tuning);
+
+            assertFalse(etiqueta.isBlank());
+            assertNotEquals(tuning.toString(), etiqueta);
         }
     }
 }

@@ -4,8 +4,11 @@ import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.model.Pitch;
+import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
+import java.util.List;
 
 /**
  * El unico punto que traduce un tipo del dominio a su texto en castellano: ningun combo
@@ -24,8 +27,19 @@ public final class Labels {
             case BarrePreference barrePreference -> barrePreferenceLabel(barrePreference);
             case PitchClass pitchClass -> pitchClass.name() + " (" + pitchClass.solfegeName() + ")";
             case Scale scale -> scale.name();
+            case Tuning tuning -> tuning.name() + " (" + stringLetters(tuning) + ")";
             default -> throw new IllegalArgumentException("Sin etiqueta para " + value);
         };
+    }
+
+    /** Las letras de las cuerdas de graves a agudas, como el manual escribe "EADGBE". */
+    private static String stringLetters(Tuning tuning) {
+        StringBuilder letters = new StringBuilder();
+        List<Pitch> strings = tuning.strings();
+        for (int string = strings.size() - 1; string >= 0; string--) {
+            letters.append(PitchClass.fromSemitone(strings.get(string).midiNumber()).name());
+        }
+        return letters.toString();
     }
 
     private static String barrePreferenceLabel(BarrePreference value) {
