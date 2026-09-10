@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-/** La ventana del afinador: el afinador MIDI y el afinador digital de la pista activa. */
 public final class TunerDialog {
 
     private TunerDialog() {
@@ -33,7 +32,6 @@ public final class TunerDialog {
         microphone.stopListening();
     }
 
-    /** Arma las dos solapas del afinador sin abrir ningun dialogo, para poder probarlas. */
     static Tabs buildTabs(Editor editor, Player player, Ports.Microphone microphone) {
         Track track = editor.currentTrack();
         Tuning tuning = track.tuning();
@@ -70,10 +68,6 @@ public final class TunerDialog {
     record Tabs(JTabbedPane pane, MidiTunerPanel midiTuner) {
     }
 
-    /**
-     * Conecta la aguja con la entrada de audio. Si la maquina no tiene entrada,
-     * se dice, en vez de dejar una aguja que no se mueve nunca.
-     */
     private static Component listen(Ports.Microphone microphone, DigitalTunerPanel needle) {
         JLabel state = new JLabel(microphone.isAvailable()
                 ? "Tocá una cuerda al aire."
@@ -92,7 +86,6 @@ public final class TunerDialog {
         return state;
     }
 
-    /** Cuantas centesimas de semitono separan lo que suena de la cuerda elegida. */
     private static int centsBetween(double frequencyHz, com.gstncaruso.tabpro.core.model.Pitch target) {
         double midiNumber = 69 + 12 * Math.log(frequencyHz / 440.0) / Math.log(2);
         return (int) Math.round((midiNumber - target.midiNumber()) * 100);

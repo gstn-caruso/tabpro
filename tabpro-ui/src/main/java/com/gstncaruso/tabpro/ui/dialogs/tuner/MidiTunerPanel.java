@@ -13,11 +13,6 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.Timer;
 
-/**
- * El afinador MIDI: una fila por cuerda, con un boton que la hace sonar en
- * bucle para compararla con la cuerda real. Cada toggle arranca sonando una vez
- * al toque (lo que prueban los tests) y programa las repeticiones con un Timer.
- */
 public final class MidiTunerPanel extends JPanel {
 
     private static final int LOOP_INTERVAL_MS = 900;
@@ -70,7 +65,6 @@ public final class MidiTunerPanel extends JPanel {
         return loops.containsKey(string);
     }
 
-    /** Corta todas las cuerdas que hayan quedado sonando en bucle, por ejemplo al cerrar la ventana. */
     public void stopAllLoops() {
         for (int string : List.copyOf(loops.keySet())) {
             stopLoop(string);

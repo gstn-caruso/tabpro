@@ -15,10 +15,6 @@ import javax.accessibility.AccessibleRole;
 import javax.swing.JComponent;
 import javax.swing.UIManager;
 
-/**
- * El afinador digital: una aguja que se mueve segun cuanto se aparta la nota
- * escuchada de la altura de referencia, en centesimas de semitono.
- */
 public final class DigitalTunerPanel extends JComponent implements AccessibleControl {
 
     public static final int MAX_CENTS = 50;
@@ -89,7 +85,6 @@ public final class DigitalTunerPanel extends JComponent implements AccessibleCon
         return target;
     }
 
-    /** Cuantas centesimas de semitono esta desafinado: negativo grave, positivo agudo. */
     public void setDeviationCents(int cents) {
         this.deviationCents = Math.clamp(cents, -MAX_CENTS, MAX_CENTS);
         updateAccessibleDescription();
@@ -104,7 +99,6 @@ public final class DigitalTunerPanel extends JComponent implements AccessibleCon
         return Math.abs(deviationCents) <= 3;
     }
 
-    /** El angulo de la aguja en radianes, de -60 a +60 grados. */
     static double needleAngleRadians(int cents) {
         double maxAngle = Math.toRadians(60);
         return (cents / (double) MAX_CENTS) * maxAngle;
