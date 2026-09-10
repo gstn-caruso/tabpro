@@ -41,6 +41,8 @@ public final class Icons {
     private static final String NOTEHEAD_X_BLACK = "";
     /** SMuFL U+E0DD "noteheadDiamondWhite": la cabeza en rombo hueco, para armonicos. */
     private static final String NOTEHEAD_DIAMOND_WHITE = "";
+    /** SMuFL U+E4A0 "articAccentAbove": el acento dibujado arriba de la nota. */
+    private static final String ARTIC_ACCENT_ABOVE = "";
 
     private Icons() {
     }
@@ -216,14 +218,7 @@ public final class Icons {
     }
 
     public static Icon accent() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            Path2D accent = new Path2D.Double();
-            accent.moveTo(size * 0.22, size * 0.32);
-            accent.lineTo(size * 0.78, size * 0.5);
-            accent.lineTo(size * 0.22, size * 0.68);
-            graphics.draw(accent);
-        });
+        return new GlyphIcon(SIZE, ARTIC_ACCENT_ABOVE);
     }
 
     public static Icon staccato() {
