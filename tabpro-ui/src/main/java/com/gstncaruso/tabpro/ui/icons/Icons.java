@@ -491,6 +491,11 @@ public final class Icons {
         return svgIcon("hand-click");
     }
 
+    /** La digitacion de mano derecha: la misma mano de {@link #fingering()}, espejada. */
+    public static Icon fingeringRightHand() {
+        return svgIcon("hand-click-mirrored");
+    }
+
     public static Icon strokeDown() {
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
