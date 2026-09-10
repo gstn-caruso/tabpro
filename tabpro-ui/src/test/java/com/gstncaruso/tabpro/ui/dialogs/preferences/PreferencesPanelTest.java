@@ -85,14 +85,6 @@ class PreferencesPanelTest {
         assertEquals(preferences, panel.toPreferences());
     }
 
-    /**
-     * Sonido > Cuenta regresiva [Transport.toggleCountDown] ya prende una cuenta regresiva de
-     * verdad. Esta casilla era un duplicado que no tocaba ese Transport para nada -Preferencias
-     * solo la guardaba y releia a si misma-: el manual (linea 2148-2157) dice que Preferencias
-     * [F12] configura el METRONOMO, y trata la Cuenta regresiva como un toggle propio del menu
-     * Sonido, sin mencionar nunca una casilla en Preferencias para ella. Se saca en vez de
-     * cablearla, para no inventar un control que el manual no describe.
-     */
     @Test
     void noLongerOffersACountInCheckboxThatDuplicatesTheSoundMenuToggle() {
         PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
@@ -109,11 +101,6 @@ class PreferencesPanelTest {
         return false;
     }
 
-    /**
-     * El manual, linea 1916: "You can force the multitrack view when using the Horizontal Screen
-     * Mode in the Options > Preferences [F12]". La preferencia y su efecto ya existian; lo que
-     * faltaba era el lugar donde el manual dice que se elige.
-     */
     @Test
     void offersToForceTheMultitrackViewOnTheHorizontalScreen() {
         PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
@@ -132,7 +119,6 @@ class PreferencesPanelTest {
         throw new AssertionError("no hay ninguna casilla que hable de \"" + words + "\"");
     }
 
-    /** Preferencias [F12] > Accesibilidad: la fuente base de la interfaz, hoy fija en 12pt. */
     @Test
     void offersToChooseTheInterfaceFontSize() {
         Preferences preferences = Preferences.defaults().withInterfaceFontSize(16);
@@ -142,7 +128,6 @@ class PreferencesPanelTest {
         assertEquals(16, panel.toPreferences().interfaceFontSize());
     }
 
-    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
     @Test
     void offersToTurnHighContrastOn() {
         Preferences preferences = Preferences.defaults().withHighContrastEnabled(true);
@@ -152,7 +137,6 @@ class PreferencesPanelTest {
         assertTrue(panel.toPreferences().highContrastEnabled());
     }
 
-    /** Preferencias [F12] > Accesibilidad: apaga las de FlatLaf y las propias de tabpro. */
     @Test
     void offersToTurnAnimationsOff() {
         Preferences preferences = Preferences.defaults().withAnimationsDisabled(true);

@@ -8,7 +8,6 @@ import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/** Las preferencias generales: la ventana de Preferencias [F12]. */
 public final class PreferencesPanel extends FormPanel {
 
     private final JComboBox<NoteValue> defaultNoteValue = new JComboBox<>(NoteValue.values());
