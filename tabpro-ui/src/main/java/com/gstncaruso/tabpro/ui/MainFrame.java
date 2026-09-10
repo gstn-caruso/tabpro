@@ -1203,6 +1203,12 @@ public final class MainFrame extends JFrame {
         }
 
         @Override
+        public void fingeringRightHand() {
+            FingeringDialog.showFocusedOnRightHand(MainFrame.this, editor);
+            backToTheScore();
+        }
+
+        @Override
         public void chordDiagram() {
             ChordDialog.show(MainFrame.this, editor, player, editingPreferences.showBassInChordName());
             backToTheScore();

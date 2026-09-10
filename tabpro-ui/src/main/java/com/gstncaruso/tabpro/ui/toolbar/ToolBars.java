@@ -226,9 +226,8 @@ public final class ToolBars {
         bar.addSeparator();
         add(bar, "effect.fadeIn", "effect.pickstrokeDown", "effect.pickstrokeUp");
         bar.addSeparator();
-        // El manual trae un boton de digitacion por mano; el dialogo de tabpro ya cubre las
-        // dos, asi que un solo boton alcanza y el de la mano derecha queda como hueco funcional.
-        add(bar, "note.chord", "effect.text", "note.mixTableChange", "note.fingering");
+        add(bar, "note.chord", "effect.text", "note.mixTableChange", "note.fingering",
+                "note.fingeringRightHand");
         bar.addSeparator();
         add(bar, "effect.strokeUp", "effect.strokeDown");
         return bar;

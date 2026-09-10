@@ -64,6 +64,8 @@ public final class Ports {
 
         void fingering();
 
+        void fingeringRightHand();
+
         void chordDiagram();
 
         void scales();

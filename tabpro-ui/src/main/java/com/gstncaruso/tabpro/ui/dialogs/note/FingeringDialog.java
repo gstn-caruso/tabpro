@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import java.awt.Component;
 import java.util.Optional;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 
 /** La ventana de digitacion: que dedo pisa la cuerda y que dedo la toca. */
 public final class FingeringDialog {
@@ -17,19 +18,35 @@ public final class FingeringDialog {
     }
 
     public static void show(Component parent, Editor editor) {
+        open(parent, editor, Hand.LEFT);
+    }
+
+    /** Como {@link #show(Component, Editor)}, pero arranca con el foco en el campo de mano derecha. */
+    public static void showFocusedOnRightHand(Component parent, Editor editor) {
+        open(parent, editor, Hand.RIGHT);
+    }
+
+    private static void open(Component parent, Editor editor, Hand initialFocus) {
         Optional<Finger> left = editor.currentNote().flatMap(note -> note.effects().leftHand());
         Optional<Finger> right = editor.currentNote().flatMap(note -> note.effects().rightHand());
-        Fields fields = buildFields(left, right);
+        Fields fields = buildFields(left, right, initialFocus);
 
-        if (!DialogShell.ask(parent, "Digitación", fields.form())) {
+        if (!DialogShell.ask(parent, "Digitación", fields.form(), fields.initialFocus())) {
             return;
         }
         editor.setLeftHandFinger(chosen(fields.leftHand()));
         editor.setRightHandFinger(chosen(fields.rightHand()));
     }
 
+    enum Hand { LEFT, RIGHT }
+
     /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
     static Fields buildFields(Optional<Finger> left, Optional<Finger> right) {
+        return buildFields(left, right, Hand.LEFT);
+    }
+
+    /** Como {@link #buildFields(Optional, Optional)}, pero elige donde arranca el foco inicial. */
+    static Fields buildFields(Optional<Finger> left, Optional<Finger> right, Hand initialFocus) {
         JComboBox<Object> leftHand = fingers(left, Finger::leftHandSymbol);
         JComboBox<Object> rightHand = fingers(right, Finger::rightHandSymbol);
 
@@ -37,10 +54,10 @@ public final class FingeringDialog {
                 .addRow("Mano izquierda", leftHand)
                 .addRow("Mano derecha", rightHand);
 
-        return new Fields(form, leftHand, rightHand);
+        return new Fields(form, leftHand, rightHand, initialFocus == Hand.RIGHT ? rightHand : leftHand);
     }
 
-    record Fields(FormPanel form, JComboBox<Object> leftHand, JComboBox<Object> rightHand) {
+    record Fields(FormPanel form, JComboBox<Object> leftHand, JComboBox<Object> rightHand, JComponent initialFocus) {
     }
 
     private static JComboBox<Object> fingers(

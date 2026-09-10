@@ -709,6 +709,34 @@ final class AuditSupport {
     }
 
     /**
+     * Como {@link #withDialog(Runnable, Consumer)}, pero devuelve el dialogo real ya abierto en
+     * vez de manejarlo y cerrarlo: dispara la accion sin bloquear -si bloqueara con
+     * invokeAndWait, el hilo del test quedaria preso del bucle anidado del modal- para que el
+     * hilo del test quede libre y pueda esperar eventos reales (por ejemplo el foco) mientras el
+     * EDT sigue bombeando ese bucle. El llamador es responsable de cerrarlo.
+     */
+    static JDialog awaitDialog(Runnable trigger, long timeoutMillis) throws Exception {
+        CountDownLatch opened = new CountDownLatch(1);
+        JDialog[] captured = new JDialog[1];
+        AWTEventListener listener = event -> {
+            if (event.getID() == WindowEvent.WINDOW_OPENED && event.getSource() instanceof JDialog dialog) {
+                captured[0] = dialog;
+                opened.countDown();
+            }
+        };
+        Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);
+        try {
+            SwingUtilities.invokeLater(trigger::run);
+            if (!opened.await(timeoutMillis, TimeUnit.MILLISECONDS)) {
+                throw new AssertionError("el dialogo nunca abrio una ventana (WINDOW_OPENED)");
+            }
+            return captured[0];
+        } finally {
+            Toolkit.getDefaultToolkit().removeAWTEventListener(listener);
+        }
+    }
+
+    /**
      * Despacha una tecla sin bloquear el hilo del test y dice si eso abrio una ventana real
      * dentro del tiempo dado: para los atajos que deberian abrir un dialogo modal, sin arriesgar
      * que el test quede colgado si el dialogo de verdad aparece y nadie lo cierra.
@@ -752,6 +780,30 @@ final class AuditSupport {
         target.addFocusListener(listener);
         try {
             SwingUtilities.invokeLater(target::requestFocusInWindow);
+            return gained.await(timeoutMillis, TimeUnit.MILLISECONDS);
+        } finally {
+            target.removeFocusListener(listener);
+        }
+    }
+
+    /**
+     * Como {@link #requestFocusAndAwait(Component, long)}, pero sin pedir el foco: para observar
+     * si alguien mas -por ejemplo la ventana que se acaba de abrir- ya se lo dio o esta por
+     * darselo, sin que el test mismo lo provoque.
+     */
+    static boolean awaitFocusOwner(Component target, long timeoutMillis) throws Exception {
+        if (target.isFocusOwner()) {
+            return true;
+        }
+        CountDownLatch gained = new CountDownLatch(1);
+        FocusListener listener = new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                gained.countDown();
+            }
+        };
+        target.addFocusListener(listener);
+        try {
             return gained.await(timeoutMillis, TimeUnit.MILLISECONDS);
         } finally {
             target.removeFocusListener(listener);

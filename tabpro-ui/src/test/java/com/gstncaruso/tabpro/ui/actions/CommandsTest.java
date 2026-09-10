@@ -269,6 +269,17 @@ class CommandsTest {
         assertEquals(List.of("metronomeSettings"), asked);
     }
 
+    /**
+     * Guitar Pro 5, manual pagina 14: junto al boton de digitacion de mano izquierda hay uno de
+     * mano derecha, que abre el mismo dialogo con el foco en su campo.
+     */
+    @Test
+    void theFingeringRightHandCommandAsksForItsDialog() {
+        commands.get("note.fingeringRightHand").actionPerformed(event());
+
+        assertEquals(List.of("fingeringRightHand"), asked);
+    }
+
     @Test
     void editMarkerStartsDisabledWithoutAMarkerOnTheScore() {
         assertFalse(commands.get("marker.edit").isEnabled());
