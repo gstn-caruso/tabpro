@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.print;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,6 +34,16 @@ class BmpDocumentTest {
         BufferedImage image = opaquePage(5, 3);
 
         assertArrayEquals(writeWithImageIo(image), writeWithBmpDocument(image));
+    }
+
+    @Test
+    void writeToPideLosPixelesPorFilaNoUnoPorUno() throws IOException {
+        PixelAccessCountingImage image = new PixelAccessCountingImage(9, 4);
+
+        writeWithBmpDocument(image);
+
+        assertEquals(0, image.singlePixelCalls(), "no puede llamar a getRGB(x, y) por cada pixel");
+        assertEquals(image.getHeight(), image.bulkRowCalls(), "tiene que pedir los pixeles fila por fila");
     }
 
     private static byte[] writeWithBmpDocument(BufferedImage image) throws IOException {
