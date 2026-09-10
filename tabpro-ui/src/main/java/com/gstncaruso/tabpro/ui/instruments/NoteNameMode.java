@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.ui.instruments;
 
-/** Cuanto nombre de nota se dibuja sobre las marcas del diapason. */
 public enum NoteNameMode {
     NONE("Sin nombres") {
         @Override

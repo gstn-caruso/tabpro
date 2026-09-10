@@ -338,7 +338,6 @@ class BeatViewsTest {
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 
-    /** El gesto real: un clic en el centro de esa tecla del piano. */
     private static void clickKey(BeatViews views, int midiNumber) {
         KeyboardView keyboard = views.keyboard();
         keyboard.setSize(900, 92);

@@ -30,12 +30,6 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-/**
- * El diapason y el teclado, arriba de la partitura: muestran las notas del beat en el que
- * estas parado y, mientras suena, las del beat que esta sonando en esa misma pista. Un clic
- * sobre un traste o una tecla escribe esa nota en el beat del cursor; uno sobre una que ya
- * esta la borra; el clic derecho la escribe y avanza al beat siguiente.
- */
 public final class BeatViews extends JPanel {
 
     private static final int TITLE_HEIGHT = 24;
@@ -67,18 +61,12 @@ public final class BeatViews extends JPanel {
         refresh();
     }
 
-    /** Dibuja en el diapason y en el teclado la escala que eligio la ventana de escalas. */
     public void showScale(int rootPitchClass, java.util.Collection<Integer> semitones) {
         Scale scale = Scale.of(rootPitchClass, semitones);
         fretboard.setScale(scale);
         keyboard.setScale(scale);
     }
 
-    /**
-     * Lo que dispara abrir la herramienta de escalas, segun el manual: el teclado se muestra
-     * solo (el diapason no -para eso hay que abrirlo antes con View > Fretboard) y los dos
-     * quedan en el modo "Beat y escala".
-     */
     public void prepareForScalesTool() {
         setKeyboardVisible(true);
         fretboard.setDisplayMode(FretboardDisplayMode.BEAT_AND_SCALE);
@@ -104,16 +92,10 @@ public final class BeatViews extends JPanel {
         repaint();
     }
 
-    /**
-     * Que dispara la ✕ de la banda de titulo del diapason: por defecto lo oculta, pero quien
-     * arma la ventana principal la reemplaza por el mismo comando de Ver > Diapasón, para que el
-     * item de menu, el boton de la barra y la preferencia queden sincronizados sin cableado extra.
-     */
     public void setOnCloseFretboard(Runnable action) {
         this.onCloseFretboard = java.util.Objects.requireNonNull(action);
     }
 
-    /** El equivalente de {@link #setOnCloseFretboard} para la ✕ del teclado. */
     public void setOnCloseKeyboard(Runnable action) {
         this.onCloseKeyboard = java.util.Objects.requireNonNull(action);
     }
@@ -124,30 +106,22 @@ public final class BeatViews extends JPanel {
         repaint();
     }
 
-    /** El diapason en si, para quien necesite leer o cambiar algo mas puntual. */
     public FretboardView fretboard() {
         return fretboard;
     }
 
-    /** El teclado en si, para quien necesite leer o cambiar algo mas puntual. */
     public KeyboardView keyboard() {
         return keyboard;
     }
 
-    /** La afinacion de la pista donde esta el cursor, que es la que se dibuja. */
     public static Tuning tuningToShow(Editor editor) {
         return editor.currentTrack().tuning();
     }
 
-    /**
-     * El beat que suena en la pista del cursor si la reproduccion esta en marcha, y si no el
-     * beat sobre el que esta parado el cursor.
-     */
     public static Beat beatToShow(Editor editor, Playhead playhead) {
         return locationToShow(editor, playhead).beat();
     }
 
-    /** Donde esta, pista y todo, el beat que hay que mostrar: ver {@link #beatToShow}. */
     public static BeatLocation locationToShow(Editor editor, Playhead playhead) {
         Cursor cursor = editor.cursor();
         Track track = editor.currentTrack();
@@ -156,10 +130,6 @@ public final class BeatViews extends JPanel {
                 .orElseGet(() -> new BeatLocation(track, cursor.measure(), cursor.voice(), cursor.beat()));
     }
 
-    /**
-     * Si lo que se ve es el beat del cursor. Mientras suena se ve el beat que suena, que no es el
-     * que se editaria: ahi el clic no escribe, para no cambiar a ciegas un beat que no esta a la vista.
-     */
     public static boolean showsTheCursorBeat(Editor editor, Playhead playhead) {
         return soundingPosition(editor, playhead).isEmpty();
     }
@@ -233,8 +203,6 @@ public final class BeatViews extends JPanel {
         fretboard.show(location);
         keyboard.show(location);
     }
-
-    // ---- controles ----------------------------------------------------------
 
     private JComponent fretboardToolbar() {
         JPanel bar = toolbar();

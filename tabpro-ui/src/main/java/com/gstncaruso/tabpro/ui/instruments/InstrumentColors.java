@@ -3,7 +3,6 @@ package com.gstncaruso.tabpro.ui.instruments;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Color;
 
-/** Los colores del diapason y del teclado, aparte de los de la partitura. */
 public final class InstrumentColors {
 
     public static final Color FRET_WIRE = new Color(0x86786D);
@@ -16,15 +15,12 @@ public final class InstrumentColors {
     public static final Color BLACK_KEY = new Color(0x232427);
     public static final Color KEY_EDGE = new Color(0x696E78);
 
-    /** El color con el que se marca una nota que esta sonando, en las dos vistas. */
     public static final Color PRESSED = new Color(0xE5484D);
     public static final Color PRESSED_INK = new Color(0x000000);
 
-    /** El color de contexto: lo que suma un modo de vista ademas del beat. */
     public static final Color CONTEXT = new Color(0x3574F0);
     public static final Color CONTEXT_INK = new Color(0x000000);
 
-    /** El anillo que sigue al mouse, sin que haga falta hacer clic. */
     public static final Color HOVER = new Color(0x798496);
 
     private InstrumentColors() {

@@ -93,7 +93,6 @@ class FretboardViewTest {
         Track capoed = Track.standardGuitar("g").mappingSettings(settings -> settings.withCapo(2));
         view.show(locationOf(capoed, Beat.rest(Duration.quarter())));
 
-        // cuerda 1 al aire (Mi) mas la cejilla en el traste 2 (Fa#).
         assertEquals("F#", view.labelFor(new FretPosition(1, 0)));
     }
 
@@ -104,7 +103,6 @@ class FretboardViewTest {
         view.setDisplayMode(FretboardDisplayMode.BEAT_AND_SCALE);
         view.setScale(Scale.cMajor());
 
-        // cuerda 1 al aire = Mi.
         assertEquals("E", view.labelFor(new FretPosition(1, 0), MarkKind.SECONDARY));
     }
 
@@ -116,7 +114,6 @@ class FretboardViewTest {
         view.setScale(Scale.cMajor());
         view.setScaleLabelMode(ScaleLabelMode.INTERVAL);
 
-        // Mi es la tercera de Do mayor.
         assertEquals("3", view.labelFor(new FretPosition(1, 0), MarkKind.SECONDARY));
     }
 

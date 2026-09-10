@@ -35,12 +35,9 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-/** El teclado, con las teclas del beat en el que estas parado hundidas. */
 public final class KeyboardView extends JComponent implements AccessibleControl {
 
-    /** Do0: mas grave que la cuerda mas grave de un bajo de cinco cuerdas afinado bien abajo. */
     public static final int LOWEST = 21;
-    /** Do8: mas agudo que el traste 24 de la primera cuerda de una guitarra. */
     public static final int HIGHEST = 108;
     public static final int PREFERRED_HEIGHT = 92;
 
@@ -119,7 +116,6 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         });
     }
 
-    /** Lo que se llama, con la tecla bajo el caret, cuando Enter o Espacio lo activan. */
     public void onCaretActivated(IntConsumer listener) {
         this.onCaretActivated = listener;
     }
@@ -137,7 +133,6 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         });
     }
 
-    /** La tecla que hay bajo el caret de teclado ahora mismo. */
     public OptionalInt caretKey() {
         return OptionalInt.of(caretKey);
     }
@@ -159,8 +154,6 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         return new BeatLocation(Track.standardGuitar("Guitarra"), 0, VoicePart.LEAD, 0);
     }
 
-    // ---- lo que se muestra -------------------------------------------------
-
     public void show(BeatLocation location) {
         this.location = location;
         repaint();
@@ -180,7 +173,6 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         repaint();
     }
 
-    /** La tecla que esta bajo el mouse en este momento, sin que haga falta clickear. */
     public OptionalInt hoveredKey() {
         return hovered;
     }
@@ -196,7 +188,6 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         return Optional.of(isWhite(midiNumber) ? whiteKeyBounds(midiNumber) : blackKeyBounds(midiNumber));
     }
 
-    /** La tecla que hay en ese punto: las negras primero, que estan encima de las blancas. */
     public OptionalInt keyAt(int x, int y) {
         OptionalInt black = keyAt(x, y, false);
         return black.isPresent() ? black : keyAt(x, y, true);
@@ -250,8 +241,6 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         return getHeight() - TOP_MARGIN - BOTTOM_MARGIN;
     }
 
-    // ---- el mouse -----------------------------------------------------------
-
     private void trackTheMouse() {
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -268,8 +257,6 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
             }
         });
     }
-
-    // ---- dibujo -------------------------------------------------------------
 
     @Override
     protected void paintComponent(Graphics graphics) {
