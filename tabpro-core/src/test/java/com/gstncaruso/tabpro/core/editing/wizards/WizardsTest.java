@@ -47,7 +47,7 @@ class WizardsTest {
 
     @Test
     void transposingLeavesThePercussionAlone() {
-        Score score = new Score("Prueba", 120, List.of(Track.percussion("Bateria")));
+        Score score = new Score("Test", 120, List.of(Track.percussion("Drums")));
 
         assertEquals(score, Transposition.transposeEveryTrack(score, 3));
     }
@@ -92,9 +92,9 @@ class WizardsTest {
                 Beat.of(Duration.quarter(), new Note(1, 2)), Beat.of(Duration.quarter(), new Note(1, 3))));
         Measure shortBar = new Measure(TimeSignature.fourFour(),
                 List.of(Beat.of(Duration.quarter(), new Note(1, 4))));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25),
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25),
                 List.of(completeBar, shortBar));
-        Score score = new Score("Prueba", 120, List.of(track));
+        Score score = new Score("Test", 120, List.of(track));
 
         List<BarDurationCheck.Finding> findings = BarDurationCheck.run(score);
 
@@ -127,8 +127,8 @@ class WizardsTest {
     @Test
     void theRestFillerCompletesAnEmptyBar() {
         Measure empty = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(empty));
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(empty));
+        Score score = new Score("Test", 120, List.of(track));
 
         Score filled = RestFiller.run(score, MeasureRange.wholeScore(1));
 
@@ -190,8 +190,8 @@ class WizardsTest {
                 Beat.of(Duration.quarter(), new Note(1, 3)),
                 Beat.of(Duration.quarter(), new Note(1, 4)),
                 Beat.of(Duration.quarter(), new Note(1, 5))));
-        Score score = new Score("Prueba", 120,
-                List.of(new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(crowded))));
+        Score score = new Score("Test", 120,
+                List.of(new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(crowded))));
 
         Score arranged = BarArranger.run(score);
 
@@ -209,8 +209,8 @@ class WizardsTest {
         Measure sparse = new Measure(TimeSignature.fourFour(), List.of(
                 Beat.of(Duration.quarter(), new Note(1, 6)), Beat.of(Duration.quarter(), new Note(1, 7)),
                 Beat.of(Duration.quarter(), new Note(1, 8))));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(crowded, sparse));
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(crowded, sparse));
+        Score score = new Score("Test", 120, List.of(track));
 
         Score arranged = BarArranger.run(score);
 
@@ -309,7 +309,7 @@ class WizardsTest {
 
     private static Score scoreWith(Beat... beats) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        return new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Test", 120, List.of(track));
     }
 }
