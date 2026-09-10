@@ -1,3 +1,10 @@
+## [0.57.0](https://github.com/gstn-caruso/tabpro/compare/v0.56.0...v0.57.0) (2026-09-10)
+
+### Features
+
+* **harmony:** la herramienta de escalas tiene listas, diagrama de grados y escuchar, como Guitar Pro 5 ([#171](https://github.com/gstn-caruso/tabpro/issues/171)) ([e3b6511](https://github.com/gstn-caruso/tabpro/commit/e3b65113da429fedd83d0878fc21c6b03f110d0e))
+* **midi:** importar MIDI con escucha previa, marcar todas y cuantización por radios, como Guitar Pro 5 ([#170](https://github.com/gstn-caruso/tabpro/issues/170)) ([ef8394c](https://github.com/gstn-caruso/tabpro/commit/ef8394cca73a7ebe939b193f713703f5a9c2c659))
+
 ## [0.56.0](https://github.com/gstn-caruso/tabpro/compare/v0.55.0...v0.56.0) (2026-09-10)
 
 ### Features
