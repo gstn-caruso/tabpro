@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.awt.Component;
 import java.awt.Container;
 import javax.swing.JButton;
@@ -15,6 +16,15 @@ import javax.swing.JTable;
 import org.junit.jupiter.api.Test;
 
 class MarkersTableDialogTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        Editor editor = new Editor(Score.blank());
+        editor.setMarker(Marker.named("Intro"));
+
+        AccessibilityAssertions.assertNoViolations(MarkersTableDialog.buildContent(editor, () -> {
+        }));
+    }
 
     @Test
     void emptyScoreLeavesOnlyAddEnabled() {
