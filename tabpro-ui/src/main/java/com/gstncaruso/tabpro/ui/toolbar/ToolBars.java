@@ -10,6 +10,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 /**
@@ -162,6 +163,7 @@ public final class ToolBars {
         bar.addSeparator();
         add(bar, "sound.play", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
                 "sound.loop");
+        bar.add(soundFontToggle());
         bar.addSeparator();
         add(bar, "tool.transpose");
         bar.addSeparator();
@@ -192,6 +194,10 @@ public final class ToolBars {
         add(bar, "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak");
         bar.addSeparator();
         add(bar, "note.stemUp", "note.stemDown", "note.stemAutomatic");
+        bar.addSeparator();
+        add(bar, "note.dynamic.PIANO_PIANISSIMO", "note.dynamic.PIANISSIMO", "note.dynamic.PIANO",
+                "note.dynamic.MEZZO_PIANO", "note.dynamic.MEZZO_FORTE", "note.dynamic.FORTE",
+                "note.dynamic.FORTISSIMO", "note.dynamic.FORTE_FORTISSIMO");
         return bar;
     }
 
@@ -246,6 +252,7 @@ public final class ToolBars {
     private static JButton button(Command command) {
         JButton button = new JButton(command);
         button.setText(null);
+        button.setForeground(Palette.text());
         button.setFocusable(false);
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
@@ -255,6 +262,30 @@ public final class ToolBars {
         button.setMaximumSize(new Dimension(26, 24));
         button.addChangeListener(event -> button.setContentAreaFilled(
                 button.getModel().isRollover() || button.getModel().isPressed()));
+        return button;
+    }
+
+    /**
+     * Guitar Pro 5, manual pagina 14: donde esa fila trae los dos iconos de RSE, tabpro pone uno
+     * solo, conmutable: F2 y este boton comparten el mismo comando, asi que prender uno prende
+     * el otro.
+     */
+    private JToggleButton soundFontToggle() {
+        return toggleButton(commands.get("sound.soundFont"));
+    }
+
+    private static JToggleButton toggleButton(Command command) {
+        JToggleButton button = new JToggleButton(command);
+        button.setText(null);
+        button.setFocusable(false);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(button.isSelected());
+        button.setToolTipText(tooltipOf(command));
+        button.getAccessibleContext().setAccessibleName(command.label());
+        button.setPreferredSize(new Dimension(26, 24));
+        button.setMaximumSize(new Dimension(26, 24));
+        button.addChangeListener(event -> button.setContentAreaFilled(
+                button.getModel().isRollover() || button.getModel().isPressed() || button.isSelected()));
         return button;
     }
 

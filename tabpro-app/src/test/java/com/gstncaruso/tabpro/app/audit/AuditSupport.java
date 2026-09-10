@@ -109,6 +109,26 @@ final class AuditSupport {
         return built[0];
     }
 
+    /**
+     * Como newFrame, pero con un ScoreFiles y un ScoreExchange reales: los que necesita
+     * cualquier test que ejercite Abrir/Guardar/Importar/Exportar por el JFileChooser real,
+     * en vez de los dobles NoScoreFiles/ScoreExchange.NONE que tiran UnsupportedOperationException.
+     */
+    static MainFrame newFrame(
+            Editor editor, ScoreFiles files, com.gstncaruso.tabpro.core.files.ScoreExchange exchange) throws Exception {
+        MainFrame[] built = new MainFrame[1];
+        SwingUtilities.invokeAndWait(() -> {
+            MainFrame frame = new MainFrame(
+                    editor, files, new SilentPlayer(),
+                    com.gstncaruso.tabpro.ui.theme.ThemeSwitch.NONE, com.gstncaruso.tabpro.ui.actions.Ports.Devices.NONE,
+                    exchange, com.gstncaruso.tabpro.ui.actions.Ports.Microphone.NONE);
+            frame.pack();
+            frame.setVisible(true);
+            built[0] = frame;
+        });
+        return built[0];
+    }
+
     /** Como newFrame, pero con un ThemeSwitch que el test puede inspeccionar despues. */
     static MainFrame newFrame(Editor editor, com.gstncaruso.tabpro.ui.theme.ThemeSwitch themes) throws Exception {
         MainFrame[] built = new MainFrame[1];
@@ -273,6 +293,18 @@ final class AuditSupport {
         return new Editor(Score.blank());
     }
 
+    /**
+     * Un fixture real de otro modulo (tabpro-format/src/test/resources/...), para los tests que
+     * necesitan un archivo de verdad en disco -no del classpath de este modulo- para dárselo a un
+     * JFileChooser real. La suite corre agregada desde tabpro-tests (ver pom.xml raiz, "reunir
+     * los tests de los modulos"): copia las clases compiladas, pero los fixtures de
+     * src/test/resources se quedan en su propio modulo, un nivel arriba del directorio de trabajo
+     * real con el que corre surefire.
+     */
+    static Path repoFile(String relativeFromRepoRoot) {
+        return Path.of(System.getProperty("user.dir"), "..", relativeFromRepoRoot).normalize();
+    }
+
     /** Una partitura con varios compases, para que navegar entre ellos tenga algo que mostrar. */
     static Editor editorWithMeasures(int extraMeasures) {
         Editor editor = blankEditor();
@@ -338,7 +370,12 @@ final class AuditSupport {
         return null;
     }
 
-    private static JMenuItem findMenuItem(JMenu menu, String label) {
+    /**
+     * El JMenuItem real dentro de un submenu puntual (por ejemplo "Importar" o "Exportar"), para
+     * cuando la misma etiqueta aparece en mas de un lado del menu Archivo (MIDI…, MusicXML… y
+     * Tablatura ASCII… existen tanto para importar como para exportar).
+     */
+    static JMenuItem findMenuItem(JMenu menu, String label) {
         for (int i = 0; i < menu.getItemCount(); i++) {
             JMenuItem item = menu.getItem(i);
             if (item == null) {
@@ -442,6 +479,29 @@ final class AuditSupport {
             }
             if (child instanceof Container container) {
                 JButton found = findButtonByActionName(container, label);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    /** El JToggleButton real de una barra de herramientas cuya Action tiene ese nombre exacto. */
+    static javax.swing.JToggleButton findToggleButtonByActionName(Container root, String label) {
+        if (root instanceof javax.swing.JToggleButton button
+                && button.getAction() != null
+                && label.equals(button.getAction().getValue(Action.NAME))) {
+            return button;
+        }
+        for (Component child : root.getComponents()) {
+            if (child instanceof javax.swing.JToggleButton button
+                    && button.getAction() != null
+                    && label.equals(button.getAction().getValue(Action.NAME))) {
+                return button;
+            }
+            if (child instanceof Container container) {
+                javax.swing.JToggleButton found = findToggleButtonByActionName(container, label);
                 if (found != null) {
                     return found;
                 }

@@ -318,8 +318,18 @@ public final class Icons {
     // ---- efectos ----------------------------------------------------------
 
     public static Icon letter(String text) {
+        return letter(text, Font.BOLD);
+    }
+
+    /** El manual dibuja las ocho dinamicas (ppp...fff) en cursiva, a diferencia de las demas
+     * abreviaturas de la barra, que van en redonda. */
+    public static Icon italicLetter(String text) {
+        return letter(text, Font.BOLD | Font.ITALIC);
+    }
+
+    private static Icon letter(String text, int style) {
         return icon((graphics, size) -> {
-            graphics.setFont(small(size));
+            graphics.setFont(small(size).deriveFont(style));
             double width = graphics.getFontMetrics().stringWidth(text);
             graphics.drawString(text, (float) ((size - width) / 2), (float) (size * 0.7));
         });

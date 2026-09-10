@@ -16,6 +16,21 @@ public final class DynamicsDialog {
 
     public static void show(Component parent, Editor editor) {
         Dynamic current = editor.currentNote().map(note -> note.effects().dynamic()).orElse(Dynamic.defaultDynamic());
+        Fields fields = buildFields(current);
+
+        if (!DialogShell.ask(parent, "Dinámica", fields.form())) {
+            return;
+        }
+        Dynamic chosen = (Dynamic) fields.dynamics().getSelectedItem();
+        if (fields.wholeChord().isSelected()) {
+            editor.setChordDynamic(chosen);
+        } else {
+            editor.setDynamic(chosen);
+        }
+    }
+
+    /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
+    static Fields buildFields(Dynamic current) {
         JComboBox<Dynamic> dynamics = new JComboBox<>(Dynamic.values());
         dynamics.setSelectedItem(current);
         JCheckBox wholeChord = new JCheckBox("Aplicar a todo el acorde");
@@ -24,14 +39,9 @@ public final class DynamicsDialog {
                 .addRow("Dinámica", dynamics)
                 .addRow("", wholeChord);
 
-        if (!DialogShell.ask(parent, "Dinámica", form)) {
-            return;
-        }
-        Dynamic chosen = (Dynamic) dynamics.getSelectedItem();
-        if (wholeChord.isSelected()) {
-            editor.setChordDynamic(chosen);
-        } else {
-            editor.setDynamic(chosen);
-        }
+        return new Fields(form, dynamics, wholeChord);
+    }
+
+    record Fields(FormPanel form, JComboBox<Dynamic> dynamics, JCheckBox wholeChord) {
     }
 }

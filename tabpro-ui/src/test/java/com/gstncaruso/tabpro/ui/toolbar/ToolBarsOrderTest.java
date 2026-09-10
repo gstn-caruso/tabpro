@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JButton;
+import javax.swing.AbstractButton;
 import javax.swing.JToolBar;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +57,7 @@ class ToolBarsOrderTest {
                 "bar.alternateEndings", "bar.forceLineBreak", "bar.preventLineBreak", SEP,
                 "marker.insert", "marker.previous", "marker.next", "marker.list", SEP,
                 "sound.play", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
-                "sound.loop", SEP,
+                "sound.loop", "sound.soundFont", SEP,
                 "tool.transpose", SEP,
                 "nav.previousBar", "nav.nextBar", "tool.scales", "tool.tuner", SEP);
     }
@@ -73,7 +73,10 @@ class ToolBarsOrderTest {
                 "bar.octave8va", "bar.octave8vb", "bar.octave15ma", "bar.octave15mb", SEP,
                 "view.hideStandardNotation", "view.hideTablature", SEP,
                 "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak", SEP,
-                "note.stemUp", "note.stemDown", "note.stemAutomatic");
+                "note.stemUp", "note.stemDown", "note.stemAutomatic", SEP,
+                "note.dynamic.PIANO_PIANISSIMO", "note.dynamic.PIANISSIMO", "note.dynamic.PIANO",
+                "note.dynamic.MEZZO_PIANO", "note.dynamic.MEZZO_FORTE", "note.dynamic.FORTE",
+                "note.dynamic.FORTISSIMO", "note.dynamic.FORTE_FORTISSIMO");
     }
 
     @Test
@@ -103,7 +106,7 @@ class ToolBarsOrderTest {
         for (Component component : bar.getComponents()) {
             if (component instanceof JToolBar.Separator) {
                 actual.add(SEP);
-            } else if (component instanceof JButton button) {
+            } else if (component instanceof AbstractButton button) {
                 actual.add(button.getAction());
             }
         }
@@ -112,7 +115,7 @@ class ToolBarsOrderTest {
 
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
-        InvocationHandler handler = (proxy, method, args) -> null;
+        InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
         return (T) Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[] {port}, handler);
     }
 }

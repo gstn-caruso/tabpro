@@ -19,7 +19,17 @@ public final class FingeringDialog {
     public static void show(Component parent, Editor editor) {
         Optional<Finger> left = editor.currentNote().flatMap(note -> note.effects().leftHand());
         Optional<Finger> right = editor.currentNote().flatMap(note -> note.effects().rightHand());
+        Fields fields = buildFields(left, right);
 
+        if (!DialogShell.ask(parent, "Digitación", fields.form())) {
+            return;
+        }
+        editor.setLeftHandFinger(chosen(fields.leftHand()));
+        editor.setRightHandFinger(chosen(fields.rightHand()));
+    }
+
+    /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
+    static Fields buildFields(Optional<Finger> left, Optional<Finger> right) {
         JComboBox<Object> leftHand = fingers(left, Finger::leftHandSymbol);
         JComboBox<Object> rightHand = fingers(right, Finger::rightHandSymbol);
 
@@ -27,11 +37,10 @@ public final class FingeringDialog {
                 .addRow("Mano izquierda", leftHand)
                 .addRow("Mano derecha", rightHand);
 
-        if (!DialogShell.ask(parent, "Digitación", form)) {
-            return;
-        }
-        editor.setLeftHandFinger(chosen(leftHand));
-        editor.setRightHandFinger(chosen(rightHand));
+        return new Fields(form, leftHand, rightHand);
+    }
+
+    record Fields(FormPanel form, JComboBox<Object> leftHand, JComboBox<Object> rightHand) {
     }
 
     private static JComboBox<Object> fingers(

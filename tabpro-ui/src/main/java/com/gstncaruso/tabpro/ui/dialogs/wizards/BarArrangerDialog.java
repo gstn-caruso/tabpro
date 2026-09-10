@@ -16,6 +16,20 @@ public final class BarArrangerDialog {
     }
 
     public static void show(Component parent, Editor editor) {
+        Fields fields = buildFields();
+
+        boolean accepted = DialogShell.ask(parent, "Organizador de compases", fields.content(), "Organizar");
+        if (!accepted) {
+            return;
+        }
+        int trackIndex = editor.cursor().track();
+        editor.apply(score -> fields.scope().everyTrackSelected()
+                ? BarArranger.run(score)
+                : BarArranger.runOnTrack(score, trackIndex));
+    }
+
+    /** Arma el contenido y el campo que hay que releer si se acepta; sin abrir ningun dialogo. */
+    static Fields buildFields() {
         JPanel content = new JPanel(new BorderLayout(0, DialogStyle.GAP_S));
         DialogStyle.padded(content);
         content.add(new JLabel("<html>Reacomoda los beats para que cada compas sume<br>"
@@ -23,11 +37,9 @@ public final class BarArrangerDialog {
         TrackScopePanel scope = new TrackScopePanel();
         content.add(scope, BorderLayout.CENTER);
 
-        boolean accepted = DialogShell.ask(parent, "Organizador de compases", content, "Organizar");
-        if (!accepted) {
-            return;
-        }
-        int trackIndex = editor.cursor().track();
-        editor.apply(score -> scope.everyTrackSelected() ? BarArranger.run(score) : BarArranger.runOnTrack(score, trackIndex));
+        return new Fields(content, scope);
+    }
+
+    record Fields(JPanel content, TrackScopePanel scope) {
     }
 }

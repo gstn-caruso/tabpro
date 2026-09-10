@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
+import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import com.gstncaruso.tabpro.core.model.effects.StemOverride;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.swing.KeyStroke;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class CommandsTest {
@@ -34,6 +36,16 @@ class CommandsTest {
     private final Commands commands = new Commands(
             editor, record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
+
+    /**
+     * Armar el comando de sound.soundFont ya le pregunta al puerto su estado real para arrancar
+     * sincronizado (ver Commands.defineSoundCommands): esa pregunta no es lo que cada test quiere
+     * comprobar, asi que el rastro de "a quien le preguntaron" arranca limpio para cada uno.
+     */
+    @BeforeEach
+    void olvidaLoQuePreguntoElConstructor() {
+        asked.clear();
+    }
 
     @Test
     void everyCommandHasANameAndSomethingToDo() {
@@ -211,6 +223,30 @@ class CommandsTest {
             commands.get(name).actionPerformed(event());
             assertEquals(Optional.of(type), editor.currentNote().orElseThrow().effects().slide(), name);
         });
+    }
+
+    /**
+     * Manual, "Dynamic" (linea 1000): las ocho dinamicas, de ppp a fff, son botones que fijan la
+     * dinamica de la nota bajo el cursor, el mismo camino que ya usa DynamicsDialog sin marcar
+     * "aplicar a todo el acorde". Un acorde de dos cuerdas confirma que solo tocan esa nota.
+     */
+    @Test
+    void everyDynamicCommandSetsTheNoteUnderTheCursorWithoutTouchingTheRestOfTheChord() {
+        editor.setFret(5);
+        int firstString = editor.currentNote().orElseThrow().string();
+        editor.moveDown();
+        editor.setFret(7);
+        int secondString = editor.currentNote().orElseThrow().string();
+        editor.moveUp();
+        assertEquals(firstString, editor.currentNote().orElseThrow().string());
+
+        for (Dynamic dynamic : Dynamic.values()) {
+            commands.get("note.dynamic." + dynamic.name()).actionPerformed(event());
+            assertEquals(dynamic, editor.currentNote().orElseThrow().effects().dynamic(), dynamic.name());
+        }
+
+        assertEquals(Dynamic.defaultDynamic(),
+                editor.currentBeat().noteOn(secondString).orElseThrow().effects().dynamic());
     }
 
     @Test

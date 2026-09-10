@@ -1,3 +1,15 @@
+## [0.39.0](https://github.com/gstn-caruso/tabpro/compare/v0.38.0...v0.39.0) (2026-09-10)
+
+### Features
+
+* **toolbar:** las ocho dinámicas y el banco de sonidos como botones, donde GP5 los pone ([#132](https://github.com/gstn-caruso/tabpro/issues/132)) ([6ac062f](https://github.com/gstn-caruso/tabpro/commit/6ac062f7c072ba251ebe8a13422467818976fb8d))
+
+## [0.38.0](https://github.com/gstn-caruso/tabpro/compare/v0.37.1...v0.38.0) (2026-09-10)
+
+### Features
+
+* **toolbar:** las barras tienen el orden y los grupos de Guitar Pro 5, con los efectos abajo de la partitura ([#127](https://github.com/gstn-caruso/tabpro/issues/127)) ([ec3fc91](https://github.com/gstn-caruso/tabpro/commit/ec3fc91bcb1eb5b420ea3a39cece6248f294abc5))
+
 ## [0.37.1](https://github.com/gstn-caruso/tabpro/compare/v0.37.0...v0.37.1) (2026-09-10)
 
 ### Bug Fixes

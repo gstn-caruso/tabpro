@@ -15,6 +15,7 @@ import com.gstncaruso.tabpro.ui.MainFrame;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import javax.swing.JMenuItem;
 import javax.swing.JSlider;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,34 @@ class ConfigureTheSoundAuditTest {
             assertEquals(cambiosAntes + 1, devices.toggleCount(),
                     "F2, despachado de verdad sobre el lienzo, tiene que llegar al Devices real");
             assertEquals(!antes, devices.soundFontActive(), "F2 tiene que alternar el banco de sonido real");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    /**
+     * El test de arriba ya prueba que F2 llega al Devices real por el menu; este prueba que el
+     * conmutable de la barra -otro control, el mismo comando- se entera del cambio y lo muestra,
+     * no solo el item de menu que lo disparo. Una interfaz que no sincroniza sus controles entre
+     * si es la "interfaz que miente" que esta auditoria persigue.
+     */
+    @Test
+    void f2ConLaPartituraEnfocadaSincronizaElBotonRealDeLaBarra() throws Exception {
+        Editor editor = blankEditor();
+        AuditSupport.RecordingDevices devices = new AuditSupport.RecordingDevices();
+        MainFrame frame = AuditSupport.newFrame(editor, devices);
+        try {
+            ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
+            JToggleButton boton = AuditSupport.findToggleButtonByActionName(frame.getContentPane(), "Banco de sonido");
+            assertNotNull(boton, "no encontre el boton conmutable real de 'Banco de sonido'");
+            assertEquals(devices.soundFontActive(), boton.isSelected(),
+                    "el boton tiene que arrancar mostrando el estado real del banco de sonido");
+            boolean antes = boton.isSelected();
+
+            pressKey(canvas, KeyStroke.getKeyStroke("F2"));
+
+            assertEquals(!antes, boton.isSelected(), "F2 tiene que sincronizar el boton conmutable real");
+            assertEquals(devices.soundFontActive(), boton.isSelected());
         } finally {
             AuditSupport.dispose(frame);
         }

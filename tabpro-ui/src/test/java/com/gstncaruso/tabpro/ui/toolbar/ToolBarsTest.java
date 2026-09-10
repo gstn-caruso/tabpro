@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.toolbar;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,7 +14,9 @@ import java.awt.Component;
 import java.awt.Container;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import javax.swing.JButton;
+import java.util.List;
+import javax.swing.AbstractButton;
+import javax.swing.JToggleButton;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -100,16 +103,63 @@ class ToolBarsTest {
         for (Container row : new Container[] {
             toolBars.component(), toolBars.effectsComponent(),
         }) {
-            for (JButton button : buttonsOf(row)) {
+            for (AbstractButton button : buttonsOf(row)) {
                 assertNotNull(button.getIcon(), button.getAccessibleContext().getAccessibleName() + " sin icono");
             }
         }
     }
 
-    private java.util.List<JButton> buttonsOf(Container root) {
-        java.util.List<JButton> found = new java.util.ArrayList<>();
+    /**
+     * Manual, "Configure the Sound" (linea 1953): F2 prende o apaga el banco de sonido. Un
+     * conmutable que no arranca mostrando el estado real, o que se desincroniza en cuanto el
+     * cambio viene de otro lado (F2, el item del menu Sonido, que comparten este mismo comando),
+     * es la "interfaz que miente" que la auditoria de tabpro persigue.
+     */
+    @Test
+    void elBotonDelBancoDeSonidoArrancaYSeMantieneSincronizadoConElPuertoReal() {
+        boolean[] activo = {true};
+        List<String> llamados = new java.util.ArrayList<>();
+        InvocationHandler handler = (proxy, method, args) -> {
+            llamados.add(method.getName());
+            if (method.getName().equals("toggleSoundFont")) {
+                activo[0] = !activo[0];
+                return null;
+            }
+            if (method.getName().equals("soundFontActive")) {
+                return activo[0];
+            }
+            return null;
+        };
+        Ports.Playback playback = (Ports.Playback) Proxy.newProxyInstance(
+                Ports.Playback.class.getClassLoader(), new Class<?>[] {Ports.Playback.class}, handler);
+        ToolBars otraBarra = new ToolBars(new Commands(
+                editor, record(Ports.Document.class), record(Ports.Dialogs.class), playback, record(Ports.View.class)));
+        JToggleButton button = toggleButtonNamed(otraBarra.structureToolBar, "Banco de sonido");
+
+        assertTrue(button.isSelected(), "tiene que arrancar mostrando que el banco esta prendido");
+
+        button.doClick();
+        assertFalse(button.isSelected());
+
+        button.getAction().actionPerformed(null);
+        assertTrue(button.isSelected(), "un disparo ajeno al boton (F2, el menu) tiene que sincronizarlo igual");
+
+        assertEquals(2, llamados.stream().filter("toggleSoundFont"::equals).count());
+    }
+
+    private JToggleButton toggleButtonNamed(Container root, String name) {
+        for (AbstractButton button : buttonsOf(root)) {
+            if (button instanceof JToggleButton toggle && name.equals(button.getAccessibleContext().getAccessibleName())) {
+                return toggle;
+            }
+        }
+        throw new AssertionError("no encontre un boton conmutable llamado " + name);
+    }
+
+    private java.util.List<AbstractButton> buttonsOf(Container root) {
+        java.util.List<AbstractButton> found = new java.util.ArrayList<>();
         for (Component child : root.getComponents()) {
-            if (child instanceof JButton button) {
+            if (child instanceof AbstractButton button) {
                 found.add(button);
             }
             if (child instanceof Container container) {
@@ -121,7 +171,7 @@ class ToolBarsTest {
 
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
-        InvocationHandler handler = (proxy, method, args) -> null;
+        InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
         return (T) Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[] {port}, handler);
     }
 }

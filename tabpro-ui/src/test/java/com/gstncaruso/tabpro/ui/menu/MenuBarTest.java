@@ -141,7 +141,10 @@ class MenuBarTest {
                 "Armónico natural", "Armónico artificial",
                 "Slap", "Pop", "Rasgueo y púa",
                 "Último compás",
-                "Mesa de mezcla"), sinMnemonico);
+                "Mesa de mezcla",
+                // Las ocho dinamicas (linea 1000 del manual) agotan las letras libres del menu
+                // Nota: "ppp" y "mf" alcanzan mnemonico, las otras seis se suman a la lista.
+                "pp", "p", "mp", "f", "ff", "fff"), sinMnemonico);
     }
 
     private List<Violation> mnemonicViolationsOfEveryItem(JMenuBar bar) {
@@ -191,6 +194,20 @@ class MenuBarTest {
         assertTrue(itemLabels(sonido).contains("Configuración del metrónomo…"));
     }
 
+    /**
+     * Manual, "Dynamic" (linea 1000): las ocho dinamicas van junto a la entrada de dialogo
+     * existente, no en un submenu aparte.
+     */
+    @Test
+    void elMenuNotaOfreceLasOchoDinamicasJuntoALaEntradaExistente() {
+        JMenuBar bar = new MenuBar(commands).build();
+
+        Set<String> labels = itemLabels(menuNamed(bar, "Nota"));
+
+        assertTrue(labels.containsAll(
+                List.of("ppp", "pp", "p", "mp", "mf", "f", "ff", "fff")));
+    }
+
     private JMenu menuNamed(JMenuBar bar, String name) {
         for (int i = 0; i < bar.getMenuCount(); i++) {
             JMenu menu = bar.getMenu(i);
@@ -225,7 +242,7 @@ class MenuBarTest {
 
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
-        InvocationHandler handler = (proxy, method, args) -> null;
+        InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
         return (T) Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[] {port}, handler);
     }
 }
