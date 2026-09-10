@@ -114,6 +114,22 @@ class ZoomSelectorTest {
         assertEquals(selector.getPreferredSize().width, selector.getWidth());
     }
 
+    @Test
+    void conLaTipografiaDe20PuntosDeAccesibilidadElAnchoCreceYSigueSinEstirarse() {
+        ZoomSelector selectorConFuentePorDefecto = new ZoomSelector(zoomHolder, commands);
+        int anchoConFuentePorDefecto = selectorConFuentePorDefecto.getPreferredSize().width;
+
+        ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
+        selector.setFont(selector.getFont().deriveFont(20f));
+        JToolBar bar = new JToolBar();
+        bar.add(selector);
+        bar.setSize(1440, bar.getPreferredSize().height);
+        bar.doLayout();
+
+        assertTrue(selector.getPreferredSize().width > anchoConFuentePorDefecto);
+        assertEquals(selector.getPreferredSize().width, selector.getWidth());
+    }
+
     private static void type(ZoomSelector selector, String text) {
         selector.getEditor().setItem(text);
         selector.actionPerformed(new java.awt.event.ActionEvent(selector, java.awt.event.ActionEvent.ACTION_PERFORMED, ""));
