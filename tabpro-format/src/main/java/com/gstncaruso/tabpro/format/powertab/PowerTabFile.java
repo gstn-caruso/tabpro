@@ -42,7 +42,7 @@ import java.util.Optional;
  * copyrightable expression) and this implementation was written entirely from scratch,
  * in Java, with the design and names of the rest of tabpro. The real test fixtures that
  * use these classes are a different matter: those are indeed third-party files, and
- * their provenance and license (GPLv3) are documented separately in the LEEME.md of
+ * their provenance and license (GPLv3) are documented separately in the README.md of
  * {@code src/test/resources/powertab/}.
  *
  * <p>Opens a PowerTab score (.ptb). The file stores the header and then two complete
