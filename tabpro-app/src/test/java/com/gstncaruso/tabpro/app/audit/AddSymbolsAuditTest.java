@@ -39,7 +39,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class AddSymbolsAuditTest {
 
     @Test
-    void bendPorElAtajoBAbreElDialogoRealYElValorElegidoLlegaAlModelo() throws Exception {
+    void bendByTheBShortcutOpensTheRealDialogAndTheChosenValueReachesTheModel() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -52,20 +52,20 @@ class AddSymbolsAuditTest {
                 Container bendTab = tabContent(dialog, "Bend");
                 assertNotNull(bendTab, "no encontre la solapa Bend en el dialogo real");
 
-                JCheckBox activo = findComponent(bendTab, JCheckBox.class);
-                assertNotNull(activo);
-                if (!activo.isSelected()) {
-                    activo.doClick();
+                JCheckBox active = findComponent(bendTab, JCheckBox.class);
+                assertNotNull(active);
+                if (!active.isSelected()) {
+                    active.doClick();
                 }
 
                 @SuppressWarnings("unchecked")
-                JComboBox<BendType> tipo = (JComboBox<BendType>) findComponent(bendTab, JComboBox.class);
-                assertNotNull(tipo);
-                tipo.setSelectedItem(BendType.PREBEND);
+                JComboBox<BendType> type = (JComboBox<BendType>) findComponent(bendTab, JComboBox.class);
+                assertNotNull(type);
+                type.setSelectedItem(BendType.PREBEND);
 
-                JSpinner altura = findComponent(bendTab, JSpinner.class);
-                assertNotNull(altura);
-                altura.setValue(8);
+                JSpinner height = findComponent(bendTab, JSpinner.class);
+                assertNotNull(height);
+                height.setValue(8);
 
                 findButton(dialog, "Aceptar").doClick();
             });
@@ -82,7 +82,7 @@ class AddSymbolsAuditTest {
     }
 
     @Test
-    void palancaPorElMenuAbreElDialogoRealYElTipoPropioElegidoLlegaAlModelo() throws Exception {
+    void tremoloBarByTheMenuOpensTheRealDialogAndItsOwnChosenTypeReachesTheModel() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -93,18 +93,18 @@ class AddSymbolsAuditTest {
                 Container tremoloBarTab = tabContent(dialog, "Palanca");
                 assertNotNull(tremoloBarTab, "no encontre la solapa Palanca en el dialogo real");
 
-                JCheckBox activo = findComponent(tremoloBarTab, JCheckBox.class);
-                assertNotNull(activo);
-                if (!activo.isSelected()) {
-                    activo.doClick();
+                JCheckBox active = findComponent(tremoloBarTab, JCheckBox.class);
+                assertNotNull(active);
+                if (!active.isSelected()) {
+                    active.doClick();
                 }
 
                 @SuppressWarnings("unchecked")
-                JComboBox<BendType> tipo = (JComboBox<BendType>) findComponent(tremoloBarTab, JComboBox.class);
-                assertNotNull(tipo);
-                assertEquals(BendType.tremoloBarTypes(), comboValues(tipo),
+                JComboBox<BendType> type = (JComboBox<BendType>) findComponent(tremoloBarTab, JComboBox.class);
+                assertNotNull(type);
+                assertEquals(BendType.tremoloBarTypes(), comboValues(type),
                         "la solapa Palanca tiene que ofrecer sus seis tipos propios, no los del Bend");
-                tipo.setSelectedItem(BendType.DIVE);
+                type.setSelectedItem(BendType.DIVE);
 
                 findButton(dialog, "Aceptar").doClick();
             });
@@ -119,7 +119,7 @@ class AddSymbolsAuditTest {
     }
 
     @Test
-    void trinoPorElMenuAbreElDialogoRealYElValorElegidoLlegaAlModelo() throws Exception {
+    void trillByTheMenuOpensTheRealDialogAndTheChosenValueReachesTheModel() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -130,9 +130,9 @@ class AddSymbolsAuditTest {
                 Container trillTab = tabContent(dialog, "Trino");
                 assertNotNull(trillTab);
 
-                JCheckBox activo = findComponent(trillTab, JCheckBox.class);
-                if (!activo.isSelected()) {
-                    activo.doClick();
+                JCheckBox active = findComponent(trillTab, JCheckBox.class);
+                if (!active.isSelected()) {
+                    active.doClick();
                 }
 
                 JSpinner fret = findComponent(trillTab, JSpinner.class);
@@ -151,7 +151,7 @@ class AddSymbolsAuditTest {
     }
 
     @Test
-    void armonicosPorElMenuAbreElDialogoRealYElTipoElegidoLlegaAlModelo() throws Exception {
+    void harmonicsByTheMenuOpensTheRealDialogAndTheChosenTypeReachesTheModel() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -162,14 +162,14 @@ class AddSymbolsAuditTest {
                 Container harmonicsTab = tabContent(dialog, "Armónicos");
                 assertNotNull(harmonicsTab);
 
-                JCheckBox activo = findComponent(harmonicsTab, JCheckBox.class);
-                if (!activo.isSelected()) {
-                    activo.doClick();
+                JCheckBox active = findComponent(harmonicsTab, JCheckBox.class);
+                if (!active.isSelected()) {
+                    active.doClick();
                 }
 
                 @SuppressWarnings("unchecked")
-                JComboBox<HarmonicType> tipo = (JComboBox<HarmonicType>) findComponent(harmonicsTab, JComboBox.class);
-                tipo.setSelectedItem(HarmonicType.ARTIFICIAL);
+                JComboBox<HarmonicType> type = (JComboBox<HarmonicType>) findComponent(harmonicsTab, JComboBox.class);
+                type.setSelectedItem(HarmonicType.ARTIFICIAL);
 
                 findButton(dialog, "Aceptar").doClick();
             });
@@ -183,21 +183,21 @@ class AddSymbolsAuditTest {
     }
 
     @Test
-    void opcionesDeLetRingAbreElAsistenteRealConSuPropioTituloYFoco() throws Exception {
-        elAsistenteDeOpcionesAbreConSuPropioTituloYFoco("Opciones de let ring…", "Opciones de let ring", 0);
+    void letRingOptionsOpenTheRealWizardWithItsOwnTitleAndFocus() throws Exception {
+        theOptionsWizardOpensWithItsOwnTitleAndFocus("Opciones de let ring…", "Opciones de let ring", 0);
     }
 
     @Test
-    void opcionesDePalmMuteAbreElAsistenteRealConSuPropioTituloYFoco() throws Exception {
-        elAsistenteDeOpcionesAbreConSuPropioTituloYFoco("Opciones de palm mute…", "Opciones de palm mute", 1);
+    void palmMuteOptionsOpenTheRealWizardWithItsOwnTitleAndFocus() throws Exception {
+        theOptionsWizardOpensWithItsOwnTitleAndFocus("Opciones de palm mute…", "Opciones de palm mute", 1);
     }
 
     @Test
-    void opcionesDeDinamicaAbreElAsistenteRealConSuPropioTituloYFoco() throws Exception {
-        elAsistenteDeOpcionesAbreConSuPropioTituloYFoco("Opciones de dinámica…", "Opciones de dinámica", 2);
+    void dynamicsOptionsOpenTheRealWizardWithItsOwnTitleAndFocus() throws Exception {
+        theOptionsWizardOpensWithItsOwnTitleAndFocus("Opciones de dinámica…", "Opciones de dinámica", 2);
     }
 
-    private void elAsistenteDeOpcionesAbreConSuPropioTituloYFoco(
+    private void theOptionsWizardOpensWithItsOwnTitleAndFocus(
             String menuLabel, String expectedTitle, int expectedComboIndex) throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);

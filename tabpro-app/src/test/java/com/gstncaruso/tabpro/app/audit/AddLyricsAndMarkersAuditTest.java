@@ -28,7 +28,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class AddLyricsAndMarkersAuditTest {
 
     @Test
-    void laLetraEscritaEnLaSolapaRealDeInformacionDeLaPartituraLlegaAlModelo() throws Exception {
+    void lyricsTypedInTheScoreInformationTabReachTheModel() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -36,13 +36,13 @@ class AddLyricsAndMarkersAuditTest {
             assertNotNull(item, "no encontre 'Información de la partitura…' en el menu real");
 
             withDialog(item::doClick, dialog -> {
-                Container letra = tabContent(dialog, "Letra");
-                assertNotNull(letra, "no encontre la solapa real 'Letra'");
+                Container lyricsTab = tabContent(dialog, "Letra");
+                assertNotNull(lyricsTab, "no encontre la solapa real 'Letra'");
 
-                Container primeraLinea = tabContent(letra, "Línea 1");
-                assertNotNull(primeraLinea, "no encontre la pestaña real de la linea 1");
+                Container firstLineTab = tabContent(lyricsTab, "Línea 1");
+                assertNotNull(firstLineTab, "no encontre la pestaña real de la linea 1");
 
-                var areas = findComponents(primeraLinea, JTextArea.class);
+                var areas = findComponents(firstLineTab, JTextArea.class);
                 assertTrue(areas.size() >= 1, "no encontre el area real de texto de la primer linea");
                 areas.get(0).setText("Hola mundo");
 
@@ -57,7 +57,7 @@ class AddLyricsAndMarkersAuditTest {
     }
 
     @Test
-    void insertarAquiEnElDialogoRealDeMarcadoresDejaElMarcadorEnElCompasDelCursor() throws Exception {
+    void insertHereInTheMarkersDialogLeavesTheMarkerInTheCursorBar() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -66,9 +66,9 @@ class AddLyricsAndMarkersAuditTest {
             assertTrue(editor.score().attributesOf(0).marker().isEmpty(), "el compas arranca sin marcador");
 
             withDialog(item::doClick, dialog -> {
-                JTextField nombre = AuditSupport.findComponent(dialog, JTextField.class);
-                assertNotNull(nombre, "no encontre el campo real de nombre del marcador");
-                nombre.setText("Estribillo");
+                JTextField name = AuditSupport.findComponent(dialog, JTextField.class);
+                assertNotNull(name, "no encontre el campo real de nombre del marcador");
+                name.setText("Estribillo");
 
                 findButton(dialog, "Insertar aquí").doClick();
                 findButton(dialog, "Cerrar").doClick();
@@ -84,7 +84,7 @@ class AddLyricsAndMarkersAuditTest {
     }
 
     @Test
-    void editarElMarcadorDelCursorEnElDialogoRealDejaElNombreNuevoEnElModelo() throws Exception {
+    void editingTheCursorMarkerInTheDialogLeavesTheNewNameInTheModel() throws Exception {
         Editor editor = blankEditor();
         editor.setMarker(Marker.named("Intro"));
         MainFrame frame = newFrame(editor);
@@ -93,9 +93,9 @@ class AddLyricsAndMarkersAuditTest {
             assertNotNull(item, "no encontre 'Editar el marcador…' en el menu real");
 
             withDialog(item::doClick, dialog -> {
-                JTextField nombre = AuditSupport.findComponent(dialog, JTextField.class);
-                assertNotNull(nombre, "no encontre el campo real de nombre del marcador");
-                nombre.setText("Estribillo");
+                JTextField name = AuditSupport.findComponent(dialog, JTextField.class);
+                assertNotNull(name, "no encontre el campo real de nombre del marcador");
+                name.setText("Estribillo");
 
                 findButton(dialog, "Guardar cambios").doClick();
                 findButton(dialog, "Cerrar").doClick();
@@ -111,7 +111,7 @@ class AddLyricsAndMarkersAuditTest {
     }
 
     @Test
-    void borrarEnLaTablaRealDeMarcadoresQuitaElMarcadorDelModelo() throws Exception {
+    void deletingInTheMarkersTableRemovesTheMarkerFromTheModel() throws Exception {
         Editor editor = blankEditor();
         editor.setMarker(Marker.named("Intro"));
         MainFrame frame = newFrame(editor);
