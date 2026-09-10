@@ -7,9 +7,8 @@ import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 
 /**
  * Writes a "master bar": the attributes of a measure that Guitar Pro stores once per
- * measure. The mirror of {@link GuitarProMeasureAttributesReader}, but only for GP4: the
- * time signature and key signature are only written when they change from the previous
- * measure.
+ * measure. Only for GP4: the time signature and key signature are only written when
+ * they change from the previous measure.
  *
  * <p>The first measure is the exception, since it has no previous one: there they are
  * always written. A reader does "if the flag is set, read the value; if not, carry over

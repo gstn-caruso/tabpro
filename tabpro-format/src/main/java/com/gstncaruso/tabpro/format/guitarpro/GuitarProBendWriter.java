@@ -4,10 +4,7 @@ import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
 
-/**
- * The mirror of {@link GuitarProBendReader}. Every bend type tabpro recognizes has its
- * own code in the format: nothing is lost on export.
- */
+/** Every bend type tabpro recognizes has its own code in the format: nothing is lost on export. */
 final class GuitarProBendWriter {
 
     private static final int UNITS_PER_QUARTER_TONE = 25;

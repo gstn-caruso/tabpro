@@ -13,9 +13,9 @@ import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import com.gstncaruso.tabpro.core.model.effects.Trill;
 
 /**
- * The mirror of {@link GuitarProNoteReader}, but only for GP4: no note's own duration
- * and no structured harmonic, both of which GP5 adds. The grace note's "on beat" and
- * "dead" flags do not exist in GP4 either: they are lost when the grace note uses them.
+ * Only for GP4: no note's own duration and no structured harmonic, both of which GP5
+ * adds. The grace note's "on beat" and "dead" flags do not exist in GP4 either: they
+ * are lost when the grace note uses them.
  */
 final class GuitarProNoteWriter {
 

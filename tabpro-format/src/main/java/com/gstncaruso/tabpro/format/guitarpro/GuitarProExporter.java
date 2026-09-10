@@ -19,13 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Exports a score to the Guitar Pro 4 format. The mirror of {@link GuitarProFile}, but
- * for a single generation: GP4 carries lyrics, a single global triplet feel, and octave
- * in the key signature, and carries no directions, page setup, music author, or second
- * voice.
- *
- * <p>Whatever tabpro models that GP4 does not support is lost on export; {@link #warningsFor}
- * says exactly what, for this particular score.
+ * GP4 carries lyrics, a single global triplet feel, and octave in the key signature, and
+ * carries no directions, page setup, music author, or second voice.
  */
 public final class GuitarProExporter {
 

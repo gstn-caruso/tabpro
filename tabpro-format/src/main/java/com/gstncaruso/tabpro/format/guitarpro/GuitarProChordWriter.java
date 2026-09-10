@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Writes a chord diagram in the "new" format used from GP4 on (one-byte fields, seven
- * strings, fingering). The mirror of {@link GuitarProChordReader}.
+ * strings, fingering).
  *
  * <p>The format does not distinguish "show only the name" from "show the full diagram":
  * every exported chord reads back with its diagram visible, even when

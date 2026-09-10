@@ -9,7 +9,7 @@ import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 /**
  * Writes the header of a Guitar Pro 4 file: the score info, the lyrics, the tempo, and
  * the initial key signature. GP4 has no page setup or RSE, and the music author has no
- * field of its own: it is lost on export ({@link GuitarProExporter#warningsFor} reports it).
+ * field of its own: it is lost on export.
  */
 final class GuitarProHeaderWriter {
 

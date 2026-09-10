@@ -11,8 +11,8 @@ import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 
 /**
- * The mirror of {@link GuitarProBeatReader}, but only for GP4: it writes neither the
- * second voice nor the wide vibrato, since those only exist in other format generations.
+ * Only for GP4: it writes neither the second voice nor the wide vibrato, since those
+ * only exist in other format generations.
  */
 final class GuitarProBeatWriter {
 
@@ -182,7 +182,6 @@ final class GuitarProBeatWriter {
         return change.changes(parameter) ? change.valueOf(parameter).orElseThrow() : -1;
     }
 
-    /** The file expects mixing-table knobs in their sixteen steps, not in MIDI's 0 to 127. */
     private static int knobOrUnset(ParameterChange change, SoundParameter parameter) {
         int midi = valueOrUnset(change, parameter);
         return midi < 0 ? midi : GuitarProMixerLevel.ofMidi(midi).step();

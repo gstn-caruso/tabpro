@@ -35,7 +35,6 @@ final class GuitarProChannelReader {
         return new GuitarProChannel(clampedProgram, volume, pan, chorus, reverb, phaser, tremolo);
     }
 
-    /** Each knob comes in its sixteen steps, not in the 0 to 127 range the model uses. */
     private int effectByte(int value, int whenUnset) {
         return value == UNSET ? whenUnset : new GuitarProMixerLevel(value).midi();
     }

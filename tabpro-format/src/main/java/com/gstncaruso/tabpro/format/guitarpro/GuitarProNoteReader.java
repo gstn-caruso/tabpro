@@ -236,7 +236,6 @@ final class GuitarProNoteReader {
         return version.hasSlideMask() ? slideInMask(code) : slideTypeOf(code);
     }
 
-    /** The model stores a single slide per note: of the ones the mask carries, the first one counts. */
     private static SlideType slideInMask(int mask) {
         for (int bit = 0; bit < SLIDES_IN_MASK.length; bit++) {
             if ((mask & (1 << bit)) != 0) {

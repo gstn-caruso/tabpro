@@ -30,7 +30,6 @@ final class GuitarProChannelWriter {
         return List.of(table);
     }
 
-    /** The file stores each mixing-table knob in its sixteen steps, not MIDI's 0 to 127. */
     private static void writeKnob(GuitarProByteWriter writer, int midi) {
         writer.writeUnsignedByte(GuitarProMixerLevel.ofMidi(midi).step());
     }

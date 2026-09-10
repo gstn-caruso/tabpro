@@ -352,10 +352,7 @@ final class GuitarProBeatReader {
         return transition;
     }
 
-    /**
-     * Each value that changes carries how many beats it takes to arrive. The model
-     * handles a single transition per change, so it keeps the longest one.
-     */
+    /** Each value that changes carries its own byte for how many beats it takes to arrive. */
     private static int readTransitionDurations(GuitarProByteReader reader, int... changedValues) {
         int longest = 0;
         for (int value : changedValues) {

@@ -4,11 +4,6 @@ import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * The versions of the Guitar Pro binary format this code can read, with the layout
- * differences between them resolved by polymorphism instead of {@code if} cascades
- * scattered across the readers.
- */
 enum GuitarProVersion {
 
     GP3(3, 0),
@@ -47,7 +42,6 @@ enum GuitarProVersion {
         return generation;
     }
 
-    /** Reference title, only for readable error messages. */
     String label() {
         return "v" + generation + "." + String.format("%02d", minor);
     }

@@ -4,8 +4,7 @@ import com.gstncaruso.tabpro.core.model.Channel;
 
 /**
  * A Guitar Pro mixing-table value -- volume, pan, chorus, reverb, phaser, or tremolo --
- * seen as what it is in the file: one of the sixteen knob steps. The tabpro model
- * handles them in MIDI's 0 to 127, so a translation is needed in both directions.
+ * seen as what it is in the file: one of the sixteen knob steps.
  */
 record GuitarProMixerLevel(int step) {
 
@@ -16,7 +15,6 @@ record GuitarProMixerLevel(int step) {
         step = Math.clamp(step, 0, STEPS);
     }
 
-    /** The step the knob must be set to for it to sound this loud. */
     static GuitarProMixerLevel ofMidi(int midi) {
         return new GuitarProMixerLevel((midi + 1) / MIDI_PER_STEP);
     }

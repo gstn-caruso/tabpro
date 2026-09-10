@@ -22,7 +22,6 @@ final class GuitarProSoundingFrets {
 
     private final Map<VoicePart, Map<Integer, Integer>> fretByStringOf = new EnumMap<>(VoicePart.class);
 
-    /** Gives each tied note the fret of the note it continues. */
     Voice resolving(VoicePart part, Voice voice) {
         Map<Integer, Integer> sounding = fretByStringOf.computeIfAbsent(part, ignored -> new HashMap<>());
         List<Beat> beats = new ArrayList<>(voice.beatCount());
