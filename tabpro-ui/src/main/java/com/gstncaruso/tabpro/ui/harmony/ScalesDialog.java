@@ -49,7 +49,8 @@ public final class ScalesDialog {
         private final Editor editor;
         private final Player player;
         private final ChosenScale chosen;
-        private final JComboBox<PitchClass> tonics = new JComboBox<>();
+        private final DefaultListModel<PitchClass> tonicsModel = new DefaultListModel<>();
+        private final JList<PitchClass> tonics = new JList<>(tonicsModel);
         private final JComboBox<Scale> scales = new JComboBox<>(ScaleLibrary.all().toArray(Scale[]::new));
         private final DefaultListModel<ScaleTone> tones = new DefaultListModel<>();
         private final DefaultListModel<ScaleMatch> matches = new DefaultListModel<>();
@@ -63,24 +64,30 @@ public final class ScalesDialog {
             int lastMeasure = editor.currentTrack().measureCount();
             fromMeasure = new JSpinner(new SpinnerNumberModel(1, 1, lastMeasure, 1));
             toMeasure = new JSpinner(new SpinnerNumberModel(lastMeasure, 1, lastMeasure, 1));
-            tonics.setRenderer(new LabeledListCellRenderer());
+            tonics.setCellRenderer(new LabeledListCellRenderer());
+            tonics.getAccessibleContext().setAccessibleName("Tonalidad");
+            tonics.setToolTipText("Tonalidad");
             scales.setRenderer(new LabeledListCellRenderer());
-            PitchClasses.chromatic().forEach(tonics::addItem);
-            chosen.tonic().ifPresent(tonics::setSelectedItem);
+            PitchClasses.chromatic().forEach(tonicsModel::addElement);
+            chosen.tonic().ifPresent(tonic -> tonics.setSelectedValue(tonic, true));
             chosen.scale().ifPresent(scales::setSelectedItem);
 
             setLayout(new BorderLayout(10, 10));
             add(chooserZone(), BorderLayout.NORTH);
             add(tonesZone(), BorderLayout.CENTER);
             add(finderZone(), BorderLayout.SOUTH);
-            tonics.addActionListener(event -> chooseScale());
+            tonics.addListSelectionListener(event -> {
+                if (!event.getValueIsAdjusting()) {
+                    chooseScale();
+                }
+            });
             scales.addActionListener(event -> chooseScale());
             chooseScale();
         }
 
         private JPanel chooserZone() {
             JPanel zone = new JPanel(new GridLayout(1, 0, 8, 0));
-            zone.add(labelled("Tonalidad", tonics));
+            zone.add(labelled("Tonalidad", new JScrollPane(tonics)));
             zone.add(labelled("Escala", scales));
             return zone;
         }
@@ -151,7 +158,7 @@ public final class ScalesDialog {
             list.addListSelectionListener(event -> {
                 ScaleMatch match = list.getSelectedValue();
                 if (match != null) {
-                    tonics.setSelectedItem(match.tonic());
+                    tonics.setSelectedValue(match.tonic(), true);
                     scales.setSelectedItem(match.scale());
                 }
             });
@@ -162,7 +169,7 @@ public final class ScalesDialog {
         }
 
         private void chooseScale() {
-            PitchClass tonic = (PitchClass) tonics.getSelectedItem();
+            PitchClass tonic = tonics.getSelectedValue();
             Scale scale = (Scale) scales.getSelectedItem();
             if (tonic == null || scale == null) {
                 return;

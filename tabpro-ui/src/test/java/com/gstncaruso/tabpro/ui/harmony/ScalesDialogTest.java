@@ -27,17 +27,14 @@ class ScalesDialogTest {
     }
 
     @Test
-    void elComboDeTonalidadMuestraElNombreDeLaNotaEnCastellano() {
+    void laListaDeTonalidadMuestraElNombreDeLaNotaEnCastellano() {
         Editor editor = new Editor(Score.blank());
 
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), new ChosenScale());
 
-        @SuppressWarnings("unchecked")
-        JComboBox<PitchClass> tonics = Combos.firstWithItemType(panel, PitchClass.class);
-        Component rendered = tonics.getRenderer()
-                .getListCellRendererComponent(new JList<>(), PitchClass.of("C"), 0, false, false);
+        JList<?> tonics = Combos.firstListNamed(panel, "Tonalidad");
 
-        assertEquals("C (Do)", ((JLabel) rendered).getText());
+        assertEquals("C (Do)", Combos.renderedTextOfList(tonics, PitchClass.of("C")));
     }
 
     @Test
