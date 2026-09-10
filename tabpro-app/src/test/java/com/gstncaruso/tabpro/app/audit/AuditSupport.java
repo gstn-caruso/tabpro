@@ -67,6 +67,64 @@ final class AuditSupport {
         SwingUtilities.invokeAndWait(frame::dispose);
     }
 
+    /** Como newFrame, pero con un Player que el test puede inspeccionar despues. */
+    static MainFrame newFrame(Editor editor, Player player) throws Exception {
+        MainFrame[] built = new MainFrame[1];
+        SwingUtilities.invokeAndWait(() -> {
+            MainFrame frame = new MainFrame(editor, new NoScoreFiles(), player);
+            frame.pack();
+            frame.setVisible(true);
+            built[0] = frame;
+        });
+        return built[0];
+    }
+
+    /**
+     * No termina la reproduccion sola -al reves del Player de {@link #newFrame(Editor)}-: se
+     * queda "sonando" hasta que el propio Transport la frene, para poder mirar desde afuera si
+     * Espacio de verdad la arranco y la freno.
+     */
+    static final class RecordingPlayer implements Player {
+        private volatile boolean playCalled;
+        private volatile boolean stopCalled;
+        private volatile boolean playing;
+        private volatile Timeline lastTimeline;
+
+        @Override
+        public void play(Timeline timeline, PlaybackListener listener) {
+            playCalled = true;
+            lastTimeline = timeline;
+            playing = true;
+        }
+
+        @Override
+        public void playNote(Pitch pitch, int program) {
+        }
+
+        @Override
+        public void stop() {
+            stopCalled = true;
+            playing = false;
+        }
+
+        @Override
+        public boolean isPlaying() {
+            return playing;
+        }
+
+        boolean playCalled() {
+            return playCalled;
+        }
+
+        boolean stopCalled() {
+            return stopCalled;
+        }
+
+        Timeline lastTimeline() {
+            return lastTimeline;
+        }
+    }
+
     static Editor blankEditor() {
         return new Editor(Score.blank());
     }
