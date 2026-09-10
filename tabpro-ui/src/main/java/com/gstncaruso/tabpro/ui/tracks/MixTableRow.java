@@ -103,7 +103,7 @@ public final class MixTableRow extends JPanel {
 
         for (MixParameter parameter : List.of(
                 MixParameter.CHORUS, MixParameter.REVERB, MixParameter.PHASER, MixParameter.TREMOLO)) {
-            ParameterCell cell = new ParameterCell(editor, model, parameter, trackIndex);
+            ParameterCell cell = new ParameterCell(editor, parameter, trackIndex);
             parameterCells.add(cell);
             addColumn(cell, MixTable.PARAMETER_WIDTH);
         }
