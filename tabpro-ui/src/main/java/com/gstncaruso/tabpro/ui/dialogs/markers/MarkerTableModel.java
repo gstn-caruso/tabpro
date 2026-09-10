@@ -7,6 +7,8 @@ import javax.swing.table.AbstractTableModel;
 /** Las columnas Posicion/Nombre de la tabla de marcadores, en el orden en que caen los compases. */
 final class MarkerTableModel extends AbstractTableModel {
 
+    private static final String[] COLUMNS = {"Posición", "Nombre"};
+
     private List<MarkerList.Positioned> rows;
 
     MarkerTableModel(Score score) {
@@ -21,6 +23,11 @@ final class MarkerTableModel extends AbstractTableModel {
     @Override
     public int getColumnCount() {
         return 2;
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        return COLUMNS[column];
     }
 
     @Override

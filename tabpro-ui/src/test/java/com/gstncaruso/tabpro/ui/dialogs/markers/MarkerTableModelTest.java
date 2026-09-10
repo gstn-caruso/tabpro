@@ -43,4 +43,12 @@ class MarkerTableModelTest {
         assertEquals("Intro", model.getValueAt(0, 1));
         assertEquals("Estribillo", model.getValueAt(1, 1));
     }
+
+    @Test
+    void namesItsColumnsAsInTheManual() {
+        MarkerTableModel model = new MarkerTableModel(Score.blank());
+
+        assertEquals("Posición", model.getColumnName(0));
+        assertEquals("Nombre", model.getColumnName(1));
+    }
 }
