@@ -10,10 +10,8 @@ import org.junit.jupiter.api.Test;
 
 class ChordDiagramFingeringTest {
 
-    /** Do mayor abierto: cuerda6 muda, 5=3, 4=2, 3=0, 2=1, 1=0. */
     private static final ChordDiagram OPEN_C = ChordDiagram.named("C", List.of(0, 1, 0, 2, 3, -1));
 
-    /** Fa mayor con cejilla en el primer traste. */
     private static final ChordDiagram BARRE_F = ChordDiagram.named("F", List.of(1, 1, 2, 3, 3, 1));
 
     @Test
@@ -78,7 +76,6 @@ class ChordDiagramFingeringTest {
 
     @Test
     void unaCejillaConservaLaFormaAlMoverseDeTraste() {
-        // La misma cejilla de Fa (forma de Mi), corrida dos trastes: Sol mayor.
         ChordDiagram solConCejilla = new ChordDiagram("G", 3, List.of(3, 3, 4, 5, 5, 3), List.of(), true);
 
         assertEquals(BARRE_F.shape(), solConCejilla.shape());
