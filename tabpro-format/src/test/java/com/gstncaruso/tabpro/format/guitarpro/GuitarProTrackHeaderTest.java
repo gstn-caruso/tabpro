@@ -19,9 +19,9 @@ class GuitarProTrackHeaderTest {
 
     @Test
     void playsOnTheTwoChannelsTheFileGaveTheTrack() {
-        GuitarProTrackHeader guitarra = trackOn(1, 6, false);
+        GuitarProTrackHeader guitar = trackOn(1, 6, false);
 
-        Channel channel = guitarra.channelIn(TABLE);
+        Channel channel = guitar.channelIn(TABLE);
 
         assertEquals(1, channel.number());
         assertEquals(6, channel.effectChannel());
@@ -29,9 +29,9 @@ class GuitarProTrackHeaderTest {
 
     @Test
     void takesItsSoundFromTheSlotItsChannelPointsAt() {
-        GuitarProTrackHeader bajo = trackOn(2, 3, false);
+        GuitarProTrackHeader bass = trackOn(2, 3, false);
 
-        Channel channel = bajo.channelIn(TABLE);
+        Channel channel = bass.channelIn(TABLE);
 
         assertEquals(33, channel.program());
         assertEquals(90, channel.volume());
@@ -40,20 +40,20 @@ class GuitarProTrackHeaderTest {
 
     @Test
     void keepsBothChannelsInsideThePortWhenTheFileLies() {
-        GuitarProTrackHeader rota = trackOn(1, 99, false);
+        GuitarProTrackHeader lyingTrack = trackOn(1, 99, false);
 
-        Channel channel = rota.channelIn(TABLE);
+        Channel channel = lyingTrack.channelIn(TABLE);
 
         assertEquals(Channel.CHANNELS_PER_PORT, channel.effectChannel());
     }
 
     @Test
     void aTrackPointingOutsideTheTableStartsOnItsDefaultChannel() {
-        GuitarProTrackHeader perdida = trackOn(9, 10, false);
-        GuitarProTrackHeader percusionPerdida = trackOn(9, 10, true);
+        GuitarProTrackHeader lostTrack = trackOn(9, 10, false);
+        GuitarProTrackHeader lostPercussionTrack = trackOn(9, 10, true);
 
-        assertEquals(Channel.playing(Track.GUITAR_PROGRAM), perdida.channelIn(TABLE));
-        assertEquals(Channel.percussion(), percusionPerdida.channelIn(TABLE));
+        assertEquals(Channel.playing(Track.GUITAR_PROGRAM), lostTrack.channelIn(TABLE));
+        assertEquals(Channel.percussion(), lostPercussionTrack.channelIn(TABLE));
     }
 
     private static GuitarProTrackHeader trackOn(int channelIndex, int effectChannelIndex, boolean percussion) {
