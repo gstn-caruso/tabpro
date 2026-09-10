@@ -6,12 +6,6 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Lee los tipos primitivos del formato binario de Guitar Pro sobre un arreglo
- * de bytes: enteros little endian, colores, y los dos sabores de string que
- * usa el formato. No sabe nada de partituras: eso es responsabilidad de los
- * lectores de cada seccion del archivo.
- */
 final class GuitarProByteReader {
 
     private final byte[] data;
@@ -65,7 +59,7 @@ final class GuitarProByteReader {
         return value;
     }
 
-    /** El unico campo del formato que viene en big endian: la duracion en GP5. */
+    /** The only field in the format that comes in big-endian order: the duration in GP5. */
     double readDoubleBigEndian() {
         require(8);
         long bits = 0;
@@ -76,7 +70,7 @@ final class GuitarProByteReader {
         return Double.longBitsToDouble(bits);
     }
 
-    /** Un color RGBA; el cuarto byte no se usa. */
+    /** An RGBA color; the fourth byte is unused. */
     ScoreColor readColor() {
         int red = readUnsignedByte();
         int green = readUnsignedByte();
@@ -85,7 +79,7 @@ final class GuitarProByteReader {
         return new ScoreColor(red, green, blue);
     }
 
-    /** La armadura: un byte con la cantidad de alteraciones y otro con el modo. */
+    /** The key signature: one byte for the accidental count and another for the mode. */
     KeySignature readKeySignature() {
         int accidentals = readSignedByte();
         int modeByte = readUnsignedByte();
@@ -93,8 +87,8 @@ final class GuitarProByteReader {
     }
 
     /**
-     * "Byte-size string": un byte de longitud seguido de un bloque de tamano
-     * fijo que contiene el texto y su relleno.
+     * "Byte-size string": a length byte followed by a fixed-size block
+     * holding the text and its padding.
      */
     String readFixedString(int fixedLength) {
         int length = readUnsignedByte();
@@ -104,7 +98,7 @@ final class GuitarProByteReader {
         return text;
     }
 
-    /** "Int-size string" sin byte de longitud extra: un entero y el texto. */
+    /** "Int-size string" with no extra length byte: an integer followed by the text. */
     String readIntPrefixedString() {
         int length = readInt();
         require(length);
@@ -114,10 +108,10 @@ final class GuitarProByteReader {
     }
 
     /**
-     * "Int-size string" con byte de longitud redundante: un entero (largo mas
-     * uno, por compatibilidad historica), un byte con el largo real, y el
-     * texto. Es la que usa Guitar Pro para el encabezado, los marcadores y
-     * las plantillas de pagina.
+     * "Int-size string" with a redundant length byte: an integer (length
+     * plus one, for historical compatibility), a byte with the actual
+     * length, and the text. This is what Guitar Pro uses for the header,
+     * markers and page templates.
      */
     String readLengthPrefixedString() {
         readInt();

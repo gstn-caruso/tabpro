@@ -20,13 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
- * Extrae una tablatura ASCII de un texto cualquiera: las cuerdas son lineas de guiones, el
- * cambio de compas es una barra en todas las cuerdas a la vez, y el texto puede traer
- * comentarios alrededor, que se ignoran. Varios bloques seguidos con la misma cantidad de
- * cuerdas son sistemas de la misma pista; un cambio en la cantidad de cuerdas empieza una pista
- * nueva.
- */
 public final class AsciiTabImporter {
 
     public Score importScore(Path path, AsciiTabImportOptions options) {
@@ -54,12 +47,6 @@ public final class AsciiTabImporter {
         }
     }
 
-    /**
-     * El import de la ventana de ASCII: cae sobre la pista activa, como pide el manual, en vez de
-     * reemplazar toda la partitura. Si el texto trae bloques de otra cantidad de cuerdas a la
-     * mitad, solo se usa el primer grupo (el que coincide con el resto del texto) -- el import
-     * cae sobre una sola pista, y el resto se ignora.
-     */
     public Track importInto(Track target, String text, AsciiTabImportOptions options) {
         List<List<String>> blocks = AsciiTabBlocks.blocksIn(text);
         if (blocks.isEmpty()) {
@@ -73,7 +60,6 @@ public final class AsciiTabImporter {
         }
     }
 
-    /** Bloques seguidos con la misma cantidad de cuerdas son sistemas de una misma pista. */
     private static List<List<List<String>>> groupIntoTracks(List<List<String>> blocks) {
         List<List<List<String>>> tracks = new ArrayList<>();
         for (List<String> block : blocks) {
@@ -96,7 +82,6 @@ public final class AsciiTabImporter {
         return new Track("Pista " + (index + 1), tuning, Channel.playing(program), measures);
     }
 
-    /** Los compases de un grupo de bloques homogeneo (misma cantidad de cuerdas en todos). */
     private static List<Measure> measuresFrom(List<List<String>> blocks, AsciiTabImportOptions options) {
         List<String> lines = concatenate(blocks);
         List<int[]> cells = cellsOf(barColumnsOf(lines), lines.getFirst().length());
@@ -108,7 +93,6 @@ public final class AsciiTabImporter {
                 : measures;
     }
 
-    /** Pega, cuerda por cuerda, los bloques de una misma pista uno atras del otro. */
     private static List<String> concatenate(List<List<String>> blocks) {
         int stringCount = blocks.getFirst().size();
         StringBuilder[] lines = new StringBuilder[stringCount];
@@ -125,7 +109,6 @@ public final class AsciiTabImporter {
         return java.util.Arrays.stream(lines).map(StringBuilder::toString).toList();
     }
 
-    /** Las columnas en las que absolutamente todas las cuerdas muestran una barra a la vez. */
     private static List<Integer> barColumnsOf(List<String> lines) {
         int length = lines.getFirst().length();
         List<Integer> bars = new ArrayList<>();
@@ -138,7 +121,6 @@ public final class AsciiTabImporter {
         return bars;
     }
 
-    /** Un compas por cada tramo entre dos barras (o entre el borde del texto y la barra mas cercana). */
     private static List<int[]> cellsOf(List<Integer> barColumns, int length) {
         List<Integer> boundaries = new ArrayList<>();
         boundaries.add(-1);
@@ -166,7 +148,6 @@ public final class AsciiTabImporter {
         return new Measure(timeSignature, beats);
     }
 
-    /** Los golpes de un tramo, agrupados por columna: la misma columna en varias cuerdas es un acorde. */
     private static List<Attack> attacksIn(int from, int to, List<String> lines) {
         Map<Integer, Map<Integer, Integer>> byStart = new TreeMap<>();
         for (int index = 0; index < lines.size(); index++) {
@@ -203,9 +184,10 @@ public final class AsciiTabImporter {
     }
 
     /**
-     * El ritmo {@code <variable>} del manual: cada columna vale una fraccion fija de negra (la
-     * grilla que fija intervalsPerQuarterNote, la "segunda lista"), sin importar cuantas columnas
-     * tenga el tramo -- cuanto mas lejos la siguiente nota, mas larga la anterior.
+     * The manual's {@code <variable>} rhythm: every column is worth a fixed fraction of a
+     * quarter note (the grid set by intervalsPerQuarterNote, the manual's "second list"),
+     * no matter how many columns the stretch spans -- the farther the next note, the longer
+     * the previous one.
      */
     private static List<Beat> beatsFromSpacing(List<Attack> attacks, int intervalsPerQuarterNote, TimeSignature timeSignature) {
         long ticksPerMeasure = timeSignature.ticksPerMeasure();

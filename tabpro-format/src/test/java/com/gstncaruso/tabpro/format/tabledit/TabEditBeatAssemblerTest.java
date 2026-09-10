@@ -17,12 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * TablEdit ubica cada nota o silencio en una posicion absoluta de la grilla;
- * tabpro pide una secuencia de beats consecutivos. Este es el paso que arma
- * esa secuencia, rellenando con silencio cualquier lugar de la grilla que el
- * archivo haya dejado sin marcar.
- */
 class TabEditBeatAssemblerTest {
 
     private static final TabEditMeasure FOUR_FOUR = new TabEditMeasure(TimeSignature.fourFour(), KeySignature.cMajor());
@@ -44,8 +38,6 @@ class TabEditBeatAssemblerTest {
 
     @Test
     void unHuecoEnLaGrillaSeRellenaConUnSilencio() {
-        // Una negra en la posicion 0 (ocupa los lugares 0 a 3 de la grilla), y recien la
-        // siguiente nota en el lugar 12: faltan los lugares 4 a 11, media redonda de silencio.
         List<TabEditEvent> events = List.of(
                 noteAt(0, 0, 5, NoteValue.QUARTER, VoicePart.LEAD),
                 noteAt(0, 12, 7, NoteValue.QUARTER, VoicePart.LEAD));

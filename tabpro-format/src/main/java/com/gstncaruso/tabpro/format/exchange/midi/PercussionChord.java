@@ -5,11 +5,6 @@ import com.gstncaruso.tabpro.core.model.PercussionKit;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Ubica los golpes simultaneos de una pista de percusion en las lineas de la tablatura de
- * bateria. En percusion el traste ya es el sonido de General MIDI (Note.fret); la linea es
- * solo para que dos golpes a la vez no compartan renglon, PercussionKit.LINE_COUNT como mucho.
- */
 final class PercussionChord {
 
     private PercussionChord() {

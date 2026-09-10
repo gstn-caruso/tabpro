@@ -10,11 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
-/**
- * El fixture es {@code song_header.ptb}, del propio repositorio de
- * powertabeditor (powertab/powertabeditor, GPLv3): un archivo real usado por
- * su propia suite de tests para probar la lectura de la cabecera.
- */
 class PowerTabHeaderReaderTest {
 
     private final PowerTabHeaderReader reader = new PowerTabHeaderReader();

@@ -1,6 +1,6 @@
 package com.gstncaruso.tabpro.format.powertab;
 
-/** Lee un marcador de tempo: hereda de "system symbol" y agrega su descripcion. */
+/** Reads a tempo marker: inherits from "system symbol" and adds its description. */
 final class PowerTabTempoMarkerReader {
 
     private static final int TYPE_SHIFT = 27;
@@ -11,7 +11,7 @@ final class PowerTabTempoMarkerReader {
         int system = reader.readUnsignedShort();
         int position = reader.readUnsignedByte();
         int data = reader.readInt();
-        reader.readMfcString(); // descripcion: no tiene lugar en el modelo.
+        reader.readMfcString(); // description: has no place in the model.
 
         int type = (data >>> TYPE_SHIFT) & TYPE_MASK;
         int beatsPerMinute = data & BEATS_PER_MINUTE_MASK;

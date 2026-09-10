@@ -11,14 +11,12 @@ import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import java.io.ByteArrayOutputStream;
 import org.junit.jupiter.api.Test;
 
-/** Las notas se arman a mano, byte a byte, siguiendo el layout de note.cpp de powertabeditor. */
 class PowerTabNoteReaderTest {
 
     private final PowerTabNoteReader reader = new PowerTabNoteReader();
 
     @Test
     void readsTheStringAndFret() {
-        // cuerda 2 (0-based) = cuerda 3 en el modelo (1-based); traste 5.
         Note note = readNote(stringData(2, 5), 0);
 
         assertEquals(3, note.string());
@@ -74,7 +72,6 @@ class PowerTabNoteReaderTest {
 
     @Test
     void readsABendFromAComplexSymbol() {
-        // bendAndHold (2) con altura 3 en cuartos de tono.
         int bentPitch = 3;
         int symbol = ('e' << 24) | (2 << 20) | (bentPitch << 4);
         Note note = readNote(stringData(0, 0), 0, symbol);

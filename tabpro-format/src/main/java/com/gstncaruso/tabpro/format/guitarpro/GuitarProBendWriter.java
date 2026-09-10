@@ -4,18 +4,14 @@ import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
 
-/**
- * Escribe la curva de un bend o de una palanca: el espejo de {@link GuitarProBendReader}.
- * Todos los tipos de bend que reconoce tabpro tienen un codigo propio en el formato: no
- * se pierde nada al exportar.
- */
+/** Every bend type tabpro recognizes has its own code in the format: nothing is lost on export. */
 final class GuitarProBendWriter {
 
     private static final int UNITS_PER_QUARTER_TONE = 25;
 
     void write(GuitarProByteWriter writer, Bend bend) {
         writer.writeSignedByte(codeOf(bend.type()));
-        writer.writeInt(bend.peakQuarterTones() * UNITS_PER_QUARTER_TONE); // profundidad general: solo informativa.
+        writer.writeInt(bend.peakQuarterTones() * UNITS_PER_QUARTER_TONE); // overall depth: informational only.
         writer.writeInt(bend.points().size());
         for (BendPoint point : bend.points()) {
             writer.writeInt(point.position());

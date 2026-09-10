@@ -3,13 +3,9 @@ package com.gstncaruso.tabpro.format.exchange.midi;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import java.util.Locale;
 
-/**
- * La afinacion que propone el "import rapido" cuando no hay tablatura en el archivo: se fija
- * en el nombre de la pista y, si no dice nada, en la familia de instrumento de General MIDI.
- */
 final class TrackTuningGuess {
 
-    /** Los programas 33 a 40 de General MIDI (1 a 128) son la familia de los bajos. */
+    /** General MIDI programs 33 to 40 (1 to 128) are the bass family. */
     private static final int FIRST_BASS_PROGRAM = 32;
     private static final int LAST_BASS_PROGRAM = 39;
 

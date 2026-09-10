@@ -19,11 +19,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * El lector completo: arma un archivo TEF3 minimo a mano (no hay muestras
- * reales de TablEdit disponibles) y confirma que el resultado sea la
- * partitura que ese archivo describe.
- */
 class TabEditFileTest {
 
     private final TabEditFile file = new TabEditFile();

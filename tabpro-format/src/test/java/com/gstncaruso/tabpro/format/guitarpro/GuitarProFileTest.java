@@ -27,11 +27,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/**
- * Lee los tres fixtures, que traen el mismo contenido escrito en las tres
- * generaciones del formato: una guitarra en afinacion estandar, dos compases de
- * 4/4 en negras con una escala de Do mayor sobre la quinta cuerda.
- */
 class GuitarProFileTest {
 
     private static final List<Integer> FIRST_MEASURE_FRETS = List.of(3, 5, 7, 8);
@@ -116,11 +111,6 @@ class GuitarProFileTest {
         assertThrows(ScoreFileException.class, () -> files.read(path));
     }
 
-    /**
-     * Guitar Pro no escribe el salto de linea del ultimo compas de la ultima pista: el
-     * archivo termina justo despues de su ultima voz. Todos los .gp5 que graba son asi,
-     * y el lector tiene que darlos por terminados en vez de pedir un byte que no existe.
-     */
     @Test
     void readsAGp5ThatEndsWithoutTheLineBreakOfItsLastMeasure(@TempDir Path folder) throws Exception {
         Path path = folder.resolve("sin-salto-final.gp5");
@@ -132,8 +122,6 @@ class GuitarProFileTest {
         assertEquals(FIRST_MEASURE_FRETS, fretsOf(score.track(0).measure(0)));
         assertEquals(SECOND_MEASURE_FRETS, fretsOf(score.track(0).measure(1)));
     }
-
-    // ---- el fixture con efectos, acordes, varias pistas y percusion ----------
 
     @ParameterizedTest
     @ValueSource(strings = {"gp3", "gp4", "gp5"})
@@ -221,7 +209,6 @@ class GuitarProFileTest {
         assertEquals(List.of(-1, 3, 2, 0, 3, 0), chord.frets());
     }
 
-    /** La segunda voz existe recien en gp5: gp3 y gp4 guardan una sola por compas. */
     @Test
     void readsTheSecondVoiceOfAGp5() {
         Measure first = readFeatures("gp5").track(0).measure(0);
@@ -239,8 +226,6 @@ class GuitarProFileTest {
         assertFalse(readFeatures("gp4").track(0).measure(0).usesTwoVoices());
     }
 
-    // ---- los efectos que el formato ramifica por version ---------------------
-
     @ParameterizedTest
     @ValueSource(strings = {"gp3", "gp4", "gp5"})
     void readsALigatureAsAPairOfNotes(String extension) {
@@ -250,7 +235,6 @@ class GuitarProFileTest {
         assertTrue(first.beat(1).notes().getFirst().tied());
     }
 
-    /** En GP3 el vibrato es del beat entero; el lector lo reparte a sus notas. */
     @ParameterizedTest
     @ValueSource(strings = {"gp3", "gp4", "gp5"})
     void readsAVibrato(String extension) {
@@ -269,7 +253,6 @@ class GuitarProFileTest {
                 second.beat(0).notes().getFirst().effects().harmonic());
     }
 
-    /** Los armonicos que no son natural ni artificial existen recien en GP4. */
     @ParameterizedTest
     @ValueSource(strings = {"gp4", "gp5"})
     void readsTheHarmonicsThatOnlyExistFromGp4(String extension) {
@@ -286,7 +269,6 @@ class GuitarProFileTest {
                 score.track(0).measure(2).beat(0).notes().getFirst().effects().harmonic());
     }
 
-    /** En 5.00 el byte de banderas va delante de todas las pistas, no solo la primera. */
     @Test
     void readsAScoreSavedAsVersionFiveZero() {
         Score score = files.read(fixtureNamed("tabpro-features-v5", "00.gp5"));
@@ -298,15 +280,6 @@ class GuitarProFileTest {
         assertEquals(List.of(3, 5, 7, 8), fretsOf(score.track(0).measure(0)));
     }
 
-    // ---- las direcciones musicales (Coda, Segno, Da Capo, etc.) --------------
-
-    /**
-     * El fixture sintetico no trae direcciones, asi que este test parchea una copia
-     * suya: ubica el offset real del bloque (leyendo cabecera y canales con los
-     * mismos lectores que usa {@link GuitarProFile}) y le escribe un Da Segno al
-     * Coda en el primer compas y un Coda en el segundo, dejando el resto del
-     * archivo intacto.
-     */
     @Test
     void readsTheDirectionSymbolsAndJumpsOfAGp5() throws Exception {
         Score score = files.read(fixtureWithDirections());
@@ -323,12 +296,11 @@ class GuitarProFileTest {
         new GuitarProChannelReader().read(probe);
         int offset = probe.position();
 
-        // slot 0 = Coda (el primer simbolo de destino); slot 10 = Da Segno al Coda
-        // (el sexto salto), segun el orden documentado del bloque de direcciones de GP5.
-        // Cada casillero guarda el numero del compas, que empieza en uno.
+        int codaSlot = 0;
+        int daSegnoAlCodaSlot = 10;
         GuitarProFileWriter block = new GuitarProFileWriter();
         for (int slot = 0; slot < 19; slot++) {
-            int measureNumber = slot == 0 ? 2 : slot == 10 ? 1 : -1;
+            int measureNumber = slot == codaSlot ? 2 : slot == daSegnoAlCodaSlot ? 1 : -1;
             block.writeShort(measureNumber);
         }
         block.writeInt(0);

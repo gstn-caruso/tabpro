@@ -6,11 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Donde hay que anotar el corchete de un grupo irregular: al principio y al final de cada
- * corrida seguida de beats con el mismo grupo (Duration.tuplet()). Un beat sin grupo no lleva
- * marca.
- */
 final class TupletRuns {
 
     record Mark(boolean start, boolean stop) {

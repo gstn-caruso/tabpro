@@ -7,15 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Convierte cantidades de tics sueltas (las que trae un MIDI, una tablatura ASCII con espaciado
- * libre, o un grupo irregular de MusicXML) a las figuras simples que el modelo sabe representar.
- * El modelo no tiene grupos irregulares para figuras importadas de otro formato: esta clase
- * redondea a la figura simple (con o sin puntillo) mas parecida.
- */
 public final class DurationTicks {
 
-    /** La figura mas chica que el modelo distingue: la fusa. Toda grilla de importacion usa esta unidad. */
     public static final long GRID_TICKS = Duration.of(NoteValue.SIXTY_FOURTH).ticks();
 
     private static final List<Duration> SIMPLE_DURATIONS = simpleDurations();
@@ -23,19 +16,12 @@ public final class DurationTicks {
     private DurationTicks() {
     }
 
-    /** La figura simple cuya duracion en tics mas se acerca a la pedida. */
     public static Duration nearestTo(long ticks) {
         return SIMPLE_DURATIONS.stream()
                 .min(Comparator.comparingLong(duration -> Math.abs(duration.ticks() - ticks)))
                 .orElseThrow();
     }
 
-    /**
-     * Lo mismo, pero exigiendo que la figura elegida sea representable exactamente con esta
-     * grilla: la precision que el import de MIDI deja elegir para la posicion y la duracion de
-     * las notas de una interpretacion humana. Una corchea con puntillo, por ejemplo, necesita una
-     * grilla de semicorchea o mas fina -- pedir una grilla de corchea la descarta.
-     */
     public static Duration nearestTo(long ticks, NoteValue finestGrid) {
         long gridTicks = Duration.of(finestGrid).ticks();
         return SIMPLE_DURATIONS.stream()
@@ -44,11 +30,6 @@ public final class DurationTicks {
                 .orElseThrow();
     }
 
-    /**
-     * Parte una cantidad de tics en una secuencia de figuras simples que suman exactamente eso,
-     * de mas larga a mas corta. Si la cantidad ya es una figura simple (con o sin puntillo), el
-     * resultado es esa unica figura.
-     */
     public static List<Duration> decompose(long ticks) {
         long rounded = Math.round(ticks / (double) GRID_TICKS) * GRID_TICKS;
         if (rounded <= 0) {

@@ -3,12 +3,11 @@ package com.gstncaruso.tabpro.format.powertab;
 import java.util.List;
 
 /**
- * Lee un sistema: su barra de arranque completa, las barras internas, el tipo
- * y la repeticion de su barra final, y sus pentagramas. Las direcciones y el
- * texto de acorde no tienen destino en el modelo y se descartan; las barras
- * de ritmo (rhythm slash) se cuentan nada mas, porque representarian musica
- * de verdad que todavia no sabemos convertir: quien ensambla la partitura
- * decide si eso alcanza para rechazar el archivo.
+ * Reads a system: its complete start barline, the internal barlines, the type and
+ * repeat count of its end barline, and its staves. Directions and chord text have no
+ * place in the model and are discarded; rhythm slashes are only counted, because they
+ * would represent real music we do not yet know how to convert: whoever assembles the
+ * score decides whether that is enough to reject the file.
  */
 final class PowerTabSystemReader {
 
@@ -16,14 +15,14 @@ final class PowerTabSystemReader {
     private final PowerTabStaffReader staffReader = new PowerTabStaffReader();
 
     PowerTabSystem read(PowerTabByteReader reader) {
-        reader.skip(16); // rectangulo del sistema: no tiene lugar en el modelo.
+        reader.skip(16); // system rectangle: has no place in the model.
         int endBarByte = reader.readUnsignedByte();
         int endBarType = (endBarByte >>> 5) & 0x07;
         int endBarRepeatCount = endBarByte & 0x1f;
-        reader.readUnsignedByte(); // espaciado entre posiciones.
-        reader.readUnsignedByte(); // espaciado de rhythm slash, arriba.
-        reader.readUnsignedByte(); // espaciado de rhythm slash, abajo.
-        reader.readUnsignedByte(); // espaciado extra.
+        reader.readUnsignedByte(); // spacing between positions.
+        reader.readUnsignedByte(); // rhythm slash spacing, above.
+        reader.readUnsignedByte(); // rhythm slash spacing, below.
+        reader.readUnsignedByte(); // extra spacing.
 
         PowerTabBarline startBar = barlineReader.read(reader);
 

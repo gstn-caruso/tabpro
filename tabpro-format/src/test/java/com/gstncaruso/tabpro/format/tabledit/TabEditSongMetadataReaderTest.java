@@ -4,12 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Los metadatos de la cancion: titulo, autor, comentarios y notas siempre
- * estan; la url y el copyright son opcionales segun el encabezado. La letra
- * completa y los eventos de texto se consumen para no perder la alineacion,
- * pero tabpro todavia no los traduce a su propio modelo.
- */
 class TabEditSongMetadataReaderTest {
 
     private final TabEditSongMetadataReader reader = new TabEditSongMetadataReader();
@@ -21,7 +15,7 @@ class TabEditSongMetadataReaderTest {
                 .writeShortString("Un autor")
                 .writeShortString("unos comentarios")
                 .writeShortString("unas notas")
-                .writeShortString(""); // lyrics: sin pistas, una sola entrada vacia
+                .writeShortString("");
         TabEditHeader header = header(false, false, false);
 
         TabEditSongMetadata metadata = reader.read(new TabEditByteReader(writer.bytes()), header);
@@ -42,7 +36,7 @@ class TabEditSongMetadataReaderTest {
                 .writeShortString("")
                 .writeShortString("http://ejemplo.com")
                 .writeShortString("(c) alguien")
-                .writeShortString(""); // lyrics
+                .writeShortString("");
         TabEditHeader header = header(true, true, false);
 
         TabEditSongMetadata metadata = reader.read(new TabEditByteReader(writer.bytes()), header);
@@ -57,11 +51,11 @@ class TabEditSongMetadataReaderTest {
                 .writeShortString("A")
                 .writeShortString("")
                 .writeShortString("")
-                .writeShortString("") // lyrics
+                .writeShortString("")
                 .writeShort(2)
                 .writeShortString("primer evento")
                 .writeShortString("segundo evento");
-        writer.writeUnsignedByte(77); // marca para confirmar que la lectura sigue alineada
+        writer.writeUnsignedByte(77);
         TabEditHeader header = headerWithTextEvents();
         TabEditByteReader input = new TabEditByteReader(writer.bytes());
 

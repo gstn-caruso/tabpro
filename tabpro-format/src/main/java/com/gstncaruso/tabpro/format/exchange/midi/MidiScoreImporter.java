@@ -31,15 +31,6 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 
-/**
- * Trae una partitura desde un archivo MIDI (formato 0 o 1). Ofrece el "import rapido" del
- * manual, una pista de tabpro por cada pista MIDI con la afinacion deducida de su nombre o
- * instrumento, y el "paso a paso", que trae una o varias pistas MIDI elegidas (fusionadas en
- * una sola si son varias) sobre una pista existente (con su propia afinacion) y permite
- * transportarla una octava abajo. Las notas que no entran en la afinacion elegida se descartan.
- * En los dos modos se puede elegir la precision con la que se cuantiza la posicion y la
- * duracion de las notas -- vacio es sin restringir, como una interpretacion humana no cuantizada.
- */
 public final class MidiScoreImporter {
 
     private static final int OCTAVE = 12;
@@ -48,27 +39,20 @@ public final class MidiScoreImporter {
         return parse(path).tracks().stream().map(MidiTrackSummary::of).toList();
     }
 
-    /** Una pista de tabpro por cada pista del MIDI que tenga notas. */
     public Score importQuick(Path path) {
         ParsedMidiFile file = parse(path);
         return importQuick(path, file, file.tracks(), false, Optional.empty(), Optional.empty(), true);
     }
 
-    /** El import rapido, pero solo con las pistas MIDI elegidas y con transposicion opcional. */
     public Score importQuick(Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave) {
         return importQuick(path, selectedMidiTrackIndices, transposeDownOneOctave, Optional.empty());
     }
 
-    /** Lo mismo, pero cuantizando posicion y duracion con la precision elegida. */
     public Score importQuick(
             Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision) {
         return importQuick(path, selectedMidiTrackIndices, transposeDownOneOctave, precision, true);
     }
 
-    /**
-     * Lo mismo, pero con la casilla "Use 2 channels per track" del manual: con dos canales el
-     * de efectos es el que sigue al de la pista; con uno solo, los dos coinciden.
-     */
     public Score importQuick(
             Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision,
             boolean useTwoChannelsPerTrack) {
@@ -103,13 +87,11 @@ public final class MidiScoreImporter {
         return new Score(title, file.tempoBpm(), tracks);
     }
 
-    /** Los compases de una o varias pistas MIDI elegidas (fusionadas si son varias), listos para reemplazar los de una pista propia. */
     public List<Measure> importMeasures(
             Path path, List<Integer> midiTrackIndices, Tuning tuning, int fretCount, boolean transposeDownOneOctave) {
         return importMeasures(path, midiTrackIndices, tuning, fretCount, transposeDownOneOctave, Optional.empty());
     }
 
-    /** Lo mismo, pero cuantizando posicion y duracion con la precision elegida. */
     public List<Measure> importMeasures(
             Path path, List<Integer> midiTrackIndices, Tuning tuning, int fretCount, boolean transposeDownOneOctave,
             Optional<NoteValue> precision) {
@@ -125,12 +107,10 @@ public final class MidiScoreImporter {
         return measuresOf(raw, file.grid(), tuning, fretCount, transposeDownOneOctave, noteDurationQuantize);
     }
 
-    /** El "paso a paso" del manual: la o las pistas MIDI elegidas reemplazan los compases de target. */
     public Track importInto(Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave) {
         return importInto(target, path, midiTrackIndices, transposeDownOneOctave, Optional.empty());
     }
 
-    /** Lo mismo, pero cuantizando posicion y duracion con la precision elegida. */
     public Track importInto(
             Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision) {
         return importInto(target, path, midiTrackIndices, transposeDownOneOctave, Optional.empty(), precision);
@@ -145,10 +125,6 @@ public final class MidiScoreImporter {
         return target.withMeasures(measures);
     }
 
-    /**
-     * Lo que hay que reproducir para escuchar la o las pistas elegidas antes de importarlas, tal
-     * como suenan en el archivo -- el manual deja escuchar las pistas MIDI antes de traerlas.
-     */
     public Timeline timelineOf(Path path, List<Integer> midiTrackIndices) {
         ParsedMidiFile file = parse(path);
         RawMidiTrack raw = merge(tracksAt(file, midiTrackIndices));
@@ -163,7 +139,6 @@ public final class MidiScoreImporter {
         return new Timeline(tempoBpm, Duration.TICKS_PER_QUARTER, List.of(track));
     }
 
-    /** El boton "importar titulo y cambios de compas" del paso a paso: no toca ninguna pista. */
     public Score importTitleAndTimeSignatures(Score target, Path path) {
         ParsedMidiFile file = parse(path);
         String title = file.title().orElseGet(() -> titleFromFileName(path));
@@ -201,7 +176,6 @@ public final class MidiScoreImporter {
                 .orElseThrow(() -> new ScoreFileException("el archivo MIDI no tiene notas en la pista " + midiTrackIndex));
     }
 
-    /** Junta las notas de varias pistas MIDI en una sola, tick a tick, como pide el "paso a paso" para fusionar pistas. */
     private static RawMidiTrack merge(List<RawMidiTrack> raws) {
         if (raws.size() == 1) {
             return raws.getFirst();

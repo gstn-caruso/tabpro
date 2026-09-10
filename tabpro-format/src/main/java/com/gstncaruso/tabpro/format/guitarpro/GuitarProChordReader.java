@@ -7,9 +7,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Lee un diagrama de acorde. GP3 guarda los campos del nombre como enteros de
- * cuatro bytes y seis trastes; de GP4 en adelante los angosta a un byte, guarda
- * siete trastes aunque la pista tenga menos cuerdas, y agrega la digitacion.
+ * Reads a chord diagram. GP3 stores the name fields as four-byte integers and six
+ * frets; from GP4 on they narrow to one byte, store seven frets even when the track
+ * has fewer strings, and add the fingering.
  */
 final class GuitarProChordReader {
 
@@ -28,8 +28,8 @@ final class GuitarProChordReader {
     }
 
     /**
-     * El formato viejo: nombre, cejilla base y trastes. La cejilla base en cero dice que
-     * el acorde es solo un nombre, sin diagrama: ahi no viene ni un traste detras.
+     * The old format: name, base fret, and frets. A base fret of zero says the chord is
+     * just a name with no diagram: no frets follow in that case.
      */
     private ChordDiagram readOldFormat(GuitarProByteReader reader) {
         String name = reader.readLengthPrefixedString();
@@ -42,40 +42,40 @@ final class GuitarProChordReader {
 
     private ChordDiagram readNewFormat(GuitarProByteReader reader, GuitarProVersion version) {
         boolean narrowFields = version.hasSecondFlagsByte();
-        reader.readBoolean(); // sharp: preferencia de notacion, no de digitado.
+        reader.readBoolean(); // sharp: notation preference, not fingering.
         reader.skip(3);
-        readNumber(reader, narrowFields); // nota fundamental
-        readNumber(reader, narrowFields); // tipo de acorde (mayor, m7, sus4...)
-        readNumber(reader, narrowFields); // extension (novena, oncena, trecena)
-        reader.readInt(); // bajo
-        reader.readInt(); // tonalidad
+        readNumber(reader, narrowFields); // root note
+        readNumber(reader, narrowFields); // chord type (major, m7, sus4...)
+        readNumber(reader, narrowFields); // extension (ninth, eleventh, thirteenth)
+        reader.readInt(); // bass note
+        reader.readInt(); // key
         reader.readBoolean(); // add
         String name = reader.readFixedString(NAME_FIELD_SIZE);
-        readNumber(reader, narrowFields); // alteracion de la quinta
-        readNumber(reader, narrowFields); // alteracion de la novena
-        readNumber(reader, narrowFields); // alteracion de la oncena
+        readNumber(reader, narrowFields); // fifth alteration
+        readNumber(reader, narrowFields); // ninth alteration
+        readNumber(reader, narrowFields); // eleventh alteration
         int baseFret = reader.readInt();
         List<Integer> frets = readFrets(reader, narrowFields ? STRING_SLOTS : GP3_STRING_SLOTS);
         readBarres(reader, narrowFields);
-        reader.skip(OMITTED_DEGREES); // que grados se omiten
+        reader.skip(OMITTED_DEGREES); // which degrees are omitted
         reader.skip(1);
         if (!narrowFields) {
             return chordOf(name, baseFret, frets, List.of());
         }
         List<Finger> fingering = readFingering(reader);
-        reader.readBoolean(); // si se muestra el digitado en el diagrama
+        reader.readBoolean(); // whether the fingering shows in the diagram
         return chordOf(name, baseFret, frets, fingering);
     }
 
-    /** Los campos del nombre son enteros en GP3 y bytes de GP4 en adelante. */
+    /** The name fields are integers in GP3 and bytes from GP4 on. */
     private static int readNumber(GuitarProByteReader reader, boolean narrow) {
         return narrow ? reader.readSignedByte() : reader.readInt();
     }
 
     private static void readBarres(GuitarProByteReader reader, boolean narrow) {
         int slots = narrow ? BARRE_SLOTS : GP3_BARRE_SLOTS;
-        readNumber(reader, narrow); // cuantas cejillas
-        for (int part = 0; part < 3; part++) { // traste, cuerda inicial y cuerda final de cada una
+        readNumber(reader, narrow); // how many barres
+        for (int part = 0; part < 3; part++) { // fret, start string and end string of each one
             for (int slot = 0; slot < slots; slot++) {
                 readNumber(reader, narrow);
             }
@@ -91,9 +91,8 @@ final class GuitarProChordReader {
     }
 
     /**
-     * Los codigos de dedo llegan en orden de cuerda; en cuanto aparece uno
-     * sin digitar cortamos la lista para no dejar huecos, que ChordDiagram
-     * no admite.
+     * Finger codes arrive in string order; as soon as an unfingered one appears the
+     * list is cut short so it does not leave gaps, which ChordDiagram does not allow.
      */
     private static List<Finger> readFingering(GuitarProByteReader reader) {
         List<Finger> fingering = new ArrayList<>();
@@ -110,8 +109,7 @@ final class GuitarProChordReader {
     }
 
     /**
-     * El archivo guarda mas cuerdas de las que el instrumento tiene: el diagrama
-     * se queda con las suyas.
+     * The file stores more strings than the instrument has: the diagram keeps only its own.
      */
     private static ChordDiagram onlyTheStringsOfTheTrack(ChordDiagram diagram, int stringCount) {
         if (diagram.stringCount() <= stringCount) {

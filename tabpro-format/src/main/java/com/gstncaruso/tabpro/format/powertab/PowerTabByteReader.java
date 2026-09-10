@@ -7,25 +7,18 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * Lee los tipos primitivos del formato binario de PowerTab sobre un arreglo de
- * bytes: enteros little endian, el "MFC string" de largo variable, el conteo
- * de vector al estilo MFC, y la etiqueta de clase que el archivador de MFC
- * antepone a cada objeto guardado en un vector. No sabe nada de partituras:
- * eso es responsabilidad de los lectores de cada seccion del archivo.
- */
 final class PowerTabByteReader {
 
-    /** El archivador de MFC anuncia una clase nueva con este valor de 16 bits. */
+    /** The MFC archiver announces a new class with this 16-bit value. */
     private static final int NEW_CLASS_TAG = 0xffff;
 
-    /** Un objeto grande usa un identificador de 32 bits en vez de uno de 16. */
+    /** A large object uses a 32-bit identifier instead of a 16-bit one. */
     private static final int BIG_OBJECT_TAG = 0x7fff;
 
-    /** Bit que en el word de 16 bits marca que el tag corresponde a una clase. */
+    /** The bit that in the 16-bit word marks the tag as belonging to a class. */
     private static final int CLASS_TAG = 0x8000;
 
-    /** El mismo bit, ya corrido a su lugar dentro del tag de 32 bits. */
+    /** The same bit, already shifted to its place within the 32-bit tag. */
     private static final long BIG_CLASS_TAG = 0x80000000L;
 
     private final byte[] data;
@@ -57,7 +50,7 @@ final class PowerTabByteReader {
         return readUnsignedByte() != 0;
     }
 
-    /** Un entero de 16 bits sin signo, little endian. */
+    /** An unsigned 16-bit integer, little endian. */
     int readUnsignedShort() {
         require(2);
         int value = (data[position] & 0xFF) | ((data[position + 1] & 0xFF) << 8);
@@ -65,7 +58,7 @@ final class PowerTabByteReader {
         return value;
     }
 
-    /** Un entero de 32 bits, little endian. El bit mas alto se trata a mano donde hace falta. */
+    /** A 32-bit integer, little endian. The top bit is handled by hand where needed. */
     int readInt() {
         require(4);
         int value = (data[position] & 0xFF)
@@ -77,8 +70,8 @@ final class PowerTabByteReader {
     }
 
     /**
-     * El conteo de un vector al estilo MFC: un entero de 16 bits, y si vale
-     * 0xffff (desborda) uno de 32 bits a continuacion.
+     * The count of an MFC-style vector: a 16-bit integer, and if it is 0xffff
+     * (overflow) a 32-bit one right after.
      */
     int readCount() {
         int wordCount = readUnsignedShort();
@@ -93,8 +86,8 @@ final class PowerTabByteReader {
     }
 
     /**
-     * "MFC string": un largo de tamano variable (1, 2 o 4 bytes segun haga
-     * falta) seguido del texto en ISO 8859-1.
+     * "MFC string": a variable-size length (1, 2, or 4 bytes as needed) followed by the
+     * text in ISO 8859-1.
      */
     String readMfcString() {
         int length = readMfcStringLength();
@@ -120,11 +113,10 @@ final class PowerTabByteReader {
     }
 
     /**
-     * La etiqueta de clase que MFC antepone a cada objeto de un vector: la
-     * primera vez que aparece una clase trae su esquema y su nombre: las
-     * veces siguientes es solo una referencia corta. No tiene significado
-     * musical, pero hay que consumirla igual para no perder la sincronia del
-     * archivo.
+     * The class tag MFC prepends to every object of a vector: the first time a class
+     * appears it carries its schema and its name; the following times it is only a
+     * short reference. It has no musical meaning, but it must be consumed all the same
+     * to not lose the file's sync.
      */
     void readClassInformation() {
         int wordTag = readUnsignedShort();
@@ -140,15 +132,15 @@ final class PowerTabByteReader {
         }
 
         if (wordTag == NEW_CLASS_TAG) {
-            readUnsignedShort(); // esquema de la clase, no hace falta.
+            readUnsignedShort(); // class schema, not needed.
             int nameLength = readUnsignedShort();
             skip(nameLength);
         }
     }
 
     /**
-     * Un vector al estilo MFC de objetos completos: el conteo, y por cada
-     * elemento su etiqueta de clase seguida del objeto en si.
+     * An MFC-style vector of complete objects: the count, and for each element its
+     * class tag followed by the object itself.
      */
     <T> List<T> readVector(Function<PowerTabByteReader, T> readOne) {
         int count = readCount();
@@ -161,9 +153,9 @@ final class PowerTabByteReader {
     }
 
     /**
-     * Un vector al estilo MFC que se descarta: igual que {@link #readVector},
-     * pero sin quedarse con nada. Devuelve el conteo, para que quien pregunte
-     * pueda decidir si un vector no vacio alcanza para rechazar el archivo.
+     * An MFC-style vector that gets discarded: same as {@link #readVector}, but keeping
+     * nothing. Returns the count, so whoever asks can decide whether a non-empty vector
+     * is enough to reject the file.
      */
     int skipVector(Consumer<PowerTabByteReader> skipOne) {
         int count = readCount();
@@ -174,10 +166,7 @@ final class PowerTabByteReader {
         return count;
     }
 
-    /**
-     * Un vector "chico" de bytes sin signo: un byte de tamano y esa cantidad
-     * de valores.
-     */
+    /** A "small" vector of unsigned bytes: a size byte and that many values. */
     int[] readSmallVectorOfUnsignedBytes() {
         int size = readUnsignedByte();
         int[] values = new int[size];
@@ -188,9 +177,9 @@ final class PowerTabByteReader {
     }
 
     /**
-     * Un arreglo fijo de enteros de 32 bits, con la misma codificacion que un
-     * vector chico: un byte de tamano y esa cantidad de valores, sin llenar
-     * el resto del arreglo (se completa en cero, como en C++).
+     * A fixed array of 32-bit integers, with the same encoding as a small vector: a
+     * size byte and that many values, without filling the rest of the array (it is
+     * padded with zero, as in C++).
      */
     int[] readSmallFixedArrayOfInts(int capacity) {
         int size = readUnsignedByte();

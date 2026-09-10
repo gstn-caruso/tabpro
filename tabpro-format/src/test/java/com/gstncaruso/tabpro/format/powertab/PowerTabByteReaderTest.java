@@ -72,15 +72,14 @@ class PowerTabByteReaderTest {
                 () -> new PowerTabByteReader(data).readSmallFixedArrayOfInts(2));
     }
 
-    /** Una clase nueva trae 0xffff, el esquema, el largo del nombre y el nombre. */
     @Test
     void skipsANewClassTag() {
         byte[] data = {
-            (byte) 0xFF, (byte) 0xFF, // NEW_CLASS_TAG
-            0x01, 0x00, // esquema
-            0x03, 0x00, // largo del nombre
-            'F', 'o', 'o', // nombre
-            0x42, // el primer byte del objeto en si
+            (byte) 0xFF, (byte) 0xFF,
+            0x01, 0x00,
+            0x03, 0x00,
+            'F', 'o', 'o',
+            0x42,
         };
         PowerTabByteReader reader = new PowerTabByteReader(data);
 
@@ -89,7 +88,6 @@ class PowerTabByteReaderTest {
         assertEquals(0x42, reader.readUnsignedByte());
     }
 
-    /** Una referencia corta a una clase ya vista no trae nada mas: solo el word. */
     @Test
     void skipsAPlainObjectTagWithNoClassInformation() {
         byte[] data = {0x00, 0x00, 0x42};

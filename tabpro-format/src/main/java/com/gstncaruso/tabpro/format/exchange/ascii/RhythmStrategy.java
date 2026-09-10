@@ -3,10 +3,10 @@ package com.gstncaruso.tabpro.format.exchange.ascii;
 import com.gstncaruso.tabpro.core.model.Duration;
 
 /**
- * Como el import de ASCII decide cuanto dura cada nota, ya que el texto no lleva figuras. El
- * manual ofrece dos caminos: un ritmo fijo para todas las notas, o deducirlo del espaciado entre
- * columnas (cuanto mas lejos la siguiente nota, mas larga la anterior), tomando en cuenta
- * cuantos intervalos (columnas) hay entre dos negras -- la "segunda lista" del manual.
+ * How ASCII import decides how long each note lasts, since the text carries no note values.
+ * The manual offers two paths: a fixed rhythm for every note, or deriving it from the spacing
+ * between columns (the farther the next note, the longer the previous one), based on how many
+ * intervals (columns) fall between two quarter notes -- the manual's "second list".
  */
 public sealed interface RhythmStrategy {
 

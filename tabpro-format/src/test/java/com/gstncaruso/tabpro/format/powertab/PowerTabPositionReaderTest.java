@@ -8,7 +8,6 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import java.io.ByteArrayOutputStream;
 import org.junit.jupiter.api.Test;
 
-/** Las posiciones se arman a mano, byte a byte, siguiendo el layout de position.cpp de powertabeditor. */
 class PowerTabPositionReaderTest {
 
     private static final int FLAG_DOTTED = 0x01;
@@ -37,7 +36,6 @@ class PowerTabPositionReaderTest {
         assertEquals(1, position.beat().notes().size());
     }
 
-    /** El modelo de tabpro no distingue doble puntillo: se aproxima a uno solo. */
     @Test
     void aDoubleDottedNoteIsApproximatedAsDotted() {
         PowerTabPosition position = read(0, durationData(2, FLAG_DOUBLE_DOTTED), new int[0], 0);
@@ -63,17 +61,16 @@ class PowerTabPositionReaderTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.write(index);
         out.write(0);
-        out.write(0); // beaming, sin uso.
+        out.write(0);
         writeInt(out, data);
         out.write(symbols.length);
         for (int symbol : symbols) {
             writeInt(out, symbol);
         }
-        // el conteo de notas, al estilo MFC (word).
         out.write(noteCount & 0xFF);
         out.write((noteCount >>> 8) & 0xFF);
         for (int i = 0; i < noteCount; i++) {
-            out.write(0x00); // sin tag de clase (referencia corta).
+            out.write(0x00);
             out.write(0x00);
             writeNote(out, i, 2);
         }
@@ -84,7 +81,7 @@ class PowerTabPositionReaderTest {
         out.write((string0Based << 5) | fret);
         out.write(0x00);
         out.write(0x00);
-        out.write(0x00); // sin simbolos complejos.
+        out.write(0x00);
     }
 
     private static void writeInt(ByteArrayOutputStream out, int value) {

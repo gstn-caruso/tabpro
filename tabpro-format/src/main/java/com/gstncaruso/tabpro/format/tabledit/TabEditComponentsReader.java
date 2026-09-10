@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Lee la lista de componentes del final del archivo: cada uno es un registro
- * de 12 bytes de tamano fijo (una posicion, un byte de tipo y siete de carga
- * util), asi que lo que no es nota ni silencio se puede descartar sin perder
- * la alineacion. Un tipo que no reconocemos en absoluto se declara con una
- * excepcion en vez de arriesgar una interpretacion a ciegas.
+ * Reads the list of components at the end of the file: each one is a fixed 12-byte
+ * record (a position, a type byte, and seven of payload), so whatever is not a note or
+ * a rest can be discarded without losing alignment. A type we do not recognize at all
+ * is declared with an exception instead of risking a blind interpretation.
  */
 final class TabEditComponentsReader {
 
@@ -21,12 +20,11 @@ final class TabEditComponentsReader {
     private static final int TYPE_REST = 0x33;
 
     /**
-     * Tipos que reconocemos pero todavia no traducimos al modelo de tabpro:
-     * acorde, salto de linea, acento, crescendo, evento de texto, conexion
-     * (ligado grafico con duracion y corchete), diagrama de escala, cambio de
-     * bateria, marca de espaciado o metadatos de nota de adorno (comparten el
-     * mismo tipo), cambio de voz/instrumento, simbolo, final alternativo (las
-     * repeticiones), corte de corchete, largo de plica y sincopa.
+     * Types we recognize but do not yet translate into the tabpro model: chord, line
+     * break, accent, crescendo, text event, tie (graphic slur with duration and beam),
+     * scale diagram, drum change, spacing mark or grace-note metadata (they share the
+     * same type), voice/instrument change, symbol, alternate ending (the repeats), beam
+     * cut, stem length, and syncopation.
      */
     private static final int[] KNOWN_BUT_UNSUPPORTED_TYPES = {
             0x35, 0x36, 0x37, 0x38, 0x39, 0x3D, 0x75, 0x78, 0x7D, 0x7E, 0xB6, 0xB7, 0xBD, 0xBE, 0xFD, 0xFE,
@@ -48,14 +46,14 @@ final class TabEditComponentsReader {
                 TabEditRestFields fields = restReader.read(record);
                 events.add(new TabEditRestEvent(position, fields.duration(), fields.voice()));
             } else if (isKnownButUnsupported(type)) {
-                // El bloque de 12 bytes ya quedo consumido entero: no hace falta leer el resto.
+                // The 12-byte block is already fully consumed: no need to read anything else.
             } else if (isNoteType(type)) {
                 TabEditNoteFields fields = noteReader.read(record, type);
                 if (fields.isGraceNote()) {
-                    // TablEdit guarda la nota de adorno como un evento propio, con su propia
-                    // posicion; tabpro solo sabe adornar la nota principal con una nota de
-                    // adorno previa. Fusionarlas a mano seria adivinar cual es "la principal",
-                    // asi que por ahora se declara sin soportar y se descarta.
+                    // TablEdit stores the grace note as its own event, with its own
+                    // position; tabpro only knows how to decorate the main note with a
+                    // preceding grace note. Merging them by hand would mean guessing which
+                    // one is "the main one", so for now it is declared unsupported and discarded.
                     continue;
                 }
                 events.add(noteEventOf(position, fields));
@@ -84,7 +82,7 @@ final class TabEditComponentsReader {
                 fields.slapping(), fields.fadeIn());
     }
 
-    /** El rango de nota vale para cualquier byte cuyos 5 bits bajos caigan ahi, mas alla de los otros bits. */
+    /** The note range applies to any byte whose lowest 5 bits fall in it, regardless of the other bits. */
     private static boolean isNoteType(int type) {
         int lowerBits = type & 0x1F;
         return lowerBits > 0 && lowerBits <= 0x19;

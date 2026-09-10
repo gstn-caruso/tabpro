@@ -62,7 +62,6 @@ class AsciiTabExporterTest {
         String tab = exporter.export(score, AsciiTabExportOptions.standard());
 
         List<String> stringLines = stringLinesOf(linesOf(tab));
-        // las dos lineas tienen que medir lo mismo aunque una lleve un numero de dos digitos
         assertEquals(stringLines.get(0).length(), stringLines.get(5).length());
     }
 

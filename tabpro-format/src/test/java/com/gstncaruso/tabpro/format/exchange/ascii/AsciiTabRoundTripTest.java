@@ -15,12 +15,6 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * La tablatura ASCII no tiene forma de anotar un silencio, asi que una nota seguida de un
- * silencio se ve identica a una nota mas larga: esa ambiguedad la advierte el manual y no hay
- * forma de evitarla leyendo solo el espaciado. Por eso la ida y vuelta que se puede pedir sin
- * perder nada es la de una pista sin silencios, con duraciones multiplo de la corchea.
- */
 class AsciiTabRoundTripTest {
 
     private final AsciiTabExporter exporter = new AsciiTabExporter();
@@ -38,9 +32,11 @@ class AsciiTabRoundTripTest {
         Score original = new Score("Prueba", 120, List.of(track));
 
         String tab = exporter.export(original, AsciiTabExportOptions.standard());
-        // el exportador usa una columna por semicorchea (4 por negra): con esa misma cantidad de
-        // intervalos por negra la ida y vuelta preserva las duraciones exactas.
-        Score imported = importer.importScore(tab, AsciiTabImportOptions.standard().withRhythm(RhythmStrategy.fromSpacing(4)));
+        int intervalsPerQuarterNoteMatchingTheExportersColumnWidth = 4;
+        Score imported = importer.importScore(
+                tab,
+                AsciiTabImportOptions.standard()
+                        .withRhythm(RhythmStrategy.fromSpacing(intervalsPerQuarterNoteMatchingTheExportersColumnWidth)));
 
         assertEquals(List.of(chord, first, second, third, fourth), imported.track(0).measure(0).beats());
     }

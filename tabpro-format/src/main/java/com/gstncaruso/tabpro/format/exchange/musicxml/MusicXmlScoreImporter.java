@@ -33,10 +33,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-/**
- * Lee una partitura en MusicXML. Si el archivo trae la cuerda y el traste, se
- * respetan; si no, cada altura se ubica en el diapason de la afinacion elegida.
- */
 public final class MusicXmlScoreImporter {
 
     private static final int DEFAULT_TEMPO = 120;
@@ -116,13 +112,12 @@ public final class MusicXmlScoreImporter {
         return new Track(name, tuning, Channel.playing(Track.GUITAR_PROGRAM), measures);
     }
 
-    /** La afinacion sale del staff-details; si no esta, se asume una guitarra. */
     private static Tuning tuningOf(Element part) {
         List<Element> strings = elementsNamed(part, "staff-tuning");
         if (strings.isEmpty()) {
             return Tuning.standard();
         }
-        // La linea mas alta de la tablatura es la cuerda 1, la mas aguda.
+        // The topmost tab line is string 1, the highest-pitched one.
         List<Element> fromTheTopDown = new ArrayList<>(strings);
         fromTheTopDown.sort(java.util.Comparator.comparingInt(
                 (Element string) -> asInteger(string.getAttribute("line")).orElse(0)).reversed());
@@ -144,7 +139,7 @@ public final class MusicXmlScoreImporter {
                 : Optional.empty();
     }
 
-    /** La armadura vale hasta el proximo &lt;key&gt;, tal como en el resto de MusicXML. */
+    /** The key signature holds until the next &lt;key&gt;, just like the rest of MusicXML. */
     private static Optional<KeySignature> keySignatureOf(Element measure) {
         return intOf(measure, "fifths").map(fifths -> new KeySignature(fifths, modeOf(measure)));
     }
@@ -188,8 +183,8 @@ public final class MusicXmlScoreImporter {
     }
 
     /**
-     * Sin &lt;type&gt; -tipico del silencio de compas entero, {@code <rest measure="yes"/>}-
-     * la unica pista de cuanto dura la nota es su &lt;duration&gt; en divisions.
+     * Without &lt;type&gt; -typical of a whole-measure rest, {@code <rest measure="yes"/>}-
+     * the only clue to how long the note lasts is its &lt;duration&gt; in divisions.
      */
     private static Duration durationFromTicksOf(Element note, int divisions, Tuplet tuplet) {
         return intOf(note, "duration")
@@ -203,7 +198,6 @@ public final class MusicXmlScoreImporter {
         return (long) units * Duration.TICKS_PER_QUARTER / Math.max(1, divisions);
     }
 
-    /** La figura simple (sin grupo irregular) cuyos ticks coinciden exactamente con esa duracion. */
     private static Optional<Duration> closestPlainDuration(long ticks) {
         for (NoteValue value : NoteValue.values()) {
             for (boolean dotted : new boolean[] {false, true}) {
@@ -239,8 +233,6 @@ public final class MusicXmlScoreImporter {
         return Optional.of(PitchSpelling.pitchOf(
                 step.get().charAt(0), intOf(note, "alter").orElse(0), octave.get()));
     }
-
-    // ---- lo minimo de DOM que hace falta ----------------------------------
 
     private static List<Element> elementsNamed(Element parent, String name) {
         List<Element> found = new ArrayList<>();

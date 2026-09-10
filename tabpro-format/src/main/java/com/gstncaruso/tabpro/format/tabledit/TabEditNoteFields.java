@@ -5,11 +5,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.NoteEffects;
 
-/**
- * Lo que trae una nota de TablEdit antes de saber en que cuerda cae (eso lo
- * pone la posicion). El tapping, el slap y el fade in son marcas del beat
- * entero en el modelo de tabpro, asi que viajan aparte de los efectos de nota.
- */
+/** What a TablEdit note carries before knowing which string it falls on (the position supplies that). */
 record TabEditNoteFields(
         int fret,
         boolean isGraceNote,

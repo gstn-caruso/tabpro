@@ -1,8 +1,8 @@
 package com.gstncaruso.tabpro.format.tabledit;
 
 /**
- * Lo que trae el encabezado de 256 bytes de un archivo TEF3: el tempo inicial
- * y que secciones opcionales trae el resto del archivo.
+ * What the 256-byte header of a TEF3 file carries: the initial tempo and which
+ * optional sections the rest of the file brings.
  */
 record TabEditHeader(
         int initialBpm,

@@ -14,12 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/**
- * Los fixtures son del propio repositorio de powertabeditor
- * (powertab/powertabeditor, GPLv3, test/formats/powertab_old/data/): archivos
- * reales usados por su propia suite de tests, cada uno probando una seccion
- * del formato. Los valores esperados replican los de esa suite.
- */
 class PowerTabFileTest {
 
     private final PowerTabFile files = new PowerTabFile();
@@ -35,11 +29,6 @@ class PowerTabFileTest {
         assertEquals("2001", score.info().copyright());
     }
 
-    /**
-     * La score de guitarra tiene 2 guitarras definidas pero un solo pentagrama
-     * (el "guitar in" asigna la primera): la segunda guitarra, sin pentagrama
-     * propio, no genera pista. La score de bajo aporta la tercera.
-     */
     @Test
     void readsTheGuitarsFromBothScoresAsSeparateTracks() {
         Score score = read("guitars");
@@ -49,11 +38,6 @@ class PowerTabFileTest {
         assertEquals(4, score.track(1).stringCount());
     }
 
-    /**
-     * La barra interna (doble barra, la menor con 2 sostenidos, 5/8) cierra el
-     * primer compas y abre el segundo: la doble barra queda en el compas que
-     * cierra, la armadura y la medida nuevas en el que abre.
-     */
     @Test
     void readsADoubleBarAndAMinorKeyWithAnOddMeter() {
         Score score = read("barlines");
@@ -91,7 +75,6 @@ class PowerTabFileTest {
         assertEquals(java.util.Optional.of(HarmonicType.NATURAL), note2.effects().harmonic());
     }
 
-    /** El final alternativo esta anclado en la posicion de la barra interna: abre el segundo compas. */
     @Test
     void readsTheAlternateEndingNumbers() {
         Score score = read("alternate_endings");
@@ -119,12 +102,6 @@ class PowerTabFileTest {
         assertThrows(ScoreFileException.class, () -> read("guitar_ins"));
     }
 
-    /**
-     * Estos fixtures ejercitan secciones que se descartan a proposito (diagramas
-     * de acorde, texto de acorde, texto flotante, direcciones, dinamicas, bend,
-     * volume swell, tremolo bar): lo que importa aca es que el lector no pierda
-     * la sincronia del archivo al saltearlas, no el contenido que se descarta.
-     */
     @ParameterizedTest
     @ValueSource(strings = {
         "chord_diagrams", "chordtext", "floating_text", "directions", "bends", "tremolo_bars", "volume_swells"

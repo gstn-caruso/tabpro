@@ -13,7 +13,6 @@ import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import com.gstncaruso.tabpro.core.model.effects.Trill;
 import com.gstncaruso.tabpro.core.model.effects.TremoloPicking;
 
-/** Lee una nota de la tablatura y todos los efectos que le puede pedir la partitura. */
 final class GuitarProNoteReader {
 
     private static final int FLAG_DURATION = 0x01;
@@ -28,7 +27,7 @@ final class GuitarProNoteReader {
     private static final int TIE_TYPE = 2;
     private static final int DEAD_TYPE = 3;
 
-    /** El slide que anuncia cada bit de la mascara de GP5, del bit mas bajo al mas alto. */
+    /** The slide announced by each bit of the GP5 mask, from the lowest bit to the highest. */
     private static final SlideType[] SLIDES_IN_MASK = {
         SlideType.SHIFT, SlideType.LEGATO, SlideType.OUT_DOWNWARDS,
         SlideType.OUT_UPWARDS, SlideType.IN_FROM_BELOW, SlideType.IN_FROM_ABOVE,
@@ -39,9 +38,9 @@ final class GuitarProNoteReader {
     Note read(GuitarProByteReader reader, GuitarProVersion version, int string) {
         int flags = reader.readUnsignedByte();
 
-        // El tipo y el traste los dispara la misma bandera pero no son consecutivos:
-        // la dinamica se mete en el medio. Lo unico que cambia entre generaciones es
-        // donde va la duracion propia de la nota, y de que tamano es.
+        // The type and the fret are triggered by the same flag but are not consecutive:
+        // the dynamic sits in between. The only thing that changes between generations is
+        // where the note's own duration goes, and how big it is.
         boolean isGp5 = version.hasNoteDurationPercent();
         int type = 1;
         if ((flags & FLAG_TYPE_AND_FRET) != 0) {
@@ -51,7 +50,7 @@ final class GuitarProNoteReader {
             skipDurationOverride(reader, version, flags);
         }
 
-        // Guitar Pro solo escribe la dinamica cuando no es la suya por defecto, que es forte.
+        // Guitar Pro only writes the dynamic when it is not its default, which is forte.
         NoteEffects effects = NoteEffects.none().withDynamic(Dynamic.FORTE);
         if ((flags & FLAG_DYNAMIC) != 0) {
             effects = effects.withDynamic(dynamicOf(reader.readSignedByte()));
@@ -68,7 +67,7 @@ final class GuitarProNoteReader {
         }
         if (isGp5) {
             skipDurationOverride(reader, version, flags);
-            // En gp5 toda nota cierra con un byte de banderas propio.
+            // In gp5 every note closes with its own flags byte.
             reader.readUnsignedByte();
         }
         if (leftHand != null) {
@@ -164,9 +163,10 @@ final class GuitarProNoteReader {
     }
 
     /**
-     * El adorno trae siempre traste, dinamica, duracion y transicion, pero hasta GP4 la
-     * duracion va antes que la transicion y desde GP5 el orden se invierte. Leerlos al
-     * reves no corre ningun byte: cambia el adorno por otro sin que nada avise.
+     * The grace note always carries fret, dynamic, duration, and transition, but up to
+     * GP4 the duration comes before the transition and from GP5 on the order is
+     * reversed. Reading them backwards shifts no byte: it silently turns the grace note
+     * into another one.
      */
     private GraceNote readGraceNote(GuitarProByteReader reader, GuitarProVersion version) {
         int fret = reader.readUnsignedByte();
@@ -228,15 +228,14 @@ final class GuitarProNoteReader {
     }
 
     /**
-     * Hasta GP4 el slide es un numero, uno solo por nota. Desde GP5 el mismo byte pasa a
-     * ser una mascara de bits, para que una nota pueda traer varios a la vez: los dos
-     * primeros bits coinciden por casualidad con los numeros viejos, los otros cuatro no.
+     * Up to GP4 the slide is a number, only one per note. From GP5 on the same byte
+     * becomes a bitmask, so a note can carry several at once: the first two bits
+     * coincide by chance with the old numbers, the other four do not.
      */
     private static SlideType slideOf(int code, GuitarProVersion version) {
         return version.hasSlideMask() ? slideInMask(code) : slideTypeOf(code);
     }
 
-    /** El modelo guarda un solo slide por nota: de los que trae la mascara vale el primero. */
     private static SlideType slideInMask(int mask) {
         for (int bit = 0; bit < SLIDES_IN_MASK.length; bit++) {
             if ((mask & (1 << bit)) != 0) {
@@ -275,7 +274,7 @@ final class GuitarProNoteReader {
         };
     }
 
-    /** 1=treintaidosava, 2=veinticuatroava (sin equivalente: cae en treintaidosava), 3=dieciseisava. */
+    /** 1=thirty-second, 2=twenty-fourth (no equivalent: falls back to thirty-second), 3=sixteenth. */
     private static NoteValue graceDurationOf(int code) {
         return code == 3 ? NoteValue.SIXTEENTH : NoteValue.THIRTY_SECOND;
     }

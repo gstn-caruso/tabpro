@@ -6,14 +6,9 @@ import com.gstncaruso.tabpro.core.model.bars.Mode;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Escribe los tipos primitivos del formato binario de Guitar Pro: el espejo de
- * {@link GuitarProByteReader}. No sabe nada de partituras: eso es responsabilidad de los
- * escritores de cada seccion del archivo.
- */
 final class GuitarProByteWriter {
 
-    /** El largo mas grande que entra en el byte de longitud redundante. */
+    /** The largest length that fits in the redundant length byte. */
     private static final int MAX_LENGTH_PREFIXED = 255;
 
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -49,7 +44,7 @@ final class GuitarProByteWriter {
         return this;
     }
 
-    /** El unico campo del formato que va en big endian: la duracion en GP5. GP4 no lo usa. */
+    /** The only field in the format that goes in big-endian order: the duration in GP5. GP4 does not use it. */
     GuitarProByteWriter writeDoubleBigEndian(double value) {
         long bits = Double.doubleToLongBits(value);
         for (int shift = 56; shift >= 0; shift -= 8) {
@@ -58,7 +53,7 @@ final class GuitarProByteWriter {
         return this;
     }
 
-    /** Un color RGBA; el cuarto byte no se usa y se escribe en cero. */
+    /** An RGBA color; the fourth byte is unused and is written as zero. */
     GuitarProByteWriter writeColor(ScoreColor color) {
         writeUnsignedByte(color.red());
         writeUnsignedByte(color.green());
@@ -67,7 +62,7 @@ final class GuitarProByteWriter {
         return this;
     }
 
-    /** La armadura: un byte con la cantidad de alteraciones y otro con el modo. */
+    /** The key signature: one byte for the accidental count and another for the mode. */
     GuitarProByteWriter writeKeySignature(KeySignature keySignature) {
         writeSignedByte(keySignature.accidentals());
         writeUnsignedByte(keySignature.mode() == Mode.MAJOR ? 0 : 1);
@@ -75,8 +70,8 @@ final class GuitarProByteWriter {
     }
 
     /**
-     * "Byte-size string": un byte de longitud y un bloque de tamano fijo. Un texto mas
-     * largo que el bloque se trunca: no hay forma de que entre entero.
+     * "Byte-size string": a length byte followed by a fixed-size block. A text longer
+     * than the block gets truncated: there is no way to fit it whole.
      */
     GuitarProByteWriter writeFixedString(String text, int fixedLength) {
         byte[] raw = truncated(ascii(text), fixedLength);
@@ -88,7 +83,7 @@ final class GuitarProByteWriter {
         return this;
     }
 
-    /** "Int-size string" sin byte de longitud extra. */
+    /** "Int-size string" with no extra length byte. */
     GuitarProByteWriter writeIntPrefixedString(String text) {
         byte[] raw = ascii(text);
         writeInt(raw.length);
@@ -97,8 +92,8 @@ final class GuitarProByteWriter {
     }
 
     /**
-     * "Int-size string" con el byte de largo redundante que usa la cabecera, los marcadores
-     * y los nombres de acorde. Ese byte es de 0 a 255: un texto mas largo se trunca.
+     * "Int-size string" with the redundant length byte used by the header, the markers,
+     * and the chord names. That byte ranges from 0 to 255: a longer text gets truncated.
      */
     GuitarProByteWriter writeLengthPrefixedString(String text) {
         byte[] raw = truncated(ascii(text), MAX_LENGTH_PREFIXED);

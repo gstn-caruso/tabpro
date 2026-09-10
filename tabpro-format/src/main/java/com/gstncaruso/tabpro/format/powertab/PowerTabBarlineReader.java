@@ -5,11 +5,11 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 
 /**
- * Lee una barra: su posicion, su tipo, su armadura y su medida. La marca de
- * ensayo que puede traer (letra + descripcion) no tiene lugar en el modelo de
- * tabpro; se consume igual para no perder la sincronia del archivo. Tampoco
- * se distingue si la armadura o la medida estan marcadas para mostrarse o no
- * ("show"/"cancellation"): tabpro siempre las aplica.
+ * Reads a barline: its position, its type, its key signature, and its time signature.
+ * The rehearsal mark it can carry (letter + description) has no place in the tabpro
+ * model; it is consumed all the same to not lose the file's sync. It also does not
+ * distinguish whether the key signature or time signature are marked to show or not
+ * ("show"/"cancellation"): tabpro always applies them.
  */
 final class PowerTabBarlineReader {
 
@@ -39,7 +39,7 @@ final class PowerTabBarlineReader {
 
     private TimeSignature readTimeSignature(PowerTabByteReader reader) {
         int data = reader.readInt();
-        reader.readUnsignedByte(); // pulsos por compas: no tiene lugar en el modelo.
+        reader.readUnsignedByte(); // pulses per measure: has no place in the model.
 
         if ((data & COMMON_TIME) != 0) {
             return new TimeSignature(4, 4);
@@ -53,7 +53,7 @@ final class PowerTabBarlineReader {
     }
 
     private void skipRehearsalSign(PowerTabByteReader reader) {
-        reader.readUnsignedByte(); // letra.
-        reader.readMfcString(); // descripcion.
+        reader.readUnsignedByte(); // letter.
+        reader.readMfcString(); // description.
     }
 }

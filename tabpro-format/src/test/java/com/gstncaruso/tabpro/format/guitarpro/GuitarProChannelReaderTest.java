@@ -5,13 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.model.Channel;
 import org.junit.jupiter.api.Test;
 
-/**
- * Los bytes de esta tabla son los que graba Guitar Pro: la perilla de volumen en 13 y la
- * de paneo en 8 son los valores con que nace cualquier pista suya.
- */
 class GuitarProChannelReaderTest {
 
-    /** Cuantos bytes ocupa un canal: el instrumento, las seis perillas y dos de relleno. */
     private static final int CHANNEL_BYTES = 4 + 6 + 2;
     private static final int CHANNEL_COUNT = Channel.PORT_COUNT * Channel.CHANNELS_PER_PORT;
 
@@ -19,11 +14,6 @@ class GuitarProChannelReaderTest {
 
     private final GuitarProChannelReader reader = new GuitarProChannelReader();
 
-    /**
-     * Las perillas de la mesa tienen dieciseis pasos, no ciento veintiocho: leerlas como
-     * si fueran valores de MIDI deja toda pista importada casi muda y pegada a la
-     * izquierda.
-     */
     @Test
     void theKnobsComeInSixteenStepsAndTheModelUsesMidi() {
         GuitarProChannel channel = firstOf(25, 13, 8, 0, 0, 0, 0);
@@ -56,7 +46,6 @@ class GuitarProChannelReaderTest {
         assertEquals(32, channel.tremolo());
     }
 
-    /** Un byte en 0xFF dice que el parametro no se toco: ahi vale el valor por defecto. */
     @Test
     void anUntouchedKnobKeepsItsDefault() {
         GuitarProChannel channel = firstOf(25, UNSET, UNSET, 0, 0, 0, 0);

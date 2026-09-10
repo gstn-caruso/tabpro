@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.format.exchange.ascii;
 
 import java.util.Map;
 
-/** Una columna de la tablatura de texto: una barra de compas, o un beat con sus trastes. */
 record TabColumn(int width, boolean isBar, Map<Integer, Integer> fretsByString) {
 
     static TabColumn bar() {

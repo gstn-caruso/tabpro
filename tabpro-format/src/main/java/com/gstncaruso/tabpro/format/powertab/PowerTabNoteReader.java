@@ -10,10 +10,9 @@ import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import com.gstncaruso.tabpro.core.model.effects.Trill;
 
 /**
- * Lee una nota de PowerTab: la cuerda que se pisa (0-based en el archivo, 1-based
- * en el modelo), el traste, y los simbolos complejos que le agregan un bend, un
- * armonico, un slide o un trino. La palanca de trino no trae velocidad propia en
- * este formato: se usa la que el modelo ofrece por default.
+ * Reads a PowerTab note: the fretted string (0-based in the file, 1-based in the
+ * model), the fret, and the complex symbols that add a bend, a harmonic, a slide, or a
+ * trill. The trill does not carry its own speed in this format: the model's default is used.
  */
 final class PowerTabNoteReader {
 
@@ -85,11 +84,7 @@ final class PowerTabNoteReader {
         return effects;
     }
 
-    /**
-     * Un slide de PowerTab puede traer a la vez un "entrando desde" y un
-     * "saliendo hacia"; el modelo de tabpro solo guarda uno por nota, asi que
-     * el de salida (mas especifico) le gana al de entrada.
-     */
+    /** A PowerTab slide can carry both a "sliding in from" and a "sliding out to" at once. */
     private NoteEffects withSlide(NoteEffects effects, int symbol) {
         int slideOutType = (symbol >>> 8) & 0xFF;
         int slideIntoType = (symbol >>> 16) & 0xFF;
@@ -112,18 +107,17 @@ final class PowerTabNoteReader {
     }
 
     /**
-     * El bend de PowerTab distingue 8 variantes (con y sin sostener el punto
-     * mas alto); el modelo de tabpro conoce 5 formas de curva. Las variantes
-     * "con sostenido" se aproximan a la forma base, y la duracion y los
-     * puntos de dibujo no tienen donde ir en el modelo.
+     * A PowerTab bend distinguishes 8 variants (holding the peak point or not). The
+     * "held" variants are approximated to the base shape, and the duration and the
+     * drawing points have nowhere to go in the model.
      */
     private static Bend bendOf(int symbol) {
         int type = (symbol >>> 20) & 0xF;
         int bentPitch = (symbol >>> 4) & 0xF;
         BendType bendType = switch (type) {
-            case 0, 2 -> BendType.BEND; // normalBend, bendAndHold (aproximado)
-            case 1, 6, 7 -> BendType.BEND_RELEASE; // bendAndRelease, gradualRelease, immediateRelease (aproximado)
-            case 3, 5 -> BendType.PREBEND; // preBend, preBendAndHold (aproximado)
+            case 0, 2 -> BendType.BEND; // normalBend, bendAndHold (approximated)
+            case 1, 6, 7 -> BendType.BEND_RELEASE; // bendAndRelease, gradualRelease, immediateRelease (approximated)
+            case 3, 5 -> BendType.PREBEND; // preBend, preBendAndHold (approximated)
             case 4 -> BendType.PREBEND_RELEASE;
             default -> BendType.BEND;
         };

@@ -3,14 +3,13 @@ package com.gstncaruso.tabpro.format.powertab;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 
 /**
- * Lee la cabecera del archivo: la marca y version de PowerTab, y los datos de
- * la cancion. Solo se soporta el formato de version 1.7 (el unico que
- * escribio PowerTab Editor 1.7, y el que entienden los archivos reales) y
- * solo canciones, no lecciones.
+ * Reads the file header: the PowerTab marker and version, and the song data. Only the
+ * version 1.7 format is supported (the only one PowerTab Editor 1.7 wrote, and the one
+ * real files use) and only songs, not lessons.
  */
 final class PowerTabHeaderReader {
 
-    /** Los cuatro bytes "ptab" en little endian. */
+    /** The four bytes "ptab", little endian. */
     private static final int MARKER = 0x62617470;
 
     private static final int VERSION_1_7 = 4;
@@ -46,7 +45,7 @@ final class PowerTabHeaderReader {
     }
 
     private PowerTabHeader readSong(PowerTabByteReader reader) {
-        reader.readUnsignedByte(); // el tipo de contenido (guitarra/bajo/percusion): no tiene lugar en el modelo.
+        reader.readUnsignedByte(); // content type (guitar/bass/drums): has no place in the model.
         String title = reader.readMfcString();
         String artist = reader.readMfcString();
         skipReleaseInfo(reader);
@@ -58,31 +57,31 @@ final class PowerTabHeaderReader {
         }
         String arranger = reader.readMfcString();
         String transcriber = reader.readMfcString();
-        reader.readMfcString(); // transcriptor de la pista de bajo: no tiene lugar en el modelo.
+        reader.readMfcString(); // bass track transcriber: has no place in the model.
         String copyright = reader.readMfcString();
         String lyrics = reader.readMfcString();
         String notes = reader.readMfcString();
-        reader.readMfcString(); // notas de la pista de bajo: no tiene lugar en el modelo.
+        reader.readMfcString(); // bass track notes: has no place in the model.
         return new PowerTabHeader(title, artist, composer, lyricist, arranger, transcriber, copyright, lyrics, notes);
     }
 
-    /** El dato de lanzamiento no tiene destino en el modelo de tabpro; solo hay que dejarlo atras. */
+    /** The release data has no place in the tabpro model; it only needs to be skipped. */
     private void skipReleaseInfo(PowerTabByteReader reader) {
         int releaseType = reader.readUnsignedByte();
         if (releaseType == RELEASETYPE_PUBLIC_AUDIO) {
-            reader.readUnsignedByte(); // tipo de lanzamiento (single, EP, album...).
-            reader.readMfcString(); // titulo del lanzamiento.
-            reader.readUnsignedShort(); // anio.
-            reader.readUnsignedByte(); // en vivo.
+            reader.readUnsignedByte(); // release type (single, EP, album...).
+            reader.readMfcString(); // release title.
+            reader.readUnsignedShort(); // year.
+            reader.readUnsignedByte(); // live.
         } else if (releaseType == RELEASETYPE_PUBLIC_VIDEO) {
-            reader.readMfcString(); // titulo del video.
-            reader.readUnsignedByte(); // en vivo.
+            reader.readMfcString(); // video title.
+            reader.readUnsignedByte(); // live.
         } else if (releaseType == RELEASETYPE_BOOTLEG) {
-            reader.readMfcString(); // titulo del bootleg.
-            reader.readUnsignedShort(); // mes.
-            reader.readUnsignedShort(); // dia.
-            reader.readUnsignedShort(); // anio.
+            reader.readMfcString(); // bootleg title.
+            reader.readUnsignedShort(); // month.
+            reader.readUnsignedShort(); // day.
+            reader.readUnsignedShort(); // year.
         }
-        // RELEASETYPE_NOTRELEASED no trae nada mas.
+        // RELEASETYPE_NOTRELEASED carries nothing else.
     }
 }

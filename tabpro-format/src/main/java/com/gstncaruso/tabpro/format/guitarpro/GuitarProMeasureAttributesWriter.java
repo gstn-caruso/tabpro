@@ -6,13 +6,13 @@ import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 
 /**
- * Escribe un "master bar": los atributos de un compas que Guitar Pro guarda una sola vez
- * por compas. El espejo de {@link GuitarProMeasureAttributesReader}, pero solo para GP4:
- * la medida y la armadura solo se escriben cuando cambian respecto del compas anterior.
+ * Writes a "master bar": the attributes of a measure that Guitar Pro stores once per
+ * measure. Only for GP4: the time signature and key signature are only written when
+ * they change from the previous measure.
  *
- * <p>El primer compas es la excepcion, porque no tiene anterior: ahi las escribe siempre.
- * Quien lee hace "si la bandera esta, leo el valor; si no, arrastro el del compas de
- * antes", y en el primero no hay ninguno del que arrastrar.
+ * <p>The first measure is the exception, since it has no previous one: there they are
+ * always written. A reader does "if the flag is set, read the value; if not, carry over
+ * the previous measure's", and the first measure has none to carry over.
  */
 final class GuitarProMeasureAttributesWriter {
 
@@ -25,10 +25,9 @@ final class GuitarProMeasureAttributesWriter {
     private static final int FLAG_KEY_SIGNATURE = 0x40;
     private static final int FLAG_DOUBLE_BAR = 0x80;
 
-    /** GP3 escribe la cuenta de repeticion ya restada en uno, igual que GP4. */
+    /** GP3 writes the repeat count already reduced by one, just like GP4. */
     private static final int REPEAT_COUNT_OFFSET = 1;
 
-    /** Nulos hasta que se escribe el primer compas, que es el que no tiene anterior. */
     private TimeSignature previousTimeSignature;
     private KeySignature previousKeySignature;
 

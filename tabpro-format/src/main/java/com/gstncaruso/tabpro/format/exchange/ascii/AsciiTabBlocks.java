@@ -3,11 +3,6 @@ package com.gstncaruso.tabpro.format.exchange.ascii;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Reconoce los bloques de tablatura de un texto cualquiera: corridas de lineas seguidas hechas
- * solo de guiones, digitos y barras, sin lineas vacias en el medio. Todo lo demas (comentarios,
- * lineas en blanco) separa un bloque del siguiente y se ignora.
- */
 final class AsciiTabBlocks {
 
     private AsciiTabBlocks() {

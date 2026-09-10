@@ -26,13 +26,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-/**
- * {@link MusicXmlRoundTripTest} solo prueba que lo que exportamos nos lo podamos leer a
- * nosotros mismos. Esta clase no usa el importador de tabpro para nada: verifica, leyendo el
- * XML con un parser DOM crudo, que lo que escribimos tiene la forma que el estandar exige
- * -sin la XSD a mano, pero con lo que el DTD de MusicXML fija de memoria: orden de hijos donde
- * el esquema lo pide, y que <divisions> sea coherente con las <duration> que se escriben.
- */
 class MusicXmlExportShapeTest {
 
     private final MusicXmlScoreExporter exporter = new MusicXmlScoreExporter();
@@ -114,8 +107,6 @@ class MusicXmlExportShapeTest {
         }
     }
 
-    // ---- lo que necesita esta clase, sin depender del importador ---------
-
     private static Score scoreWith(Beat... beats) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
@@ -139,9 +130,6 @@ class MusicXmlExportShapeTest {
         return factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
     }
 
-    /** Ticks esperados en <duration>, calculados a partir de lo que dice el propio <type> del note,
-     * no de la formula interna del exportador: divisions es "partes por negra", tal como lo define
-     * el estandar. */
     private static long expectedDurationUnits(Element note, int divisions) {
         int denominator = switch (textOf(note, "type").orElseThrow()) {
             case "whole" -> 1;

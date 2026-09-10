@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.format;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 
-/** Lee del archivo los nombres de las constantes del dominio. */
 final class Enums {
 
     private Enums() {

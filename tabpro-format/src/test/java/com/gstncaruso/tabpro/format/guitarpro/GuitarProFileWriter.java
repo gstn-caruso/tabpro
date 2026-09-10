@@ -6,11 +6,6 @@ import com.gstncaruso.tabpro.core.model.bars.Mode;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Armador de bytes de prueba: escribe archivos binarios minimos de Guitar Pro
- * con el mismo layout que entiende {@link GuitarProByteReader}, para poder
- * probar el lector sin depender de archivos reales.
- */
 final class GuitarProFileWriter {
 
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -68,7 +63,6 @@ final class GuitarProFileWriter {
         return this;
     }
 
-    /** "Byte-size string": un byte de largo y un bloque de tamano fijo. */
     GuitarProFileWriter writeFixedString(String text, int fixedLength) {
         byte[] raw = ascii(text);
         writeUnsignedByte(raw.length);
@@ -79,7 +73,6 @@ final class GuitarProFileWriter {
         return this;
     }
 
-    /** "Int-size string" sin byte de largo extra. */
     GuitarProFileWriter writeIntPrefixedString(String text) {
         byte[] raw = ascii(text);
         writeInt(raw.length);
@@ -87,7 +80,6 @@ final class GuitarProFileWriter {
         return this;
     }
 
-    /** "Int-size string" con el byte de largo redundante que usa la cabecera. */
     GuitarProFileWriter writeLengthPrefixedString(String text) {
         byte[] raw = ascii(text);
         writeInt(raw.length + 1);

@@ -7,17 +7,10 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El formato viejo del diagrama de acorde: el unico que tenia GP3, y que GP4 y GP5
- * siguen escribiendo cuando el acorde no usa nada de lo que agregaron. Los bytes de
- * cada caso son los que graba Guitar Pro, tomados de archivos reales.
- */
 class GuitarProChordReaderTest {
 
-    /** El primer byte del diagrama elige entre el formato viejo y el de GP4. */
     private static final int OLD_FORMAT = 0;
 
-    /** La mascara de cuerdas del beat, que viene justo detras del diagrama. */
     private static final int STRING_MASK = 0x7C;
 
     private final GuitarProChordReader chords = new GuitarProChordReader();
@@ -39,11 +32,6 @@ class GuitarProChordReaderTest {
         assertEquals(STRING_MASK, reader.readUnsignedByte(), "la mascara de cuerdas queda intacta");
     }
 
-    /**
-     * El nombre es un "int-size string": un entero con el largo del bloque y despues el
-     * bloque, no un campo de tamano fijo. Leerlo como fijo se come veinte bytes de lo
-     * que sigue.
-     */
     @Test
     void theNameOfAnOldChordIsAsLongAsItSays() {
         GuitarProByteReader reader = reading(new GuitarProFileWriter()
@@ -59,10 +47,6 @@ class GuitarProChordReaderTest {
         assertEquals(STRING_MASK, reader.readUnsignedByte(), "la mascara de cuerdas queda intacta");
     }
 
-    /**
-     * Con la cejilla base en cero el acorde es solo un nombre: Guitar Pro no escribe ni
-     * un traste detras. Si el lector los lee igual, se lleva puestos veinticuatro bytes.
-     */
     @Test
     void anOldChordWithoutABaseFretHasNoFretsAtAll() {
         GuitarProByteReader reader = reading(new GuitarProFileWriter()
@@ -78,7 +62,6 @@ class GuitarProChordReaderTest {
         assertEquals(STRING_MASK, reader.readUnsignedByte(), "la mascara de cuerdas queda intacta");
     }
 
-    /** El formato viejo sigue siendo el mismo cuando lo escribe un archivo de GP5. */
     @Test
     void aGp5FileStillWritesTheOldChordTheSameWay() {
         GuitarProByteReader reader = reading(new GuitarProFileWriter()

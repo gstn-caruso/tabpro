@@ -8,11 +8,6 @@ import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import org.junit.jupiter.api.Test;
 
-/**
- * El primer master bar no tiene compas anterior del que arrastrar nada: el formato lo
- * obliga a escribir su medida y su armadura, aunque sean las de siempre. Quien lo lee
- * hace "si la bandera esta, leo; si no, uso el compas anterior", y ahi no hay anterior.
- */
 class GuitarProMeasureAttributesWriterTest {
 
     private static final int FLAG_NUMERATOR = 0x01;
@@ -32,8 +27,8 @@ class GuitarProMeasureAttributesWriterTest {
     void elPrimerCompasEscribeSuArmaduraAunqueSeaDoMayor() {
         byte[] bytes = writeBars(TimeSignature.fourFour());
 
-        assertEquals(0, bytes[3]); // alteraciones
-        assertEquals(0, bytes[4]); // modo mayor
+        assertEquals(0, bytes[3]);
+        assertEquals(0, bytes[4]);
     }
 
     @Test

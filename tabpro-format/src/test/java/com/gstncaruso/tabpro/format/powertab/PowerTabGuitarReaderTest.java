@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/** Los bytes se arman a mano siguiendo el layout de guitar.cpp/tuning.cpp de powertabeditor. */
 class PowerTabGuitarReaderTest {
 
     private final PowerTabGuitarReader reader = new PowerTabGuitarReader();
@@ -14,18 +13,18 @@ class PowerTabGuitarReaderTest {
     @Test
     void readsTheDescriptionTheChannelAndTheTuning() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(0); // numero.
+        out.write(0);
         writeMfcString(out, "Lead Guitar");
-        out.write(25); // preset.
-        out.write(104); // volumen inicial.
-        out.write(64); // pan.
-        out.write(10); // reverb.
-        out.write(0); // chorus.
-        out.write(0); // tremolo.
-        out.write(0); // phaser.
-        out.write(3); // cejilla.
-        writeMfcString(out, "Standard"); // nombre de la afinacion.
-        out.write(0); // sostenidos/bemoles y corrimiento.
+        out.write(25);
+        out.write(104);
+        out.write(64);
+        out.write(10);
+        out.write(0);
+        out.write(0);
+        out.write(0);
+        out.write(3);
+        writeMfcString(out, "Standard");
+        out.write(0);
         int[] notes = {64, 59, 55, 50, 45, 40};
         out.write(notes.length);
         for (int note : notes) {

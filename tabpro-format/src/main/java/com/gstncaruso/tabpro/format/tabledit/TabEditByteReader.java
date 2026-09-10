@@ -4,11 +4,6 @@ import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-/**
- * Lee los tipos primitivos del formato binario de TablEdit (.tef, version 3)
- * sobre un arreglo de bytes: todo little endian. No sabe nada de partituras:
- * eso es responsabilidad de los lectores de cada seccion del archivo.
- */
 final class TabEditByteReader {
 
     private final byte[] data;
@@ -45,7 +40,7 @@ final class TabEditByteReader {
         return data[position++];
     }
 
-    /** TablEdit guarda los shorts sin signo: el largo de los strings, el conteo de compases, etc. */
+    /** TablEdit stores shorts unsigned: string lengths, measure counts, and the like. */
     int readUnsignedShort() {
         require(2);
         int value = (data[position] & 0xFF) | ((data[position + 1] & 0xFF) << 8);
@@ -63,7 +58,7 @@ final class TabEditByteReader {
         return value;
     }
 
-    /** Un bloque de tamano fijo, para envolverlo despues en su propio {@link TabEditByteReader}. */
+    /** A fixed-size block, to later wrap in its own {@link TabEditByteReader}. */
     byte[] readBlock(int byteCount) {
         require(byteCount);
         byte[] block = Arrays.copyOfRange(data, position, position + byteCount);
@@ -72,9 +67,9 @@ final class TabEditByteReader {
     }
 
     /**
-     * El string de los metadatos de la cancion: un short sin signo con el largo,
-     * y esa cantidad de caracteres. Si aparece un byte nulo antes de terminar,
-     * TablEdit corta ahi mismo y no consume el resto del campo declarado.
+     * The song metadata string: an unsigned short with the length, and that many
+     * characters. If a null byte appears before the end, TablEdit cuts it off right
+     * there and does not consume the rest of the declared field.
      */
     String readShortString() {
         int length = readUnsignedShort();
@@ -89,7 +84,7 @@ final class TabEditByteReader {
         return text.toString();
     }
 
-    /** Un string que termina en un byte nulo, como el nombre de una pista. */
+    /** A string that ends in a null byte, like a track's name. */
     String readNullTerminatedString(int maxLength) {
         StringBuilder text = new StringBuilder();
         int byteRead;

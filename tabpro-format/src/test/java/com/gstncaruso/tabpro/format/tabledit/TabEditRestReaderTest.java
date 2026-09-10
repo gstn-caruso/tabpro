@@ -6,7 +6,6 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import org.junit.jupiter.api.Test;
 
-/** El silencio: a diferencia de la nota, su duracion ocupa el byte entero, sin mezclarse con nada. */
 class TabEditRestReaderTest {
 
     private final TabEditRestReader reader = new TabEditRestReader();

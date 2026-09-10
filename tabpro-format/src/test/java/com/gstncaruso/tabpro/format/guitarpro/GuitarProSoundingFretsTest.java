@@ -11,12 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro escribe un traste cualquiera en la nota ligada -- la que continua a la
- * anterior sin volver a pulsar la cuerda -- porque el que vale es el de la nota que
- * continua. Los numeros de estos casos salen de "Tie.gp5", de la suite de PyGuitarPro:
- * ahi una ligada que continua un traste 2 viene escrita como 12.
- */
 class GuitarProSoundingFretsTest {
 
     private final GuitarProSoundingFrets sounding = new GuitarProSoundingFrets();
@@ -44,7 +38,6 @@ class GuitarProSoundingFretsTest {
         assertEquals(9, fretOf(resolved, 1, 2));
     }
 
-    /** La voz de bajos no le presta su traste a la principal ni al reves. */
     @Test
     void everyVoiceRemembersItsOwn() {
         resolve(VoicePart.LEAD, note(1, 5));
@@ -53,7 +46,6 @@ class GuitarProSoundingFretsTest {
         assertEquals(8, fretOf(bass, 1, 1));
     }
 
-    /** La ligadura cruza el compas: la memoria es de toda la pista, no de un compas. */
     @Test
     void whatSoundsCrossesTheBarLine() {
         resolve(VoicePart.LEAD, note(1, 4));
@@ -62,7 +54,6 @@ class GuitarProSoundingFretsTest {
         assertEquals(4, fretOf(next, 0, 1));
     }
 
-    /** Un silencio no interrumpe lo que la cuerda venia sonando: no toca ninguna cuerda. */
     @Test
     void aRestDoesNotForgetWhatWasSounding() {
         Voice resolved = resolve(VoicePart.LEAD, note(1, 6), rest(), tied(1, 0));
@@ -70,7 +61,6 @@ class GuitarProSoundingFretsTest {
         assertEquals(6, fretOf(resolved, 2, 1));
     }
 
-    /** Sin nada sonando en esa cuerda la ligadura no continua nada: queda lo que dice el archivo. */
     @Test
     void aTieWithNothingToContinueKeepsWhatTheFileSays() {
         Voice resolved = resolve(VoicePart.LEAD, tied(1, 3));

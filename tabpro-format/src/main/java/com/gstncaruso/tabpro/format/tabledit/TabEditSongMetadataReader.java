@@ -1,10 +1,10 @@
 package com.gstncaruso.tabpro.format.tabledit;
 
 /**
- * Lee los metadatos de la cancion, justo despues del encabezado. La letra
- * completa y los eventos de texto tienen su propio formato (lineas por pista,
- * corchetes, saltos de linea) que tabpro todavia no traduce: se consumen igual
- * para no perder la alineacion del resto del archivo, y quedan sin usar.
+ * Reads the song metadata, right after the header. The full lyrics and the text events
+ * have their own format (lines per track, brackets, line breaks) that tabpro does not
+ * translate yet: they are consumed all the same to not lose the alignment of the rest
+ * of the file, and are left unused.
  */
 final class TabEditSongMetadataReader {
 
@@ -15,17 +15,17 @@ final class TabEditSongMetadataReader {
         String notes = input.readShortString();
 
         if (header.hasUrl()) {
-            input.readShortString(); // url: sin lugar en ScoreInfo, se descarta.
+            input.readShortString(); // url: no place in ScoreInfo, discarded.
         }
 
         String copyright = header.hasCopyright() ? input.readShortString() : "";
 
-        input.readShortString(); // letra completa (formato propio de TablEdit): no soportada.
+        input.readShortString(); // full lyrics (TablEdit's own format): not supported.
 
         if (header.hasTextEvents()) {
             int totalTextEvents = input.readUnsignedShort();
             for (int i = 0; i < totalTextEvents; i++) {
-                input.readShortString(); // eventos de texto: no soportados, solo se consumen.
+                input.readShortString(); // text events: not supported, only consumed.
             }
         }
 

@@ -1,10 +1,8 @@
 package com.gstncaruso.tabpro.format.powertab;
 
 /**
- * Un "guitar in" de PowerTab: dice que guitarras suenan en que pentagrama a
- * partir de cierta posicion de cierto sistema. Quien ensambla la partitura
- * usa la mascara (bit i = guitarra i) para resolver que guitarra le toca a
- * cada pentagrama.
+ * A PowerTab "guitar in": says which guitars sound on which staff starting from a
+ * given position of a given system, via a mask (bit i = guitar i).
  */
 record PowerTabGuitarIn(int system, int staff, int position, int staffGuitarsMask) {
 }

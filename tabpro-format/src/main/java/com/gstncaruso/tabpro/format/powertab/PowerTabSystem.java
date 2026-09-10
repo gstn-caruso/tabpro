@@ -3,10 +3,10 @@ package com.gstncaruso.tabpro.format.powertab;
 import java.util.List;
 
 /**
- * Un sistema de PowerTab: una linea de la partitura que puede tener varios
- * compases adentro, delimitados por sus barras. La barra final solo trae su
- * tipo y su cantidad de repeticion (el archivo no le guarda armadura ni
- * medida propias: nunca abre un compas nuevo, solo cierra el ultimo).
+ * A PowerTab system: a line of the score that can hold several measures inside,
+ * delimited by their barlines. The final barline only carries its type and repeat
+ * count (the file stores no key signature or time signature of its own for it: it
+ * never opens a new measure, it only closes the last one).
  */
 record PowerTabSystem(
         PowerTabBarline startBar,

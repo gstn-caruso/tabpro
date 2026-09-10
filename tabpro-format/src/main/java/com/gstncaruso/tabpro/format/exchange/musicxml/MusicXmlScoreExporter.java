@@ -14,14 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Escribe la partitura en MusicXML: notacion estandar mas la tablatura, que
- * MusicXML representa con la cuerda y el traste dentro de {@code <technical>}.
- */
+/** MusicXML represents the tab with the string and the fret inside {@code <technical>}. */
 public final class MusicXmlScoreExporter {
 
-    /** Las divisiones por negra con las que se escriben las duraciones. */
-    private static final int DIVISIONS = Duration.TICKS_PER_QUARTER / 4;
+    private static final int DIVISIONS_PER_QUARTER_NOTE = Duration.TICKS_PER_QUARTER / 4;
 
     public void export(Score score, Path path) {
         try {
@@ -108,7 +104,7 @@ public final class MusicXmlScoreExporter {
 
     private static void appendAttributes(StringBuilder xml, Track track, Measure measure) {
         xml.append("      <attributes>\n");
-        xml.append("        <divisions>").append(DIVISIONS).append("</divisions>\n");
+        xml.append("        <divisions>").append(DIVISIONS_PER_QUARTER_NOTE).append("</divisions>\n");
         appendKey(xml, measure);
         appendTime(xml, measure);
         xml.append("        <staves>2</staves>\n");
@@ -120,12 +116,10 @@ public final class MusicXmlScoreExporter {
     }
 
     /**
-     * Del segundo compas en adelante solo hace falta repetir lo que cambio desde el anterior:
-     * el estandar dice que, ante la ausencia de un elemento de {@code <attributes>}, sigue
-     * vigente el valor de la ultima vez que se declaro. Repetir la tanda completa en cada
-     * compas no es invalido, pero tampoco hace falta -y, sin esto, un cambio de armadura o de
-     * compas a mitad de la pieza se perdia en silencio, porque nunca se escribia en ningun
-     * lado.
+     * From the second measure on, only what changed since the previous one needs to repeat:
+     * the standard says that, in the absence of an {@code <attributes>} element, the value
+     * from the last time it was declared still applies. Repeating the whole batch on every
+     * measure is not invalid, but it is not necessary either.
      */
     private static void appendChangedAttributes(StringBuilder xml, Measure previous, Measure measure) {
         boolean keyChanged = !measure.attributes().keySignature().equals(previous.attributes().keySignature());
@@ -154,7 +148,6 @@ public final class MusicXmlScoreExporter {
                 .append("</beat-type></time>\n");
     }
 
-    /** La afinacion de la tablatura, cuerda por cuerda. */
     private static void appendStaffDetails(StringBuilder xml, Track track) {
         xml.append("        <staff-details number=\"2\">\n");
         xml.append("          <staff-lines>").append(track.stringCount()).append("</staff-lines>\n");
@@ -217,9 +210,9 @@ public final class MusicXmlScoreExporter {
     }
 
     /**
-     * El content model de {@code <note>} del DTD de MusicXML pone {@code duration, (tie, tie?)?}
-     * antes de {@code type, dot*, time-modification}: por eso {@code <tie>} no puede salir junto
-     * con el resto de {@link #appendTypeAndModifiers}.
+     * The MusicXML DTD's content model for {@code <note>} puts {@code duration, (tie, tie?)?}
+     * before {@code type, dot*, time-modification}: that is why {@code <tie>} cannot appear
+     * together with the rest of {@link #appendTypeAndModifiers}.
      */
     private static void appendDurationAndType(StringBuilder xml, Duration duration) {
         appendDuration(xml, duration);
@@ -227,7 +220,7 @@ public final class MusicXmlScoreExporter {
     }
 
     private static void appendDuration(StringBuilder xml, Duration duration) {
-        long divisions = duration.ticks() * DIVISIONS / Duration.TICKS_PER_QUARTER;
+        long divisions = duration.ticks() * DIVISIONS_PER_QUARTER_NOTE / Duration.TICKS_PER_QUARTER;
         xml.append("        <duration>").append(Math.max(1, divisions)).append("</duration>\n");
     }
 

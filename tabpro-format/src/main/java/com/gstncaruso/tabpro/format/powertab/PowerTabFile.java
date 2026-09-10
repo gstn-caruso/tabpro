@@ -29,53 +29,31 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Procedencia del formato: PowerTab no publica una especificacion aparte, asi
- * que el layout binario de este lector sale de leer el codigo fuente de
- * powertabeditor (github.com/powertab/powertabeditor, GPLv3), puntualmente
- * los {@code Deserialize()} de {@code source/formats/powertab_old/powertabdocument/}
- * (powertabfileheader, score, guitar, tuning, system, staff, barline,
- * timesignature, keysignature, position, note, alternateending,
- * tempomarker, guitarin) y {@code powertaboldimporter.cpp}, que convierte
- * ese modelo viejo al modelo moderno y aclaro semantica que el layout solo
- * no explica (por ejemplo, que una barra abre el compas que empieza en su
- * posicion y cierra el anterior). De ahi no se copio ni una linea de
- * codigo: se leyo el orden y el tamano de los campos (un hecho del formato,
- * no una expresion con derecho de autor) y se escribio esta implementacion
- * entera de cero, en Java, con el diseno y los nombres del resto de tabpro.
- * Los fixtures reales de test que usan estas clases son harina de otro
- * costal: esos si son archivos de terceros, y su procedencia y licencia
- * (GPLv3) estan aparte en el LEEME.md de {@code src/test/resources/powertab/}.
+ * Format provenance: PowerTab publishes no separate specification, so this reader's
+ * binary layout comes from reading the powertabeditor source code
+ * (github.com/powertab/powertabeditor, GPLv3), specifically the {@code Deserialize()}
+ * methods of {@code source/formats/powertab_old/powertabdocument/} (powertabfileheader,
+ * score, guitar, tuning, system, staff, barline, timesignature, keysignature, position,
+ * note, alternateending, tempomarker, guitarin) and {@code powertaboldimporter.cpp},
+ * which converts that old model into the modern one and clarified semantics the layout
+ * alone does not explain (for example, that a barline opens the measure that starts at
+ * its position and closes the previous one). Not a single line of code was copied from
+ * there: the order and size of the fields were read (a fact of the format, not a
+ * copyrightable expression) and this implementation was written entirely from scratch,
+ * in Java, with the design and names of the rest of tabpro. The real test fixtures that
+ * use these classes are a different matter: those are indeed third-party files, and
+ * their provenance and license (GPLv3) are documented separately in the LEEME.md of
+ * {@code src/test/resources/powertab/}.
  *
- * <p>Abre una partitura de PowerTab (.ptb). El archivo guarda la cabecera y
- * despues dos "score" completas, siempre en el mismo orden: la de guitarra y
- * la de bajo (aunque la cancion solo use una). Cada sistema es un tramo de la
- * partitura que puede tener varios compases adentro, delimitados por sus
- * barras; cada pentagrama guarda todas sus posiciones en un solo arreglo,
- * indexado por la misma numeracion de posicion que usan las barras.
+ * <p>Opens a PowerTab score (.ptb). The file stores the header and then two complete
+ * "scores", always in the same order: guitar and bass (even if the song only uses one).
+ * Each system is a stretch of the score that can hold several measures inside,
+ * delimited by their barlines; each staff stores all its positions in a single array,
+ * indexed by the same position numbering the barlines use.
  *
- * <p>El archivo trae dos "score" independientes (guitarra y bajo); tabpro no
- * hace la fusion de compas a compas que hace PowerTab Editor 2.0 entre las
- * dos, asi que cada una entra con sus propios compases, como pistas
- * separadas. Si la cancion solo usa una, la otra llega vacia y no agrega
- * pistas.
- *
- * <p>La cantidad de pentagramas de una partitura no tiene por que coincidir
- * con la cantidad de guitarras definidas: PowerTab asigna guitarras a
- * pentagramas con "guitar in" (una guitarra puede no tocar en ningun
- * pentagrama, o un pentagrama puede no tener ninguna asignacion explicita).
- * Una pista sale de cada pentagrama; que guitarra le toca se resuelve por su
- * primer "guitar in" y, si no hay ninguno, por la regla simple de que el
- * pentagrama N usa la guitarra N.
- *
- * <p>Alcance de esta primera version: estructura (compases, pistas, afinacion),
- * notas y sus duraciones, y un grupo razonable de efectos por nota (ligado,
- * armonicos, slide, bend, trino). Lo que no se soporta se declara con una
- * excepcion clara en vez de adivinar: los silencios de varios compases
- * comprimidos (multibar rest), las barras de ritmo (rhythm slash), los
- * sistemas con distinta cantidad de pentagramas dentro de una misma partitura,
- * y la reasignacion de un pentagrama a otra guitarra a mitad de la pieza.
- * Una guitarra definida pero sin ningun pentagrama asignado en toda la
- * partitura no genera pista: no toca nada, asi que no se pierde musica.
+ * <p>The number of staves in a score need not match the number of guitars defined:
+ * PowerTab assigns guitars to staves with "guitar in" (a guitar may play on no staff,
+ * or a staff may have no explicit assignment).
  */
 public final class PowerTabFile {
 
@@ -119,8 +97,6 @@ public final class PowerTabFile {
         return new Score(infoOf(header), tempo, tracks, Lyrics.none());
     }
 
-    // ---- pistas -------------------------------------------------------------
-
     private List<Track> tracksOf(PowerTabScore score) {
         if (score.systems().isEmpty()) {
             return List.of();
@@ -146,15 +122,6 @@ public final class PowerTabFile {
         return tracks;
     }
 
-    /**
-     * Que guitarra toca en cada pentagrama, segun el primer "guitar in" que lo
-     * mencione (el bit mas bajo de su mascara). Si ninguno lo menciona, se usa
-     * la regla simple de que el pentagrama N toca la guitarra N. Si esa
-     * guitarra tampoco existe (metadatos incompletos: pasa en archivos de
-     * prueba armados a mano), se usa la primera guitarra definida en vez de
-     * fallar — eso solo cambia el nombre, la afinacion y el canal que se le
-     * atribuyen al pentagrama, nunca las notas que trae.
-     */
     private static int[] resolveGuitarPerStaff(PowerTabScore score, int staffCount) {
         int[] guitarOfStaff = new int[staffCount];
         java.util.Arrays.fill(guitarOfStaff, -1);
@@ -238,12 +205,6 @@ public final class PowerTabFile {
         return voice.isUnused() ? Voice.restingFor(Duration.quarter()) : voice;
     }
 
-    /**
-     * La afinacion de la guitarra normalmente tiene tantas notas como cuerdas
-     * declara el pentagrama; cuando no coincide (pasa en algunos archivos de
-     * prueba armados a mano), se ajusta al pentagrama, que es quien de verdad
-     * acota los numeros de cuerda que traen las notas.
-     */
     private static Tuning tuningOf(PowerTabGuitar guitar, int stringCount) {
         List<Integer> notes = guitar.tuningMidiNotes();
         Tuning tuning = notes.isEmpty()
@@ -253,9 +214,8 @@ public final class PowerTabFile {
     }
 
     /**
-     * PowerTab no distingue un canal de efectos aparte del canal principal (a
-     * diferencia de Guitar Pro): se usa el mismo numero para los dos, que es
-     * como tabpro modela "un solo canal por pista".
+     * PowerTab does not distinguish an effects channel separate from the main channel
+     * (unlike Guitar Pro): the same number is used for both.
      */
     private static Channel channelOf(PowerTabGuitar guitar, int staffIndex) {
         int number = Math.clamp(staffIndex + 1, 1, Channel.CHANNELS_PER_PORT);
@@ -280,9 +240,6 @@ public final class PowerTabFile {
                 false, false, false, TrackDisplay.standard(), false);
     }
 
-    // ---- compases -------------------------------------------------------------
-
-    /** El tramo de posiciones que ocupa un compas dentro de un sistema, con sus atributos ya resueltos. */
     private record MeasureSlice(int start, int end, TimeSignature timeSignature, MeasureAttributes attributes) {
     }
 
@@ -358,8 +315,6 @@ public final class PowerTabFile {
                 .findFirst()
                 .orElseThrow(() -> new ScoreFileException("archivo PowerTab corrupto: no hay barra en la posicion " + position));
     }
-
-    // ---- cabecera -------------------------------------------------------------
 
     private static ScoreInfo infoOf(PowerTabHeader header) {
         return new ScoreInfo(

@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Lee la lista de compases: cada uno es un registro de tamano fijo (declarado
- * en el archivo con 4 bytes de mas), del que solo hacen falta los primeros 8
- * para la medida y la armadura. El resto es relleno que no hace falta
- * entender: leer el bloque entero de una vez alcanza para no desalinearse.
+ * Reads the list of measures: each one is a fixed-size record (declared in the file
+ * with 4 extra bytes), of which only the first 8 are needed for the time signature and
+ * key signature. The rest is padding that does not need to be understood: reading the
+ * whole block at once is enough to not lose alignment.
  */
 final class TabEditMeasureReader {
 
@@ -19,7 +19,7 @@ final class TabEditMeasureReader {
     List<TabEditMeasure> read(TabEditByteReader input) {
         int measureRecordSize = input.readUnsignedShort() - 4;
         int measureCount = input.readUnsignedShort();
-        input.skip(4); // relleno fijo, siempre en cero
+        input.skip(4); // fixed padding, always zero
 
         List<TabEditMeasure> measures = new ArrayList<>(measureCount);
         for (int i = 0; i < measureCount; i++) {
@@ -36,8 +36,9 @@ final class TabEditMeasureReader {
         record.skip(1);
         int denominator = record.readUnsignedByte();
         int numerator = record.readUnsignedByte();
-        // El resto del registro (ancho de relleno a la izquierda y lo que sobre) no hace
-        // falta para la medida ni la armadura, y ya quedo consumido al leer el bloque entero.
+        // The rest of the record (left-padding width and whatever else) is not needed
+        // for the time signature or key signature, and is already consumed by reading
+        // the whole block.
 
         TimeSignature timeSignature = new TimeSignature(numerator, denominator);
         KeySignature keySignature =

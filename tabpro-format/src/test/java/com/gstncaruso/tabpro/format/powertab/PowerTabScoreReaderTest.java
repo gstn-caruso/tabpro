@@ -4,11 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * El fixture es {@code guitars.ptb}, del propio repositorio de powertabeditor:
- * dos guitarras en la score de guitarra (7 y 6 cuerdas) y una en la score de
- * bajo (4 cuerdas).
- */
 class PowerTabScoreReaderTest {
 
     private final PowerTabHeaderReader headerReader = new PowerTabHeaderReader();

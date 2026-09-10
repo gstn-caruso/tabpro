@@ -7,11 +7,6 @@ import com.gstncaruso.tabpro.core.model.bars.Mode;
 import java.io.ByteArrayOutputStream;
 import org.junit.jupiter.api.Test;
 
-/**
- * Bytes armados a mano siguiendo barline.cpp/keysignature.cpp/timesignature.cpp
- * de powertabeditor. Los valores replican el barlines.ptb real del proyecto: doble
- * barra, la menor con 2 sostenidos, medida 5/8.
- */
 class PowerTabBarlineReaderTest {
 
     private final PowerTabBarlineReader reader = new PowerTabBarlineReader();
@@ -19,18 +14,17 @@ class PowerTabBarlineReaderTest {
     @Test
     void readsADoubleBarWithAMinorKeyAndAnOddMeter() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(3); // posicion.
-        out.write((PowerTabBarline.DOUBLE_BAR << 5)); // tipo, sin repeticion.
+        out.write(3);
+        out.write((PowerTabBarline.DOUBLE_BAR << 5));
 
-        out.write(0x40 | 2); // armadura: menor (bit6), 2 sostenidos.
+        out.write(0x40 | 2);
 
-        // medida: 5 tiempos (zero-based 4, bits 27-31) de octava (exponente 3, bits 24-26).
         int timeData = (4 << 27) | (3 << 24);
         writeInt(out, timeData);
-        out.write(5); // pulsos por compas: se descarta.
+        out.write(5);
 
-        out.write('A'); // letra de la marca de ensayo: se descarta.
-        writeMfcString(out, "Intro"); // descripcion: se descarta.
+        out.write('A');
+        writeMfcString(out, "Intro");
 
         PowerTabBarline barline = reader.read(new PowerTabByteReader(out.toByteArray()));
 
@@ -46,9 +40,9 @@ class PowerTabBarlineReaderTest {
     void readsARepeatEndWithItsCount() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.write(0);
-        out.write((PowerTabBarline.REPEAT_END << 5) | 3); // tipo repeatEnd, repite 3 veces.
-        out.write(0); // armadura de Do mayor.
-        writeInt(out, 0); // medida: nada marcado (comun/corte apagados, todo en cero).
+        out.write((PowerTabBarline.REPEAT_END << 5) | 3);
+        out.write(0);
+        writeInt(out, 0);
         out.write(0);
         out.write(0);
         writeMfcString(out, "");

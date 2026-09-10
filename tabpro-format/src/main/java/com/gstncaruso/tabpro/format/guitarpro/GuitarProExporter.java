@@ -19,13 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Exporta una partitura al formato de Guitar Pro 4, tal como pide el manual en
- * "File &gt; Export &gt; Guitar Pro 4 Format". Es el espejo de {@link GuitarProFile}, pero
- * de una sola generacion: GP4 trae letra, un unico triplet feel global y octava en la
- * armadura, y no trae direcciones, page setup, autor de la musica ni segunda voz.
- *
- * <p>Lo que tabpro modela y GP4 no soporta se pierde al exportar; {@link #warningsFor}
- * dice exactamente que, para esta partitura en particular.
+ * GP4 carries lyrics, a single global triplet feel, and octave in the key signature, and
+ * carries no directions, page setup, music author, or second voice.
  */
 public final class GuitarProExporter {
 
@@ -97,7 +92,6 @@ public final class GuitarProExporter {
         }
     }
 
-    /** Lo que esta partitura en particular pierde al exportarse a Guitar Pro 4. */
     public List<String> warningsFor(Score score) {
         List<String> warnings = new ArrayList<>();
         if (!score.info().musicAuthor().isBlank()) {

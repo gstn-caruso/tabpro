@@ -25,15 +25,6 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
 
-/**
- * Armador de archivos MIDI de prueba: escribe una partitura como notacion plana —una pista de
- * tempo y armadura, y una pista por pista audible, con su instrumento, su mezcla y sus notas de
- * corrido— para poder probar el importador sin depender de ningun exportador.
- *
- * <p>Es a proposito lo mas parecido a lo que escribe cualquier otro programa: sin efectos, sin
- * repeticiones y con un solo canal por pista. Eso es justo lo que el importador tiene que saber
- * leer, y no lo que tabpro exporta, que rinde la partitura entera como suena.
- */
 final class PlainMidiWriter {
 
     private static final int SEQUENCE_FORMAT = 1;
@@ -144,7 +135,6 @@ final class PlainMidiWriter {
         }
     }
 
-    /** Lo que sigue sonando en cada cuerda, para poder apagarlo cuando corresponde. */
     private static final class Sustains {
 
         private record Ringing(int soundOrPitch, long endTick) {

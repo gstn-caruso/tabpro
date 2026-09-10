@@ -9,13 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Lee una posicion de PowerTab: su figura, si es un silencio, y las notas que
- * suenan en ella. El tipo de figura se guarda como su denominador (1, 2, 4,
- * 8...), igual que {@link NoteValue#denominator()}, asi que no hace falta
- * traducir una tabla como en Guitar Pro. El doble puntillo no tiene donde ir
- * en el modelo de tabpro (que solo conoce un puntillo): se aproxima a uno
- * solo. El agrupamiento irregular (tresillos y demas) tampoco se aplica en
- * esta version: la figura se lee a su valor nominal.
+ * Reads a PowerTab position: its note value, whether it is a rest, and the notes that
+ * sound on it. The note-value type is stored as its denominator (1, 2, 4, 8...), same
+ * as {@link NoteValue#denominator()}, so there is no lookup table to translate like in
+ * Guitar Pro. Double dots have nowhere to go in the tabpro model (which only knows a
+ * single dot): they are approximated to one. Irregular grouping (triplets and the like)
+ * is not applied in this version either: the note value is read at its nominal length.
  */
 final class PowerTabPositionReader {
 
@@ -31,7 +30,7 @@ final class PowerTabPositionReader {
 
     PowerTabPosition read(PowerTabByteReader reader) {
         int index = reader.readUnsignedByte();
-        reader.readUnsignedShort(); // beaming y agrupamiento irregular: no se aplica en esta version.
+        reader.readUnsignedShort(); // beaming and irregular grouping: not applied in this version.
         int data = reader.readInt();
         int[] symbols = reader.readSmallFixedArrayOfInts(MAX_COMPLEX_SYMBOLS);
 

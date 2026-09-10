@@ -6,11 +6,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
-/**
- * Cada seccion descartada tiene que consumir exactamente sus bytes: un
- * centinela puesto justo despues confirma que no se lee ni de mas ni de
- * menos.
- */
 class PowerTabAuxiliaryReaderTest {
 
     private static final int SENTINEL = 0x99;
@@ -31,8 +26,8 @@ class PowerTabAuxiliaryReaderTest {
     @Test
     void skipsADirectionWithTwoSymbols() {
         assertLeavesTheSentinel(body -> {
-            body.write(9); // posicion.
-            body.write(2); // dos simbolos de 16 bits.
+            body.write(9);
+            body.write(2);
             body.write(new byte[4], 0, 4);
         }, PowerTabAuxiliaryReader::skipDirection);
     }
@@ -40,8 +35,8 @@ class PowerTabAuxiliaryReaderTest {
     @Test
     void skipsAChordText() {
         assertLeavesTheSentinel(body -> {
-            body.write(4); // posicion.
-            body.write(new byte[6], 0, 6); // chord name.
+            body.write(4);
+            body.write(new byte[6], 0, 6);
         }, PowerTabAuxiliaryReader::skipChordText);
     }
 
@@ -59,19 +54,19 @@ class PowerTabAuxiliaryReaderTest {
     void skipsFloatingText() {
         assertLeavesTheSentinel(body -> {
             writeMfcString(body, "foo\nbaz");
-            body.write(new byte[16], 0, 16); // rectangulo.
-            body.write(0); // banderas.
+            body.write(new byte[16], 0, 16);
+            body.write(0);
             writeMfcString(body, "Arial");
-            body.write(new byte[15], 0, 15); // resto del font setting.
+            body.write(new byte[15], 0, 15);
         }, PowerTabAuxiliaryReader::skipFloatingText);
     }
 
     @Test
     void skipsAChordDiagram() {
         assertLeavesTheSentinel(body -> {
-            body.write(new byte[6], 0, 6); // chord name.
-            body.write(2); // traste superior.
-            body.write(6); // seis cuerdas.
+            body.write(new byte[6], 0, 6);
+            body.write(2);
+            body.write(6);
             body.write(new byte[6], 0, 6);
         }, PowerTabAuxiliaryReader::skipChordDiagram);
     }

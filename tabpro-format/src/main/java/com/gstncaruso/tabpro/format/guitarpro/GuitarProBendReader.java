@@ -7,10 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Lee la curva de un bend o de una palanca. Guitar Pro guarda la posicion de
- * 0 a 60 (igual que {@link BendPoint#LAST_POSITION}) y la profundidad en unidades
- * de las que entran 25 en cada cuarto de tono: un tono entero, que es el bend
- * completo, se escribe como 100. Tabpro la guarda en cuartos de tono.
+ * Guitar Pro stores the bend or tremolo bar curve position from 0 to 60 (same as
+ * {@link BendPoint#LAST_POSITION}) and the depth in units of which 25 make a quarter
+ * tone: a whole tone, the full bend, is written as 100. Tabpro stores it in quarter tones.
  */
 final class GuitarProBendReader {
 
@@ -18,7 +17,7 @@ final class GuitarProBendReader {
 
     Bend read(GuitarProByteReader reader) {
         int rawType = reader.readSignedByte();
-        reader.readInt(); // profundidad general de la curva: se puede derivar de los puntos.
+        reader.readInt(); // overall curve depth: derivable from the points.
         int pointCount = Math.max(2, reader.readInt());
         List<BendPoint> points = new ArrayList<>(pointCount);
         for (int i = 0; i < pointCount; i++) {
@@ -31,9 +30,9 @@ final class GuitarProBendReader {
     }
 
     /**
-     * La palanca de GP3 no tiene curva: es un solo entero con cuanto se hunde la cuerda.
-     * Se le da la forma con que la dibuja Guitar Pro -- baja hasta la mitad de la nota y
-     * vuelve a su altura.
+     * The GP3 tremolo bar has no curve: it is a single integer with how far the string
+     * dips. It is given the shape Guitar Pro draws it with -- it dips to the middle of
+     * the note and returns to pitch.
      */
     Bend readOldTremoloBar(GuitarProByteReader reader) {
         int depth = quarterTonesOf(-reader.readInt());
@@ -56,7 +55,7 @@ final class GuitarProBendReader {
                 -BendPoint.MAX_QUARTER_TONES, BendPoint.MAX_QUARTER_TONES);
     }
 
-    /** Los codigos 1 a 5 son del bend; 6 a 11 son los propios de la palanca. */
+    /** Codes 1 to 5 belong to the bend; 6 to 11 are specific to the tremolo bar. */
     private static BendType bendTypeOf(int rawType) {
         return switch (rawType) {
             case 1 -> BendType.BEND;

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-/** La curva se escribe en las mismas unidades en que la lee el formato: 25 por cuarto de tono. */
 class GuitarProBendWriterTest {
 
     private static final int WHOLE_TONE_IN_QUARTER_TONES = 4;
@@ -27,7 +26,7 @@ class GuitarProBendWriterTest {
         writer.write(bytes, bend);
         GuitarProByteReader reader = new GuitarProByteReader(bytes.bytes());
 
-        reader.readSignedByte(); // tipo
+        reader.readSignedByte();
         assertEquals(WHOLE_TONE_RAW, reader.readInt(), "la profundidad general");
         assertEquals(2, reader.readInt());
         reader.readInt();

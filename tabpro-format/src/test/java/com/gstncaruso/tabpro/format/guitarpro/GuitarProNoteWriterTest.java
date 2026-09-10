@@ -10,10 +10,8 @@ import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.core.model.effects.NoteEffects;
 import org.junit.jupiter.api.Test;
 
-/** En Guitar Pro 4 la nota de adorno va traste, dinamica, duracion y recien despues transicion. */
 class GuitarProNoteWriterTest {
 
-    /** Traste, tipo, dinamica y traste de la nota, mas los dos bytes de banderas del efecto. */
     private static final int BYTES_BEFORE_THE_GRACE_NOTE = 6;
 
     private static final int THIRTY_SECOND = 1;

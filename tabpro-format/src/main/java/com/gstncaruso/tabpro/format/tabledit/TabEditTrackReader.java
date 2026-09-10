@@ -4,20 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Lee el encabezado de cada pista: un registro de tamano fijo del que hacen
- * falta la cantidad de cuerdas, el instrumento, la cejilla, el pan y el
- * volumen, la afinacion y el nombre. La pinza (clave, corchete de gran
- * pentagrama, doble cuerda, pedal steel, pista de ritmo) no tiene donde vivir
- * en el modelo de tabpro y se descarta junto con el resto del relleno.
+ * Reads each track's header: a fixed-size record from which the string count, the
+ * instrument, the capo, the pan and volume, the tuning, and the name are needed. The
+ * clamp (clef, grand staff brace, double string, pedal steel, rhythm track) has nowhere
+ * to live in the tabpro model and is discarded along with the rest of the padding.
  */
 final class TabEditTrackReader {
 
-    /** El instrumento MIDI que TablEdit usa como marca de "esto es una pista de percusion". */
+    /** The MIDI instrument TablEdit uses to mark "this is a percussion track". */
     private static final int PERCUSSION_MIDI_INSTRUMENT = 96;
 
     private static final int TUNING_SLOTS = 12;
 
-    /** Un numero MIDI de referencia: el byte crudo de afinacion es cuanto mas grave suena esa cuerda. */
+    /** A reference MIDI number: the raw tuning byte is how much lower that string sounds. */
     private static final int TUNING_REFERENCE_MIDI_NUMBER = 96;
 
     List<TabEditTrackHeader> read(TabEditByteReader input) {
@@ -36,15 +35,15 @@ final class TabEditTrackReader {
         record.skip(7);
         int midiInstrument = record.readUnsignedByte();
         record.skip(2);
-        record.skip(1); // transposicion: no tiene donde vivir en el modelo de tabpro.
+        record.skip(1); // transposition: has nowhere to live in the tabpro model.
         int capo = record.readUnsignedByte();
         record.skip(1);
-        record.skip(1); // desplazamiento del Do central: solo afecta el dibujo en pentagrama.
-        record.skip(1); // clave, gran pentagrama, corchete: idem.
+        record.skip(1); // middle-C offset: only affects staff drawing.
+        record.skip(1); // clef, grand staff, brace: same.
         record.skip(1);
         int pan = record.readUnsignedByte();
         int volume = record.readUnsignedByte();
-        record.skip(1); // doble cuerda, let ring de pista, pedal steel, pista de ritmo: idem.
+        record.skip(1); // double string, track let ring, pedal steel, rhythm track: same.
 
         List<Integer> tuning = new ArrayList<>(stringCount);
         for (int string = 0; string < stringCount; string++) {

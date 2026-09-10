@@ -32,10 +32,6 @@ import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El escritor exporta a Guitar Pro 4 y el lector existente tiene que releer exactamente lo
- * mismo, salvo lo que GP4 no puede representar (documentado en cada test que lo toca).
- */
 class GuitarProExporterTest {
 
     private final GuitarProExporter exporter = new GuitarProExporter();

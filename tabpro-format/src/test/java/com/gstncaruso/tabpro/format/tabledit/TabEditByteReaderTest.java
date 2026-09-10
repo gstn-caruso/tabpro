@@ -9,11 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import org.junit.jupiter.api.Test;
 
-/**
- * Los primitivos de bajo nivel del formato .tef de TablEdit: todo little
- * endian, con dos sabores de string y bloques de tamano fijo que se leen como
- * un sub-arreglo independiente.
- */
 class TabEditByteReaderTest {
 
     @Test
@@ -69,9 +64,6 @@ class TabEditByteReaderTest {
 
     @Test
     void unStringConPrefijoDeLargoCortoSeCortaEnElPrimerNulo() {
-        // El largo declarado dice 10, pero adentro hay un byte nulo antes de terminar: TablEdit
-        // corta ahi mismo y deja el cursor justo despues del nulo, sin consumir el resto del
-        // campo declarado. Es el comportamiento real del lector de referencia, no uno ideal.
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(10);
         writer.writeUnsignedByte('h').writeUnsignedByte('o').writeUnsignedByte('l').writeUnsignedByte('a');
         writer.writeUnsignedByte(0);

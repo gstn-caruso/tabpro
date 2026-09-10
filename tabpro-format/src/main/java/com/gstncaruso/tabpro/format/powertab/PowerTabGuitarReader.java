@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Lee una guitarra: su descripcion, los parametros de su canal y su afinacion.
- * El numero de la guitarra y el nombre y los datos de la afinacion (sostenidos
- * o bemoles, corrimiento de notacion) no tienen lugar en el modelo de tabpro:
- * la afinacion se identifica por sus notas, no por su nombre.
+ * Reads a guitar: its description, its channel parameters, and its tuning. The guitar
+ * number and the tuning's name and data (sharps or flats, notation shift) have no
+ * place in the tabpro model: the tuning is identified by its notes, not by its name.
  */
 final class PowerTabGuitarReader {
 
     PowerTabGuitar read(PowerTabByteReader reader) {
-        reader.readUnsignedByte(); // numero: el orden del vector ya lo da.
+        reader.readUnsignedByte(); // number: the vector order already gives it.
         String description = reader.readMfcString();
         int preset = reader.readUnsignedByte();
         int initialVolume = reader.readUnsignedByte();
@@ -27,8 +26,8 @@ final class PowerTabGuitarReader {
     }
 
     private List<Integer> readTuning(PowerTabByteReader reader) {
-        reader.readMfcString(); // nombre de la afinacion.
-        reader.readUnsignedByte(); // sostenidos/bemoles y corrimiento de notacion.
+        reader.readMfcString(); // tuning name.
+        reader.readUnsignedByte(); // sharps/flats and notation shift.
         int[] notes = reader.readSmallVectorOfUnsignedBytes();
         List<Integer> midiNotes = new ArrayList<>(notes.length);
         for (int note : notes) {

@@ -8,10 +8,6 @@ import com.gstncaruso.tabpro.core.model.effects.BendType;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-/**
- * La escala de la curva la fija el formato, no tabpro: Guitar Pro guarda 25 unidades
- * por cuarto de tono, asi que un tono entero (cuatro cuartos) se escribe como 100.
- */
 class GuitarProBendReaderTest {
 
     private static final int WHOLE_TONE = 100;

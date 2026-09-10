@@ -15,9 +15,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Lee la cabecera del archivo: los datos de la partitura, la letra, la
- * configuracion de pagina y RSE (que no tienen destino en el modelo de
- * tabpro y se descartan), el tempo y la armadura inicial.
+ * Reads the file header: the score info, the lyrics, the page setup and RSE settings
+ * (which have no place in the tabpro model and are discarded), the tempo, and the
+ * initial key signature.
  */
 final class GuitarProHeaderReader {
 
@@ -35,17 +35,15 @@ final class GuitarProHeaderReader {
     }
 
     /**
-     * Los canales suenan justo despues de la cabecera; las direcciones, justo
-     * despues de ellos: 19 slots de dos bytes, uno por simbolo de destino
-     * (Coda, Doble Coda, Segno, Segno Segno, Fine, en ese orden) y uno por
-     * salto (los catorce de {@link DirectionJump}, en el orden en que los
-     * declara el enum), cada uno con el compas al que apunta o -1 si no se
-     * usa. Cuatro bytes reservados cierran el bloque.
-     */
-    /**
-     * El orden en que el archivo guarda los cinco simbolos de destino. Lo fija el
-     * formato de Guitar Pro, no tabpro: por eso se declara aca, donde se lee el
-     * archivo, y no se deduce del orden de declaracion del enum.
+     * The channels play right after the header; the directions, right after them: 19
+     * two-byte slots, one per target symbol (Coda, Double Coda, Segno, Segno Segno,
+     * Fine, in that order) and one per jump (the fourteen from {@link DirectionJump},
+     * in the order the enum declares them), each carrying the measure it points to or
+     * -1 if unused. Four reserved bytes close the block.
+     *
+     * <p>The order in which the file stores the five target symbols is fixed by the
+     * Guitar Pro format, not by tabpro: that is why it is declared here, where the file
+     * is read, rather than derived from the enum's declaration order.
      */
     static final List<DirectionSymbol> SYMBOL_SLOTS = List.of(
             DirectionSymbol.CODA,
@@ -54,7 +52,7 @@ final class GuitarProHeaderReader {
             DirectionSymbol.SEGNO_SEGNO,
             DirectionSymbol.FINE);
 
-    /** El orden en que el archivo guarda los catorce saltos. Lo fija el formato. */
+    /** The order in which the file stores the fourteen jumps. Fixed by the format. */
     static final List<DirectionJump> JUMP_SLOTS = List.of(
             DirectionJump.DA_CAPO,
             DirectionJump.DA_CAPO_AL_CODA,
@@ -88,8 +86,8 @@ final class GuitarProHeaderReader {
     }
 
     /**
-     * Un slot de destino: el numero del compas al que apunta -- el primero es el uno, no
-     * el cero --, o vacio si no se usa, que es lo que dice un -1.
+     * A target slot: the number of the measure it points to -- the first one is one,
+     * not zero -- or empty if unused, which is what a -1 means.
      */
     private Optional<Integer> readSlot(GuitarProByteReader reader) {
         int measureNumber = reader.readShort();
@@ -172,9 +170,9 @@ final class GuitarProHeaderReader {
     }
 
     /**
-     * La armadura inicial es un entero con signo y nada mas: cuantas alteraciones lleva.
-     * El modo mayor o menor no existe aca; solo aparece en los cambios de armadura de
-     * cada compas, que traen dos bytes propios.
+     * The initial key signature is a signed integer and nothing else: how many
+     * accidentals it carries. The major or minor mode does not exist here; it only
+     * appears in each measure's key signature changes, which carry two bytes of their own.
      */
     private KeySignature readKeySignatureAndOctave(GuitarProByteReader reader, GuitarProVersion version) {
         int accidentals = (byte) reader.readInt();

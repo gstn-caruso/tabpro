@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.format.exchange.ascii;
 
-/** Cuantas columnas de texto entran en un renglon antes de pasar al siguiente. */
 public record AsciiTabExportOptions(int columnsPerLine) {
 
     private static final int MIN_COLUMNS_PER_LINE = 10;

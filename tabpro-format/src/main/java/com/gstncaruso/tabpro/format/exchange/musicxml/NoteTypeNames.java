@@ -3,7 +3,7 @@ package com.gstncaruso.tabpro.format.exchange.musicxml;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 
-/** El nombre de figura que usa MusicXML en {@code <type>}, que no es el mismo texto que el enum. */
+/** The note-value name MusicXML uses in {@code <type>}, which is not the same text as the enum. */
 final class NoteTypeNames {
 
     private NoteTypeNames() {
