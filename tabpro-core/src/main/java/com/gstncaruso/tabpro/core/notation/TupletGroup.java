@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.core.notation;
 
 import com.gstncaruso.tabpro.core.model.Tuplet;
 
-/** Un tramo de beats consecutivos que comparten el mismo grupo irregular. */
 public record TupletGroup(int firstBeat, int lastBeat, Tuplet tuplet) {
 
     public TupletGroup {

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
-/** Una pista de la partitura: su instrumento, su afinacion y sus compases. */
 public record Track(
         String name, Tuning tuning, Channel channel, TrackSettings settings, List<Measure> measures) {
 
@@ -14,7 +13,6 @@ public record Track(
     public static final int BASS_PROGRAM = 33;
     public static final int PERCUSSION_PROGRAM = 0;
 
-    /** Los colores con que Guitar Pro pinta las pistas nuevas, en orden. */
     private static final List<ScoreColor> PALETTE = List.of(
             ScoreColor.rgb(0xE05C5C), ScoreColor.rgb(0x5C9CE0), ScoreColor.rgb(0x63BD63),
             ScoreColor.rgb(0xE0B25C), ScoreColor.rgb(0xB07CD8), ScoreColor.rgb(0x5CC7C7),
@@ -58,7 +56,6 @@ public record Track(
         return settings.percussion();
     }
 
-    /** Si al combinar dos digitos tipeados forman un traste o un sonido valido para esta pista. */
     public boolean acceptsTypedNumber(int number) {
         return isPercussion() ? PercussionKit.isPlayable(number) : number <= Tuning.MAX_FRET;
     }
@@ -86,17 +83,10 @@ public record Track(
         return measure(measureIndex).hasNotes();
     }
 
-    /** La quinta cuerda del banjo, si esta opcion esta activa. */
     private static final int BANJO_FIFTH_STRING = 5;
 
-    /**
-     * La quinta cuerda de un banjo no llega hasta la cejuela: arranca en el
-     * traste 6, asi que el primer traste que se puede pisar no es el 1 sino
-     * el 6, y de ahi para arriba.
-     */
     private static final int BANJO_FIFTH_STRING_FRET_OFFSET = 5;
 
-    /** La altura que suena esa nota, contando la cejilla y la quinta cuerda del banjo. */
     public Pitch pitchOf(Note note) {
         return tuning.pitchOf(effectiveNote(note)).transposed(settings.capo());
     }
@@ -108,18 +98,10 @@ public record Track(
         return note;
     }
 
-    /** Cuantas cuerdas agudas de una guitarra de doce cuerdas se doblan al unisono; el resto, a la octava. */
     private static final int TWELVE_STRING_UNISON_STRINGS = 2;
     private static final int OCTAVE_SEMITONES = 12;
     private static final int UNISON_SEMITONES = 0;
 
-    /**
-     * El intervalo con el que dobla esta cuerda una guitarra de doce cuerdas:
-     * al unisono las dos cuerdas mas agudas, a la octava el resto, tal como
-     * suenan los cursos de una doce cuerdas real. Vacio si la pista no tiene
-     * esta opcion activa, que es lo unico que cambia: la tablatura se sigue
-     * escribiendo con las mismas seis lineas.
-     */
     public Optional<Integer> twelveStringDoublingInterval(int string) {
         if (!settings.twelveString()) {
             return Optional.empty();
@@ -180,7 +162,6 @@ public record Track(
         return new Track(name, tuning, channel, settings, updated);
     }
 
-    /** Los atributos del compas, que en Guitar Pro son iguales en todas las pistas. */
     public MeasureAttributes attributesOf(int measureIndex) {
         return measure(measureIndex).attributes();
     }

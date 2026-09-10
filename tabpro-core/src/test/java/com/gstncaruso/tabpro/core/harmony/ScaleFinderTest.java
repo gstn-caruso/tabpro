@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 class ScaleFinderTest {
 
-    /** Do Re Mi Fa Sol La Si en Do central: una melodia bien diatonica. */
     private static final List<Pitch> DO_MAYOR =
             List.of(60, 62, 64, 65, 67, 69, 71).stream().map(Pitch::new).toList();
 
@@ -46,7 +45,7 @@ class ScaleFinderTest {
     @Test
     void unaNotaAjenaCuentaComoUnaIncidencia() {
         List<Pitch> conUnaNotaExtranha = new java.util.ArrayList<>(DO_MAYOR);
-        conUnaNotaExtranha.add(new Pitch(61)); // Do#, ajeno a Do mayor
+        conUnaNotaExtranha.add(new Pitch(61));
 
         List<ScaleMatch> candidatas = ScaleFinder.find(conUnaNotaExtranha);
 

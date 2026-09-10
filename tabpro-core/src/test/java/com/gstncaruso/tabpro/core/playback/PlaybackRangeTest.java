@@ -7,10 +7,6 @@ import com.gstncaruso.tabpro.core.model.Score;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Reproducir desde una posicion o solo un rango: una seleccion de compases
- * que se toca de corrido, sin repeticiones ni saltos.
- */
 class PlaybackRangeTest {
 
     @Test

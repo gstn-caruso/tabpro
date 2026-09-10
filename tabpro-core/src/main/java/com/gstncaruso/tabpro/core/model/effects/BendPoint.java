@@ -1,15 +1,9 @@
 package com.gstncaruso.tabpro.core.model.effects;
 
-/**
- * Un punto de la curva de un bend o de una palanca: cuanto se estiro la cuerda
- * en un momento dado de la nota.
- */
 public record BendPoint(int position, int quarterTones, int vibrato) {
 
-    /** La curva se dibuja sobre una grilla que va de 0 a 60, como en Guitar Pro. */
     public static final int LAST_POSITION = 60;
 
-    /** Tres tonos, el maximo que ofrece la ventana de bend. */
     public static final int MAX_QUARTER_TONES = 12;
 
     public static final int MAX_VIBRATO = 3;
@@ -34,7 +28,6 @@ public record BendPoint(int position, int quarterTones, int vibrato) {
         return quarterTones / 2.0;
     }
 
-    /** Que fraccion de la nota transcurrio cuando se llega a este punto. */
     public double fractionOfTheNote() {
         return position / (double) LAST_POSITION;
     }

@@ -8,14 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/**
- * El manual permite copiar entre dos sesiones de Guitar Pro ("it is easy to take a
- * track from another file and paste it in your current file"). Tabpro corre un proceso
- * por sesion, asi que "dos sesiones" son dos Editor -cada uno con su propio Clipboard-
- * que comparten solo el lugar donde vive lo copiado: exactamente lo que pasaria entre
- * dos procesos con el portapapeles del sistema operativo en el medio, pero sin salir
- * del proceso (y por eso corre igual en headless).
- */
 class SharedClipboardTest {
 
     @Test

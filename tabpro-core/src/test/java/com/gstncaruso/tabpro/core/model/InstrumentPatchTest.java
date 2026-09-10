@@ -5,11 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * El patch de instrumentos del manual: un archivo de texto que solo cambia
- * los nombres que se muestran, nunca el sonido -"Configure the Sound > MIDI
- * Setup".
- */
 class InstrumentPatchTest {
 
     @Test

@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model.effects;
 
-/** Cuan fuerte se toca una nota, de muy suave a muy fuerte. */
 public enum Dynamic {
     PIANO_PIANISSIMO("ppp", 15),
     PIANISSIMO("pp", 31),

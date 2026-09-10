@@ -3,10 +3,6 @@ package com.gstncaruso.tabpro.core.files;
 import java.nio.file.Path;
 import java.util.Locale;
 
-/**
- * El manual tiene un solo Archivo &gt; Abrir, que reconoce indistintamente los formatos que
- * sabe leer: esta es la regla, por la extension del archivo, de a que lector le corresponde.
- */
 public enum ScoreFileFormat {
     TABPRO,
     GUITAR_PRO,

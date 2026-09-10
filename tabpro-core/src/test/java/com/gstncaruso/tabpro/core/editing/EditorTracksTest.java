@@ -23,12 +23,6 @@ class EditorTracksTest {
         assertEquals("Bajo", editor.currentTrack().name());
     }
 
-    /**
-     * Antes, una pista nueva entraba siempre en el canal 1: no molestaba porque MidiSequences
-     * ignoraba ese valor y repartia los canales por su cuenta. Ahora que el canal configurado
-     * llega a sonar, una pista nueva tiene que arrancar en un canal que no colisione con las que
-     * ya estan, o toda partitura de varias pistas recien armada sonaria con un solo instrumento.
-     */
     @Test
     void addingATrackAssignsItTheNextFreeChannelPair() {
         Editor editor = new Editor(Score.blank());
@@ -46,7 +40,6 @@ class EditorTracksTest {
         assertEquals(6, third.effectChannel());
     }
 
-    /** El casillero "Forzar canales 11 a 16" de la pista nueva reparte su par en la mitad alta del puerto. */
     @Test
     void addingATrackThatForcesChannels11to16AssignsItThere() {
         Editor editor = new Editor(Score.blank());
@@ -59,7 +52,6 @@ class EditorTracksTest {
         assertEquals(12, channel.effectChannel());
     }
 
-    /** La percusion sigue yendo siempre al canal 10, nunca al proximo canal libre. */
     @Test
     void addingAPercussionTrackKeepsItOnTheTenthChannel() {
         Editor editor = new Editor(Score.blank());

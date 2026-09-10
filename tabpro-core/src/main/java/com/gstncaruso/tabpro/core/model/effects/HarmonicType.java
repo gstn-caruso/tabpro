@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model.effects;
 
-/** Los armonicos que reconoce la tablatura, con la sigla con que se anotan. */
 public enum HarmonicType {
     NATURAL("N.H."),
     ARTIFICIAL("A.H."),

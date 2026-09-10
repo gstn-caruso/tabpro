@@ -2,15 +2,6 @@ package com.gstncaruso.tabpro.core.model;
 
 import java.util.Set;
 
-/**
- * Los parametros de sonido de una pista, los que muestra la mesa de mezcla.
- *
- * <p>Una pista ocupa dos canales del puerto, como hace Guitar Pro por defecto:
- * el suyo, donde suenan las notas limpias, y el de efectos, donde suenan las
- * que llevan bend o vibrato, para que corriendo la altura de una no se corra
- * la de las demas. Poner los dos en el mismo numero es volver a un solo canal
- * por pista, que viene bien cuando la partitura tiene muchas.
- */
 public record Channel(
         int program, int volume, int pan, int chorus, int reverb, int phaser, int tremolo,
         int port, int number, int effectChannel, boolean muted, boolean solo) {
@@ -19,13 +10,12 @@ public record Channel(
     public static final int CENTER_PAN = 64;
     public static final int MAX = 127;
 
-    /** Por convencion de MIDI, la percusion suena siempre en el canal 10. */
+    /** By MIDI convention, percussion always plays on channel 10. */
     public static final int PERCUSSION_CHANNEL = 10;
 
     public static final int PORT_COUNT = 4;
     public static final int CHANNELS_PER_PORT = 16;
 
-    /** Donde arranca el barrido de "Forzar canales 11 a 16" del manual. */
     private static final int FORCED_FIRST_CHANNEL = 11;
 
     public Channel {
@@ -52,15 +42,6 @@ public record Channel(
                 effectChannelNextTo(PERCUSSION_CHANNEL), false, false);
     }
 
-    /**
-     * El canal de efectos que le toca por defecto al que use ese numero: el que
-     * sigue, salteando el de percusion si es que cae justo ahi -una pista
-     * melodica no puede terminar con sus efectos sonando como bateria-, salvo
-     * en la propia percusion, que toca todo en el 10. Al que ya esta en el
-     * ultimo canal del puerto no le queda a donde ir: se queda en el suyo,
-     * degradando a un solo canal para la pista, algo que el propio modelo
-     * permite a proposito.
-     */
     public static int effectChannelNextTo(int number) {
         if (number == PERCUSSION_CHANNEL) {
             return PERCUSSION_CHANNEL;
@@ -72,23 +53,10 @@ public record Channel(
         return Math.min(next, CHANNELS_PER_PORT);
     }
 
-    /**
-     * La misma pista con el proximo canal libre y su canal de efectos, el par que no colisiona
-     * con ninguno de los que ya estan usando otras pistas no percutivas -salta el canal de
-     * percusion, para no aterrizar ahi por accidente- y usa {@link #effectChannelNextTo} para
-     * el segundo canal, la misma regla que ya calcula ese valor en cualquier otro lugar. La usan
-     * tanto una pista nueva como el arreglo de un archivo guardado antes de que el canal
-     * configurado llegara a sonar de verdad.
-     */
     public Channel withNextFreeChannelPairAfter(Set<Integer> channelsInUse) {
         return withNextFreeChannelPairAfter(channelsInUse, false);
     }
 
-    /**
-     * Como {@link #withNextFreeChannelPairAfter(Set)}, pero si {@code forceChannels11to16} viene
-     * de la casilla "Forzar canales 11 a 16" del manual, el barrido arranca en el 11 en vez del 1:
-     * la pista y sus efectos quedan en la mitad alta del puerto, dejando la baja para otras pistas.
-     */
     public Channel withNextFreeChannelPairAfter(Set<Integer> channelsInUse, boolean forceChannels11to16) {
         int firstChannel = forceChannels11to16 ? FORCED_FIRST_CHANNEL : 1;
         for (int candidate = firstChannel; candidate <= CHANNELS_PER_PORT; candidate++) {
@@ -100,7 +68,6 @@ public record Channel(
                 return withNumber(candidate).withEffectChannel(effects);
             }
         }
-        // no quedo ningun par libre: comparte consigo misma antes que fallar.
         int onlyFree = firstFreeChannel(channelsInUse, firstChannel);
         return withNumber(onlyFree).withEffectChannel(onlyFree);
     }
@@ -114,11 +81,6 @@ public record Channel(
         return firstChannel;
     }
 
-    /**
-     * La casilla "usar 2 canales por pista" del import de MIDI del manual: con los
-     * dos canales, el de efectos es el que sigue (para bends o slides sin correr
-     * las demas notas); con uno solo, los dos canales son el mismo.
-     */
     public static int effectChannelFor(int number, boolean useTwoChannelsPerTrack) {
         return useTwoChannelsPerTrack ? effectChannelNextTo(number) : number;
     }

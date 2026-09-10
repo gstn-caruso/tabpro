@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/** Como esta afinada cada cuerda. La cuerda 1 es la mas aguda. */
 public record Tuning(String name, List<Pitch> strings) {
 
-    /** El traste mas alto que tiene un instrumento de cuerda en este programa. */
     public static final int MAX_FRET = 36;
 
     public Tuning {
@@ -52,7 +50,6 @@ public record Tuning(String name, List<Pitch> strings) {
         return pitchOfString(note.string()).transposed(note.fret());
     }
 
-    /** La nota que suena asi de aguda en esa cuerda, si es que la cuerda llega. */
     public Optional<Note> noteFor(Pitch pitch, int string) {
         int fret = pitch.midiNumber() - pitchOfString(string).midiNumber();
         if (fret < 0 || fret > MAX_FRET) {
@@ -61,7 +58,6 @@ public record Tuning(String name, List<Pitch> strings) {
         return Optional.of(new Note(string, fret));
     }
 
-    /** La cuerda mas aguda que pueda tocar esa altura sin pasarse de trastes. */
     public Optional<Note> bestNoteFor(Pitch pitch, int fretCount) {
         for (int string = 1; string <= stringCount(); string++) {
             Optional<Note> candidate = noteFor(pitch, string);

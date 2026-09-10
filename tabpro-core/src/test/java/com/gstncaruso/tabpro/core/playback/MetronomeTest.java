@@ -11,7 +11,6 @@ import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/** El metronomo: su propio sonido, activable, marcando cada pulso del compas. */
 class MetronomeTest {
 
     @Test
@@ -25,7 +24,7 @@ class MetronomeTest {
 
     @Test
     void marcaUnClickPorPulsoDelCompas() {
-        Score score = Score.blank(); // 4/4 por defecto
+        Score score = Score.blank();
 
         List<MetronomeClick> clicks = Metronome.on().clicksFor(score);
 
@@ -108,12 +107,11 @@ class MetronomeTest {
         Score score = Score.blank().withMeasureInsertedInEveryTrackAt(1);
         Score withRepeat = score.withAttributesInEveryTrackAt(1,
                 MeasureAttributes.plain().withRepeatOpen(false).withRepeatCount(2));
-        // ambos compases se repiten si el primero abre y el segundo cierra
         Score fullScore = withRepeat.withAttributesInEveryTrackAt(0,
                 MeasureAttributes.plain().withRepeatOpen(true));
 
         List<MetronomeClick> clicks = Metronome.on().clicksFor(fullScore);
 
-        assertEquals(16, clicks.size()); // 2 compases de 4 pulsos, dos vueltas
+        assertEquals(16, clicks.size());
     }
 }

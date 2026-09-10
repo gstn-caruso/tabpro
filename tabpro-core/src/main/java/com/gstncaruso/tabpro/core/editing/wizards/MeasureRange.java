@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.editing.wizards;
 
-/** El rango de compases sobre el que trabaja un asistente, contado desde 1. */
 public record MeasureRange(int from, int to) {
 
     public MeasureRange {

@@ -9,10 +9,6 @@ import com.gstncaruso.tabpro.core.model.effects.BendType;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Como se mueve la altura de una nota a lo largo de su duracion: bends,
- * palanca, slides y vibrato son distintas formas de la misma curva.
- */
 class PitchTrajectoryTest {
 
     @Test
@@ -49,7 +45,7 @@ class PitchTrajectoryTest {
 
     @Test
     void seConstruyeAPartirDeUnBendEscalandoLasPosicionesALosTicksDeLaNota() {
-        Bend bend = Bend.of(BendType.BEND, 4); // sube un tono (4 cuartos de tono)
+        Bend bend = Bend.of(BendType.BEND, 4);
         PitchTrajectory trajectory = PitchTrajectory.of(bend, 960);
 
         assertEquals(0.0, trajectory.semitonesAt(0));
@@ -58,7 +54,7 @@ class PitchTrajectoryTest {
 
     @Test
     void unaPalancaSeReproduceConElMismoMecanismoQueElBendPeroPuedeBajar() {
-        Bend dive = Bend.of(BendType.DIVE, 4); // dive: baja medio tono y se queda
+        Bend dive = Bend.of(BendType.DIVE, 4);
         PitchTrajectory trajectory = PitchTrajectory.of(dive, 960);
 
         assertEquals(0.0, trajectory.semitonesAt(0));

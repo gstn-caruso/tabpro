@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model;
 
-/** Lo que la ventana de propiedades define sobre una pista. */
 public record TrackSettings(
         ScoreColor color,
         int capo,

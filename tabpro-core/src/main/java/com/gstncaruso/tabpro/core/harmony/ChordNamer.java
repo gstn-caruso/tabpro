@@ -8,17 +8,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * La zona D de la ventana de acordes: dado un diagrama (que cuerdas suenan y en que
- * traste), adivina que acorde es. Puede haber mas de un nombre igual de valido -las
- * mismas notas a veces forman mas de un acorde, y ahi entran los nombres alternativos.
- */
 public final class ChordNamer {
 
     private ChordNamer() {
     }
 
-    /** Los acordes que explican ese diagrama, del mas exacto al mas parcial. */
     public static List<Chord> namesFor(ChordDiagram diagram, Tuning tuning) {
         Set<Integer> sounded = new HashSet<>();
         int lowestSoundingString = lowestSoundingString(diagram);

@@ -33,14 +33,9 @@ class ClefTest {
 
     @Test
     void stepOfDelegatesToStaffPosition() {
-        // MI grave al aire de la guitarra (E2, MIDI 40) en clave de sol: step -7 (ver StaffPositionTest).
         assertEquals(-7, Clef.TREBLE.stepOf(new Pitch(40)));
     }
 
-    /**
-     * La inversa de stepOf: el grado -7 de la clave de sol es, otra vez, mi grave (E2, MIDI 40)
-     * -ver StaffPositionTest.openLowEOnGuitarNeedsThreeLedgerLinesBelowTreble.
-     */
     @Test
     void pitchAtStepIsTheInverseOfStepOf() {
         assertEquals(Optional.of(new Pitch(40)), Clef.TREBLE.pitchAtStep(-7));

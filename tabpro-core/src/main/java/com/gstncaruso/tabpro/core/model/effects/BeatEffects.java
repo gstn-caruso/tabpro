@@ -3,7 +3,6 @@ package com.gstncaruso.tabpro.core.model.effects;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import java.util.Optional;
 
-/** Lo que se le pide al beat entero, y no a una nota suelta. */
 public record BeatEffects(
         Optional<Stroke> stroke,
         Optional<PickstrokeDirection> pickstroke,
@@ -83,17 +82,11 @@ public record BeatEffects(
         return new BeatEffects(stroke, pickstroke, fadeIn, tapping, slapping, popping, wideVibrato, tremoloBar, wah, text, Optional.ofNullable(chord), parameterChange, beamBreak, stemOverride);
     }
 
-    /**
-     * "Es posible cambiar a mano las barras... usando el menu Nota" (manual, linea 923). El
-     * corte se pide sobre este beat -misma forma que {@link com.gstncaruso.tabpro.core.model.bars.LineBreak}:
-     * automatico por default, o forzado a lo que pida el usuario.
-     */
     public BeatEffects withBeamBreak(BeamBreak beamBreak) {
         return new BeatEffects(stroke, pickstroke, fadeIn, tapping, slapping, popping, wideVibrato, tremoloBar, wah, text, chord, parameterChange,
                 beamBreak == null ? BeamBreak.AUTOMATIC : beamBreak, stemOverride);
     }
 
-    /** "...y la direccion de la plica" (manual, linea 923), con la misma forma que el corte de barra. */
     public BeatEffects withStemOverride(StemOverride stemOverride) {
         return new BeatEffects(stroke, pickstroke, fadeIn, tapping, slapping, popping, wideVibrato, tremoloBar, wah, text, chord, parameterChange,
                 beamBreak, stemOverride == null ? StemOverride.AUTOMATIC : stemOverride);

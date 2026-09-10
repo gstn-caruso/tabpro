@@ -7,10 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * El speed trainer: cada vuelta del loop sube el tempo un paso, sin pasarse
- * del tempo final.
- */
 class SpeedTrainerTest {
 
     @Test

@@ -13,19 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
 
-/**
- * Los cambios de parametro que el manual deja insertar en medio de la
- * partitura, ya resueltos en el tiempo: que valor le toca a cada pista en cada
- * tick y como queda el mapa de tempo.
- *
- * <p>Se recorren en el orden en que suenan los compases, no en el que estan
- * escritos, asi que una repeticion los vuelve a disparar. Y arrancar en el
- * medio no pierde nada: lo que dejaron los cambios anteriores se aplica de
- * entrada, como pide el consejo del manual.
- */
 record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
 
-    /** Cada cuantos ticks se manda un valor nuevo mientras dura una transicion. */
     private static final long TRANSITION_STEP_TICKS = 60;
 
     SoundAutomation {
@@ -43,15 +32,10 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
         return byTrack.get(index);
     }
 
-    /**
-     * Lo que ya sono antes de que empiece este orden: los compases que la
-     * partitura entera toca hasta llegar al primero de los que se van a tocar.
-     */
     private static PlayOrder whatSoundedBefore(Score score, PlayOrder order) {
         return order.isEmpty() ? PlayOrder.nothing() : PlayOrder.of(score).before(order.measureAt(0));
     }
 
-    /** Los cambios que pide la partitura al recorrer ese orden, cada uno en el tick en que suena. */
     private static List<AskedChange> askedIn(Score score, PlayOrder order) {
         List<AskedChange> asked = new ArrayList<>();
         for (int index = 0; index < score.trackCount(); index++) {
@@ -67,7 +51,6 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
         return asked;
     }
 
-    /** Cuanto dura un beat de transicion: el pulso del compas que lleva el cambio. */
     private static long pulseOf(Track track, int measureIndex) {
         TimeSignature timeSignature = track.measure(measureIndex).timeSignature();
         return timeSignature.ticksPerMeasure() / timeSignature.beats();
@@ -85,7 +68,6 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
         return values;
     }
 
-    /** Un cambio escrito en la partitura, ya ubicado en el tiempo. */
     private record AskedChange(long tick, int track, ParameterChange change, long pulseTicks) {
 
         long transitionTicks() {
@@ -97,15 +79,9 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
         }
     }
 
-    /** Un valor intermedio de una transicion. */
     private record Step(long tick, int value) {
     }
 
-    /**
-     * Las dos pasadas que hace la mesa de mezcla: la que recupera lo que ya sono
-     * antes de arrancar, que solo deja valores finales, y la que programa lo que
-     * va a sonar, que ademas los manda a su tick.
-     */
     private enum Pass {
         RECOVERING, SCHEDULING;
 
@@ -114,10 +90,6 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
         }
     }
 
-    /**
-     * La mesa de mezcla mientras corre la partitura: se acuerda de en cuanto
-     * quedo cada parametro, para que la transicion que venga arranque de ahi.
-     */
     private static final class Mix {
 
         private final Score score;
@@ -134,7 +106,6 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
             }
         }
 
-        /** Los cambios que ya pasaron: solo dejan su valor final, y se anuncia al arrancar. */
         void recover(List<AskedChange> asked) {
             for (AskedChange change : asked) {
                 apply(change, Pass.RECOVERING);
@@ -169,7 +140,6 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
             }
         }
 
-        /** El tempo vale para toda la partitura, no importa a cuantas pistas apunte el cambio. */
         private void applyTempo(AskedChange asked, int target, Pass pass) {
             if (!pass.schedules()) {
                 tempo = TempoMap.steady(target);
@@ -201,7 +171,6 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
             }
         }
 
-        /** Lo que quedo distinto de como arranca la pista se manda apenas empieza a sonar. */
         private void announceWhatChangedBeforeStarting() {
             for (int track = 0; track < score.trackCount(); track++) {
                 if (!score.isAudible(track)) {
@@ -217,10 +186,6 @@ record SoundAutomation(TempoMap tempo, List<List<ScheduledParameter>> byTrack) {
             }
         }
 
-        /**
-         * Un cambio instantaneo es un solo valor; uno con transicion se reparte en
-         * valores intermedios hasta llegar al ultimo, que cae justo al terminar.
-         */
         private static List<Step> stepsOf(AskedChange asked, int from, int target) {
             long transition = asked.transitionTicks();
             if (transition <= 0 || from == target) {

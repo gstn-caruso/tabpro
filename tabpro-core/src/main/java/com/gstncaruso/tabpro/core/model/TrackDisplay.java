@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model;
 
-/** Que partes de la pista se dibujan en la partitura. */
 public record TrackDisplay(
         boolean standardNotation,
         boolean tablature,

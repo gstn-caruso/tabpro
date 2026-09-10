@@ -10,10 +10,6 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Reacomoda los beats para que cada compas sume lo que su medida pide: los que
- * sobran pasan al compas siguiente y los que faltan vienen del que sigue.
- */
 public final class BarArranger {
 
     private BarArranger() {
@@ -46,7 +42,6 @@ public final class BarArranger {
         return track.withMeasures(arranged);
     }
 
-    /** Saca de la cola los beats que entran en un compas de esa medida. */
     private static Voice take(List<Beat> pending, long capacity) {
         List<Beat> taken = new ArrayList<>();
         long room = capacity;

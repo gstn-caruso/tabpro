@@ -10,10 +10,6 @@ import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El orden en que se tocan los compases: de corrido si no hay nada especial,
- * pero respetando repeticiones, finales alternativos y saltos.
- */
 class PlayOrderTest {
 
     @Test
@@ -100,8 +96,6 @@ class PlayOrderTest {
 
         PlayOrder order = PlayOrder.of(score);
 
-        // el salto vuelve una vez al principio; la segunda vez que se pisa el
-        // mismo compas 2 el salto ya se uso y se sigue de largo.
         assertEquals(List.of(0, 1, 2, 0, 1, 2), order.measureIndexes());
     }
 

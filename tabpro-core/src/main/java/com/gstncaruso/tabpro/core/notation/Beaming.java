@@ -8,12 +8,6 @@ import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Agrupa los beats de un compas en grupos unidos por barra (beam), como en una partitura. El
- * agrupamiento es automatico segun la duracion y el compas, pero el manual (linea 923) permite
- * "cambiar a mano las barras... usando el menu Nota": cada beat puede forzar o impedir el corte
- * justo antes suyo, ver {@link BeamBreak}.
- */
 public final class Beaming {
 
     private Beaming() {

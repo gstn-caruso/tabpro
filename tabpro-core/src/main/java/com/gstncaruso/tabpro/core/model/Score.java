@@ -12,7 +12,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-/** La partitura entera: sus datos, su tempo, sus pistas y su letra. */
 public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics) {
 
     public static final int MAX_TRACKS = 256;
@@ -54,17 +53,12 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
         return tracks.stream().mapToInt(Track::measureCount).max().orElse(0);
     }
 
-    /** Los atributos de un compas valen para toda la partitura: los define la primera pista. */
     public MeasureAttributes attributesOf(int measureIndex) {
         Track first = track(0);
         int clamped = Math.clamp(measureIndex, 0, first.measureCount() - 1);
         return first.attributesOf(clamped);
     }
 
-    /**
-     * El marcador que rige un compas: el que tiene puesto, o si no tiene el del marcador anterior
-     * mas cercano. Nunca mira hacia adelante.
-     */
     public OptionalInt measureOfMarkerInEffectAt(int measureIndex) {
         for (int measure = measureIndex; measure >= 0; measure--) {
             if (attributesOf(measure).marker().isPresent()) {
@@ -117,7 +111,6 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
         return withTracks(updated);
     }
 
-    /** Mueve una pista de lugar, para reordenar la mesa de mezcla. */
     public Score withTrackMoved(int from, int to) {
         if (to < 0 || to >= tracks.size()) {
             return this;
@@ -139,18 +132,12 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
         return mapTracks(track -> index < track.measureCount() ? track.withoutMeasureAt(index) : track);
     }
 
-    /** Los atributos de compas son los mismos en todas las pistas, como en Guitar Pro. */
     public Score withAttributesInEveryTrackAt(int index, MeasureAttributes attributes) {
         return mapTracks(track -> index < track.measureCount()
                 ? track.mappingMeasure(index, measure -> measure.withAttributes(attributes))
                 : track);
     }
 
-    /**
-     * El salto de linea es la excepcion entre los atributos de compas: el manual dice que vale
-     * solo para la pista activa, asi que a diferencia de {@link #withAttributesInEveryTrackAt}
-     * cambia una sola pista y deja a las demas con el suyo propio.
-     */
     public Score withLineBreakInTrackAt(int trackIndex, int measureIndex, LineBreak lineBreak) {
         return mappingTrack(trackIndex, track -> measureIndex < track.measureCount()
                 ? track.mappingMeasure(measureIndex,
@@ -158,11 +145,6 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
                 : track);
     }
 
-    /**
-     * 8va/8vb/15ma/15mb del manual: igual que el salto de linea, es una decision de notacion de
-     * una pista en un pasaje concreto, no de toda la partitura -asi que tambien cambia una sola
-     * pista, nunca todas.
-     */
     public Score withOctaveMarkInTrackAt(int trackIndex, int measureIndex, OctaveMark octaveMark) {
         return mappingTrack(trackIndex, track -> measureIndex < track.measureCount()
                 ? track.mappingMeasure(measureIndex,
@@ -170,13 +152,11 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
                 : track);
     }
 
-    /** Un cambio de compas rige desde ese compas hasta el proximo cambio. */
     public Score withTimeSignatureFrom(int index, TimeSignature timeSignature) {
         return mapTracks(track -> propagatingFrom(track, index,
                 Measure::timeSignature, Measure::withTimeSignature, timeSignature));
     }
 
-    /** La armadura vale desde el compas donde se fija hasta el proximo cambio, como en el manual. */
     public Score withKeySignatureFrom(int index, KeySignature keySignature) {
         return mapTracks(track -> propagatingFrom(track, index,
                 measure -> measure.attributes().keySignature(),
@@ -184,7 +164,6 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
                 keySignature));
     }
 
-    /** El triplet feel vale desde el compas donde se fija hasta el proximo cambio, como en el manual. */
     public Score withTripletFeelFrom(int index, TripletFeel tripletFeel) {
         return mapTracks(track -> propagatingFrom(track, index,
                 measure -> measure.attributes().tripletFeel(),
@@ -192,11 +171,6 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
                 tripletFeel));
     }
 
-    /**
-     * Aplica un valor desde el compas index en adelante, deteniendose apenas encuentra
-     * un compas que ya tenia, antes del cambio, un valor distinto del que regia en index
-     * (ahi empieza otro tramo, fijado por un cambio posterior).
-     */
     private static <V> Track propagatingFrom(
             Track track, int index, Function<Measure, V> valueOf, BiFunction<Measure, V, Measure> withValue, V value) {
         Track changed = track;

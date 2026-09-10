@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model.effects;
 
-/** Los efectos de nota que estan o no estan, sin nada que configurar. */
 public enum Ornament {
     GHOST("Nota fantasma"),
     DEAD("Nota muerta"),

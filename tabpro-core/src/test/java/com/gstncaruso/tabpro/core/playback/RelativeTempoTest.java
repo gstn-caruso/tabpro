@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-/** El tempo relativo: un coeficiente de x0.25 a x2 sobre el tempo del archivo. */
 class RelativeTempoTest {
 
     @Test

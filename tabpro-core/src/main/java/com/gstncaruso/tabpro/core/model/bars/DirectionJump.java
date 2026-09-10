@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.core.model.bars;
 
 import java.util.Optional;
 
-/** Los catorce saltos que puede llevar el final de un compas. */
 public enum DirectionJump {
     DA_CAPO("Da Capo", null, null),
     DA_CAPO_AL_CODA("Da Capo al Coda", null, DirectionSymbol.CODA),
@@ -33,12 +32,10 @@ public enum DirectionJump {
         return label;
     }
 
-    /** El simbolo al que hay que ir; vacio significa volver al principio de la partitura. */
     public Optional<DirectionSymbol> jumpsTo() {
         return Optional.ofNullable(jumpsTo);
     }
 
-    /** El simbolo donde termina el recorrido despues del salto, si lo hay. */
     public Optional<DirectionSymbol> stopsAt() {
         return Optional.ofNullable(stopsAt);
     }

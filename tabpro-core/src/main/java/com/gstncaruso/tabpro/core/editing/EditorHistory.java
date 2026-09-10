@@ -4,7 +4,6 @@ import com.gstncaruso.tabpro.core.model.Score;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-/** Lo que hace posible deshacer y rehacer: la partitura tal como estaba. */
 final class EditorHistory {
 
     private final Deque<Snapshot> past = new ArrayDeque<>();

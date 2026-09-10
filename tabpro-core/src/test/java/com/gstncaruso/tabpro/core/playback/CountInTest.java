@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import org.junit.jupiter.api.Test;
 
-/** La cuenta regresiva: un compas vacio antes de empezar, si esta activada. */
 class CountInTest {
 
     @Test

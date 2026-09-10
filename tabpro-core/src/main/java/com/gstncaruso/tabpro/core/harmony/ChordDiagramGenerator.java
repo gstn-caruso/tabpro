@@ -9,21 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Lo que hace unica a la herramienta de acordes de Guitar Pro: dado un acorde y CUALQUIER
- * afinacion, encontrar todas las posiciones donde se lo puede tocar, respetando que una
- * mano solo alcanza unos pocos trastes de distancia y que las cuerdas al aire cuentan.
- */
 public final class ChordDiagramGenerator {
 
-    /** Cuantos trastes de distancia alcanza una mano comoda, de la mas baja a la mas alta que pisa. */
     public static final int DEFAULT_MAX_SPAN = 4;
 
-    /**
-     * Alcanza con recorrer una octava: cualquier forma que exista mas arriba del mastil ya
-     * aparecio, transportada, dentro de estos primeros doce trastes (las notas se repiten
-     * cada doce trastes en cualquier afinacion).
-     */
     private static final int SEARCH_WINDOWS = 12;
 
     private ChordDiagramGenerator() {
@@ -37,17 +26,10 @@ public final class ChordDiagramGenerator {
         return generate(chord, tuning, maxSpan, ChordComplexity.COMPLEX);
     }
 
-    /** Todas las posiciones posibles, ordenadas de mas facil a mas dificil y filtradas por complejidad. */
     public static List<ChordDiagram> generate(Chord chord, Tuning tuning, int maxSpan, ChordComplexity maxComplexity) {
         return generate(chord, tuning, maxSpan, maxComplexity, Set.of());
     }
 
-    /**
-     * Lo mismo, pero dejando que el usuario relaje la busqueda tildando que tonos del acorde no
-     * hace falta que suenen (los casilleros 1', 3', 5'... de la ventana de acordes). Omitir un
-     * tono no lo prohibe: solo deja de exigirlo, asi aparecen posiciones mas simples que antes
-     * no calificaban.
-     */
     public static List<ChordDiagram> generate(
             Chord chord, Tuning tuning, int maxSpan, ChordComplexity maxComplexity, Set<Interval> omittedTones) {
         Set<Integer> formula = chord.formulaSemitones();
@@ -137,7 +119,6 @@ public final class ChordDiagramGenerator {
         if (actualBass != bassSemitone) {
             return false;
         }
-        // que cada forma se cuente una sola vez: en la ventana que arranca justo en su traste mas bajo.
         return lowestFretted == Integer.MAX_VALUE ? baseFret == 1 : lowestFretted == baseFret;
     }
 

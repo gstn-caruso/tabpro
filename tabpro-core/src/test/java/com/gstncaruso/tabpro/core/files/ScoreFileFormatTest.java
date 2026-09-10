@@ -5,10 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
-/**
- * El manual tiene un solo Abrir, que reconoce indistintamente sus formatos: esta es la
- * regla que dice, por la extension del archivo, a que lector le corresponde.
- */
 class ScoreFileFormatTest {
 
     @Test

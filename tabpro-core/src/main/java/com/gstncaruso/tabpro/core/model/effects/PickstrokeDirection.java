@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model.effects;
 
-/** Hacia donde va la pua. */
 public enum PickstrokeDirection {
     DOWN("Hacia abajo"),
     UP("Hacia arriba");

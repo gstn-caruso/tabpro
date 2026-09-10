@@ -9,18 +9,11 @@ import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * El reloj de una pista: en que tick cae cada uno de sus beats al recorrer un
- * orden de compases, ya con el swing del triplet feel aplicado. Lo comparten
- * quien hace sonar las notas y quien aplica los cambios de parametro, para que
- * los dos hablen del mismo momento.
- */
 final class TrackClock {
 
     private TrackClock() {
     }
 
-    /** Los beats de las dos voces, compas a compas en el orden en que se tocan. */
     static List<TimedBeat> of(Track track, PlayOrder order) {
         List<TimedBeat> timed = new ArrayList<>();
         long tick = 0;

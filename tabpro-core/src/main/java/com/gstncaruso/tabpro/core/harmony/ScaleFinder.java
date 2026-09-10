@@ -12,16 +12,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * El "Scale Finder" del manual: dadas las notas que sonaron, que tonalidad y escala las
- * explican mejor -la que menos notas ajenas (incidencias) tiene.
- */
 public final class ScaleFinder {
 
     private ScaleFinder() {
     }
 
-    /** Las candidatas para esas alturas, de la que menos incidencias tiene a la que mas. */
     public static List<ScaleMatch> find(List<Pitch> pitches) {
         if (pitches.isEmpty()) {
             return List.of();
@@ -43,7 +38,6 @@ public final class ScaleFinder {
         return matches.stream().sorted(Comparator.comparingInt(ScaleMatch::incidentNotes)).toList();
     }
 
-    /** Lo mismo, pero tomando las notas de un rango de compases de una pista. */
     public static List<ScaleMatch> findIn(Track track, int fromMeasureIndex, int toMeasureIndexInclusive) {
         List<Pitch> pitches = new ArrayList<>();
         for (int index = fromMeasureIndex; index <= toMeasureIndexInclusive; index++) {

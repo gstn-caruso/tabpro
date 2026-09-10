@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/** La curva del bend y de la palanca: hasta donde llega y de que lado. */
 class BendTest {
 
     @Test

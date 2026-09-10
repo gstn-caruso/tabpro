@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model.effects;
 
-/** Como se llega desde la nota de adorno hasta la nota principal. */
 public enum GraceTransition {
     NONE("Ninguna"),
     SLIDE("Slide"),

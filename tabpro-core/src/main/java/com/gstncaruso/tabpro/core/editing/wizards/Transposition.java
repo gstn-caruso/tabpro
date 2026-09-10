@@ -6,10 +6,6 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import java.util.Optional;
 
-/**
- * Sube o baja la partitura la cantidad de semitonos que se pida. No transpone
- * los diagramas de acordes, como aclara el manual.
- */
 public final class Transposition {
 
     private Transposition() {
@@ -34,7 +30,6 @@ public final class Transposition {
         return Wizards.mappingNotes(track, note -> relocate(track.tuning(), note, semitones));
     }
 
-    /** Busca la misma cuerda; si la nota se sale del diapason, la muda a otra. */
     private static Note relocate(Tuning tuning, Note note, int semitones) {
         int fret = note.fret() + semitones;
         if (fret >= 0 && fret <= Tuning.MAX_FRET) {

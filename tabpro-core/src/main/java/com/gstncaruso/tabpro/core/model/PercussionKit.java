@@ -6,16 +6,15 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Los sonidos de bateria de la especificacion General MIDI. En una pista de
- * percusion los numeros de la tablatura son estos sonidos, no trastes.
+ * The General MIDI percussion sounds. On a percussion track, the tablature
+ * numbers are these sounds, not frets.
  */
 public final class PercussionKit {
 
-    /** El rango que toda placa de sonido garantiza. */
+    /** The range every General MIDI sound bank guarantees. */
     public static final int LOWEST_SOUND = 35;
     public static final int HIGHEST_SOUND = 81;
 
-    /** La tablatura de percusion tiene seis lineas, una por sonido simultaneo. */
     public static final int LINE_COUNT = 6;
 
     private static final Map<Integer, String> NAMES = names();
@@ -23,7 +22,6 @@ public final class PercussionKit {
     private PercussionKit() {
     }
 
-    /** Una afinacion ficticia: las lineas de percusion no tienen altura propia. */
     public static Tuning tuning() {
         return Tuning.of("Percusión", 0, 0, 0, 0, 0, 0);
     }

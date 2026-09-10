@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model;
 
-/** Un color de la partitura, sin depender de la interfaz que lo dibuje. */
 public record ScoreColor(int red, int green, int blue) {
 
     public ScoreColor {

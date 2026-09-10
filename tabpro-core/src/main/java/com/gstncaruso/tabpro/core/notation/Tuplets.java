@@ -6,8 +6,6 @@ import com.gstncaruso.tabpro.core.model.Tuplet;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Agrupa los beats de un compas que comparten el mismo grupo irregular, para dibujar un unico
- * corchete con su numero sobre todo el grupo. */
 public final class Tuplets {
 
     private Tuplets() {

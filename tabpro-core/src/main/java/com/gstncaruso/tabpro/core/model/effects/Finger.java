@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model.effects;
 
-/** Los dedos con que se digita, con la sigla que lleva cada mano en la partitura. */
 public enum Finger {
     THUMB("T", "P"),
     INDEX("1", "I"),

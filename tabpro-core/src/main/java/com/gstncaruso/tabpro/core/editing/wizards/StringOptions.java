@@ -6,10 +6,6 @@ import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import java.util.Set;
 
-/**
- * Los asistentes que aplican un efecto a ciertas cuerdas dentro de un rango de
- * compases: let ring, palm mute y dinamica, como los describe el manual.
- */
 public final class StringOptions {
 
     private StringOptions() {

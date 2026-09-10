@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-/** El rango de compases que se repite en un loop de practica. */
 class LoopRangeTest {
 
     @Test

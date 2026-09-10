@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Los kits de bateria que estandariza General MIDI Level 1 para el canal 10. Ahi el program
- * change no elige un instrumento: elige el conjunto de sonidos de percusion a usar.
+ * The drum kits standardized by General MIDI Level 1 for channel 10. There, the
+ * program change does not pick an instrument: it picks the set of percussion
+ * sounds to use.
  */
 public final class DrumKits {
 
@@ -21,12 +22,10 @@ public final class DrumKits {
         return List.copyOf(NAMES.values());
     }
 
-    /** El programa de General MIDI del kit que esta en esa posicion de {@link #names()}. */
     public static int programAt(int index) {
         return new ArrayList<>(NAMES.keySet()).get(index);
     }
 
-    /** La posicion en {@link #names()} de ese programa, o la del kit Standard si no es un kit conocido. */
     public static int indexOf(int program) {
         int index = new ArrayList<>(NAMES.keySet()).indexOf(program);
         return index >= 0 ? index : 0;

@@ -1,9 +1,5 @@
 package com.gstncaruso.tabpro.core.playback;
 
-/**
- * Un tramo de la reproduccion que suena a un tempo parejo: empieza en ese tick
- * y vale hasta que arranca el siguiente.
- */
 public record TempoChange(long tick, int bpm) {
 
     public TempoChange {

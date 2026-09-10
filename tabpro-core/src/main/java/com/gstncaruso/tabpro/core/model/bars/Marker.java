@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.core.model.bars;
 
 import com.gstncaruso.tabpro.core.model.ScoreColor;
 
-/** El cartel que identifica una parte de la partitura: Intro, Estribillo, Solo. */
 public record Marker(String name, ScoreColor color) {
 
     public static final ScoreColor DEFAULT_COLOR = ScoreColor.rgb(0xFF0000);

@@ -34,11 +34,6 @@ class EditorBarsTest {
         assertTrue(editor.score().track(1).measure(0).attributes().repeatOpen());
     }
 
-    /**
-     * El manual dice que el salto de linea, a diferencia del resto de los atributos del compas,
-     * vale solo para la pista activa -salvo que se este en la vista multipista, donde vale para
-     * esa vista compartida por todas las pistas.
-     */
     @Test
     void aLineBreakOutsideTheMultitrackViewOnlyReachesTheActiveTrack() {
         editor.setLineBreak(LineBreak.FORCED, false);
@@ -75,11 +70,6 @@ class EditorBarsTest {
         assertEquals(LineBreak.FORCED, editor.score().track(1).measure(0).attributes().lineBreak());
     }
 
-    /**
-     * 8va/8vb/15ma/15mb del manual: son una decision de notacion de una pista en un pasaje
-     * concreto -no de toda la partitura, como la armadura o una repeticion- asi que, igual que
-     * el salto de linea, valen solo para la pista activa.
-     */
     @Test
     void anOctaveMarkOnlyReachesTheActiveTrack() {
         editor.setOctaveMark(OctaveMark.OTTAVA_ALTA);
@@ -107,10 +97,6 @@ class EditorBarsTest {
         assertEquals(OctaveMark.NONE, editor.score().track(0).measure(0).attributes().octaveMark());
     }
 
-    /**
-     * El punto que mas importa del manual: la marca cambia donde se escribe la nota, nunca como
-     * suena. Ni el traste, ni la cuerda, ni la altura real que toca esa nota se mueven un pelo.
-     */
     @Test
     void anOctaveMarkNeverChangesWhatANoteSoundsLike() {
         editor.setFret(5);

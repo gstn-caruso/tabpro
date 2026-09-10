@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/** La curva con que se estira una cuerda a lo largo de una nota. */
 public record Bend(BendType type, List<BendPoint> points) {
 
     public Bend {
@@ -16,7 +15,6 @@ public record Bend(BendType type, List<BendPoint> points) {
         points = List.copyOf(sorted);
     }
 
-    /** El bend clasico: sube desde la nota hasta la altura pedida y se queda ahi. */
     public static Bend of(BendType type, int quarterTones) {
         return new Bend(type, pointsFor(type, quarterTones));
     }
@@ -45,7 +43,6 @@ public record Bend(BendType type, List<BendPoint> points) {
         };
     }
 
-    /** Cuanto se estiro la cuerda en ese momento, interpolando entre los puntos. */
     public double semitonesAt(int position) {
         BendPoint before = points.getFirst();
         for (BendPoint point : points) {
@@ -69,16 +66,10 @@ public record Bend(BendType type, List<BendPoint> points) {
         return from.semitones() + (to.semitones() - from.semitones()) * progress;
     }
 
-    /** La maxima altura que alcanza la curva, que es la que se anota sobre la tablatura. */
     public int peakQuarterTones() {
         return points.stream().mapToInt(BendPoint::quarterTones).max().orElse(0);
     }
 
-    /**
-     * Cuanto se aparta la curva de la nota escrita en el punto que mas lejos
-     * llega, con su signo. La palanca sobre todo baja, asi que la altura que se
-     * le anota no es la maxima sino la mas lejana.
-     */
     public int farthestQuarterTones() {
         return points.stream()
                 .max(Comparator.comparingInt(point -> Math.abs(point.quarterTones())))

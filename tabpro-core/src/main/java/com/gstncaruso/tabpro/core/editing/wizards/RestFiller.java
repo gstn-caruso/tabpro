@@ -11,10 +11,6 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Completa con silencios los compases que quedaron cortos y saca los silencios
- * de mas de los que quedaron largos.
- */
 public final class RestFiller {
 
     private RestFiller() {
@@ -69,7 +65,6 @@ public final class RestFiller {
         return grown;
     }
 
-    /** Los silencios mas largos que entren en el hueco, del mas largo al mas corto. */
     private static List<Duration> restsFor(long missing) {
         List<Duration> rests = new ArrayList<>();
         long left = missing;

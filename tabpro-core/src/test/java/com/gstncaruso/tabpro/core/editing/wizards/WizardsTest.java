@@ -52,10 +52,6 @@ class WizardsTest {
         assertEquals(score, Transposition.transposeEveryTrack(score, 3));
     }
 
-    /**
-     * El manual (Check Bar Duration) dice que el asistente detecta los compases que no
-     * suman lo que su medida pide; uno que ya cierra no tiene por que aparecer.
-     */
     @Test
     void theDurationCheckFindsTheBarsThatDoNotCloseTheirTime() {
         Score score = scoreWith(Beat.rest(Duration.quarter()));
@@ -107,11 +103,6 @@ class WizardsTest {
         assertEquals(1, findings.getFirst().measureIndex());
     }
 
-    /**
-     * El manual (Complete/Reduce Bars with Rests) dice que completa con silencios los
-     * compases cortos: no alcanza con que cierre, tienen que ser los silencios correctos
-     * -los mas largos que entren primero- en el lugar correcto -despues de lo que ya sonaba-.
-     */
     @Test
     void theRestFillerCompletesAShortBar() {
         Score score = scoreWith(Beat.of(Duration.quarter(), new Note(1, 5)));
@@ -133,7 +124,6 @@ class WizardsTest {
                 filled.track(0).measure(0).beats());
     }
 
-    /** El manual dice explicitamente "(or empty bars)": un compas sin nada tambien se completa. */
     @Test
     void theRestFillerCompletesAnEmptyBar() {
         Measure empty = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
@@ -181,10 +171,6 @@ class WizardsTest {
         assertEquals(4, reduced.track(0).measure(0).beats().size());
     }
 
-    /**
-     * El manual solo promete borrar silencios de mas; un compas largo por notas -no por
-     * silencios- no tiene de donde sacar, asi que queda largo.
-     */
     @Test
     void theRestFillerCannotShrinkABarThatIsTooLongOnlyWithNotes() {
         Score score = scoreWith(
@@ -196,11 +182,6 @@ class WizardsTest {
         assertEquals(2, result.track(0).measure(0).beats().size());
     }
 
-    /**
-     * El manual (Bar Arranger) dice que reacomoda los compases para que su posicion sea
-     * musicalmente correcta; el tip de captura MIDI (linea 846 del manual) describe justo
-     * este caso: cambiar el ritmo al final corre los compases de lugar y hay que recomponerlos.
-     */
     @Test
     void theBarArrangerPushesTheSpareBeatsToTheNextBar() {
         Measure crowded = new Measure(TimeSignature.fourFour(), List.of(
@@ -272,11 +253,6 @@ class WizardsTest {
                 louder.track(0).measure(0).beat(0).noteOn(1).orElseThrow().effects().dynamic());
     }
 
-    /**
-     * El manual (Automatic Finger Positioning) promete tres cosas: no cambiar la melodia,
-     * facilitar la ejecucion del acorde y facilitar el movimiento de mano. Esta prueba cubre
-     * la primera -la altura real tiene que seguir siendo la misma-.
-     */
     @Test
     void theAutomaticFingeringKeepsEveryPitch() {
         Score score = scoreWith(Beat.of(Duration.quarter(), new Note(6, 12)));
@@ -289,7 +265,6 @@ class WizardsTest {
         assertEquals(before, tuning.pitchOf(after).midiNumber());
     }
 
-    /** Facilitar la ejecucion del acorde: dos notas que colisionan en la misma cuerda tienen que separarse. */
     @Test
     void theAutomaticFingeringSeparatesAChordOntoDifferentStrings() {
         Score score = scoreWith(Beat.of(Duration.quarter(), new Note(1, 0), new Note(1, 5)));
@@ -307,11 +282,6 @@ class WizardsTest {
                 Set.of(tuning.pitchOf(after.get(0)).midiNumber(), tuning.pitchOf(after.get(1)).midiNumber()));
     }
 
-    /**
-     * Facilitar el movimiento de mano: una vez que la mano quedo arriba del diapason, la
-     * siguiente nota con varias digitaciones posibles tiene que elegir la mas cercana a la
-     * mano, no la de traste mas bajo.
-     */
     @Test
     void theAutomaticFingeringFollowsTheHandInsteadOfJumpingToTheLowestFret() {
         Score score = scoreWith(
@@ -326,10 +296,6 @@ class WizardsTest {
         assertEquals(12, second.fret());
     }
 
-    /**
-     * El manual no dice que hacer con una nota que ninguna cuerda puede alcanzar (fuera del
-     * rango de trastes de la afinacion); el codigo la deja como estaba, que es lo mas seguro.
-     */
     @Test
     void theAutomaticFingeringLeavesANoteAloneWhenNoStringCanReachIt() {
         Score score = scoreWith(Beat.of(Duration.quarter(), new Note(1, 50)));

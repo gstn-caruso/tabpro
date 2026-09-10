@@ -6,11 +6,6 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.util.List;
 
-/**
- * El swing del triplet feel: pares consecutivos de corcheas (o semicorcheas)
- * iguales se reparten dos tercios y un tercio del tiempo que ocupan, sin
- * tocar lo que esta escrito.
- */
 final class SwingTiming {
 
     private SwingTiming() {

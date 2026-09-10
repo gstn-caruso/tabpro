@@ -12,11 +12,6 @@ import com.gstncaruso.tabpro.core.model.Track;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Una guitarra de doce cuerdas suena doblada: al unisono las dos cuerdas mas
- * agudas, a la octava las cuatro graves. La tablatura no cambia, asi que esto
- * se ve solo en lo que realmente suena.
- */
 class TrackRendererTwelveStringTest {
 
     private static final Duration QUARTER = Duration.quarter();

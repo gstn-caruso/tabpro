@@ -19,10 +19,6 @@ import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Lo que el manual llama insertar cambios de parametro: bajar el volumen al
- * final, cambiar el instrumento a mitad de partitura, acelerar de a poco.
- */
 class ParameterChangePlaybackTest {
 
     private static final long PULSE = Duration.quarter().ticks();
@@ -213,8 +209,6 @@ class ParameterChangePlaybackTest {
         assertEquals(List.of(new ScheduledParameter(MEASURE + 2 * PULSE, SoundParameter.VOLUME, 40)),
                 delayed.tracks().get(0).parameters());
     }
-
-    // ---- armado de partituras de prueba -----------------------------------
 
     private static Timeline fromMeasure(int measure, Score score) {
         return Timeline.of(score, PlaybackRange.from(measure, score).asPlayOrder(score));

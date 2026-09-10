@@ -27,7 +27,6 @@ class ChordFrettingTest {
 
     @Test
     void respectsTheConfiguredFretCount() {
-        // 64 + 24 = 88: entraria en la cuerda 1 con el traste 24 al limite, pero no con 12.
         List<Note> withinLimit = ChordFretting.assign(standard, 24, List.of(new Pitch(88)));
         List<Note> beyondLimit = ChordFretting.assign(standard, 12, List.of(new Pitch(88)));
 
@@ -45,8 +44,6 @@ class ChordFrettingTest {
 
     @Test
     void resolvesAStringConflictInAChordWithTheNextBestString() {
-        // 45 (la) sale abierta en la cuerda 5, o traste 5 en la cuerda 6: dos notas identicas a la
-        // vez se reparten esas dos opciones en vez de pisarse la misma cuerda.
         List<Note> chord = ChordFretting.assign(standard, FRET_COUNT, List.of(new Pitch(45), new Pitch(45)));
 
         assertEquals(List.of(new Note(5, 0), new Note(6, 5)), chord);

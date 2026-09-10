@@ -6,27 +6,22 @@ import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import org.junit.jupiter.api.Test;
 
-/**
- * La altura que suena un armonico: los naturales dependen del nodo de la
- * cuerda (el traste no es la altura), los demas se transportan desde la
- * nota pisada.
- */
 class HarmonicPitchTest {
 
-    private static final Pitch OPEN_STRING = new Pitch(40); // mi grave
+    private static final Pitch OPEN_STRING = new Pitch(40);
 
     @Test
     void elArmonicoNaturalDelTraste12EsUnaOctavaSobreLaCuerdaAlAire() {
         Pitch pitch = HarmonicPitch.of(HarmonicType.NATURAL, OPEN_STRING, new Pitch(52), 12);
 
-        assertEquals(new Pitch(52), pitch); // 40 + 12
+        assertEquals(new Pitch(52), pitch);
     }
 
     @Test
     void elArmonicoNaturalDelTraste7EsUnaDuodecimaSobreLaCuerdaAlAire() {
         Pitch pitch = HarmonicPitch.of(HarmonicType.NATURAL, OPEN_STRING, new Pitch(47), 7);
 
-        assertEquals(new Pitch(59), pitch); // 40 + 19
+        assertEquals(new Pitch(59), pitch);
     }
 
     @Test
@@ -40,14 +35,14 @@ class HarmonicPitchTest {
     void elArmonicoNaturalDelTraste5EsDosOctavas() {
         Pitch pitch = HarmonicPitch.of(HarmonicType.NATURAL, OPEN_STRING, new Pitch(45), 5);
 
-        assertEquals(new Pitch(64), pitch); // 40 + 24
+        assertEquals(new Pitch(64), pitch);
     }
 
     @Test
     void elArmonicoNaturalDelTraste4EsDosOctavasYTercera() {
         Pitch pitch = HarmonicPitch.of(HarmonicType.NATURAL, OPEN_STRING, new Pitch(44), 4);
 
-        assertEquals(new Pitch(68), pitch); // 40 + 28
+        assertEquals(new Pitch(68), pitch);
     }
 
     @Test
