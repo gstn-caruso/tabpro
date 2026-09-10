@@ -137,4 +137,11 @@ class PreferencesTest {
     void animationsStartEnabled() {
         assertFalse(preferences.animationsDisabled());
     }
+
+    @Test
+    void remembersThatAnimationsAreDisabled() {
+        preferences.setAnimationsDisabled(true);
+
+        assertTrue(preferences.animationsDisabled());
+    }
 }

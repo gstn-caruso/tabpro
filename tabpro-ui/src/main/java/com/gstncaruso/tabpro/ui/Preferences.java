@@ -104,6 +104,10 @@ public final class Preferences {
         return stored.getBoolean(ANIMATIONS_DISABLED, false);
     }
 
+    public void setAnimationsDisabled(boolean disabled) {
+        stored.putBoolean(ANIMATIONS_DISABLED, disabled);
+    }
+
     /** Preferencias [F12], "Figura por defecto al insertar": la usa {@code Editor.insertBeat}. */
     public NoteValue defaultNoteValue() {
         return NoteValue.valueOf(stored.get(DEFAULT_NOTE_VALUE, NoteValue.QUARTER.name()));
