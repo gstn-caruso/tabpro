@@ -3,11 +3,6 @@ package com.gstncaruso.tabpro.core.harmony;
 import java.util.Arrays;
 import java.util.Optional;
 
-/**
- * Un intervalo con nombre: cuantas letras y cuantos semitonos hay desde la fundamental, y
- * como se escribe (b3, #5, 9...). Sirve tanto para deletrear las notas de un acorde como
- * para nombrar el grado de una escala.
- */
 public enum Interval {
     ROOT(0, 0, "1"),
     AUGMENTED_UNISON(0, 1, "#1"),
@@ -46,12 +41,10 @@ public enum Interval {
         this.label = label;
     }
 
-    /** Cuantas letras hay que subir desde la fundamental (0 a 6, sin contar octavas). */
     public int letterSteps() {
         return letterSteps;
     }
 
-    /** Cuantos semitonos hay desde la fundamental. Puede pasar de 12 en las extensiones (9, 11, 13). */
     public int semitones() {
         return semitones;
     }
@@ -60,17 +53,14 @@ public enum Interval {
         return label;
     }
 
-    /** El numero de grado tal como lo dice un musico (3, 5, 7, 9, 11, 13...), sin el accidente. */
     public int degreeNumber() {
         return letterSteps + 1 + (semitones >= 12 ? 7 : 0);
     }
 
-    /** La nota que resulta de aplicar este intervalo a esa fundamental. */
     public PitchClass from(PitchClass root) {
         return root.steppedBy(letterSteps, semitones);
     }
 
-    /** El intervalo simple (dentro de una octava) que corresponde a esos pasos y semitonos. */
     public static Optional<Interval> matching(int letterSteps, int semitones) {
         int steps = Math.floorMod(letterSteps, 7);
         int pitchClass = Math.floorMod(semitones, 12);

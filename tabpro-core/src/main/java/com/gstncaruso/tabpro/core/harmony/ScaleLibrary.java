@@ -2,11 +2,6 @@ package com.gstncaruso.tabpro.core.harmony;
 
 import java.util.List;
 
-/**
- * Las escalas que ofrece Guitar Pro: el modo mayor y sus siete modos, las tres menores,
- * las pentatonicas, la blues, la cromatica, la de tonos enteros, las dos disminuidas y un
- * puñado de escalas "exoticas" bien documentadas.
- */
 public final class ScaleLibrary {
 
     private ScaleLibrary() {
@@ -129,9 +124,6 @@ public final class ScaleLibrary {
         return new Scale("Egipcia", List.of(0, 2, 5, 7, 10), List.of(0, 1, 3, 4, 6));
     }
 
-    /** Todas las escalas de la biblioteca, en el orden en que las ofrece Guitar Pro. */
-    // Los modos de la menor armonica, que Guitar Pro lista con nombre propio.
-
     public static Scale locrianNatural6() {
         return sevenNotes("Locrio natural 6", List.of(0, 1, 3, 5, 6, 9, 10));
     }
@@ -147,9 +139,6 @@ public final class ScaleLibrary {
     public static Scale lydianSharpTwo() {
         return sevenNotes("Lidio #2", List.of(0, 3, 4, 6, 7, 9, 11));
     }
-
-
-    // Los modos de la menor melodica.
 
     public static Scale dorianFlatTwo() {
         return sevenNotes("Dórico b2", List.of(0, 1, 3, 5, 7, 9, 10));
@@ -171,12 +160,9 @@ public final class ScaleLibrary {
         return sevenNotes("Locrio #2", List.of(0, 2, 3, 5, 6, 8, 10));
     }
 
-    /** La alterada: su cuarto grado es una cuarta disminuida, no una tercera mayor. */
     public static Scale superLocrian() {
         return sevenNotes("Superlocrio (alterada)", List.of(0, 1, 3, 4, 6, 8, 10));
     }
-
-    // Otras que ofrece Guitar Pro.
 
     public static Scale bebopDominant() {
         return new Scale("Be-bop dominante", List.of(0, 2, 4, 5, 7, 9, 10, 11), List.of(0, 1, 2, 3, 4, 5, 6, 6));

@@ -2,11 +2,6 @@ package com.gstncaruso.tabpro.core.harmony;
 
 import java.util.List;
 
-/**
- * Los tipos de acorde que ofrece Guitar Pro, con su sufijo de nombre y su formula: que
- * intervalos lo forman, y cuales de ellos son imprescindibles cuando no alcanzan las
- * cuerdas para tocarlos todos (ahi es la quinta justa la que primero se sacrifica).
- */
 public enum ChordType {
     MAJOR("", tone(Interval.ROOT), tone(Interval.MAJOR_THIRD), tone(Interval.PERFECT_FIFTH)),
     MINOR("m", tone(Interval.ROOT), tone(Interval.MINOR_THIRD), tone(Interval.PERFECT_FIFTH)),
@@ -156,12 +151,10 @@ public enum ChordType {
         return new ChordTone(interval, false);
     }
 
-    /** El sufijo con que Guitar Pro nombra este tipo de acorde: "m7", "sus4", "dim7"... */
     public String suffix() {
         return suffix;
     }
 
-    /** La formula del acorde: que intervalos lo forman y cuales son imprescindibles. */
     public List<ChordTone> tones() {
         return tones;
     }

@@ -49,7 +49,6 @@ class TrackChordsTest {
     void underTheTitleIgnoraLasPistasQueNoLoPidieron() {
         Measure compas1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
         Track pista = Track.standardGuitar("Guitarra").withMeasures(List.of(compas1));
-        // ABOVE_THE_STAFF es el placement por defecto: no pidio salir debajo del titulo.
         Score partitura = new Score("", 120, List.of(pista));
 
         assertTrue(TrackChords.underTheTitle(partitura).isEmpty());

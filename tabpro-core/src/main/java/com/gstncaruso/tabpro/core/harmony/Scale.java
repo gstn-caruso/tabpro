@@ -3,13 +3,6 @@ package com.gstncaruso.tabpro.core.harmony;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Una escala: sus semitonos desde la tonica (que es lo que suena) y que letra usar para
- * cada uno (que es como se deletrea bien, sin saltear ni repetir letras de mas). La
- * misma letra puede aparecer dos veces en una escala (una nota "blue" o una escala
- * disminuida reusan una letra con dos alteraciones distintas), pero no hace falta usarlas
- * todas: una pentatonica, por ejemplo, deja afuera dos de las siete.
- */
 public record Scale(String name, List<Integer> semitones, List<Integer> letterSteps) {
 
     public Scale {
@@ -27,7 +20,6 @@ public record Scale(String name, List<Integer> semitones, List<Integer> letterSt
         return semitones.size();
     }
 
-    /** Las notas de la escala a partir de esa tonica: nombre, intervalo y grado de cada una. */
     public List<ScaleTone> notesFrom(PitchClass tonic) {
         List<ScaleTone> notes = new ArrayList<>(degreeCount());
         for (int i = 0; i < degreeCount(); i++) {
