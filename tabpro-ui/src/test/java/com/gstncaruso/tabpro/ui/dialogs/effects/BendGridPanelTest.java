@@ -1,0 +1,33 @@
+package com.gstncaruso.tabpro.ui.dialogs.effects;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.gstncaruso.tabpro.core.model.effects.BendPoint;
+import com.gstncaruso.tabpro.core.model.effects.BendType;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import java.awt.event.ActionEvent;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import org.junit.jupiter.api.Test;
+
+class BendGridPanelTest {
+
+    @Test
+    void tieneNombreYTooltipAccesibles() {
+        AccessibilityAssertions.assertNoViolations(new BendGridPanel(BendCurveEditor.blank(BendType.BEND, 4)));
+    }
+
+    @Test
+    void theRightArrowKeyMovesTheCaretForward() {
+        BendGridPanel panel = new BendGridPanel(BendCurveEditor.blank(BendType.BEND, 4));
+
+        pressShortcut(panel, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals(1, panel.caretPosition());
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
+    }
+}
