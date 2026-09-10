@@ -24,11 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * La mesa de mezcla: una fila por pista con numero, nombre, visibilidad en la vista multipista,
- * solo, silencio, puerto, los dos canales, instrumento y los seis parametros de sonido. Los
- * botones de arriba del numero de pista reducen o restauran todos los parametros a la vez.
- */
 public final class MixTable extends JPanel {
 
     public static final int NUMBER_WIDTH = 24;

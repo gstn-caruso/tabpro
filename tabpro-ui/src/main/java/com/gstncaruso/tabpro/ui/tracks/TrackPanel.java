@@ -19,14 +19,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
-/**
- * El panel de abajo: la mesa de mezcla con todas las pistas y, al costado, la vista general con
- * los marcadores y la grilla de compases.
- */
 public final class TrackPanel extends JPanel {
 
     public static final int ROW_HEIGHT = 34;
-    /** Como en Guitar Pro 5: la banda de cabecera es 1,3 veces mas alta que una fila de datos. */
     public static final int HEADER_HEIGHT = Math.round(ROW_HEIGHT * 1.3f);
 
     private final Editor editor;
@@ -126,7 +121,6 @@ public final class TrackPanel extends JPanel {
         }
     }
 
-    /** Alto que pide el panel para mostrar todas sus pistas sin scrollear. */
     public int preferredPanelHeight() {
         return HEADER_HEIGHT + editor.score().trackCount() * ROW_HEIGHT + 26;
     }

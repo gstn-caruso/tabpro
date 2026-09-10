@@ -3,12 +3,6 @@ package com.gstncaruso.tabpro.ui.tracks;
 import java.awt.Color;
 import java.util.List;
 
-/**
- * El color con el que se reconoce cada pista en la grilla de compases. Sale del orden de la
- * pista y no se guarda en el archivo: alcanza para distinguirlas de un vistazo.
- *
- * <p>El rojo no esta en la lista a proposito, porque es el que marca el compas que suena.
- */
 public final class TrackColors {
 
     private static final List<Color> PALETTE = List.of(

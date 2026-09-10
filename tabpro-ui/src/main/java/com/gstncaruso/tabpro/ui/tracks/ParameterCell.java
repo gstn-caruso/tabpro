@@ -7,10 +7,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * Una celda de la mesa de mezcla para un {@link MixParameter}: un numero plano editable, como
- * chorus, reverb, phaser o tremolo en Guitar Pro.
- */
 public final class ParameterCell extends JPanel {
 
     private final Editor editor;

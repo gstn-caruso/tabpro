@@ -14,11 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Auditoria de rendimiento, hallazgo 4: TrackPanel.editorChanged() llamaba a
- * GlobalView.refresh(), que revalida y repinta toda la grilla de compases -O(compases x pistas)-
- * con cada flecha, aunque solo se movio el cursor.
- */
 class MeasureGridCursorHighlightTest {
 
     @Test

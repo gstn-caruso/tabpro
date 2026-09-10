@@ -28,10 +28,6 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-/**
- * La franja arriba de la grilla de compases: el nombre de cada marcador con su color, sobre los
- * compases que abarca. Doble clic crea un marcador nuevo, o edita el que ya esta ahi.
- */
 public final class MarkerZone extends JComponent implements AccessibleControl {
 
     public static final int HEIGHT = TrackPanel.HEADER_HEIGHT / 2;
@@ -75,7 +71,6 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
         });
     }
 
-    /** Donde esta parado el caret de teclado: no se confunde con el cursor real hasta Enter. */
     public int caret() {
         return caret;
     }
@@ -167,7 +162,6 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
         return fromLookAndFeel != null ? fromLookAndFeel : ScoreColors.ACCENT;
     }
 
-    /** Como en Guitar Pro 5: el nombre del marcador se lee en rojo sobre la cabecera de la grilla. */
     private void paintSegment(Graphics2D g, MarkerSegments.Segment segment) {
         int x = segment.fromMeasure() * MeasureGrid.CELL_WIDTH;
         int width = (segment.toMeasureExclusive() - segment.fromMeasure()) * MeasureGrid.CELL_WIDTH;
@@ -175,7 +169,6 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
         g.drawString(truncated(segment.marker().name(), width - 3, g.getFontMetrics()), x + 3, HEIGHT - 4);
     }
 
-    /** Corta el nombre del marcador con puntos suspensivos si no entra en el ancho del segmento. */
     static String truncated(String name, int maxWidth, FontMetrics metrics) {
         if (metrics.stringWidth(name) <= maxWidth) {
             return name;

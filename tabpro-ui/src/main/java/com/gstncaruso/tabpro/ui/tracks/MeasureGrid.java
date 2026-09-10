@@ -31,21 +31,11 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-/**
- * Un cuadradito por compas y por pista: marcado si esa pista toca algo ahi, rodeado de un borde
- * claro si es el compas donde esta parada la edicion, y toda la columna en rojo mientras ese
- * compas suena.
- */
 public class MeasureGrid extends JComponent implements AccessibleControl {
 
     public static final int CELL_WIDTH = 15;
     public static final int NUMBER_EVERY = 5;
     private static final int NUMBER_MARGIN = 4;
-    /**
-     * La franja de los numeros de compas: lo que queda del encabezado de la mesa de mezcla una vez
-     * que la zona de marcadores se llevo su parte. Las dos juntas miden lo mismo que el encabezado
-     * del mixer, asi que el cuadrado de una pista queda a la altura de su fila.
-     */
     public static final int NUMBERS_HEIGHT = TrackPanel.HEADER_HEIGHT - MarkerZone.HEIGHT;
 
     static final Color PLAYING_TINT = new Color(
@@ -94,7 +84,6 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
         });
     }
 
-    /** Donde esta parado el caret de teclado: no se confunde con el cursor real hasta Enter. */
     public Cell caret() {
         return caret;
     }
@@ -161,11 +150,6 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
         repaint();
     }
 
-    /**
-     * Auditoria de rendimiento, hallazgo 4: solo cambiar de donde esta parado el cursor no
-     * necesita revalidar ni repintar toda la grilla -O(compases x pistas)-, alcanza con la union
-     * de la celda vieja y la nueva.
-     */
     public void moveCursorHighlight() {
         Rectangle next = cellBounds(editor.cursor().track(), editor.cursor().measure());
         repaint(cursorCellArea.union(next));
@@ -242,7 +226,6 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
         g.fillRect(measure * CELL_WIDTH, 0, CELL_WIDTH, getHeight());
     }
 
-    /** Donde esta parada la edicion: el compas del cursor, en la fila de su pista. */
     private void outlineCursorCell(Graphics2D g, Score score) {
         Cursor cursor = editor.cursor();
         if (isOutside(score, cursor.measure())) {
@@ -254,7 +237,7 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
         g.drawRect(cell.x + 1, cell.y + 1, cell.width - 3, cell.height - 3);
     }
 
-    /** El borde va despues de las celdas, para que marque la columna sin taparla. */
+    /** Graphics2D paints in the order it is called, so drawing this after the cell fills keeps it on top. */
     private void outlinePlayingColumn(Graphics2D g, Score score, int measure) {
         if (isOutside(score, measure)) {
             return;
@@ -279,17 +262,12 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
         }
     }
 
-    /**
-     * Como en Guitar Pro 5: un numero por compas si el mas ancho de todos entra en la celda, o
-     * uno cada {@link #NUMBER_EVERY} compases cuando no entra.
-     */
     static int numberStep(int measureCount, FontMetrics metrics) {
         String widestNumber = String.valueOf(measureCount);
         boolean everyNumberFitsTheCell = metrics.stringWidth(widestNumber) + NUMBER_MARGIN <= CELL_WIDTH;
         return everyNumberFitsTheCell ? 1 : NUMBER_EVERY;
     }
 
-    /** Una pista que no suena se ve apagada, igual que su nombre en la lista. */
     private Color colorOf(int trackIndex) {
         Color color = TrackColors.of(trackIndex);
         return editor.score().isAudible(trackIndex) ? color : faded(color);

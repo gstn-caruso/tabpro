@@ -5,10 +5,6 @@ import com.gstncaruso.tabpro.core.model.bars.Marker;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * En que compases rige cada marcador de la partitura: desde el compas que lo lleva hasta el
- * proximo marcador (o hasta el final). Separado de como se dibuja la zona de marcadores.
- */
 public final class MarkerSegments {
 
     private MarkerSegments() {

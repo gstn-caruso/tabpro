@@ -8,7 +8,6 @@ import java.awt.FontMetrics;
 import java.awt.image.BufferedImage;
 import org.junit.jupiter.api.Test;
 
-/** Como en Guitar Pro 5: el nombre del marcador se corta con puntos suspensivos si no entra. */
 class MarkerZoneTruncationTest {
 
     private static final FontMetrics METRICS = metrics();

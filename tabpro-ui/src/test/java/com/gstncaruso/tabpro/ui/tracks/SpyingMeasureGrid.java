@@ -5,8 +5,6 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Registra las llamadas a revalidate()/repaint() para que los tests puedan verificar, sin
- * mostrar ninguna ventana, si un cambio dispara el camino completo o el incremental. */
 final class SpyingMeasureGrid extends MeasureGrid {
     int revalidateCalls;
     boolean fullRepaintCalled;
@@ -34,8 +32,6 @@ final class SpyingMeasureGrid extends MeasureGrid {
         super.repaint(area);
     }
 
-    /** El propio constructor de JComponent dispara un repaint (setBackground); lo que importa
-     * para estas pruebas es lo que pasa despues, con la grilla ya armada. */
     void forgetCallsMadeWhileBuilding() {
         revalidateCalls = 0;
         fullRepaintCalled = false;

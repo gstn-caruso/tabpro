@@ -26,10 +26,6 @@ import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * Una fila de la mesa de mezcla: numero, nombre, visibilidad en la vista multipista, puerto,
- * los dos canales de la pista, instrumento, los seis parametros de sonido, silencio y solo.
- */
 public final class MixTableRow extends JPanel {
 
     private final Editor editor;
@@ -251,10 +247,7 @@ public final class MixTableRow extends JPanel {
         editor.setProgram(trackIndex, percussion ? DrumKits.programAt(index) : index);
     }
 
-    /**
-     * En el canal 10 el program change no elige un instrumento: elige un Drum Kit (manual,
-     * capitulo Percussion). El combo ofrece kits o instrumentos segun sea la pista.
-     */
+    /** On MIDI channel 10 a program change selects a drum kit, not an instrument. */
     private void refreshInstrumentCombo(Track track) {
         boolean percussion = track.isPercussion();
         if (percussion != instrumentComboShowsDrumKits) {

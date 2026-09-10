@@ -13,11 +13,6 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import org.junit.jupiter.api.Test;
 
-/**
- * La grilla dice donde esta parada la edicion: el cuadrado del compas del cursor, en la fila de su
- * pista, va rodeado de un borde claro. Los tests miran el pixel del borde -no le preguntan a ningun
- * metodo si "esta marcado"-, porque lo que importa es que se vea.
- */
 class MeasureGridPaintingTest {
 
     @Test
@@ -65,13 +60,11 @@ class MeasureGridPaintingTest {
                 "la marca vieja no puede quedar pegada");
     }
 
-    /** El pixel del medio del borde de arriba de esa celda. */
     private static int topEdgeOf(BufferedImage painted, MeasureGrid grid, int track, int measure) {
         Rectangle cell = grid.cellBounds(track, measure);
         return painted.getRGB(cell.x + cell.width / 2, cell.y + 1);
     }
 
-    /** El pixel del medio de esa celda. */
     private static int centerOf(BufferedImage painted, MeasureGrid grid, int track, int measure) {
         Rectangle cell = grid.cellBounds(track, measure);
         return painted.getRGB(cell.x + cell.width / 2, cell.y + cell.height / 2);

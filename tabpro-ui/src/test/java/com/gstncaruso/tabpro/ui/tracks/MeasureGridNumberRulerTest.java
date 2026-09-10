@@ -7,10 +7,6 @@ import java.awt.FontMetrics;
 import java.awt.image.BufferedImage;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 numera cada compas cuando el numero entra en el ancho de la celda, y cada 5 cuando
- * no -como en la regla de la vista general de la mesa de mezcla-.
- */
 class MeasureGridNumberRulerTest {
 
     private static final FontMetrics METRICS = metrics();

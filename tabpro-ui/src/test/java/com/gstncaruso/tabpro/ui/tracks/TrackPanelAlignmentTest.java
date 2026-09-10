@@ -13,13 +13,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import org.junit.jupiter.api.Test;
 
-/**
- * La mesa de mezcla y la grilla de compases son dos componentes distintos, uno al lado del otro,
- * que muestran las mismas pistas: el cuadrado de una pista tiene que quedar a la altura de su fila
- * en el mixer, o clickear "la fila de la guitarra" en la grilla es adivinar. El color de la pista
- * aparece justo dos veces -en la franja de su fila y en su cuadrado-, asi que estos tests pintan el
- * panel entero y miden donde cayo cada uno, en vez de preguntarle a una constante que puede mentir.
- */
 class TrackPanelAlignmentTest {
 
     private static final int WIDTH = 1300;
@@ -66,7 +59,6 @@ class TrackPanelAlignmentTest {
         return image;
     }
 
-    /** Sin ventana no hay nadie que valide el arbol, asi que se lo recorre a mano. */
     private static void layOut(Component component) {
         if (component instanceof Container container) {
             container.doLayout();
@@ -76,7 +68,6 @@ class TrackPanelAlignmentTest {
         }
     }
 
-    /** Desde donde hasta donde, a lo alto, aparece ese color en esa franja de columnas. */
     private static Band bandOf(BufferedImage painted, Color color, int fromX, int toX) {
         int top = Integer.MAX_VALUE;
         int bottom = Integer.MIN_VALUE;
