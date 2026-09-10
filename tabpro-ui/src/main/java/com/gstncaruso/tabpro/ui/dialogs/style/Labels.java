@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
+import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public final class Labels {
             case PitchClass pitchClass -> pitchClass.name() + " (" + pitchClass.solfegeName() + ")";
             case Scale scale -> scale.name();
             case Tuning tuning -> tuning.name() + " (" + stringLetters(tuning) + ")";
+            case Dynamic dynamic -> dynamic.symbol();
             default -> throw new IllegalArgumentException("Sin etiqueta para " + value);
         };
     }

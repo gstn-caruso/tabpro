@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
+import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -124,5 +125,19 @@ class LabelsTest {
             assertFalse(etiqueta.isBlank());
             assertNotEquals(tuning.toString(), etiqueta);
         }
+    }
+
+    @Test
+    void traduceLaDinamicaASuSimboloMusical() {
+        assertEquals("mf", Labels.of(Dynamic.MEZZO_FORTE));
+    }
+
+    @ParameterizedTest
+    @EnumSource(Dynamic.class)
+    void todaDinamicaTieneUnaEtiquetaPropia(Dynamic value) {
+        String etiqueta = Labels.of(value);
+
+        assertFalse(etiqueta.isBlank());
+        assertNotEquals(value.name(), etiqueta);
     }
 }

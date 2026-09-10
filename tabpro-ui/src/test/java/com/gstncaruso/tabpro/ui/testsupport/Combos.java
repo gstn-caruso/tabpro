@@ -3,6 +3,8 @@ package com.gstncaruso.tabpro.ui.testsupport;
 import java.awt.Component;
 import java.awt.Container;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
 
 /**
  * Encuentra un combo dentro de un panel de prueba por el tipo de sus items, sin obligar
@@ -29,5 +31,14 @@ public final class Combos {
             }
         }
         return null;
+    }
+
+    /** El texto que el combo realmente pinta para ese item, sin abrir ninguna ventana. */
+    @SuppressWarnings("unchecked")
+    public static String renderedTextOf(Container root, Class<?> itemType, Object item) {
+        JComboBox combo = firstWithItemType(root, itemType);
+        Component rendered =
+                combo.getRenderer().getListCellRendererComponent(new JList<>(), item, 0, false, false);
+        return ((JLabel) rendered).getText();
     }
 }

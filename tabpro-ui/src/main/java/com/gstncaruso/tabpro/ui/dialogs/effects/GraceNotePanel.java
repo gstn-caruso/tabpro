@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
@@ -22,6 +23,7 @@ public final class GraceNotePanel extends FormPanel {
 
     public GraceNotePanel(GraceNote initial) {
         this.initialDead = initial.dead();
+        duration.setRenderer(new LabeledListCellRenderer());
         dynamic.setRenderer((list, value, index, isSelected, hasFocus) ->
                 new javax.swing.JLabel(value == null ? "" : value.symbol()));
         transition.setRenderer((list, value, index, isSelected, hasFocus) ->

@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import org.junit.jupiter.api.Test;
 
 class StrokePanelTest {
@@ -13,6 +14,15 @@ class StrokePanelTest {
     @Test
     void ningunControlQuedaSinNombreNiTooltipAccesible() {
         AccessibilityAssertions.assertNoViolations(new StrokePanel(Stroke.of(StrokeDirection.DOWN)));
+    }
+
+    @Test
+    void elComboDeVelocidadMuestraLaFiguraEnCastellano() {
+        StrokePanel panel = new StrokePanel(Stroke.of(StrokeDirection.DOWN));
+
+        String texto = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
+
+        assertEquals("Negra", texto);
     }
 
     @Test
