@@ -403,7 +403,10 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
     private void editorChanged() {
         revalidate();
         repaint();
-        scrollRectToVisible(cursorBounds(editor.cursor()));
+        Rectangle cursor = cursorBounds(editor.cursor());
+        if (!cursor.isEmpty() && !getVisibleRect().isEmpty()) {
+            scrollRectToVisible(cursor);
+        }
     }
 
     private Rectangle cursorBounds(Cursor cursor) {

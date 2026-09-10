@@ -318,6 +318,28 @@ class ScoreCanvasTest {
                 "con el auto-scroll destildado la vista no se tiene que mover aunque el playhead quede afuera");
     }
 
+    /**
+     * Auditoria de corpus, hallazgo 2: justo despues de cambiar de modo de vista, el JViewport
+     * real todavia mide 0x0 -Swing no layouteo todavia-. Pedirle un scroll ahi (como hacia
+     * {@code editorChanged} sin guarda) no tira excepcion en un test headless, pero mueve la
+     * vista a una posicion sin sentido -el mismo mecanismo que en pantalla real termina en
+     * {@code IllegalArgumentException: Width (0) and height (0) cannot be <= 0}.
+     */
+    @Test
+    void doesNotScrollWhenTheAncestorViewportHasNoSizeYet() throws Exception {
+        Editor manyMeasures = editorWithManyMeasures(30);
+        ScoreCanvas horizontal = new ScoreCanvas(manyMeasures);
+        horizontal.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+        JScrollPane pane = new JScrollPane(horizontal);
+
+        javax.swing.SwingUtilities.invokeAndWait(manyMeasures::moveToLastMeasure);
+
+        assertEquals(0, pane.getViewport().getViewPosition().x,
+                "sin layout todavia (viewport 0x0) no hay que mover el scroll a un lugar sin sentido");
+        assertEquals(0, pane.getViewport().getViewPosition().y,
+                "sin layout todavia (viewport 0x0) no hay que mover el scroll a un lugar sin sentido");
+    }
+
     /** Treinta compases en Pantalla Horizontal -que nunca envuelve- para que el ultimo quede
      * bien lejos del origen y un scroll de verdad haga falta para llegar a el. */
     private static ScoreCanvas canvasWithManyMeasuresScrolledHorizontally() {
