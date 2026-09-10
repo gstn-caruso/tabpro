@@ -37,6 +37,14 @@ class StatusBarTest {
     }
 
     @Test
+    void showsTheMeasureDurationInBeats() {
+        Editor editor = new Editor(Score.blank());
+        StatusBar bar = new StatusBar(editor);
+
+        assertEquals("1.000 : 4.000", bar.durationText());
+    }
+
+    @Test
     void showsTheTitleAndTheAuthorOnTheRight() {
         ScoreInfo info = ScoreInfo.empty().withTitle("Sultans of Swing").withMusicAuthor("Mark Knopfler");
         Editor editor = new Editor(new Score(info, 120, Score.blank().tracks(), Score.blank().lyrics()));

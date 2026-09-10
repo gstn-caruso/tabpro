@@ -24,6 +24,7 @@ public final class StatusBar extends JPanel {
     private final JLabel position = new JLabel();
     private final JLabel completeness = new JLabel();
     private final JLabel trackName = new JLabel();
+    private final JLabel duration = new JLabel();
     private final JLabel credits = new JLabel();
 
     public StatusBar(Editor editor) {
@@ -50,6 +51,8 @@ public final class StatusBar extends JPanel {
         left.add(styled(completeness));
         left.add(separator());
         left.add(styled(trackName));
+        left.add(separator());
+        left.add(styled(duration));
 
         styled(credits).setHorizontalAlignment(SwingConstants.RIGHT);
 
@@ -76,6 +79,10 @@ public final class StatusBar extends JPanel {
         return trackName.getText();
     }
 
+    String durationText() {
+        return duration.getText();
+    }
+
     String creditsText() {
         return credits.getText();
     }
@@ -88,6 +95,7 @@ public final class StatusBar extends JPanel {
         completeness.setForeground(
                 info.completeness() == MeasureCompleteness.COMPLETE ? ScoreColors.LABEL : ScoreColors.WARNING);
         trackName.setText(info.trackName());
+        duration.setText(info.measureBeatsRatioText());
         credits.setText(creditsOf(info));
         credits.setToolTipText(BeatDescription.describe(editor.cursor(), editor.currentBeat()));
     }
