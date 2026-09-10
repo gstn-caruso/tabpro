@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
+import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
@@ -139,7 +140,7 @@ public final class Commands {
         define("bar.delete", "Borrar el compás", editor::deleteMeasure).withIcon(Icons.deleteBar());
         define("bar.keySignature", "Armadura…", dialogs::keySignature).withIcon(Icons.keySignature());
         define("bar.timeSignature", "Medida del compás…", dialogs::timeSignature).withIcon(Icons.timeSignature());
-        define("bar.tripletFeel", "Triplet feel…", dialogs::tripletFeel);
+        define("bar.tripletFeel", "Triplet feel…", dialogs::tripletFeel).withIcon(Icons.tripletFeel());
         define("bar.doubleBar", "Doble barra", editor::toggleDoubleBar).withIcon(Icons.doubleBar());
         define("bar.repeatOpen", "Repetición: abrir", editor::toggleRepeatOpen).withIcon(Icons.repeatOpen());
         define("bar.repeatClose", "Repetición: cerrar…", dialogs::repeatClose).withIcon(Icons.repeatClose());
@@ -147,19 +148,20 @@ public final class Commands {
                 .withIcon(Icons.alternateEndings());
         define("bar.directions", "Direcciones musicales…", dialogs::musicalDirections);
         define("bar.forceLineBreak", "Forzar salto de línea",
-                () -> editor.setLineBreak(LineBreak.FORCED, view.isMultitrack()));
+                () -> editor.setLineBreak(LineBreak.FORCED, view.isMultitrack())).withIcon(Icons.forceLineBreak());
         define("bar.preventLineBreak", "Impedir salto de línea",
-                () -> editor.setLineBreak(LineBreak.PREVENTED, view.isMultitrack()));
+                () -> editor.setLineBreak(LineBreak.PREVENTED, view.isMultitrack()))
+                .withIcon(Icons.preventLineBreak());
         define("bar.resetLineBreak", "Reiniciar la organización",
                 () -> editor.setLineBreak(LineBreak.AUTOMATIC, view.isMultitrack()));
         define("bar.octave8va", "8va (suena una octava más arriba de lo escrito)",
-                () -> editor.setOctaveMark(OctaveMark.OTTAVA_ALTA));
+                () -> editor.setOctaveMark(OctaveMark.OTTAVA_ALTA)).withIcon(Icons.octave8va());
         define("bar.octave8vb", "8vb (suena una octava más abajo de lo escrito)",
-                () -> editor.setOctaveMark(OctaveMark.OTTAVA_BASSA));
+                () -> editor.setOctaveMark(OctaveMark.OTTAVA_BASSA)).withIcon(Icons.octave8vb());
         define("bar.octave15ma", "15ma (suena dos octavas más arriba de lo escrito)",
-                () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_ALTA));
+                () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_ALTA)).withIcon(Icons.octave15ma());
         define("bar.octave15mb", "15mb (suena dos octavas más abajo de lo escrito)",
-                () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_BASSA));
+                () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_BASSA)).withIcon(Icons.octave15mb());
         define("bar.octaveNone", "Sin marca de octava", () -> editor.setOctaveMark(OctaveMark.NONE));
     }
 
@@ -171,10 +173,14 @@ public final class Commands {
         define("track.addGuitar", "Agregar una guitarra", () -> editor.addTrack(Track.standardGuitar("Guitarra")));
         define("track.addBass", "Agregar un bajo", () -> editor.addTrack(Track.standardBass("Bajo")));
         define("track.addPercussion", "Agregar percusión", () -> editor.addTrack(Track.percussion("Batería")));
-        define("track.delete", "Borrar la pista", editor::removeCurrentTrack).withAccelerator("ctrl shift DELETE");
-        define("track.moveUp", "Subir la pista", () -> editor.moveCurrentTrack(-1)).withAccelerator("ctrl alt UP");
-        define("track.moveDown", "Bajar la pista", () -> editor.moveCurrentTrack(1)).withAccelerator("ctrl alt DOWN");
-        define("track.properties", "Propiedades de la pista…", dialogs::trackProperties).withAccelerator("F6");
+        define("track.delete", "Borrar la pista", editor::removeCurrentTrack)
+                .withAccelerator("ctrl shift DELETE").withIcon(Icons.trackDelete());
+        define("track.moveUp", "Subir la pista", () -> editor.moveCurrentTrack(-1))
+                .withAccelerator("ctrl alt UP").withIcon(Icons.trackMoveUp());
+        define("track.moveDown", "Bajar la pista", () -> editor.moveCurrentTrack(1))
+                .withAccelerator("ctrl alt DOWN").withIcon(Icons.trackMoveDown());
+        define("track.properties", "Propiedades de la pista…", dialogs::trackProperties)
+                .withAccelerator("F6").withIcon(Icons.trackProperties());
         define("track.instrument", "Instrumento…", dialogs::instrument).withAccelerator("F7");
         define("track.previous", "Pista anterior", editor::moveToPreviousTrack).withAccelerator("ctrl UP");
         define("track.next", "Pista siguiente", editor::moveToNextTrack).withAccelerator("ctrl DOWN");
@@ -191,7 +197,8 @@ public final class Commands {
         define("note.triplet", "Tresillo", editor::toggleTriplet).withAccelerator("SLASH").withIcon(Icons.tuplet(3));
         defineTupletCommands();
         define("note.tie", "Ligar la nota", editor::toggleTie).withAccelerator("L").withIcon(Icons.tie());
-        define("note.tieBeat", "Ligar el beat", editor::tieWholeBeat).withAccelerator("ctrl L");
+        define("note.tieBeat", "Ligar el beat", editor::tieWholeBeat)
+                .withAccelerator("ctrl L").withIcon(Icons.tieBeat());
         define("note.insertBeat", "Insertar un beat", editor::insertBeat).withAccelerator("INSERT");
         define("note.deleteNote", "Borrar la nota", editor::clearNote).withAccelerator("DELETE");
         define("note.deleteBeat", "Borrar el beat", editor::deleteBeat).withAccelerator("ctrl DELETE");
@@ -204,8 +211,9 @@ public final class Commands {
         define("note.repeatToEndOfBar", "Copiar el beat hasta el final del compás",
                 editor::repeatBeatToTheEndOfTheMeasure).withAccelerator("C");
         define("note.dynamics", "Dinámica…", dialogs::dynamics);
-        define("note.soundDuration", "Duración del sonido…", dialogs::soundDuration);
-        define("note.fingering", "Digitación…", dialogs::fingering);
+        define("note.soundDuration", "Duración del sonido…", dialogs::soundDuration)
+                .withIcon(Icons.soundDuration());
+        define("note.fingering", "Digitación…", dialogs::fingering).withIcon(Icons.fingering());
         define("note.chord", "Acorde…", dialogs::chordDiagram).withAccelerator("A").withIcon(Icons.chordDiagram());
         define("note.mixTableChange", "Cambio de parámetros…", dialogs::mixTableChange)
                 .withAccelerator("F10").withIcon(Icons.mixTable());
@@ -257,12 +265,18 @@ public final class Commands {
      * "Bar > Break Line" (forzar/impedir/reiniciar): fuerzan, impiden o vuelven al automatismo.
      */
     private void defineBeamAndStemCommands() {
-        define("note.forceBeamBreak", "Forzar corte de barra", () -> editor.setBeamBreak(BeamBreak.FORCED));
-        define("note.preventBeamBreak", "Impedir corte de barra", () -> editor.setBeamBreak(BeamBreak.PREVENTED));
-        define("note.resetBeamBreak", "Barra automática", () -> editor.setBeamBreak(BeamBreak.AUTOMATIC));
-        define("note.stemUp", "Plica hacia arriba", () -> editor.setStemOverride(StemOverride.UP));
-        define("note.stemDown", "Plica hacia abajo", () -> editor.setStemOverride(StemOverride.DOWN));
-        define("note.stemAutomatic", "Plica automática", () -> editor.setStemOverride(StemOverride.AUTOMATIC));
+        define("note.forceBeamBreak", "Forzar corte de barra", () -> editor.setBeamBreak(BeamBreak.FORCED))
+                .withIcon(Icons.forceBeamBreak());
+        define("note.preventBeamBreak", "Impedir corte de barra", () -> editor.setBeamBreak(BeamBreak.PREVENTED))
+                .withIcon(Icons.preventBeamBreak());
+        define("note.resetBeamBreak", "Barra automática", () -> editor.setBeamBreak(BeamBreak.AUTOMATIC))
+                .withIcon(Icons.resetBeamBreak());
+        define("note.stemUp", "Plica hacia arriba", () -> editor.setStemOverride(StemOverride.UP))
+                .withIcon(Icons.stemUp());
+        define("note.stemDown", "Plica hacia abajo", () -> editor.setStemOverride(StemOverride.DOWN))
+                .withIcon(Icons.stemDown());
+        define("note.stemAutomatic", "Plica automática", () -> editor.setStemOverride(StemOverride.AUTOMATIC))
+                .withIcon(Icons.stemAutomatic());
     }
 
     // ---- efectos ----------------------------------------------------------
@@ -273,19 +287,20 @@ public final class Commands {
         define("effect.legatoSlide", "Slide legato", () -> editor.setSlide(SlideType.LEGATO))
                 .withAccelerator("S").withIcon(Icons.slide());
         define("effect.shiftSlide", "Slide con ataque", () -> editor.setSlide(SlideType.SHIFT))
-                .withAccelerator("alt S");
+                .withAccelerator("alt S").withIcon(Icons.shiftSlide());
         define("effect.slideInFromBelow", "Entrando desde abajo", () -> editor.setSlide(SlideType.IN_FROM_BELOW));
         define("effect.slideInFromAbove", "Entrando desde arriba", () -> editor.setSlide(SlideType.IN_FROM_ABOVE));
         define("effect.slideOutDownwards", "Saliendo hacia abajo", () -> editor.setSlide(SlideType.OUT_DOWNWARDS));
         define("effect.slideOutUpwards", "Saliendo hacia arriba", () -> editor.setSlide(SlideType.OUT_UPWARDS));
         define("effect.noSlide", "Sin slide", () -> editor.setSlide(null));
         define("effect.bend", "Bend…", dialogs::bend).withAccelerator("B").withIcon(Icons.bend());
-        define("effect.tremoloBar", "Palanca…", dialogs::tremoloBar);
+        define("effect.tremoloBar", "Palanca…", dialogs::tremoloBar).withIcon(Icons.tremoloBar());
         define("effect.vibrato", "Vibrato", () -> editor.toggleOrnament(Ornament.VIBRATO))
                 .withAccelerator("V").withIcon(Icons.vibrato());
         define("effect.wideVibrato", "Vibrato amplio", editor::toggleWideVibrato).withIcon(Icons.wideVibrato());
-        define("effect.trill", "Trino…", dialogs::trill);
-        define("effect.tremoloPicking", "Trémolo de púa…", dialogs::tremoloPicking);
+        define("effect.trill", "Trino…", dialogs::trill).withIcon(Icons.trill());
+        define("effect.tremoloPicking", "Trémolo de púa…", dialogs::tremoloPicking)
+                .withIcon(Icons.tremoloPicking());
         define("effect.palmMute", "Palm mute", () -> editor.toggleOrnament(Ornament.PALM_MUTE))
                 .withAccelerator("P").withIcon(Icons.letter("PM"));
         define("effect.letRing", "Let ring", () -> editor.toggleOrnament(Ornament.LET_RING))
@@ -298,10 +313,16 @@ public final class Commands {
                 .withAccelerator("O").withIcon(Icons.ghostNote());
         define("effect.accent", "Nota acentuada", () -> editor.toggleOrnament(Ornament.ACCENTED))
                 .withIcon(Icons.accent());
-        define("effect.heavyAccent", "Nota muy acentuada", () -> editor.toggleOrnament(Ornament.HEAVY_ACCENTED));
-        define("effect.fadeIn", "Fade in", editor::toggleFadeIn).withAccelerator("F");
-        define("effect.graceNote", "Nota de adorno…", dialogs::graceNote).withAccelerator("G");
+        define("effect.heavyAccent", "Nota muy acentuada", () -> editor.toggleOrnament(Ornament.HEAVY_ACCENTED))
+                .withIcon(Icons.heavyAccent());
+        define("effect.fadeIn", "Fade in", editor::toggleFadeIn).withAccelerator("F").withIcon(Icons.fadeIn());
+        define("effect.graceNote", "Nota de adorno…", dialogs::graceNote)
+                .withAccelerator("G").withIcon(Icons.graceNote());
         define("effect.harmonics", "Armónicos…", dialogs::harmonics).withIcon(Icons.harmonic());
+        define("effect.naturalHarmonic", "Armónico natural", () -> editor.setHarmonic(HarmonicType.NATURAL))
+                .withIcon(Icons.naturalHarmonic());
+        define("effect.artificialHarmonic", "Armónico artificial",
+                () -> editor.setHarmonic(HarmonicType.ARTIFICIAL)).withIcon(Icons.artificialHarmonic());
         define("effect.tapping", "Tapping", editor::toggleTapping).withIcon(Icons.letter("T"));
         define("effect.slapping", "Slap", editor::toggleSlapping).withIcon(Icons.letter("S"));
         define("effect.popping", "Pop", editor::togglePopping).withIcon(Icons.letter("P"));
@@ -310,8 +331,10 @@ public final class Commands {
         define("effect.strokeDown", "Rasgueo hacia abajo", () -> editor.setStroke(Stroke.of(StrokeDirection.DOWN)))
                 .withAccelerator("ctrl D").withIcon(Icons.strokeDown());
         define("effect.strokeOptions", "Rasgueo…", dialogs::stroke);
-        define("effect.pickstrokeUp", "Púa hacia arriba", () -> editor.setPickstroke(PickstrokeDirection.UP));
-        define("effect.pickstrokeDown", "Púa hacia abajo", () -> editor.setPickstroke(PickstrokeDirection.DOWN));
+        define("effect.pickstrokeUp", "Púa hacia arriba", () -> editor.setPickstroke(PickstrokeDirection.UP))
+                .withIcon(Icons.pickstrokeUp());
+        define("effect.pickstrokeDown", "Púa hacia abajo", () -> editor.setPickstroke(PickstrokeDirection.DOWN))
+                .withIcon(Icons.pickstrokeDown());
         define("effect.wahOpen", "Wah abierto", () -> editor.setWah(Wah.OPEN));
         define("effect.wahClosed", "Wah cerrado", () -> editor.setWah(Wah.CLOSED));
         define("effect.wahOff", "Wah apagado", () -> editor.setWah(Wah.OFF));
@@ -323,11 +346,11 @@ public final class Commands {
     private void defineMarkerCommands() {
         define("marker.insert", "Insertar un marcador…", dialogs::insertMarker)
                 .withAccelerator("shift INSERT").withIcon(Icons.marker());
-        define("marker.list", "Lista de marcadores…", dialogs::markerList);
+        define("marker.list", "Lista de marcadores…", dialogs::markerList).withIcon(Icons.markerList());
         define("marker.previous", "Marcador anterior", editor::moveToPreviousMarker)
-                .withAccelerator("shift TAB");
+                .withAccelerator("shift TAB").withIcon(Icons.markerPrevious());
         define("marker.next", "Marcador siguiente", editor::moveToNextMarker)
-                .withAccelerator("ctrl TAB");
+                .withAccelerator("ctrl TAB").withIcon(Icons.markerNext());
     }
 
     // ---- herramientas -----------------------------------------------------
@@ -339,9 +362,9 @@ public final class Commands {
         define("tool.arrangeBars", "Organizador de compases…", dialogs::arrangeBars);
         define("tool.completeBars", "Completar y reducir compases con silencios…", dialogs::completeBarsWithRests);
         define("tool.automaticFingering", "Digitación automática…", dialogs::automaticFingering);
-        define("tool.transpose", "Transponer…", dialogs::transpose);
+        define("tool.transpose", "Transponer…", dialogs::transpose).withIcon(Icons.transpose());
         define("tool.checkBarDurations", "Verificar la duración de los compases", dialogs::checkBarDurations)
-                .withAccelerator("F4");
+                .withAccelerator("F4").withIcon(Icons.checkBarDurations());
         define("tool.scales", "Escalas…", dialogs::scales).withIcon(Icons.scales());
         define("tool.tuner", "Afinador…", dialogs::tuner).withIcon(Icons.tuner());
     }
@@ -392,8 +415,10 @@ public final class Commands {
                 .withAccelerator("ctrl G");
         define("view.dynamicNotes", "Notas con dinámica", view::toggleShowsDynamicNotes)
                 .withAccelerator("F11");
-        define("view.hideStandardNotation", "Ocultar el pentagrama", view::toggleStandardNotation);
-        define("view.hideTablature", "Ocultar la tablatura", view::toggleTablature);
+        define("view.hideStandardNotation", "Ocultar el pentagrama", view::toggleStandardNotation)
+                .withIcon(Icons.hideStandardNotation());
+        define("view.hideTablature", "Ocultar la tablatura", view::toggleTablature)
+                .withIcon(Icons.hideTablature());
         define("view.fretboard", "Diapasón", view::toggleFretboard).withAccelerator("ctrl 3")
                 .withIcon(Icons.fretboard());
         define("view.keyboard", "Teclado", view::toggleKeyboard).withAccelerator("ctrl 4")
@@ -406,13 +431,16 @@ public final class Commands {
                 .checkedByDefault();
         define("view.toolBars.structure", "Estructura y sonido", view::toggleStructureToolBar)
                 .checkedByDefault();
-        define("view.toolBars.notation", "Figuras y efectos", view::toggleNotationToolBar)
+        define("view.toolBars.notation", "Figuras", view::toggleNotationToolBar)
+                .checkedByDefault();
+        define("view.toolBars.effects", "Efectos", view::toggleEffectsToolBar)
                 .checkedByDefault();
         for (String theme : themes) {
             define("view.theme." + theme, theme, () -> view.useTheme(theme));
         }
         define("options.midiSetup", "Configuración MIDI…", dialogs::midiSetup);
-        define("options.preferences", "Preferencias…", dialogs::preferences).withAccelerator("F12");
+        define("options.preferences", "Preferencias…", dialogs::preferences)
+                .withAccelerator("F12").withIcon(Icons.preferences());
     }
 
     private void defineHelpCommands() {

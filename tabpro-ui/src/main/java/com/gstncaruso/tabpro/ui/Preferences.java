@@ -26,6 +26,7 @@ public final class Preferences {
     private static final String DEFAULT_NOTE_VALUE = "defaultNoteValue";
     private static final String AUTO_SCROLL_DURING_PLAYBACK = "autoScrollDuringPlayback";
     private static final String FORCE_MULTITRACK_IN_HORIZONTAL_MODE = "forceMultitrackInHorizontalMode";
+    private static final String EFFECTS_TOOL_BAR_VISIBLE = "effectsToolBarVisible";
     private static final String SEPARATOR = "\n";
 
     private final java.util.prefs.Preferences stored;
@@ -133,5 +134,14 @@ public final class Preferences {
 
     public void setForceMultitrackInHorizontalMode(boolean forced) {
         stored.putBoolean(FORCE_MULTITRACK_IN_HORIZONTAL_MODE, forced);
+    }
+
+    /** Ver > Menus y barras > Efectos: visible por defecto, como las otras filas. */
+    public boolean effectsToolBarVisible() {
+        return stored.getBoolean(EFFECTS_TOOL_BAR_VISIBLE, true);
+    }
+
+    public void setEffectsToolBarVisible(boolean visible) {
+        stored.putBoolean(EFFECTS_TOOL_BAR_VISIBLE, visible);
     }
 }

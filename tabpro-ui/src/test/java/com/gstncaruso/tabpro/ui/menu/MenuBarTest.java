@@ -138,6 +138,7 @@ class MenuBarTest {
         assertEquals(Set.of(
                 "Acorde…", "Barra de unión", "Plica",
                 "Nota muerta", "Nota acentuada", "Fade in", "Nota de adorno…", "Armónicos…",
+                "Armónico natural", "Armónico artificial",
                 "Slap", "Pop", "Rasgueo y púa",
                 "Último compás",
                 "Mesa de mezcla"), sinMnemonico);

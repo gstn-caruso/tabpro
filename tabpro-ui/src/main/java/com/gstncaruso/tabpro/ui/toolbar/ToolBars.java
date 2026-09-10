@@ -3,7 +3,6 @@ package com.gstncaruso.tabpro.ui.toolbar;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.theme.Palette;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -14,25 +13,26 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
 /**
- * Las barras de herramientas, en las mismas tres filas que usa Guitar Pro: el
- * archivo y la edicion, la estructura y el sonido, y las figuras y los efectos.
- * Ver > Menus y barras deja elegir cada fila por separado, ademas del interruptor
- * general que las esconde a todas juntas.
+ * Las barras de herramientas, con los mismos cuatro grupos que usa Guitar Pro 5: arriba, el
+ * archivo y la edicion, la estructura y el sonido, y las figuras; abajo, pegada a la mesa de
+ * mezcla, la barra de efectos ({@link #effectsComponent()}). Ver > Menus y barras deja elegir
+ * cada fila por separado, ademas del interruptor general que esconde las tres de arriba juntas.
  */
 public final class ToolBars {
 
     private final Commands commands;
     private final JPanel rows = new JPanel();
-    private final JPanel structureRowExtras = transparentRow();
-    private final JComponent documentToolBar;
-    private final JComponent structureToolBar;
-    private final JComponent notationToolBar;
+    final JToolBar documentToolBar;
+    final JToolBar structureToolBar;
+    final JToolBar notationToolBar;
+    final JToolBar effectsToolBar;
 
     public ToolBars(Commands commands) {
         this.commands = commands;
         documentToolBar = leftAligned(documentRow());
         structureToolBar = leftAligned(structureRow());
         notationToolBar = leftAligned(notationRow());
+        effectsToolBar = leftAligned(effectsRow());
         rows.setLayout(new BoxLayout(rows, BoxLayout.Y_AXIS));
         rows.setBackground(Palette.panel());
         rows.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Palette.separator()));
@@ -41,8 +41,17 @@ public final class ToolBars {
         rows.add(notationToolBar);
     }
 
+    /** Las tres filas de arriba: documento y edicion, estructura y sonido, figuras. */
     public JComponent component() {
         return rows;
+    }
+
+    /**
+     * La barra de efectos, la cuarta fila del manual: en Guitar Pro 5 va abajo de la partitura,
+     * pegada a la mesa de mezcla, no arriba junto a las otras tres.
+     */
+    public JComponent effectsComponent() {
+        return effectsToolBar;
     }
 
     public void setVisible(boolean visible) {
@@ -80,80 +89,142 @@ public final class ToolBars {
         return notationToolBar.isVisible();
     }
 
-    /** Los extras que la ventana agrega a la fila del sonido, como el tempo. */
-    public void addToSoundRow(JComponent component) {
-        structureRowExtras.add(Box.createHorizontalStrut(8));
-        structureRowExtras.add(component);
+    /** Ver > Menus y barras: la fila de efectos, elegible por separado como las otras tres. */
+    public void setEffectsToolBarVisible(boolean visible) {
+        effectsToolBar.setVisible(visible);
     }
 
-    private JComponent documentRow() {
+    public boolean isEffectsToolBarVisible() {
+        return effectsToolBar.isVisible();
+    }
+
+    /**
+     * Los extras que la ventana agrega a la fila del sonido, como el tempo: Guitar Pro 5 no los
+     * trae en esta fila, asi que {@link #structureRow()} ya dejo un separador antes de ellos.
+     */
+    public void addToSoundRow(JComponent component) {
+        structureToolBar.add(Box.createHorizontalStrut(4));
+        structureToolBar.add(component);
+    }
+
+    /**
+     * Guitar Pro 5, manual pagina 14, fila 1: archivo, edicion, pistas, compases, vistas, zoom
+     * y paneles. Copiar y pegar no estan en esta fila del manual; se conservan al final, que es
+     * donde ya vivian antes de este orden.
+     */
+    private JToolBar documentRow() {
         JToolBar bar = emptyBar();
-        add(bar, "file.new", "file.open", "file.save", "file.print");
+        add(bar, "file.new", "file.open", "file.save");
+        bar.addSeparator();
+        add(bar, "file.information");
+        bar.addSeparator();
+        add(bar, "file.pageSetup", "file.print");
         bar.addSeparator();
         add(bar, "edit.undo", "edit.redo");
         bar.addSeparator();
-        add(bar, "edit.cut", "edit.copy", "edit.paste");
+        add(bar, "track.add", "track.properties", "track.moveUp", "track.moveDown", "track.delete",
+                "tool.checkBarDurations");
         bar.addSeparator();
-        add(bar, "file.information", "file.pageSetup");
+        add(bar, "bar.insert", "bar.delete");
+        bar.addSeparator();
+        add(bar, "edit.cut", "options.preferences");
+        bar.addSeparator();
+        add(bar, "view.multitrack");
         bar.addSeparator();
         add(bar, "view.page", "view.parchment", "view.verticalScreen", "view.horizontalScreen");
         bar.addSeparator();
         add(bar, "view.zoomOut", "view.resetZoom", "view.zoomIn");
         bar.addSeparator();
-        add(bar, "view.multitrack", "view.fretboard", "view.keyboard", "view.mixTable");
+        add(bar, "view.fretboard", "view.keyboard", "view.mixTable");
+        bar.addSeparator();
+        add(bar, "edit.copy", "edit.paste");
         return bar;
     }
 
-    private JComponent structureRow() {
+    /**
+     * Guitar Pro 5, manual pagina 14, fila 2: atributos del compas, barras, marcadores,
+     * transporte. La pista anterior/siguiente y las herramientas de escalas y afinador no estan
+     * en esta fila del manual; se conservan al final, que es donde ya vivian antes de este orden.
+     */
+    private JToolBar structureRow() {
         JToolBar bar = emptyBar();
-        add(bar, "track.add", "bar.insert", "bar.delete");
+        add(bar, "bar.keySignature", "bar.timeSignature", "bar.tripletFeel");
         bar.addSeparator();
-        add(bar, "bar.keySignature", "bar.timeSignature", "bar.doubleBar",
-                "bar.repeatOpen", "bar.repeatClose", "bar.alternateEndings", "marker.insert");
+        add(bar, "bar.repeatOpen", "bar.repeatClose");
         bar.addSeparator();
-        add(bar, "nav.firstBar", "nav.previousBar", "sound.play", "nav.nextBar", "nav.lastBar");
+        add(bar, "bar.doubleBar");
         bar.addSeparator();
-        add(bar, "sound.loop", "sound.metronome", "sound.countDown");
+        add(bar, "bar.alternateEndings", "bar.forceLineBreak", "bar.preventLineBreak");
         bar.addSeparator();
-        add(bar, "tool.scales", "tool.tuner");
-        JPanel row = new JPanel(new BorderLayout());
-        row.setOpaque(false);
-        row.add(bar, BorderLayout.CENTER);
-        row.add(structureRowExtras, BorderLayout.EAST);
-        return row;
+        // El manual trae "editar" y "lista" como botones distintos; el catalogo no tiene un
+        // comando de editar un marcador puntual, asi que ese lugar queda como hueco funcional.
+        add(bar, "marker.insert", "marker.previous", "marker.next", "marker.list");
+        bar.addSeparator();
+        add(bar, "sound.play", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
+                "sound.loop");
+        bar.addSeparator();
+        add(bar, "tool.transpose");
+        bar.addSeparator();
+        add(bar, "nav.previousBar", "nav.nextBar", "tool.scales", "tool.tuner");
+        bar.addSeparator();
+        return bar;
     }
 
-    private JComponent notationRow() {
+    /**
+     * Guitar Pro 5, manual pagina 14, fila 3: figuras y su notacion (los efectos de la nota
+     * tienen su propia barra, ver {@link #effectsRow()}).
+     */
+    private JToolBar notationRow() {
         JToolBar bar = emptyBar();
         add(bar, "note.value.WHOLE", "note.value.HALF", "note.value.QUARTER", "note.value.EIGHTH",
                 "note.value.SIXTEENTH", "note.value.THIRTY_SECOND", "note.value.SIXTY_FOURTH");
         bar.addSeparator();
-        add(bar, "note.dot", "note.triplet", "note.rest", "note.tie");
+        add(bar, "note.dot", "note.triplet", "note.tieBeat");
         bar.addSeparator();
-        add(bar, "effect.deadNote", "effect.ghostNote", "effect.accent", "effect.staccato",
-                "effect.palmMute", "effect.letRing");
+        add(bar, "note.rest");
         bar.addSeparator();
-        add(bar, "effect.hammer", "effect.legatoSlide", "effect.bend", "effect.vibrato",
-                "effect.wideVibrato", "effect.harmonics");
+        add(bar, "note.tie", "note.soundDuration");
         bar.addSeparator();
-        add(bar, "effect.tapping", "effect.slapping", "effect.popping",
-                "effect.strokeDown", "effect.strokeUp");
+        add(bar, "bar.octave8va", "bar.octave8vb", "bar.octave15ma", "bar.octave15mb");
         bar.addSeparator();
-        add(bar, "note.chord", "effect.text", "note.mixTableChange");
+        add(bar, "view.hideStandardNotation", "view.hideTablature");
+        bar.addSeparator();
+        add(bar, "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak");
+        bar.addSeparator();
+        add(bar, "note.stemUp", "note.stemDown", "note.stemAutomatic");
+        return bar;
+    }
+
+    /**
+     * Guitar Pro 5, manual pagina 14, barra de efectos: va abajo de la partitura, pegada a la
+     * mesa de mezcla, no junto a las otras tres filas de arriba.
+     */
+    private JToolBar effectsRow() {
+        JToolBar bar = emptyBar();
+        add(bar, "effect.deadNote", "effect.graceNote", "effect.ghostNote", "effect.accent",
+                "effect.heavyAccent", "effect.letRing", "effect.naturalHarmonic", "effect.artificialHarmonic");
+        bar.addSeparator();
+        add(bar, "effect.hammer", "effect.legatoSlide", "effect.shiftSlide", "effect.bend", "effect.tremoloBar",
+                "effect.vibrato", "effect.wideVibrato");
+        bar.addSeparator();
+        add(bar, "effect.trill", "effect.tremoloPicking", "effect.palmMute", "effect.staccato");
+        bar.addSeparator();
+        add(bar, "effect.tapping", "effect.slapping", "effect.popping");
+        bar.addSeparator();
+        add(bar, "effect.fadeIn", "effect.pickstrokeDown", "effect.pickstrokeUp");
+        bar.addSeparator();
+        // El manual trae un boton de digitacion por mano; el dialogo de tabpro ya cubre las
+        // dos, asi que un solo boton alcanza y el de la mano derecha queda como hueco funcional.
+        add(bar, "note.chord", "effect.text", "note.mixTableChange", "note.fingering");
+        bar.addSeparator();
+        add(bar, "effect.strokeUp", "effect.strokeDown");
         return bar;
     }
 
     /** Las filas arrancan pegadas a la izquierda, como en una barra de verdad. */
-    private static JComponent leftAligned(JComponent row) {
+    private static <T extends JComponent> T leftAligned(T row) {
         row.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, row.getPreferredSize().height));
-        return row;
-    }
-
-    private static JPanel transparentRow() {
-        JPanel row = new JPanel();
-        row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
-        row.setOpaque(false);
         return row;
     }
 

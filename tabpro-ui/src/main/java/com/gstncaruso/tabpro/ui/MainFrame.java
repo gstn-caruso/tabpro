@@ -163,6 +163,12 @@ public final class MainFrame extends JFrame {
         commands = new Commands(
                 editor, documentActions, new Windows(), new Playback(), new View(), themes.names());
         toolBars = new ToolBars(commands);
+        boolean effectsToolBarVisible = preferences.effectsToolBarVisible();
+        toolBars.setEffectsToolBarVisible(effectsToolBarVisible);
+        // El casillero de "Efectos" en Ver > Menus y barras arranca marcado por defecto
+        // (Command.checkedByDefault); si la preferencia guardada la tenia escondida, el
+        // casillero real tiene que arrancar destildado, no al reves de lo que muestra la barra.
+        commands.get("view.toolBars.effects").putValue(javax.swing.Action.SELECTED_KEY, effectsToolBarVisible);
         toolBars.addToSoundRow(new JLabel("Tempo "));
         toolBars.addToSoundRow(tempoSpinner);
         setJMenuBar(new MenuBar(commands, document::recentFiles, documentActions::openRecent).build());
@@ -184,7 +190,13 @@ public final class MainFrame extends JFrame {
         canvas.onClickReposition(hit -> transport.seekTo(hit.measure(), hit.beat()));
         editor.addListener(this::updateTitle);
 
-        scoreMixSplit = new ScoreMixSplit(scrollPane, trackPanel);
+        // Guitar Pro 5: la barra de efectos va pegada abajo de la partitura, arriba de la mesa
+        // de mezcla, no junto a las otras tres filas de arriba.
+        JPanel scoreWithEffects = new JPanel(new BorderLayout());
+        scoreWithEffects.add(scrollPane, BorderLayout.CENTER);
+        scoreWithEffects.add(toolBars.effectsComponent(), BorderLayout.SOUTH);
+
+        scoreMixSplit = new ScoreMixSplit(scoreWithEffects, trackPanel);
         // El JScrollPane de la partitura y el JSplitPane que la comparte con la mesa de mezcla
         // traen atajos propios (scroll, F6/F8 para el split) que le ganan a un atajo de menu
         // mientras la partitura tiene el foco. Sin este barrido, Ctrl+Home, Ctrl+Fin, F6, F8 y
@@ -946,6 +958,14 @@ public final class MainFrame extends JFrame {
         @Override
         public void toggleNotationToolBar() {
             toolBars.setNotationToolBarVisible(!toolBars.isNotationToolBarVisible());
+            backToTheScore();
+        }
+
+        @Override
+        public void toggleEffectsToolBar() {
+            boolean visible = !toolBars.isEffectsToolBarVisible();
+            toolBars.setEffectsToolBarVisible(visible);
+            preferences.setEffectsToolBarVisible(visible);
             backToTheScore();
         }
 
