@@ -47,6 +47,8 @@ public final class Icons {
     private static final String ARTIC_STACCATO_ABOVE = "";
     /** SMuFL U+E0A4 "noteheadBlack": la cabeza rellena de negra. */
     private static final String NOTEHEAD_BLACK = "";
+    /** SMuFL U+E0CE "noteheadParenthesis": los parentesis que rodean una cabeza de nota. */
+    private static final String NOTEHEAD_PARENTHESIS = "";
     /** SMuFL U+E262 "accidentalSharp": el sostenido. */
     private static final String ACCIDENTAL_SHARP = "";
     /** SMuFL U+E084 "timeSig4": el digito 4 de una cifra de compas. */
@@ -214,12 +216,7 @@ public final class Icons {
     }
 
     public static Icon ghostNote() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(Glyphs.arc(size * 0.22, size * 0.22, size * 0.8, size * 0.9));
-            graphics.draw(Glyphs.arc(size * 0.78, size * 0.78, size * 0.8, -size * 0.9));
-            graphics.fill(Glyphs.noteHead(size * 0.5, size * 0.5, size * 0.28, false));
-        });
+        return GlyphIcon.overlaid(SIZE, NOTEHEAD_BLACK, NOTEHEAD_PARENTHESIS);
     }
 
     public static Icon accent() {
