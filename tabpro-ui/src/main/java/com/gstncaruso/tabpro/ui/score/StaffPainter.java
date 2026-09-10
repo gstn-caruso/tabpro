@@ -27,9 +27,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
@@ -240,12 +238,19 @@ final class StaffPainter {
         boolean above = step < MIDDLE_LINE_STEP;
         double markY = above ? y - NOTE_HEIGHT - SPACE * 0.35 : y + NOTE_HEIGHT + SPACE * 0.35;
         if (note.has(Ornament.STACCATO)) {
-            g.setColor(ink);
-            fill(g, dot(centerX, markY, SPACE * 0.16));
+            paintArticulationGlyph(
+                    g, centerX, markY, above ? MusicFont.articStaccatoAbove() : MusicFont.articStaccatoBelow(), ink);
         }
         if (note.has(Ornament.ACCENTED) || note.has(Ornament.HEAVY_ACCENTED)) {
             paintAccentMark(g, centerX, markY, ink, note.has(Ornament.HEAVY_ACCENTED));
         }
+    }
+
+    private static void paintArticulationGlyph(Graphics2D g, double centerX, double y, String glyph, Color ink) {
+        g.setColor(ink);
+        g.setFont(MusicFont.sizedTo(SPACE));
+        double width = g.getFontMetrics().stringWidth(glyph);
+        g.drawString(glyph, (float) (centerX - width / 2), (float) y);
     }
 
     private static void paintAccentMark(Graphics2D g, double centerX, double y, Color ink, boolean heavy) {
@@ -713,14 +718,6 @@ final class StaffPainter {
             default -> paintRestGlyph(
                     g, layout, trackIndex, measureIndex, centerX, MusicFont.rest64th(), MIDDLE_LINE_STEP, ink);
         }
-    }
-
-    private static Shape dot(double x, double y, double radius) {
-        return new Ellipse2D.Double(x - radius, y - radius, radius * 2, radius * 2);
-    }
-
-    private static void fill(Graphics2D g, Shape shape) {
-        g.fill(shape);
     }
 
     private record Stem(double x, double rootY, double endY, boolean up) {
