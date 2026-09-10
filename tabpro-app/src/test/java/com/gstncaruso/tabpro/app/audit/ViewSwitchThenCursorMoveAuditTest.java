@@ -21,13 +21,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Auditoria de corpus (docs/auditoria-corpus.md), hallazgo 2: con una partitura de verdad con
- * direcciones Coda/Segno, recorrer las cuatro vistas del menu Ver y despues mover el cursor al
- * ultimo compas -desde el hilo del test, sin pasar por una tecla real despachada, igual que hizo
- * el harness que encontro el hallazgo- no tiene que tirar ninguna excepcion ni colgar la
- * maquina virtual.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ViewSwitchThenCursorMoveAuditTest {

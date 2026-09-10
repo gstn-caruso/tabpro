@@ -18,12 +18,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Wizards" (linea 1587 del texto extraido): Transponer, en el menu Herramientas. El
- * boton de aceptar de este dialogo no dice "Aceptar" sino "Transponer" -DialogShell.ask lo
- * permite elegir por parametro-, asi que buscarlo por el texto real importa: si alguien lo
- * llamara "Aceptar" a mano en un test, no lo hubiera encontrado.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class WizardsAuditTest {

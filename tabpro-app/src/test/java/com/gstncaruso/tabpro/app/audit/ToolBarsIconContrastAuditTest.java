@@ -25,10 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
 /**
- * Guitar Pro 5, manual pagina 14: el icono de cada boton de una fila de herramientas tiene que
- * leerse contra el fondo real que tiene detras, no solo pintarse. MainFrame extiende JFrame, asi
- * que armarlo de verdad exige un toolkit no headless (ver AuditSupport); por eso esta auditoria,
- * en vez de un test comun.
+ * MainFrame extends JFrame, so building a real one requires a non-headless toolkit (see
+ * AuditSupport); that is why this is an audit test instead of an ordinary one.
  */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)

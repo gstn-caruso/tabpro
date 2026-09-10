@@ -13,14 +13,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Tools for the Guitarist" (linea 2665 del texto extraido): Escalas y Afinador, los dos
- * en el menu Herramientas, sin atajo. Son ventanas de consulta -tocan y muestran, no escriben en
- * la partitura-, asi que lo que importa verificar dinamicamente es que el menu real abre el
- * dialogo real de verdad, no un getter de la Action. Cobertura liviana: el contenido de cada
- * ventana (patrones de escala, afinacion detectada) ya tiene sus propios tests unitarios
- * (ScaleFinderTest, PitchDetectorTest).
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ToolsForTheGuitaristAuditTest {
