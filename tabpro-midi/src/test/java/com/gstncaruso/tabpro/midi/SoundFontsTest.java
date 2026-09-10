@@ -20,29 +20,29 @@ class SoundFontsTest {
 
     @Test
     void thereIsNothingWhenTheDirectoryDoesNotExist() {
-        List<Path> found = SoundFonts.installed(List.of(tempDir.resolve("no-existe")));
+        List<Path> found = SoundFonts.installed(List.of(tempDir.resolve("does-not-exist")));
 
         assertEquals(List.of(), found);
     }
 
     @Test
     void findsSf2AndDlsFilesButIgnoresOthers() throws IOException {
-        Files.createFile(tempDir.resolve("banco.sf2"));
-        Files.createFile(tempDir.resolve("otro.dls"));
-        Files.createFile(tempDir.resolve("leeme.txt"));
+        Files.createFile(tempDir.resolve("bank.sf2"));
+        Files.createFile(tempDir.resolve("other.dls"));
+        Files.createFile(tempDir.resolve("readme.txt"));
 
         List<Path> found = SoundFonts.installed(List.of(tempDir));
 
         assertEquals(2, found.size());
-        assertTrue(found.stream().anyMatch(p -> p.getFileName().toString().equals("banco.sf2")));
-        assertTrue(found.stream().anyMatch(p -> p.getFileName().toString().equals("otro.dls")));
+        assertTrue(found.stream().anyMatch(p -> p.getFileName().toString().equals("bank.sf2")));
+        assertTrue(found.stream().anyMatch(p -> p.getFileName().toString().equals("other.dls")));
     }
 
     @Test
     void looksInEveryDirectoryGiven() throws IOException {
-        Path second = Files.createDirectory(tempDir.resolve("segundo"));
-        Files.createFile(tempDir.resolve("uno.sf2"));
-        Files.createFile(second.resolve("dos.sf2"));
+        Path second = Files.createDirectory(tempDir.resolve("second"));
+        Files.createFile(tempDir.resolve("one.sf2"));
+        Files.createFile(second.resolve("two.sf2"));
 
         List<Path> found = SoundFonts.installed(List.of(tempDir, second));
 
@@ -51,15 +51,15 @@ class SoundFontsTest {
 
     @Test
     void readingAMissingFileIsEmpty() {
-        Optional<Soundbank> bank = SoundFonts.read(tempDir.resolve("no-existe.sf2"));
+        Optional<Soundbank> bank = SoundFonts.read(tempDir.resolve("does-not-exist.sf2"));
 
         assertTrue(bank.isEmpty());
     }
 
     @Test
     void readingAnInvalidFileIsEmpty() throws IOException {
-        Path bogus = tempDir.resolve("invalido.sf2");
-        Files.writeString(bogus, "esto no es un banco SoundFont valido");
+        Path bogus = tempDir.resolve("invalid.sf2");
+        Files.writeString(bogus, "this is not a valid SoundFont bank");
 
         Optional<Soundbank> bank = SoundFonts.read(bogus);
 
@@ -69,7 +69,7 @@ class SoundFontsTest {
     @Test
     void readingARealSoundFontInstalledInTheSystemWorks() {
         List<Path> real = SoundFonts.installed();
-        Assumptions.assumeFalse(real.isEmpty(), "no hay ningun banco de sonido instalado en esta maquina");
+        Assumptions.assumeFalse(real.isEmpty(), "no sound bank installed on this machine");
 
         Optional<Soundbank> bank = SoundFonts.read(real.get(0));
 
