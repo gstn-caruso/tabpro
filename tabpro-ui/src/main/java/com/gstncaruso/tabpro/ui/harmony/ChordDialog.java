@@ -11,16 +11,20 @@ import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -28,6 +32,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -64,9 +69,10 @@ public final class ChordDialog {
 
         private final JComboBox<PitchClass> roots = new JComboBox<>();
         private final JComboBox<ChordType> types = new JComboBox<>(ChordType.values());
+        private final JComboBox<Interval> inversions = new JComboBox<>();
         private final JComboBox<PitchClass> basses = new JComboBox<>();
-        private final JComboBox<ChordComplexity> complexities = new JComboBox<>(ChordComplexity.values());
-        private final JComboBox<BarrePreference> barres = new JComboBox<>(BarrePreference.values());
+        private final Map<ChordComplexity, JRadioButton> complexityButtons = new EnumMap<>(ChordComplexity.class);
+        private final Map<BarrePreference, JRadioButton> barreButtons = new EnumMap<>(BarrePreference.class);
         private final JTextField name = new JTextField(12);
         private final JCheckBox useDiagram = new JCheckBox("Usar diagrama", true);
         private final JCheckBox showFingering = new JCheckBox("Digitación", true);
@@ -91,8 +97,7 @@ public final class ChordDialog {
             roots.setRenderer(new LabeledListCellRenderer());
             basses.setRenderer(new LabeledListCellRenderer());
             types.setRenderer(new LabeledListCellRenderer());
-            complexities.setRenderer(new LabeledListCellRenderer());
-            barres.setRenderer(new LabeledListCellRenderer());
+            inversions.setRenderer(inversionRenderer());
             name.getAccessibleContext().setAccessibleName("Nombre del acorde");
             name.setToolTipText("Nombre del acorde");
             baseFret.getAccessibleContext().setAccessibleName("Traste base");
@@ -113,10 +118,39 @@ public final class ChordDialog {
             JPanel zone = titled("Acorde");
             zone.add(labelled("Fundamental", roots));
             zone.add(labelled("Tipo", types));
+            zone.add(labelled("Inversión", inversions));
             zone.add(labelled("Bajo", basses));
-            zone.add(labelled("Posiciones", complexities));
-            zone.add(labelled("Cejilla", barres));
+            zone.add(labelled("Posiciones", complexityChoice()));
+            zone.add(labelled("Cejilla", barreChoice()));
             return zone;
+        }
+
+        /** Simple / Media / Todas: siempre visibles, como el filtro de complejidad del manual. */
+        private JPanel complexityChoice() {
+            JPanel choice = new JPanel(new GridLayout(0, 1));
+            ButtonGroup group = new ButtonGroup();
+            for (ChordComplexity complexity : ChordComplexity.values()) {
+                JRadioButton radio = new JRadioButton(Labels.of(complexity));
+                radio.addActionListener(event -> whenSelecting(() -> model.selectComplexity(complexity)));
+                group.add(radio);
+                complexityButtons.put(complexity, radio);
+                choice.add(radio);
+            }
+            return choice;
+        }
+
+        /** Cualquiera / Forzar / Prohibir cejilla: siempre visibles, como el filtro del diagrama. */
+        private JPanel barreChoice() {
+            JPanel choice = new JPanel(new GridLayout(0, 1));
+            ButtonGroup group = new ButtonGroup();
+            for (BarrePreference preference : BarrePreference.values()) {
+                JRadioButton radio = new JRadioButton(Labels.of(preference));
+                radio.addActionListener(event -> whenSelecting(() -> model.selectBarrePreference(preference)));
+                group.add(radio);
+                barreButtons.put(preference, radio);
+                choice.add(radio);
+            }
+            return choice;
         }
 
         /** Zona B: el diagrama que se va a escribir en la partitura. */
@@ -223,11 +257,8 @@ public final class ChordDialog {
         private void wireUp() {
             roots.addActionListener(event -> whenSelecting(() -> model.selectRoot((PitchClass) roots.getSelectedItem())));
             types.addActionListener(event -> whenSelecting(() -> model.selectType((ChordType) types.getSelectedItem())));
+            inversions.addActionListener(event -> whenSelecting(this::selectChosenInversion));
             basses.addActionListener(event -> whenSelecting(() -> model.selectBass((PitchClass) basses.getSelectedItem())));
-            complexities.addActionListener(event ->
-                    whenSelecting(() -> model.selectComplexity((ChordComplexity) complexities.getSelectedItem())));
-            barres.addActionListener(event ->
-                    whenSelecting(() -> model.selectBarrePreference((BarrePreference) barres.getSelectedItem())));
             name.addActionListener(event -> model.setCustomName(name.getText()));
             useDiagram.addActionListener(event -> model.setUseDiagram(useDiagram.isSelected()));
             showFingering.addActionListener(event -> model.setShowFingering(showFingering.isSelected()));
@@ -251,6 +282,13 @@ public final class ChordDialog {
             });
         }
 
+        private void selectChosenInversion() {
+            Interval degree = (Interval) inversions.getSelectedItem();
+            if (degree != null) {
+                model.selectInversion(degree);
+            }
+        }
+
         private void whenSelecting(Runnable change) {
             if (updating) {
                 return;
@@ -263,9 +301,10 @@ public final class ChordDialog {
             updating = true;
             roots.setSelectedItem(model.selection().root());
             types.setSelectedItem(model.selection().type());
+            refreshInversions();
             basses.setSelectedItem(model.selection().bass());
-            complexities.setSelectedItem(model.selection().complexity());
-            barres.setSelectedItem(model.barrePreference());
+            complexityButtons.get(model.selection().complexity()).setSelected(true);
+            barreButtons.get(model.barrePreference()).setSelected(true);
             name.setText(model.current().name());
             useDiagram.setSelected(model.useDiagram());
             showFingering.setSelected(model.showFingering());
@@ -274,6 +313,45 @@ public final class ChordDialog {
             refreshOmitChecks();
             refreshLists();
             updating = false;
+        }
+
+        /** Los grados invertibles cambian con el tipo de acorde, asi que la lista se arma de nuevo. */
+        private void refreshInversions() {
+            inversions.removeAllItems();
+            model.omittableTones().forEach(inversions::addItem);
+            inversions.setSelectedItem(currentInversion());
+        }
+
+        /** El grado cuya nota coincide con el bajo actual, o ninguno si el bajo es ajeno al acorde. */
+        private Interval currentInversion() {
+            PitchClass root = model.selection().root();
+            PitchClass bass = model.selection().bass();
+            return model.omittableTones().stream()
+                    .filter(degree -> degree.from(root).equals(bass))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        private javax.swing.ListCellRenderer<Object> inversionRenderer() {
+            return new javax.swing.DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(
+                        JList<?> owner, Object value, int index, boolean selected, boolean focused) {
+                    super.getListCellRendererComponent(owner, value, index, selected, focused);
+                    if (value instanceof Interval degree) {
+                        setText(inversionLabel(degree));
+                    }
+                    return this;
+                }
+            };
+        }
+
+        private String inversionLabel(Interval degree) {
+            if (degree == Interval.ROOT) {
+                return "Fundamental";
+            }
+            PitchClass note = degree.from(model.selection().root());
+            return note.name() + " (" + degree.label() + ")";
         }
 
         /** Los casilleros 1', 3', 5'... cambian con el tipo de acorde, asi que se arman de nuevo. */

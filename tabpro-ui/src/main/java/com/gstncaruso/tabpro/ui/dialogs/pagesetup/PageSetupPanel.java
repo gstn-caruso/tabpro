@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.pagesetup;
 
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import com.gstncaruso.tabpro.ui.page.BannerLine;
 import com.gstncaruso.tabpro.ui.page.Orientation;
 import com.gstncaruso.tabpro.ui.page.PageBanner;
@@ -36,8 +37,8 @@ public final class PageSetupPanel extends FormPanel {
     private final List<BannerRow> footerRows = new ArrayList<>();
 
     public PageSetupPanel(PageSetup initial) {
-        paperFormat.setRenderer((list, value, index, isSelected, hasFocus) -> new JLabel(value == null ? "" : value.label()));
-        orientation.setRenderer((list, value, index, isSelected, hasFocus) -> new JLabel(value == null ? "" : value.label()));
+        paperFormat.setRenderer(new LabeledListCellRenderer());
+        orientation.setRenderer(new LabeledListCellRenderer());
 
         addRow("Papel", paperFormat);
         addRow("Orientacion", orientation);

@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.a11y;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractButton;
@@ -26,15 +27,6 @@ public final class AccessibilityWalker {
 
     /** "labeledBy" es la client property que JLabel#setLabelFor deja en el componente etiquetado. */
     private static final String LABELED_BY_PROPERTY = "labeledBy";
-
-    /**
-     * La clase del renderer que trae un combo o una lista recien creados, sin importar que
-     * Look and Feel este instalado: si un componente real sigue teniendo esta misma clase, es
-     * que nadie le puso un renderer propio todavia.
-     */
-    private static final Class<?> DEFAULT_COMBO_RENDERER_CLASS = new JComboBox<>().getRenderer().getClass();
-
-    private static final Class<?> DEFAULT_LIST_RENDERER_CLASS = new JList<>().getCellRenderer().getClass();
 
     public List<Violation> walk(Container root) {
         List<Violation> violations = new ArrayList<>();
@@ -75,26 +67,14 @@ public final class AccessibilityWalker {
         violations.addAll(rawDomainTextViolations(component, path));
     }
 
-    /**
-     * Un combo o una lista que todavia usa el renderer por defecto para pintar un enum o un
-     * record deja ver el toString() crudo del dominio (p.ej. "QUARTER" en vez de "Negra"). Si
-     * ya tiene un renderer propio no importa que su texto coincida por casualidad con el
-     * toString(): la UI dejo de depender de el.
-     */
     private List<Violation> rawDomainTextViolations(Component component, String path) {
-        if (component instanceof JComboBox<?> combo
-                && isDefaultRenderer(combo.getRenderer(), DEFAULT_COMBO_RENDERER_CLASS)) {
+        if (component instanceof JComboBox<?> combo) {
             return rawDomainTextViolations(path, combo.getModel(), combo.getRenderer());
         }
-        if (component instanceof JList<?> list
-                && isDefaultRenderer(list.getCellRenderer(), DEFAULT_LIST_RENDERER_CLASS)) {
+        if (component instanceof JList<?> list) {
             return rawDomainTextViolations(path, list.getModel(), list.getCellRenderer());
         }
         return List.of();
-    }
-
-    private boolean isDefaultRenderer(ListCellRenderer<?> renderer, Class<?> defaultRendererClass) {
-        return renderer.getClass() == defaultRendererClass;
     }
 
     @SuppressWarnings("unchecked")
@@ -124,9 +104,29 @@ public final class AccessibilityWalker {
 
     private boolean matchesRawToString(Object item, String text) {
         if (item instanceof Enum<?> enumValue) {
-            return text.equals(enumValue.toString()) || text.equals(enumValue.name());
+            return text.equals(enumValue.name());
         }
-        return text.equals(item.toString());
+        return text.equals(syntheticRecordToString(item));
+    }
+
+    private String syntheticRecordToString(Object item) {
+        RecordComponent[] components = item.getClass().getRecordComponents();
+        StringBuilder raw = new StringBuilder(item.getClass().getSimpleName()).append('[');
+        for (int index = 0; index < components.length; index++) {
+            if (index > 0) {
+                raw.append(", ");
+            }
+            raw.append(components[index].getName()).append('=').append(rawComponentValue(components[index], item));
+        }
+        return raw.append(']').toString();
+    }
+
+    private Object rawComponentValue(RecordComponent component, Object item) {
+        try {
+            return component.getAccessor().invoke(item);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("No se pudo leer " + component.getName() + " de " + item, e);
+        }
     }
 
     private boolean isInteractive(Component component) {

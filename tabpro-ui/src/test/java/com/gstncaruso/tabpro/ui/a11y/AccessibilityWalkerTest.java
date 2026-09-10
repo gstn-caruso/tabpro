@@ -257,11 +257,53 @@ class AccessibilityWalkerTest {
         assertTrue(violaciones.get(0).reason().startsWith("toString() crudo: Escala["));
     }
 
+    private record FormatoDePapel(String etiqueta, int ancho, int alto) {
+
+        @Override
+        public String toString() {
+            return etiqueta;
+        }
+    }
+
     @Test
-    void unComboConRenderPropioNoEsUnaViolacionAunqueElTextoCoincidaConElToString() {
+    void unComboQueMuestraElToStringPersonalizadoDeUnRecordNoEsUnaViolacion() {
+        JPanel panel = new JPanel();
+        JLabel etiqueta = new JLabel("Formato");
+        JComboBox<FormatoDePapel> combo =
+                new JComboBox<>(new FormatoDePapel[] {new FormatoDePapel("A4", 210, 297)});
+        etiqueta.setLabelFor(combo);
+        panel.add(etiqueta);
+        panel.add(combo);
+
+        assertTrue(walker.walk(panel).isEmpty());
+    }
+
+    private enum Dinamica {
+        FORTE;
+
+        @Override
+        public String toString() {
+            return "f";
+        }
+    }
+
+    @Test
+    void unComboQueMuestraElToStringPersonalizadoDeUnEnumNoEsUnaViolacion() {
+        JPanel panel = new JPanel();
+        JLabel etiqueta = new JLabel("Dinamica");
+        JComboBox<Dinamica> combo = new JComboBox<>(new Dinamica[] {Dinamica.FORTE});
+        etiqueta.setLabelFor(combo);
+        panel.add(etiqueta);
+        panel.add(combo);
+
+        assertTrue(walker.walk(panel).isEmpty());
+    }
+
+    @Test
+    void unComboConRenderPropioQueMuestraElNombreCrudoDeUnEnumEsUnaViolacion() {
         JPanel panel = new JPanel();
         JLabel etiqueta = new JLabel("Figura");
-        JComboBox<Figura> combo = new JComboBox<>(Figura.values());
+        JComboBox<Figura> combo = new JComboBox<>(new Figura[] {Figura.NEGRA});
         etiqueta.setLabelFor(combo);
         combo.setRenderer(new DefaultListCellRenderer() {
 
@@ -276,7 +318,10 @@ class AccessibilityWalkerTest {
         panel.add(etiqueta);
         panel.add(combo);
 
-        assertTrue(walker.walk(panel).isEmpty());
+        List<Violation> violaciones = walker.walk(panel);
+
+        assertEquals(1, violaciones.size());
+        assertEquals("toString() crudo: NEGRA", violaciones.get(0).reason());
     }
 
     @Test

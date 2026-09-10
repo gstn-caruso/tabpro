@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.harmony;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.harmony.Chord;
@@ -58,35 +59,39 @@ class ChordDialogTest {
     }
 
     @Test
-    void elComboDePosicionesMuestraLaComplejidadEnCastellano() {
+    void lasPosicionesSonBotonesDeRadioSiempreVisiblesQueEligenLaComplejidad() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 
         ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
 
-        @SuppressWarnings("unchecked")
-        JComboBox<ChordComplexity> complexities = Combos.firstWithItemType(panel, ChordComplexity.class);
-        Component rendered = complexities.getRenderer()
-                .getListCellRendererComponent(new JList<>(), ChordComplexity.COMPLEX, 0, false, false);
+        javax.swing.JRadioButton simple = Combos.radioButtonWithText(panel, "Simple");
+        assertNotNull(Combos.radioButtonWithText(panel, "Media"), "no encontre el radio 'Media'");
+        assertNotNull(Combos.radioButtonWithText(panel, "Todas"), "no encontre el radio 'Todas'");
+        assertNotNull(simple, "no encontre el radio 'Simple'");
 
-        assertEquals("Todas", ((JLabel) rendered).getText());
+        simple.doClick();
+
+        assertEquals(ChordComplexity.SIMPLE, model.selection().complexity());
     }
 
     @Test
-    void elComboDeCejillaMuestraLaPreferenciaEnCastellano() {
+    void laCejillaSeEligeConBotonesDeRadioSiempreVisibles() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 
         ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
 
-        @SuppressWarnings("unchecked")
-        JComboBox<BarrePreference> barres = Combos.firstWithItemType(panel, BarrePreference.class);
-        Component rendered = barres.getRenderer()
-                .getListCellRendererComponent(new JList<>(), BarrePreference.ANY, 0, false, false);
+        javax.swing.JRadioButton forzar = Combos.radioButtonWithText(panel, "Forzar cejilla");
+        assertNotNull(Combos.radioButtonWithText(panel, "Cualquiera"), "no encontre el radio 'Cualquiera'");
+        assertNotNull(Combos.radioButtonWithText(panel, "Prohibir cejilla"), "no encontre el radio 'Prohibir cejilla'");
+        assertNotNull(forzar, "no encontre el radio 'Forzar cejilla'");
 
-        assertEquals("Cualquiera", ((JLabel) rendered).getText());
+        forzar.doClick();
+
+        assertEquals(BarrePreference.FORCE, model.barrePreference());
     }
 
     @Test
@@ -103,6 +108,27 @@ class ChordDialogTest {
                 .getListCellRendererComponent(new JList<>(), PitchClass.of("C"), 0, false, false);
 
         assertEquals("C (Do)", ((JLabel) rendered).getText());
+    }
+
+    @Test
+    void elComboDeInversionMuestraFundamentalParaLaRaizYElGradoConLaNotaParaLasDemas() {
+        Editor editor = new Editor(Score.blank());
+        ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
+        ChordLibrary library = new ChordLibrary(scratch);
+
+        ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
+
+        @SuppressWarnings("unchecked")
+        JComboBox<com.gstncaruso.tabpro.core.harmony.Interval> inversions =
+                Combos.firstWithItemType(panel, com.gstncaruso.tabpro.core.harmony.Interval.class);
+
+        String fundamental = ((JLabel) inversions.getRenderer().getListCellRendererComponent(
+                new JList<>(), com.gstncaruso.tabpro.core.harmony.Interval.ROOT, 0, false, false)).getText();
+        String tercera = ((JLabel) inversions.getRenderer().getListCellRendererComponent(
+                new JList<>(), com.gstncaruso.tabpro.core.harmony.Interval.MAJOR_THIRD, 0, false, false)).getText();
+
+        assertEquals("Fundamental", fundamental);
+        assertEquals("E (3)", tercera);
     }
 
     @Test

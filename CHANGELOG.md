@@ -1,3 +1,26 @@
+## [0.56.0](https://github.com/gstn-caruso/tabpro/compare/v0.55.0...v0.56.0) (2026-09-10)
+
+### Features
+
+* **harmony:** el constructor de acordes separa la inversión del bajo y elige posiciones y cejilla con radios, como Guitar Pro 5 ([#169](https://github.com/gstn-caruso/tabpro/issues/169)) ([2f75858](https://github.com/gstn-caruso/tabpro/commit/2f758583b403fa5378041b75407caab69418d0bf))
+
+## [0.55.0](https://github.com/gstn-caruso/tabpro/compare/v0.54.0...v0.55.0) (2026-09-10)
+
+### Features
+
+* **percussion:** el asistente muestra los sonidos en una grilla de cuatro columnas, como Guitar Pro 5 ([#165](https://github.com/gstn-caruso/tabpro/issues/165)) ([b59354a](https://github.com/gstn-caruso/tabpro/commit/b59354ad7d118b36c8644b4d29bd37586a3d9312))
+
+### Bug Fixes
+
+* **a11y:** el oráculo de combos mira el texto pintado por cualquier renderer, y Orientación y Papel usan etiquetas ([#168](https://github.com/gstn-caruso/tabpro/issues/168)) ([1272f53](https://github.com/gstn-caruso/tabpro/commit/1272f53de6c711713c0517f8c2df84f19ec335e4))
+
+## [0.54.0](https://github.com/gstn-caruso/tabpro/compare/v0.53.0...v0.54.0) (2026-09-10)
+
+### Features
+
+* **markers:** la lista de marcadores es la tabla de gestión de Guitar Pro 5 ([#163](https://github.com/gstn-caruso/tabpro/issues/163)) ([a1c2b91](https://github.com/gstn-caruso/tabpro/commit/a1c2b917729ff5987535ef8ba88f2665d21824d1))
+* **track:** las propiedades de pista tienen las dos columnas de Guitar Pro 5, «Forzar canales 11 a 16» y los estilos de diagramas ([#164](https://github.com/gstn-caruso/tabpro/issues/164)) ([69c632b](https://github.com/gstn-caruso/tabpro/commit/69c632b9cd616611bb54e6517f6782c869f40af8))
+
 ## [0.53.0](https://github.com/gstn-caruso/tabpro/compare/v0.52.1...v0.53.0) (2026-09-10)
 
 ### Features

@@ -320,8 +320,21 @@ partitura; la cuarta, el corpus; la quinta, en curso, los diálogos.
 | B4 · botón de digitación de mano derecha | `feat/boton-de-digitacion-de-mano-derecha` | #154 | mergeado |
 | F · auditoría de robustez con el corpus real (71 archivos: 68 abren, 68 pasan render, export y reapertura) | `docs/auditoria-corpus` | #155 | mergeado |
 | F · fix: la partitura recibe las notificaciones del `Editor` en el EDT y no scrollea con viewport 0×0 | `fix/las-notificaciones-del-editor-llegan-por-el-edt` | #156 | mergeado |
-| F · todos los componentes Swing escuchan al `Editor` por el adaptador del EDT | `refactor/todos-los-componentes-escuchan-al-editor-por-el-edt` | — | en curso |
-| G · auditoría visual de los diálogos contra las capturas del manual | — | — | en curso |
+| F · todos los componentes Swing escuchan al `Editor` por el adaptador del EDT | `refactor/todos-los-componentes-escuchan-al-editor-por-el-edt` | #158 | mergeado |
+| G · auditoría visual de los diálogos contra las capturas del manual (quince ítems) | — | — | hecha, no se commitea |
+| G · «Documento centrado» al imprimir | `feat/documento-centrado-al-imprimir` | #159 | mergeado |
+| G · letra en cinco pestañas con área multilínea | `feat/letra-multilinea-como-gp5` | #160 | mergeado |
+| G · combos y listas con etiquetas en castellano (`Labels`, oráculo en el recorredor) | `fix/los-combos-muestran-etiquetas-legibles` | #161 | mergeado |
+| G · secciones de formulario como cajas de grupo con título | `feat/cajas-de-grupo-con-titulo-en-los-formularios` | #162 | mergeado |
+| G · lista de marcadores como tabla de gestión | `feat/lista-de-marcadores-con-tabla-como-gp5` | #163 | mergeado |
+| G · propiedades de pista en dos columnas, «Forzar canales 11 a 16» y estilos de diagramas | `feat/propiedades-de-pista-como-gp5` | #164 | mergeado |
+| G · asistente de percusión en grilla de cuatro columnas | `feat/asistente-de-percusion-en-grilla-como-gp5` | #165 | mergeado |
+| F · el harness falla limpio en vez de colgar la suite | `test/el-harness-falla-limpio-en-vez-de-colgarse` | #166 | mergeado |
+| G · el oráculo de combos no exime renderers propios («Orientación» mostraba PORTRAIT) | `fix/el-oraculo-de-combos-no-exime-renderers-propios` | — | en curso |
+| G · importar MIDI con escucha previa y cuantización por radios | `feat/importar-midi-como-gp5` | — | en curso |
+| G · herramienta de escalas con listas, diagrama de grados y escuchar | — | — | pendiente |
+| G · constructor de acordes con controles finos | — | — | pendiente |
+| G · «Forzar barras horizontales» (pide barras inclinadas, pieza grande de render) | — | — | anotado |
 
 Lo que queda anotado para después: digitación de mano derecha como botón
 aparte (el diálogo único ya cubre las dos manos), tres íconos de la captura de
@@ -329,8 +342,8 @@ GP5 que no se distinguen, `doubleBar` y `tuplet` en Java2D por ser sub-píxel en
 Bravura, los valores predefinidos del combo de zoom (el manual no los lista), y
 la fuente del dígito de traste, que la resolución del manual no permite afirmar.
 
-**Estado (2026-09-10, tarde):** 45 PRs de la etapa (#112–#156) en `main`, CI
-verde, ~2750 tests. Tres auditorías hechas, todas con oráculo externo: uso
+**Estado (2026-09-10, noche):** 55 PRs de la etapa (#112–#166) en `main`, CI
+verde, ~2890 tests. Tres auditorías hechas, todas con oráculo externo: uso
 real de los 15 capítulos del manual (harness que corre en el CI bajo Xvfb),
 visual zona por zona y de la partitura contra las capturas del manual, medidas
 en píxeles. Lo que las tres encontraron está cerrado o anotado arriba.
