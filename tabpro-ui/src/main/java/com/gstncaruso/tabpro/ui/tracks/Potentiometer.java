@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -15,7 +16,11 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 
 /**
  * Un parametro de sonido dibujado como perilla giratoria, tal como lo describe el manual de
@@ -43,6 +48,25 @@ public final class Potentiometer extends JComponent implements AccessibleControl
         setToolTipText(String.valueOf(this.value));
         addMouseListener(dragStart());
         addMouseMotionListener(drag());
+        installKeyboardShortcuts();
+    }
+
+    private void installKeyboardShortcuts() {
+        InputMap inputMap = getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = getActionMap();
+        bindStep(inputMap, actionMap, "RIGHT", 1);
+    }
+
+    private void bindStep(InputMap inputMap, ActionMap actionMap, String keyStroke, int step) {
+        String name = "potentiometer.step." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setValue(value + step);
+                onUserChange.run();
+            }
+        });
     }
 
     /** El angulo, en grados y en la convencion de Arc2D, que le corresponde a un valor. */

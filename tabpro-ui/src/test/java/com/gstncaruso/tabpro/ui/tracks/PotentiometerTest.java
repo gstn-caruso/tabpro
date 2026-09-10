@@ -4,7 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class PotentiometerTest {
@@ -67,6 +70,20 @@ class PotentiometerTest {
         g.dispose();
 
         assertTrue(hasAnyPixel(image));
+    }
+
+    @Test
+    void theRightArrowKeyIncreasesTheValueByOneStep() {
+        Potentiometer knob = new Potentiometer(0, 127, 64);
+
+        pressShortcut(knob, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals(65, knob.getValue());
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 
     private boolean hasAnyPixel(BufferedImage image) {
