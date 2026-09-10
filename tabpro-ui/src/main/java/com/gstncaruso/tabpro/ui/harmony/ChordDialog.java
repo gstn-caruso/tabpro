@@ -87,6 +87,10 @@ public final class ChordDialog {
                 roots.addItem(pitchClass);
                 basses.addItem(pitchClass);
             });
+            name.getAccessibleContext().setAccessibleName("Nombre del acorde");
+            name.setToolTipText("Nombre del acorde");
+            baseFret.getAccessibleContext().setAccessibleName("Traste base");
+            baseFret.setToolTipText("Traste base");
             omitChecks.setLayout(new BoxLayout(omitChecks, BoxLayout.Y_AXIS));
             omitChecks.setBorder(BorderFactory.createTitledBorder("Omitir"));
             setLayout(new BorderLayout(10, 10));
@@ -156,11 +160,13 @@ public final class ChordDialog {
             zone.add(namedList("Biblioteca", list, 90), BorderLayout.CENTER);
             JPanel buttons = new JPanel(new GridLayout(1, 0, 4, 0));
             JButton add = new JButton("+");
+            add.getAccessibleContext().setAccessibleName("Agregar a la biblioteca");
             add.addActionListener(event -> {
                 library.add(model.current());
                 refreshLists();
             });
             JButton remove = new JButton("−");
+            remove.getAccessibleContext().setAccessibleName("Quitar de la biblioteca");
             remove.addActionListener(event -> {
                 if (list.getSelectedIndex() >= 0) {
                     library.remove(list.getSelectedIndex());
@@ -190,6 +196,8 @@ public final class ChordDialog {
         /** Zona C: todas las posiciones posibles del acorde construido. */
         private JScrollPane candidatesZone() {
             JList<ChordDiagram> list = diagramList(candidates);
+            list.getAccessibleContext().setAccessibleName("Posiciones");
+            list.setToolTipText("Posiciones");
             list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
             list.setVisibleRowCount(1);
             list.addListSelectionListener(event -> {
@@ -349,6 +357,8 @@ public final class ChordDialog {
         }
 
         private static JScrollPane namedList(String title, JList<?> list, int height) {
+            list.getAccessibleContext().setAccessibleName(title);
+            list.setToolTipText(title);
             JScrollPane scroll = new JScrollPane(list);
             scroll.setBorder(BorderFactory.createTitledBorder(title));
             scroll.setPreferredSize(new Dimension(190, height));
@@ -364,7 +374,11 @@ public final class ChordDialog {
 
         private static JPanel labelled(String label, Component field) {
             JPanel row = new JPanel(new BorderLayout(6, 0));
-            row.add(new JLabel(label), BorderLayout.WEST);
+            JLabel text = new JLabel(label);
+            if (field instanceof javax.swing.JComponent labeledField) {
+                text.setLabelFor(labeledField);
+            }
+            row.add(text, BorderLayout.WEST);
             row.add(field, BorderLayout.CENTER);
             return row;
         }
