@@ -1,3 +1,9 @@
+## [0.49.0](https://github.com/gstn-caruso/tabpro/compare/v0.48.0...v0.49.0) (2026-09-10)
+
+### Features
+
+* **score:** la selección es amarilla y el marcador lleva su cuadrado de color, como en Guitar Pro 5 ([#150](https://github.com/gstn-caruso/tabpro/issues/150)) ([c6faaa6](https://github.com/gstn-caruso/tabpro/commit/c6faaa6a7f64ad1311456f396ee048d92cd49f22)), closes [#FFFF00](https://github.com/gstn-caruso/tabpro/issues/FFFF00)
+
 ## [0.48.0](https://github.com/gstn-caruso/tabpro/compare/v0.47.0...v0.48.0) (2026-09-10)
 
 ### Features
