@@ -98,6 +98,41 @@ class MenuBarTest {
         }
     }
 
+    /**
+     * Manual, "Configure the Sound" (linea 1945): el volumen y la actividad del metronomo se
+     * configuran en su propio dialogo. El comando ya asegura que existe y llama al puerto
+     * correcto (ver CommandsTest); esto verifica que el menu real lo ofrece.
+     */
+    @Test
+    void elMenuSonidoOfreceLaConfiguracionDelMetronomo() {
+        JMenuBar bar = new MenuBar(commands).build();
+
+        JMenu sonido = menuNamed(bar, "Sonido");
+
+        assertTrue(itemLabels(sonido).contains("Configuración del metrónomo…"));
+    }
+
+    private JMenu menuNamed(JMenuBar bar, String name) {
+        for (int i = 0; i < bar.getMenuCount(); i++) {
+            JMenu menu = bar.getMenu(i);
+            if (name.equals(menu.getText())) {
+                return menu;
+            }
+        }
+        return null;
+    }
+
+    private Set<String> itemLabels(JMenu menu) {
+        Set<String> labels = new HashSet<>();
+        for (int i = 0; i < menu.getItemCount(); i++) {
+            JMenuItem item = menu.getItem(i);
+            if (item != null) {
+                labels.add(item.getText());
+            }
+        }
+        return labels;
+    }
+
     private JMenu recentFilesMenuOf(JMenuBar bar) {
         JMenu fileMenu = (JMenu) bar.getMenu(0);
         for (int i = 0; i < fileMenu.getItemCount(); i++) {

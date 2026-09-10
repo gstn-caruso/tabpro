@@ -187,7 +187,8 @@ public final class MenuBar {
         JMenu menu = new JMenu("Sonido");
         add(menu, "sound.play", "sound.playFromStart", "sound.loop");
         menu.addSeparator();
-        add(menu, "sound.tempo", "sound.relativeTempo", "sound.metronome", "sound.countDown");
+        add(menu, "sound.tempo", "sound.relativeTempo", "sound.metronome", "sound.metronomeSettings",
+                "sound.countDown");
         menu.addSeparator();
         add(menu, "sound.stepBack", "sound.stepForward", "sound.midiInput", "sound.soundFont");
         menu.addSeparator();
