@@ -3,6 +3,8 @@ package com.gstncaruso.tabpro.ui.dialogs.style;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JRootPane;
@@ -68,13 +70,19 @@ public final class DialogShell {
         }
 
         dialog.getContentPane().setLayout(new BorderLayout());
-        dialog.getContentPane().add(content, BorderLayout.CENTER);
+        dialog.getContentPane().add(fittedToScreen(content, buttons), BorderLayout.CENTER);
         dialog.getContentPane().add(buttons, BorderLayout.SOUTH);
         dialog.pack();
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
 
         return accepted[0];
+    }
+
+    private static JComponent fittedToScreen(JComponent content, JComponent southBar) {
+        Dimension screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getSize();
+        int availableHeight = availableContentHeight(screen.height, southBar.getPreferredSize().height);
+        return fitToAvailableHeight(content, availableHeight);
     }
 
     /**
