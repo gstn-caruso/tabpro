@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.EdtEditorListener;
+import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
@@ -280,6 +281,7 @@ public final class BeatViews extends JPanel {
         rootCombo.getAccessibleContext().setAccessibleName("Nota raíz de la escala");
         rootCombo.setToolTipText("Nota raíz de la escala");
         JComboBox<ScaleType> typeCombo = new JComboBox<>(ScaleType.values());
+        typeCombo.setRenderer(new LabeledListCellRenderer());
         typeCombo.setFont(typeCombo.getFont().deriveFont(10f));
         typeCombo.getAccessibleContext().setAccessibleName("Tipo de escala");
         typeCombo.setToolTipText("Tipo de escala");

@@ -14,6 +14,7 @@ import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.AwaitEdt;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Rectangle;
@@ -29,6 +30,15 @@ import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class BeatViewsTest {
+
+    @Test
+    void elComboDeTipoDeEscalaMuestraSuNombreEnCastellano() {
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+
+        String texto = Combos.renderedTextOf(views, ScaleType.class, ScaleType.MAJOR);
+
+        assertEquals("Mayor", texto);
+    }
 
     @Test
     void closingTheFretboardTitleBarHidesTheFretboard() {
