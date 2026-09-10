@@ -21,13 +21,13 @@ public final class BravuraFont {
     private static Font load() {
         try (InputStream resource = BravuraFont.class.getResourceAsStream(RESOURCE)) {
             if (resource == null) {
-                throw new IllegalStateException("No se encontró " + RESOURCE + " en el classpath");
+                throw new IllegalStateException(RESOURCE + " was not found on the classpath");
             }
             return Font.createFont(Font.TRUETYPE_FONT, resource);
         } catch (FontFormatException e) {
-            throw new IllegalStateException("Bravura.otf no tiene un formato de fuente valido", e);
+            throw new IllegalStateException("Bravura.otf does not have a valid font format", e);
         } catch (IOException e) {
-            throw new UncheckedIOException("No se pudo leer " + RESOURCE, e);
+            throw new UncheckedIOException("Could not read " + RESOURCE, e);
         }
     }
 }
