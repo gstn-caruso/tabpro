@@ -18,6 +18,7 @@ import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
+import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -361,7 +362,7 @@ public final class Commands {
                 .withAccelerator("shift TAB").withIcon(Icons.markerPrevious());
         define("marker.next", "Marcador siguiente", editor::moveToNextMarker)
                 .withAccelerator("ctrl TAB").withIcon(Icons.markerNext());
-        editor.addListener(this::refreshEditMarkerCommand);
+        editor.addListener(EdtEditorListener.onEdt(this::refreshEditMarkerCommand));
         refreshEditMarkerCommand();
     }
 
