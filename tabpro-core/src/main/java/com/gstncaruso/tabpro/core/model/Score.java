@@ -60,10 +60,17 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
         return first.attributesOf(clamped);
     }
 
+    /**
+     * El marcador que rige un compas: el que tiene puesto, o si no tiene el del marcador anterior
+     * mas cercano. Nunca mira hacia adelante.
+     */
     public java.util.OptionalInt measureOfMarkerInEffectAt(int measureIndex) {
-        return attributesOf(measureIndex).marker().isPresent()
-                ? java.util.OptionalInt.of(measureIndex)
-                : java.util.OptionalInt.empty();
+        for (int measure = measureIndex; measure >= 0; measure--) {
+            if (attributesOf(measure).marker().isPresent()) {
+                return java.util.OptionalInt.of(measure);
+            }
+        }
+        return java.util.OptionalInt.empty();
     }
 
     public TimeSignature timeSignatureOf(int measureIndex) {
