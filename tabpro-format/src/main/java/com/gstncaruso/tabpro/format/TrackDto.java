@@ -41,6 +41,7 @@ public record TrackDto(
         Boolean showRhythm,
         String diagrams,
         Boolean diagramsBelowStandardNotation,
+        Boolean forceHorizontalBeams,
         Boolean forceChannels11to16,
         List<MeasureDto> measures) {
 
@@ -76,6 +77,7 @@ public record TrackDto(
                 display.rhythmOnTablature(),
                 display.diagrams().name(),
                 display.diagramsBelowStandardNotation(),
+                display.forceHorizontalBeams(),
                 settings.forceChannels11to16(),
                 track.measures().stream().map(MeasureDto::from).toList());
     }
@@ -118,7 +120,7 @@ public record TrackDto(
                 orElse(showRhythm, false),
                 Enums.read(DiagramPlacement.class, diagrams, DiagramPlacement.ABOVE_THE_STAFF),
                 orElse(diagramsBelowStandardNotation, false),
-                false);
+                orElse(forceHorizontalBeams, false));
         return new TrackSettings(
                 color == null ? Track.colorFor(index) : ScoreColor.rgb(color),
                 orElse(capo, 0),
