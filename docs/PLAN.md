@@ -296,16 +296,32 @@ PR que lo usa.
 | D · mesa de mezcla con deslizadores, números planos y columnas de GP5 | `feat/mesa-de-mezcla-como-gp5` | #141 | mergeado |
 | D · vista global con regla de compases, marcadores en rojo y cabecera 1,3× | `feat/vista-global-como-gp5` | #142 | mergeado |
 | D · bandas de título con ✕ en diapasón y teclado | `feat/paneles-de-diapason-y-teclado-con-titulo` | #143 | mergeado |
-| D · README y capturas de la segunda tanda | `docs/readme-y-capturas-de-la-segunda-tanda` | — | en curso |
-| D · auditoría de la partitura contra los ejemplos de notación del manual | — | — | en curso |
+| D · README y capturas de la segunda tanda, sobre el `main` final | `docs/readme-y-capturas-de-la-segunda-tanda` | #152 | mergeado |
+| D · el combo de zoom conserva su ancho | `fix/el-combo-de-zoom-no-se-estira` | #146 | mergeado |
+| E · auditoría de la partitura contra los ejemplos de notación del manual (diez ítems medidos) | — | — | hecha, no se commitea |
+| E · nombres de cuerda apagados por defecto, como GP5 | `feat/nombres-de-cuerda-opcionales-por-pista` | #147 | mergeado |
+| E · tempo inicial escrito, tempo y números de compás en rojo | `feat/tempo-inicial-y-numeros-de-compas-como-gp5` | #148 | mergeado |
+| E · brecha pentagrama–tab medida (36 px) | `feat/brecha-pentagrama-tab-como-gp5` | #149 | mergeado |
+| E · selección amarilla y cuadrado de color del marcador | `feat/seleccion-amarilla-y-marcador-con-color-como-gp5` | #150 | mergeado |
+| E · el cuadrado del marcador no pisa el nombre de pista | `fix/el-cuadrado-del-marcador-no-pisa-el-nombre-de-pista` | #151 | mergeado |
+| E · dinámicas escritas bajo la nota | — | — | **no aplica**: el manual dice que GP5 no las muestra en la partitura; el modo F11 ya existe |
 
 Lo que queda anotado para después: digitación de mano derecha como botón
 aparte (el diálogo único ya cubre las dos manos), tres íconos de la captura de
 GP5 que no se distinguen, `doubleBar` y `tuplet` en Java2D por ser sub-píxel en
-Bravura, y los valores predefinidos del combo de zoom, que el manual no lista.
+Bravura, los valores predefinidos del combo de zoom (el manual no los lista), y
+la fuente del dígito de traste, que la resolución del manual no permite afirmar.
 
-**Lo que enseñó esta tanda:**
-Dos PRs se lastimaron por comandos encadenados sin condición: uno se mergeó con
+**Estado al cierre (2026-09-10):** 41 PRs de la etapa (#112–#152) en `main`,
+CI verde, ~2730 tests. Tres auditorías hechas, todas con oráculo externo: uso
+real de los 15 capítulos del manual (harness que corre en el CI bajo Xvfb),
+visual zona por zona y de la partitura contra las capturas del manual, medidas
+en píxeles. Lo que las tres encontraron está cerrado o anotado arriba.
+
+**Lo que enseñó esta tanda:** un worker que termina sin cambios pierde su
+worktree, y retomado por mensaje trabaja en el checkout principal: se lanza uno
+nuevo. Un worker se negó con razón a implementar las dinámicas escritas porque
+el manual dice lo contrario: el oráculo manda sobre el brief. Dos PRs se lastimaron por comandos encadenados sin condición: uno se mergeó con
 el CI rojo y a otro se le borró la branch remota con el CI rojo (GitHub cierra
 el PR). El merge y el borrado se gatean con el exit code de `gh pr checks` y
 con el estado MERGED. Y dos ramas que borran o renombran un color compartido
