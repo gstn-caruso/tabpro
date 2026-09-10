@@ -108,13 +108,18 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     private void editMarkerAt(int measureIndex) {
         Marker current = editor.score().attributesOf(measureIndex).marker().orElse(null);
         String initial = current == null ? "" : current.name();
-        String chosen = JOptionPane.showInputDialog(this, "Nombre del marcador", initial);
+        String chosen = promptForMarkerName(initial);
         if (chosen == null || chosen.isBlank()) {
             return;
         }
         Marker marker = current == null ? Marker.named(chosen.trim()) : new Marker(chosen.trim(), current.color());
         moveEditorTo(measureIndex);
         editor.setMarker(marker);
+    }
+
+    /** Aislado en su propio metodo para que un test pueda contestar sin abrir un dialogo real. */
+    String promptForMarkerName(String initial) {
+        return JOptionPane.showInputDialog(this, "Nombre del marcador", initial);
     }
 
     private void moveEditorTo(int measureIndex) {
