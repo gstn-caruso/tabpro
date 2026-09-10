@@ -18,10 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 alarga una figura o un silencio con el puntillo grabado de Bravura en vez de un
- * circulo dibujado a mano.
- */
 class AugmentationDotPaintingTest {
 
     private static final int WIDTH = 900;

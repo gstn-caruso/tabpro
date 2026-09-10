@@ -27,13 +27,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * La ventana de escalas: ver y escuchar cualquier escala en cualquier tonalidad,
- * y buscar cual usa un rango de compases de la partitura.
- */
 public final class ScalesDialog {
 
-    /** La octava en la que se escuchan las notas de la escala. */
     private static final int LISTENING_OCTAVE = 60;
 
     private ScalesDialog() {

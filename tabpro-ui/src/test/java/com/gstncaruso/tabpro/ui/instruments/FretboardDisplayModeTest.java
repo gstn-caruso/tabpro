@@ -51,7 +51,6 @@ class FretboardDisplayModeTest {
 
         FretMarks marks = FretboardDisplayMode.BEAT_AND_CHORD.marks(location, 24, Optional.empty());
 
-        // el traste 1,0 ya esta en el beat: queda como primario, no se duplica en el contexto.
         assertEquals(set(new FretPosition(1, 0)), marks.primary());
         assertEquals(
                 set(new FretPosition(2, 1), new FretPosition(3, 0),
@@ -104,7 +103,6 @@ class FretboardDisplayModeTest {
         FretMarks marks =
                 FretboardDisplayMode.BEAT_AND_SCALE.marks(location, 4, Optional.of(Scale.cMajor()));
 
-        // cuerda al aire en Do: los trastes de Do mayor son el 0 (Do), el 2 (Re) y el 4 (Mi).
         assertEquals(
                 set(new FretPosition(1, 0), new FretPosition(1, 2), new FretPosition(1, 4)),
                 marks.secondary());

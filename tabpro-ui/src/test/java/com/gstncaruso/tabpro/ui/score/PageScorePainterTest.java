@@ -45,13 +45,6 @@ class PageScorePainterTest {
     private static final int VIEWPORT_WIDTH = 900;
     private static final double ONE_PIXEL_OF_REDONDEO = 1.0;
 
-    /**
-     * {@code canvasSize}, {@code paint}, {@code pageCount}, {@code paginationOf} y
-     * {@code paintPage} llaman cada uno a {@code layoutFor} por su cuenta: en un solo ciclo de
-     * pintado (getPreferredSize + paintComponent) se calcula el mismo layout mas de una vez sin
-     * que nada haya cambiado. Dos llamadas seguidas con la misma partitura y el mismo viewport
-     * tienen que devolver el mismo objeto, no dos layouts iguales pero recalculados.
-     */
     @Test
     void layoutIsMemoizedForTheSameScoreAndViewport() {
         Score score = scoreWithMeasures(10);
@@ -86,11 +79,6 @@ class PageScorePainterTest {
         assertNotSame(first, second, "cambiar el zoom invalida el layout cacheado");
     }
 
-    /**
-     * {@code TrackChords.underTheTitle(score)} recorre todos los compases de todas las pistas:
-     * exportar 300 hojas de la misma partitura no tiene que repetir ese barrido 300 veces.
-     * Se cachea junto con el layout, con la misma clave (score + viewport).
-     */
     @Test
     void chordDiagramsUnderTheTitleAreMemoizedForTheSameScoreAndViewport() {
         Score score = scoreWithMeasures(10);
@@ -223,12 +211,6 @@ class PageScorePainterTest {
         assertDoesNotThrow(() -> paintOn(score, viewport));
     }
 
-    /**
-     * Cambiar a Modo Pagina con una partitura larga hoy pinta las 300 hojas aunque la ventana
-     * solo pueda mostrar una o dos: el clip que Swing ya calcula para lo que esta a la vista se
-     * ignora. Con un clip que cubre solo la hoja del medio, las hojas de mas alla no tienen que
-     * tocarse en absoluto.
-     */
     @Test
     void pagesOutsideTheClipAreNotPainted() {
         Score score = scoreWithMeasures(200);
@@ -258,12 +240,6 @@ class PageScorePainterTest {
         return "Página " + pageNumber + " de " + totalPages;
     }
 
-    /**
-     * {@link PageScorePainter#paintPage} arma una sola hoja y la dibuja con
-     * {@link PaperGraphics}, que recorta el lienzo al tamano exacto de esa hoja: gracias a eso el
-     * clip real que llega a {@code ScorePainter.paintTrack} ya viene acotado, y renderizar la hoja
-     * del medio no tiene que tocar los compases que solo viven en la primera ni en la tercera.
-     */
     @Test
     void renderingOnePageDoesNotPaintMeasuresOfTheOthers() {
         Score score = scoreWithMeasures(200);
@@ -326,10 +302,6 @@ class PageScorePainterTest {
                 "el encabezado es el texto configurado, no el titulo de la partitura");
     }
 
-    /**
-     * El rectangulito que anuncia un cambio de parametro es rojo porque el rojo es lo que dice
-     * que ahi cambia algo: en la hoja tiene que salir del mismo color que en la pantalla.
-     */
     @Test
     void theParameterChangeMarkIsRedOnPaperJustLikeOnScreen() {
         LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
@@ -338,11 +310,6 @@ class PageScorePainterTest {
                 "el cambio de parametro se anuncia en rojo");
     }
 
-    /**
-     * La linea de reproduccion es un color propio -no un gris de pantalla- asi que no le toca la
-     * inversion del Modo Pagina: tiene que llegar a la hoja del mismo verde con que se ve en
-     * pantalla, no invertida ni apagada.
-     */
     @Test
     void thePlayingLineIsTheSameGreenOnPaperAsOnScreen() {
         LienzoDePrueba lienzo = renderConLienzo(
@@ -353,11 +320,6 @@ class PageScorePainterTest {
                 "la linea de reproduccion tiene que verse verde en la hoja");
     }
 
-    /**
-     * El cursor de edicion tambien es un color propio -no un gris de pantalla- asi que tampoco le
-     * toca la inversion del Modo Pagina: tiene que llegar a la hoja del mismo rojo con que se ve
-     * en pantalla, no invertido ni apagado.
-     */
     @Test
     void theEditingCursorIsTheSameRedOnPaperAsOnScreen() {
         LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
@@ -366,10 +328,6 @@ class PageScorePainterTest {
                 "el cursor de edicion tiene que verse rojo en la hoja");
     }
 
-    /**
-     * Lo que en la pantalla oscura es tinta clara, sobre la hoja tiene que ser tinta oscura: si
-     * llegara al papel del color con el que se dibuja en pantalla, no se veria nada.
-     */
     @Test
     void theScoreIsWrittenInDarkInkOnPaper() {
         LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
@@ -379,14 +337,6 @@ class PageScorePainterTest {
         assertFalse(lienzo.dibujaColorEnRegion(ScoreColors.INK, music), "y no con la tinta clara de la pantalla");
     }
 
-    /**
-     * Manual, linea 2800: Propiedades de la pista [F6] deja elegir si los diagramas de acorde
-     * van "at the top of the score". DiagramPlacement.showsUnderTheTitle() ya calculaba esto
-     * bien, pero {@link PageChromePainter} no lo consultaba: elegir "Debajo del titulo" o "En
-     * los dos lados" no cambiaba un solo pixel. Comparado contra ABOVE_THE_STAFF -que ya se
-     * dibuja arriba del pentagrama desde antes- para aislar el efecto nuevo: BOTH tiene que
-     * agregar el diagrama en el encabezado sin tocarlo donde ya se veia.
-     */
     @Test
     void theHeaderGetsTheDiagramWhenThePlacementAsksForBothSides() {
         BufferedImage aboveOnly = render(scoreWithChordPlacement(DiagramPlacement.ABOVE_THE_STAFF), PageSetup.defaults());
@@ -398,10 +348,6 @@ class PageScorePainterTest {
                 "BOTH tiene que agregar el diagrama tambien en el encabezado");
     }
 
-    /**
-     * UNDER_THE_TITLE saca el diagrama de arriba del pentagrama (ya lo hacia showsOnTheScore(),
-     * eso no era el bug) pero tiene que aparecer en el encabezado, cosa que HIDDEN nunca hace.
-     */
     @Test
     void theHeaderTellsUnderTheTitleApartFromHidden() {
         BufferedImage hidden = render(scoreWithChordPlacement(DiagramPlacement.HIDDEN), PageSetup.defaults());
@@ -413,7 +359,6 @@ class PageScorePainterTest {
                 "UNDER_THE_TITLE tiene que mostrar el diagrama en el encabezado, HIDDEN no");
     }
 
-    /** El diagrama debajo del titulo va una sola vez por hoja, no compas por compas. */
     private static Score scoreWithChordPlacement(DiagramPlacement placement) {
         ChordDiagram am = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
         Beat chordBeat = Beat.rest(Duration.quarter()).withEffects(BeatEffects.none().withChord(am));
@@ -425,14 +370,12 @@ class PageScorePainterTest {
         return new Score("", 120, List.of(track));
     }
 
-    /** Solo la musica de la hoja, sin el encabezado ni el pie, que se dibujan aparte. */
     private static BufferedImage musicOf(BufferedImage sheet) {
         PageMetrics paper = PageMetrics.of(PageSetup.defaults());
         return sheet.getSubimage(
                 paper.contentLeft(), paper.contentTop(), paper.contentWidth(), paper.contentHeight());
     }
 
-    /** Solo el encabezado de la hoja -donde va el titulo y, ahora, los diagramas del track. */
     private static BufferedImage headerOf(BufferedImage sheet) {
         PageMetrics paper = PageMetrics.of(PageSetup.defaults());
         return sheet.getSubimage(0, 0, sheet.getWidth(), paper.contentTop());

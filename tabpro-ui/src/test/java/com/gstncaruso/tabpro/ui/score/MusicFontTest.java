@@ -8,11 +8,6 @@ import java.awt.Font;
 import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 graba clave y cifra de compas con Bravura (SMuFL) en vez de dibujarlas a mano.
- * La fuente viaja en el jar como recurso: un empaquetado roto tiene que fallar aca, no en
- * produccion.
- */
 class MusicFontTest {
 
     @Test

@@ -27,16 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Un {@link Graphics2D} de mentira para tests de painters: en vez de rasterizar en un
- * {@link BufferedImage}, anota que se pidio dibujar, donde y de que color, y contesta preguntas
- * sobre eso -para que los asserts hablen del dibujo, no de pixeles sueltos.
- *
- * <p>Delega la parte geometrica (transform, clip, fuente) a un {@link Graphics2D} de verdad sobre
- * un lienzo de 1x1 que nunca se pinta: asi {@code getFontMetrics}, {@code getTransform} y el resto
- * siguen siendo exactos, y las coordenadas que se anotan ya vienen traducidas al espacio absoluto
- * del lienzo raiz, sin importar cuantos {@code create(x, y, w, h)} anidados haga el pintor.
- */
 public final class LienzoDePrueba extends Graphics2D {
 
     private record OrdenDeDibujo(double x, double y, double width, double height, Color color, Font fuente, String texto) {
@@ -46,7 +36,6 @@ public final class LienzoDePrueba extends Graphics2D {
         }
     }
 
-    /** Un texto tal como se pidio dibujar, junto con la fuente que estaba puesta en ese momento. */
     public record TextoDibujado(Font fuente, String texto) {
     }
 
@@ -57,7 +46,6 @@ public final class LienzoDePrueba extends Graphics2D {
         this(new ArrayList<>(), new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics());
     }
 
-    /** Un lienzo con el clip ya puesto, como lo ve el pintor cuando solo hay que dibujar lo visible. */
     public LienzoDePrueba(Rectangle clip) {
         this(new ArrayList<>(), clippedCanvas(clip));
     }
@@ -73,22 +61,18 @@ public final class LienzoDePrueba extends Graphics2D {
         this.delegado = delegado;
     }
 
-    /** Si algo se dibujo con exactamente ese color, en cualquier lugar del lienzo. */
     public boolean dibujaColor(Color color) {
         return ordenes.stream().anyMatch(orden -> orden.color().equals(color));
     }
 
-    /** Si algo se dibujo con exactamente ese color, tocando la region dada. */
     public boolean dibujaColorEnRegion(Color color, Rectangle region) {
         return ordenes.stream().anyMatch(orden -> orden.color().equals(color) && orden.tocaA(region));
     }
 
-    /** Si ese texto exacto se escribio tocando la region dada. */
     public boolean escribeTextoEnRegion(String texto, Rectangle region) {
         return ordenes.stream().anyMatch(orden -> texto.equals(orden.texto()) && orden.tocaA(region));
     }
 
-    /** Todo lo que se escribio, cada texto con la fuente que tenia puesta al pedirse. */
     public List<TextoDibujado> textosDibujados() {
         return ordenes.stream()
                 .filter(orden -> orden.texto() != null)
@@ -96,12 +80,10 @@ public final class LienzoDePrueba extends Graphics2D {
                 .toList();
     }
 
-    /** Si dentro de esa region se dibujo exactamente lo mismo -mismo orden, forma, color y texto- que en otro lienzo. */
     public boolean coincideEnRegionCon(LienzoDePrueba otro, Rectangle region) {
         return ordenesEnRegion(region).equals(otro.ordenesEnRegion(region));
     }
 
-    /** Si se dibujo exactamente lo mismo -mismo orden, forma, color y texto- que en otro lienzo. */
     public boolean coincideCon(LienzoDePrueba otro) {
         return ordenes.equals(otro.ordenes);
     }

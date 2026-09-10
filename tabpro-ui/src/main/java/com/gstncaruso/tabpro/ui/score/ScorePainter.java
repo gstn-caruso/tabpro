@@ -22,10 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Dibuja la partitura entera: cada pista con su pentagrama arriba y su tablatura abajo, una
- * debajo de la otra, sistema por sistema.
- */
 public final class ScorePainter {
 
     private ScorePainter() {
@@ -41,8 +37,6 @@ public final class ScorePainter {
         paint(g, layout, score, cursor, playhead, selection, Optional.of(cursor.voice()), true);
     }
 
-    /** Igual que {@link #paint}, pero puede saltear el fondo oscuro: el Modo Pagina dibuja sobre
-     * una hoja que ya esta pintada, con los colores que le pasa el {@link PaperGraphics}. */
     static void paint(
             Graphics2D g, ScoreLayout layout, Score score, Cursor cursor, Playhead playhead,
             Optional<Selection> selection, Optional<VoicePart> highlightedVoice, boolean paintBackground) {
@@ -69,13 +63,6 @@ public final class ScorePainter {
         }
     }
 
-    /**
-     * El cursor de edicion tambien cruza el sistema entero, igual que la linea de reproduccion y
-     * por la misma razon geometrica: no se corta en los huecos entre pistas. Se pinta atenuado
-     * -no a pleno color, ver {@link #paintCursor}- y antes que la linea de reproduccion, para
-     * que si coinciden en la misma columna gane el verde, mas importante para seguir donde suena
-     * la musica; el rojo pleno de la pista que se esta editando vuelve a pintarse encima despues.
-     */
     private static void paintCursorTrail(Graphics2D g, ScoreLayout layout, Cursor cursor) {
         int x = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat()).x;
         int top = layout.systemTop(layout.systemOf(cursor.measure()));
@@ -84,10 +71,6 @@ public final class ScorePainter {
         g.fillRect(x, top, 1, bottom - top);
     }
 
-    /**
-     * La hoja impresa o exportada no lleva cursor de edicion: se lo pide con un
-     * cursor que apunta fuera de la partitura.
-     */
     private static boolean showsTheEditingCursor(Score score, Cursor cursor) {
         return cursor.track() >= 0 && cursor.track() < score.trackCount();
     }
@@ -180,22 +163,11 @@ public final class ScorePainter {
         g.drawString(track.name(), x, y);
     }
 
-    /**
-     * La linea de reproduccion se dibuja al final, encima de toda la musica: si se pintara antes
-     * que las notas, cualquier cabeza, plica o numero de traste que cayera en su columna la
-     * taparia por completo.
-     */
     private static void paintPlayingLines(Graphics2D g, ScoreLayout layout, Score score, Playhead playhead) {
         soundingNow(layout, score, playhead)
                 .ifPresent(position -> paintPlaying(g, layout, position.track(), position));
     }
 
-    /**
-     * Todas las pistas suenan a la vez, asi que la reproduccion esta en un solo lugar y le toca
-     * una sola linea. Como cada pista parte el compas distinto -negras en la guitarra, una
-     * redonda en el bajo- el arranque del beat que suena cae en una x distinta segun la pista;
-     * la que vale es la que arranco mas tarde, que es la mas cercana al instante que se oye.
-     */
     private static Optional<BeatPosition> soundingNow(ScoreLayout layout, Score score, Playhead playhead) {
         Optional<BeatPosition> latest = Optional.empty();
         for (int trackIndex = 0; trackIndex < score.trackCount(); trackIndex++) {
@@ -218,19 +190,14 @@ public final class ScorePainter {
         return layout.beatBounds(position.track(), position.measure(), position.beat()).x;
     }
 
-    /**
-     * Una linea vertical fina que senala donde va la reproduccion, en vez de un bloque que tapa
-     * la musica. Cruza el sistema entero de punta a punta -no solo la pista que esta sonando-
-     * porque todas las pistas del sistema suenan juntas.
-     */
     private static void paintPlaying(Graphics2D g, ScoreLayout layout, int trackIndex, BeatPosition position) {
         Rectangle beat = layout.beatBounds(trackIndex, position.measure(), position.beat());
         int top = layout.systemTop(layout.systemOf(position.measure()));
         int bottom = top + layout.systemHeight();
         g.setColor(ScoreColors.PLAYING);
-        // fillRect en vez de drawLine: una linea trazada de un pixel de ancho cae justo en el
-        // limite entre dos columnas y el antialiasing la reparte mitad y mitad, dejandola
-        // desteñida. Un rectangulo de una columna cae adentro de un pixel entero y sale nitida.
+        // fillRect instead of drawLine: a one-pixel-wide stroked line falls exactly on the
+        // boundary between two columns, and antialiasing splits it half and half, leaving it
+        // faded. A one-column-wide fill falls inside a whole pixel and comes out crisp.
         g.fillRect(beat.x, top, 1, bottom - top);
     }
 
@@ -240,7 +207,6 @@ public final class ScorePainter {
             ScoreColors.INCOMPLETE_MEASURE.getBlue(),
             40);
 
-    /** El compas que no suma lo que su medida pide se tine de rojo, salvo el que se esta editando. */
     private static void paintIncompleteMeasureBackground(
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, boolean beingEdited) {
         Measure measure = track.measure(measureIndex);
@@ -260,9 +226,6 @@ public final class ScorePainter {
         for (int measure = selection.fromMeasure();
                 measure <= selection.toMeasure() && measure < track.measureCount(); measure++) {
             int system = layout.systemOf(measure);
-            // Un compas entero se pinta de punta a punta, no solo donde caen los beats de la voz
-            // principal: el manual dice que las acciones valen para las dos voces, y el compas
-            // siempre deja un margen (cabecera, padding) que ningun beat pisa.
             if (selection.wholeMeasures()) {
                 grow(areaPerSystem, system, layout.measureBounds(selection.track(), measure));
                 continue;
@@ -292,25 +255,13 @@ public final class ScorePainter {
         g.drawRect(bounds.x, bounds.y, bounds.width - 1, bounds.height - 1);
     }
 
-    /**
-     * El cursor de edicion a pleno color: una linea vertical fina y roja en el arranque del beat
-     * actual, que cruza el pentagrama y la tablatura de la pista que se esta editando. Fuera de
-     * esa pista la linea sigue existiendo pero atenuada -ver {@link #paintCursorTrail}-, para que
-     * de un vistazo se siga viendo en cual de las pistas esta parado el cursor sin que se corte
-     * entre pistas como si fueran sistemas separados.
-     *
-     * <p>El cuadradito que marca donde esta parado el cursor va en la notacion activa -manual,
-     * linea 769: la tablatura si se edita ahi, la cabeza de la nota en el pentagrama si se edita
-     * en el pentagrama-; ver {@link #paintCorrespondingMark} para la marca gris, que va siempre
-     * en la otra.
-     */
     private static void paintCursor(Graphics2D g, ScoreLayout layout, Score score, Cursor cursor) {
         int x = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat()).x;
         int top = layout.staffTop(cursor.track(), cursor.measure());
         int bottom = layout.tabBottom(cursor.track(), cursor.measure());
         g.setColor(ScoreColors.CURSOR);
-        // fillRect en vez de drawLine: la misma razon que en paintPlaying, para que el
-        // antialiasing no reparta la linea entre dos columnas y la deje desteñida.
+        // fillRect instead of drawLine: same reason as in paintPlaying, so antialiasing does
+        // not split the line between two columns and leave it faded.
         g.fillRect(x, top, 1, bottom - top);
         if (cursor.notation() == Notation.STANDARD) {
             paintCursorNote(g, layout, score, cursor);
@@ -319,18 +270,11 @@ public final class ScorePainter {
         }
     }
 
-    /** La linea sola no dice en que cuerda esta parado el cursor: a esa altura se la ensancha. */
     private static void paintCursorString(Graphics2D g, ScoreLayout layout, Cursor cursor, int x) {
         int y = layout.stringY(cursor.track(), cursor.measure(), cursor.string());
         g.fillRect(x - 2, y - 2, 5, 5);
     }
 
-    /**
-     * El cursor sobre la cabeza de la nota, cuando se edita en el pentagrama: la misma altura que
-     * agregaria Enter -la de la nota que ya suena en la cuerda del cursor, o la de la cuerda al
-     * aire si esta en silencio-, para que el cuadradito muestre de verdad donde va a caer la
-     * proxima nota.
-     */
     private static void paintCursorNote(Graphics2D g, ScoreLayout layout, Score score, Cursor cursor) {
         Track track = score.track(cursor.track());
         Measure measure = track.measure(cursor.measure());
@@ -344,8 +288,6 @@ public final class ScorePainter {
         g.fillRect(bounds.x + 1, y - 5, bounds.width - 2, 10);
     }
 
-    /** La marca del cursor en la OTRA notacion (manual, linea 769-770): gris, y solo si hay una
-     * nota real que marcar -a diferencia del cuadradito del cursor, que siempre se ve. */
     private static void paintCorrespondingMark(Graphics2D g, ScoreLayout layout, Score score, Cursor cursor) {
         if (cursor.notation() == Notation.STANDARD) {
             paintCorrespondingString(g, layout, score, cursor);
@@ -354,7 +296,6 @@ public final class ScorePainter {
         }
     }
 
-    /** La nota que corresponde al cursor en la otra notacion, marcada con un rectangulo gris. */
     private static void paintCorrespondingNote(Graphics2D g, ScoreLayout layout, Score score, Cursor cursor) {
         Track track = score.track(cursor.track());
         if (cursor.measure() >= track.measureCount()) {
@@ -368,8 +309,6 @@ public final class ScorePainter {
         Beat beat = beats.get(cursor.beat());
         beat.noteOn(cursor.string()).ifPresent(note -> {
             Clef clef = Clef.forTuning(track.tuning());
-            // La misma cuenta que StaffPainter para ubicar la cabeza -8va/8vb/15ma/15mb
-            // incluido-, no una copia: si la formula vive en dos lados, vuelven a separarse.
             int octaveShift = measure.attributes().octaveMark().staffStepShift();
             StaffPosition position = StaffPainter.positionOf(track, clef, note, octaveShift);
             int y = layout.stepY(cursor.track(), cursor.measure(), position.step());
@@ -379,9 +318,6 @@ public final class ScorePainter {
         });
     }
 
-    /** La cuerda que corresponde al cursor cuando se edita en el pentagrama: el numero de traste
-     * que ya se ve siempre en la tablatura, pero marcado de gris en vez de en el color del cursor
-     * -la marca cambio de lado, como pide el manual-. Solo si hay una nota real en esa cuerda. */
     private static void paintCorrespondingString(Graphics2D g, ScoreLayout layout, Score score, Cursor cursor) {
         Track track = score.track(cursor.track());
         if (cursor.measure() >= track.measureCount()) {

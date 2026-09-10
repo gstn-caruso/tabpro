@@ -24,19 +24,6 @@ import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
-/**
- * El lienzo de una hoja de papel: dibuja lo mismo que le piden, pero cada color que el pintor
- * elige de {@link ScoreColors} entra como se ve en la pantalla oscura y sale como se lee sobre la
- * hoja clara.
- *
- * <p>Los pintores de la partitura eligen sus colores pensando en el fondo oscuro de la pantalla y
- * no saben nada de hojas. El Modo Pagina los dejaba dibujar sobre un lienzo transparente e
- * invertia despues cada pixel, y esa inversion no sabia lo que estaba invirtiendo: servia
- * mientras toda la tinta fuera gris, pero el rectangulito rojo del cambio de parametro, un
- * marcador de color o el compas incompleto llegaban a la hoja con el color cambiado. Traducir el
- * color en el momento en que el pintor lo elige deja que cada cosa se dibuje directamente del
- * color que le toca, y que no quede nada para invertir despues.
- */
 final class PaperGraphics extends Graphics2D {
 
     private final Graphics2D canvas;
@@ -45,7 +32,6 @@ final class PaperGraphics extends Graphics2D {
         this.canvas = canvas;
     }
 
-    /** Un pedazo de hoja, recortado y en el origen, listo para que la partitura se dibuje adentro. */
     static Graphics2D over(Graphics2D g, int x, int y, int width, int height) {
         return new PaperGraphics((Graphics2D) g.create(x, y, Math.max(1, width), Math.max(1, height)));
     }
@@ -74,8 +60,6 @@ final class PaperGraphics extends Graphics2D {
     public Graphics create() {
         return new PaperGraphics((Graphics2D) canvas.create());
     }
-
-    // De aca para abajo es todo plomeria: cada mensaje va tal cual al lienzo de abajo.
 
     @Override
     public void addRenderingHints(Map<?, ?> hints) {

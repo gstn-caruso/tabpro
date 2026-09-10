@@ -110,8 +110,6 @@ class ChordEditorModelTest {
 
     @Test
     void ofreceNombresAlternativosParaElDiagramaPrincipal() {
-        // Do mayor sin la fundamental en el bajo grave suena igual que Do6 sin la sexta, etc.
-        // Alcanza con verificar que el nombre elegido este entre los alternativos.
         assertTrue(model.alternativeNames().stream().anyMatch(chord -> chord.name().equals("C")));
     }
 
@@ -138,7 +136,7 @@ class ChordEditorModelTest {
 
     @Test
     void tocarLaMismaNotaDeNuevoLaSaca() {
-        model.toggleFret(1, 0); // la primera cuerda al aire ya suena en Do mayor
+        model.toggleFret(1, 0);
 
         model.toggleFret(1, 0);
 

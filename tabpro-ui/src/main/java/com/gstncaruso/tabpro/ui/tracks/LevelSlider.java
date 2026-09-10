@@ -24,13 +24,6 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-/**
- * Un parametro de sonido dibujado como deslizador horizontal, tal como el volumen y el paneo en
- * la mesa de mezcla de Guitar Pro: una barra que se rellena segun el nivel y una caja numerica
- * que viaja sobre el cursor. Cuando el color de relleno y el de la parte vacia coinciden, la
- * barra se ve pintada de punta a punta y solo se mueve la caja -asi se lee el paneo, centrado en
- * el medio del rango.
- */
 public final class LevelSlider extends JComponent implements AccessibleControl {
 
     private static final Color BADGE_BACKGROUND = ScoreColors.PAGE_PAPER;

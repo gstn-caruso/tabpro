@@ -10,11 +10,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/**
- * La banda de titulo de una mini-ventana como el diapason o el teclado, igual que en Guitar Pro
- * 5: el nombre en negrita a la izquierda, los controles propios de esa vista al medio, y a la
- * derecha el boton de cerrar.
- */
 final class PanelTitleBar extends JPanel {
 
     private final JButton close;

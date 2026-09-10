@@ -15,17 +15,11 @@ import java.awt.Rectangle;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 dibuja la cabeza de percusion con el glifo grabado de Bravura que corresponde a su
- * forma -X, rombo u ovalo- en vez de dos diagonales, un Path2D o una elipse trazados a mano.
- */
 class PercussionNoteheadPaintingTest {
 
     private static final int WIDTH = 900;
-    /** 42 = "Hi-hat cerrado": shapeFor lo mapea a CROSS. */
     private static final int HI_HAT_CLOSED = 42;
 
-    /** 54 = "Pandereta": shapeFor lo mapea a DIAMOND. */
     private static final int TAMBOURINE = 54;
 
     @Test
@@ -38,8 +32,6 @@ class PercussionNoteheadPaintingTest {
         assertGlyphAt(TAMBOURINE, MusicFont.noteheadDiamondBlack());
     }
 
-    /** 38 = "Caja acustica": shapeFor no la reconoce ni como platillo ni como pandereta, asi que
-     * cae en el ovalo comun. */
     private static final int ACOUSTIC_SNARE = 38;
 
     @Test

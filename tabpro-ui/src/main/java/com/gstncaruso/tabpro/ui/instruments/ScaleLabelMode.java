@@ -1,9 +1,5 @@
 package com.gstncaruso.tabpro.ui.instruments;
 
-/**
- * Que texto lleva una nota de la escala sobre el diapason, tal como lo permite personalizar
- * el manual: su nombre, su intervalo respecto de la tonica, o el grado que ocupa en la escala.
- */
 public enum ScaleLabelMode {
     NAME("Nombre") {
         @Override

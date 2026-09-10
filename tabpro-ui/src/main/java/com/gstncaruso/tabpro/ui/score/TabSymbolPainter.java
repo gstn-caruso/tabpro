@@ -20,22 +20,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-/**
- * Los simbolos que el manual agrupa en "Add Symbols" y que se dibujan arriba de la tablatura:
- * PM, let ring, tapping, slap, pop, fade in, armonicos, vibrato, trino, tremolo de pua, rasgueo,
- * pua, el pedal de wah-wah y texto libre. Se apilan con {@link VerticalStack} para no pisarse cuando coinciden varios en el
- * mismo beat.
- */
 final class TabSymbolPainter {
 
     private static final int ROW_HEIGHT = 11;
     private static final int ROW_GAP = 1;
 
-    /**
-     * Cuanto aire deja la fila mas cercana al TAB antes del digito de traste de la primera
-     * cuerda: la mitad del paso entre cuerdas, igual que el rectangulo que {@link TabPainter}
-     * reserva para ese digito.
-     */
     private static final int FRET_DIGIT_CLEARANCE = ScoreLayout.STRING_SPACING / 2;
 
     private TabSymbolPainter() {
@@ -74,7 +63,6 @@ final class TabSymbolPainter {
         });
     }
 
-    /** Las siglas que valen una vez por beat, juntando lo que pida cualquiera de sus notas. */
     private static List<String> labelsFor(Beat beat) {
         List<String> labels = new ArrayList<>();
         BeatEffects effects = beat.effects();

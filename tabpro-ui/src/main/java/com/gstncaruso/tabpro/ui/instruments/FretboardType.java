@@ -2,11 +2,6 @@ package com.gstncaruso.tabpro.ui.instruments;
 
 import java.awt.Color;
 
-/**
- * Los tipos de diapason que ofrece el manual: puramente esteticos, pero cada uno se
- * ve distinto en el color de la madera, la forma de los marcadores y el ancho del
- * mastil.
- */
 public enum FretboardType {
     ELECTRIC("Eléctrica", new Color(0x3A2F28), new Color(0x8D7665), InlayStyle.DOTS, 1.0,
             FretboardPalette.electric()),
@@ -77,7 +72,6 @@ public enum FretboardType {
         return inlayStyle;
     }
 
-    /** Cuanto mas ancho que el electrico se dibuja el mastil de este tipo. */
     public double neckWidthFactor() {
         return neckWidthFactor;
     }

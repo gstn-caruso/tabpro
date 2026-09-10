@@ -10,14 +10,9 @@ import java.util.List;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
-/**
- * Un escritor de PDF mínimo: una página por imagen, cada una comprimida y
- * estirada para llenar la hoja del tamaño que pida la configuración de página.
- * Alcanza para exportar la partitura sin traer una biblioteca entera.
- */
 final class PdfDocument {
 
-    /** Una hoja A4 en puntos, que es la unidad del PDF (72 por pulgada). */
+    /** A4 sheet in points, the PDF unit (72 per inch). */
     private static final double A4_WIDTH = 595.28;
     private static final double A4_HEIGHT = 841.89;
 
@@ -50,7 +45,7 @@ final class PdfDocument {
         int objectCount = 2 + pages.size() * 3;
         int pagesObject = 2;
 
-        // 1: catalogo, 2: arbol de paginas, y por cada hoja: pagina, contenido e imagen.
+        // Object 1: catalog, object 2: page tree, then per sheet: page, content and image.
         offsets.add(body.size());
         append(body, "1 0 obj\n<< /Type /Catalog /Pages " + pagesObject + " 0 R >>\nendobj\n");
 
@@ -103,7 +98,6 @@ final class PdfDocument {
         body.writeTo(out);
     }
 
-    /** La imagen se escala para entrar entera en la hoja, centrada. */
     private String contentFor(BufferedImage image) {
         double scale = Math.min(sheetWidth / image.getWidth(), sheetHeight / image.getHeight());
         double width = image.getWidth() * scale;

@@ -20,11 +20,11 @@ class ChordSoundTest {
 
         assertEquals(
                 List.of(
-                        new Pitch(64), // cuerda 1 al aire, Mi4
-                        new Pitch(60), // cuerda 2 traste 1
-                        new Pitch(57), // cuerda 3 traste 2
-                        new Pitch(52), // cuerda 4 traste 2
-                        new Pitch(45)), // cuerda 5 al aire
+                        new Pitch(64),
+                        new Pitch(60),
+                        new Pitch(57),
+                        new Pitch(52),
+                        new Pitch(45)),
                 player.sounded().stream().map(RecordingPlayer.Sounded::pitch).toList());
     }
 

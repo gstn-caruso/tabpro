@@ -34,24 +34,10 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/**
- * Manual, linea 769-770: "cuando el cursor esta sobre una nota, la nota que le corresponde en la
- * otra notacion queda rodeada de un rectangulo gris". {@link ScorePainter#paintCorrespondingNote}
- * ya hace exactamente esto desde el clon original (v0.6.0) -no hacia falta escribirlo-, pero no
- * tenia ni un test propio: exactamente el patron de bug que este repo viene arrastrando, donde se
- * declara el color, se llama al metodo, y nada verifica que el pixel correcto se pinte. Estos
- * tests comparan la partitura pintada con y sin cursor, pixel a pixel -nunca preguntan un metodo.
- */
 class CorrespondingNoteMarkPaintingTest {
 
     private static final int WIDTH = 900;
 
-    /**
-     * Con una sola nota por compas (sin acorde de por medio), la marca tiene que aparecer justo
-     * en el grado que le corresponde a ESA nota, no en un lugar fijo del pentagrama. Se prueba
-     * con dos notas bien separadas -grave y aguda- para que un pintor que marcara siempre la
-     * misma altura quede en evidencia.
-     */
     @Test
     void theCorrespondingNoteMarkTracksWhicheverNoteTheCursorIsOn() {
         Note low = new Note(6, 0);
@@ -75,12 +61,6 @@ class CorrespondingNoteMarkPaintingTest {
                 "la marca tiene que aparecer en el grado de la nota aguda");
     }
 
-    /**
-     * El caso que justifica el feature entero: en un acorde de tres notas -tres alturas bien
-     * distintas en el pentagrama- la marca tiene que caer solo en la cabeza de la cuerda del
-     * cursor. Comparado nota por nota: si el pintor marcara siempre la misma cabeza, o el acorde
-     * entero, alguna de estas seis comparaciones lo agarra.
-     */
     @Test
     void inAChordTheMarkFallsOnlyOnTheNoteOfTheCursorsString() {
         Note lowString = new Note(6, 0);
@@ -114,10 +94,6 @@ class CorrespondingNoteMarkPaintingTest {
         assertNotEquals(bare.pixelAt(x, yHigh), onHighString.pixelAt(x, yHigh), "falta la marca en la cuerda del cursor");
     }
 
-    /**
-     * Sin nota en la cuerda del cursor -silencio- no hay nada que rodear en la otra notacion, asi
-     * que no puede aparecer ninguna marca en toda la franja del pentagrama.
-     */
     @Test
     void aBeatWithoutANoteOnTheCursorsStringShowsNoCorrespondingMark() {
         Score score = scoreWith(new Measure(TimeSignature.fourFour(), List.of(
@@ -130,20 +106,11 @@ class CorrespondingNoteMarkPaintingTest {
         Rectangle beat = bare.layout.beatBounds(0, 0, 0);
         int top = bare.layout.staffTop(0, 0);
         int bottom = bare.layout.tabTop(0, 0);
-        // Arranca en beat.x + 1, no en beat.x: ahi vive la linea vertical del cursor, que cambia
-        // con o sin cursor por otro motivo (existe o no) y no tiene nada que ver con esta marca.
         assertTrue(
                 sameInArea(bare, onRest, new Rectangle(beat.x + 1, top, beat.width - 2, bottom - top)),
                 "sin nota en la cuerda del cursor no puede aparecer ninguna marca gris");
     }
 
-    /**
-     * ScoreColors.CORRESPONDING_NOTE esta en la tabla ON_PAPER (como LABEL, STAFF_LINE o
-     * VOICE_INACTIVE): en el Modo Pagina tiene que salir invertido -gris oscuro sobre hoja clara-
-     * y no el mismo gris claro con que se ve sobre el fondo oscuro de la pantalla, que ahi se
-     * leeria destenido. Ver PageScorePainterTest.thePlayingLineIsTheSameGreenOnPaperAsOnScreen,
-     * que hace la comprobacion analoga para un color que -a diferencia de este- no se invierte.
-     */
     @Test
     void theCorrespondingNoteMarkReachesPageModeMirroredNotAsTheRawScreenColor() {
         Note note = new Note(1, 12);
@@ -173,13 +140,6 @@ class CorrespondingNoteMarkPaintingTest {
                 "el gris crudo de pantalla, sin invertir, se leeria mal sobre el papel claro");
     }
 
-    /**
-     * El bug de verdad: bajo 8va/8vb/15ma/15mb, StaffPainter escribe la cabeza siete (o catorce)
-     * grados corrida -{@link StaffPainter#positionOf} aplica {@code octaveMark.staffStepShift()}-
-     * pero paintCorrespondingNote calculaba la posicion sin ese corrimiento. La marca quedaba
-     * senalando pentagrama vacio (o la linea de otra nota) mientras la cabeza real estaba siete
-     * grados mas arriba: una marca que apunta a la nota equivocada es peor que no tener marca.
-     */
     @Test
     void theCorrespondingNoteMarkFollowsTheNoteWhenAnOctaveMarkMovesItsHead() {
         Note note = new Note(1, 0);
@@ -211,12 +171,6 @@ class CorrespondingNoteMarkPaintingTest {
                 "sin el corrimiento la marca queda senalando pentagrama vacio");
     }
 
-    /**
-     * Manual, linea 769-770: la marca gris va en la OTRA notacion. Editando en el pentagrama
-     * -TAB apretado- las dos marcas tienen que invertirse: el cuadradito del cursor (que en la
-     * tablatura marca la cuerda) pasa a marcar la cabeza de la nota, y el rectangulo gris (que en
-     * la tablatura marca la cabeza) pasa a marcar el numero de traste.
-     */
     @Test
     void theCursorMarksInvertWhenEditingInStandardNotation() {
         Note note = new Note(3, 5);
@@ -227,10 +181,6 @@ class CorrespondingNoteMarkPaintingTest {
         Painted onTablature = paint(score, new Cursor(0, 0, 0, 3));
         Painted onStaff = paint(score, new Cursor(0, 0, 0, 3).onNotation(Notation.STANDARD));
 
-        // El cuadradito de la tablatura es angosto y arranca en el borde izquierdo del beat
-        // (ScorePainter.paintCursorString); la marca del pentagrama es ancha y cruza su centro
-        // (ScorePainter.paintCorrespondingNote): cada una necesita su propia x para no pintar
-        // afuera de donde realmente cae la marca.
         int xEdge = bare.layout.beatBounds(0, 0, 0).x;
         int xCenter = bare.noteX();
         int yStaff = bare.layout.stepY(0, 0, position.step());
@@ -257,8 +207,6 @@ class CorrespondingNoteMarkPaintingTest {
         return ScoreLayout.of(score, WIDTH).stepY(0, 0, position.step());
     }
 
-    /** Cuatro negras -la nota y tres silencios- completan el compas de 4/4: uno incompleto se
-     * pinta con un tinte de aviso que contaminaria la comparacion de pixeles. */
     private static Measure completeMeasureOf(Note note) {
         return completeMeasureOf(Beat.of(Duration.quarter(), note));
     }
@@ -310,7 +258,6 @@ class CorrespondingNoteMarkPaintingTest {
         return true;
     }
 
-    /** Busca, en un cuadrado alrededor de (x,y), el primer pixel donde difieren dos imagenes. */
     private static int[] firstDifferingPixelNear(BufferedImage one, BufferedImage other, int x, int y, int radius) {
         for (int dy = -radius; dy <= radius; dy++) {
             for (int dx = -radius; dx <= radius; dx++) {
@@ -325,8 +272,6 @@ class CorrespondingNoteMarkPaintingTest {
         return null;
     }
 
-    /** Como queda un pixel de fondo {@code baseRGB} despues de pintarle encima {@code overlay}:
-     * deja que el propio AWT haga la mezcla alfa, en vez de repetir su formula a mano. */
     private static int blended(int baseRGB, Color overlay) {
         BufferedImage tiny = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         tiny.setRGB(0, 0, baseRGB);

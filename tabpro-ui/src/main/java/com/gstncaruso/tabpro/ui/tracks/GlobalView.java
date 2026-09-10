@@ -6,10 +6,6 @@ import java.awt.BorderLayout;
 import java.util.OptionalInt;
 import javax.swing.JPanel;
 
-/**
- * La vista general: la zona de marcadores arriba y, debajo, la grilla de compases por pista. Las
- * dos comparten el mismo ancho de celda, asi que se ven y se scrollean como una sola unidad.
- */
 public final class GlobalView extends JPanel {
 
     private final MarkerZone markerZone;
@@ -43,8 +39,6 @@ public final class GlobalView extends JPanel {
         grid.repaint();
     }
 
-    /** Solo cambio el cursor: la zona de marcadores no depende de el, y la grilla se limita a
-     * resaltar la celda nueva sin recalcular todas las demas. */
     public void moveCursorHighlight() {
         grid.moveCursorHighlight();
     }

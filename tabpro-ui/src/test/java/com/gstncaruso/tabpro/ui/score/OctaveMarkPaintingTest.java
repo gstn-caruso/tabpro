@@ -27,18 +27,9 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * 8va/8vb/15ma/15mb del manual: cambian donde se escribe la nota en el pentagrama, nunca lo que
- * se toca. El test que importa no es que la marca haya quedado guardada, sino las dos mitades
- * juntas: la nota se escribe en otro lugar del pentagrama Y la tablatura -lo que de verdad se
- * toca- se dibuja exactamente igual que sin la marca.
- */
 class OctaveMarkPaintingTest {
 
     private static final int WIDTH = 900;
-    // La prima al aire cae cerca del espacio superior del pentagrama (sin lineas adicionales);
-    // 8va la escribe justo en la linea de abajo, asi el corrimiento no arrastra lineas
-    // adicionales hasta pisar la tablatura y contaminar la comparacion pixel a pixel de abajo.
     private static final Note NOTE = new Note(1, 0);
 
     @Test
@@ -84,7 +75,6 @@ class OctaveMarkPaintingTest {
         assertEquals(plain.noteX(), marked.noteX());
     }
 
-    /** La mitad que mas importa: lo que de verdad se toca -la tablatura- no se mueve un pixel. */
     @Test
     void anOctaveMarkNeverChangesWhatTheTablatureShows() {
         Painted plain = paint(OctaveMark.NONE);
@@ -94,12 +84,6 @@ class OctaveMarkPaintingTest {
                 "la tablatura tiene que quedar identica: la marca solo cambia el pentagrama");
     }
 
-    /**
-     * El extremo derecho del compas -donde llega la linea de puntos, pero nunca la plica ni las
-     * lineas adicionales de la nota, que quedan centradas sobre su propia cabeza- es el unico
-     * lugar limpio para preguntar si la marca dibujo algo, sin que un pentagrama ya ocupado por
-     * la clave (a la izquierda) o por la nota (al medio) de un falso positivo.
-     */
     @Test
     void withoutAMarkNothingReachesTheEndOfTheMeasureAboveOrBelowTheStaff() {
         Painted plain = paint(OctaveMark.NONE);
@@ -125,8 +109,6 @@ class OctaveMarkPaintingTest {
     }
 
     private static Painted paint(OctaveMark octaveMark) {
-        // Cuatro negras -la nota y tres silencios- completan el compas de 4/4: uno incompleto
-        // se pinta con un tinte de aviso que taparia justo la franja que estos tests miran.
         Measure measure = new Measure(
                 TimeSignature.fourFour(),
                 MeasureAttributes.plain().withOctaveMark(octaveMark),
@@ -143,9 +125,6 @@ class OctaveMarkPaintingTest {
         Graphics2D g = image.createGraphics();
         g.setClip(0, 0, WIDTH, layout.totalHeight());
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        // Cursor fuera de la partitura: sin el, ScorePainter resalta con un rectangulo gris la
-        // nota correspondiente en la otra notacion en la posicion SIN corrimiento -logica de
-        // ScorePainter, fuera del alcance de este cambio- y contamina la comparacion de pixeles.
         ScorePainter.paint(g, layout, score, new Cursor(-1, 0, 0, 1), Playhead.silent());
         g.dispose();
         return new Painted(image, layout);
@@ -174,9 +153,6 @@ class OctaveMarkPaintingTest {
             return false;
         }
 
-        /** Deja 3px de aire pegados al pentagrama: ahi puede sangrar el trazo de la linea
-         * superior del pentagrama, sin antialiasing de por medio, y no tiene nada que ver con
-         * la marca de octava que este test busca. */
         private static final int STAFF_BLEED_MARGIN = 3;
 
         boolean hasInkAboveTheStaffNear(int x) {

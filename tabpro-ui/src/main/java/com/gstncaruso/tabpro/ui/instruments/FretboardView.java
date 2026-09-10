@@ -34,11 +34,6 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-/**
- * El mastil: las notas del beat marcadas donde se pisan, mas lo que sume el modo
- * de vista elegido. Respeta la cejilla, la cantidad de trastes y de cuerdas de la
- * pista activa, y se puede dar vuelta para zurdos.
- */
 public final class FretboardView extends JComponent implements AccessibleControl {
 
     public static final int PREFERRED_HEIGHT = 118;
@@ -122,7 +117,6 @@ public final class FretboardView extends JComponent implements AccessibleControl
         });
     }
 
-    /** Lo que se llama, con la nota bajo el caret, cuando Enter o Espacio lo activan. */
     public void onCaretActivated(Consumer<Note> listener) {
         this.onCaretActivated = listener;
     }
@@ -145,7 +139,6 @@ public final class FretboardView extends JComponent implements AccessibleControl
         return Math.max(lowest, Math.min(highest, candidate));
     }
 
-    /** La nota que hay bajo el caret de teclado ahora mismo. */
     public Optional<Note> caretNote() {
         return Optional.of(new Note(caretString, caretFret));
     }
@@ -166,8 +159,6 @@ public final class FretboardView extends JComponent implements AccessibleControl
     private static BeatLocation defaultLocation() {
         return new BeatLocation(Track.standardGuitar("Guitarra"), 0, VoicePart.LEAD, 0);
     }
-
-    // ---- lo que se muestra -------------------------------------------------
 
     public void show(BeatLocation location) {
         this.location = location;
@@ -192,7 +183,6 @@ public final class FretboardView extends JComponent implements AccessibleControl
         return noteNameMode;
     }
 
-    /** Que muestran las notas de la escala en modo "Beat y escala": nombre, intervalo o grado. */
     public void setScaleLabelMode(ScaleLabelMode scaleLabelMode) {
         this.scaleLabelMode = scaleLabelMode;
         repaint();
@@ -225,18 +215,14 @@ public final class FretboardView extends JComponent implements AccessibleControl
         repaint();
     }
 
-    /** La nota que esta bajo el mouse en este momento, sin que haga falta clickear. */
     public Optional<Note> hoveredNote() {
         return hovered;
     }
-
-    // ---- geometria ----------------------------------------------------------
 
     public int stringCount() {
         return location.track().stringCount();
     }
 
-    /** Cuantos trastes se dibujan: los que admite la pista activa, no siempre los mismos. */
     public int fretCount() {
         return location.track().settings().fretCount();
     }
@@ -253,7 +239,6 @@ public final class FretboardView extends JComponent implements AccessibleControl
         return TOP_MARGIN + (int) Math.round((string - 1) * stringGap());
     }
 
-    /** La nota que se pisa en ese punto del mastil, o nada si el punto cae afuera. */
     public Optional<Note> noteAt(int x, int y) {
         int logicalX = handedness.mirror(x, getWidth());
         return stringAt(y).flatMap(string -> logicalFretAt(logicalX).map(fret -> new Note(string, fret)));
@@ -303,16 +288,10 @@ public final class FretboardView extends JComponent implements AccessibleControl
         return (int) Math.round(stringGap() / 2 * fretboardType.neckWidthFactor());
     }
 
-    /** Como se llama la nota de esa posicion, ya con la cejilla de la pista sumada. */
     public String labelFor(FretPosition position) {
         return PitchName.of(location.track().pitchOf(new Note(position.string(), position.fret()))).text();
     }
 
-    /**
-     * El texto que se dibuja para esa posicion. Las notas de contexto de "Beat y escala"
-     * respetan el modo de etiqueta elegido (nombre, intervalo o grado); todo lo demas -incluida
-     * la nota que se esta pisando ahora mismo- siempre se llama por su nombre.
-     */
     public String labelFor(FretPosition position, MarkKind kind) {
         String name = labelFor(position);
         if (kind != MarkKind.SECONDARY || displayMode != FretboardDisplayMode.BEAT_AND_SCALE) {
@@ -324,8 +303,6 @@ public final class FretboardView extends JComponent implements AccessibleControl
     private int midiOf(FretPosition position) {
         return location.track().pitchOf(new Note(position.string(), position.fret())).midiNumber();
     }
-
-    // ---- el mouse -----------------------------------------------------------
 
     private void trackTheMouse() {
         addMouseMotionListener(new MouseMotionAdapter() {
@@ -343,8 +320,6 @@ public final class FretboardView extends JComponent implements AccessibleControl
             }
         });
     }
-
-    // ---- dibujo -----------------------------------------------------------
 
     @Override
     protected void paintComponent(Graphics graphics) {
@@ -386,7 +361,6 @@ public final class FretboardView extends JComponent implements AccessibleControl
         return fromLookAndFeel != null ? fromLookAndFeel : fretboardType.hoverColor();
     }
 
-    /** Lo unico que se dibuja mirando al mastil al reves para zurdos: nada de texto. */
     private void withHandedTransform(Graphics2D g, Consumer<Graphics2D> painting) {
         if (handedness == Handedness.RIGHT_HANDED) {
             painting.accept(g);

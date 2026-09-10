@@ -3,7 +3,6 @@ package com.gstncaruso.tabpro.ui.instruments;
 import java.util.Arrays;
 import java.util.Set;
 
-/** Las escalas mas comunes para el modo "beat y escala", como semitonos desde la tonica. */
 public enum ScaleType {
     MAJOR("Mayor", 0, 2, 4, 5, 7, 9, 11),
     NATURAL_MINOR("Menor natural", 0, 2, 3, 5, 7, 8, 10),
@@ -23,7 +22,6 @@ public enum ScaleType {
         return label;
     }
 
-    /** Los semitonos que forman la escala, contados desde la tonica. */
     public Set<Integer> semitones() {
         return intervals;
     }

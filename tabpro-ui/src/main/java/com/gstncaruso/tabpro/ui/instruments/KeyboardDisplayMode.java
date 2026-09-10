@@ -7,10 +7,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Los modos de vista del teclado. Son los mismos cuatro del diapason menos el del
- * diagrama de acorde, que no tiene sentido sobre teclas.
- */
 public enum KeyboardDisplayMode {
     ONLY_BEAT("Solo el beat") {
         @Override

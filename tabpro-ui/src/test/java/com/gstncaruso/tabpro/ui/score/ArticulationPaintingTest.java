@@ -18,31 +18,18 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 dibuja el staccato y el acento con el glifo grabado de Bravura que corresponde al
- * lado de la nota donde caen, en vez de una elipse o un chevron trazados a mano.
- */
 class ArticulationPaintingTest {
 
     private static final int WIDTH = 900;
-    /** string=3 fret=0: grado 2, debajo de la linea del medio -la marca cae arriba de la nota. */
     private static final Note BELOW_MIDDLE_LINE = new Note(3, 0);
-    /** string=1 fret=0: grado 7, arriba de la linea del medio -la marca cae abajo de la nota. */
     private static final Note ABOVE_MIDDLE_LINE = new Note(1, 0);
-    /** SPACE*0.92 + SPACE*0.35, ver StaffPainter.NOTE_HEIGHT y paintArticulations: el aire entre
-     * la nota y su marca de articulacion. */
     private static final double MARK_OFFSET = ScoreLayout.STAFF_LINE_SPACING * (0.92 + 0.35);
 
-    /**
-     * Debajo de la linea del medio la plica va hacia arriba (convencion estandar); el staccato
-     * cae del lado de la cabeza opuesto a la plica, es decir abajo.
-     */
     @Test
     void aStaccatoNoteBelowTheMiddleLineGetsTheStaccatoBelowGlyph() {
         assertGlyphNearNote(BELOW_MIDDLE_LINE, Ornament.STACCATO, MusicFont.articStaccatoBelow(), false);
     }
 
-    /** Arriba de la linea del medio la plica va hacia abajo; el staccato cae arriba, opuesto a ella. */
     @Test
     void aStaccatoNoteAboveTheMiddleLineGetsTheStaccatoAboveGlyph() {
         assertGlyphNearNote(ABOVE_MIDDLE_LINE, Ornament.STACCATO, MusicFont.articStaccatoAbove(), true);

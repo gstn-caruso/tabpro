@@ -3,12 +3,6 @@ package com.gstncaruso.tabpro.ui.score;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Como se reparten los sistemas de un {@link ScoreLayout} en hojas, sin que ningun sistema quede
- * cortado entre dos. Paginado, las hojas tienen todas el mismo alto util -el que dicta la
- * configuracion de pagina- y el contenido que no entra pasa a la siguiente; como pergamino hay
- * una sola hoja que crece tanto como haga falta.
- */
 public final class PageLayout {
 
     private final List<Integer> firstSystemOfPage;
@@ -21,7 +15,6 @@ public final class PageLayout {
         this.systemCount = systemCount;
     }
 
-    /** Una sola hoja, tan alta como la partitura entera. */
     public static PageLayout parchment(ScoreLayout layout) {
         if (layout.systemCount() == 0) {
             return empty();
@@ -30,7 +23,6 @@ public final class PageLayout {
         return new PageLayout(List.of(0), List.of(height), layout.systemCount());
     }
 
-    /** Tantas hojas como haga falta para que en cada una entren {@code maxContentHeight} pixeles. */
     public static PageLayout paginated(ScoreLayout layout, int maxContentHeight) {
         if (layout.systemCount() == 0) {
             return empty();
@@ -78,7 +70,6 @@ public final class PageLayout {
         return page;
     }
 
-    /** Cuanto mide de alto el contenido de esa hoja, sin contar margenes ni encabezado ni pie. */
     public int contentHeightOf(int page) {
         return pageContentHeight.get(page);
     }

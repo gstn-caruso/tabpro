@@ -23,12 +23,6 @@ import java.util.List;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-/**
- * "let ring" y "P.M." se apilan justo encima de la primera cuerda, en la brecha entre el
- * pentagrama y la tablatura. La auditoria visual los encontro pisando el digito de esa misma
- * cuerda en la pista de abajo (Bajo) de una partitura a dos pistas: se reproduce ese caso para
- * que la fila mas cercana al TAB deje el digito intacto.
- */
 class TabSymbolClearsTheFretDigitTest {
 
     private static final int WIDTH = 300;

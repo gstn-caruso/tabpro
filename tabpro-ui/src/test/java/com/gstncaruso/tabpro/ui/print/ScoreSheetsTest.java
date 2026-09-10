@@ -75,11 +75,6 @@ class ScoreSheetsTest {
         assertTrue(onA3 < onA4, "en A3 entra mas musica por hoja");
     }
 
-    /**
-     * La hoja se dibuja sin canal alfa a proposito. Exportar a BMP una imagen que lo tenga no
-     * falla a los gritos: {@code ImageIO.write} devuelve false, no tira ninguna excepcion y no
-     * deja ningun archivo. La hoja opaca es lo que hace que eso no pueda pasar.
-     */
     @Test
     void everySheetIsOpaqueSoThatBmpCanBeWritten() {
         assertFalse(

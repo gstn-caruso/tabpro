@@ -18,10 +18,6 @@ import org.junit.jupiter.api.Test;
 
 class TrackPanelTest {
 
-    /**
-     * Auditoria de rendimiento, hallazgo 4: editorChanged() llamaba siempre a
-     * globalView.refresh(), que revalida y repinta toda la grilla de compases con cada flecha.
-     */
     @Test
     void movingTheCursorSkipsTheHeavyGlobalViewRefresh() throws Exception {
         Editor editor = editorWithTwoMeasures();

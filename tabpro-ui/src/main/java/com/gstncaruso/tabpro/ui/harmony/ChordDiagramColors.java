@@ -2,11 +2,6 @@ package com.gstncaruso.tabpro.ui.harmony;
 
 import java.awt.Color;
 
-/**
- * La paleta propia del diagrama de acorde: tiene que leerse bien sobre el fondo oscuro de la
- * ventana, asi que no usa las claves genericas del look and feel (permitido para este dibujo,
- * como el diapason y el teclado tienen la suya).
- */
 final class ChordDiagramColors {
 
     static final Color BACKGROUND = new Color(0x2B2D30);

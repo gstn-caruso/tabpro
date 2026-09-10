@@ -11,11 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * La paleta oscura: la partitura, el panel de pistas, el diapason y el teclado se ven siempre
- * sobre fondo oscuro, la elija o no el tema de la ventana. {@code ChordDiagramColorsContrastTest}
- * cubre el diagrama de acorde, que vive en otro paquete por su propio fondo package-private.
- */
 class ScoreColorsContrastTest {
 
     @Test

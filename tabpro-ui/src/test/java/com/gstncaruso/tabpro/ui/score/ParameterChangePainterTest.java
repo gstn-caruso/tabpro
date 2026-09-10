@@ -25,11 +25,6 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Como se ve un cambio de parametro insertado en medio de la partitura: el
- * rectangulito rojo del manual para lo que no tiene simbolo musical, y la negra
- * con su numero para el cambio de tempo.
- */
 class ParameterChangePainterTest {
 
     private static final int WIDTH = 900;
@@ -78,7 +73,6 @@ class ParameterChangePainterTest {
 
         ParameterChangePainter.paintMeasure(lienzo, layout, track, 0, 0);
 
-        // STAFF_CLEARANCE (16) de ParameterChangePainter: el aire entre el tempo y el pentagrama.
         int bottom = layout.staffTop(0, 0) - 16;
         assertTrue(lienzo.escribeTextoEnRegion(MusicFont.metNoteQuarterUp(), new Rectangle(0, bottom - 14, WIDTH, 16)),
                 "el tempo tiene que escribir la negra chiquita con el glifo de Bravura");
@@ -147,8 +141,6 @@ class ParameterChangePainterTest {
         assertFalse(painted.hasColorAbove(0, 0, 0, ScoreColors.PARAMETER_CHANGE));
     }
 
-    // ---- armado de partituras de prueba -----------------------------------
-
     private static ParameterChange change(SoundParameter parameter, int value) {
         return ParameterChange.nothing().changing(parameter, value);
     }
@@ -191,7 +183,6 @@ class ParameterChangePainterTest {
             return scanAbove(track, measure, beat, pixel -> pixel == color.getRGB());
         }
 
-        /** Si el aire sobre ese beat quedo dibujado igual que en la otra hoja. */
         boolean looksLikeAbove(Painted other, int track, int measure, int beat) {
             Rectangle bounds = layout.beatBounds(track, measure, beat);
             int staffTop = layout.staffTop(track, measure);
@@ -205,7 +196,6 @@ class ParameterChangePainterTest {
             return true;
         }
 
-        /** La franja de aire que hay entre la etiqueta de la pista y el pentagrama, sobre ese beat. */
         private boolean scanAbove(int track, int measure, int beat, java.util.function.IntPredicate wanted) {
             Rectangle bounds = layout.beatBounds(track, measure, beat);
             int staffTop = layout.staffTop(track, measure);

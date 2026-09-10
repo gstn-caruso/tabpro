@@ -55,22 +55,11 @@ class ScoreCanvasTest {
         assertTrue(avisado[0]);
     }
 
-    /**
-     * Tab es, de fabrica, una tecla de navegacion de foco para cualquier JComponent: si
-     * ScoreCanvas no la desactiva, AWT se queda con ella para mover el foco antes de que
-     * KeyboardEditing (que si tiene el binding de Tab) llegue a verla.
-     */
     @Test
     void desactivaSusTeclasDeFocoParaQueTabLlegueAlEditorDeTeclado() {
         assertFalse(canvas.getFocusTraversalKeysEnabled());
     }
 
-    /**
-     * Con Tab reservado para alternar tablatura/pentagrama, la partitura necesita otra forma de
-     * ceder el foco. Ctrl+Tab y Shift+Tab ya son "Marcador siguiente/anterior" del manual, y F6
-     * ya es "Propiedades de la pista": el primer par libre, en el orden que pide el manual de
-     * atajos, es Ctrl+F6 / Ctrl+Shift+F6.
-     */
     @Test
     void ctrlF6LePideALaCosturaDeFocoQueVayaAlSiguienteComponente() {
         RecordingFocusTraversal recorder = new RecordingFocusTraversal();
@@ -162,11 +151,6 @@ class ScoreCanvasTest {
                 "el bajo tiene cuatro cuerdas, asi que ocupa menos alto que la guitarra");
     }
 
-    /**
-     * El manual, en Multiple Selection: "para seleccionar compases completos, apreta Ctrl
-     * mientras haces la seleccion". Arrastrando con Ctrl apretado, la seleccion tiene que
-     * abarcar los compases enteros que toco el arrastre, no solo los beats.
-     */
     @Test
     void draggingWithControlHeldSelectsWholeMeasures() {
         Editor twoMeasures = editorWithTwoMeasures();
@@ -214,10 +198,6 @@ class ScoreCanvasTest {
         assertFalse(selection.wholeMeasures());
     }
 
-    /**
-     * Como en Guitar Pro 5 y en cualquier editor: un clic sin Shift limpia cualquier seleccion
-     * vieja, aunque no arrastre a ningun lado.
-     */
     @Test
     void clickingSomewhereClearsAnyActiveSelection() {
         Editor twoMeasures = editorWithTwoMeasures();
@@ -231,10 +211,6 @@ class ScoreCanvasTest {
         assertTrue(canvasWithTwoMeasures.selection().isEmpty());
     }
 
-    /**
-     * Como en Guitar Pro 5 y en cualquier editor: Shift mas clic no limpia la seleccion, la
-     * extiende desde donde estaba el cursor hasta donde cayo el clic.
-     */
     @Test
     void shiftClickExtendsTheSelectionInsteadOfClearingIt() {
         Editor twoMeasures = editorWithTwoMeasures();
@@ -251,10 +227,6 @@ class ScoreCanvasTest {
         assertEquals(1, selection.toMeasure());
     }
 
-    /**
-     * El manual, en Using the Mouse: "Note > 0 to 30 (clic derecho sobre la tablatura)". El
-     * menu tiene que ofrecer los trastes de la cuerda donde cayo el clic.
-     */
     @Test
     void rightClickingAStringOffersTheFretsOfItsTrack() {
         ScoreLayout layout = ScoreLayout.of(editor.score(), 900);
@@ -299,11 +271,6 @@ class ScoreCanvasTest {
         assertTrue(canvas.contextMenuAt(-100, -100).isEmpty());
     }
 
-    /**
-     * El manual deja reposicionar el audio con un clic durante la reproduccion. El lienzo no
-     * sabe nada del Transport, asi que avisa donde cayo el clic para que quien lo escuche
-     * decida si hay que saltar la reproduccion ahi.
-     */
     @Test
     void aClickOnTheScoreTellsWhoeverIsListeningWhereItLanded() {
         ScoreLayout layout = ScoreLayout.of(editor.score(), 900);
@@ -328,12 +295,6 @@ class ScoreCanvasTest {
         assertTrue(notified.isEmpty());
     }
 
-    /**
-     * Preferencias [F12], "Desplazar la pantalla durante la reproduccion": destildarla no hacia
-     * nada, porque {@code showPlayhead} pedia el scroll sin preguntar. La prueba mete el lienzo
-     * en un JScrollPane de verdad y mira si la vista se mueve -el efecto en la pantalla-, no si
-     * la preferencia "quedo guardada", que es justo lo que no alcanzaba antes.
-     */
     @Test
     void showPlayheadScrollsToKeepItVisibleByDefault() {
         ScoreCanvas horizontal = canvasWithManyMeasuresScrolledHorizontally();
@@ -357,13 +318,6 @@ class ScoreCanvasTest {
                 "con el auto-scroll destildado la vista no se tiene que mover aunque el playhead quede afuera");
     }
 
-    /**
-     * Auditoria de corpus, hallazgo 2: justo despues de cambiar de modo de vista, el JViewport
-     * real todavia mide 0x0 -Swing no layouteo todavia-. Pedirle un scroll ahi (como hacia
-     * {@code editorChanged} sin guarda) no tira excepcion en un test headless, pero mueve la
-     * vista a una posicion sin sentido -el mismo mecanismo que en pantalla real termina en
-     * {@code IllegalArgumentException: Width (0) and height (0) cannot be <= 0}.
-     */
     @Test
     void doesNotScrollWhenTheAncestorViewportHasNoSizeYet() throws Exception {
         Editor manyMeasures = editorWithManyMeasures(30);
@@ -379,11 +333,6 @@ class ScoreCanvasTest {
                 "sin layout todavia (viewport 0x0) no hay que mover el scroll a un lugar sin sentido");
     }
 
-    /**
-     * Defensa en profundidad, mas alla del guard anterior: si algun dia algo mueve el cursor
-     * desde otro hilo, la reaccion del canvas (revalidate/repaint/scroll) tiene que llegar por
-     * el EDT, nunca en el acto sobre el hilo que llamo.
-     */
     @Test
     void deliversTheEditorNotificationOnTheEdtEvenWhenItCameFromAnotherThread() throws Exception {
         Editor manyMeasures = editorWithManyMeasures(30);
@@ -407,11 +356,6 @@ class ScoreCanvasTest {
                 "una vez que el EDT proceso la cola, el scroll real tiene que haber llegado");
     }
 
-    /**
-     * Encola en el EDT una tarea que no vuelve hasta que se cuente abajo el latch devuelto:
-     * cualquier aviso que otro hilo encole despues queda esperando detras, asi la prueba puede
-     * mirar el estado de antes de que ese aviso se procese sin que sea una carrera.
-     */
     private static CountDownLatch blockTheEdtQueueUntilReleased() {
         CountDownLatch releaseEdt = new CountDownLatch(1);
         SwingUtilities.invokeLater(() -> await(releaseEdt));
@@ -426,8 +370,6 @@ class ScoreCanvasTest {
         }
     }
 
-    /** Treinta compases en Pantalla Horizontal -que nunca envuelve- para que el ultimo quede
-     * bien lejos del origen y un scroll de verdad haga falta para llegar a el. */
     private static ScoreCanvas canvasWithManyMeasuresScrolledHorizontally() {
         ScoreCanvas manyMeasures = new ScoreCanvas(editorWithManyMeasures(30));
         manyMeasures.setViewMode(ViewMode.SCREEN_HORIZONTAL);
@@ -443,7 +385,6 @@ class ScoreCanvasTest {
         return new Editor(new Score("Prueba", 120, List.of(guitar)));
     }
 
-    /** Un JScrollPane real, medido y layouteado sin necesidad de mostrar ninguna ventana. */
     private static JScrollPane paneShowing(ScoreCanvas canvas) {
         canvas.setSize(canvas.getPreferredSize());
         JScrollPane pane = new JScrollPane(canvas);
@@ -460,10 +401,6 @@ class ScoreCanvasTest {
         return new Editor(new Score("Prueba", 120, List.of(guitar)));
     }
 
-    /**
-     * Auditoria de rendimiento, hallazgo 4: cualquier movimiento de cursor disparaba un
-     * relayout+repaint completo, sin distinguir "cambio el modelo" de "solo se movio el cursor".
-     */
     @Test
     void movingTheCursorSkipsRevalidateAndRepaintsOnlyTheCursorArea() throws Exception {
         Editor twoMeasures = editorWithTwoMeasures();
@@ -523,8 +460,6 @@ class ScoreCanvasTest {
             super.repaint(area);
         }
 
-        /** El propio constructor de JComponent dispara un repaint (setBackground); lo que
-         * importa para estas pruebas es lo que pasa despues, con el lienzo ya armado. */
         void forgetCallsMadeWhileBuilding() {
             revalidateCalls = 0;
             fullRepaintCalled = false;

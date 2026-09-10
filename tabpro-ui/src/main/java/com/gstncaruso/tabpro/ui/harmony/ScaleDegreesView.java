@@ -11,10 +11,6 @@ import java.util.List;
 import javax.accessibility.AccessibleContext;
 import javax.swing.JComponent;
 
-/**
- * El diagrama de grados de la escala elegida: el nombre de cada nota y su intervalo respecto
- * de la tonica, en columnas parejas, tal como lo dibuja el manual.
- */
 public final class ScaleDegreesView extends JComponent {
 
     public static final int PREFERRED_WIDTH = 420;
@@ -70,7 +66,6 @@ public final class ScaleDegreesView extends JComponent {
         return tones.get(index).interval().label();
     }
 
-    /** La posicion horizontal de la columna de ese grado, parejas entre si como en el manual. */
     public int degreeX(int index) {
         return SIDE_MARGIN + (int) Math.round(index * columnGap());
     }

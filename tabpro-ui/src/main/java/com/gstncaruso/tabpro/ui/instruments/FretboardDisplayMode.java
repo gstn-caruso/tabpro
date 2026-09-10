@@ -8,11 +8,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Los modos de vista que ofrece el diapason, tal como los describe el manual: que
- * mostrar ademas de las notas del beat. Cada uno decide sus posiciones secundarias
- * a su manera, sin cascadas de if en quien los usa.
- */
 public enum FretboardDisplayMode {
     ONLY_BEAT("Solo el beat") {
         @Override
@@ -65,7 +60,6 @@ public enum FretboardDisplayMode {
         return label;
     }
 
-    /** Las posiciones que este modo marca, primarias (el beat) y secundarias (el contexto). */
     public abstract FretMarks marks(BeatLocation location, int fretCount, Optional<Scale> scale);
 
     private static Set<FretPosition> positionsOf(Beat beat) {

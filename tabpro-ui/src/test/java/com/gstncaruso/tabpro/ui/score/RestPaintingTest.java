@@ -17,10 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 dibuja cada silencio con el glifo grabado de Bravura que corresponde a su figura
- * en vez de un rectangulo, un path o un gancho trazados a mano.
- */
 class RestPaintingTest {
 
     private static final int WIDTH = 900;

@@ -10,7 +10,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.List;
 
-/** La letra de la pista que la lleva, repartida silaba por silaba debajo de su tablatura. */
 final class LyricsPainter {
 
     private static final int LINE_HEIGHT = 13;

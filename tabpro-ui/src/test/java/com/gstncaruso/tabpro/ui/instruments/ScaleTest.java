@@ -90,7 +90,6 @@ class ScaleTest {
 
     @Test
     void degreeAndIntervalCanDifferOnAScaleThatSkipsSteps() {
-        // La pentatonica menor no tiene segundo grado: su segunda nota es la tercera menor.
         Scale minorPentatonic = new Scale(0, ScaleType.MINOR_PENTATONIC);
 
         assertEquals("b3", minorPentatonic.intervalLabelOf(63));

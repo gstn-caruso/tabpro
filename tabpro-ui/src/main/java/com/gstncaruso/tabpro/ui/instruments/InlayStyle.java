@@ -2,13 +2,10 @@ package com.gstncaruso.tabpro.ui.instruments;
 
 import java.awt.Graphics2D;
 
-/** La forma de los marcadores de traste, que cambia segun el tipo de diapason. */
 public enum InlayStyle {
-    /** La clasica no lleva marcadores: el mastil queda liso. */
     NONE {
         @Override
         public void draw(Graphics2D g, int centerX, int centerY, int radius) {
-            // sin marcador
         }
     },
     DOTS {

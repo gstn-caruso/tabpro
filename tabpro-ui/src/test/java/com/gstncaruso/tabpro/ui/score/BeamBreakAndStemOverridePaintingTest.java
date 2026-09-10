@@ -27,22 +27,11 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El manual, linea 923: el agrupamiento por barra de union y la direccion de la plica son
- * automaticos, pero "es posible cambiar[los] a mano... usando el menu Nota". Lo que importa aca
- * no es que el override haya quedado guardado (eso lo prueba JsonScoreFilesTest) sino que de
- * verdad cambia el dibujo, igual que OctaveMarkPaintingTest para la marca de octava.
- */
 class BeamBreakAndStemOverridePaintingTest {
 
     private static final int WIDTH = 900;
-    /** SPACE*3.4 (ver StaffPainter.STEM_LENGTH); alcanza como aproximacion, el radio de busqueda
-     * de pixeles perdona el redondeo. */
     private static final int STEM_LENGTH = 27;
 
-    // Grado 4 (la linea del medio): la plica automatica apunta para abajo, y con ese largo de
-    // plica la barra cae bien adentro del hueco entre el pentagrama y la tablatura -lejos de
-    // cualquier linea, asi que la unica tinta posible ahi es la barra misma.
     private static final Note MIDDLE_NOTE = new Note(2, 0);
     private static final int BEAM_SEARCH_RADIUS = 4;
 
@@ -81,9 +70,6 @@ class BeamBreakAndStemOverridePaintingTest {
 
         assertFalse(automatic.looksLike(forcedUp), "forzar la plica tiene que cambiar la hoja pintada");
 
-        // La plica se ata a un costado de la cabeza de la nota, no a su centro (NOTE_WIDTH/2 mas
-        // el margen de StaffPainter.stemOf), asi que el radio de busqueda tiene que cubrir ese
-        // corrimiento horizontal ademas del vertical.
         int x = automatic.noteX(0);
         assertTrue(automatic.hasInkNear(x, automatic.stemTipBelow(MIDDLE_NOTE), 6),
                 "automatica, la plica de esta nota apunta para abajo");
@@ -96,8 +82,6 @@ class BeamBreakAndStemOverridePaintingTest {
                 "forzada para arriba, ya no puede quedar nada abajo de la nota");
     }
 
-    /** Ocho corcheas llenan el compas de 4/4 -dos pares automaticos por cada mitad- con el
-     * override puesto en un solo beat, para aislar su efecto. */
     private static Painted paintEighthsWithOverrideAt(int beatIndex, BeamBreak beamBreak) {
         Duration eighth = new Duration(NoteValue.EIGHTH, false);
         Beat[] beats = new Beat[8];

@@ -21,15 +21,9 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 dibuja la bandera de una nota no agrupada con el glifo grabado de Bravura que
- * corresponde a su figura y a la direccion de la plica, en vez de un gancho de Path2D trazado a
- * mano.
- */
 class FlagPaintingTest {
 
     private static final int WIDTH = 900;
-    /** SPACE*3.4, ver StaffPainter.STEM_LENGTH: el largo de la plica sin agrupar. */
     private static final double STEM_LENGTH = ScoreLayout.STAFF_LINE_SPACING * 3.4;
     private static final Note NOTE = new Note(2, 0);
 

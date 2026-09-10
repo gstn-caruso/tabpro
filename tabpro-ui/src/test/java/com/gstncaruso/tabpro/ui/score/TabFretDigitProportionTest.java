@@ -6,10 +6,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 mide el digito de traste con un bounding box de 5x8 px sobre un espaciado entre
- * cuerdas de 9 px: el digito ocupa 0,89 de ese espaciado.
- */
 class TabFretDigitProportionTest {
 
     @Test

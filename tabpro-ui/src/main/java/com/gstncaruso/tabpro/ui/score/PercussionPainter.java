@@ -8,8 +8,6 @@ import com.gstncaruso.tabpro.core.model.Track;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-/** La notacion propia de percusion: cada linea es un sonido y la cabeza cambia de forma segun
- * de que sonido se trata (platillos con X, panderetas y afines con rombo, el resto con ovalo). */
 final class PercussionPainter {
 
     private static final int RADIUS = 4;

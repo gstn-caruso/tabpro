@@ -103,11 +103,6 @@ class ScorePainterTest {
                 Playhead.silent()));
     }
 
-    /**
-     * El manual pide el cursor de edicion como una linea vertical fina que cruza el pentagrama y
-     * la tablatura -no como el recuadro de antes, que solo marcaba una cuerda-. Se ubica en el
-     * arranque del beat actual, igual convencion que la linea de reproduccion.
-     */
     @Test
     void theEditingCursorIsAThinRedLineAcrossTheStaffAndTheTablature() {
         Cursor cursor = new Cursor(0, 0, 0, 3);
@@ -136,10 +131,6 @@ class ScorePainterTest {
                 "el cursor no puede tapar el beat entero como el recuadro de antes");
     }
 
-    /**
-     * La linea sola no dice en que cuerda esta parado el cursor -eso lo hacia bien el recuadro de
-     * antes-, asi que a la altura de esa cuerda la marca tiene que ensancharse.
-     */
     @Test
     void theEditingCursorStillShowsWhichStringItIsOn() {
         Cursor cursor = new Cursor(0, 0, 0, 3);
@@ -322,11 +313,6 @@ class ScorePainterTest {
         assertDoesNotThrow(() -> paint(scoreWith(measure), new Cursor(0, 0, 0, 1), Playhead.silent()));
     }
 
-    /**
-     * El manual describe seis tipos de slide (linea 1250 y siguientes). Cada uno tiene que
-     * dibujarse distinto de no tener slide, y distinto de los otros cinco -no alcanza con que el
-     * enum tenga seis valores si despues el pintor los confunde.
-     */
     @Test
     void everySlideTypeDrawsSomethingDifferentOnTheTablature() {
         Painted sinSlide = paint(scoreWith(measureWithSlide(null)), new Cursor(0, 0, 0, 1), Playhead.silent());
@@ -405,12 +391,6 @@ class ScorePainterTest {
         assertDoesNotThrow(() -> paint(score, new Cursor(0, 0, 0, 1), Playhead.silent()));
     }
 
-    /**
-     * El manual (p14: «Bridge», «Outro») dibuja un cuadradito solido con el color del marcador
-     * junto a su nombre. tabpro lo ponia arriba del texto, en la misma franja donde escribe el
-     * nombre de la pista -algo que GP5 no hace ahi-, y el cuadrado terminaba pisandolo. Ahora
-     * comparte renglon con el texto del marcador, a su izquierda.
-     */
     @Test
     void aSectionMarkerDrawsASquareInItsOwnColorBesideItsName() {
         Color markerColor = new Color(0x00, 0xAA, 0x00);
@@ -474,10 +454,6 @@ class ScorePainterTest {
                 "un marcador que ya contrasta con el fondo no necesita un borde extra");
     }
 
-    /**
-     * El manual (p14: «Outro») mide el cuadradito de color en 6x9 px a 96 dpi; a la escala
-     * interna de tabpro, x1,333, eso da 8x12.
-     */
     @Test
     void theSectionMarkerSquareMatchesTheSizeMeasuredInTheManual() {
         Color markerColor = new Color(0x00, 0xAA, 0x00);
@@ -489,11 +465,6 @@ class ScorePainterTest {
         assertEquals(12, square.height, "el cuadrado tiene que medir 12 px de alto, como en el manual");
     }
 
-    /**
-     * El nombre del marcador comparte color con el cuadrado, asi que no alcanza con acotar el
-     * area de busqueda: hay que parar en la primera columna en blanco despues del cuadrado, antes
-     * de llegar al texto.
-     */
     private static Rectangle solidMarkerSquareBounds(Painted painted, Color markerColor) {
         int x0 = painted.layout().measureX(0);
         int staffTop = painted.layout().staffTop(0, 0);
@@ -636,13 +607,6 @@ class ScorePainterTest {
         g.dispose();
     }
 
-    /**
-     * El manual: al seleccionar compases enteros (Ctrl+clic) la seleccion tiene que abarcar el
-     * compas completo, no solo los beats que tiene la voz principal. Un compas siempre deja un
-     * margen (MEASURE_LEFT_PADDING/MEASURE_RIGHT_PADDING) que ningun beat pisa; si la seleccion
-     * de compas entero pinta ese margen tambien, es que esta usando el ancho del compas y no el
-     * de sus beats.
-     */
     @Test
     void aWholeMeasureSelectionPaintsTheFullMeasureIncludingItsMargin() {
         Measure full = new Measure(TimeSignature.fourFour(), List.of(
@@ -874,11 +838,6 @@ class ScorePainterTest {
                 "el pedal de wah-wah tiene que quedar anotado arriba de la tablatura");
     }
 
-    /**
-     * La transicion de la nota de adorno se elige en el dialogo y se guarda, pero
-     * la hoja quedaba igual con cualquiera de las cuatro: una notita suelta y
-     * desconectada. Cada una tiene que dejar su propia marca hasta la nota.
-     */
     @Test
     void laTransicionDeLaNotaDeAdornoSeDibujaHastaLaNota() {
         int sinTransicion = inkBetweenTheGraceNoteAndTheNote(GraceTransition.NONE);
@@ -930,14 +889,6 @@ class ScorePainterTest {
         return new Score("", 120, List.of(track));
     }
 
-
-    /**
-     * Todas las pistas suenan a la vez, asi que la reproduccion esta en UN solo lugar: una sola
-     * linea. Como cada pista parte el compas distinto -la guitarra en negras, el bajo en una
-     * redonda- el arranque del beat que suena cae en una x distinta por pista, y dibujar una
-     * linea por pista llenaria el sistema de lineas paralelas. La que vale es la del beat que
-     * arranco mas tarde: es la que esta mas cerca del instante que se esta oyendo.
-     */
     @Test
     void thereIsOnlyOnePlayingLineNoMatterHowManyTracksAreSounding() {
         Score score = twoTracksSplittingTheBarDifferently();
@@ -956,12 +907,6 @@ class ScorePainterTest {
                 "la linea va donde arranco el beat que suena mas tarde");
     }
 
-    /**
-     * Repintar una pantalla de una partitura larga hoy cuesta lo mismo que pintarla entera:
-     * {@code paintTrack} recorre todos los compases de todas las pistas sin mirar el clip.
-     * Con un clip acotado al primer sistema, un compas bien lejos -al final de la partitura- no
-     * tiene que tocarse.
-     */
     @Test
     void paintTrackSkipsMeasuresFarFromTheClip() {
         Score score = scoreWithMeasures(60, 1);
@@ -978,12 +923,6 @@ class ScorePainterTest {
         assertTrue(painted.contains(1), "el primer compas, adentro del clip, si se tiene que pintar");
     }
 
-    /**
-     * El mismo recorte, a la escala de la auditoria de rendimiento: 300 compases y 6 pistas, con
-     * un clip de una pantalla. Ningun compas pintado puede caer en un sistema fuera del rango que
-     * el propio clip delimita -es el presupuesto de trabajo, verificado por el espia, no por
-     * milisegundos.
-     */
     @Test
     void aScreenfulClipOnALargeScoreOnlyTouchesMeasuresNearIt() {
         Score score = scoreWithMeasures(300, 6);
@@ -1063,7 +1002,6 @@ class ScorePainterTest {
 
     private record Painted(BufferedImage image, ScoreLayout layout) {
 
-        /** Las columnas pintadas con el color de la reproduccion a esa altura. */
         List<Integer> playingColumnsAt(int y) {
             List<Integer> columns = new ArrayList<>();
             for (int x = 0; x < image.getWidth(); x++) {
@@ -1097,7 +1035,6 @@ class ScorePainterTest {
             return false;
         }
 
-        /** Cuanta tinta hay en un rectangulo: sirve para comparar la misma hoja con y sin un efecto. */
         int inkIn(Rectangle area) {
             int ink = 0;
             for (int x = area.x; x < area.x + area.width; x++) {

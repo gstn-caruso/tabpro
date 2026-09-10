@@ -4,7 +4,6 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 
-/** Un PrinterJob falso: registra lo que ScorePrinting le manda, sin abrir ninguna ventana real. */
 final class RecordingPrinting implements Printing {
 
     private String jobName;

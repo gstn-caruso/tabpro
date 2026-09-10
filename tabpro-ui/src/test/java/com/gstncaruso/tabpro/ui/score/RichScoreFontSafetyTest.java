@@ -45,13 +45,6 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/**
- * Red de seguridad contra la clase de bug que aparecio en esta rama: un painter dibujaba un
- * glifo de Bravura y se olvidaba de volver a la fuente de texto, asi que lo que venia despues
- * salia en cajitas vacias. {@link LienzoDePrueba} solo anotaba que texto se pidio dibujar, no
- * con que fuente -esta prueba pinta una partitura que ejercita todos los painters y verifica,
- * para cada texto que se escribio, que la fuente puesta en ese momento lo sabe mostrar.
- */
 class RichScoreFontSafetyTest {
 
     private static final int WIDTH = 900;
@@ -75,8 +68,6 @@ class RichScoreFontSafetyTest {
         PageScorePainter.paint(lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
         return lienzo;
     }
-
-    // ---- armado de la partitura rica --------------------------------------
 
     private static Score richScore() {
         Score score = new Score("Cancion de prueba", 96, List.of(guitarTrack(), bassTrack(), percussionTrack()));
@@ -154,7 +145,6 @@ class RichScoreFontSafetyTest {
                 Beat.of(Duration.quarter(), new Note(1, 0))));
     }
 
-    /** Todo lo que el manual agrupa en "Add Symbols", repartido en un beat por grupo. */
     private static Measure measureWithTabEffects() {
         Note tremoloBarNote = new Note(2, 4);
         Beat rhythmicEffects = Beat.of(Duration.quarter(), tremoloBarNote).withEffects(BeatEffects.none()
@@ -210,7 +200,6 @@ class RichScoreFontSafetyTest {
         return plainMeasure().mappingAttributes(attrs -> attrs.withJump(DirectionJump.DA_SEGNO_AL_FINE));
     }
 
-    /** El bug conocido de esta rama: el tempo tiene que seguir escribiendose en texto legible. */
     private static Measure measureWithATempoAndAPanChange() {
         return new Measure(TimeSignature.fourFour(), List.of(
                 Beat.of(Duration.quarter(), new Note(1, 0)).withEffects(
@@ -238,7 +227,6 @@ class RichScoreFontSafetyTest {
         return Track.standardBass("Bajo").withMeasures(List.of(measure));
     }
 
-    /** 42 = hi-hat cerrado (cruz), 54 = pandereta (rombo), 38 = caja acustica (ovalo comun). */
     private static Track percussionTrack() {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(
                 Beat.of(Duration.quarter(), new Note(1, 42)),

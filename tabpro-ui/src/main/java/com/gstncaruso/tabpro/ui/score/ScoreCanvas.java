@@ -31,11 +31,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.Scrollable;
 
-/**
- * El lienzo de la partitura: dibuja las pistas que se ven segun el {@link ViewMode}, el
- * {@link Zoom} y las {@link VisibleTracks} elegidas, y traduce los clics a movimientos del
- * cursor o, arrastrando, a una seleccion multiple.
- */
 public class ScoreCanvas extends JComponent implements Scrollable, AccessibleControl, ZoomHolder {
 
     private static final int FALLBACK_WIDTH = 900;
@@ -100,17 +95,12 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
                     return;
                 }
                 requestFocusInWindow();
-                // El manual: Shift mas clic extiende la seleccion desde donde estaba el cursor,
-                // igual que Shift mas flecha; sin Shift, el clic la limpia como cualquier otro
-                // movimiento del cursor.
                 if (e.isShiftDown()) {
                     editor.whileExtendingSelection(() -> moveCursorTo(e.getX(), e.getY()));
                     return;
                 }
                 editor.clearSelection();
                 moveCursorTo(e.getX(), e.getY());
-                // El manual: "para seleccionar compases completos, apreta Ctrl mientras haces la
-                // seleccion". Un clic sin arrastrar ya alcanza para seleccionar el compas entero.
                 if (e.isControlDown()) {
                     editor.startSelection(true);
                 }
@@ -118,8 +108,8 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                // El disparador del menu contextual es distinto por plataforma: en algunas
-                // llega en mousePressed, en otras (Windows) recien en mouseReleased.
+                // MouseEvent.isPopupTrigger() fires on mousePressed on some platforms, on
+                // mouseReleased on Windows.
                 if (e.isPopupTrigger()) {
                     showContextMenu(e);
                 }
@@ -135,13 +125,6 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
         installFocusExit();
     }
 
-    /**
-     * Tab queda reservado para alternar tablatura/pentagrama (KeyboardEditing), asi que la
-     * partitura necesita otra tecla para cederle el foco a la mesa de mezcla o a los
-     * instrumentos. Ctrl+Tab/Shift+Tab ya son "Marcador siguiente/anterior" y F6 ya es
-     * "Propiedades de la pista" (ver AcceleratorGuard): el primer par libre es Ctrl+F6 hacia
-     * adelante y Ctrl+Shift+F6 hacia atras.
-     */
     private void installFocusExit() {
         InputMap inputMap = getInputMap(WHEN_FOCUSED);
         ActionMap actionMap = getActionMap();
@@ -175,8 +158,6 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
         return accessibleContext;
     }
 
-    // ---- Modo de vista y zoom: la API que usa el menu Ver de la ventana principal ----
-
     public ViewMode viewMode() {
         return viewMode;
     }
@@ -207,30 +188,24 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
         setZoom(zoom.out());
     }
 
-    /** Avisar cuando cambia el zoom, que es lo que muestra el combo de la fila 1. */
     @Override
     public void onZoomChange(Runnable listener) {
         zoomListeners.add(listener);
     }
 
-    // ---- Configurar pagina: el papel sobre el que se reparte la partitura ----
-
     public PageSetup pageSetup() {
         return pageSetup;
     }
 
-    /** El boton Actualizar partitura de Configurar pagina: la hoja cambia y hay que redibujar. */
     public void setPageSetup(PageSetup pageSetup) {
         this.pageSetup = pageSetup;
         repaginate();
     }
 
-    /** En cuantas hojas quedo repartida la partitura y donde cae cada compas. */
     public Pagination pagination() {
         return PageScorePainter.paginationOf(editor.score(), viewport());
     }
 
-    /** Avisar cuando cambia el reparto en hojas, que es lo que muestra la barra de estado. */
     public void onPaginationChange(Runnable listener) {
         paginationListeners.add(listener);
     }
@@ -240,8 +215,6 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
         repaint();
         paginationListeners.forEach(Runnable::run);
     }
-
-    // ---- Vista multipista: el menu Ver la prende y apaga, la mesa de mezcla apaga pistas ----
 
     public boolean isMultitrack() {
         return visibleTracks.isMultitrack();
@@ -280,7 +253,6 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
         repaint();
     }
 
-    /** Ver > Notas con dinamica [F11]: si la cabeza de la nota va con el gradiente de dinamica. */
     public boolean showsDynamicNotes() {
         return showsDynamicNotes;
     }
@@ -290,8 +262,6 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
         repaint();
     }
 
-    /** Preferencias [F12], "Desplazar la pantalla durante la reproduccion": si {@link #showPlayhead}
-     * puede correr la vista para mantenerlo adentro, o si el usuario prefiere manejarla el mismo. */
     public boolean autoScrollDuringPlayback() {
         return autoScrollDuringPlayback;
     }
@@ -305,8 +275,6 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
         revalidate();
         repaint();
     }
-
-    // ---- Seleccion multiple: el Editor es quien la guarda, el lienzo solo la pinta ----
 
     public Optional<Selection> selection() {
         return editor.selection();
@@ -350,8 +318,6 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
 
     @Override
     public boolean getScrollableTracksViewportWidth() {
-        // Solo la pantalla vertical envuelve al ancho disponible; las demas tienen su propio
-        // ancho (el de la hoja, o el de la partitura entera sin envolver) y se scrollean.
         return viewMode == ViewMode.SCREEN_VERTICAL;
     }
 
@@ -372,20 +338,10 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
         return hit;
     }
 
-    /**
-     * El manual deja reposicionar el audio con un clic durante la reproduccion. El lienzo no
-     * sabe nada del Transport -no le corresponde-, asi que solo avisa donde cayo el clic; quien
-     * escucha decide si hay que saltar la reproduccion ahi.
-     */
     public void onClickReposition(Consumer<ScoreLayout.Hit> listener) {
         clickListeners.add(listener);
     }
 
-    /**
-     * El manual: clic derecho sobre la tablatura ofrece "Note > 0 to 30" para escribir el
-     * traste de la cuerda donde cayo el clic sin pasar por el teclado. Antes de armar el menu,
-     * el clic mueve el cursor ahi mismo, igual que un clic izquierdo.
-     */
     Optional<JPopupMenu> contextMenuAt(int x, int y) {
         return moveCursorTo(x, y).map(hit -> FretContextMenu.forTrack(editor.currentTrack(), editor::setFret));
     }
@@ -403,12 +359,6 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
         });
     }
 
-    /**
-     * Auditoria de rendimiento, hallazgo 4: solo cambiar de donde esta parado el cursor (o su
-     * seleccion) no necesita recalcular el tamano de la partitura ni repintarla entera -alcanza
-     * con la union de donde estaba y donde quedo. Un cambio de contenido si puede haber cambiado
-     * el tamano, asi que ahi se mantiene el camino completo de siempre.
-     */
     private void onEditorChanged(EditorChange change) {
         if (change == EditorChange.CONTENT) {
             revalidate();
@@ -444,7 +394,6 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
         return from.union(to);
     }
 
-    /** La pista activa la manda el cursor, asi que se lee recien al dibujar. */
     private ScoreViewport viewport() {
         return new ScoreViewport(
                 viewMode, zoom, viewportWidth(),

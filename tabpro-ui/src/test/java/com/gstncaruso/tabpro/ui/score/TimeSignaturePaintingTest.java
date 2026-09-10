@@ -13,11 +13,6 @@ import java.awt.Rectangle;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 escribe la cifra de compas con los glifos musicales de Bravura, no con los
- * digitos de una fuente de texto -y hasta en compases de mas de un digito como 12/8 la arma
- * glifo por glifo.
- */
 class TimeSignaturePaintingTest {
 
     private static final int WIDTH = 900;

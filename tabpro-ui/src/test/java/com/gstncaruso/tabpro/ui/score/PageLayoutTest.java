@@ -51,10 +51,6 @@ class PageLayoutTest {
         }
     }
 
-    /**
-     * El presupuesto de exportar: con la partitura repartida en P hojas, cada compas tiene que
-     * quedar del lado de exactamente una, ni pintado dos veces ni salteado.
-     */
     @Test
     void everyMeasureBelongsToExactlyOnePage() {
         ScoreLayout layout = ScoreLayout.of(scoreWithMeasures(300), NARROW_WIDTH);

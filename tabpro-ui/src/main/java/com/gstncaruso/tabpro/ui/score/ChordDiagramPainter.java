@@ -13,20 +13,12 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.util.List;
 
-/**
- * El diagrama de un acorde: cuerdas, trastes, circulo para cuerda al aire, cruz para cuerda que
- * no se toca y un punto por cada dedo. Se dibuja arriba del pentagrama, en el beat que lo lleva
- * -o, si la pista lo pidio, una fila entera de ellos en el encabezado de la pagina, ver
- * {@link #paintRow}-.
- */
 final class ChordDiagramPainter {
 
     private static final int STRING_GAP = 6;
     private static final int FRET_GAP = 8;
     private static final int VISIBLE_FRETS = 4;
-    /** Separacion horizontal entre diagramas cuando se dibujan en fila, en el encabezado. */
     private static final int ROW_GAP = 30;
-    /** Separacion entre la grilla del diagrama y el pentagrama, arriba o abajo. */
     private static final int STAFF_GAP = 12;
 
     private ChordDiagramPainter() {
@@ -53,13 +45,6 @@ final class ChordDiagramPainter {
         }
     }
 
-    /**
-     * Manual, linea 2800: los diagramas "at the top of the score" van una sola vez por hoja, no
-     * compas por compas -{@link com.gstncaruso.tabpro.core.harmony.TrackChords#underTheTitle}
-     * ya junto los que corresponden-. Se reparten en una sola fila, centrados en {@code centerX},
-     * con el mismo dibujo que arriba del pentagrama pero mas chicos porque el encabezado tiene el
-     * alto fijo de {@link PageChromePainter}.
-     */
     static void paintRow(Graphics2D g, List<ChordDiagram> chords, int centerX, int gridBottom) {
         if (chords.isEmpty()) {
             return;
@@ -78,7 +63,6 @@ final class ChordDiagramPainter {
         return (chord.stringCount() - 1) * STRING_GAP;
     }
 
-    /** El diagrama centrado en {@code centerX}, con la grilla terminando en {@code gridBottom}. */
     private static void paintDiagram(Graphics2D g, int centerX, int gridBottom, ChordDiagram chord) {
         int stringCount = chord.stringCount();
         int gridWidth = (stringCount - 1) * STRING_GAP;
@@ -114,7 +98,6 @@ final class ChordDiagramPainter {
         }
     }
 
-    /** La cuerda 1 (la mas aguda) va a la derecha, como en un diagrama de acorde de libro. */
     private static int xOfString(int x, int stringCount, int string) {
         return x + (stringCount - string) * STRING_GAP;
     }

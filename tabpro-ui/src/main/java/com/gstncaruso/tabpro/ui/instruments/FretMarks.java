@@ -4,11 +4,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Que posiciones del mastil marca un modo de vista: las del beat (primarias) y
- * las que suma el modo como contexto (secundarias). Una posicion primaria nunca
- * aparece tambien como secundaria.
- */
 public record FretMarks(Set<FretPosition> primary, Set<FretPosition> secondary) {
 
     public static FretMarks of(Set<FretPosition> primary, Set<FretPosition> secondary) {

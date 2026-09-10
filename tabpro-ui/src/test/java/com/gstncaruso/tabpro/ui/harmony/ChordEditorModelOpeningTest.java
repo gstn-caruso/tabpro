@@ -40,7 +40,6 @@ class ChordEditorModelOpeningTest {
 
     @Test
     void unBeatConNotasQueFormanUnAcordeConocidoNoQuedaEnModoPersonalizado() {
-        // Mi menor abierto: 0-2-2-0-0-0
         Beat beat = Beat.of(
                 Duration.quarter(),
                 new Note(6, 0), new Note(5, 2), new Note(4, 2),
@@ -54,8 +53,6 @@ class ChordEditorModelOpeningTest {
 
     @Test
     void unBeatConNotasQueNoFormanNingunAcordeConocidoQuedaEnModoPersonalizado() {
-        // Mi (cuerda 6 al aire) y Sib (cuerda 5, traste 1) estan a un tritono: ningun
-        // tipo de acorde de la biblioteca los explica con solo dos notas sonando.
         Beat beat = Beat.of(Duration.quarter(), new Note(6, 0), new Note(5, 1));
 
         ChordEditorModel model = ChordEditorModel.forBeat(beat, Tuning.standard());
@@ -66,7 +63,6 @@ class ChordEditorModelOpeningTest {
 
     @Test
     void unBeatQueYaTieneAcordeLoCargaTalCual() {
-        // frets: cuerda1=0, cuerda2=1, cuerda3=0, cuerda4=2, cuerda5=0, cuerda6=muda.
         ChordDiagram existente = ChordDiagram.named("Am7", List.of(0, 1, 0, 2, 0, -1));
         Beat beat = Beat.rest(Duration.quarter()).withEffects(BeatEffects.none().withChord(existente));
 

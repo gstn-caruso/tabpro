@@ -6,10 +6,6 @@ import com.gstncaruso.tabpro.ui.theme.PaletteCheck.Pair;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El diagrama de acorde tiene su fondo propio, siempre oscuro sin importar el tema de la
- * ventana: forma parte de la paleta oscura junto con {@code ScoreColorsContrastTest}.
- */
 class ChordDiagramColorsContrastTest {
 
     @Test

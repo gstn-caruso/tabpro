@@ -25,24 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El manual, "Properties of the track" (pagina 13, seccion Style, "Force Horizontal Beams"): sin
- * esa opcion, una barra de union sigue la pendiente de sus cabezas de nota, acotada a un tope,
- * igual que Guitar Pro 5 y cualquier editor de partituras; con la opcion activa, vuelve a ser
- * horizontal, el comportamiento de siempre.
- *
- * <p>Todos los grupos arrancan despues de un silencio de negra para que la plica de la primera
- * nota no comparta columna con la cifra de compas.
- */
 class BeamSlopePaintingTest {
 
     private static final int WIDTH = 900;
     private static final double SPACE = ScoreLayout.STAFF_LINE_SPACING;
-    /** ver StaffPainter.NOTE_WIDTH: el ancho de una cabeza de nota. */
     private static final double NOTE_WIDTH = SPACE * 1.28;
-    /** ver StaffPainter.MAX_BEAM_SLOPE: el tope de inclinacion de una barra, en pixeles. */
     private static final double MAX_BEAM_SLOPE = SPACE;
-    /** ver StaffPainter.BEAM_GAP: la separacion entre una barra y la siguiente. */
     private static final double BEAM_GAP = SPACE * 0.84;
 
     private static final Note LOW = new Note(3, 0);
@@ -131,8 +119,6 @@ class BeamSlopePaintingTest {
                 "con 'Forzar barras horizontales' activo, un grupo ascendente tiene que quedar horizontal");
     }
 
-    /** Silencio de negra, las dos corcheas del grupo y otro silencio de negra: 4/4 completo, con
-     * la primera plica lejos de la cifra de compas. */
     private static Painted paintEighths(boolean forceHorizontalBeams, Note first, Note second) {
         Duration eighth = new Duration(NoteValue.EIGHTH, false);
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(
@@ -142,8 +128,6 @@ class BeamSlopePaintingTest {
         return paint(measure, forceHorizontalBeams);
     }
 
-    /** Silencio de negra, hasta cuatro semicorcheas (las que sobran, silencio) y dos silencios de
-     * negra: 4/4 completo, con la primera plica lejos de la cifra de compas. */
     private static Painted paintSixteenths(Note... notes) {
         Duration sixteenth = new Duration(NoteValue.SIXTEENTH, false);
         List<Beat> beats = new ArrayList<>();
@@ -185,17 +169,12 @@ class BeamSlopePaintingTest {
             return layout.stepY(0, 0, step);
         }
 
-        /** La misma cuenta que StaffPainter.stemOf: la plica de una nota que apunta para arriba
-         * se ata al costado derecho de la cabeza, no a su centro. */
         int stemX(int beatIndex, boolean up) {
             Rectangle beat = layout.beatBounds(0, 0, beatIndex);
             double centerX = beat.x + beat.width / 2.0;
             return (int) Math.round(up ? centerX + NOTE_WIDTH / 2 - 0.8 : centerX - NOTE_WIDTH / 2 + 0.8);
         }
 
-        /** El primer pixel de tinta de nota (plica, barra o cabeza; no las lineas grises del
-         * pentagrama), bajando desde arriba, en la columna angosta de la plica: el extremo de la
-         * barra (o de la plica, si no hay barra) es siempre lo mas alto que hay ahi. */
         int topInkY(int beatIndex, boolean up) {
             int x = stemX(beatIndex, up);
             for (int y = 0; y < image.getHeight(); y++) {

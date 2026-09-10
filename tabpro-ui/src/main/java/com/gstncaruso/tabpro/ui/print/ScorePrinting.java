@@ -18,7 +18,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
 
-/** Imprimir la partitura y guardarla como imagen, como pide el manual. */
 public final class ScorePrinting {
 
     private final Printing printing;
@@ -28,11 +27,6 @@ public final class ScorePrinting {
         this.printing = printing;
     }
 
-    /**
-     * Manda a la impresora las hojas que se pidieron, con el tamano que se pidio. Que hojas y de
-     * que tamano ya lo decidio la ventana de Imprimir; el dialogo del sistema queda solo para
-     * elegir la impresora y su papel.
-     */
     public void print(Score score, PageSetup setup, PrintSettings settings, String jobName)
             throws PrinterException {
         printing.setJobName(jobName);
@@ -42,17 +36,10 @@ public final class ScorePrinting {
         }
     }
 
-    /** En cuantas hojas se reparte la partitura, que es lo que la ventana de Imprimir necesita saber. */
     public static int pageCount(Score score, PageSetup setup) {
         return ScoreSheets.pageCount(score, setup);
     }
 
-    /**
-     * El boton Configure del manual, en la ventana de Imprimir: deja elegir el papel y la
-     * orientacion de la impresora misma. Es otro formato distinto del {@link PageSetup} de la
-     * partitura -ese lo pide "Configurar pagina [F8]" y describe el documento, no el aparato. Lo
-     * elegido queda para la proxima vez que se imprima.
-     */
     public void configurePrinterPage() {
         pageFormat = printing.pageDialog(currentPageFormat());
     }
@@ -73,15 +60,8 @@ public final class ScorePrinting {
     }
 
     /**
-     * Escribe la imagen con ImageIO y no se conforma con que el metodo vuelva sin tirar
-     * excepcion: {@code ImageIO.write} devuelve {@code false} (sin escribir nada) cuando ningun
-     * escritor instalado puede codificar esa imagen en ese formato, y eso no puede pasar
-     * desapercibido.
-     *
-     * <p>Para BMP, si la imagen no tiene canal alfa -el caso real de toda partitura exportada-, se
-     * escribe con {@link BmpDocument} en vez de con ImageIO: mismo formato, mucho mas rapido porque
-     * pide los pixeles en bloque. Con transparencia real, ImageIO sigue a cargo -y sigue fallando
-     * igual que antes, porque BMP no la soporta.
+     * {@code ImageIO.write} returns {@code false} without writing anything and without throwing
+     * when no installed writer can encode the image in that format.
      */
     static void writeImage(BufferedImage image, String format, Path path) {
         if (format.equals("bmp") && BmpDocument.canEncode(image)) {
@@ -105,7 +85,6 @@ public final class ScorePrinting {
         }
     }
 
-    /** Exporta la partitura a PDF, una hoja por pagina. */
     public static void exportPdf(Score score, PageSetup setup, Path path) {
         PageMetrics sheet = PageMetrics.of(setup);
         PdfDocument pdf = new PdfDocument(sheet.pageWidthPoints(), sheet.pageHeightPoints());
@@ -132,14 +111,6 @@ public final class ScorePrinting {
         return name.endsWith(".bmp") ? "bmp" : "png";
     }
 
-    /**
-     * Cada hoja de la partitura, una por hoja de papel de la impresora.
-     *
-     * <p>Visible para el paquete -y no privada- a proposito: es el {@link Printable} que la
-     * impresora de verdad invoca, y es lo unico de esta clase que un test sin impresora necesita
-     * construir a mano para ejercitarlo directamente con un {@link Graphics2D} y un
-     * {@link PageFormat} armados en el test.
-     */
     record ScorePages(Score score, PageSetup setup, PrintSettings settings) implements Printable {
 
         @Override
@@ -168,7 +139,6 @@ public final class ScorePrinting {
         }
     }
 
-    /** El archivo con la extension que le corresponde a la imagen. */
     public static Path withImageExtension(File file) {
         String name = file.getName();
         String lower = name.toLowerCase(java.util.Locale.ROOT);

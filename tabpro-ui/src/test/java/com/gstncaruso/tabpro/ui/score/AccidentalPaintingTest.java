@@ -19,10 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 dibuja el sostenido, el bemol y el becuadro con los glifos grabados de Bravura en
- * vez de trazarlos a mano con lineas y barras.
- */
 class AccidentalPaintingTest {
 
     private static final int WIDTH = 900;

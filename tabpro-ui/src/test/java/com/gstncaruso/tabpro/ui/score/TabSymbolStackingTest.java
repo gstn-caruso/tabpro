@@ -23,12 +23,6 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Fade in, P.M. y let ring se apilan sobre la tablatura con {@link
- * com.gstncaruso.tabpro.core.notation.VerticalStack}: cuantos mas coinciden en el mismo beat, mas
- * cerca del pentagrama sube la fila de arriba. Achicar {@link ScoreLayout#STAFF_TO_TAB_GAP} deja
- * menos aire para ese apilamiento, y no puede empezar a pintar dentro del pentagrama.
- */
 class TabSymbolStackingTest {
 
     private static final int WIDTH = 300;

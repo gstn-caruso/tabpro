@@ -16,11 +16,6 @@ import java.util.function.BiConsumer;
 import java.util.function.IntConsumer;
 import javax.swing.JComponent;
 
-/**
- * La zona B: el diagrama grande y clicable. Un clic en la grilla agrega o saca una nota; un
- * clic en el encabezado alterna cuerda al aire / muda. La geometria esta en metodos aparte
- * para poder testearla sin pintar nada, como el diapason y el teclado.
- */
 public final class ChordDiagramCanvas extends JComponent {
 
     public static final int PREFERRED_WIDTH = 200;
@@ -65,7 +60,6 @@ public final class ChordDiagramCanvas extends JComponent {
         this.onHeaderClick = listener;
     }
 
-    /** El clic en la fila de numeros de abajo: define o cambia la digitacion de esa cuerda. */
     public void onFingerClick(IntConsumer listener) {
         this.onFingerClick = listener;
     }
@@ -86,13 +80,10 @@ public final class ChordDiagramCanvas extends JComponent {
         fretAt(y).ifPresent(fret -> onFretClick.accept(string.getAsInt(), fret));
     }
 
-    // ---- geometria: columnas (cuerdas) -------------------------------------
-
     public int stringCount() {
         return tuning.stringCount();
     }
 
-    /** La cuerda 6 (la mas grave) queda a la izquierda, como en cualquier diagrama de acorde. */
     public int stringX(int string) {
         return SIDE_MARGIN + (int) Math.round((stringCount() - string) * stringGap());
     }
@@ -109,9 +100,6 @@ public final class ChordDiagramCanvas extends JComponent {
         return stringCount() <= 1 ? 0 : (double) (getWidth() - 2 * SIDE_MARGIN) / (stringCount() - 1);
     }
 
-    // ---- geometria: filas (trastes) ----------------------------------------
-
-    /** Cuantas filas hace falta dibujar para que entre todo lo que ya esta pisado. */
     public int rowCount() {
         return Math.max(MINIMUM_ROWS, diagram.highestFret() - diagram.baseFret() + 1);
     }
@@ -128,12 +116,10 @@ public final class ChordDiagramCanvas extends JComponent {
         return y >= TOP_MARGIN && y < TOP_MARGIN + HEADER_HEIGHT;
     }
 
-    /** El centro de la fila del traste "diagram.baseFret() + row". */
     public int fretRowY(int row) {
         return TOP_MARGIN + HEADER_HEIGHT + (int) Math.round((row + 0.5) * rowHeight());
     }
 
-    /** El traste absoluto de esa fila, o nada si el clic cayo afuera de la grilla. */
     public OptionalInt fretAt(int y) {
         int gridTop = TOP_MARGIN + HEADER_HEIGHT;
         if (y < gridTop) {
@@ -148,9 +134,6 @@ public final class ChordDiagramCanvas extends JComponent {
         return (double) usable / rowCount();
     }
 
-    // ---- geometria: fila de digitacion, debajo de la grilla ------------------
-
-    /** El renglon con los numeros de dedo, debajo del ultimo traste dibujado. */
     public int fingerRowY() {
         return fretRowY(rowCount() - 1) + (int) Math.round(rowHeight() / 2) + BOTTOM_MARGIN / 2;
     }
@@ -158,8 +141,6 @@ public final class ChordDiagramCanvas extends JComponent {
     public boolean isFingerRow(int y) {
         return y >= fretRowY(rowCount() - 1) + Math.round(rowHeight() / 2);
     }
-
-    // ---- pintura ------------------------------------------------------------
 
     @Override
     protected void paintComponent(Graphics graphics) {
@@ -285,10 +266,6 @@ public final class ChordDiagramCanvas extends JComponent {
         return Math.max(6, (int) (rowHeight() * 0.32));
     }
 
-    /**
-     * Los numeros clickeables de abajo: la digitacion de la mano izquierda de cada cuerda
-     * pisada. Una cuerda al aire o muda no lleva numero, porque no se digita.
-     */
     private void paintFingerRow(Graphics2D g) {
         int y = fingerRowY();
         g.setColor(ChordDiagramColors.LABEL);

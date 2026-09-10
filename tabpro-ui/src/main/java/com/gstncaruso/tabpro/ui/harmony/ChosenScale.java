@@ -6,10 +6,6 @@ import com.gstncaruso.tabpro.core.harmony.ScaleTone;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * La escala que quedo elegida en la ventana de escalas. El diapason y el teclado
- * la consultan para dibujarla, como dice el manual.
- */
 public final class ChosenScale {
 
     private Scale scale;
@@ -33,7 +29,6 @@ public final class ChosenScale {
         tonic = null;
     }
 
-    /** Los semitonos que forman la escala, contados desde su tonica. */
     public List<Integer> semitonesFromTheTonic() {
         return tones().stream()
                 .map(tone -> Math.floorMod(tone.pitchClass().semitone() - tonic.semitone(), 12))
@@ -41,7 +36,6 @@ public final class ChosenScale {
                 .toList();
     }
 
-    /** Las notas de la escala elegida, con su intervalo y su grado. */
     public List<ScaleTone> tones() {
         return scale == null || tonic == null ? List.of() : scale.notesFrom(tonic);
     }

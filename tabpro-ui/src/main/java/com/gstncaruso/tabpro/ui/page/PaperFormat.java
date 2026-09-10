@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.ui.page;
 
-/** Los tamanos de papel mas comunes para imprimir la partitura, medidos en vertical. */
 public enum PaperFormat {
     A4("A4", 210, 297),
     A3("A3", 297, 420),

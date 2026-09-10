@@ -23,10 +23,6 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El bend sube desde la cuerda hacia el pentagrama con su curva y la etiqueta "full": en la
- * primera cuerda es el que menos aire tiene antes de {@link ScoreLayout#STAFF_TO_TAB_GAP}.
- */
 class BendLabelClearsTheStaffTest {
 
     private static final int WIDTH = 300;

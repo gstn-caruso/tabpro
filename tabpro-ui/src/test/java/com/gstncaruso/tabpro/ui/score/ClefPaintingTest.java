@@ -14,10 +14,6 @@ import java.awt.Rectangle;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 graba la clave con el glifo grabado de Bravura -trazo modulado, espiral cerrada-
- * en vez de dibujarla a mano con un Path2D de grosor uniforme.
- */
 class ClefPaintingTest {
 
     private static final int WIDTH = 900;

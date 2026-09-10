@@ -6,12 +6,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Los valores con los que se llenan los campos del encabezado y del pie de una hoja: los datos de
- * Informacion de la partitura mas en que hoja de cuantas estamos. Como dice el manual, las
- * palabras entre corchetes -[%title], [%artist], [%page]…- se reemplazan por su valor; lo que no
- * es un campo conocido queda tal cual lo escribio quien configuro la pagina.
- */
 public record PageFields(ScoreInfo info, int pageNumber, int pageCount) {
 
     private static final Pattern FIELD = Pattern.compile("\\[%([a-zA-Z]+)]");
@@ -21,10 +15,6 @@ public record PageFields(ScoreInfo info, int pageNumber, int pageCount) {
                 valueOf(match.group(1)).orElseGet(match::group)));
     }
 
-    /**
-     * Si vale la pena imprimir esa linea: un texto sin campos siempre dice algo, pero uno que solo
-     * tiene campos que la partitura nunca lleno dejaria una linea vacia o un rotulo suelto.
-     */
     public boolean hasAnythingToSay(String template) {
         Matcher fields = FIELD.matcher(template);
         boolean sawAField = false;
