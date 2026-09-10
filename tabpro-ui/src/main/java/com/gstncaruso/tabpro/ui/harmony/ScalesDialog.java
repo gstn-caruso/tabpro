@@ -6,20 +6,20 @@ import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.harmony.ScaleFinder;
 import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
 import com.gstncaruso.tabpro.core.harmony.ScaleMatch;
-import com.gstncaruso.tabpro.core.harmony.ScaleTone;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
+import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -49,9 +49,11 @@ public final class ScalesDialog {
         private final Editor editor;
         private final Player player;
         private final ChosenScale chosen;
-        private final JComboBox<PitchClass> tonics = new JComboBox<>();
-        private final JComboBox<Scale> scales = new JComboBox<>(ScaleLibrary.all().toArray(Scale[]::new));
-        private final DefaultListModel<ScaleTone> tones = new DefaultListModel<>();
+        private final DefaultListModel<PitchClass> tonicsModel = new DefaultListModel<>();
+        private final JList<PitchClass> tonics = new JList<>(tonicsModel);
+        private final DefaultListModel<Scale> scalesModel = new DefaultListModel<>();
+        private final JList<Scale> scales = new JList<>(scalesModel);
+        private final ScaleDegreesView degrees = new ScaleDegreesView();
         private final DefaultListModel<ScaleMatch> matches = new DefaultListModel<>();
         private final JSpinner fromMeasure;
         private final JSpinner toMeasure;
@@ -63,62 +65,64 @@ public final class ScalesDialog {
             int lastMeasure = editor.currentTrack().measureCount();
             fromMeasure = new JSpinner(new SpinnerNumberModel(1, 1, lastMeasure, 1));
             toMeasure = new JSpinner(new SpinnerNumberModel(lastMeasure, 1, lastMeasure, 1));
-            tonics.setRenderer(new LabeledListCellRenderer());
-            scales.setRenderer(new LabeledListCellRenderer());
-            PitchClasses.chromatic().forEach(tonics::addItem);
-            chosen.tonic().ifPresent(tonics::setSelectedItem);
-            chosen.scale().ifPresent(scales::setSelectedItem);
+            tonics.setCellRenderer(new LabeledListCellRenderer());
+            tonics.getAccessibleContext().setAccessibleName("Tonalidad");
+            tonics.setToolTipText("Tonalidad");
+            scales.setCellRenderer(new LabeledListCellRenderer());
+            scales.getAccessibleContext().setAccessibleName("Escala");
+            scales.setToolTipText("Escala");
+            PitchClasses.chromatic().forEach(tonicsModel::addElement);
+            ScaleLibrary.all().forEach(scalesModel::addElement);
+            chosen.tonic().ifPresent(tonic -> tonics.setSelectedValue(tonic, true));
+            chosen.scale().ifPresent(scale -> scales.setSelectedValue(scale, true));
 
             setLayout(new BorderLayout(10, 10));
             add(chooserZone(), BorderLayout.NORTH);
-            add(tonesZone(), BorderLayout.CENTER);
+            add(degreesZone(), BorderLayout.CENTER);
             add(finderZone(), BorderLayout.SOUTH);
-            tonics.addActionListener(event -> chooseScale());
-            scales.addActionListener(event -> chooseScale());
+            tonics.addListSelectionListener(event -> {
+                if (!event.getValueIsAdjusting()) {
+                    chooseScale();
+                }
+            });
+            scales.addListSelectionListener(event -> {
+                if (!event.getValueIsAdjusting()) {
+                    chooseScale();
+                }
+            });
             chooseScale();
         }
 
         private JPanel chooserZone() {
             JPanel zone = new JPanel(new GridLayout(1, 0, 8, 0));
-            zone.add(labelled("Tonalidad", tonics));
-            zone.add(labelled("Escala", scales));
+            zone.add(labelled("Tonalidad", new JScrollPane(tonics)));
+            zone.add(labelled("Escala", new JScrollPane(scales)));
             return zone;
         }
 
-        private JScrollPane tonesZone() {
-            JList<ScaleTone> list = new JList<>(tones);
-            list.getAccessibleContext().setAccessibleName("Notas de la escala");
-            list.setToolTipText("Notas de la escala");
-            list.setCellRenderer(new javax.swing.DefaultListCellRenderer() {
-
-                @Override
-                public Component getListCellRendererComponent(
-                        JList<?> owner, Object value, int index, boolean selected, boolean focused) {
-                    super.getListCellRendererComponent(owner, value, index, selected, focused);
-                    if (value instanceof ScaleTone tone) {
-                        setText(describe(tone));
-                    }
-                    return this;
-                }
-            });
-            list.addListSelectionListener(event -> {
-                ScaleTone tone = list.getSelectedValue();
-                if (tone != null) {
-                    player.playNote(
-                            new Pitch(LISTENING_OCTAVE + tone.pitchClass().semitone()),
-                            editor.currentTrack().channel().program());
-                }
-            });
-            JScrollPane scroll = new JScrollPane(list);
-            scroll.setBorder(BorderFactory.createTitledBorder("Notas de la escala"));
-            scroll.setPreferredSize(new Dimension(420, 190));
-            return scroll;
+        private JPanel degreesZone() {
+            JPanel zone = new JPanel(new BorderLayout());
+            zone.setBorder(BorderFactory.createTitledBorder("Grados de la escala"));
+            zone.add(listenBar(), BorderLayout.NORTH);
+            zone.add(degrees, BorderLayout.CENTER);
+            return zone;
         }
 
-        private static String describe(ScaleTone tone) {
-            return tone.pitchClass().name()
-                    + "   ·   grado " + tone.degree()
-                    + "   ·   " + tone.interval().label();
+        private JPanel listenBar() {
+            JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            JButton listen = new JButton(Icons.play());
+            listen.setToolTipText("Escuchar la escala");
+            listen.getAccessibleContext().setAccessibleName("Escuchar");
+            listen.addActionListener(event -> listenToScale());
+            bar.add(listen);
+            return bar;
+        }
+
+        private void listenToScale() {
+            List<Pitch> pitches = chosen.tones().stream()
+                    .map(tone -> new Pitch(LISTENING_OCTAVE + tone.pitchClass().semitone()))
+                    .toList();
+            player.playSequence(pitches, editor.currentTrack().channel().program());
         }
 
         private JPanel finderZone() {
@@ -151,8 +155,8 @@ public final class ScalesDialog {
             list.addListSelectionListener(event -> {
                 ScaleMatch match = list.getSelectedValue();
                 if (match != null) {
-                    tonics.setSelectedItem(match.tonic());
-                    scales.setSelectedItem(match.scale());
+                    tonics.setSelectedValue(match.tonic(), true);
+                    scales.setSelectedValue(match.scale(), true);
                 }
             });
             JScrollPane scroll = new JScrollPane(list);
@@ -162,14 +166,13 @@ public final class ScalesDialog {
         }
 
         private void chooseScale() {
-            PitchClass tonic = (PitchClass) tonics.getSelectedItem();
-            Scale scale = (Scale) scales.getSelectedItem();
+            PitchClass tonic = tonics.getSelectedValue();
+            Scale scale = scales.getSelectedValue();
             if (tonic == null || scale == null) {
                 return;
             }
             chosen.choose(tonic, scale);
-            tones.clear();
-            chosen.tones().forEach(tones::addElement);
+            degrees.show(chosen.tones());
         }
 
         private void findScales() {
