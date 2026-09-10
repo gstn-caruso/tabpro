@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.AbstractButton;
+import javax.swing.JLabel;
 
 public final class MnemonicAssigner {
 
@@ -33,6 +34,15 @@ public final class MnemonicAssigner {
         }
         button.setMnemonic(keyCodeAt(button.getText(), index));
         button.setDisplayedMnemonicIndex(index);
+    }
+
+    public void applyTo(JLabel label) {
+        int index = chooseIndex(label.getText());
+        if (index < 0) {
+            return;
+        }
+        label.setDisplayedMnemonic(keyCodeAt(label.getText(), index));
+        label.setDisplayedMnemonicIndex(index);
     }
 
     private int keyCodeAt(String text, int index) {

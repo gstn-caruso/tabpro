@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.a11y;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.event.KeyEvent;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import org.junit.jupiter.api.Test;
 
@@ -67,5 +68,15 @@ class MnemonicAssignerTest {
 
         assertEquals(KeyEvent.VK_G, item.getMnemonic());
         assertEquals(0, item.getDisplayedMnemonicIndex());
+    }
+
+    @Test
+    void aplicarleElMnemonicoAUnaEtiquetaLeFijaLaTeclaYElIndiceSubrayado() {
+        JLabel label = new JLabel("Título");
+
+        assigner.applyTo(label);
+
+        assertEquals(KeyEvent.VK_T, label.getDisplayedMnemonic());
+        assertEquals(0, label.getDisplayedMnemonicIndex());
     }
 }
