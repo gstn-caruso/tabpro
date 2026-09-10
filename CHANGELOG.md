@@ -1,3 +1,9 @@
+## [0.30.0](https://github.com/gstn-caruso/tabpro/compare/v0.29.0...v0.30.0) (2026-09-10)
+
+### Features
+
+* **score:** la partitura se escribe con la tipografia de Guitar Pro 5 ([#110](https://github.com/gstn-caruso/tabpro/issues/110)) ([9f04fef](https://github.com/gstn-caruso/tabpro/commit/9f04feffe112c227b810d2fdfb49f4d815973cfc))
+
 ## [0.29.0](https://github.com/gstn-caruso/tabpro/compare/v0.28.1...v0.29.0) (2026-09-09)
 
 ### Features
