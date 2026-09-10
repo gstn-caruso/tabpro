@@ -51,6 +51,10 @@ public final class Icons {
     private static final String ACCIDENTAL_SHARP = "";
     /** SMuFL U+E084 "timeSig4": el digito 4 de una cifra de compas. */
     private static final String TIME_SIG_4 = "";
+    /** SMuFL U+E040 "repeatLeft": la barra de inicio de repeticion, con sus dos puntos. */
+    private static final String REPEAT_LEFT = "";
+    /** SMuFL U+E041 "repeatRight": la barra de fin de repeticion, con sus dos puntos. */
+    private static final String REPEAT_RIGHT = "";
 
     private Icons() {
     }
@@ -123,11 +127,11 @@ public final class Icons {
     }
 
     public static Icon repeatOpen() {
-        return icon((graphics, size) -> repeat(graphics, size, true));
+        return new GlyphIcon(SIZE, REPEAT_LEFT);
     }
 
     public static Icon repeatClose() {
-        return icon((graphics, size) -> repeat(graphics, size, false));
+        return new GlyphIcon(SIZE, REPEAT_RIGHT);
     }
 
     public static Icon alternateEndings() {
