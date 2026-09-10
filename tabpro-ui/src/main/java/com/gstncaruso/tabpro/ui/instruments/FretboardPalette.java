@@ -12,7 +12,7 @@ record FretboardPalette(
         Color contextInk,
         Color hover) {
 
-    static FretboardPalette sharedWithElectric() {
+    static FretboardPalette electric() {
         return new FretboardPalette(
                 InstrumentColors.STRING,
                 InstrumentColors.FRET_WIRE,

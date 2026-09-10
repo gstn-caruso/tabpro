@@ -9,7 +9,7 @@ import java.awt.Color;
  */
 public enum FretboardType {
     ELECTRIC("Electrica", new Color(0x3A2F28), new Color(0x8D7665), InlayStyle.DOTS, 1.0,
-            FretboardPalette.sharedWithElectric()),
+            FretboardPalette.electric()),
     ACOUSTIC("Acustica", new Color(0x8A5A34), new Color(0xD4B79F), InlayStyle.DOTS, 1.1,
             new FretboardPalette(
                     new Color(0xBEBBB5),
