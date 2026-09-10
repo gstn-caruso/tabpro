@@ -37,6 +37,7 @@ public final class MixTable extends JPanel {
     public static final int PORT_WIDTH = 32;
     public static final int CHANNEL_WIDTH = 32;
     public static final int INSTRUMENT_WIDTH = 132;
+    public static final int LEVEL_WIDTH = 96;
     public static final int PARAMETER_WIDTH = 42;
     public static final int TOGGLE_WIDTH = 22;
     public static final int COLUMN_GAP = 4;
@@ -45,7 +46,8 @@ public final class MixTable extends JPanel {
     private static final List<Integer> COLUMN_WIDTHS = List.of(
             NUMBER_WIDTH, VISIBLE_WIDTH, ICON_WIDTH, NAME_WIDTH, PORT_WIDTH, CHANNEL_WIDTH, CHANNEL_WIDTH,
             INSTRUMENT_WIDTH,
-            PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH,
+            LEVEL_WIDTH, LEVEL_WIDTH,
+            PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH,
             TOGGLE_WIDTH, TOGGLE_WIDTH);
 
     public static final int WIDTH =
@@ -134,7 +136,10 @@ public final class MixTable extends JPanel {
         addTitle(header, "Ch", CHANNEL_WIDTH);
         addTitle(header, "Ch2", CHANNEL_WIDTH);
         addTitle(header, "Instrumento", INSTRUMENT_WIDTH);
-        for (MixParameter parameter : MixParameter.values()) {
+        addTitle(header, MixParameter.VOLUME.label(), LEVEL_WIDTH);
+        addTitle(header, MixParameter.PAN.label(), LEVEL_WIDTH);
+        for (MixParameter parameter : List.of(
+                MixParameter.CHORUS, MixParameter.REVERB, MixParameter.PHASER, MixParameter.TREMOLO)) {
             addClickableTitle(header, parameter);
         }
         addTitle(header, "M", TOGGLE_WIDTH);
