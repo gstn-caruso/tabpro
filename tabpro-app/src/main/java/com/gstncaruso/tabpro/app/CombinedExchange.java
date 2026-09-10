@@ -48,17 +48,20 @@ public final class CombinedExchange implements ScoreExchange {
 
     @Override
     public Score importMidiQuick(
-            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision,
+            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
             boolean useTwoChannelsPerTrack) {
         return notation.importMidiQuick(
-                path, selectedMidiTrackIndices, transposeDownOneOctave, precision, useTwoChannelsPerTrack);
+                path, selectedMidiTrackIndices, transposeDownOneOctave, chordPositionQuantize, noteDurationQuantize,
+                useTwoChannelsPerTrack);
     }
 
     @Override
     public Track importMidiInto(
             Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
-            Optional<NoteValue> precision) {
-        return notation.importMidiInto(target, path, midiTrackIndices, transposeDownOneOctave, precision);
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize) {
+        return notation.importMidiInto(
+                target, path, midiTrackIndices, transposeDownOneOctave, chordPositionQuantize, noteDurationQuantize);
     }
 
     @Override

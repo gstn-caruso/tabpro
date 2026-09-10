@@ -95,8 +95,8 @@ public final class MidiImportDialog {
             }
             try {
                 Score imported = exchange.importMidiQuick(
-                        currentPath[0], selected, panel.transposeDownOneOctave(), Optional.of(panel.noteDurationQuantize()),
-                        panel.useTwoChannelsPerTrack());
+                        currentPath[0], selected, panel.transposeDownOneOctave(), Optional.of(panel.chordPositionQuantize()),
+                        Optional.of(panel.noteDurationQuantize()), panel.useTwoChannelsPerTrack());
                 adopt.accept(imported);
                 afterChange.run();
             } catch (ScoreFileException e) {
@@ -119,10 +119,12 @@ public final class MidiImportDialog {
             try {
                 int trackIndex = editor.cursor().track();
                 boolean transpose = panel.transposeDownOneOctave();
+                Optional<NoteValue> chordPositionQuantize = Optional.of(panel.chordPositionQuantize());
                 Optional<NoteValue> noteDurationQuantize = Optional.of(panel.noteDurationQuantize());
                 editor.apply(score -> score.mappingTrack(
                         trackIndex,
-                        track -> exchange.importMidiInto(track, currentPath[0], selected, transpose, noteDurationQuantize)));
+                        track -> exchange.importMidiInto(
+                                track, currentPath[0], selected, transpose, chordPositionQuantize, noteDurationQuantize)));
                 afterChange.run();
             } catch (ScoreFileException e) {
                 showError(parent, e);
