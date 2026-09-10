@@ -1,3 +1,9 @@
+## [0.34.1](https://github.com/gstn-caruso/tabpro/compare/v0.34.0...v0.34.1) (2026-09-10)
+
+### Bug Fixes
+
+* **shortcuts:** los siete atajos del manual que Swing interceptaba antes de llegar al editor ([#121](https://github.com/gstn-caruso/tabpro/issues/121)) ([3b40f9a](https://github.com/gstn-caruso/tabpro/commit/3b40f9acc5f6a727ac57e92a53ead914dfb79565))
+
 ## [0.34.0](https://github.com/gstn-caruso/tabpro/compare/v0.33.1...v0.34.0) (2026-09-10)
 
 ### Features
