@@ -19,6 +19,11 @@ final class ParameterChangePainter {
 
     /** Cuanto se despegan del pentagrama, para no pisar las notas que asoman por arriba. */
     private static final int STAFF_CLEARANCE = 16;
+    /**
+     * El tempo inicial necesita mas aire que un cambio a mitad de partitura: comparte el compas
+     * con las notas de verdad, y una plica forzada hacia arriba puede llegar hasta ahi.
+     */
+    private static final int INITIAL_TEMPO_EXTRA_CLEARANCE = 14;
 
     private static final int MARK_WIDTH = 9;
     private static final int MARK_HEIGHT = 5;
@@ -41,8 +46,8 @@ final class ParameterChangePainter {
         }
         Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, 0);
         int centerX = bounds.x + bounds.width / 2;
-        int bottom = layout.staffTop(trackIndex, measureIndex) - STAFF_CLEARANCE;
-        paintTempo(g, scoreTempo, centerX, bottom - ROW_HEIGHT);
+        int bottom = layout.staffTop(trackIndex, measureIndex) - STAFF_CLEARANCE - INITIAL_TEMPO_EXTRA_CLEARANCE;
+        paintTempo(g, scoreTempo, centerX, bottom);
     }
 
     static void paintMeasure(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {

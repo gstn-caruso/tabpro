@@ -25,6 +25,8 @@ import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.core.model.effects.NoteEffects;
+import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
 import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
@@ -240,6 +242,29 @@ class ScorePainterTest {
 
         assertTrue(painted.hasColorIn(above, ScoreColors.TEMPO),
                 "el tempo global de la partitura tiene que verse arriba del primer compas");
+    }
+
+    @Test
+    void theInitialTempoDoesNotDuplicateAnExplicitChangeOnTheFirstBeat() {
+        Measure withExplicitChange = measureOf(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3)),
+                Beat.of(Duration.quarter(), new Note(1, 5)));
+        ParameterChange explicitTempo = ParameterChange.nothing().changing(SoundParameter.TEMPO, 90);
+        withExplicitChange = withExplicitChange.withBeat(0,
+                withExplicitChange.beat(0).withEffects(BeatEffects.none().withParameterChange(explicitTempo)));
+        Score score = new Score("", 120, List.of(
+                new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(withExplicitChange))));
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        ScorePainter.paint(lienzo, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        long tempoGlyphs = lienzo.textosDibujados().stream()
+                .filter(texto -> MusicFont.metNoteQuarterUp().equals(texto.texto()))
+                .count();
+        assertEquals(1, tempoGlyphs, "el compas 1 solo tiene que mostrar un tempo, el del cambio explicito");
     }
 
     @Test
