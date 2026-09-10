@@ -1,6 +1,8 @@
 package com.gstncaruso.tabpro.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.ui.theme.ThemeSwitch;
 import java.util.List;
@@ -30,8 +32,29 @@ class AccessibilitySettingsTest {
         assertEquals(18, themes.lastFontSize);
     }
 
+    @Test
+    void appliesTheStoredHighContrastChoice() {
+        preferences.setHighContrastEnabled(true);
+
+        AccessibilitySettings.applyFrom(preferences, themes);
+
+        assertTrue(themes.lastHighContrast);
+    }
+
+    /** "Sin animaciones" prendido tiene que apagar las animaciones de FlatLaf, no prenderlas. */
+    @Test
+    void turnsAnimationsOffWhenTheyAreDisabled() {
+        preferences.setAnimationsDisabled(true);
+
+        AccessibilitySettings.applyFrom(preferences, themes);
+
+        assertFalse(themes.lastAnimationsEnabled);
+    }
+
     private static final class RecordingThemeSwitch implements ThemeSwitch {
         private int lastFontSize;
+        private boolean lastHighContrast;
+        private boolean lastAnimationsEnabled = true;
 
         @Override
         public List<String> names() {
@@ -54,10 +77,12 @@ class AccessibilitySettingsTest {
 
         @Override
         public void useHighContrast(boolean enabled) {
+            lastHighContrast = enabled;
         }
 
         @Override
         public void useAnimations(boolean enabled) {
+            lastAnimationsEnabled = enabled;
         }
     }
 }
