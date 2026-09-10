@@ -7,7 +7,6 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import java.util.function.UnaryOperator;
 
-/** Los recorridos que comparten los asistentes para llegar hasta cada nota. */
 final class Wizards {
 
     private Wizards() {

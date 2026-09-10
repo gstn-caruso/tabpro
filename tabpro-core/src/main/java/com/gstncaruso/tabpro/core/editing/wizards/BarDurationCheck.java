@@ -6,7 +6,6 @@ import com.gstncaruso.tabpro.core.model.Track;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Revisa la partitura buscando compases que no suman lo que su medida pide. */
 public final class BarDurationCheck {
 
     private BarDurationCheck() {
@@ -26,7 +25,6 @@ public final class BarDurationCheck {
         return List.copyOf(findings);
     }
 
-    /** Un compas que no cierra, y si le falta o le sobra. */
     public record Finding(int trackIndex, int measureIndex, boolean tooShort) {
 
         public boolean tooLong() {

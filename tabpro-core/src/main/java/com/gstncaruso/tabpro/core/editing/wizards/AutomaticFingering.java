@@ -11,13 +11,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Reubica las notas en el diapason sin cambiar la melodia, para que la mano
- * viaje lo menos posible entre un beat y el siguiente.
- */
 public final class AutomaticFingering {
 
-    /** Lo que abarca la mano sin desplazarse. */
     private static final int HAND_SPAN = 4;
 
     private AutomaticFingering() {
@@ -48,7 +43,6 @@ public final class AutomaticFingering {
         return beat.withNotes(placed);
     }
 
-    /** La misma altura, en la cuerda libre cuyo traste quede mas cerca de la mano. */
     private static Note closestTo(Tuning tuning, Note note, int hand, List<Integer> used) {
         Note best = bestFingeringFor(tuning, tuning.pitchOf(note), hand, used)
                 .map(found -> found.withEffects(note.effects()).tied(note.tied()))
@@ -57,11 +51,6 @@ public final class AutomaticFingering {
         return best;
     }
 
-    /**
-     * La nota que produce esa altura en la cuerda libre (fuera de {@code excludedStrings}) cuyo
-     * traste quede mas cerca de la mano, si alguna cuerda la alcanza. La reutilizan tanto la
-     * redigitacion de un track entero como cualquier alta puntual de una nota nueva a esa altura.
-     */
     public static Optional<Note> bestFingeringFor(
             Tuning tuning, Pitch pitch, int hand, Collection<Integer> excludedStrings) {
         Note best = null;
