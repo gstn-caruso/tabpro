@@ -60,17 +60,20 @@ public final class NotationExchange implements ScoreExchange {
 
     @Override
     public Score importMidiQuick(
-            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision,
+            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
             boolean useTwoChannelsPerTrack) {
         return midiImporter.importQuick(
-                path, selectedMidiTrackIndices, transposeDownOneOctave, precision, useTwoChannelsPerTrack);
+                path, selectedMidiTrackIndices, transposeDownOneOctave, chordPositionQuantize, noteDurationQuantize,
+                useTwoChannelsPerTrack);
     }
 
     @Override
     public Track importMidiInto(
             Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
-            Optional<NoteValue> precision) {
-        return midiImporter.importInto(target, path, midiTrackIndices, transposeDownOneOctave, precision);
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize) {
+        return midiImporter.importInto(
+                target, path, midiTrackIndices, transposeDownOneOctave, chordPositionQuantize, noteDurationQuantize);
     }
 
     @Override

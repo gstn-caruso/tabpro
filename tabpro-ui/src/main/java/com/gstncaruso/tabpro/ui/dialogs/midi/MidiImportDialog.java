@@ -3,8 +3,10 @@ package com.gstncaruso.tabpro.ui.dialogs.midi;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
@@ -44,24 +46,25 @@ public final class MidiImportDialog {
             Consumer<Score> adopt,
             Runnable afterChange,
             Path initialPath,
-            Consumer<Timeline> onListen) {
+            Player player) {
         Path[] currentPath = {initialPath};
         MidiImportPanel panel;
         try {
-            panel = new MidiImportPanel(exchange.midiTracksIn(currentPath[0]));
+            panel = new MidiImportPanel(
+                    exchange.midiTracksIn(currentPath[0]), player,
+                    selected -> timelineOrSilence(parent, exchange, currentPath[0], selected));
         } catch (ScoreFileException e) {
             showError(parent, e);
             return;
         }
 
         JButton openAnother = DialogStyle.flatButton("Abrir otro archivo…");
-        JButton listen = DialogStyle.flatButton("Escuchar");
         JButton quickImport = DialogStyle.flatButton("Import rápido (reemplaza la partitura)");
         JButton titleAndTimeSignatures = DialogStyle.flatButton("Importar título y cambios de compás");
         JButton addTrack = DialogStyle.flatButton("Agregar una pista");
         JButton importOntoCurrent = DialogStyle.flatButton("Importar sobre la pista actual");
 
-        JPanel top = flowOf(openAnother, listen);
+        JPanel top = flowOf(openAnother);
         JPanel stepByStep = flowOf(titleAndTimeSignatures, addTrack, importOntoCurrent);
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(flowOf(quickImport), BorderLayout.NORTH);
@@ -86,22 +89,14 @@ public final class MidiImportDialog {
             }
         });
 
-        listen.addActionListener(event -> withSelection(parent, panel, selected -> {
-            try {
-                onListen.accept(exchange.midiTrackTimeline(currentPath[0], selected));
-            } catch (ScoreFileException e) {
-                showError(parent, e);
-            }
-        }));
-
         quickImport.addActionListener(event -> withSelection(parent, panel, selected -> {
             if (!askToDiscardChanges.getAsBoolean()) {
                 return;
             }
             try {
                 Score imported = exchange.importMidiQuick(
-                        currentPath[0], selected, panel.transposeDownOneOctave(), Optional.of(panel.precision()),
-                        panel.useTwoChannelsPerTrack());
+                        currentPath[0], selected, panel.transposeDownOneOctave(), Optional.of(panel.chordPositionQuantize()),
+                        Optional.of(panel.noteDurationQuantize()), panel.useTwoChannelsPerTrack());
                 adopt.accept(imported);
                 afterChange.run();
             } catch (ScoreFileException e) {
@@ -124,9 +119,12 @@ public final class MidiImportDialog {
             try {
                 int trackIndex = editor.cursor().track();
                 boolean transpose = panel.transposeDownOneOctave();
-                Optional<NoteValue> precision = Optional.of(panel.precision());
+                Optional<NoteValue> chordPositionQuantize = Optional.of(panel.chordPositionQuantize());
+                Optional<NoteValue> noteDurationQuantize = Optional.of(panel.noteDurationQuantize());
                 editor.apply(score -> score.mappingTrack(
-                        trackIndex, track -> exchange.importMidiInto(track, currentPath[0], selected, transpose, precision)));
+                        trackIndex,
+                        track -> exchange.importMidiInto(
+                                track, currentPath[0], selected, transpose, chordPositionQuantize, noteDurationQuantize)));
                 afterChange.run();
             } catch (ScoreFileException e) {
                 showError(parent, e);
@@ -160,5 +158,18 @@ public final class MidiImportDialog {
 
     private static void showError(Component parent, ScoreFileException e) {
         JOptionPane.showMessageDialog(parent, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private static Timeline timelineOrSilence(Component parent, ScoreExchange exchange, Path path, List<Integer> selected) {
+        try {
+            return exchange.midiTrackTimeline(path, selected);
+        } catch (ScoreFileException e) {
+            showError(parent, e);
+            return silentTimeline();
+        }
+    }
+
+    private static Timeline silentTimeline() {
+        return new Timeline(0, Duration.TICKS_PER_QUARTER, List.of());
     }
 }

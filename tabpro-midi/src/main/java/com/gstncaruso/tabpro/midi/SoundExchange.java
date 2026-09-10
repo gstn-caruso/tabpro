@@ -56,7 +56,8 @@ public final class SoundExchange implements ScoreExchange {
 
     @Override
     public Score importMidiQuick(
-            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision,
+            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
             boolean useTwoChannelsPerTrack) {
         throw ScoreExchange.notSupported("la importación de MIDI");
     }
@@ -64,7 +65,7 @@ public final class SoundExchange implements ScoreExchange {
     @Override
     public Track importMidiInto(
             Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
-            Optional<NoteValue> precision) {
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize) {
         throw ScoreExchange.notSupported("la importación de MIDI");
     }
 

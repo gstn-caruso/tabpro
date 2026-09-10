@@ -37,14 +37,15 @@ public interface ScoreExchange {
         @Override
         public Score importMidiQuick(
                 Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
-                Optional<NoteValue> precision, boolean useTwoChannelsPerTrack) {
+                Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
+                boolean useTwoChannelsPerTrack) {
             throw notSupported("la importación de MIDI");
         }
 
         @Override
         public Track importMidiInto(
                 Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
-                Optional<NoteValue> precision) {
+                Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize) {
             throw notSupported("la importación de MIDI");
         }
 
@@ -133,20 +134,22 @@ public interface ScoreExchange {
     List<MidiTrackInfo> midiTracksIn(Path path);
 
     /**
-     * El "import rápido" del manual, pero solo con las pistas elegidas en la ventana. precision
-     * vacio es sin restringir la cuantización de la posición y la duración de las notas; presente
-     * es la figura más fina admitida, como deja elegir el manual. useTwoChannelsPerTrack es la
+     * El "import rápido" del manual, pero solo con las pistas elegidas en la ventana.
+     * chordPositionQuantize y noteDurationQuantize vacios son sin restringir la cuantización de
+     * la posición y la duración de las notas; presentes son la figura más fina admitida para cada
+     * una, como los dos grupos de radios del manual. useTwoChannelsPerTrack es la
      * casilla "Use 2 channels per track" del import rápido: con los dos canales, el de efectos
      * es el que sigue al de la pista; con uno solo, coinciden.
      */
     Score importMidiQuick(
-            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision,
+            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
             boolean useTwoChannelsPerTrack);
 
     /** El "import paso a paso": la o las pistas MIDI elegidas reemplazan los compases de target. */
     Track importMidiInto(
             Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
-            Optional<NoteValue> precision);
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize);
 
     /** El botón "importar título y cambios de compás" del import paso a paso de MIDI. */
     Score importMidiTitleAndTimeSignatures(Score target, Path path);

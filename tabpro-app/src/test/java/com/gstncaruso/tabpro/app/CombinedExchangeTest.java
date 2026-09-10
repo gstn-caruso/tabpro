@@ -73,14 +73,15 @@ class CombinedExchangeTest {
             @Override
             public Score importMidiQuick(
                     Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
-                    Optional<NoteValue> precision, boolean useTwoChannelsPerTrack) {
+                    Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
+                    boolean useTwoChannelsPerTrack) {
                 throw irrelevantForThisTest();
             }
 
             @Override
             public Track importMidiInto(
                     Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
-                    Optional<NoteValue> precision) {
+                    Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize) {
                 throw irrelevantForThisTest();
             }
 
@@ -177,14 +178,15 @@ class CombinedExchangeTest {
             @Override
             public Score importMidiQuick(
                     Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
-                    Optional<NoteValue> precision, boolean useTwoChannelsPerTrack) {
+                    Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
+                    boolean useTwoChannelsPerTrack) {
                 throw irrelevantForThisTest();
             }
 
             @Override
             public Track importMidiInto(
                     Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
-                    Optional<NoteValue> precision) {
+                    Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize) {
                 throw irrelevantForThisTest();
             }
 

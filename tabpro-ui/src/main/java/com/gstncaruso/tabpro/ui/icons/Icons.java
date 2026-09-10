@@ -556,6 +556,10 @@ public final class Icons {
         return svgIcon("player-stop");
     }
 
+    public static Icon selectAllTracks() {
+        return svgIcon("checks");
+    }
+
     public static Icon loop() {
         return svgIcon("repeat");
     }

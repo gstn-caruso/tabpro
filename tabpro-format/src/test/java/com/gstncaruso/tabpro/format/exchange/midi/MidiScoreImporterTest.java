@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.format.exchange.midi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,9 +19,14 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.ScheduledNote;
 import com.gstncaruso.tabpro.core.playback.Timeline;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.ShortMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -391,6 +397,97 @@ class MidiScoreImporterTest {
     void importingTitleAndTimeSignaturesRejectsAFileThatDoesNotExist() {
         Score target = Score.blank();
         assertThrows(ScoreFileException.class, () -> importer.importTitleAndTimeSignatures(target, Path.of("no-existe.mid")));
+    }
+
+    @Test
+    void chordPositionQuantizeWithAQuarterNoteGridSnapsANoteCloseToTheDownbeat(@TempDir Path tempDir) throws Exception {
+        Path path = rawMidiFile(tempDir, "cerca-del-pulso.mid", new long[] {240, 64, 100});
+
+        Score imported = importer.importQuick(
+                path, indicesOf(path), false, Optional.of(NoteValue.QUARTER), Optional.empty(), true);
+
+        Track track = imported.track(0);
+        assertEquals(1, track.measure(0).beat(0).notes().size());
+        assertEquals(64, track.pitchOf(track.measure(0).beat(0).notes().get(0)).midiNumber());
+    }
+
+    @Test
+    void chordPositionQuantizeWithASixteenthNoteGridLeavesAnAlreadyAlignedNoteWhereItIs(@TempDir Path tempDir) throws Exception {
+        Path path = rawMidiFile(tempDir, "ya-alineada.mid", new long[] {240, 64, 100});
+
+        Score imported = importer.importQuick(
+                path, indicesOf(path), false, Optional.of(NoteValue.SIXTEENTH), Optional.empty(), true);
+
+        Track track = imported.track(0);
+        assertTrue(track.measure(0).beat(0).notes().isEmpty(), "sigue habiendo un silencio antes: la nota no se movio");
+        assertEquals(Duration.of(NoteValue.SIXTEENTH), track.measure(0).beat(0).duration());
+        assertEquals(1, track.measure(0).beat(1).notes().size());
+    }
+
+    @Test
+    void chordPositionQuantizeMergesTwoNearbyAttacksIntoAChord(@TempDir Path tempDir) throws Exception {
+        Path path = rawMidiFile(tempDir, "casi-simultaneas.mid", new long[] {900, 60, 100}, new long[] {1020, 64, 100});
+
+        Score imported = importer.importQuick(
+                path, indicesOf(path), false, Optional.of(NoteValue.QUARTER), Optional.empty(), true);
+
+        Track track = imported.track(0);
+        long beatsWithNotes = track.measure(0).beats().stream().filter(beat -> !beat.notes().isEmpty()).count();
+        assertEquals(1, beatsWithNotes, "las dos notas casi simultaneas tienen que caer en un unico beat");
+        Beat chord = track.measure(0).beats().stream().filter(beat -> !beat.notes().isEmpty()).findFirst().orElseThrow();
+        assertEquals(2, chord.notes().size());
+    }
+
+    @Test
+    void chordPositionQuantizeCanPushANoteIntoTheNextMeasureAtTheEdgeOfAMeasure(@TempDir Path tempDir) throws Exception {
+        Path path = rawMidiFile(tempDir, "borde-de-compas.mid", new long[] {3800, 64, 60});
+
+        Score imported = importer.importQuick(
+                path, indicesOf(path), false, Optional.of(NoteValue.QUARTER), Optional.empty(), true);
+
+        Track track = imported.track(0);
+        assertEquals(2, track.measureCount(), "el archivo tiene que traer un segundo compas para que la nota se pueda mover ahi");
+        boolean firstMeasureHasNotes = track.measure(0).beats().stream().anyMatch(beat -> !beat.notes().isEmpty());
+        assertFalse(firstMeasureHasNotes, "la nota cuantizada se movio, asi que el primer compas queda en silencio");
+        assertEquals(1, track.measure(1).beat(0).notes().size());
+    }
+
+    @Test
+    void theStepByStepImportAlsoQuantizesTheChordPosition(@TempDir Path tempDir) throws Exception {
+        Path path = rawMidiFile(tempDir, "paso-a-paso.mid", new long[] {240, 64, 100});
+        Track existing = Track.standardGuitar("Guitarra");
+        int midiTrackIndex = importer.tracksIn(path).get(0).index();
+
+        Track merged = importer.importInto(
+                existing, path, List.of(midiTrackIndex), false, Optional.of(NoteValue.QUARTER), Optional.empty());
+
+        assertEquals(1, merged.measure(0).beat(0).notes().size(),
+                "la nota a 240 tics cuantiza al tiempo 1 con grilla de negra: tiene que caer en el primer beat");
+    }
+
+    private static Path rawMidiFile(Path dir, String fileName, long[]... notes) throws Exception {
+        Sequence sequence = new Sequence(Sequence.PPQ, (int) Duration.TICKS_PER_QUARTER);
+        sequence.createTrack();
+        javax.sound.midi.Track track = sequence.createTrack();
+        track.add(new MidiEvent(new MetaMessage(0x03, "Guitarra".getBytes(StandardCharsets.UTF_8), 8), 0));
+        track.add(new MidiEvent(new ShortMessage(ShortMessage.PROGRAM_CHANGE, 0, 25, 0), 0));
+        long lastTick = 0;
+        for (long[] note : notes) {
+            long tick = note[0];
+            int pitch = (int) note[1];
+            long duration = note[2];
+            track.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, 0, pitch, 100), tick));
+            track.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, 0, pitch, 0), tick + duration));
+            lastTick = Math.max(lastTick, tick + duration);
+        }
+        track.add(new MidiEvent(new MetaMessage(0x2F, new byte[0], 0), lastTick));
+        Path path = dir.resolve(fileName);
+        PlainMidiWriter.write(sequence, path);
+        return path;
+    }
+
+    private List<Integer> indicesOf(Path path) {
+        return importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
     }
 
     private static Path export(Score score, Path dir) {

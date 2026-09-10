@@ -1,0 +1,63 @@
+package com.gstncaruso.tabpro.format.exchange.midi;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+import com.gstncaruso.tabpro.core.model.NoteValue;
+import java.util.List;
+import java.util.Optional;
+import java.util.TreeMap;
+import org.junit.jupiter.api.Test;
+
+class RawMidiTrackTest {
+
+    @Test
+    void withNoGridLeavesThePositionsUntouched() {
+        RawMidiTrack raw = trackWith(notesByTick(720L, new RawNote(64, 100)));
+
+        RawMidiTrack quantized = raw.withPositionsQuantizedTo(Optional.empty());
+
+        assertSame(raw, quantized);
+    }
+
+    @Test
+    void aNoteCloseToTheDownbeatSnapsToItWithAQuarterNoteGrid() {
+        RawMidiTrack raw = trackWith(notesByTick(240L, new RawNote(64, 100)));
+
+        RawMidiTrack quantized = raw.withPositionsQuantizedTo(Optional.of(NoteValue.QUARTER));
+
+        assertEquals(List.of(0L), List.copyOf(quantized.notesByTick().keySet()));
+    }
+
+    @Test
+    void theSameNoteStaysPutWithASixteenthNoteGridBecauseItAlreadyFallsOnIt() {
+        RawMidiTrack raw = trackWith(notesByTick(240L, new RawNote(64, 100)));
+
+        RawMidiTrack quantized = raw.withPositionsQuantizedTo(Optional.of(NoteValue.SIXTEENTH));
+
+        assertEquals(List.of(240L), List.copyOf(quantized.notesByTick().keySet()));
+    }
+
+    @Test
+    void twoNotesThatSnapToTheSameGridPointBecomeAChord() {
+        TreeMap<Long, List<RawNote>> notesByTick = new TreeMap<>();
+        notesByTick.put(900L, List.of(new RawNote(60, 100)));
+        notesByTick.put(1020L, List.of(new RawNote(64, 100)));
+        RawMidiTrack raw = trackWith(notesByTick);
+
+        RawMidiTrack quantized = raw.withPositionsQuantizedTo(Optional.of(NoteValue.QUARTER));
+
+        assertEquals(List.of(960L), List.copyOf(quantized.notesByTick().keySet()));
+        assertEquals(List.of(new RawNote(60, 100), new RawNote(64, 100)), quantized.notesByTick().get(960L));
+    }
+
+    private static RawMidiTrack trackWith(TreeMap<Long, List<RawNote>> notesByTick) {
+        return new RawMidiTrack(0, "Guitarra", 25, 1, 1, 100, 64, 0, 0, 0, 0, false, notesByTick);
+    }
+
+    private static TreeMap<Long, List<RawNote>> notesByTick(long tick, RawNote... notes) {
+        TreeMap<Long, List<RawNote>> map = new TreeMap<>();
+        map.put(tick, List.of(notes));
+        return map;
+    }
+}
