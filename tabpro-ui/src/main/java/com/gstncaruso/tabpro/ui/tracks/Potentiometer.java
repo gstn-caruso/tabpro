@@ -63,12 +63,16 @@ public final class Potentiometer extends JComponent implements AccessibleControl
     }
 
     private void bindStep(InputMap inputMap, ActionMap actionMap, String keyStroke, int step) {
-        String name = "potentiometer.step." + keyStroke;
+        bindTo(inputMap, actionMap, keyStroke, () -> value + step);
+    }
+
+    private void bindTo(InputMap inputMap, ActionMap actionMap, String keyStroke, java.util.function.IntSupplier target) {
+        String name = "potentiometer.goto." + keyStroke;
         inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
         actionMap.put(name, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setValue(value + step);
+                setValue(target.getAsInt());
                 onUserChange.run();
             }
         });
