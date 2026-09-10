@@ -18,6 +18,7 @@ import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import com.gstncaruso.tabpro.core.model.effects.StemOverride;
+import com.gstncaruso.tabpro.ui.AwaitEdt;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -297,6 +298,7 @@ class CommandsTest {
     @Test
     void editMarkerBecomesEnabledAfterInsertingAMarkerOnTheCursor() {
         editor.setMarker(Marker.named("Intro"));
+        AwaitEdt.flush();
 
         assertTrue(commands.get("marker.edit").isEnabled());
     }
@@ -311,6 +313,7 @@ class CommandsTest {
         localEditor.setMarker(Marker.named("Intro"));
 
         localEditor.moveTo(2, 0, 1);
+        AwaitEdt.flush();
 
         assertTrue(localCommands.get("marker.edit").isEnabled());
     }
