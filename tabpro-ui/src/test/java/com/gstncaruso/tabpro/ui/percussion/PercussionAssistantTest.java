@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
@@ -16,6 +17,13 @@ import javax.swing.JList;
 import org.junit.jupiter.api.Test;
 
 class PercussionAssistantTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        Editor editor = new Editor(new Score("Prueba", 120, java.util.List.of(Track.percussion("Batería"))));
+
+        AccessibilityAssertions.assertNoViolations(new PercussionAssistant(editor, new RecordingPlayer()));
+    }
 
     @Test
     void appliesOnlyToAPercussionTrack() {

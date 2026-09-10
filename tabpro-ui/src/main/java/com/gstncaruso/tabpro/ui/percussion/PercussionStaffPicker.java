@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.percussion;
 
+import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.instruments.InstrumentColors;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BasicStroke;
@@ -16,6 +17,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 import javax.swing.JComponent;
 
 /**
@@ -23,7 +26,7 @@ import javax.swing.JComponent;
  * linea es un sonido. Un clic lo escucha, un doble clic lo agrega al beat, igual
  * que en la zona (1).
  */
-public final class PercussionStaffPicker extends JComponent {
+public final class PercussionStaffPicker extends JComponent implements AccessibleControl {
 
     public static final int PREFERRED_HEIGHT = 96;
 
@@ -51,8 +54,23 @@ public final class PercussionStaffPicker extends JComponent {
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setPreferredSize(new Dimension(0, PREFERRED_HEIGHT));
         setMinimumSize(new Dimension(0, PREFERRED_HEIGHT));
+        setToolTipText("Pentagrama de percusión");
+        getAccessibleContext().setAccessibleName("Pentagrama de percusión");
         trackTheMouse();
         installClicking(onPlay, onAdd);
+    }
+
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        if (accessibleContext == null) {
+            accessibleContext = new AccessibleJComponent() {
+                @Override
+                public AccessibleRole getAccessibleRole() {
+                    return AccessibleRole.PANEL;
+                }
+            };
+        }
+        return accessibleContext;
     }
 
     private void installClicking(IntConsumer onPlay, Consumer<PercussionLine> onAdd) {
