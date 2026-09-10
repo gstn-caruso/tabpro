@@ -40,6 +40,8 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 class ScorePainterTest {
@@ -952,6 +954,81 @@ class ScorePainterTest {
         assertEquals(
                 painted.layout().beatBounds(0, 0, 2).x, lines.get(0),
                 "la linea va donde arranco el beat que suena mas tarde");
+    }
+
+    /**
+     * Repintar una pantalla de una partitura larga hoy cuesta lo mismo que pintarla entera:
+     * {@code paintTrack} recorre todos los compases de todas las pistas sin mirar el clip.
+     * Con un clip acotado al primer sistema, un compas bien lejos -al final de la partitura- no
+     * tiene que tocarse.
+     */
+    @Test
+    void paintTrackSkipsMeasuresFarFromTheClip() {
+        Score score = scoreWithMeasures(60, 1);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
+        Rectangle clipOnTheFirstSystem = new Rectangle(
+                0, 0, WIDTH, ScoreLayout.TOP_MARGIN + layout.systemHeight());
+        LienzoDePrueba lienzo = new LienzoDePrueba(clipOnTheFirstSystem);
+
+        ScorePainter.paint(lienzo, layout, score, new Cursor(-1, 0, 0, 1), Playhead.silent());
+
+        Set<Integer> painted = measureNumbersPaintedIn(lienzo);
+        assertFalse(painted.contains(layout.measureCount()),
+                "el ultimo compas, lejos del clip, no tiene que pintarse");
+        assertTrue(painted.contains(1), "el primer compas, adentro del clip, si se tiene que pintar");
+    }
+
+    /**
+     * El mismo recorte, a la escala de la auditoria de rendimiento: 300 compases y 6 pistas, con
+     * un clip de una pantalla. Ningun compas pintado puede caer en un sistema fuera del rango que
+     * el propio clip delimita -es el presupuesto de trabajo, verificado por el espia, no por
+     * milisegundos.
+     */
+    @Test
+    void aScreenfulClipOnALargeScoreOnlyTouchesMeasuresNearIt() {
+        Score score = scoreWithMeasures(300, 6);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
+        int screenHeight = 800;
+        int clipTop = ScoreLayout.TOP_MARGIN + 10 * (layout.systemHeight() + ScoreLayout.SYSTEM_GAP);
+        Rectangle screenClip = new Rectangle(0, clipTop, WIDTH, screenHeight);
+        int firstVisibleSystem = layout.systemAt(clipTop);
+        int lastVisibleSystem = layout.systemAt(clipTop + screenHeight);
+        LienzoDePrueba lienzo = new LienzoDePrueba(screenClip);
+
+        ScorePainter.paint(lienzo, layout, score, new Cursor(-1, 0, 0, 1), Playhead.silent());
+
+        Set<Integer> painted = measureNumbersPaintedIn(lienzo);
+        assertFalse(painted.isEmpty(), "algo tiene que pintarse dentro del clip");
+        for (int measureNumber : painted) {
+            int system = layout.systemOf(measureNumber - 1);
+            assertTrue(system >= firstVisibleSystem && system <= lastVisibleSystem,
+                    "el compas " + measureNumber + " esta en el sistema " + system
+                            + ", fuera del rango visible [" + firstVisibleSystem + "," + lastVisibleSystem + "]");
+        }
+    }
+
+    private static Set<Integer> measureNumbersPaintedIn(LienzoDePrueba lienzo) {
+        return lienzo.textosDibujados().stream()
+                .filter(texto -> ScoreFonts.MEASURE_NUMBER_FONT.equals(texto.fuente()))
+                .map(texto -> Integer.parseInt(texto.texto()))
+                .collect(Collectors.toSet());
+    }
+
+    private static Score scoreWithMeasures(int measureCount, int trackCount) {
+        List<Measure> measures = new ArrayList<>();
+        for (int i = 0; i < measureCount; i++) {
+            measures.add(new Measure(TimeSignature.fourFour(), List.of(
+                    Beat.of(Duration.quarter(), new Note(1, i % 5)),
+                    Beat.of(Duration.quarter(), new Note(1, i % 5)),
+                    Beat.of(Duration.quarter(), new Note(1, i % 5)),
+                    Beat.of(Duration.quarter(), new Note(1, i % 5)))));
+        }
+        List<Track> tracks = new ArrayList<>();
+        for (int t = 0; t < trackCount; t++) {
+            Track guitar = Track.standardGuitar("Guitarra " + t);
+            tracks.add(new Track("Guitarra " + t, guitar.tuning(), guitar.channel(), measures));
+        }
+        return new Score("", 120, tracks);
     }
 
     private static Score twoTracksSplittingTheBarDifferently() {
