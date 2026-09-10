@@ -25,11 +25,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * El lado notacional del intercambio: los formatos que guardan como esta escrita la partitura.
- * Leer un MIDI ajeno es traducir una notacion que no es la nuestra, asi que el importador de
- * MIDI vive aca; exportar sonido es rendir la partitura, y de eso se ocupa tabpro-midi.
- */
 public final class NotationExchange implements ScoreExchange {
 
     private final MidiScoreImporter midiImporter = new MidiScoreImporter();
@@ -47,7 +42,6 @@ public final class NotationExchange implements ScoreExchange {
         return midiImporter.importQuick(path);
     }
 
-    /** El lado sonoro del intercambio, {@code tabpro-midi}, es quien exporta MIDI. */
     @Override
     public void exportMidi(Score score, Path path) {
         throw ScoreExchange.notSupported("la exportación a MIDI");
@@ -86,7 +80,6 @@ public final class NotationExchange implements ScoreExchange {
         return midiImporter.timelineOf(path, midiTrackIndices);
     }
 
-    /** El lado sonoro del intercambio, {@code tabpro-midi}, es quien renderiza WAVE. */
     @Override
     public void exportWave(Score score, Path path, AudioQuality quality) {
         throw ScoreExchange.notSupported("la exportación a WAVE");
