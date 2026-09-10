@@ -29,7 +29,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -242,7 +241,7 @@ final class StaffPainter {
                     g, centerX, markY, above ? MusicFont.articStaccatoAbove() : MusicFont.articStaccatoBelow(), ink);
         }
         if (note.has(Ornament.ACCENTED) || note.has(Ornament.HEAVY_ACCENTED)) {
-            paintAccentMark(g, centerX, markY, ink, note.has(Ornament.HEAVY_ACCENTED));
+            paintAccentMark(g, centerX, markY, above, ink, note.has(Ornament.HEAVY_ACCENTED));
         }
     }
 
@@ -253,21 +252,12 @@ final class StaffPainter {
         g.drawString(glyph, (float) (centerX - width / 2), (float) y);
     }
 
-    private static void paintAccentMark(Graphics2D g, double centerX, double y, Color ink, boolean heavy) {
-        g.setColor(ink);
-        g.setStroke(new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.draw(chevron(centerX, y));
+    private static void paintAccentMark(Graphics2D g, double centerX, double y, boolean above, Color ink, boolean heavy) {
+        String glyph = above ? MusicFont.articAccentAbove() : MusicFont.articAccentBelow();
+        paintArticulationGlyph(g, centerX, y, glyph, ink);
         if (heavy) {
-            g.draw(chevron(centerX, y - SPACE * 0.5));
+            paintArticulationGlyph(g, centerX, y - SPACE * 0.5, glyph, ink);
         }
-    }
-
-    private static Path2D chevron(double centerX, double y) {
-        Path2D chevron = new Path2D.Double();
-        chevron.moveTo(centerX - SPACE * 0.5, y - SPACE * 0.25);
-        chevron.lineTo(centerX + SPACE * 0.5, y);
-        chevron.lineTo(centerX - SPACE * 0.5, y + SPACE * 0.25);
-        return chevron;
     }
 
     private static String noteheadGlyphFor(NoteValue value) {

@@ -19,8 +19,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 /**
- * Guitar Pro 5 dibuja el staccato con el glifo grabado de Bravura que corresponde al lado de la
- * nota donde cae, en vez de una elipse trazada a mano.
+ * Guitar Pro 5 dibuja el staccato y el acento con el glifo grabado de Bravura que corresponde al
+ * lado de la nota donde caen, en vez de una elipse o un chevron trazados a mano.
  */
 class ArticulationPaintingTest {
 
@@ -41,6 +41,16 @@ class ArticulationPaintingTest {
     @Test
     void aStaccatoNoteAboveTheMiddleLineGetsTheStaccatoBelowGlyph() {
         assertGlyphNearNote(ABOVE_MIDDLE_LINE, Ornament.STACCATO, MusicFont.articStaccatoBelow());
+    }
+
+    @Test
+    void anAccentedNoteBelowTheMiddleLineGetsTheAccentAboveGlyph() {
+        assertGlyphNearNote(BELOW_MIDDLE_LINE, Ornament.ACCENTED, MusicFont.articAccentAbove());
+    }
+
+    @Test
+    void anAccentedNoteAboveTheMiddleLineGetsTheAccentBelowGlyph() {
+        assertGlyphNearNote(ABOVE_MIDDLE_LINE, Ornament.ACCENTED, MusicFont.articAccentBelow());
     }
 
     private static void assertGlyphNearNote(Note note, Ornament ornament, String glyph) {
