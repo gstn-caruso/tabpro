@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.effects;
 
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -8,7 +9,7 @@ import javax.swing.JPanel;
 
 public final class TogglableEffectPanel<T extends JComponent> extends JPanel {
 
-    private final JCheckBox active = new JCheckBox("Activo");
+    private final JCheckBox active = new JCheckBox(Texts.get("edit_dialogs.TogglableEffectPanel.active"));
     private final T content;
 
     public TogglableEffectPanel(boolean initiallyActive, T content) {
