@@ -1,3 +1,10 @@
+## [0.40.0](https://github.com/gstn-caruso/tabpro/compare/v0.39.2...v0.40.0) (2026-09-10)
+
+### Features
+
+* **print:** configurar página conserva el formato elegido, y la impresión se verifica hasta el PrinterJob ([#137](https://github.com/gstn-caruso/tabpro/issues/137)) ([b7e2296](https://github.com/gstn-caruso/tabpro/commit/b7e2296d818e0b6ed8bba73495fc44dc9f6a6c6d))
+* **toolbar:** el selector de pista por número de Guitar Pro 5 al final de la fila 1 ([#136](https://github.com/gstn-caruso/tabpro/issues/136)) ([0d1d762](https://github.com/gstn-caruso/tabpro/commit/0d1d762872e13da1279adca49830d3dcb9b7e236))
+
 ## [0.39.2](https://github.com/gstn-caruso/tabpro/compare/v0.39.1...v0.39.2) (2026-09-10)
 
 ### Bug Fixes
