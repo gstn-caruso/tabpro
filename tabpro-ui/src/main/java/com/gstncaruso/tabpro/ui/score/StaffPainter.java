@@ -44,6 +44,9 @@ final class StaffPainter {
     private static final double STEM_LENGTH = SPACE * 3.4;
     private static final double BEAM_THICKNESS = SPACE * 0.52;
     private static final double BEAM_GAP = SPACE * 0.84;
+    /** El tope de inclinacion de una barra de union: un espacio de pentagrama por grupo, la
+     * convencion tipografica habitual (nunca mas de dos). */
+    private static final double MAX_BEAM_SLOPE = SPACE;
     private static final int MIDDLE_LINE_STEP = 4;
 
     /** Los grados donde va cada alteracion de la armadura, en orden de letra (Do..Si). */
@@ -494,7 +497,8 @@ final class StaffPainter {
             stems.add(stemOf(layout, track, clef, trackIndex, measureIndex, lane, beats.get(beatIndex), up, octaveShift));
         }
 
-        BeamLine beamLine = flatBeamLine(stems, up);
+        BeamLine beamLine = beamLineFor(
+                track, clef, beats, group, stems, up, octaveShift, track.settings().display().forceHorizontalBeams());
 
         g.setColor(ink);
         g.setStroke(STEM);
@@ -512,13 +516,83 @@ final class StaffPainter {
         paintPartialBeams(g, stems, beats, group, beamLine, direction, beams);
     }
 
-    /** La barra sin pendiente: al ras del extremo mas lejos de todas las cabezas de nota, para que
-     * ninguna plica quede mas corta que el largo minimo estandar. */
-    private static BeamLine flatBeamLine(List<Stem> stems, boolean up) {
+    /**
+     * La barra de un grupo: sigue la pendiente que dan las cabezas de nota del primer y el ultimo
+     * beat, acotada a {@link #MAX_BEAM_SLOPE}, y horizontal cuando el rasgo de la pista lo fuerza,
+     * cuando las notas estan todas a la misma altura o cuando el grupo hace zigzag (las notas de
+     * adentro cruzan la linea que uniria los extremos). El extremo que ya queda mas lejos de las
+     * cabezas de nota (el que fijaria la barra horizontal de siempre) se mantiene sin estirar de
+     * mas; el otro extremo es el que se acerca, nunca mas alla de lo que ya alcanzaba solo.
+     */
+    private static BeamLine beamLineFor(
+            Track track,
+            Clef clef,
+            List<Beat> beats,
+            BeamGroup group,
+            List<Stem> stems,
+            boolean up,
+            int octaveShift,
+            boolean forceHorizontalBeams) {
         double flatY = up
                 ? stems.stream().mapToDouble(Stem::endY).min().orElseThrow()
                 : stems.stream().mapToDouble(Stem::endY).max().orElseThrow();
-        return new BeamLine(stems.get(0).x(), flatY, stems.get(stems.size() - 1).x(), flatY);
+        double firstX = stems.get(0).x();
+        double lastX = stems.get(stems.size() - 1).x();
+        if (forceHorizontalBeams || stems.size() < 2) {
+            return new BeamLine(firstX, flatY, lastX, flatY);
+        }
+        List<Integer> outerSteps = outerStepsOf(track, clef, beats, group, up, octaveShift);
+        if (isFlatTrend(outerSteps)) {
+            return new BeamLine(firstX, flatY, lastX, flatY);
+        }
+
+        double naturalFirst = stems.get(0).endY();
+        double naturalLast = stems.get(stems.size() - 1).endY();
+        boolean firstIsAnchor = up ? naturalFirst <= naturalLast : naturalFirst >= naturalLast;
+        double anchor = firstIsAnchor ? naturalFirst : naturalLast;
+        double other = firstIsAnchor ? naturalLast : naturalFirst;
+        double cappedOther = anchor + clampMagnitude(other - anchor, MAX_BEAM_SLOPE);
+        double firstY = firstIsAnchor ? anchor : cappedOther;
+        double lastY = firstIsAnchor ? cappedOther : anchor;
+        return new BeamLine(firstX, firstY, lastX, lastY);
+    }
+
+    private static double clampMagnitude(double value, double cap) {
+        return Math.max(-cap, Math.min(cap, value));
+    }
+
+    /** El grado mas lejos del centro del pentagrama de cada beat del grupo -el mismo que ata la
+     * plica, ver {@link #stemOf}-, en orden: la referencia para decidir si el grupo sube, baja o
+     * hace zigzag. */
+    private static List<Integer> outerStepsOf(
+            Track track, Clef clef, List<Beat> beats, BeamGroup group, boolean up, int octaveShift) {
+        List<Integer> steps = new ArrayList<>();
+        for (int beatIndex = group.firstBeat(); beatIndex <= group.lastBeat(); beatIndex++) {
+            List<Integer> notesSteps = beats.get(beatIndex).notes().stream()
+                    .map(note -> positionOf(track, clef, note, octaveShift).step())
+                    .toList();
+            steps.add(up
+                    ? notesSteps.stream().mapToInt(Integer::intValue).max().orElse(MIDDLE_LINE_STEP)
+                    : notesSteps.stream().mapToInt(Integer::intValue).min().orElse(MIDDLE_LINE_STEP));
+        }
+        return steps;
+    }
+
+    /** Sin tendencia clara: todas las notas a la misma altura, o un zigzag donde el grado no crece
+     * ni decrece de punta a punta sin cambiar de sentido en el medio. */
+    private static boolean isFlatTrend(List<Integer> steps) {
+        boolean nonDecreasing = true;
+        boolean nonIncreasing = true;
+        for (int i = 1; i < steps.size(); i++) {
+            if (steps.get(i) < steps.get(i - 1)) {
+                nonDecreasing = false;
+            }
+            if (steps.get(i) > steps.get(i - 1)) {
+                nonIncreasing = false;
+            }
+        }
+        boolean monotonic = nonDecreasing || nonIncreasing;
+        return !monotonic || steps.get(0).equals(steps.get(steps.size() - 1));
     }
 
     /** El cuerpo de una barra entre sus dos extremos: un rectangulo cuando es horizontal, un
