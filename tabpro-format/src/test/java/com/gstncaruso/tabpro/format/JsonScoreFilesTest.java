@@ -96,10 +96,10 @@ class JsonScoreFilesTest {
 
     @Test
     void savesAndLoadsTheMixerOfEveryTrack(@TempDir Path tempDir) {
-        Track guitar = Track.standardGuitar("Guitarra")
+        Track guitar = Track.standardGuitar("Guitar")
                 .withChannel(Channel.playing(30).withVolume(80).withPan(20).toggledSolo());
-        Track bass = Track.standardBass("Bajo").withChannel(Channel.playing(33).toggledMute());
-        Score score = new Score("Prueba", 120, List.of(guitar, bass));
+        Track bass = Track.standardBass("Bass").withChannel(Channel.playing(33).toggledMute());
+        Score score = new Score("Test", 120, List.of(guitar, bass));
         Path path = tempDir.resolve("score.tabpro");
 
         scoreFiles.save(score, path);
@@ -109,9 +109,9 @@ class JsonScoreFilesTest {
 
     @Test
     void savesAndLoadsDiagramsBelowStandardNotation(@TempDir Path tempDir) {
-        Track guitar = Track.standardGuitar("Guitarra").mappingSettings(
+        Track guitar = Track.standardGuitar("Guitar").mappingSettings(
                 settings -> settings.withDisplay(settings.display().withDiagramsBelowStandardNotation(true)));
-        Score score = new Score("Prueba", 120, List.of(guitar));
+        Score score = new Score("Test", 120, List.of(guitar));
         Path path = tempDir.resolve("score.tabpro");
 
         scoreFiles.save(score, path);
@@ -121,9 +121,9 @@ class JsonScoreFilesTest {
 
     @Test
     void savesAndLoadsForceChannels11to16(@TempDir Path tempDir) {
-        Track guitar = Track.standardGuitar("Guitarra")
+        Track guitar = Track.standardGuitar("Guitar")
                 .mappingSettings(settings -> settings.withForceChannels11to16(true));
-        Score score = new Score("Prueba", 120, List.of(guitar));
+        Score score = new Score("Test", 120, List.of(guitar));
         Path path = tempDir.resolve("score.tabpro");
 
         scoreFiles.save(score, path);
@@ -133,9 +133,9 @@ class JsonScoreFilesTest {
 
     @Test
     void savesAndLoadsForceHorizontalBeams(@TempDir Path tempDir) {
-        Track guitar = Track.standardGuitar("Guitarra").mappingSettings(
+        Track guitar = Track.standardGuitar("Guitar").mappingSettings(
                 settings -> settings.withDisplay(settings.display().withForceHorizontalBeams(true)));
-        Score score = new Score("Prueba", 120, List.of(guitar));
+        Score score = new Score("Test", 120, List.of(guitar));
         Path path = tempDir.resolve("score.tabpro");
 
         scoreFiles.save(score, path);
@@ -156,14 +156,14 @@ class JsonScoreFilesTest {
     @Test
     void rejectsMalformedJson(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("score.tabpro");
-        Files.writeString(path, "{ esto no es json valido");
+        Files.writeString(path, "{ this is not valid json");
 
         assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
     }
 
     @Test
     void rejectsAMissingFile(@TempDir Path tempDir) {
-        Path path = tempDir.resolve("no-existe.tabpro");
+        Path path = tempDir.resolve("does-not-exist.tabpro");
 
         assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
     }
@@ -174,11 +174,11 @@ class JsonScoreFilesTest {
         String jsonWithoutBeats = """
                 {
                   "format": 1,
-                  "title": "Prueba",
+                  "title": "Test",
                   "tempo": 120,
                   "tracks": [
                     {
-                      "name": "Guitarra",
+                      "name": "Guitar",
                       "midiProgram": 25,
                       "tuning": [64, 59, 55, 50, 45, 40],
                       "measures": [
@@ -275,8 +275,8 @@ class JsonScoreFilesTest {
                 TimeSignature.fourFour(),
                 MeasureAttributes.plain().withOctaveMark(octaveMark),
                 List.of(new Voice(List.of(Beat.of(Duration.quarter(), new Note(6, 0)))), Voice.unused()));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        return new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Test", 120, List.of(track));
     }
 
     @Test
@@ -327,16 +327,16 @@ class JsonScoreFilesTest {
         Beat beat = Beat.of(Duration.quarter(), new Note(6, 0))
                 .withEffects(com.gstncaruso.tabpro.core.model.effects.BeatEffects.none().withBeamBreak(beamBreak));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        return new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Test", 120, List.of(track));
     }
 
     private static Score scoreWithStemOverride(StemOverride stemOverride) {
         Beat beat = Beat.of(Duration.quarter(), new Note(6, 0))
                 .withEffects(com.gstncaruso.tabpro.core.model.effects.BeatEffects.none().withStemOverride(stemOverride));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        return new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Test", 120, List.of(track));
     }
 
     @Test
@@ -366,7 +366,7 @@ class JsonScoreFilesTest {
                 com.gstncaruso.tabpro.core.model.effects.BeatEffects.none()
                         .withStroke(new Stroke(StrokeDirection.DOWN, NoteValue.THIRTY_SECOND, true)));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        return new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Test", 120, List.of(track));
     }
 }
