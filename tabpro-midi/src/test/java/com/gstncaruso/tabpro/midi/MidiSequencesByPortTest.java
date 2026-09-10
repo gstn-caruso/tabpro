@@ -114,7 +114,7 @@ class MidiSequencesByPortTest {
                 return event;
             }
         }
-        throw new AssertionError("no se encontro un evento meta de tipo " + metaType);
+        throw new AssertionError("no meta event found of type " + metaType);
     }
 
     private int microsecondsPerQuarterOf(MetaMessage tempoEvent) {

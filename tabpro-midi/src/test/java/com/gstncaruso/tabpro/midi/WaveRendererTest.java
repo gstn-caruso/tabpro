@@ -33,7 +33,7 @@ class WaveRendererTest {
     @Test
     void rendersAPlayableWaveFileWithTheRequestedFormatAndDuration(@TempDir Path tempDir) throws Exception {
         Sequence sequence = twoQuarterNoteSequenceAt(120);
-        Path path = tempDir.resolve("prueba.wav");
+        Path path = tempDir.resolve("test.wav");
 
         renderer.render(sequence, path, AudioQuality.standard());
 
@@ -44,16 +44,16 @@ class WaveRendererTest {
             assertEquals(2, in.getFormat().getChannels());
 
             double seconds = in.getFrameLength() / in.getFormat().getSampleRate();
-            assertEquals(1.0, seconds, 0.05, "dos negras a 120 bpm duran un segundo");
+            assertEquals(1.0, seconds, 0.05, "two quarter notes at 120 bpm last one second");
 
-            assertTrue(hasSound(in), "el wave no puede ser puro silencio: las notas tienen que sonar");
+            assertTrue(hasSound(in), "the wave cannot be pure silence: the notes have to sound");
         }
     }
 
     @Test
     void rendersWithTheRequestedSampleRateBitDepthAndChannels(@TempDir Path tempDir) throws Exception {
         Sequence sequence = twoQuarterNoteSequenceAt(120);
-        Path path = tempDir.resolve("prueba.wav");
+        Path path = tempDir.resolve("test.wav");
         AudioQuality quality = new AudioQuality(48_000, 24, 1);
 
         renderer.render(sequence, path, quality);
@@ -71,7 +71,7 @@ class WaveRendererTest {
                 getClass().getClassLoader(), new Class<?>[] {Synthesizer.class}, doNothing());
         WaveRenderer withoutOfflineSupport = new WaveRenderer(() -> notAnAudioSynthesizer);
         Sequence sequence = twoQuarterNoteSequenceAt(120);
-        Path path = tempDir.resolve("prueba.wav");
+        Path path = tempDir.resolve("test.wav");
 
         assertThrows(ScoreFileException.class, () -> withoutOfflineSupport.render(sequence, path, AudioQuality.standard()));
     }

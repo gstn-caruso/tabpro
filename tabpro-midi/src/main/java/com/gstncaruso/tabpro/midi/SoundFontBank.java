@@ -92,7 +92,7 @@ public final class SoundFontBank implements AutoCloseable {
     public Synthesizer freshSynthesizer() throws MidiUnavailableException {
         Synthesizer synth = synthesizers.get();
         if (synth == null) {
-            throw new MidiUnavailableException("no hay ningun sintetizador disponible para renderizar el audio");
+            throw new MidiUnavailableException("no synthesizer available to render the audio");
         }
         if (!active || file.isEmpty() || !(synth instanceof AudioSynthesizer audioSynth)) {
             return synth;
@@ -125,7 +125,7 @@ public final class SoundFontBank implements AutoCloseable {
             return Optional.of(synth);
         } catch (MidiUnavailableException e) {
             System.err.println(
-                    "El puerto " + port + " se queda sin sintetizador interno para el banco de sonido: "
+                    "Port " + port + " is left without an internal synthesizer for the sound bank: "
                             + e.getMessage());
             return Optional.empty();
         }

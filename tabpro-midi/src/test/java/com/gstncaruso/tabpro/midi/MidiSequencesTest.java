@@ -298,7 +298,7 @@ class MidiSequencesTest {
                 .mapToObj(track::get)
                 .filter(event -> event.getMessage() instanceof ShortMessage sm && sm.getCommand() == command)
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("no se encontro un mensaje de comando " + command));
+                .orElseThrow(() -> new AssertionError("no command message found for " + command));
     }
 
     @Test
@@ -355,7 +355,7 @@ class MidiSequencesTest {
         Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
 
         assertEquals(40, lastControllerValue(track, 7),
-                "arrancar en el medio recupera el volumen que dejo el cambio anterior");
+                "starting in the middle recovers the volume left by the previous change");
     }
 
     private int lastControllerValue(Track track, int controller) {
@@ -366,7 +366,7 @@ class MidiSequencesTest {
                         && sm.getData1() == controller)
                 .map(event -> ((ShortMessage) event.getMessage()).getData2())
                 .reduce((first, second) -> second)
-                .orElseThrow(() -> new AssertionError("no se encontro el controlador " + controller));
+                .orElseThrow(() -> new AssertionError("controller not found " + controller));
     }
 
     private int controllerValueAt(Track track, int controller, long tick) {
@@ -379,7 +379,7 @@ class MidiSequencesTest {
                 .map(event -> ((ShortMessage) event.getMessage()).getData2())
                 .findFirst()
                 .orElseThrow(() -> new AssertionError(
-                        "no se encontro el controlador " + controller + " en el tick " + tick));
+                        "controller not found " + controller + " at tick " + tick));
     }
 
     private MidiEvent lastEventOfCommand(Track track, int command) {
@@ -387,7 +387,7 @@ class MidiSequencesTest {
                 .mapToObj(track::get)
                 .filter(event -> event.getMessage() instanceof ShortMessage sm && sm.getCommand() == command)
                 .reduce((first, second) -> second)
-                .orElseThrow(() -> new AssertionError("no se encontro un mensaje de comando " + command));
+                .orElseThrow(() -> new AssertionError("no command message found for " + command));
     }
 
     private List<MidiEvent> metaEventsOfType(Track track, int type) {
@@ -411,7 +411,7 @@ class MidiSequencesTest {
                         && sm.getData1() == controller)
                 .map(message -> ((ShortMessage) message).getData2())
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("no se encontro el controlador " + controller));
+                .orElseThrow(() -> new AssertionError("controller not found " + controller));
     }
 
     private int channelOf(Track track) {
@@ -426,7 +426,7 @@ class MidiSequencesTest {
                 return event;
             }
         }
-        throw new AssertionError("no se encontró un MetaMessage de tipo " + type);
+        throw new AssertionError("no MetaMessage found of type " + type);
     }
 
     private List<MetaMessage> markersOf(Track track) {
@@ -508,7 +508,7 @@ class MidiSequencesTest {
         assertFalse(bends.isEmpty());
         int centerValue = pitchBendValue(bends.get(0));
         boolean wentUpAtSomePoint = bends.stream().anyMatch(message -> pitchBendValue(message) > centerValue);
-        assertTrue(wentUpAtSomePoint, "el pitch bend tiene que subir en algun punto de la curva");
+        assertTrue(wentUpAtSomePoint, "the pitch bend has to go up at some point of the curve");
         assertEquals(centerValue, pitchBendValue(bends.get(bends.size() - 1)));
     }
 
@@ -536,7 +536,7 @@ class MidiSequencesTest {
         Track track = MidiSequences.fromTimeline(timeline).getTracks()[1];
 
         List<Integer> expressionValues = expressionValues(track);
-        assertTrue(expressionValues.size() > 1, "el fade in tiene que mandar varios pasos");
+        assertTrue(expressionValues.size() > 1, "the fade in has to send several steps");
         assertTrue(expressionValues.get(0) < expressionValues.get(expressionValues.size() - 1));
     }
 
@@ -602,10 +602,10 @@ class MidiSequencesTest {
         assertEquals(1, steady.stream().filter(value -> value == bendHeight).distinct().count());
         assertTrue(
                 vibrated.stream().anyMatch(value -> value > bendHeight),
-                "la vibrada tiene que empujar el pitch bend por encima de la altura del bend");
+                "the vibrato has to push the pitch bend above the bend height");
         assertTrue(
                 steady.stream().noneMatch(value -> value > bendHeight),
-                "sin vibrada el bend no puede pasar de su altura");
+                "without vibrato the bend cannot go past its height");
     }
 
     private List<Integer> pitchBendValuesOfANoteBentWithVibrato(int level) {
@@ -614,7 +614,7 @@ class MidiSequencesTest {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(
                 Beat.of(Duration.quarter(), new Note(1, 0).withBend(bend))));
         Score score = Score.blank().withTrack(0,
-                com.gstncaruso.tabpro.core.model.Track.standardGuitar("Guitarra").withMeasure(0, measure));
+                com.gstncaruso.tabpro.core.model.Track.standardGuitar("Guitar").withMeasure(0, measure));
 
         Track track = MidiSequences.fromTimeline(Timeline.of(score)).getTracks()[1];
 
@@ -627,11 +627,11 @@ class MidiSequencesTest {
         List<MidiEvent> closedEvents = wahEventsOf(beatWith(Wah.CLOSED));
         List<MidiEvent> noPedalEvents = wahEventsOf(plainBeat());
 
-        assertTrue(noPedalEvents.isEmpty(), "sin pedal no hay nada que mandar");
-        assertFalse(openEvents.isEmpty(), "el wah abierto tiene que llegar a la secuencia");
+        assertTrue(noPedalEvents.isEmpty(), "without a pedal there is nothing to send");
+        assertFalse(openEvents.isEmpty(), "the open wah must reach the sequence");
         assertTrue(
                 controllerValueOf(openEvents.get(0)) > controllerValueOf(closedEvents.get(0)),
-                "el pedal abierto tiene que abrir mas que el cerrado");
+                "the open pedal has to open more than the closed one");
     }
 
     @Test
@@ -649,7 +649,7 @@ class MidiSequencesTest {
         assertEquals(2, events.size());
         assertTrue(
                 controllerValueOf(events.get(1)) < controllerValueOf(events.get(0)),
-                "apagar el pedal tiene que soltar lo que dejo abierto el beat anterior");
+                "turning off the pedal has to release what the previous beat left open");
     }
 
     private static Beat beatWith(Wah wah) {
@@ -663,7 +663,7 @@ class MidiSequencesTest {
     private List<MidiEvent> wahEventsOf(Beat... beats) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
         Score score = Score.blank().withTrack(0,
-                com.gstncaruso.tabpro.core.model.Track.standardGuitar("Guitarra").withMeasure(0, measure));
+                com.gstncaruso.tabpro.core.model.Track.standardGuitar("Guitar").withMeasure(0, measure));
 
         Track track = MidiSequences.fromTimeline(Timeline.of(score)).getTracks()[1];
 
@@ -733,7 +733,7 @@ class MidiSequencesTest {
                 .toList();
         assertEquals(2, notesOn.size());
         assertEquals(9, notesOn.get(0).getChannel());
-        assertTrue(notesOn.get(0).getData1() != notesOn.get(1).getData1(), "el acento suena distinto del pulso comun");
+        assertTrue(notesOn.get(0).getData1() != notesOn.get(1).getData1(), "the accent sounds different from the common beat");
     }
 
     @Test
@@ -803,7 +803,7 @@ class MidiSequencesTest {
                 .filter(message -> message.getChannel() == channel)
                 .map(ShortMessage::getData1)
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("no se encontro el instrumento del canal " + channel));
+                .orElseThrow(() -> new AssertionError("no instrument found for channel " + channel));
     }
 
     private int controllerValueOn(Track track, int channel, int controller) {
@@ -822,7 +822,7 @@ class MidiSequencesTest {
                 .map(message -> ((ShortMessage) message).getData2())
                 .findFirst()
                 .orElseThrow(() -> new AssertionError(
-                        "no se encontro el controlador " + controller + " del canal " + channel));
+                        "controller not found " + controller + " on channel " + channel));
     }
 
     private ShortMessage controllerOn(Track track, int channel, int controller) {
@@ -830,6 +830,6 @@ class MidiSequencesTest {
                 .filter(message -> message.getChannel() == channel && message.getData1() == controller)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError(
-                        "no se encontro el controlador " + controller + " del canal " + channel));
+                        "controller not found " + controller + " on channel " + channel));
     }
 }

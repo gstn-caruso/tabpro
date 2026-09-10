@@ -31,7 +31,7 @@ public final class MicrophonePitch implements AutoCloseable {
             line.start();
         } catch (LineUnavailableException e) {
             line = null;
-            throw new IllegalStateException("no se pudo abrir la entrada de audio: " + e.getMessage(), e);
+            throw new IllegalStateException("could not open the audio input: " + e.getMessage(), e);
         }
         listening = new Thread(() -> listen(heard), "tuner-input");
         listening.setDaemon(true);

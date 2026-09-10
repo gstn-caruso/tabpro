@@ -32,7 +32,7 @@ public final class SoundFontSynthesizer implements AutoCloseable {
             throws MidiUnavailableException {
         Synthesizer synthesizer = synthesizers.get();
         if (synthesizer == null) {
-            throw new MidiUnavailableException("no hay ningun sintetizador disponible en esta maquina");
+            throw new MidiUnavailableException("no synthesizer available on this machine");
         }
         synthesizer.open();
         SoundFontSynthesizer result = new SoundFontSynthesizer(synthesizer);

@@ -102,19 +102,19 @@ class SoundFontBankTest {
 
     @Test
     void anInvalidFileDegradesToTheInternalSynthOnEveryPortWithoutBreakingAnything() throws IOException {
-        Path bogus = tempDir.resolve("invalido.sf2");
-        Files.writeString(bogus, "esto no es un banco SoundFont valido");
+        Path bogus = tempDir.resolve("invalid.sf2");
+        Files.writeString(bogus, "this is not a valid SoundFont bank");
         bank = new SoundFontBank(Optional.of(bogus), FakeSynthesizer::new);
 
         Receiver port1 = bank.receiverForPort(1);
         Receiver port2 = bank.receiverForPort(2);
 
-        assertFalse(bank.active(), "un archivo que no carga no puede quedar activo");
+        assertFalse(bank.active(), "a file that fails to load cannot stay active");
         assertDoesNotThrow(() -> {
             port1.send(new ShortMessage(ShortMessage.NOTE_ON, 0, 60, 100), -1);
             port2.send(new ShortMessage(ShortMessage.NOTE_ON, 1, 61, 100), -1);
         });
-        assertTrue(bank.status().contains("invalido.sf2"));
+        assertTrue(bank.status().contains("invalid.sf2"));
     }
 
     @Test
@@ -133,11 +133,11 @@ class SoundFontBankTest {
 
     @Test
     void withoutAnySynthesizerAvailableAChosenFileCannotBeActiveEither() {
-        bank = new SoundFontBank(Optional.of(tempDir.resolve("cualquiera.sf2")), () -> null);
+        bank = new SoundFontBank(Optional.of(tempDir.resolve("whichever.sf2")), () -> null);
 
         bank.receiverForPort(1);
 
-        assertFalse(bank.active(), "sin sintetizador no hay donde cargar nada, activo miente igual que con un archivo invalido");
+        assertFalse(bank.active(), "without a synthesizer there is nowhere to load anything, active lies the same as with an invalid file");
         assertTrue(bank.status().contains("No se pudo cargar"));
     }
 
@@ -172,7 +172,7 @@ class SoundFontBankTest {
         javax.sound.sampled.AudioFormat format = new javax.sound.sampled.AudioFormat(44_100, 16, 2, true, false);
         javax.sound.sampled.AudioInputStream stream = audioSynth.openStream(format, java.util.Map.of());
 
-        assertTrue(synth.getLoadedInstruments().length > 0, "el banco tendria que haber quedado cargado al abrir el stream offline");
+        assertTrue(synth.getLoadedInstruments().length > 0, "the bank should have ended up loaded when opening the offline stream");
         synth.close();
     }
 
@@ -184,7 +184,7 @@ class SoundFontBankTest {
                 (proxy, method, args) -> {
                     if (method.getName().equals("open") && method.getParameterCount() == 0) {
                         throw new AssertionError(
-                                "freshSynthesizer no puede abrir una linea de audio real: el render es offline");
+                                "freshSynthesizer cannot open a real audio line: the render is offline");
                     }
                     return method.invoke(real, args);
                 });
@@ -218,7 +218,7 @@ class SoundFontBankTest {
 
     private Path firstInstalledOrSkip() {
         List<Path> real = SoundFonts.installed();
-        Assumptions.assumeFalse(real.isEmpty(), "no hay ningun banco de sonido instalado en esta maquina");
+        Assumptions.assumeFalse(real.isEmpty(), "no sound bank installed on this machine");
         return real.get(0);
     }
 }

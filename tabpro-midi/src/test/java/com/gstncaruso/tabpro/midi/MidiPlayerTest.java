@@ -52,7 +52,7 @@ class MidiPlayerTest {
         try {
             sequencer = MidiSystem.getSequencer(false);
         } catch (MidiUnavailableException e) {
-            Assumptions.assumeTrue(false, "sin sequencer MIDI");
+            Assumptions.assumeTrue(false, "no MIDI sequencer");
             return;
         }
         player = new MidiPlayer(sequencer, port -> silentReceiver(), MidiPlayerTest::unconnectedSequencer);
@@ -75,7 +75,7 @@ class MidiPlayerTest {
         assertTrue(
                 received.stream().anyMatch(message ->
                         message.getCommand() == ShortMessage.NOTE_ON && message.getData1() == 60),
-                "la nota no llego al sintetizador");
+                "the note did not reach the synthesizer");
         withFakeSynth.close();
     }
 
@@ -100,7 +100,7 @@ class MidiPlayerTest {
         assertTrue(latch.await(5, TimeUnit.SECONDS));
         assertTrue(
                 received.stream().anyMatch(message -> message.getCommand() == ShortMessage.NOTE_ON),
-                "la partitura no sono por el receiver del banco de sonido");
+                "the score did not sound through the sound bank's receiver");
         withFakeSynth.close();
     }
 
@@ -131,7 +131,7 @@ class MidiPlayerTest {
         assertEquals(3, noteOnTimestamps.size());
         assertTrue(
                 noteOnTimestamps.get(2) - noteOnTimestamps.get(0) >= 600,
-                "las notas de la secuencia tendrian que sonar espaciadas en el tiempo, no todas juntas");
+                "the notes in the sequence should sound spaced out in time, not all at once");
         withFakeSynth.close();
     }
 
@@ -262,7 +262,7 @@ class MidiPlayerTest {
 
         assertTrue(
                 secondMeasureSounded.await(2, TimeUnit.SECONDS),
-                "el segundo compas -de cuatro segundos de largo el primero- tendria que sonar bien antes");
+                "the second measure -the first one is four seconds long- should sound well before");
     }
 
     @Test
@@ -281,8 +281,8 @@ class MidiPlayerTest {
         player.seekTo(target);
         player.stop();
 
-        assertTrue(Math.abs(player.tickPositionOfPort(1) - target) < 100, "el puerto principal no salto");
-        assertTrue(Math.abs(player.tickPositionOfPort(2) - target) < 100, "el puerto secundario no salto");
+        assertTrue(Math.abs(player.tickPositionOfPort(1) - target) < 100, "the primary port did not jump");
+        assertTrue(Math.abs(player.tickPositionOfPort(2) - target) < 100, "the secondary port did not jump");
     }
 
     @Test
@@ -310,7 +310,7 @@ class MidiPlayerTest {
         player.play(timeline, noOpListener());
 
         javax.sound.midi.Sequence mainSequence = player.sequenceInPlay();
-        assertEquals(2, mainSequence.getTracks().length, "solo el conductor y la pista del puerto 1");
+        assertEquals(2, mainSequence.getTracks().length, "only the conductor track and port 1's track");
         assertEquals(25, programOf(mainSequence.getTracks()[1]));
     }
 
@@ -390,7 +390,7 @@ class MidiPlayerTest {
                 Beat.of(sixteenth, new Note(1, 1)),
                 Beat.of(sixteenth, new Note(1, 2)),
                 Beat.of(sixteenth, new Note(1, 3))));
-        Track track = Track.standardGuitar("Guitarra").withMeasure(0, measure);
+        Track track = Track.standardGuitar("Guitar").withMeasure(0, measure);
         Score score = Score.blank().withTempo(600).withTrack(0, track);
         return Timeline.of(score);
     }

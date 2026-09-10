@@ -41,19 +41,19 @@ class SoundFontSynthesizerTest {
 
     @Test
     void anInvalidFileDegradesToTheInternalSynthesizerWithoutThrowing() throws IOException {
-        Path bogus = tempDir.resolve("invalido.sf2");
-        Files.writeString(bogus, "esto no es un banco SoundFont valido");
+        Path bogus = tempDir.resolve("invalid.sf2");
+        Files.writeString(bogus, "this is not a valid SoundFont bank");
 
         bank = openWithFake(Optional.of(bogus));
 
         assertFalse(bank.active());
-        assertTrue(bank.file().isEmpty(), "un banco que no cargo no puede quedar activo");
-        assertTrue(bank.status().contains("invalido.sf2"), "el estado tiene que nombrar el archivo que fallo");
+        assertTrue(bank.file().isEmpty(), "a bank that failed to load cannot stay active");
+        assertTrue(bank.status().contains("invalid.sf2"), "the status has to name the file that failed");
     }
 
     @Test
     void aMissingFileDegradesToTheInternalSynthesizerWithoutThrowing() {
-        bank = openWithFake(Optional.of(tempDir.resolve("no-existe.sf2")));
+        bank = openWithFake(Optional.of(tempDir.resolve("does-not-exist.sf2")));
 
         assertFalse(bank.active());
     }
@@ -87,9 +87,9 @@ class SoundFontSynthesizerTest {
 
         bank.toggle();
         assertFalse(bank.active());
-        assertTrue(bank.file().isPresent(), "apagarlo no lo descarga, solo deja de sonar");
+        assertTrue(bank.file().isPresent(), "turning it off does not unload it, it just stops sounding");
         int loadedWithoutBank = bank.synthesizer().getLoadedInstruments().length;
-        assertNotEquals(loadedWithBank, loadedWithoutBank, "apagar el banco tiene que cambiar los instrumentos cargados");
+        assertNotEquals(loadedWithBank, loadedWithoutBank, "turning off the bank has to change the loaded instruments");
 
         bank.toggle();
         assertTrue(bank.active());
@@ -98,7 +98,7 @@ class SoundFontSynthesizerTest {
 
     private Path firstInstalledOrSkip() {
         List<Path> real = SoundFonts.installed();
-        Assumptions.assumeFalse(real.isEmpty(), "no hay ningun banco de sonido instalado en esta maquina");
+        Assumptions.assumeFalse(real.isEmpty(), "no sound bank installed on this machine");
         return real.get(0);
     }
 
@@ -106,7 +106,7 @@ class SoundFontSynthesizerTest {
         try {
             return SoundFontSynthesizer.open(file);
         } catch (MidiUnavailableException e) {
-            Assumptions.assumeTrue(false, "sin sintetizador MIDI disponible en esta maquina");
+            Assumptions.assumeTrue(false, "no MIDI synthesizer available on this machine");
             throw new AssertionError(e);
         }
     }

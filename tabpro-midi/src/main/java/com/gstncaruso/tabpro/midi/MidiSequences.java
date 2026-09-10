@@ -227,7 +227,7 @@ public final class MidiSequences {
             case CHORUS -> CHORUS_CONTROLLER;
             case PHASER -> PHASER_CONTROLLER;
             case PROGRAM, TEMPO -> throw new IllegalArgumentException(
-                    parameter.label() + " no viaja como controlador MIDI");
+                    parameter.label() + " does not travel as a MIDI controller");
         };
     }
 
