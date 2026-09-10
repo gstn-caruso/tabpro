@@ -522,6 +522,8 @@ Slices, in order (4.2 to 4.8 can run two at a time once 4.1 has merged):
 | 4.8 | default track names in importers, page element defaults |
 | 4.9 | the switch (`feat`) |
 
+Phase 1 result: comment lines in Java went from 6775 to 1088, all in English and all documenting an external contract.
+
 ### How to resume without context
 
 Read this section and the table below, then take the first row that is not
@@ -537,16 +539,17 @@ their changes touch the same lines.
 | Item | Branch | PR | State |
 |---|---|---|---|
 | Stage plan | `docs/plan-english-codebase-and-i18n`, `docs/plan-i18n-design` | #192 | merged |
-| 1 · core comments | `refactor/core-comments` | — | in progress |
-| 1 · format comments | `refactor/format-comments` | — | in progress |
-| 1 · midi comments | `refactor/midi-comments` | — | in progress |
-| 1 · app comments | `refactor/app-comments` | — | in progress |
-| 1 · ui/dialogs comments | `refactor/ui-dialogs-comments` | — | in progress |
-| 1 · ui/score and neighbors comments | `refactor/ui-score-comments` | — | in progress |
-| 1 · rest of ui comments | `refactor/ui-rest-comments` | — | in progress |
+| 1 · core comments | `refactor/core-comments` | #200 | merged |
+| 1 · format comments (two passes) | `refactor/format-comments` | #202 | merged |
+| 1 · midi comments | `refactor/midi-comments` | #195 | merged |
+| 1 · app comments | `refactor/app-comments` | #196 | merged |
+| 1 · ui/dialogs comments | `refactor/ui-dialogs-comments` | #197 | merged |
+| 1 · ui/score and neighbors comments | `refactor/ui-score-comments` | #198 | merged |
+| 1 · rest of ui comments | `refactor/ui-rest-comments` | #199 | merged |
 | 1 · build and CI files in English | `ci/build-files-in-english` | #193 | merged |
-| 1 · cross-scope renames | — | — | pending |
-| 2 · identifiers and test names, per module | — | — | pending |
+| 1 · cross-scope renames | — | — | not needed: no worker found one |
+| 2 · midi identifiers and test names | `test/midi-english-names` | #201 | merged |
+| 2 · core, format, app (+ `integracion` → `integration` tag), ui/dialogs, ui/score group, rest of ui | `test/<scope>-english-names` | — | in progress |
 | 3 · internal messages | — | — | pending |
 | 4 · i18n slices 4.1–4.9 (see design above) | — | — | pending |
 | 5 · docs in English | — | — | pending |
