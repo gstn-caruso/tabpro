@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.toolbar;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.actions.Commands;
+import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BoxLayout;
@@ -49,7 +50,7 @@ public final class TrackSelector extends JPanel {
         trackButtons.clear();
         for (int trackIndex = 0; trackIndex < editor.score().trackCount(); trackIndex++) {
             int selectedTrackIndex = trackIndex;
-            JToggleButton button = new JToggleButton();
+            JToggleButton button = new JToggleButton(Icons.letter(String.valueOf(trackIndex + 1)));
             button.addActionListener(event -> editor.selectTrack(selectedTrackIndex));
             trackButtons.add(button);
             numbers.add(button);

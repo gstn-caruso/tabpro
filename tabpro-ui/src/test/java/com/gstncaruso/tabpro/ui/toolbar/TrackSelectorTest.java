@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.toolbar;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
@@ -166,6 +167,13 @@ class TrackSelectorTest {
 
         assertEquals("Pista 1: Bajo", selector.trackButtons().get(0).getAccessibleContext().getAccessibleName());
         assertEquals("Pista 2: Guitarra", selector.trackButtons().get(1).getAccessibleContext().getAccessibleName());
+    }
+
+    @Test
+    void cadaBotonDePistaMuestraUnIconoConSuNumero() {
+        TrackSelector selector = new TrackSelector(editor, commands);
+
+        assertNotNull(selector.trackButtons().get(0).getIcon());
     }
 
     @SuppressWarnings("unchecked")
