@@ -47,6 +47,8 @@ public final class TuningEditorPanel extends JPanel {
         top.add(labeled("Cuerdas", stringCount), BorderLayout.WEST);
         top.add(familyButtons(), BorderLayout.CENTER);
         add(top, BorderLayout.NORTH);
+        library.getAccessibleContext().setAccessibleName("Afinación de la biblioteca");
+        library.setToolTipText("Afinación de la biblioteca");
         add(library, BorderLayout.CENTER);
         rows.setLayout(new GridLayout(0, 1, 0, DialogStyle.GAP_XS));
         add(rows, BorderLayout.SOUTH);
@@ -70,7 +72,9 @@ public final class TuningEditorPanel extends JPanel {
     private static JPanel labeled(String text, JSpinner spinner) {
         JPanel panel = new JPanel(new BorderLayout(DialogStyle.GAP_XS, 0));
         panel.setOpaque(false);
-        panel.add(new javax.swing.JLabel(text), BorderLayout.WEST);
+        javax.swing.JLabel label = new javax.swing.JLabel(text);
+        label.setLabelFor(spinner);
+        panel.add(label, BorderLayout.WEST);
         panel.add(spinner, BorderLayout.CENTER);
         return panel;
     }
@@ -146,6 +150,7 @@ public final class TuningEditorPanel extends JPanel {
         for (int string = 1; string <= tuning.stringCount(); string++) {
             int fixedString = string;
             rows.add(new TuningRow(
+                    string,
                     tuning.pitchOfString(string),
                     () -> listen(fixedString),
                     pitch -> tuning = tuning.withStringPitch(fixedString, pitch)));

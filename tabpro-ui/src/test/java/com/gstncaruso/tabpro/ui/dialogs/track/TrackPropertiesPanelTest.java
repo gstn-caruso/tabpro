@@ -6,12 +6,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.model.ScoreColor;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.TrackDisplay;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.dialogs.RecordingPlayer;
 import org.junit.jupiter.api.Test;
 
 class TrackPropertiesPanelTest {
 
     private final RecordingPlayer player = new RecordingPlayer();
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(
+                new TrackPropertiesPanel(Track.standardGuitar("Guitarra 1"), player));
+    }
 
     @Test
     void startsWithTheTracksName() {

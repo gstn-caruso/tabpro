@@ -27,6 +27,8 @@ public final class PercussionSoundPalette extends JPanel {
         setOpaque(false);
 
         list = new JList<>(PercussionKit.sounds().toArray(new Integer[0]));
+        list.getAccessibleContext().setAccessibleName("Sonidos de percusión");
+        list.setToolTipText("Sonidos de percusión");
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setBackground(ScoreColors.SURFACE);
         list.setForeground(ScoreColors.INK);

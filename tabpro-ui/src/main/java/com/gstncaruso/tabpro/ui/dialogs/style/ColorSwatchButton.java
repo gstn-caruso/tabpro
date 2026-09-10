@@ -13,6 +13,8 @@ public final class ColorSwatchButton extends JButton {
 
     public ColorSwatchButton(ScoreColor initial) {
         setPreferredSize(new Dimension(48, 22));
+        getAccessibleContext().setAccessibleName("Color");
+        setToolTipText("Color");
         apply(initial);
         addActionListener(event -> pickColor());
     }

@@ -33,9 +33,14 @@ public final class WaveExportPanel extends JPanel {
         channels.add(stereo);
         (defaults.channels() == 1 ? mono : stereo).setSelected(true);
 
-        add(new JLabel("Frecuencia de muestreo"));
+        JLabel sampleRateLabel = new JLabel("Frecuencia de muestreo");
+        sampleRateLabel.setLabelFor(sampleRate);
+        JLabel bitDepthLabel = new JLabel("Profundidad de bits");
+        bitDepthLabel.setLabelFor(bitDepth);
+
+        add(sampleRateLabel);
         add(sampleRate);
-        add(new JLabel("Profundidad de bits"));
+        add(bitDepthLabel);
         add(bitDepth);
         add(mono);
         add(stereo);

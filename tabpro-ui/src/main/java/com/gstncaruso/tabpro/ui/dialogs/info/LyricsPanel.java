@@ -33,7 +33,7 @@ public final class LyricsPanel extends FormPanel {
                         + " Lo que va entre corchetes [asi] no se dibuja.</html>"));
 
         for (int index = 0; index < LyricLine.MAX_LINES; index++) {
-            LyricLineRow row = new LyricLineRow(initial.line(index));
+            LyricLineRow row = new LyricLineRow(initial.line(index), index + 1);
             row.textField().addFocusListener(rememberingFocus(row.textField()));
             lines.add(row);
             addRow("Linea " + (index + 1), row);

@@ -7,12 +7,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.dialogs.RecordingPlayer;
 import org.junit.jupiter.api.Test;
 
 class TuningEditorPanelTest {
 
     private final RecordingPlayer player = new RecordingPlayer();
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new TuningEditorPanel(Tuning.standard(), 25, player));
+    }
 
     @Test
     void startsWithTheGivenTuning() {

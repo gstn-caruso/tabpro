@@ -4,9 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import org.junit.jupiter.api.Test;
 
 class DefaultScorePropertiesPanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        NewScoreDefaults defaults = new NewScoreDefaults(
+                120, new TimeSignature(4, 4), KeySignature.cMajor(), "", "");
+        AccessibilityAssertions.assertNoViolations(new DefaultScorePropertiesPanel(defaults));
+    }
 
     @Test
     void startsWithTheGivenDefaults() {

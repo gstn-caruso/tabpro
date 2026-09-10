@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.tracks;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
+import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -13,6 +14,8 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
@@ -20,7 +23,7 @@ import javax.swing.JOptionPane;
  * La franja arriba de la grilla de compases: el nombre de cada marcador con su color, sobre los
  * compases que abarca. Doble clic crea un marcador nuevo, o edita el que ya esta ahi.
  */
-public final class MarkerZone extends JComponent {
+public final class MarkerZone extends JComponent implements AccessibleControl {
 
     public static final int HEIGHT = 12;
 
@@ -30,6 +33,8 @@ public final class MarkerZone extends JComponent {
         this.editor = editor;
         setOpaque(true);
         setBackground(ScoreColors.SURFACE);
+        setToolTipText("Zona de marcadores");
+        getAccessibleContext().setAccessibleName("Zona de marcadores");
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -38,6 +43,19 @@ public final class MarkerZone extends JComponent {
                 }
             }
         });
+    }
+
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        if (accessibleContext == null) {
+            accessibleContext = new AccessibleJComponent() {
+                @Override
+                public AccessibleRole getAccessibleRole() {
+                    return AccessibleRole.PANEL;
+                }
+            };
+        }
+        return accessibleContext;
     }
 
     public int measureAt(int x) {

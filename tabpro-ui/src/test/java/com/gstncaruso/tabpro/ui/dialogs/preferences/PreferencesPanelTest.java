@@ -5,12 +5,20 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.awt.Component;
 import java.util.Locale;
 import javax.swing.JCheckBox;
 import org.junit.jupiter.api.Test;
 
 class PreferencesPanelTest {
+
+    @Test
+    void ningunCampoQuedaSinNombreNiTooltipAccesible() {
+        PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
+
+        AccessibilityAssertions.assertNoViolations(panel);
+    }
 
     @Test
     void startsWithTheGivenPreferences() {

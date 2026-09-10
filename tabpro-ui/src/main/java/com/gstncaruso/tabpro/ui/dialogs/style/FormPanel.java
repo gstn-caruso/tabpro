@@ -23,23 +23,7 @@ public class FormPanel extends JPanel {
 
     /** Una fila con etiqueta a la izquierda y un campo que ocupa el resto del ancho. */
     public FormPanel addRow(String label, JComponent field) {
-        GridBagConstraints labelConstraints = new GridBagConstraints();
-        labelConstraints.gridx = 0;
-        labelConstraints.gridy = row;
-        labelConstraints.anchor = GridBagConstraints.WEST;
-        labelConstraints.insets = new Insets(DialogStyle.GAP_XS, 0, DialogStyle.GAP_XS, DialogStyle.GAP_S);
-        add(new JLabel(label), labelConstraints);
-
-        GridBagConstraints fieldConstraints = new GridBagConstraints();
-        fieldConstraints.gridx = 1;
-        fieldConstraints.gridy = row;
-        fieldConstraints.weightx = 1;
-        fieldConstraints.fill = GridBagConstraints.HORIZONTAL;
-        fieldConstraints.insets = new Insets(DialogStyle.GAP_XS, 0, DialogStyle.GAP_XS, 0);
-        add(field, fieldConstraints);
-
-        row++;
-        return this;
+        return addLabeledRow(label, field, field);
     }
 
     /** Una fila con un campo mas un componente al lado, por ejemplo un boton de escuchar. */
@@ -48,7 +32,30 @@ public class FormPanel extends JPanel {
         withTrailing.setOpaque(false);
         withTrailing.add(field, java.awt.BorderLayout.CENTER);
         withTrailing.add(trailing, java.awt.BorderLayout.EAST);
-        return addRow(label, withTrailing);
+        return addLabeledRow(label, withTrailing, field);
+    }
+
+    /** La etiqueta describe {@code labeledField}, aunque en la fila se ubique {@code layout}. */
+    private FormPanel addLabeledRow(String label, JComponent layout, JComponent labeledField) {
+        GridBagConstraints labelConstraints = new GridBagConstraints();
+        labelConstraints.gridx = 0;
+        labelConstraints.gridy = row;
+        labelConstraints.anchor = GridBagConstraints.WEST;
+        labelConstraints.insets = new Insets(DialogStyle.GAP_XS, 0, DialogStyle.GAP_XS, DialogStyle.GAP_S);
+        JLabel labelComponent = new JLabel(label);
+        labelComponent.setLabelFor(labeledField);
+        add(labelComponent, labelConstraints);
+
+        GridBagConstraints fieldConstraints = new GridBagConstraints();
+        fieldConstraints.gridx = 1;
+        fieldConstraints.gridy = row;
+        fieldConstraints.weightx = 1;
+        fieldConstraints.fill = GridBagConstraints.HORIZONTAL;
+        fieldConstraints.insets = new Insets(DialogStyle.GAP_XS, 0, DialogStyle.GAP_XS, 0);
+        add(layout, fieldConstraints);
+
+        row++;
+        return this;
     }
 
     /** Un componente que ocupa las dos columnas, como un area de texto o una lista. */

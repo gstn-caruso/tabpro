@@ -1,3 +1,9 @@
+## [0.32.0](https://github.com/gstn-caruso/tabpro/compare/v0.31.0...v0.32.0) (2026-09-10)
+
+### Features
+
+* **icons:** los íconos de archivo, edición, zoom y transporte salen de Tabler Icons ([#113](https://github.com/gstn-caruso/tabpro/issues/113)) ([4bb3cfc](https://github.com/gstn-caruso/tabpro/commit/4bb3cfceebc892a1a5450c852ef8d897b65642b6)), closes [#102](https://github.com/gstn-caruso/tabpro/issues/102)
+
 ## [0.31.0](https://github.com/gstn-caruso/tabpro/compare/v0.30.0...v0.31.0) (2026-09-10)
 
 ### Features

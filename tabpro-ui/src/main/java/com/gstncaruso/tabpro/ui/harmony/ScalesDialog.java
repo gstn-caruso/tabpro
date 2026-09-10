@@ -84,6 +84,8 @@ public final class ScalesDialog {
 
         private JScrollPane tonesZone() {
             JList<ScaleTone> list = new JList<>(tones);
+            list.getAccessibleContext().setAccessibleName("Notas de la escala");
+            list.setToolTipText("Notas de la escala");
             list.setCellRenderer(new javax.swing.DefaultListCellRenderer() {
 
                 @Override
@@ -128,6 +130,8 @@ public final class ScalesDialog {
             zone.add(range, BorderLayout.NORTH);
 
             JList<ScaleMatch> list = new JList<>(matches);
+            list.getAccessibleContext().setAccessibleName("Escalas encontradas");
+            list.setToolTipText("Escalas encontradas");
             list.setCellRenderer(new javax.swing.DefaultListCellRenderer() {
 
                 @Override
@@ -178,7 +182,11 @@ public final class ScalesDialog {
 
         private static JPanel labelled(String label, Component field) {
             JPanel row = new JPanel(new BorderLayout(6, 0));
-            row.add(new JLabel(label), BorderLayout.WEST);
+            JLabel text = new JLabel(label);
+            if (field instanceof javax.swing.JComponent labeledField) {
+                text.setLabelFor(labeledField);
+            }
+            row.add(text, BorderLayout.WEST);
             row.add(field, BorderLayout.CENTER);
             return row;
         }

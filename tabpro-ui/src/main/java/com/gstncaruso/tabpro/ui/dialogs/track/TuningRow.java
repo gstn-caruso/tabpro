@@ -15,13 +15,17 @@ final class TuningRow extends JPanel {
     private final JSpinner midiNumber;
     private final JLabel noteName = new JLabel();
 
-    TuningRow(Pitch initial, Runnable onListen, java.util.function.Consumer<Pitch> onChange) {
+    TuningRow(int stringNumber, Pitch initial, Runnable onListen, java.util.function.Consumer<Pitch> onChange) {
         super(new BorderLayout(DialogStyle.GAP_S, 0));
         midiNumber = new JSpinner(new SpinnerNumberModel(initial.midiNumber(), 0, 127, 1));
+        String name = "Cuerda " + stringNumber;
+        midiNumber.getAccessibleContext().setAccessibleName(name);
+        midiNumber.setToolTipText(name);
         setOpaque(false);
         add(midiNumber, BorderLayout.WEST);
         add(noteName, BorderLayout.CENTER);
         javax.swing.JButton listen = DialogStyle.flatButton("Escuchar");
+        listen.getAccessibleContext().setAccessibleName("Escuchar " + name.toLowerCase(java.util.Locale.ROOT));
         listen.addActionListener(event -> onListen.run());
         add(listen, BorderLayout.EAST);
 

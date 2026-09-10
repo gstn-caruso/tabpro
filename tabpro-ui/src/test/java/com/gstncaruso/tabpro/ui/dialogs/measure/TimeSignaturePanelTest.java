@@ -3,9 +3,15 @@ package com.gstncaruso.tabpro.ui.dialogs.measure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.model.TimeSignature;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import org.junit.jupiter.api.Test;
 
 class TimeSignaturePanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new TimeSignaturePanel(new TimeSignature(4, 4)));
+    }
 
     @Test
     void startsWithTheGivenSignature() {

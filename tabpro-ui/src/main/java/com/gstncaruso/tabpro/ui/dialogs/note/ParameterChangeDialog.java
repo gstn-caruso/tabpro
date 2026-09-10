@@ -26,6 +26,24 @@ public final class ParameterChangeDialog {
 
     public static void show(Component parent, Editor editor) {
         ParameterChange current = editor.currentBeat().effects().parameterChange();
+        Fields fields = buildFields(current, editor);
+
+        if (!DialogShell.ask(parent, "Cambio de parámetros", fields.form())) {
+            return;
+        }
+        ParameterChange change = ParameterChange.nothing()
+                .over((Integer) fields.transition().getValue())
+                .onEveryTrack(fields.everyTrack().isSelected());
+        for (SoundParameter parameter : SoundParameter.values()) {
+            if (fields.enabled().get(parameter).isSelected()) {
+                change = change.changing(parameter, (Integer) fields.values().get(parameter).getValue());
+            }
+        }
+        editor.setParameterChange(change.isEmpty() ? null : change);
+    }
+
+    /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
+    static Fields buildFields(ParameterChange current, Editor editor) {
         Map<SoundParameter, JCheckBox> enabled = new EnumMap<>(SoundParameter.class);
         Map<SoundParameter, JSpinner> values = new EnumMap<>(SoundParameter.class);
 
@@ -36,6 +54,8 @@ public final class ParameterChangeDialog {
                     current.valueOf(parameter).orElse(defaultOf(parameter, editor)),
                     parameter.minimum(), parameter.maximum(), 1));
             spinner.setEnabled(box.isSelected());
+            spinner.getAccessibleContext().setAccessibleName(parameter.label());
+            spinner.setToolTipText(parameter.label());
             box.addActionListener(event -> spinner.setEnabled(box.isSelected()));
             enabled.put(parameter, box);
             values.put(parameter, spinner);
@@ -49,18 +69,15 @@ public final class ParameterChangeDialog {
         form.addRow("Transición (beats)", transition);
         form.addFullWidthRow(everyTrack);
 
-        if (!DialogShell.ask(parent, "Cambio de parámetros", form)) {
-            return;
-        }
-        ParameterChange change = ParameterChange.nothing()
-                .over((Integer) transition.getValue())
-                .onEveryTrack(everyTrack.isSelected());
-        for (SoundParameter parameter : SoundParameter.values()) {
-            if (enabled.get(parameter).isSelected()) {
-                change = change.changing(parameter, (Integer) values.get(parameter).getValue());
-            }
-        }
-        editor.setParameterChange(change.isEmpty() ? null : change);
+        return new Fields(form, enabled, values, transition, everyTrack);
+    }
+
+    record Fields(
+            FormPanel form,
+            Map<SoundParameter, JCheckBox> enabled,
+            Map<SoundParameter, JSpinner> values,
+            JSpinner transition,
+            JCheckBox everyTrack) {
     }
 
     /** El valor que ya tiene la pista, para no arrancar de cero. */

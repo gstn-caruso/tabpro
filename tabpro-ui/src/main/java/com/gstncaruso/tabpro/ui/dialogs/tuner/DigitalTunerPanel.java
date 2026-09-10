@@ -2,11 +2,14 @@ package com.gstncaruso.tabpro.ui.dialogs.tuner;
 
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.notation.PitchName;
+import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 import javax.swing.JComponent;
 import javax.swing.UIManager;
 
@@ -14,7 +17,7 @@ import javax.swing.UIManager;
  * El afinador digital: una aguja que se mueve segun cuanto se aparta la nota
  * escuchada de la altura de referencia, en centesimas de semitono.
  */
-public final class DigitalTunerPanel extends JComponent {
+public final class DigitalTunerPanel extends JComponent implements AccessibleControl {
 
     public static final int MAX_CENTS = 50;
 
@@ -24,6 +27,21 @@ public final class DigitalTunerPanel extends JComponent {
     public DigitalTunerPanel(Pitch target) {
         this.target = target;
         setPreferredSize(new Dimension(220, 140));
+        setToolTipText("Afinador digital");
+        getAccessibleContext().setAccessibleName("Afinador digital");
+    }
+
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        if (accessibleContext == null) {
+            accessibleContext = new AccessibleJComponent() {
+                @Override
+                public AccessibleRole getAccessibleRole() {
+                    return AccessibleRole.CANVAS;
+                }
+            };
+        }
+        return accessibleContext;
     }
 
     public void setTarget(Pitch target) {

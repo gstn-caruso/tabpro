@@ -5,10 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
 import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class DirectionsPanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new DirectionsPanel(Optional.empty(), Optional.empty()));
+    }
 
     @Test
     void startsWithNothingWhenTheMeasureHasNoDirections() {

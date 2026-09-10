@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -17,6 +18,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
 import java.util.OptionalInt;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 import javax.swing.JComponent;
 
 /**
@@ -24,7 +27,7 @@ import javax.swing.JComponent;
  * claro si es el compas donde esta parada la edicion, y toda la columna en rojo mientras ese
  * compas suena.
  */
-public final class MeasureGrid extends JComponent {
+public final class MeasureGrid extends JComponent implements AccessibleControl {
 
     public static final int CELL_WIDTH = 15;
     public static final int NUMBER_EVERY = 5;
@@ -48,12 +51,27 @@ public final class MeasureGrid extends JComponent {
         this.editor = editor;
         setOpaque(true);
         setBackground(ScoreColors.SURFACE);
+        setToolTipText("Grilla de compases");
+        getAccessibleContext().setAccessibleName("Grilla de compases");
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 hitTest(e.getX(), e.getY()).ifPresent(MeasureGrid.this::goTo);
             }
         });
+    }
+
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        if (accessibleContext == null) {
+            accessibleContext = new AccessibleJComponent() {
+                @Override
+                public AccessibleRole getAccessibleRole() {
+                    return AccessibleRole.PANEL;
+                }
+            };
+        }
+        return accessibleContext;
     }
 
     public void showPlayingMeasure(OptionalInt measure) {

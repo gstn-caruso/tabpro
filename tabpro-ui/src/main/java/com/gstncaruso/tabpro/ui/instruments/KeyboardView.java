@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.instruments;
 
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
@@ -18,10 +19,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 import javax.swing.JComponent;
 
 /** El teclado, con las teclas del beat en el que estas parado hundidas. */
-public final class KeyboardView extends JComponent {
+public final class KeyboardView extends JComponent implements AccessibleControl {
 
     /** Do0: mas grave que la cuerda mas grave de un bajo de cinco cuerdas afinado bien abajo. */
     public static final int LOWEST = 21;
@@ -47,7 +50,22 @@ public final class KeyboardView extends JComponent {
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setPreferredSize(new Dimension(0, PREFERRED_HEIGHT));
         setMinimumSize(new Dimension(0, PREFERRED_HEIGHT));
+        setToolTipText("Teclado");
+        getAccessibleContext().setAccessibleName("Teclado");
         trackTheMouse();
+    }
+
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        if (accessibleContext == null) {
+            accessibleContext = new AccessibleJComponent() {
+                @Override
+                public AccessibleRole getAccessibleRole() {
+                    return AccessibleRole.PANEL;
+                }
+            };
+        }
+        return accessibleContext;
     }
 
     private static BeatLocation defaultLocation() {

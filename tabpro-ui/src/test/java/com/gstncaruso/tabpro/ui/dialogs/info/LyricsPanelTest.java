@@ -4,12 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.model.LyricLine;
 import com.gstncaruso.tabpro.core.model.Lyrics;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class LyricsPanelTest {
 
     private final List<String> trackNames = List.of("Guitarra", "Bajo", "Voz");
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new LyricsPanel(trackNames, Lyrics.none()));
+    }
 
     @Test
     void startsOnTheTrackTheLyricsAlreadyPointTo() {

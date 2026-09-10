@@ -16,6 +16,7 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.awt.Rectangle;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
@@ -31,6 +32,11 @@ class ScoreCanvasTest {
     private final Editor editor = new Editor(new Score("Prueba", 120, List.of(
             Track.standardGuitar("Guitarra"), Track.standardBass("Bajo"))));
     private final ScoreCanvas canvas = new ScoreCanvas(editor);
+
+    @Test
+    void noQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(canvas);
+    }
 
     @Test
     void startsInTheMultitrackView() {
