@@ -35,6 +35,8 @@ public final class Icons {
     private static final String MET_NOTE_64TH_UP = "";
     /** SMuFL U+E1E7 "augmentationDot": el puntillo que alarga una figura. */
     private static final String AUGMENTATION_DOT = "";
+    /** SMuFL U+E4E5 "restQuarter": el silencio de negra. */
+    private static final String REST_QUARTER = "";
 
     private Icons() {
     }
@@ -162,7 +164,7 @@ public final class Icons {
     }
 
     public static Icon rest() {
-        return icon((graphics, size) -> Glyphs.quarterRest(graphics, size * 0.5, size * 0.5, size / 13.0));
+        return new GlyphIcon(SIZE, REST_QUARTER);
     }
 
     /** El corchete de un n-tuplet con su numero: 3 para el tresillo, 5 para el quintillo, etc. */
