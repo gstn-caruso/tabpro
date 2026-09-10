@@ -24,6 +24,14 @@ class GlyphIconTest {
     }
 
     @Test
+    void reportaClaroSiBravuraNoTieneElCodepointPedido() {
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> new GlyphIcon(18, "A"));
+
+        assertTrue(error.getMessage().contains("U+0041"), error.getMessage());
+    }
+
+    @Test
     void unGlifoSoloSePintaDelForegroundYMideElTamanoPedido() {
         GlyphIcon icon = new GlyphIcon(18, NOTEHEAD_BLACK);
 
