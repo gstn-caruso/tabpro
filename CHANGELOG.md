@@ -1,3 +1,9 @@
+## [0.48.0](https://github.com/gstn-caruso/tabpro/compare/v0.47.0...v0.48.0) (2026-09-10)
+
+### Features
+
+* **score:** la distancia entre pentagrama y tablatura es la medida en Guitar Pro 5 ([#149](https://github.com/gstn-caruso/tabpro/issues/149)) ([6bb33b7](https://github.com/gstn-caruso/tabpro/commit/6bb33b7db199b5c9969e306d5928cc744a0465d6))
+
 ## [0.47.0](https://github.com/gstn-caruso/tabpro/compare/v0.46.2...v0.47.0) (2026-09-10)
 
 ### Features
