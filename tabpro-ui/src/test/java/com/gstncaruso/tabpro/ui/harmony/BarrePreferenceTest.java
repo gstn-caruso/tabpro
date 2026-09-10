@@ -29,7 +29,7 @@ class BarrePreferenceTest {
 
         assertTrue(
                 diagrams.stream().anyMatch(ChordDiagram::requiresBarre),
-                "hace falta al menos un diagrama con cejilla para probar esto");
+                "at least one diagram with a barre is needed to test this");
         for (ChordDiagram diagram : diagrams) {
             assertEquals(diagram.requiresBarre(), BarrePreference.FORCE.accepts(diagram));
         }

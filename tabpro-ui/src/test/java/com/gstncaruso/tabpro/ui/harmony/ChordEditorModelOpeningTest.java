@@ -93,7 +93,7 @@ class ChordEditorModelOpeningTest {
 
         model.applyTo(editor);
 
-        assertFalse(editor.currentBeat().notes().isEmpty(), "un beat vacio recibe las notas del diagrama elegido");
+        assertFalse(editor.currentBeat().notes().isEmpty(), "an empty beat receives the notes of the chosen diagram");
     }
 
     @Test

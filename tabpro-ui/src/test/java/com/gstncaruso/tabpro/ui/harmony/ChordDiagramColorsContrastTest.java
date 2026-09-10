@@ -11,21 +11,21 @@ class ChordDiagramColorsContrastTest {
     @Test
     void everyMarkOnTheDiagramReadsOverItsBackground() {
         PaletteCheck.assertEveryPairReads(List.of(
-                new Pair("nombre de posicion / fondo", ChordDiagramColors.LABEL, ChordDiagramColors.BACKGROUND,
+                new Pair("position name / background", ChordDiagramColors.LABEL, ChordDiagramColors.BACKGROUND,
                         Contrast.TEXT_MINIMUM_RATIO),
-                new Pair("digitacion en el dedo / fondo del dedo", ChordDiagramColors.FINGER_INK,
+                new Pair("fingering on the finger / finger background", ChordDiagramColors.FINGER_INK,
                         ChordDiagramColors.FINGER, Contrast.TEXT_MINIMUM_RATIO),
-                new Pair("grilla / fondo", ChordDiagramColors.GRID, ChordDiagramColors.BACKGROUND,
+                new Pair("grid / background", ChordDiagramColors.GRID, ChordDiagramColors.BACKGROUND,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("cejilla (nut) / fondo", ChordDiagramColors.NUT, ChordDiagramColors.BACKGROUND,
+                new Pair("nut / background", ChordDiagramColors.NUT, ChordDiagramColors.BACKGROUND,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("cuerda al aire / fondo", ChordDiagramColors.OPEN_STRING, ChordDiagramColors.BACKGROUND,
+                new Pair("open string / background", ChordDiagramColors.OPEN_STRING, ChordDiagramColors.BACKGROUND,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("cuerda muda / fondo", ChordDiagramColors.MUTED_STRING, ChordDiagramColors.BACKGROUND,
+                new Pair("muted string / background", ChordDiagramColors.MUTED_STRING, ChordDiagramColors.BACKGROUND,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("dedo / fondo", ChordDiagramColors.FINGER, ChordDiagramColors.BACKGROUND,
+                new Pair("finger / background", ChordDiagramColors.FINGER, ChordDiagramColors.BACKGROUND,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("cejilla con barra (barre) / fondo", ChordDiagramColors.BARRE, ChordDiagramColors.BACKGROUND,
+                new Pair("barre / background", ChordDiagramColors.BARRE, ChordDiagramColors.BACKGROUND,
                         Contrast.GRAPHICAL_MINIMUM_RATIO)));
     }
 }
