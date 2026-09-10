@@ -61,4 +61,21 @@ class BendGridPanelTest {
 
         assertEquals(1, panel.caretQuarterTones());
     }
+
+    @Test
+    void theEnterKeyClicksAtTheCaretJustLikeALeftClick() {
+        BendCurveEditor editor = BendCurveEditor.blank(BendType.BEND, 4);
+        BendGridPanel panel = new BendGridPanel(editor);
+        pressShortcut(panel, KeyStroke.getKeyStroke("RIGHT"));
+        pressShortcut(panel, KeyStroke.getKeyStroke("UP"));
+
+        pressShortcut(panel, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals(java.util.List.of(1, 1, 0), pointAt(editor, 1));
+    }
+
+    private static java.util.List<Integer> pointAt(BendCurveEditor editor, int position) {
+        BendPoint point = editor.points().stream().filter(p -> p.position() == position).findFirst().orElseThrow();
+        return java.util.List.of(point.position(), point.quarterTones(), point.vibrato());
+    }
 }

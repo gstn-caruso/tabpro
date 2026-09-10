@@ -73,6 +73,19 @@ public final class BendGridPanel extends JComponent implements AccessibleControl
         bindCaretMove(inputMap, actionMap, "LEFT", -1, 0);
         bindCaretMove(inputMap, actionMap, "UP", 0, 1);
         bindCaretMove(inputMap, actionMap, "DOWN", 0, -1);
+        bindCaretActivation(inputMap, actionMap, "ENTER", () -> editor.clickAt(caretPosition, caretQuarterTones));
+    }
+
+    private void bindCaretActivation(InputMap inputMap, ActionMap actionMap, String keyStroke, Runnable action) {
+        String name = "bendgrid.activate." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action.run();
+                repaint();
+            }
+        });
     }
 
     private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int positionDelta, int quarterTonesDelta) {
