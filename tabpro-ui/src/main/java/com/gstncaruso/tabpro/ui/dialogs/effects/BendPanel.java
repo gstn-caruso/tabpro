@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
@@ -37,13 +38,13 @@ public final class BendPanel extends FormPanel {
         type.addActionListener(event -> regenerate());
         height.addChangeListener(event -> regenerate());
 
-        addRow("Tipo", type);
-        addRow("Altura (" + toneLabel() + ")", height);
+        addRow(Texts.get("edit_dialogs.shared.type"), type);
+        addRow(Texts.get("edit_dialogs.BendPanel.height", toneLabel()), height);
         addFullWidthRow(grid);
     }
 
     private String toneLabel() {
-        return "1 = 1/4 tono, 4 = 1 tono, 12 = 3 tonos";
+        return Texts.get("edit_dialogs.BendPanel.toneLabel");
     }
 
     private void regenerate() {
