@@ -697,7 +697,7 @@ final class AuditSupport {
             if (event.getID() == WindowEvent.WINDOW_OPENED && event.getSource() instanceof JDialog dialog) {
                 try {
                     onOpen.accept(dialog);
-                    if (dialog.isDisplayable()) {
+                    if (dialog.isVisible()) {
                         throw new AssertionError(
                                 "el callback de withDialog dejo el dialogo abierto: llamale dispose() antes de terminar");
                     }
