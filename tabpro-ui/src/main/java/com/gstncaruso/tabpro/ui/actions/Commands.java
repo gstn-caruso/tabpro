@@ -384,33 +384,35 @@ public final class Commands {
     }
 
     private void defineSoundCommands() {
-        define("sound.play", "Reproducir / Detener", playback::togglePlay)
+        define("sound.play", Texts.get("menus.sound.play"), playback::togglePlay)
                 .withAccelerator("SPACE").withIcon(Icons.play());
-        define("sound.playFromStart", "Reproducir desde el principio", playback::playFromTheBeginning)
+        define("sound.playFromStart", Texts.get("menus.sound.playFromStart"), playback::playFromTheBeginning)
                 .withAccelerator("ctrl SPACE");
-        define("sound.loop", "Loop / Entrenador de velocidad…", playback::loopAndSpeedTrainer)
+        define("sound.loop", Texts.get("menus.sound.loop"), playback::loopAndSpeedTrainer)
                 .withAccelerator("F9").withIcon(Icons.loop());
-        define("sound.tempo", "Tempo…", playback::tempo);
-        define("sound.relativeTempo", "Tempo relativo…", playback::relativeTempo);
-        define("sound.metronome", "Metrónomo", playback::toggleMetronome).withIcon(Icons.metronome());
-        define("sound.metronomeSettings", "Configuración del metrónomo…", dialogs::metronomeSettings);
-        define("sound.countDown", "Cuenta regresiva", playback::toggleCountDown).withIcon(Icons.countDown());
-        define("sound.stepBack", "Nota anterior", playback::stepBack);
-        define("sound.midiInput", "Entrada MIDI activa", playback::toggleMidiInput);
-        define("sound.soundFont", "Banco de sonido", this::toggleSoundFontAndRefreshItsCheckbox)
+        define("sound.tempo", Texts.get("menus.sound.tempo"), playback::tempo);
+        define("sound.relativeTempo", Texts.get("menus.sound.relativeTempo"), playback::relativeTempo);
+        define("sound.metronome", Texts.get("menus.sound.metronome"), playback::toggleMetronome)
+                .withIcon(Icons.metronome());
+        define("sound.metronomeSettings", Texts.get("menus.sound.metronomeSettings"), dialogs::metronomeSettings);
+        define("sound.countDown", Texts.get("menus.sound.countDown"), playback::toggleCountDown)
+                .withIcon(Icons.countDown());
+        define("sound.stepBack", Texts.get("menus.sound.stepBack"), playback::stepBack);
+        define("sound.midiInput", Texts.get("menus.sound.midiInput"), playback::toggleMidiInput);
+        define("sound.soundFont", Texts.get("menus.sound.soundFont"), this::toggleSoundFontAndRefreshItsCheckbox)
                 .withAccelerator("F2").withIcon(Icons.letter("SF"));
         if (playback.soundFontActive()) {
             get("sound.soundFont").checkedByDefault();
         }
-        define("sound.stepForward", "Nota siguiente", playback::stepForward);
-        define("nav.firstBar", "Primer compás", editor::moveToFirstMeasure)
+        define("sound.stepForward", Texts.get("menus.sound.stepForward"), playback::stepForward);
+        define("nav.firstBar", Texts.get("menus.nav.firstBar"), editor::moveToFirstMeasure)
                 .withAccelerator("ctrl HOME").withIcon(Icons.firstBar());
-        define("nav.previousBar", "Compás anterior", editor::moveToPreviousMeasure)
+        define("nav.previousBar", Texts.get("menus.nav.previousBar"), editor::moveToPreviousMeasure)
                 .withAccelerator("ctrl LEFT").withIcon(Icons.previousBar());
-        define("nav.nextBar", "Compás siguiente", editor::moveToNextMeasure)
+        define("nav.nextBar", Texts.get("menus.nav.nextBar"), editor::moveToNextMeasure)
                 .withAccelerator("ctrl RIGHT").withIcon(Icons.nextBar());
-        define("nav.nextNote", "Nota siguiente", editor::enter).withAccelerator("ENTER");
-        define("nav.lastBar", "Último compás", editor::moveToLastMeasure)
+        define("nav.nextNote", Texts.get("menus.nav.nextNote"), editor::enter).withAccelerator("ENTER");
+        define("nav.lastBar", Texts.get("menus.nav.lastBar"), editor::moveToLastMeasure)
                 .withAccelerator("ctrl END").withIcon(Icons.lastBar());
     }
 
