@@ -26,19 +26,19 @@ class ChordDiagramToolAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Acorde…");
-            assertNotNull(item, "no encontre 'Acorde…' en el menu real");
+            assertNotNull(item, "could not find 'Acorde…' in the real menu");
             assertEquals(javax.swing.KeyStroke.getKeyStroke("A"), item.getAccelerator());
 
             withDialog(item::doClick, dialog -> {
                 var simple = findRadioButton(dialog, "Simple");
-                assertNotNull(simple, "no encontre el radio 'Simple' en el dialogo real");
+                assertNotNull(simple, "could not find the 'Simple' radio in the real dialog");
                 simple.doClick();
 
                 AuditSupport.findButton(dialog, "Aceptar").doClick();
             });
 
             assertTrue(editor.currentBeat().effects().chord().isPresent(),
-                    "el acorde armado con el radio 'Simple' del dialogo real tiene que llegar al beat");
+                    "the chord built with the real dialog's 'Simple' radio must reach the beat");
         } finally {
             AuditSupport.dispose(frame);
         }
