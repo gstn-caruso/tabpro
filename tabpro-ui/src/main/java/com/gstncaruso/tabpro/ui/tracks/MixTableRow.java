@@ -38,12 +38,15 @@ public final class MixTableRow extends JPanel {
 
     private final JLabel number = new JLabel();
     private final JCheckBox visible = new JCheckBox();
-    private final JComponent icon = instrumentIcon();
     private final JLabel name = new JLabel();
     private final JSpinner port = new JSpinner(new SpinnerNumberModel(1, 1, Channel.PORT_COUNT, 1));
     private final JSpinner channel = new JSpinner(new SpinnerNumberModel(1, 1, Channel.CHANNELS_PER_PORT, 1));
     private final JSpinner effectChannel = new JSpinner(new SpinnerNumberModel(1, 1, Channel.CHANNELS_PER_PORT, 1));
     private final JComboBox<String> instrument = new JComboBox<>(Instruments.names().toArray(new String[0]));
+    private final LevelSlider volumeSlider =
+            new LevelSlider(0, Channel.MAX, 0, ScoreColors.VOLUME_LEVEL, ScoreColors.MUTED_INK);
+    private final LevelSlider panSlider =
+            new LevelSlider(0, Channel.MAX, Channel.CENTER_PAN, ScoreColors.PAN_LEVEL, ScoreColors.PAN_LEVEL);
     private final List<ParameterCell> parameterCells = new ArrayList<>();
     private final JToggleButton mute = new JToggleButton("M");
     private final JToggleButton solo = new JToggleButton("S");
@@ -71,7 +74,8 @@ public final class MixTableRow extends JPanel {
         visible.addActionListener(e -> model.setVisibleInMultitrackView(trackIndex, visible.isSelected()));
         addColumn(visible, MixTable.VISIBLE_WIDTH);
 
-        addColumn(icon, MixTable.ICON_WIDTH);
+        toggle(solo, () -> editor.toggleSolo(trackIndex));
+        toggle(mute, () -> editor.toggleMute(trackIndex));
 
         name.setFont(name.getFont().deriveFont(Font.BOLD));
         name.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -92,14 +96,17 @@ public final class MixTableRow extends JPanel {
         instrument.addActionListener(e -> pushProgram());
         addColumn(instrument, MixTable.INSTRUMENT_WIDTH);
 
-        for (MixParameter parameter : MixParameter.values()) {
-            ParameterCell cell = new ParameterCell(editor, model, parameter, trackIndex);
+        levelSlider(volumeSlider, MixParameter.VOLUME);
+        addColumn(volumeSlider, MixTable.LEVEL_WIDTH);
+        levelSlider(panSlider, MixParameter.PAN);
+        addColumn(panSlider, MixTable.LEVEL_WIDTH);
+
+        for (MixParameter parameter : List.of(
+                MixParameter.CHORUS, MixParameter.REVERB, MixParameter.PHASER, MixParameter.TREMOLO)) {
+            ParameterCell cell = new ParameterCell(editor, parameter, trackIndex);
             parameterCells.add(cell);
             addColumn(cell, MixTable.PARAMETER_WIDTH);
         }
-
-        toggle(mute, () -> editor.toggleMute(trackIndex));
-        toggle(solo, () -> editor.toggleSolo(trackIndex));
 
         addMouseListener(selectOnClick());
         number.addMouseListener(selectOnClick());
@@ -120,6 +127,10 @@ public final class MixTableRow extends JPanel {
         refreshInstrumentCombo(track);
         mute.setSelected(ch.muted());
         solo.setSelected(ch.solo());
+        volumeSlider.setValue(MixParameter.VOLUME.valueOf(track));
+        panSlider.setValue(MixParameter.PAN.valueOf(track));
+        volumeSlider.setVisible(!model.isReduced());
+        panSlider.setVisible(!model.isReduced());
         parameterCells.forEach(cell -> {
             cell.refresh();
             cell.setVisible(!model.isReduced());
@@ -129,7 +140,6 @@ public final class MixTableRow extends JPanel {
         boolean sounds = soundsRightNow(track);
         name.setForeground(sounds ? ScoreColors.INK : ScoreColors.MUTED_INK);
         number.setForeground(sounds ? ScoreColors.LABEL : ScoreColors.MUTED_INK);
-        icon.repaint();
         refreshAccessibleNames(track.name());
         syncing = false;
     }
@@ -144,6 +154,12 @@ public final class MixTableRow extends JPanel {
         effectChannel.getAccessibleContext().setAccessibleName("Canal de efectos de " + trackName);
         instrument.getAccessibleContext().setAccessibleName("Instrumento de " + trackName);
         instrument.setToolTipText("Instrumento de " + trackName);
+        volumeSlider.getAccessibleContext().setAccessibleName(MixParameter.VOLUME.label() + " de " + trackName);
+        panSlider.getAccessibleContext().setAccessibleName(MixParameter.PAN.label() + " de " + trackName);
+    }
+
+    private void levelSlider(LevelSlider slider, MixParameter parameter) {
+        slider.onUserChange(() -> parameter.applyTo(editor, trackIndex, slider.getValue()));
     }
 
     JLabel numberLabel() {
@@ -172,6 +188,14 @@ public final class MixTableRow extends JPanel {
 
     JComboBox<String> instrumentField() {
         return instrument;
+    }
+
+    LevelSlider volumeSlider() {
+        return volumeSlider;
+    }
+
+    LevelSlider panSlider() {
+        return panSlider;
     }
 
     JToggleButton muteToggle() {
@@ -249,25 +273,6 @@ public final class MixTableRow extends JPanel {
         component.setMinimumSize(size);
         add(component);
         add(Box.createHorizontalStrut(MixTable.COLUMN_GAP));
-    }
-
-    /** El dibujito del instrumento de la pista, que se lee de un vistazo mejor que el combo. */
-    private JComponent instrumentIcon() {
-        return new JComponent() {
-            @Override
-            protected void paintComponent(java.awt.Graphics g) {
-                int program = editor.score().track(trackIndex).channel().program();
-                boolean sounds = editor.score().isAudible(trackIndex);
-                double size = Math.min(getWidth(), getHeight()) - 2;
-                InstrumentIcon.paint(
-                        (java.awt.Graphics2D) g,
-                        program,
-                        sounds ? ScoreColors.INK : ScoreColors.MUTED_INK,
-                        (getWidth() - size) / 2.0,
-                        (getHeight() - size) / 2.0,
-                        size);
-            }
-        };
     }
 
     private MouseAdapter selectOnClick() {

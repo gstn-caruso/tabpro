@@ -13,7 +13,8 @@ public final class ScoreColors {
     public static final Color SURFACE = new Color(0x2B2D30);
     public static final Color SURFACE_HIGHLIGHT = new Color(0x35373B);
     public static final Color BORDER = new Color(0x71, 0x77, 0x80);
-    public static final Color KNOB_BODY = new Color(0x7E838B);
+    /** El tinte claro del bisel hundido en los paneles de la barra de estado. */
+    public static final Color BEVEL_SHADE = new Color(0x7E, 0x83, 0x8B);
 
     public static final Color STAFF_LINE = new Color(0x72, 0x76, 0x7F);
     public static final Color BAR_LINE = new Color(0x7E828A);
@@ -22,6 +23,10 @@ public final class ScoreColors {
     public static final Color MUTED_INK = new Color(0x9E, 0xA0, 0xA6);
 
     public static final Color ACCENT = new Color(0x3574F0);
+    /** El relleno del deslizador de volumen en la mesa de mezcla, como el naranja de Guitar Pro. */
+    public static final Color VOLUME_LEVEL = new Color(0xE0, 0x7A, 0x3D);
+    /** El deslizador de paneo, pintado de punta a punta: solo se mueve la caja del valor. */
+    public static final Color PAN_LEVEL = new Color(0xC7, 0xB5, 0x3A);
     /**
      * La linea vertical fina y roja del cursor de edicion, como en Guitar Pro. Un rojo saturado y
      * a pleno brillo para que no se confunda con los otros dos rojos de la partitura -el apagado

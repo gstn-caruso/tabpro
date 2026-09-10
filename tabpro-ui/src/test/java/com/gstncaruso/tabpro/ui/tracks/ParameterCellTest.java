@@ -1,47 +1,19 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
-import java.awt.Component;
-import java.awt.event.MouseEvent;
 import org.junit.jupiter.api.Test;
 
 class ParameterCellTest {
 
     @Test
-    void showsAKnobByDefault() {
-        Editor editor = new Editor(Score.blank());
-        MixTableModel model = new MixTableModel();
-        ParameterCell cell = new ParameterCell(editor, model, MixParameter.VOLUME, 0);
-
-        assertTrue(cell.isShowingKnob());
-        assertFalse(cell.isShowingNumber());
-    }
-
-    @Test
-    void switchesToTheNumberWhenTheColumnHeaderIsToggled() {
-        Editor editor = new Editor(Score.blank());
-        MixTableModel model = new MixTableModel();
-        ParameterCell cell = new ParameterCell(editor, model, MixParameter.VOLUME, 0);
-
-        model.toggleDisplayMode(MixParameter.VOLUME);
-        cell.refresh();
-
-        assertTrue(cell.isShowingNumber());
-        assertFalse(cell.isShowingKnob());
-    }
-
-    @Test
     void refreshReadsTheCurrentValueFromTheTrack() {
         Editor editor = new Editor(Score.blank());
-        editor.setPan(0, 20);
-        MixTableModel model = new MixTableModel();
-        ParameterCell cell = new ParameterCell(editor, model, MixParameter.PAN, 0);
+        editor.setChorus(0, 20);
+        ParameterCell cell = new ParameterCell(editor, MixParameter.CHORUS, 0);
 
         cell.refresh();
 
@@ -49,24 +21,9 @@ class ParameterCellTest {
     }
 
     @Test
-    void movingTheKnobPushesTheValueToTheEditor() {
-        Editor editor = new Editor(Score.blank());
-        MixTableModel model = new MixTableModel();
-        ParameterCell cell = new ParameterCell(editor, model, MixParameter.REVERB, 0);
-        Potentiometer knob = cell.knob();
-
-        knob.dispatchEvent(pressAt(knob, 100));
-        knob.dispatchEvent(dragTo(knob, 40));
-
-        assertEquals(60, editor.currentTrack().channel().reverb());
-    }
-
-    @Test
     void typingInTheNumberFieldPushesTheValueToTheEditor() {
         Editor editor = new Editor(Score.blank());
-        MixTableModel model = new MixTableModel();
-        model.toggleDisplayMode(MixParameter.CHORUS);
-        ParameterCell cell = new ParameterCell(editor, model, MixParameter.CHORUS, 0);
+        ParameterCell cell = new ParameterCell(editor, MixParameter.CHORUS, 0);
 
         cell.numberField().setValue(55);
 
@@ -74,21 +31,11 @@ class ParameterCellTest {
     }
 
     @Test
-    void elNombreAccesibleDelKnobYDelNumeroIncluyenElParametroYLaPista() {
+    void elNombreAccesibleDelNumeroIncluyeElParametroYLaPista() {
         Editor editor = new Editor(Score.blank());
         editor.addTrack(Track.standardBass("Bajo"));
-        MixTableModel model = new MixTableModel();
-        ParameterCell cell = new ParameterCell(editor, model, MixParameter.VOLUME, 1);
+        ParameterCell cell = new ParameterCell(editor, MixParameter.REVERB, 1);
 
-        assertEquals("Volumen de Bajo", cell.knob().getAccessibleContext().getAccessibleName());
-        assertEquals("Volumen de Bajo", cell.numberField().getAccessibleContext().getAccessibleName());
-    }
-
-    private static MouseEvent pressAt(Component target, int y) {
-        return new MouseEvent(target, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, 5, y, 1, false);
-    }
-
-    private static MouseEvent dragTo(Component target, int y) {
-        return new MouseEvent(target, MouseEvent.MOUSE_DRAGGED, System.currentTimeMillis(), 0, 5, y, 1, false);
+        assertEquals("Reverb de Bajo", cell.numberField().getAccessibleContext().getAccessibleName());
     }
 }

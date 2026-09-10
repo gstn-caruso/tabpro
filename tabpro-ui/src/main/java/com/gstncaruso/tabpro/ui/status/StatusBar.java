@@ -105,7 +105,7 @@ public final class StatusBar extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
         panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createBevelBorder(BevelBorder.LOWERED, ScoreColors.KNOB_BODY, ScoreColors.BORDER),
+                BorderFactory.createBevelBorder(BevelBorder.LOWERED, ScoreColors.BEVEL_SHADE, ScoreColors.BORDER),
                 BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         panel.add(label, BorderLayout.CENTER);
         return panel;

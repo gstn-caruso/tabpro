@@ -12,10 +12,20 @@ class MixTableContrastTest {
     @Test
     void everyMarkOfTheMixTableReadsOverItsBackground() {
         PaletteCheck.assertEveryPairReads(List.of(
-                new Pair("cuerpo de la perilla (KNOB_BODY) / panel de pistas", ScoreColors.KNOB_BODY,
+                new Pair("relleno del deslizador de volumen (VOLUME_LEVEL) / panel de pistas",
+                        ScoreColors.VOLUME_LEVEL, ScoreColors.SURFACE, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("relleno del deslizador de volumen (VOLUME_LEVEL) / fila elegida",
+                        ScoreColors.VOLUME_LEVEL, ScoreColors.SURFACE_HIGHLIGHT, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("relleno del deslizador de paneo (PAN_LEVEL) / panel de pistas", ScoreColors.PAN_LEVEL,
                         ScoreColors.SURFACE, Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("cuerpo de la perilla (KNOB_BODY) / fila elegida", ScoreColors.KNOB_BODY,
+                new Pair("relleno del deslizador de paneo (PAN_LEVEL) / fila elegida", ScoreColors.PAN_LEVEL,
                         ScoreColors.SURFACE_HIGHLIGHT, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("caja numerica del deslizador (PAGE_PAPER) / panel de pistas", ScoreColors.PAGE_PAPER,
+                        ScoreColors.SURFACE, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("caja numerica del deslizador (PAGE_PAPER) / fila elegida", ScoreColors.PAGE_PAPER,
+                        ScoreColors.SURFACE_HIGHLIGHT, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("numero de la caja (PAGE_INK) / caja numerica (PAGE_PAPER)", ScoreColors.PAGE_INK,
+                        ScoreColors.PAGE_PAPER, Contrast.TEXT_MINIMUM_RATIO),
                 new Pair("texto atenuado (MUTED_INK) / fila elegida", ScoreColors.MUTED_INK,
                         ScoreColors.SURFACE_HIGHLIGHT, Contrast.TEXT_MINIMUM_RATIO)));
     }

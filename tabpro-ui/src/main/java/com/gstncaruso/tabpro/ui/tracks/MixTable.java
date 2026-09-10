@@ -4,14 +4,10 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import java.awt.BorderLayout;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
@@ -24,38 +20,43 @@ import javax.swing.JPanel;
 
 /**
  * La mesa de mezcla: una fila por pista con numero, nombre, visibilidad en la vista multipista,
- * solo, silencio, puerto, los dos canales, instrumento y los seis parametros de sonido. El titulo de cada
- * parametro se puede clickear para alternar entre potenciometro y numero, y los botones de arriba
- * reducen o restauran todos los parametros a la vez.
+ * solo, silencio, puerto, los dos canales, instrumento y los seis parametros de sonido. Los
+ * botones de arriba del numero de pista reducen o restauran todos los parametros a la vez.
  */
 public final class MixTable extends JPanel {
 
     public static final int NUMBER_WIDTH = 24;
     public static final int VISIBLE_WIDTH = 20;
-    public static final int ICON_WIDTH = 20;
     public static final int NAME_WIDTH = 92;
     public static final int PORT_WIDTH = 32;
     public static final int CHANNEL_WIDTH = 32;
     public static final int INSTRUMENT_WIDTH = 132;
+    public static final int LEVEL_WIDTH = 96;
     public static final int PARAMETER_WIDTH = 42;
     public static final int TOGGLE_WIDTH = 22;
     public static final int COLUMN_GAP = 4;
     public static final int REDUCE_BUTTON_WIDTH = 16;
 
     private static final List<Integer> COLUMN_WIDTHS = List.of(
-            NUMBER_WIDTH, VISIBLE_WIDTH, ICON_WIDTH, NAME_WIDTH, PORT_WIDTH, CHANNEL_WIDTH, CHANNEL_WIDTH,
+            NUMBER_WIDTH, VISIBLE_WIDTH, TOGGLE_WIDTH, TOGGLE_WIDTH, NAME_WIDTH, PORT_WIDTH, CHANNEL_WIDTH,
+            CHANNEL_WIDTH,
             INSTRUMENT_WIDTH,
-            PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH,
-            TOGGLE_WIDTH, TOGGLE_WIDTH);
+            LEVEL_WIDTH, LEVEL_WIDTH,
+            PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH);
 
     public static final int WIDTH =
             COLUMN_WIDTHS.stream().mapToInt(Integer::intValue).sum() + COLUMN_WIDTHS.size() * COLUMN_GAP + 16;
+
+    private static final Map<MixParameter, String> ABBREVIATED_LABELS = Map.of(
+            MixParameter.CHORUS, "Cho",
+            MixParameter.REVERB, "Rev",
+            MixParameter.PHASER, "Pha",
+            MixParameter.TREMOLO, "Tre");
 
     private final Editor editor;
     private final MixTableModel model;
     private final JPanel rowsPanel = new JPanel();
     private final List<MixTableRow> rows = new ArrayList<>();
-    private final Map<MixParameter, JLabel> parameterHeaders = new EnumMap<>(MixParameter.class);
     private JButton reduceButton;
     private JButton restoreButton;
 
@@ -95,10 +96,6 @@ public final class MixTable extends JPanel {
         return List.copyOf(rows);
     }
 
-    JLabel headerFor(MixParameter parameter) {
-        return parameterHeaders.get(parameter);
-    }
-
     JButton reduceButton() {
         return reduceButton;
     }
@@ -129,16 +126,20 @@ public final class MixTable extends JPanel {
         header.setMaximumSize(new Dimension(Integer.MAX_VALUE, TrackPanel.HEADER_HEIGHT));
 
         header.add(reduceRestoreButtons());
-        addTitle(header, "", NAME_WIDTH + ICON_WIDTH + VISIBLE_WIDTH - 2 * REDUCE_BUTTON_WIDTH - COLUMN_GAP);
-        addTitle(header, "Prt", PORT_WIDTH);
+        addTitle(header, "", VISIBLE_WIDTH - REDUCE_BUTTON_WIDTH * 2 + NUMBER_WIDTH);
+        addTitle(header, "S", TOGGLE_WIDTH);
+        addTitle(header, "M", TOGGLE_WIDTH);
+        addTitle(header, "Nombre", NAME_WIDTH);
+        addTitle(header, "Puerto", PORT_WIDTH);
         addTitle(header, "Ch", CHANNEL_WIDTH);
         addTitle(header, "Ch2", CHANNEL_WIDTH);
         addTitle(header, "Instrumento", INSTRUMENT_WIDTH);
-        for (MixParameter parameter : MixParameter.values()) {
-            addClickableTitle(header, parameter);
+        addTitle(header, MixParameter.VOLUME.label(), LEVEL_WIDTH);
+        addTitle(header, MixParameter.PAN.label(), LEVEL_WIDTH);
+        for (MixParameter parameter : List.of(
+                MixParameter.CHORUS, MixParameter.REVERB, MixParameter.PHASER, MixParameter.TREMOLO)) {
+            addTitle(header, ABBREVIATED_LABELS.get(parameter), PARAMETER_WIDTH);
         }
-        addTitle(header, "M", TOGGLE_WIDTH);
-        addTitle(header, "S", TOGGLE_WIDTH);
         return header;
     }
 
@@ -171,22 +172,6 @@ public final class MixTable extends JPanel {
             refresh();
         });
         return button;
-    }
-
-    private void addClickableTitle(JPanel header, MixParameter parameter) {
-        JLabel title = title(parameter.label(), PARAMETER_WIDTH);
-        title.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        title.setToolTipText("Click para alternar entre potenciometro y numero");
-        title.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                model.toggleDisplayMode(parameter);
-                refresh();
-            }
-        });
-        parameterHeaders.put(parameter, title);
-        header.add(title);
-        header.add(Box.createHorizontalStrut(COLUMN_GAP));
     }
 
     private void addTitle(JPanel header, String text, int width) {
