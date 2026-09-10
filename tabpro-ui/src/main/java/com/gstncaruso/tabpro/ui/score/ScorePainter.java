@@ -240,6 +240,8 @@ public final class ScorePainter {
         Rectangle bounds = layout.measureBounds(trackIndex, measureIndex);
         g.setColor(INCOMPLETE_MEASURE_TINT);
         g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        g.setColor(ScoreColors.INCOMPLETE_MEASURE);
+        g.drawRect(bounds.x, bounds.y, bounds.width - 1, bounds.height - 1);
     }
 
     private static void paintSelection(Graphics2D g, ScoreLayout layout, Score score, Selection selection) {

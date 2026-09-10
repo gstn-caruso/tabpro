@@ -382,6 +382,25 @@ class ScorePainterTest {
     }
 
     @Test
+    void anIncompleteMeasureThatIsNotBeingEditedIsOutlinedInItsWarningColour() {
+        Measure incomplete = measureOf(Beat.of(Duration.quarter(), new Note(1, 0)));
+        Measure complete = measureOf(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3)));
+        Score score = scoreWith(incomplete, complete);
+
+        Painted painted = paint(score, new Cursor(0, 1, 0, 1), Playhead.silent());
+
+        Rectangle bounds = painted.layout().measureBounds(0, 0);
+        int edge = painted.image().getRGB(bounds.x + bounds.width / 2, bounds.y);
+        int centre = painted.image().getRGB(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+        assertNotEquals(edge, centre,
+                "el borde de aviso tiene que verse distinto del tinte que cubre el resto del compas");
+    }
+
+    @Test
     void survivesAPercussionTrackAndAMultiBeatSelection() {
         Track kit = Track.percussion("Bateria").withMeasures(List.of(
                 new Measure(TimeSignature.fourFour(), List.of(
