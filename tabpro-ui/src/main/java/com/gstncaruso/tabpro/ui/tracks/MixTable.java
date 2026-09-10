@@ -63,6 +63,7 @@ public final class MixTable extends JPanel {
     private final MixTableModel model;
     private final JPanel rowsPanel = new JPanel();
     private final List<MixTableRow> rows = new ArrayList<>();
+    private final List<JLabel> columnTitleLabels = new ArrayList<>();
     private JButton reduceButton;
     private JButton restoreButton;
 
@@ -108,6 +109,10 @@ public final class MixTable extends JPanel {
 
     JButton restoreButton() {
         return restoreButton;
+    }
+
+    List<JLabel> columnTitleLabels() {
+        return List.copyOf(columnTitleLabels);
     }
 
     private void rebuild() {
@@ -181,7 +186,9 @@ public final class MixTable extends JPanel {
     }
 
     private void addTitle(JPanel header, String text, int width) {
-        header.add(title(text, width));
+        JLabel title = title(text, width);
+        columnTitleLabels.add(title);
+        header.add(title);
         header.add(Box.createHorizontalStrut(COLUMN_GAP));
     }
 

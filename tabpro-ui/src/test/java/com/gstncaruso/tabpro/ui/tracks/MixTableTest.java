@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import javax.swing.JLabel;
 import org.junit.jupiter.api.Test;
 
 class MixTableTest {
@@ -85,5 +86,23 @@ class MixTableTest {
         table.restoreButton().doClick();
         assertTrue(table.rows().get(0).parameterCells().stream().allMatch(java.awt.Component::isVisible));
         assertTrue(table.rows().get(0).volumeSlider().isVisible());
+    }
+
+    @Test
+    void ningunaCabeceraDeColumnaInvadeALaSiguiente() {
+        Editor editor = new Editor(Score.blank());
+        editor.addTrack(Track.standardBass("Bajo"));
+        MixTable table = new MixTable(editor);
+
+        for (JLabel title : table.columnTitleLabels()) {
+            if (title.getText().isEmpty()) {
+                continue;
+            }
+            int textWidth = title.getFontMetrics(title.getFont()).stringWidth(title.getText());
+            int columnWidth = title.getPreferredSize().width;
+            assertTrue(textWidth < columnWidth,
+                    "la cabecera \"" + title.getText() + "\" (" + textWidth + "px) no entra holgada en su columna de "
+                            + columnWidth + "px");
+        }
     }
 }
