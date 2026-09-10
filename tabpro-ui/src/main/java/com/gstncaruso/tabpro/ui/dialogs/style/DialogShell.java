@@ -3,9 +3,12 @@ package com.gstncaruso.tabpro.ui.dialogs.style;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -15,7 +18,15 @@ import javax.swing.SwingUtilities;
  */
 public final class DialogShell {
 
+    /** Barra de titulo y bordes del sistema operativo, mas un margen de aire contra el borde de pantalla. */
+    static final int WINDOW_CHROME_HEIGHT = 80;
+
     private DialogShell() {
+    }
+
+    /** Lo que le queda al contenido despues de restarle a la pantalla la barra de botones y el chrome de la ventana. */
+    static int availableContentHeight(int screenHeight, int southHeight) {
+        return screenHeight - southHeight - WINDOW_CHROME_HEIGHT;
     }
 
     public static boolean ask(Component parent, String title, JComponent content) {
@@ -33,6 +44,17 @@ public final class DialogShell {
 
     public static boolean ask(
             Component parent, String title, JComponent content, String acceptLabel, JComponent initialFocus) {
+        return ask(parent, title, content, null, acceptLabel, initialFocus);
+    }
+
+    /**
+     * Como {@link #ask(Component, String, JComponent, String, JComponent)}, pero con una fila de
+     * botones propios de la ventana (por ejemplo "Actualizar partitura" en Configurar pagina) que
+     * queda, igual que Aceptar y Cancelar, siempre visible fuera de cualquier scroll.
+     */
+    public static boolean ask(
+            Component parent, String title, JComponent content, JComponent extraButtons,
+            String acceptLabel, JComponent initialFocus) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title, Dialog.ModalityType.APPLICATION_MODAL);
         ButtonBar buttons = ButtonBar.acceptCancel(acceptLabel);
         boolean[] accepted = {false};
@@ -58,14 +80,50 @@ public final class DialogShell {
             });
         }
 
+        JComponent south = southOf(extraButtons, buttons);
         dialog.getContentPane().setLayout(new BorderLayout());
-        dialog.getContentPane().add(content, BorderLayout.CENTER);
-        dialog.getContentPane().add(buttons, BorderLayout.SOUTH);
+        dialog.getContentPane().add(fittedToScreen(content, south), BorderLayout.CENTER);
+        dialog.getContentPane().add(south, BorderLayout.SOUTH);
         dialog.pack();
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
 
         return accepted[0];
+    }
+
+    private static JComponent southOf(JComponent extraButtons, JComponent buttons) {
+        if (extraButtons == null) {
+            return buttons;
+        }
+        JComponent south = new javax.swing.JPanel(new BorderLayout());
+        south.setOpaque(false);
+        south.add(extraButtons, BorderLayout.NORTH);
+        south.add(buttons, BorderLayout.SOUTH);
+        return south;
+    }
+
+    private static JComponent fittedToScreen(JComponent content, JComponent southBar) {
+        Dimension screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getSize();
+        int availableHeight = availableContentHeight(screen.height, southBar.getPreferredSize().height);
+        return fitToAvailableHeight(content, availableHeight);
+    }
+
+    /**
+     * La regla general: un dialogo nunca es mas alto que el area util de la pantalla. El alto
+     * disponible se recibe como parametro (nunca leido de {@code GraphicsEnvironment} aca adentro)
+     * para poder probarlo sin depender de un display real.
+     */
+    static JComponent fitToAvailableHeight(JComponent content, int availableHeight) {
+        if (content.getPreferredSize().height <= availableHeight) {
+            return content;
+        }
+        JScrollPane scroll = new JScrollPane(content);
+        scroll.setBorder(null);
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
+        scroll.setPreferredSize(new java.awt.Dimension(
+                content.getPreferredSize().width + scroll.getVerticalScrollBar().getPreferredSize().width,
+                availableHeight));
+        return scroll;
     }
 
     /** Para ventanas sin Cancelar, como los reportes de un asistente: solo Cerrar. */
@@ -87,7 +145,7 @@ public final class DialogShell {
 
         dialog.getRootPane().setDefaultButton(close);
         dialog.getContentPane().setLayout(new BorderLayout());
-        dialog.getContentPane().add(content.apply(dialog::dispose), BorderLayout.CENTER);
+        dialog.getContentPane().add(fittedToScreen(content.apply(dialog::dispose), bar), BorderLayout.CENTER);
         dialog.getContentPane().add(bar, BorderLayout.SOUTH);
         dialog.pack();
         dialog.setLocationRelativeTo(parent);
