@@ -70,4 +70,13 @@ class EditorSelectionTest {
 
         assertTrue(editor.selection().isEmpty());
     }
+
+    @Test
+    void changingTrackClearsAnyActiveSelection() {
+        editor.startSelection(false);
+
+        editor.selectTrack(1);
+
+        assertTrue(editor.selection().isEmpty());
+    }
 }
