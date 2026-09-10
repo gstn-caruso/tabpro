@@ -157,8 +157,6 @@ final class BarStructurePainter {
     }
 
     private static void paintCodaGlyph(Graphics2D g, int centerX, int y, boolean doubled) {
-        g.setColor(ScoreColors.INK);
-        g.setStroke(new BasicStroke(1.4f));
         paintOneCoda(g, centerX, y);
         if (doubled) {
             paintOneCoda(g, centerX - 10, y);
@@ -167,10 +165,11 @@ final class BarStructurePainter {
     }
 
     private static void paintOneCoda(Graphics2D g, int centerX, int y) {
-        int radius = 5;
-        g.draw(new Ellipse2D.Double(centerX - radius, y - radius, radius * 2, radius * 2));
-        g.draw(new Line2D.Double(centerX, y - radius - 3, centerX, y + radius + 3));
-        g.draw(new Line2D.Double(centerX - radius - 3, y, centerX + radius + 3, y));
+        g.setColor(ScoreColors.INK);
+        g.setFont(MusicFont.sizedTo(ScoreLayout.STAFF_LINE_SPACING));
+        String glyph = MusicFont.coda();
+        FontMetrics metrics = g.getFontMetrics();
+        g.drawString(glyph, centerX - metrics.stringWidth(glyph) / 2f, y);
     }
 
     private static void paintJump(Graphics2D g, int left, int right, int staffTop, DirectionJump jump) {
