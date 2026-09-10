@@ -112,6 +112,32 @@ class GlobalUiMutationScanTest {
         assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
     }
 
+    @Test
+    void aTestThatWritesToUiManagerWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "WritesToUiManager.java", """
+                class WritesToUiManager {
+                    void writes() {
+                        UIManager.put("defaultFont", font);
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
+    @Test
+    void aTestThatSwitchesTheLookAndFeelWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "SwitchesTheLookAndFeel.java", """
+                class SwitchesTheLookAndFeel {
+                    void switches() throws Exception {
+                        UIManager.setLookAndFeel(new FlatDarkLaf());
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
     private static Path write(Path root, String fileName, String content) throws IOException {
         Path file = root.resolve(fileName);
         Files.writeString(file, content);
