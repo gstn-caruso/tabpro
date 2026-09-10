@@ -43,6 +43,25 @@ class ScoreLayoutTest {
         assertEquals(layout.systemCount() - 1, layout.systemOf(11));
     }
 
+    /**
+     * El pintor necesita ir de "esta altura de pantalla" a "que sistema hay que pintar", para
+     * saltear los que quedan fuera del clip. Fuera del rango real de la partitura -arriba del
+     * primero o abajo del ultimo- se recorta al sistema mas cercano, no se cae ni devuelve un
+     * indice invalido.
+     */
+    @Test
+    void systemAtFindsWhichSystemCoversThatScreenHeight() {
+        Score score = scoreWithMeasures(12);
+        ScoreLayout layout = ScoreLayout.of(score, 300);
+        int stride = layout.systemHeight() + ScoreLayout.SYSTEM_GAP;
+
+        assertEquals(0, layout.systemAt(ScoreLayout.TOP_MARGIN));
+        assertEquals(1, layout.systemAt(ScoreLayout.TOP_MARGIN + stride));
+        assertEquals(0, layout.systemAt(-500), "arriba de todo se recorta al primer sistema");
+        assertEquals(layout.systemCount() - 1, layout.systemAt(1_000_000),
+                "abajo de todo se recorta al ultimo sistema");
+    }
+
     @Test
     void everySystemStartsAtTheLeftMargin() {
         Score score = scoreWithMeasures(12);

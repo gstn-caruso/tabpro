@@ -352,6 +352,14 @@ public final class ScoreLayout {
         return blockHeightTotal;
     }
 
+    /** Que sistema cae en esa altura de pantalla, recortado a los limites reales de la
+     * partitura: sirve para saber, dado el clip de pintado, entre que sistemas hay que pintar. */
+    public int systemAt(int y) {
+        int stride = blockHeightTotal + SYSTEM_GAP;
+        int system = (y - TOP_MARGIN) / stride;
+        return Math.clamp(system, 0, systemCount - 1);
+    }
+
     public int trackTop(int track, int measure) {
         int systemY = TOP_MARGIN + systemOf(measure) * (blockHeightTotal + SYSTEM_GAP);
         return systemY + blockTop[track];
