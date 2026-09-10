@@ -17,7 +17,18 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
-          cache: maven
+
+      # El cache de setup-java keyea por el hash de los poms y no tiene fallback:
+      # como el release reescribe la version en los seis poms, cada version
+      # arrancaba con el repositorio vacio y volvia a bajar todo. Con restore-keys
+      # la version nueva parte de la anterior y solo baja lo que cambio.
+      - name: Cache del repositorio de Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-
 
       - name: Build and test
         run: mvn -B verify
@@ -43,7 +54,18 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
-          cache: maven
+
+      # El cache de setup-java keyea por el hash de los poms y no tiene fallback:
+      # como el release reescribe la version en los seis poms, cada version
+      # arrancaba con el repositorio vacio y volvia a bajar todo. Con restore-keys
+      # la version nueva parte de la anterior y solo baja lo que cambio.
+      - name: Cache del repositorio de Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
