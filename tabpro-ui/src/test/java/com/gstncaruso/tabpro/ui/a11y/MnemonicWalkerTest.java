@@ -76,4 +76,27 @@ class MnemonicWalkerTest {
 
         assertTrue(walker.walkForm(form).stream().anyMatch(v -> v.reason().equals("sin mnemónico")));
     }
+
+    @Test
+    void unaEtiquetaSinSetLabelForNoSeReporta() {
+        JPanel form = new JPanel();
+        form.add(new JLabel("Sólo un título de sección"));
+
+        assertTrue(walker.walkForm(form).isEmpty());
+    }
+
+    @Test
+    void unaEtiquetaConMnemonicoEnUnFormularioAnidadoNoTieneHallazgos() {
+        JPanel outer = new JPanel();
+        JPanel inner = new JPanel();
+        JTextField field = new JTextField();
+        JLabel label = new JLabel("Nombre");
+        label.setLabelFor(field);
+        label.setDisplayedMnemonic('N');
+        inner.add(label);
+        inner.add(field);
+        outer.add(inner);
+
+        assertTrue(walker.walkForm(outer).isEmpty());
+    }
 }
