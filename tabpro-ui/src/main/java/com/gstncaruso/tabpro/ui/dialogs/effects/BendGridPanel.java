@@ -33,6 +33,7 @@ public final class BendGridPanel extends JComponent implements AccessibleControl
 
     private final BendCurveEditor editor;
     private int caretPosition;
+    private int caretQuarterTones;
 
     public BendGridPanel(BendCurveEditor editor) {
         this.editor = editor;
@@ -60,20 +61,27 @@ public final class BendGridPanel extends JComponent implements AccessibleControl
         return caretPosition;
     }
 
+    /** Cuantos cuartos de tono marca el caret de teclado, en la misma escala que un clic. */
+    public int caretQuarterTones() {
+        return caretQuarterTones;
+    }
+
     private void installKeyboardShortcuts() {
         InputMap inputMap = getInputMap(WHEN_FOCUSED);
         ActionMap actionMap = getActionMap();
-        bindCaretMove(inputMap, actionMap, "RIGHT", 1);
-        bindCaretMove(inputMap, actionMap, "LEFT", -1);
+        bindCaretMove(inputMap, actionMap, "RIGHT", 1, 0);
+        bindCaretMove(inputMap, actionMap, "LEFT", -1, 0);
+        bindCaretMove(inputMap, actionMap, "UP", 0, 1);
     }
 
-    private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int delta) {
+    private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int positionDelta, int quarterTonesDelta) {
         String name = "bendgrid.caret." + keyStroke;
         inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
         actionMap.put(name, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                caretPosition = Math.max(0, Math.min(BendPoint.LAST_POSITION, caretPosition + delta));
+                caretPosition = Math.max(0, Math.min(BendPoint.LAST_POSITION, caretPosition + positionDelta));
+                caretQuarterTones = Math.max(MIN_QUARTER_TONES, Math.min(MAX_QUARTER_TONES, caretQuarterTones + quarterTonesDelta));
                 repaint();
             }
         });

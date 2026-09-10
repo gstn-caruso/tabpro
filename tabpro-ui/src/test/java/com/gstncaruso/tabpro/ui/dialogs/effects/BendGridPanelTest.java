@@ -41,4 +41,13 @@ class BendGridPanelTest {
 
         assertEquals(1, panel.caretPosition());
     }
+
+    @Test
+    void theUpArrowKeyRaisesTheCaretQuarterTones() {
+        BendGridPanel panel = new BendGridPanel(BendCurveEditor.blank(BendType.BEND, 4));
+
+        pressShortcut(panel, KeyStroke.getKeyStroke("UP"));
+
+        assertEquals(1, panel.caretQuarterTones());
+    }
 }
