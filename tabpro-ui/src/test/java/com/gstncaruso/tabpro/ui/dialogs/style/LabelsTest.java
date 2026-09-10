@@ -14,6 +14,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
+import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
@@ -263,6 +264,20 @@ class LabelsTest {
     @EnumSource(StemOverride.class)
     void everyStemOverrideHasSpanishAndEnglishText(StemOverride value) {
         String key = "domain.StemOverride." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesThePickstrokeDirection() {
+        assertEquals("Hacia arriba", Labels.of(PickstrokeDirection.UP));
+    }
+
+    @ParameterizedTest
+    @EnumSource(PickstrokeDirection.class)
+    void everyPickstrokeDirectionHasSpanishAndEnglishText(PickstrokeDirection value) {
+        String key = "domain.PickstrokeDirection." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
