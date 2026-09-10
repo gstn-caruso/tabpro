@@ -117,6 +117,7 @@ public final class TrackPropertiesPanel extends FormPanel {
                 initialPercussion,
                 twelveString.isSelected(),
                 banjoFifthString.isSelected(),
-                display);
+                display,
+                false);
     }
 }

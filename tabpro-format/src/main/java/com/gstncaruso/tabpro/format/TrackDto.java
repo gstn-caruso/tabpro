@@ -123,7 +123,8 @@ public record TrackDto(
                 isSet(percussion),
                 isSet(twelveString),
                 isSet(banjoFifthString),
-                display);
+                display,
+                false);
     }
 
     private static int orElse(Integer value, int fallback) {
