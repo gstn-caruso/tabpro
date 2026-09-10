@@ -13,48 +13,48 @@ import org.junit.jupiter.api.Test;
 class ChordSelectionTest {
 
     @Test
-    void sinInversionElBajoEsLaFundamental() {
-        ChordSelection seleccion = ChordSelection.initial();
+    void withoutInversionTheBassIsTheRoot() {
+        ChordSelection selection = ChordSelection.initial();
 
-        assertEquals(Chord.of(seleccion.root(), seleccion.type()), seleccion.chord());
-        assertFalse(seleccion.chord().isInverted());
+        assertEquals(Chord.of(selection.root(), selection.type()), selection.chord());
+        assertFalse(selection.chord().isInverted());
     }
 
     @Test
-    void elBajoDistintoDeLaFundamentalArmaUnAcordeInvertido() {
-        ChordSelection seleccion = ChordSelection.initial().withBass(PitchClass.of("E"));
+    void aBassDifferentFromTheRootBuildsAnInvertedChord() {
+        ChordSelection selection = ChordSelection.initial().withBass(PitchClass.of("E"));
 
         assertEquals(
-                Chord.inverted(seleccion.root(), seleccion.type(), PitchClass.of("E")),
-                seleccion.chord());
-        assertTrue(seleccion.chord().isInverted());
+                Chord.inverted(selection.root(), selection.type(), PitchClass.of("E")),
+                selection.chord());
+        assertTrue(selection.chord().isInverted());
     }
 
     @Test
-    void cambiarLaFundamentalConservaElTipoYElFiltro() {
-        ChordSelection seleccion = ChordSelection.initial()
+    void changingTheRootKeepsTheTypeAndTheFilter() {
+        ChordSelection selection = ChordSelection.initial()
                 .withType(ChordType.MINOR_SEVENTH)
                 .withComplexity(ChordComplexity.SIMPLE)
                 .withRoot(PitchClass.of("D"));
 
-        assertEquals(PitchClass.of("D"), seleccion.root());
-        assertEquals(ChordType.MINOR_SEVENTH, seleccion.type());
-        assertEquals(ChordComplexity.SIMPLE, seleccion.complexity());
+        assertEquals(PitchClass.of("D"), selection.root());
+        assertEquals(ChordType.MINOR_SEVENTH, selection.type());
+        assertEquals(ChordComplexity.SIMPLE, selection.complexity());
     }
 
     @Test
-    void cambiarLaFundamentalMueveElBajoConEllaCuandoNoHabiaInversion() {
-        ChordSelection seleccion = ChordSelection.initial().withRoot(PitchClass.of("G"));
+    void changingTheRootMovesTheBassWithItWhenThereWasNoInversion() {
+        ChordSelection selection = ChordSelection.initial().withRoot(PitchClass.of("G"));
 
-        assertEquals(PitchClass.of("G"), seleccion.bass());
+        assertEquals(PitchClass.of("G"), selection.bass());
     }
 
     @Test
-    void cambiarLaFundamentalNoMueveUnBajoYaElegidoADeliberado() {
-        ChordSelection seleccion = ChordSelection.initial()
+    void changingTheRootDoesNotMoveABassThatWasDeliberatelyChosen() {
+        ChordSelection selection = ChordSelection.initial()
                 .withBass(PitchClass.of("E"))
                 .withRoot(PitchClass.of("G"));
 
-        assertEquals(PitchClass.of("E"), seleccion.bass());
+        assertEquals(PitchClass.of("E"), selection.bass());
     }
 }
