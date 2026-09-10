@@ -24,6 +24,10 @@ public interface ThemeSwitch {
         @Override
         public void apply(String name) {
         }
+
+        @Override
+        public void useFontSize(int points) {
+        }
     };
 
     List<String> names();
@@ -31,4 +35,7 @@ public interface ThemeSwitch {
     String current();
 
     void apply(String name);
+
+    /** Preferencias [F12] > Accesibilidad: la fuente base de toda la interfaz. */
+    void useFontSize(int points);
 }

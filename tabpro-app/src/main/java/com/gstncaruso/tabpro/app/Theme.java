@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.app;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.gstncaruso.tabpro.ui.theme.ThemeSwitch;
 import java.awt.Color;
@@ -40,7 +41,10 @@ public final class Theme implements ThemeSwitch {
             Color.WHITE, new Color(0xCCCCCC), Color.WHITE, Color.BLACK,
             new Color(0xFFD400));
 
+    private static final int DEFAULT_FONT_SIZE = 12;
+
     private String current = DARK;
+    private int fontSize = DEFAULT_FONT_SIZE;
 
     public static Theme install() {
         Theme theme = new Theme();
@@ -79,6 +83,13 @@ public final class Theme implements ThemeSwitch {
         putFlatLafTweaks(palette.accent());
     }
 
+    @Override
+    public void useFontSize(int points) {
+        fontSize = points;
+        UIManager.put("defaultFont", interfaceFont());
+        FlatLaf.updateUI();
+    }
+
     private static void putPalette(Palette palette) {
         UIManager.put("tabpro.background", palette.background());
         UIManager.put("tabpro.panel", palette.panel());
@@ -100,7 +111,7 @@ public final class Theme implements ThemeSwitch {
         UIManager.put("SplitPaneDivider.gripColor", palette.mutedText());
     }
 
-    private static void putFlatLafTweaks(Color accent) {
+    private void putFlatLafTweaks(Color accent) {
         UIManager.put("Component.focusColor", accent);
         UIManager.put("Component.focusedBorderColor", accent);
         UIManager.put("Component.arc", 6);
@@ -125,10 +136,10 @@ public final class Theme implements ThemeSwitch {
         UIManager.put("defaultFont", interfaceFont());
     }
 
-    /** Una tipografia de interfaz chica y prolija, que es lo que pide una partitura. */
-    private static Font interfaceFont() {
+    /** Una tipografia de interfaz chica y prolija, al tamano que haya elegido Accesibilidad. */
+    private Font interfaceFont() {
         Font base = UIManager.getFont("defaultFont");
-        return base == null ? new Font(Font.SANS_SERIF, Font.PLAIN, 12) : base.deriveFont(12f);
+        return base == null ? new Font(Font.SANS_SERIF, Font.PLAIN, fontSize) : base.deriveFont((float) fontSize);
     }
 
     record Palette(
