@@ -37,6 +37,8 @@ public final class Icons {
     private static final String AUGMENTATION_DOT = "";
     /** SMuFL U+E4E5 "restQuarter": el silencio de negra. */
     private static final String REST_QUARTER = "";
+    /** SMuFL U+E0A9 "noteheadXBlack": la cabeza en X de percusion, para las notas apagadas. */
+    private static final String NOTEHEAD_X_BLACK = "";
 
     private Icons() {
     }
@@ -199,11 +201,7 @@ public final class Icons {
     }
 
     public static Icon deadNote() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(new BasicStroke(size / 9f));
-            graphics.draw(new Line2D.Double(size * 0.28, size * 0.28, size * 0.72, size * 0.72));
-            graphics.draw(new Line2D.Double(size * 0.72, size * 0.28, size * 0.28, size * 0.72));
-        });
+        return new GlyphIcon(SIZE, NOTEHEAD_X_BLACK);
     }
 
     public static Icon ghostNote() {
