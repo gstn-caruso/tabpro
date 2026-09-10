@@ -10,7 +10,7 @@
   <packaging>pom</packaging>
 
   <name>Tabpro</name>
-  <description>Clon libre de Guitar Pro 5: editor de tablaturas para guitarra.</description>
+  <description>Free Guitar Pro 5 clone: tablature editor for guitar.</description>
   <url>https://github.com/gstn-caruso/tabpro</url>
 
   <licenses>
@@ -35,10 +35,9 @@
     <junit.version>5.11.4</junit.version>
     <tests.excluded.groups>integracion</tests.excluded.groups>
     <!--
-      La auditoria de uso real (tabpro-app/src/test/.../audit) instancia la ventana principal de
-      verdad para despachar eventos de teclado y de mouse reales: necesita un toolkit no headless
-      para tener foco y peers de verdad. Por defecto sigue en true (identico a como corria
-      siempre mvn -B verify); solo el grupo integracion se invoca con -Dtests.headless=false.
+      Real-use audit tests (tabpro-app/src/test/.../audit) instantiate the main window to dispatch real keyboard and mouse events:
+      they need a non-headless toolkit for focus and true peers. Defaults to true (same as mvn -B verify has always run);
+      only the integracion group is invoked with -Dtests.headless=false.
     -->
     <tests.headless>true</tests.headless>
     <flatlaf.version>3.7.2</flatlaf.version>
@@ -87,25 +86,20 @@
           <version>3.5.2</version>
           <configuration>
             <!--
-              El add-exports es para WaveRenderer (tabpro-midi): renderiza WAVE fuera de
-              tiempo real con com.sun.media.sound.AudioSynthesizer, el unico camino que expone
-              Gervill (el sintetizador del JDK) para eso. No es API publica, pero es la unica
-              forma de pedirle audio al sintetizador mas rapido que en tiempo real.
+              add-exports is for WaveRenderer (tabpro-midi): it renders WAVE off real-time using com.sun.media.sound.AudioSynthesizer,
+              the only path exposed by Gervill (the JDK synthesizer). Not public API, but the only way to get audio from the synthesizer
+              faster than real-time.
             -->
             <!--
-              TieredStopAtLevel=1 deja el JIT en C1. La suite entera vive medio segundo:
-              compilar con C2 cuesta mas de lo que llega a devolver antes de que la maquina
-              virtual termine.
+              TieredStopAtLevel=1 keeps JIT at C1. The entire suite runs in half a second: compiling with C2 costs more than
+              it can return before the VM terminates.
             -->
             <!--
-              java.util.prefs.userRoot y java.io.tmpdir aislados: MainFrame guarda Preferences
-              (archivos recientes, autoguardado, etc.) en java.util.prefs.Preferences.userRoot(),
-              y ScoreDocument busca su archivo de recuperacion en java.io.tmpdir +
-              "tabpro-recuperacion" -las mismas rutas que usa un tabpro instalado de verdad en
-              esta maquina-. La auditoria de uso real (tabpro-app/.../audit) instancia MainFrame
-              de verdad: sin esto, un archivo de recuperacion real que haya quedado de una sesion
-              real dispara un dialogo real (offerToRecover) en cada test, y las preferencias que
-              se lean o se escriban serian las reales de quien corre la suite.
+              java.util.prefs.userRoot and java.io.tmpdir are isolated: MainFrame saves Preferences (recent files, autosave, etc.)
+              in java.util.prefs.Preferences.userRoot(), and ScoreDocument looks for its recovery file in java.io.tmpdir +
+              "tabpro-recuperacion" — the same paths a real installed tabpro uses on this machine. Real-use audit tests (tabpro-app/.../audit)
+              instantiate MainFrame: without this, a real recovery file left from a real session would trigger a real dialog (offerToRecover)
+              in each test, and preferences read or written would be the real ones from whoever runs the suite.
             -->
             <argLine>-Djava.awt.headless=${tests.headless} -XX:TieredStopAtLevel=1 --add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED -Djava.util.prefs.userRoot=${project.build.directory}/test-prefs-root -Djava.io.tmpdir=${project.build.directory}</argLine>
             <excludedGroups>${tests.excluded.groups}</excludedGroups>

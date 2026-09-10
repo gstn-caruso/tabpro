@@ -14,7 +14,7 @@
   <packaging>jar</packaging>
 
   <name>Tabpro UI</name>
-  <description>Interfaz gráfica Swing: ventana, canvas de tablatura, teclado y transporte.</description>
+  <description>Swing GUI: main window, tablature canvas, keyboard and transport.</description>
   <url>https://github.com/gstn-caruso/tabpro</url>
 
   <dependencies>

@@ -14,7 +14,7 @@
   <packaging>jar</packaging>
 
   <name>Tabpro Midi</name>
-  <description>Reproducción de partituras con javax.sound.midi.</description>
+  <description>Score playback with javax.sound.midi.</description>
   <url>https://github.com/gstn-caruso/tabpro</url>
 
   <dependencies>
@@ -37,11 +37,9 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <!--
-            WaveRenderer usa com.sun.media.sound.AudioSynthesizer para renderizar WAVE fuera
-            de tiempo real: es el unico camino que expone Gervill (el sintetizador del JDK)
-            para eso. No es API publica del modulo java.desktop, asi que hay que pedir
-            explicitamente el acceso. javac no permite combinar add-exports con release,
-            asi que este modulo compila con source/target en vez de heredar release.
+            WaveRenderer uses com.sun.media.sound.AudioSynthesizer to render WAVE off real-time: it's the only path exposed
+            by Gervill (the JDK synthesizer). Not public API in the java.desktop module, so explicit access must be requested.
+            javac does not allow combining add-exports with release, so this module compiles with source/target instead of inheriting release.
           -->
           <release combine.self="override"></release>
           <source>${maven.compiler.release}</source>
