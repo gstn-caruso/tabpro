@@ -15,9 +15,6 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El color del numero de compas: coral solido como en Guitar Pro 5, no la tinta atenuada de antes.
- */
 class MeasureNumberPaintingTest {
 
     private static final int WIDTH = 900;

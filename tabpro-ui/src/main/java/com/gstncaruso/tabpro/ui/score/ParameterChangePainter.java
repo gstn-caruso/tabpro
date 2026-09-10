@@ -19,11 +19,7 @@ final class ParameterChangePainter {
 
     /** Cuanto se despegan del pentagrama, para no pisar las notas que asoman por arriba. */
     private static final int STAFF_CLEARANCE = 16;
-    /**
-     * El tempo inicial necesita mas aire que un cambio a mitad de partitura: comparte el compas
-     * con las notas de verdad, y una plica forzada hacia arriba puede llegar hasta ahi.
-     */
-    private static final int INITIAL_TEMPO_EXTRA_CLEARANCE = 14;
+    private static final int INITIAL_TEMPO_CLEARANCE_ABOVE_A_FORCED_STEM = 14;
 
     private static final int MARK_WIDTH = 9;
     private static final int MARK_HEIGHT = 5;
@@ -34,10 +30,6 @@ final class ParameterChangePainter {
     private ParameterChangePainter() {
     }
 
-    /**
-     * El tempo global de la partitura ({@link com.gstncaruso.tabpro.core.model.Score#tempo}),
-     * que GP5 siempre escribe arriba del primer compas del primer sistema.
-     */
     static void paintInitialTempo(
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, int scoreTempo) {
         ParameterChange firstBeatChange = track.measure(measureIndex).beat(0).effects().parameterChange();
@@ -46,7 +38,8 @@ final class ParameterChangePainter {
         }
         Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, 0);
         int centerX = bounds.x + bounds.width / 2;
-        int bottom = layout.staffTop(trackIndex, measureIndex) - STAFF_CLEARANCE - INITIAL_TEMPO_EXTRA_CLEARANCE;
+        int bottom = layout.staffTop(trackIndex, measureIndex)
+                - STAFF_CLEARANCE - INITIAL_TEMPO_CLEARANCE_ABOVE_A_FORCED_STEM;
         paintTempo(g, scoreTempo, centerX, bottom);
     }
 
