@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.VoicePart;
@@ -168,7 +169,7 @@ public final class BeatViews extends JPanel {
                     if (SwingUtilities.isRightMouseButton(e)) {
                         editing.pressFretAndAdvance(note);
                     } else {
-                        editing.toggleFret(note);
+                        writeFretNote(editing, note);
                     }
                 });
             }
@@ -188,6 +189,10 @@ public final class BeatViews extends JPanel {
                 });
             }
         });
+    }
+
+    private void writeFretNote(InstrumentEditing editing, Note note) {
+        editing.toggleFret(note);
     }
 
     private void refresh() {
