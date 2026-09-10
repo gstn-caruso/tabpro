@@ -336,6 +336,18 @@ class FretboardViewTest {
         assertEquals(List.of(new Note(1, 1)), activated);
     }
 
+    @Test
+    void theSpaceKeyAlsoNotifiesTheNoteUnderTheCaret() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        List<Note> activated = new java.util.ArrayList<>();
+        view.onCaretActivated(activated::add);
+
+        pressShortcut(view, KeyStroke.getKeyStroke("SPACE"));
+
+        assertEquals(List.of(new Note(1, 0)), activated);
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));

@@ -79,6 +79,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
         bindCaretMove(inputMap, actionMap, "DOWN", 1, 0);
         bindCaretMove(inputMap, actionMap, "UP", -1, 0);
         bindCaretActivation(inputMap, actionMap, "ENTER");
+        bindCaretActivation(inputMap, actionMap, "SPACE");
     }
 
     private void bindCaretActivation(InputMap inputMap, ActionMap actionMap, String keyStroke) {
