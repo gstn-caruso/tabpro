@@ -65,6 +65,14 @@ class ChordEditorModelTest {
     }
 
     @Test
+    void elegirLaInversionPorGradoArmaElBajoConLaNotaDeEseGrado() {
+        model.selectInversion(Interval.MAJOR_THIRD);
+
+        assertEquals(PitchClass.of("E"), model.selection().bass());
+        assertEquals("C/E", model.current().name());
+    }
+
+    @Test
     void elFiltroDeComplejidadDejaAfueraLosDificiles() {
         model.selectType(ChordType.MAJOR_SEVENTH);
         model.selectComplexity(ChordComplexity.SIMPLE);
