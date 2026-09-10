@@ -220,6 +220,18 @@ class CommandsTest {
         assertEquals(List.of("scoreInformation"), asked);
     }
 
+    /**
+     * Manual, "Configure the Sound" (linea 1945): el volumen y la actividad del metronomo se
+     * configuran en su propio dialogo, {@code MetronomeDialog}, ya implementado en
+     * {@code MainFrame.Windows.metronomeSettings()} pero sin ningun comando que lo llame.
+     */
+    @Test
+    void theMetronomeSettingsCommandAsksForItsWindow() {
+        commands.get("sound.metronomeSettings").actionPerformed(event());
+
+        assertEquals(List.of("metronomeSettings"), asked);
+    }
+
     @Test
     void askingForACommandThatDoesNotExistIsAMistake() {
         assertThrows(IllegalArgumentException.class, () -> commands.get("no.existe"));
