@@ -40,7 +40,7 @@ class MidiTestToneTest {
     void doesNotTurnTheNoteOffBeforeItsDuration() {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
 
-        MidiTestTone.play(receiverInto(received), 0, 500, () -> { }, cuandoTodaviaNoPaso());
+        MidiTestTone.play(receiverInto(received), 0, 500, () -> { }, neverFires());
 
         assertFalse(received.stream().anyMatch(message -> message.getCommand() == ShortMessage.NOTE_OFF));
     }
@@ -49,7 +49,7 @@ class MidiTestToneTest {
     void turnsTheNoteOffOnceItsDurationPasses() {
         List<ShortMessage> received = new CopyOnWriteArrayList<>();
 
-        MidiTestTone.play(receiverInto(received), 0, 20, () -> { }, alInstante());
+        MidiTestTone.play(receiverInto(received), 0, 20, () -> { }, immediately());
 
         assertTrue(received.stream().anyMatch(message -> message.getCommand() == ShortMessage.NOTE_OFF));
     }
@@ -58,17 +58,17 @@ class MidiTestToneTest {
     void runsTheGivenCallbackOnceTheNoteTurnsOff() {
         AtomicBoolean ranAfterward = new AtomicBoolean(false);
 
-        MidiTestTone.play(receiverInto(new CopyOnWriteArrayList<>()), 0, 20, () -> ranAfterward.set(true), alInstante());
+        MidiTestTone.play(receiverInto(new CopyOnWriteArrayList<>()), 0, 20, () -> ranAfterward.set(true), immediately());
 
         assertTrue(ranAfterward.get());
     }
 
-    private static Retardo cuandoTodaviaNoPaso() {
-        return (millis, accion) -> { };
+    private static Delay neverFires() {
+        return (millis, action) -> { };
     }
 
-    private static Retardo alInstante() {
-        return (millis, accion) -> accion.run();
+    private static Delay immediately() {
+        return (millis, action) -> action.run();
     }
 
     private static Receiver receiverInto(List<ShortMessage> received) {

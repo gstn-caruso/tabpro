@@ -5,18 +5,18 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-final class RetardoDelReloj implements Retardo, AutoCloseable {
+final class ClockDelay implements Delay, AutoCloseable {
 
-    private final ScheduledExecutorService reloj = Executors.newSingleThreadScheduledExecutor(daemonThreads());
+    private final ScheduledExecutorService clock = Executors.newSingleThreadScheduledExecutor(daemonThreads());
 
     @Override
-    public void luegoDe(long millis, Runnable accion) {
-        reloj.schedule(accion, millis, TimeUnit.MILLISECONDS);
+    public void after(long millis, Runnable action) {
+        clock.schedule(action, millis, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void close() {
-        reloj.shutdownNow();
+        clock.shutdownNow();
     }
 
     private static ThreadFactory daemonThreads() {
