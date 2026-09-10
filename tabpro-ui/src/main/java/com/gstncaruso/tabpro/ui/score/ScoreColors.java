@@ -44,6 +44,8 @@ public final class ScoreColors {
     public static final Color PLAYING = new Color(0x24, 0xA2, 0x5A);
     public static final Color PLAYING_MEASURE = new Color(0xE5484D);
     public static final Color WARNING = new Color(0xE5A44A);
+    /** El compas sin notas en la vista general de la mesa de mezcla, plateado como en Guitar Pro 5. */
+    public static final Color EMPTY_MEASURE = new Color(0xB8, 0xBC, 0xC2);
 
     /** El rectangulito rojo que anuncia un cambio de parametro sin simbolo musical propio. */
     public static final Color PARAMETER_CHANGE = new Color(0xD32F3B);

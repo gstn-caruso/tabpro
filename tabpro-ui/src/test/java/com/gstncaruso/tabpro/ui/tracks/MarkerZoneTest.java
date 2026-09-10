@@ -1,10 +1,13 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.bars.Marker;
+import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -15,6 +18,35 @@ import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class MarkerZoneTest {
+
+    @Test
+    void paintsTheMarkerNameInWarningRedInsteadOfItsOwnColor() {
+        Editor editor = new Editor(Score.blank());
+        for (int i = 0; i < 5; i++) {
+            editor.insertMeasure();
+        }
+        editor.setMarker(Marker.named("Estribillo"));
+        MarkerZone zone = new MarkerZone(editor);
+        zone.setSize(zone.getPreferredSize());
+
+        BufferedImage painted = paint(zone);
+
+        assertTrue(containsColor(painted, ScoreColors.WARNING),
+                "el nombre del marcador tiene que pintarse en rojo (WARNING)");
+        assertFalse(containsColor(painted, new java.awt.Color(0xFF, 0, 0)),
+                "ya no se pinta con el color propio del marcador");
+    }
+
+    private static boolean containsColor(BufferedImage image, java.awt.Color color) {
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                if (image.getRGB(x, y) == color.getRGB()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     @Test
     void isAsWideAsTheGridAndAsTallAsItsOwnBand() {

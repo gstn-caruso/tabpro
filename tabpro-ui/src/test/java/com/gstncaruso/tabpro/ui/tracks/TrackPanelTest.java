@@ -72,4 +72,9 @@ class TrackPanelTest {
                 MeasureGrid.NUMBERS_HEIGHT + 2 * TrackPanel.ROW_HEIGHT,
                 panel.gridComponent().getPreferredSize().height);
     }
+
+    @Test
+    void theHeaderIsOneThirdTallerThanADataRowLikeInGuitarPro5() {
+        assertEquals(Math.round(TrackPanel.ROW_HEIGHT * 1.3f), TrackPanel.HEADER_HEIGHT);
+    }
 }
