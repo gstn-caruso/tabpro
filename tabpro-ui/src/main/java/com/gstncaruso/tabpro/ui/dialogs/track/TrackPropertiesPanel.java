@@ -38,6 +38,7 @@ public final class TrackPropertiesPanel extends JPanel {
     private final JCheckBox rhythmOnTablature = new JCheckBox("Ritmo sobre la tablatura");
     private final JCheckBox diagramsOnTheScore = new JCheckBox("Diagramas en la partitura");
     private final JCheckBox diagramsUnderTheTitle = new JCheckBox("Lista de diagramas arriba de la partitura");
+    private final JCheckBox diagramsBelowStandardNotation = new JCheckBox("Diagramas debajo del pentagrama");
     private final JCheckBox forceChannels11to16 = new JCheckBox("Forzar canales 11 a 16");
 
     private final boolean initialPercussion;
@@ -60,6 +61,7 @@ public final class TrackPropertiesPanel extends JPanel {
         rhythmOnTablature.setSelected(display.rhythmOnTablature());
         diagramsOnTheScore.setSelected(display.diagrams().showsOnTheScore());
         diagramsUnderTheTitle.setSelected(display.diagrams().showsUnderTheTitle());
+        diagramsBelowStandardNotation.setSelected(display.diagramsBelowStandardNotation());
         forceChannels11to16.setSelected(track.settings().forceChannels11to16());
         keepAtLeastOneStaffVisible();
 
@@ -92,6 +94,7 @@ public final class TrackPropertiesPanel extends JPanel {
         column.addFullWidthRow(rhythmOnTablature);
         column.addFullWidthRow(diagramsOnTheScore);
         column.addFullWidthRow(diagramsUnderTheTitle);
+        column.addFullWidthRow(diagramsBelowStandardNotation);
         column.addSection("Canales");
         column.addFullWidthRow(forceChannels11to16);
         return column;
@@ -126,7 +129,7 @@ public final class TrackPropertiesPanel extends JPanel {
                 tuningLegend.isSelected(),
                 rhythmOnTablature.isSelected(),
                 DiagramPlacement.of(diagramsOnTheScore.isSelected(), diagramsUnderTheTitle.isSelected()),
-                false);
+                diagramsBelowStandardNotation.isSelected());
         return new TrackSettings(
                 color.toScoreColor(),
                 (Integer) capo.getValue(),

@@ -91,6 +91,16 @@ class TrackPropertiesPanelTest {
         assertEquals(color, panel.toTrackSettings().color());
     }
 
+    @Test
+    void diagramsBelowStandardNotationRoundTrips() {
+        Track track = Track.standardGuitar("Guitarra").mappingSettings(
+                settings -> settings.withDisplay(settings.display().withDiagramsBelowStandardNotation(true)));
+
+        TrackPropertiesPanel panel = new TrackPropertiesPanel(track, player);
+
+        assertTrue(panel.toTrackSettings().display().diagramsBelowStandardNotation());
+    }
+
     /** GP5 usa dos casilleros de Estilo para la posicion de los diagramas, no un combo. */
     @Test
     void showsTheDiagramPlacementAsTwoCheckboxesInsteadOfACombo() {
