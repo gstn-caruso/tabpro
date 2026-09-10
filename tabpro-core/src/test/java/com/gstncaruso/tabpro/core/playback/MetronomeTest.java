@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class MetronomeTest {
 
     @Test
-    void apagadoNoProduceClicks() {
+    void whenOffProducesNoClicks() {
         Score score = Score.blank();
 
         List<MetronomeClick> clicks = Metronome.off().clicksFor(score);
@@ -23,7 +23,7 @@ class MetronomeTest {
     }
 
     @Test
-    void marcaUnClickPorPulsoDelCompas() {
+    void marksOneClickPerBeatOfTheBar() {
         Score score = Score.blank();
 
         List<MetronomeClick> clicks = Metronome.on().clicksFor(score);
@@ -32,7 +32,7 @@ class MetronomeTest {
     }
 
     @Test
-    void elPrimerPulsoDeCadaCompasEsAcentuado() {
+    void theFirstBeatOfEachBarIsAccented() {
         Score score = Score.blank();
 
         List<MetronomeClick> clicks = Metronome.on().clicksFor(score);
@@ -42,7 +42,7 @@ class MetronomeTest {
     }
 
     @Test
-    void losPulsosEstanEspaciadosPorCorchera() {
+    void beatsAreSpacedByAQuarterNote() {
         Score score = Score.blank();
 
         List<MetronomeClick> clicks = Metronome.on().clicksFor(score);
@@ -53,7 +53,7 @@ class MetronomeTest {
     }
 
     @Test
-    void elSonidoAcentuadoEsDistintoDelSonidoNormal() {
+    void theAccentedSoundDiffersFromTheNormalSound() {
         MetronomeClick accented = new MetronomeClick(0, true);
         MetronomeClick plain = new MetronomeClick(0, false);
 
@@ -61,14 +61,14 @@ class MetronomeTest {
     }
 
     @Test
-    void unClickSinVolumenPropioSuenaConLaFuerzaPorDefecto() {
+    void aClickWithoutItsOwnVolumeSoundsAtTheDefaultVelocity() {
         MetronomeClick click = new MetronomeClick(0, true);
 
         assertEquals(MetronomeClick.DEFAULT_VELOCITY, click.velocity());
     }
 
     @Test
-    void losClicksSuenanConElVolumenConfiguradoEnElMetronomo() {
+    void clicksSoundAtTheVolumeConfiguredOnTheMetronome() {
         Score score = Score.blank();
 
         List<MetronomeClick> clicks = new Metronome(true, 42).clicksFor(score);
@@ -77,17 +77,17 @@ class MetronomeTest {
     }
 
     @Test
-    void rechazaUnVolumenNegativo() {
+    void rejectsANegativeVolume() {
         assertThrows(IllegalArgumentException.class, () -> new Metronome(true, -1));
     }
 
     @Test
-    void rechazaUnVolumenPorEncimaDelRangoMidi() {
+    void rejectsAVolumeAboveTheMidiRange() {
         assertThrows(IllegalArgumentException.class, () -> new Metronome(true, 128));
     }
 
     @Test
-    void withVolumePreservaSiEstaEncendido() {
+    void withVolumePreservesWhetherItIsEnabled() {
         Metronome metronome = Metronome.on().withVolume(30);
 
         assertTrue(metronome.enabled());
@@ -95,7 +95,7 @@ class MetronomeTest {
     }
 
     @Test
-    void withEnabledPreservaElVolumen() {
+    void withEnabledPreservesTheVolume() {
         Metronome metronome = Metronome.on().withVolume(30).withEnabled(false);
 
         assertFalse(metronome.enabled());
@@ -103,7 +103,7 @@ class MetronomeTest {
     }
 
     @Test
-    void sigueElOrdenDeReproduccionConRepeticiones() {
+    void followsThePlaybackOrderWithRepeats() {
         Score score = Score.blank().withMeasureInsertedInEveryTrackAt(1);
         Score withRepeat = score.withAttributesInEveryTrackAt(1,
                 MeasureAttributes.plain().withRepeatOpen(false).withRepeatCount(2));

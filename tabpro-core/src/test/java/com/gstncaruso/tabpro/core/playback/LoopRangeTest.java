@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class LoopRangeTest {
 
     @Test
-    void contieneLosCompasesEntreSusExtremosInclusive() {
+    void containsTheBarsBetweenItsEndsInclusive() {
         LoopRange loop = new LoopRange(2, 5);
 
         assertFalse(loop.contains(1));
@@ -20,18 +20,18 @@ class LoopRangeTest {
     }
 
     @Test
-    void cuentaCuantosCompasesTiene() {
+    void countsHowManyBarsItHas() {
         assertEquals(4, new LoopRange(2, 5).measureCount());
         assertEquals(1, new LoopRange(3, 3).measureCount());
     }
 
     @Test
-    void rechazaUnRangoInvertido() {
+    void rejectsAnInvertedRange() {
         assertThrows(IllegalArgumentException.class, () -> new LoopRange(5, 2));
     }
 
     @Test
-    void seConvierteEnUnPlayOrderQueSeRepite() {
+    void becomesARepeatingPlayOrder() {
         LoopRange loop = new LoopRange(1, 2);
 
         PlayOrder order = loop.asPlayOrder(3);
