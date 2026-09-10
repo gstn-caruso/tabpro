@@ -416,6 +416,21 @@ class FretboardViewTest {
         assertTrue(!differsSomewhere(first, second), "la veta tiene que ser reproducible, no aleatoria");
     }
 
+    @Test
+    void theFretWiresLookMetallicWithAHighlightAndAShadow() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        BufferedImage image = paint(view);
+
+        int wireX = (view.fretCenterX(5) + view.fretCenterX(6)) / 2;
+        int y = (view.stringY(3) + view.stringY(4)) / 2;
+        Color fretWire = FretboardType.ELECTRIC.fretWireColor();
+
+        assertEquals(fretWire.brighter().getRGB(), image.getRGB(wireX - 1, y), "falta el brillo del traste");
+        assertEquals(fretWire.getRGB(), image.getRGB(wireX, y), "el cuerpo del traste tiene que seguir igual");
+        assertEquals(fretWire.darker().getRGB(), image.getRGB(wireX + 1, y), "falta la sombra del traste");
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));

@@ -453,11 +453,16 @@ public final class FretboardView extends JComponent implements AccessibleControl
         int top = stringY(1) - padding;
         int bottom = stringY(stringCount()) + padding;
 
-        g.setColor(fretboardType.fretWireColor());
         g.setStroke(new BasicStroke(1));
+        Color fretWire = fretboardType.fretWireColor();
         for (int fret = 1; fret <= fretCount(); fret++) {
             int x = (int) Math.round(logicalNutX() + fret * fretWidth());
+            g.setColor(fretWire.brighter());
+            g.drawLine(x - 1, top, x - 1, bottom);
+            g.setColor(fretWire);
             g.drawLine(x, top, x, bottom);
+            g.setColor(fretWire.darker());
+            g.drawLine(x + 1, top, x + 1, bottom);
         }
 
         g.setColor(InstrumentColors.NUT);
