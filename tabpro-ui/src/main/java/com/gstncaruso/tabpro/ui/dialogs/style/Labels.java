@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.dialogs.style;
 
 import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
+import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
@@ -22,6 +23,7 @@ public final class Labels {
             case ChordComplexity chordComplexity -> chordComplexityLabel(chordComplexity);
             case BarrePreference barrePreference -> barrePreferenceLabel(barrePreference);
             case PitchClass pitchClass -> pitchClass.name() + " (" + pitchClass.solfegeName() + ")";
+            case Scale scale -> scale.name();
             default -> throw new IllegalArgumentException("Sin etiqueta para " + value);
         };
     }

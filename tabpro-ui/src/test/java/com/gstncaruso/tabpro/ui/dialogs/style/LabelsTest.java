@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
+import com.gstncaruso.tabpro.core.harmony.Scale;
+import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
@@ -90,5 +92,20 @@ class LabelsTest {
         PitchClass fSharp = PitchClass.of("F#");
 
         assertNotEquals(fSharp.toString(), Labels.of(fSharp));
+    }
+
+    @Test
+    void traduceLaEscalaConSuNombreEnCastellano() {
+        assertEquals("Mayor (Jonico)", Labels.of(ScaleLibrary.major()));
+    }
+
+    @Test
+    void todaEscalaDeLaBibliotecaTieneUnaEtiquetaQueNoEsSuToString() {
+        for (Scale scale : ScaleLibrary.all()) {
+            String etiqueta = Labels.of(scale);
+
+            assertFalse(etiqueta.isBlank());
+            assertNotEquals(scale.toString(), etiqueta);
+        }
     }
 }

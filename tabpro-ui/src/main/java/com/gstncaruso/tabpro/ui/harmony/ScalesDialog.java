@@ -64,6 +64,7 @@ public final class ScalesDialog {
             fromMeasure = new JSpinner(new SpinnerNumberModel(1, 1, lastMeasure, 1));
             toMeasure = new JSpinner(new SpinnerNumberModel(lastMeasure, 1, lastMeasure, 1));
             tonics.setRenderer(new LabeledListCellRenderer());
+            scales.setRenderer(new LabeledListCellRenderer());
             PitchClasses.chromatic().forEach(tonics::addItem);
             chosen.tonic().ifPresent(tonics::setSelectedItem);
             chosen.scale().ifPresent(scales::setSelectedItem);
