@@ -37,4 +37,13 @@ class MeasureBeatsRatioTextTest {
 
         assertEquals("1.500 : 4.000", MeasureBeatsRatioText.of(measure));
     }
+
+    @Test
+    void aThreeEightMeasureIsMeasuredInEighths() {
+        Measure measure = new Measure(new TimeSignature(3, 8), List.of(
+                Beat.rest(Duration.of(NoteValue.EIGHTH)),
+                Beat.rest(Duration.of(NoteValue.EIGHTH))));
+
+        assertEquals("2.000 : 3.000", MeasureBeatsRatioText.of(measure));
+    }
 }
