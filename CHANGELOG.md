@@ -1,3 +1,9 @@
+## [0.50.2](https://github.com/gstn-caruso/tabpro/compare/v0.50.1...v0.50.2) (2026-09-10)
+
+### Bug Fixes
+
+* **ui:** todos los componentes Swing reciben las notificaciones del Editor en el EDT ([#158](https://github.com/gstn-caruso/tabpro/issues/158)) ([32ac5cf](https://github.com/gstn-caruso/tabpro/commit/32ac5cf0221d6b2bb71d5ec76fc67f7cb36200bb))
+
 ## [0.50.1](https://github.com/gstn-caruso/tabpro/compare/v0.50.0...v0.50.1) (2026-09-10)
 
 ### Bug Fixes
