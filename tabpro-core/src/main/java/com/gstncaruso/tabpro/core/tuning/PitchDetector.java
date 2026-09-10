@@ -1,17 +1,10 @@
 package com.gstncaruso.tabpro.core.tuning;
 
-/**
- * Escucha una muestra de audio y dice qué nota suena. Usa la diferencia
- * cuadrática promedio normalizada: se compara la onda consigo misma corrida en
- * el tiempo, y el corrimiento donde mejor se parece es el período.
- */
 public final class PitchDetector {
 
-    /** El rango donde puede caer una cuerda de guitarra o de bajo, con aire de sobra. */
     public static final double LOWEST_HZ = 30;
     public static final double HIGHEST_HZ = 1400;
 
-    /** Por debajo de esto lo que llega es silencio, no una cuerda. */
     private static final double SILENCE = 0.005;
 
     private final int sampleRate;
@@ -51,7 +44,6 @@ public final class PitchDetector {
         return Math.sqrt(energy / samples.length) < SILENCE;
     }
 
-    /** Para cada corrimiento, cuánto se diferencia la onda de sí misma, de 0 a 1. */
     private static double[] normalisedDifference(double[] samples, int lastPeriod) {
         double[] difference = new double[lastPeriod + 1];
         double runningSum = 0;
@@ -68,7 +60,6 @@ public final class PitchDetector {
         return difference;
     }
 
-    /** El primer corrimiento donde la onda se parece bastante a sí misma. */
     private static int firstValley(double[] difference, int from, int to) {
         double threshold = 1 - DetectedPitch.MIN_CLARITY;
         for (int period = from; period <= to; period++) {
@@ -83,7 +74,6 @@ public final class PitchDetector {
         return -1;
     }
 
-    /** Afina el período con la parábola que pasa por el valle y sus vecinos. */
     private static double refined(double[] difference, int period) {
         if (period <= 0 || period + 1 >= difference.length) {
             return period;
