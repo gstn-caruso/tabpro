@@ -1,10 +1,13 @@
 package com.gstncaruso.tabpro.format;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.Pitch;
+import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import java.io.IOException;
@@ -109,6 +112,56 @@ class TuningNamesInTabproFilesTest {
         Path path = fileWithOneTrack(tempDir, "\"Mi afinación\"", pitches(62, 57, 55, 50, 45, 38));
 
         assertEquals(Tuning.of("Mi afinación", 62, 57, 55, 50, 45, 38), scoreFiles.load(path).track(0).tuning());
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("libraryTuningsWithTheNameOldFilesStored")
+    void aSavedLibraryTuningIsStoredUnderTheNameEveryEarlierVersionReads(
+            String storedName, Tuning libraryTuning, @TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("new.tabpro");
+
+        scoreFiles.save(scoreWithTunings(List.of(libraryTuning)), path);
+
+        assertTrue(Files.readString(path).contains("\"tuningName\": \"" + storedName + "\""));
+    }
+
+    @Test
+    void aSavedPercussionTrackIsStoredAsPercusion(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("new.tabpro");
+
+        scoreFiles.save(new Score("Drums", 120, List.of(Track.percussion("Drums"))), path);
+
+        assertTrue(Files.readString(path).contains("\"tuningName\": \"Percusión\""));
+    }
+
+    @Test
+    void aSavedCustomTuningIsStoredAsPersonalizada(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("new.tabpro");
+
+        scoreFiles.save(scoreWithTunings(List.of(Tuning.standard().withStringPitch(6, new Pitch(38)))), path);
+
+        assertTrue(Files.readString(path).contains("\"tuningName\": \"Personalizada\""));
+    }
+
+    @Test
+    void aScoreWithEveryKindOfTuningReloadsIdentically(@TempDir Path tempDir) {
+        List<Tuning> tunings = Stream.concat(TuningLibrary.all().stream(), Stream.of(
+                PercussionKit.tuning(),
+                Tuning.standard().withStringPitch(6, new Pitch(38)),
+                Tuning.standardBass().withStringCount(5),
+                Tuning.of("Mi afinación", 62, 57, 55, 50, 45, 38),
+                TuningLibrary.standardGuitar().transposed(-1))).toList();
+        Score score = scoreWithTunings(tunings);
+        Path path = tempDir.resolve("new.tabpro");
+
+        scoreFiles.save(score, path);
+
+        assertEquals(score, scoreFiles.load(path));
+    }
+
+    private static Score scoreWithTunings(List<Tuning> tunings) {
+        List<Track> tracks = tunings.stream().map(tuning -> Track.standardGuitar("Track").withTuning(tuning)).toList();
+        return new Score("Saved after library ids", 120, tracks);
     }
 
     private static Path fileWithOneTrack(Path directory, String storedTuningName, List<Pitch> strings)
