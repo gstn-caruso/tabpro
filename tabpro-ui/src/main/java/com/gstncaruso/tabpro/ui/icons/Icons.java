@@ -587,10 +587,6 @@ public final class Icons {
         return new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     }
 
-    private static BasicStroke dashed() {
-        return new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] {2f, 2f}, 0f);
-    }
-
     private static Font small(int size) {
         return new Font(Font.SANS_SERIF, Font.BOLD, Math.round(size * 0.62f));
     }
