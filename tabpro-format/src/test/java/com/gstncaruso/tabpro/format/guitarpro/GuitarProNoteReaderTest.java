@@ -34,7 +34,7 @@ class GuitarProNoteReaderTest {
     private final GuitarProNoteReader reader = new GuitarProNoteReader();
 
     @Test
-    void enGp4LaDuracionDelAdornoVaAntesQueLaTransicion() {
+    void inGp4TheGraceNoteDurationComesBeforeTheTransition() {
         GraceNote grace = graceOf(read(new GuitarProFileWriter()
                 .writeUnsignedByte(WITH_EFFECTS)
                 .writeUnsignedByte(HAS_GRACE).writeUnsignedByte(NO_MORE_EFFECTS)
@@ -48,7 +48,7 @@ class GuitarProNoteReaderTest {
     }
 
     @Test
-    void enGp3TambienLaDuracionVaPrimero() {
+    void inGp3TheDurationAlsoComesFirst() {
         GraceNote grace = graceOf(read(new GuitarProFileWriter()
                 .writeUnsignedByte(WITH_EFFECTS)
                 .writeUnsignedByte(HAS_GRACE)
@@ -61,7 +61,7 @@ class GuitarProNoteReaderTest {
     }
 
     @Test
-    void enGp5LaTransicionVaAntesQueLaDuracion() {
+    void inGp5TheTransitionComesBeforeTheDuration() {
         GraceNote grace = graceOf(read(new GuitarProFileWriter()
                 .writeUnsignedByte(WITH_EFFECTS)
                 .writeUnsignedByte(0x00)

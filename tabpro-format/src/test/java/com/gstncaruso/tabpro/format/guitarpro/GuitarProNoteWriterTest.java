@@ -20,7 +20,7 @@ class GuitarProNoteWriterTest {
     private final GuitarProNoteWriter writer = new GuitarProNoteWriter();
 
     @Test
-    void laDuracionDelAdornoVaAntesQueLaTransicion() {
+    void theGraceNoteDurationComesBeforeTheTransition() {
         GraceNote grace = new GraceNote(7, NoteValue.THIRTY_SECOND, Dynamic.FORTE, GraceTransition.HAMMER,
                 false, false);
 
