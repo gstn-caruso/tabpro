@@ -39,6 +39,7 @@ public final class MidiTunerPanel extends JPanel {
             add(new JLabel(PitchName.of(tuning.pitchOfString(string)).textWithOctave()));
             JToggleButton listen = new JToggleButton("Escuchar en bucle");
             listen.setFocusPainted(false);
+            listen.getAccessibleContext().setAccessibleName("Escuchar cuerda " + string + " en bucle");
             listen.addActionListener(event -> {
                 if (listen.isSelected()) {
                     startLoop(fixedString);

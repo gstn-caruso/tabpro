@@ -97,7 +97,19 @@ public final class AccessibilityWalker {
         if (component instanceof AbstractButton button) {
             return isNotBlank(button.getText());
         }
-        return component instanceof JLabel label && isNotBlank(label.getText());
+        if (component instanceof JLabel label) {
+            return isNotBlank(label.getText());
+        }
+        return component instanceof JTabbedPane pane && hasAnyTabTitle(pane);
+    }
+
+    private boolean hasAnyTabTitle(JTabbedPane pane) {
+        for (int tab = 0; tab < pane.getTabCount(); tab++) {
+            if (isNotBlank(pane.getTitleAt(tab))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isLabeledByVisibleText(Component component) {

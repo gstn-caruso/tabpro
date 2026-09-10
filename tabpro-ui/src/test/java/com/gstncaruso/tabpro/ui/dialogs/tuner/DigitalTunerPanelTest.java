@@ -5,9 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Pitch;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import org.junit.jupiter.api.Test;
 
 class DigitalTunerPanelTest {
+
+    @Test
+    void tieneNombreYTooltipAccesibles() {
+        AccessibilityAssertions.assertNoViolations(new DigitalTunerPanel(new Pitch(64)));
+    }
 
     @Test
     void startsPerfectlyInTune() {

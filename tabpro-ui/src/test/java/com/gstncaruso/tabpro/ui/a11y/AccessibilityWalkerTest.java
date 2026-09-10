@@ -12,6 +12,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import org.junit.jupiter.api.Test;
 
@@ -200,6 +201,15 @@ class AccessibilityWalkerTest {
         panel.add(new JScrollPane(new JTextArea()));
 
         assertTrue(walker.walk(panel).isEmpty());
+    }
+
+    @Test
+    void unJTabbedPaneConTitulosDeSolapaNoNecesitaTooltip() {
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.addTab("Bend", new JPanel());
+        tabs.addTab("Armonicos", new JPanel());
+
+        assertTrue(walker.walk(tabs).isEmpty());
     }
 
     @Test
