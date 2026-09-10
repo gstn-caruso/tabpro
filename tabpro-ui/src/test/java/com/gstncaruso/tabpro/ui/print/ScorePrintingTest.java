@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.print;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,6 +18,7 @@ import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.score.ViewMode;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -58,6 +60,21 @@ class ScorePrintingTest {
         scorePrinting.print(score, A4, PrintSettings.everything(1), "mi-partitura.tab");
 
         assertFalse(printing.printCalled(), "si se cancela el dialogo, no tiene que llegar a imprimir de verdad");
+    }
+
+    @Test
+    void elPageFormatElegidoAlConfigurarSeConservaParaLaProximaImpresion() throws PrinterException {
+        Score score = scoreWithMeasures(4);
+        RecordingPrinting printing = new RecordingPrinting();
+        PageFormat elegido = new PageFormat();
+        printing.chooseInPageDialog(elegido);
+        ScorePrinting scorePrinting = new ScorePrinting(printing);
+
+        scorePrinting.configurePrinterPage();
+        scorePrinting.print(score, A4, PrintSettings.everything(1), "mi-partitura.tab");
+
+        assertSame(elegido, printing.printableFormat(),
+                "el PageFormat elegido en Configurar tiene que ser el que se usa en la proxima impresion");
     }
 
     @Tag("integracion")

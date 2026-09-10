@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 public final class ScorePrinting {
 
     private final Printing printing;
+    private PageFormat pageFormat;
 
     public ScorePrinting(Printing printing) {
         this.printing = printing;
@@ -35,7 +36,7 @@ public final class ScorePrinting {
     public void print(Score score, PageSetup setup, PrintSettings settings, String jobName)
             throws PrinterException {
         printing.setJobName(jobName);
-        printing.setPrintable(new ScorePages(score, setup, settings), printing.defaultPage());
+        printing.setPrintable(new ScorePages(score, setup, settings), currentPageFormat());
         if (printing.printDialog()) {
             printing.print();
         }
@@ -49,10 +50,18 @@ public final class ScorePrinting {
     /**
      * El boton Configure del manual, en la ventana de Imprimir: deja elegir el papel y la
      * orientacion de la impresora misma. Es otro formato distinto del {@link PageSetup} de la
-     * partitura -ese lo pide "Configurar pagina [F8]" y describe el documento, no el aparato.
+     * partitura -ese lo pide "Configurar pagina [F8]" y describe el documento, no el aparato. Lo
+     * elegido queda para la proxima vez que se imprima.
      */
     public void configurePrinterPage() {
-        printing.pageDialog(printing.defaultPage());
+        pageFormat = printing.pageDialog(currentPageFormat());
+    }
+
+    private PageFormat currentPageFormat() {
+        if (pageFormat == null) {
+            pageFormat = printing.defaultPage();
+        }
+        return pageFormat;
     }
 
     public static void exportImage(Score score, PageSetup setup, Path path, ViewMode viewMode, Zoom zoom) {

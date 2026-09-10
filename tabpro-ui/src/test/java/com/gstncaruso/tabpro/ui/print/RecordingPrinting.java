@@ -13,6 +13,7 @@ final class RecordingPrinting implements Printing {
     private boolean printDialogAccepted = true;
     private boolean printCalled;
     private final PageFormat defaultPage = new PageFormat();
+    private PageFormat pageDialogChoice;
 
     @Override
     public void setJobName(String name) {
@@ -42,11 +43,15 @@ final class RecordingPrinting implements Printing {
 
     @Override
     public PageFormat pageDialog(PageFormat page) {
-        return page;
+        return pageDialogChoice == null ? page : pageDialogChoice;
     }
 
     void cancelPrintDialog() {
         this.printDialogAccepted = false;
+    }
+
+    void chooseInPageDialog(PageFormat chosen) {
+        this.pageDialogChoice = chosen;
     }
 
     String jobName() {
