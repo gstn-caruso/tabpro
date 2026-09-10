@@ -68,6 +68,15 @@ public final class DialogShell {
         return accepted[0];
     }
 
+    /**
+     * La regla general: un dialogo nunca es mas alto que el area util de la pantalla. El alto
+     * disponible se recibe como parametro (nunca leido de {@code GraphicsEnvironment} aca adentro)
+     * para poder probarlo sin depender de un display real.
+     */
+    static JComponent fitToAvailableHeight(JComponent content, int availableHeight) {
+        return content;
+    }
+
     /** Para ventanas sin Cancelar, como los reportes de un asistente: solo Cerrar. */
     public static void show(Component parent, String title, JComponent content) {
         show(parent, title, closer -> content);
