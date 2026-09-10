@@ -15,11 +15,14 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class KeyboardViewTest {
@@ -187,6 +190,20 @@ class KeyboardViewTest {
         assertEquals(OptionalInt.empty(), view.keyAt(0, HEIGHT / 2));
         assertEquals(OptionalInt.empty(), view.keyAt(WIDTH / 2, 0));
         assertEquals(OptionalInt.empty(), view.keyAt(WIDTH / 2, HEIGHT - 1));
+    }
+
+    @Test
+    void theRightArrowKeyMovesTheCaretToTheNextSemitone() {
+        KeyboardView view = sized();
+
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals(OptionalInt.of(KeyboardView.LOWEST + 1), view.caretKey());
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 
     private static BeatLocation locationOf(Track track, Beat beat) {
