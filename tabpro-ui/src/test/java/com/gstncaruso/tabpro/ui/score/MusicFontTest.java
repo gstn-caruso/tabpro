@@ -82,4 +82,9 @@ class MusicFontTest {
     void accidentalNaturalIsTheNaturalGlyph() {
         assertEquals(0xE261, MusicFont.accidentalNatural().codePointAt(0));
     }
+
+    @Test
+    void augmentationDotIsTheAugmentationDotGlyph() {
+        assertEquals(0xE1E7, MusicFont.augmentationDot().codePointAt(0));
+    }
 }

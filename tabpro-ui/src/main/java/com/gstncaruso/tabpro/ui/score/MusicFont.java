@@ -34,6 +34,8 @@ final class MusicFont {
     private static final int ACCIDENTAL_FLAT = 0xE260;
     /** SMuFL U+E261 "accidentalNatural": el becuadro. */
     private static final int ACCIDENTAL_NATURAL = 0xE261;
+    /** SMuFL U+E1E7 "augmentationDot": el puntillo que alarga una figura o un silencio. */
+    private static final int AUGMENTATION_DOT = 0xE1E7;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -84,6 +86,11 @@ final class MusicFont {
     /** El becuadro. */
     static String accidentalNatural() {
         return glyph(ACCIDENTAL_NATURAL);
+    }
+
+    /** El puntillo que alarga una figura o un silencio. */
+    static String augmentationDot() {
+        return glyph(AUGMENTATION_DOT);
     }
 
     /**
