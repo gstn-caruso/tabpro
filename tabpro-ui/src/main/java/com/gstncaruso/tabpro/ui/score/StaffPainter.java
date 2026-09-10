@@ -683,7 +683,8 @@ final class StaffPainter {
         switch (beat.duration().value()) {
             case WHOLE -> paintRestGlyph(g, layout, trackIndex, measureIndex, centerX, MusicFont.restWhole(), 6, ink);
             case HALF -> paintRestGlyph(g, layout, trackIndex, measureIndex, centerX, MusicFont.restHalf(), 4, ink);
-            case QUARTER -> paintQuarterRest(g, layout, trackIndex, measureIndex, centerX, ink);
+            case QUARTER -> paintRestGlyph(
+                    g, layout, trackIndex, measureIndex, centerX, MusicFont.restQuarter(), MIDDLE_LINE_STEP, ink);
             default -> paintHookedRest(g, layout, trackIndex, measureIndex, centerX,
                     Beaming.beamCount(beat.duration().value()), ink);
         }
@@ -700,23 +701,6 @@ final class StaffPainter {
         g.setFont(MusicFont.sizedTo(SPACE));
         double width = g.getFontMetrics().stringWidth(glyph);
         g.drawString(glyph, (float) (centerX - width / 2), (float) y);
-    }
-
-    private static void paintQuarterRest(
-            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, double centerX, Color ink) {
-        double top = layout.stepY(trackIndex, measureIndex, 7);
-        Path2D rest = new Path2D.Double();
-        rest.moveTo(centerX - SPACE * 0.30, top);
-        rest.lineTo(centerX + SPACE * 0.32, top + SPACE * 0.85);
-        rest.lineTo(centerX - SPACE * 0.26, top + SPACE * 1.60);
-        rest.lineTo(centerX + SPACE * 0.36, top + SPACE * 2.35);
-        rest.curveTo(
-                centerX - SPACE * 0.32, top + SPACE * 2.10,
-                centerX - SPACE * 0.34, top + SPACE * 3.05,
-                centerX + SPACE * 0.30, top + SPACE * 3.20);
-        g.setColor(ink);
-        g.setStroke(new BasicStroke(1.9f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.draw(rest);
     }
 
     private static void paintHookedRest(
