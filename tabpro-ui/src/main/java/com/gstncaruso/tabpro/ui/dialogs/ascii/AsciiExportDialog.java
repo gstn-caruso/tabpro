@@ -12,10 +12,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-/**
- * La ventana de "ASCII Export" del manual: vista previa de la pista activa, cuantas columnas
- * entran en cada renglon, y los botones Imprimir y Exportar.
- */
 public final class AsciiExportDialog {
 
     private AsciiExportDialog() {

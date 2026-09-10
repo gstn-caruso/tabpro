@@ -10,7 +10,6 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.util.List;
 
-/** Imprime el texto de una tablatura ASCII, como piden los botones Imprimir del manual. */
 final class AsciiPrinting {
 
     private static final Font FONT = new Font(Font.MONOSPACED, Font.PLAIN, 10);

@@ -12,12 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-/**
- * La ventana de import de ASCII del manual: la zona de texto donde pegar o corregir la
- * tablatura, el desplegable "importar con" que elige el ritmo por defecto -- una figura fija, o
- * {@code <variable>}, que lo deduce del espaciado entre columnas -- y la segunda lista que fija
- * cuantos intervalos hay entre dos negras cuando el ritmo es {@code <variable>}.
- */
 public final class AsciiImportPanel extends JPanel {
 
     private static final String VARIABLE_LABEL = "<variable>";
@@ -71,7 +65,6 @@ public final class AsciiImportPanel extends JPanel {
         return printButton;
     }
 
-    /** Vacio es el {@code <variable>} del manual: el ritmo se deduce del espaciado entre columnas. */
     public Optional<NoteValue> fixedRhythm() {
         String choice = (String) rhythmChoice.getSelectedItem();
         return VARIABLE_LABEL.equals(choice) ? Optional.empty() : Optional.of(noteValueOf(choice));
@@ -85,10 +78,6 @@ public final class AsciiImportPanel extends JPanel {
         rhythmChoice.setSelectedItem(VARIABLE_LABEL);
     }
 
-    /**
-     * La "segunda lista" del manual: cuantos intervalos (columnas) hay entre dos negras, para el
-     * ritmo {@code <variable>}. Solo importa cuando el ritmo elegido es variable.
-     */
     public int intervalsPerQuarterNote() {
         return (Integer) intervalsChoice.getSelectedItem();
     }
@@ -97,7 +86,6 @@ public final class AsciiImportPanel extends JPanel {
         intervalsChoice.setSelectedItem(value);
     }
 
-    /** Si la segunda lista es relevante con el ritmo elegido ahora mismo. */
     public boolean intervalsPerQuarterNoteEditable() {
         return intervalsChoice.isEnabled();
     }
