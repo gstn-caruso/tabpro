@@ -15,6 +15,8 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListModel;
 
 /**
  * Recorre un arbol de componentes Swing y devuelve los controles interactivos que no tienen
@@ -24,6 +26,15 @@ public final class AccessibilityWalker {
 
     /** "labeledBy" es la client property que JLabel#setLabelFor deja en el componente etiquetado. */
     private static final String LABELED_BY_PROPERTY = "labeledBy";
+
+    /**
+     * La clase del renderer que trae un combo o una lista recien creados, sin importar que
+     * Look and Feel este instalado: si un componente real sigue teniendo esta misma clase, es
+     * que nadie le puso un renderer propio todavia.
+     */
+    private static final Class<?> DEFAULT_COMBO_RENDERER_CLASS = new JComboBox<>().getRenderer().getClass();
+
+    private static final Class<?> DEFAULT_LIST_RENDERER_CLASS = new JList<>().getCellRenderer().getClass();
 
     public List<Violation> walk(Container root) {
         List<Violation> violations = new ArrayList<>();
@@ -61,6 +72,61 @@ public final class AccessibilityWalker {
         if (!hasTooltip(component) && !hasVisibleText(component)) {
             violations.add(new Violation(path, "sin tooltip y sin texto visible"));
         }
+        violations.addAll(rawDomainTextViolations(component, path));
+    }
+
+    /**
+     * Un combo o una lista que todavia usa el renderer por defecto para pintar un enum o un
+     * record deja ver el toString() crudo del dominio (p.ej. "QUARTER" en vez de "Negra"). Si
+     * ya tiene un renderer propio no importa que su texto coincida por casualidad con el
+     * toString(): la UI dejo de depender de el.
+     */
+    private List<Violation> rawDomainTextViolations(Component component, String path) {
+        if (component instanceof JComboBox<?> combo
+                && isDefaultRenderer(combo.getRenderer(), DEFAULT_COMBO_RENDERER_CLASS)) {
+            return rawDomainTextViolations(path, combo.getModel(), combo.getRenderer());
+        }
+        if (component instanceof JList<?> list
+                && isDefaultRenderer(list.getCellRenderer(), DEFAULT_LIST_RENDERER_CLASS)) {
+            return rawDomainTextViolations(path, list.getModel(), list.getCellRenderer());
+        }
+        return List.of();
+    }
+
+    private boolean isDefaultRenderer(ListCellRenderer<?> renderer, Class<?> defaultRendererClass) {
+        return renderer.getClass() == defaultRendererClass;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Violation> rawDomainTextViolations(
+            String path, ListModel<?> model, ListCellRenderer<?> renderer) {
+        List<Violation> violations = new ArrayList<>();
+        ListCellRenderer<Object> typedRenderer = (ListCellRenderer<Object>) renderer;
+        JList<Object> rendererContext = new JList<>();
+        for (int index = 0; index < model.getSize(); index++) {
+            Object item = model.getElementAt(index);
+            if (!isDomainValue(item)) {
+                continue;
+            }
+            Component rendered =
+                    typedRenderer.getListCellRendererComponent(rendererContext, item, index, false, false);
+            String renderedText = rendered instanceof JLabel label ? label.getText() : null;
+            if (isNotBlank(renderedText) && matchesRawToString(item, renderedText)) {
+                violations.add(new Violation(path, "toString() crudo: " + renderedText));
+            }
+        }
+        return violations;
+    }
+
+    private boolean isDomainValue(Object item) {
+        return item != null && (item instanceof Enum<?> || item.getClass().isRecord());
+    }
+
+    private boolean matchesRawToString(Object item, String text) {
+        if (item instanceof Enum<?> enumValue) {
+            return text.equals(enumValue.toString()) || text.equals(enumValue.name());
+        }
+        return text.equals(item.toString());
     }
 
     private boolean isInteractive(Component component) {

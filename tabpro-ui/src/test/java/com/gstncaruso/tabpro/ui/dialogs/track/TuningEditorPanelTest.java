@@ -9,6 +9,11 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.dialogs.RecordingPlayer;
+import com.gstncaruso.tabpro.ui.testsupport.Combos;
+import java.awt.Component;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import org.junit.jupiter.api.Test;
 
 class TuningEditorPanelTest {
@@ -18,6 +23,18 @@ class TuningEditorPanelTest {
     @Test
     void ningunControlQuedaSinNombreNiTooltipAccesible() {
         AccessibilityAssertions.assertNoViolations(new TuningEditorPanel(Tuning.standard(), 25, player));
+    }
+
+    @Test
+    void elComboDeLaBibliotecaMuestraElNombreYElResumenDeCuerdasEnVezDelRecordCrudo() {
+        TuningEditorPanel panel = new TuningEditorPanel(Tuning.standard(), 25, player);
+
+        @SuppressWarnings("unchecked")
+        JComboBox<Tuning> library = Combos.firstWithItemType(panel, Tuning.class);
+        Component rendered = library.getRenderer()
+                .getListCellRendererComponent(new JList<>(), TuningLibrary.standardGuitar(), 0, false, false);
+
+        assertEquals("Guitarra estandar (EADGBE)", ((JLabel) rendered).getText());
     }
 
     @Test

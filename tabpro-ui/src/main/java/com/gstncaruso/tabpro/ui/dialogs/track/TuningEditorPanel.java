@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.List;
@@ -47,6 +48,7 @@ public final class TuningEditorPanel extends JPanel {
         top.add(labeled("Cuerdas", stringCount), BorderLayout.WEST);
         top.add(familyButtons(), BorderLayout.CENTER);
         add(top, BorderLayout.NORTH);
+        library.setRenderer(new LabeledListCellRenderer());
         library.getAccessibleContext().setAccessibleName("Afinación de la biblioteca");
         library.setToolTipText("Afinación de la biblioteca");
         add(library, BorderLayout.CENTER);

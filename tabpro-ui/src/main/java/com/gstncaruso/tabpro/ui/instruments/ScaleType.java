@@ -27,9 +27,4 @@ public enum ScaleType {
     public Set<Integer> semitones() {
         return intervals;
     }
-
-    @Override
-    public String toString() {
-        return label;
-    }
 }

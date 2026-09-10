@@ -6,11 +6,10 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import java.awt.Component;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
-import javax.swing.JList;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
@@ -47,7 +46,7 @@ public final class AddTrackDialog {
         group(instrumental, percussion);
 
         JComboBox<Tuning> tunings = new JComboBox<>(TuningLibrary.all().toArray(Tuning[]::new));
-        tunings.setRenderer(tuningNames());
+        tunings.setRenderer(new LabeledListCellRenderer());
         instrumental.addActionListener(event -> tunings.setEnabled(true));
         percussion.addActionListener(event -> tunings.setEnabled(false));
 
@@ -85,20 +84,5 @@ public final class AddTrackDialog {
         for (JRadioButton option : options) {
             group.add(option);
         }
-    }
-
-    private static DefaultListCellRenderer tuningNames() {
-        return new DefaultListCellRenderer() {
-
-            @Override
-            public Component getListCellRendererComponent(
-                    JList<?> list, Object value, int index, boolean selected, boolean focused) {
-                super.getListCellRendererComponent(list, value, index, selected, focused);
-                if (value instanceof Tuning tuning) {
-                    setText(tuning.name());
-                }
-                return this;
-            }
-        };
     }
 }

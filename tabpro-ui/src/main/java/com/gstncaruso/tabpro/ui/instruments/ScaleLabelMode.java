@@ -35,9 +35,4 @@ public enum ScaleLabelMode {
     }
 
     public abstract String textFor(String name, int midiNumber, Scale scale);
-
-    @Override
-    public String toString() {
-        return label;
-    }
 }

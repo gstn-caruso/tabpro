@@ -9,6 +9,9 @@ import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.awt.Component;
 import java.util.Locale;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import org.junit.jupiter.api.Test;
 
 class PreferencesPanelTest {
@@ -18,6 +21,33 @@ class PreferencesPanelTest {
         PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
 
         AccessibilityAssertions.assertNoViolations(panel);
+    }
+
+    @Test
+    void elComboDeFiguraPorDefectoMuestraElNombreEnCastellanoEnVezDelEnumCrudo() {
+        PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
+
+        JComboBox combo = comboDeFigura(panel);
+        Component rendered = combo.getRenderer()
+                .getListCellRendererComponent(new JList<>(), NoteValue.QUARTER, 0, false, false);
+
+        assertEquals("Negra", ((JLabel) rendered).getText());
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static JComboBox comboDeFigura(Component container) {
+        if (container instanceof JComboBox combo) {
+            return combo;
+        }
+        if (container instanceof java.awt.Container parent) {
+            for (Component child : parent.getComponents()) {
+                JComboBox found = comboDeFigura(child);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 
     @Test

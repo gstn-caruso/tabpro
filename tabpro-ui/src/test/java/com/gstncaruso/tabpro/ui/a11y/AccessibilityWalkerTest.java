@@ -4,9 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -218,5 +220,77 @@ class AccessibilityWalkerTest {
         panel.add(new JPanel());
 
         assertTrue(walker.walk(panel).isEmpty());
+    }
+
+    private enum Figura { NEGRA, CORCHEA }
+
+    private record Escala(String nombre) {
+    }
+
+    @Test
+    void unComboConRenderPorDefectoQueMuestraElNombreCrudoDeUnEnumEsUnaViolacion() {
+        JPanel panel = new JPanel();
+        JLabel etiqueta = new JLabel("Figura");
+        JComboBox<Figura> combo = new JComboBox<>(new Figura[] {Figura.NEGRA});
+        etiqueta.setLabelFor(combo);
+        panel.add(etiqueta);
+        panel.add(combo);
+
+        List<Violation> violaciones = walker.walk(panel);
+
+        assertEquals(1, violaciones.size());
+        assertEquals("toString() crudo: NEGRA", violaciones.get(0).reason());
+    }
+
+    @Test
+    void unComboConRenderPorDefectoQueMuestraElToStringCrudoDeUnRecordEsUnaViolacion() {
+        JPanel panel = new JPanel();
+        JLabel etiqueta = new JLabel("Escala");
+        JComboBox<Escala> combo = new JComboBox<>(new Escala[] {new Escala("Mayor")});
+        etiqueta.setLabelFor(combo);
+        panel.add(etiqueta);
+        panel.add(combo);
+
+        List<Violation> violaciones = walker.walk(panel);
+
+        assertEquals(1, violaciones.size());
+        assertTrue(violaciones.get(0).reason().startsWith("toString() crudo: Escala["));
+    }
+
+    @Test
+    void unComboConRenderPropioNoEsUnaViolacionAunqueElTextoCoincidaConElToString() {
+        JPanel panel = new JPanel();
+        JLabel etiqueta = new JLabel("Figura");
+        JComboBox<Figura> combo = new JComboBox<>(Figura.values());
+        etiqueta.setLabelFor(combo);
+        combo.setRenderer(new DefaultListCellRenderer() {
+
+            @Override
+            public java.awt.Component getListCellRendererComponent(
+                    JList<?> list, Object value, int index, boolean isSelected, boolean hasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, hasFocus);
+                setText(String.valueOf(value));
+                return this;
+            }
+        });
+        panel.add(etiqueta);
+        panel.add(combo);
+
+        assertTrue(walker.walk(panel).isEmpty());
+    }
+
+    @Test
+    void unaListaConRenderPorDefectoQueMuestraElNombreCrudoDeUnEnumEsUnaViolacion() {
+        JPanel panel = new JPanel();
+        JLabel etiqueta = new JLabel("Figura");
+        JList<Figura> lista = new JList<>(new Figura[] {Figura.NEGRA});
+        etiqueta.setLabelFor(lista);
+        panel.add(etiqueta);
+        panel.add(lista);
+
+        List<Violation> violaciones = walker.walk(panel);
+
+        assertEquals(1, violaciones.size());
+        assertEquals("toString() crudo: NEGRA", violaciones.get(0).reason());
     }
 }
