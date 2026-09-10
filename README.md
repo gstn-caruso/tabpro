@@ -156,7 +156,7 @@ al siguiente.
 [release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
 
 ```sh
-sudo apt install ./tabpro_0.34.0_all.deb
+sudo apt install ./tabpro_0.36.0_all.deb
 tabpro
 ```
 
@@ -168,7 +168,7 @@ partitura. Necesita una JRE 25 con entorno gráfico (`openjdk-25-jre`); la varia
 **Cualquier sistema con Java 25:**
 
 ```sh
-java -jar tabpro-app-0.34.0.jar [archivo]
+java -jar tabpro-app-0.36.0.jar [archivo]
 ```
 
 ## Atajos

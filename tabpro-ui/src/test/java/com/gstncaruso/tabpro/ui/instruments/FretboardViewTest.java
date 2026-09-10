@@ -13,10 +13,14 @@ import com.gstncaruso.tabpro.core.model.TrackSettings;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Optional;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class FretboardViewTest {
@@ -274,6 +278,119 @@ class FretboardViewTest {
                 -1, -1, 0, false));
 
         assertEquals(Optional.empty(), view.hoveredNote());
+    }
+
+    @Test
+    void theRightArrowKeyMovesTheCaretToTheNextFret() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals(Optional.of(new Note(1, 1)), view.caretNote());
+    }
+
+    @Test
+    void theLeftArrowKeyMovesTheCaretToThePreviousFret() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+
+        pressShortcut(view, KeyStroke.getKeyStroke("LEFT"));
+
+        assertEquals(Optional.of(new Note(1, 1)), view.caretNote());
+    }
+
+    @Test
+    void theDownArrowKeyMovesTheCaretToTheNextString() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+
+        pressShortcut(view, KeyStroke.getKeyStroke("DOWN"));
+
+        assertEquals(Optional.of(new Note(2, 0)), view.caretNote());
+    }
+
+    @Test
+    void theUpArrowKeyMovesTheCaretToThePreviousString() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        pressShortcut(view, KeyStroke.getKeyStroke("DOWN"));
+        pressShortcut(view, KeyStroke.getKeyStroke("DOWN"));
+
+        pressShortcut(view, KeyStroke.getKeyStroke("UP"));
+
+        assertEquals(Optional.of(new Note(2, 0)), view.caretNote());
+    }
+
+    @Test
+    void theEnterKeyNotifiesTheNoteUnderTheCaret() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+        List<Note> activated = new java.util.ArrayList<>();
+        view.onCaretActivated(activated::add);
+
+        pressShortcut(view, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals(List.of(new Note(1, 1)), activated);
+    }
+
+    @Test
+    void theSpaceKeyAlsoNotifiesTheNoteUnderTheCaret() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        List<Note> activated = new java.util.ArrayList<>();
+        view.onCaretActivated(activated::add);
+
+        pressShortcut(view, KeyStroke.getKeyStroke("SPACE"));
+
+        assertEquals(List.of(new Note(1, 0)), activated);
+    }
+
+    @Test
+    void paintsAVisibleCaretRingWhenItGetsFocus() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        BufferedImage withoutFocus = paint(view);
+
+        gainFocus(view);
+        BufferedImage withFocus = paint(view);
+
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+    }
+
+    private static void gainFocus(FretboardView view) {
+        for (var listener : view.getFocusListeners()) {
+            listener.focusGained(new FocusEvent(view, FocusEvent.FOCUS_GAINED));
+        }
+    }
+
+    private static boolean differsSomewhere(BufferedImage a, BufferedImage b) {
+        for (int x = 0; x < a.getWidth(); x++) {
+            for (int y = 0; y < a.getHeight(); y++) {
+                if (a.getRGB(x, y) != b.getRGB(x, y)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Test
+    void theAccessibleDescriptionNamesTheNoteUnderTheCaret() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals("F", view.getAccessibleContext().getAccessibleDescription());
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 
     private static BeatLocation locationOf(Track track, Beat beat) {

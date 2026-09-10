@@ -7,6 +7,10 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -15,7 +19,13 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleValue;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 /**
  * Un parametro de sonido dibujado como perilla giratoria, tal como lo describe el manual de
@@ -34,6 +44,7 @@ public final class Potentiometer extends JComponent implements AccessibleControl
     };
     private int dragStartY;
     private int dragStartValue;
+    private boolean showsFocusRing;
 
     public Potentiometer(int min, int max, int value) {
         this.min = min;
@@ -43,6 +54,53 @@ public final class Potentiometer extends JComponent implements AccessibleControl
         setToolTipText(String.valueOf(this.value));
         addMouseListener(dragStart());
         addMouseMotionListener(drag());
+        installKeyboardShortcuts();
+        installFocusRing();
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
+    }
+
+    private void installKeyboardShortcuts() {
+        InputMap inputMap = getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = getActionMap();
+        bindStep(inputMap, actionMap, "RIGHT", 1);
+        bindStep(inputMap, actionMap, "UP", 1);
+        bindStep(inputMap, actionMap, "LEFT", -1);
+        bindStep(inputMap, actionMap, "DOWN", -1);
+        bindStep(inputMap, actionMap, "PAGE_UP", 10);
+        bindStep(inputMap, actionMap, "PAGE_DOWN", -10);
+        bindTo(inputMap, actionMap, "HOME", () -> min);
+        bindTo(inputMap, actionMap, "END", () -> max);
+    }
+
+    private void bindStep(InputMap inputMap, ActionMap actionMap, String keyStroke, int step) {
+        bindTo(inputMap, actionMap, keyStroke, () -> value + step);
+    }
+
+    private void bindTo(InputMap inputMap, ActionMap actionMap, String keyStroke, java.util.function.IntSupplier target) {
+        String name = "potentiometer.goto." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setValue(target.getAsInt());
+                onUserChange.run();
+            }
+        });
     }
 
     /** El angulo, en grados y en la convencion de Arc2D, que le corresponde a un valor. */
@@ -76,14 +134,43 @@ public final class Potentiometer extends JComponent implements AccessibleControl
     @Override
     public AccessibleContext getAccessibleContext() {
         if (accessibleContext == null) {
-            accessibleContext = new AccessibleJComponent() {
-                @Override
-                public AccessibleRole getAccessibleRole() {
-                    return AccessibleRole.SLIDER;
-                }
-            };
+            accessibleContext = new AccessiblePotentiometer();
         }
         return accessibleContext;
+    }
+
+    private final class AccessiblePotentiometer extends AccessibleJComponent implements AccessibleValue {
+        @Override
+        public AccessibleRole getAccessibleRole() {
+            return AccessibleRole.SLIDER;
+        }
+
+        @Override
+        public AccessibleValue getAccessibleValue() {
+            return this;
+        }
+
+        @Override
+        public Number getCurrentAccessibleValue() {
+            return value;
+        }
+
+        @Override
+        public boolean setCurrentAccessibleValue(Number number) {
+            setValue(number.intValue());
+            onUserChange.run();
+            return true;
+        }
+
+        @Override
+        public Number getMinimumAccessibleValue() {
+            return min;
+        }
+
+        @Override
+        public Number getMaximumAccessibleValue() {
+            return max;
+        }
     }
 
     @Override
@@ -112,6 +199,20 @@ public final class Potentiometer extends JComponent implements AccessibleControl
         double needleY = centerY - Math.sin(angleRadians) * radius * 0.5;
         g.setColor(ScoreColors.INK);
         g.draw(new Line2D.Double(centerX, centerY, needleX, needleY));
+
+        if (showsFocusRing) {
+            paintFocusRing(g);
+        }
+    }
+
+    private void paintFocusRing(Graphics2D g) {
+        g.setColor(focusRingColor());
+        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+    }
+
+    private Color focusRingColor() {
+        Color fromLookAndFeel = UIManager.getColor("Component.focusColor");
+        return fromLookAndFeel != null ? fromLookAndFeel : ScoreColors.ACCENT;
     }
 
     private MouseAdapter dragStart() {

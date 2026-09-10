@@ -1,15 +1,20 @@
 package com.gstncaruso.tabpro.ui.menu;
 
+import com.gstncaruso.tabpro.ui.a11y.MnemonicAssigner;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
+import java.awt.event.InputEvent;
 import java.nio.file.Path;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 /** La barra de menu de tabpro, con los mismos menus que describe el manual. */
 public final class MenuBar {
@@ -17,6 +22,7 @@ public final class MenuBar {
     private final Commands commands;
     private final Supplier<List<Path>> recentFiles;
     private final Consumer<Path> openRecentFile;
+    private final Map<JMenu, MnemonicAssigner> itemMnemonics = new IdentityHashMap<>();
 
     /** Sin archivos recientes que ofrecer, como en un uso puramente programatico o de test. */
     public MenuBar(Commands commands) {
@@ -31,37 +37,63 @@ public final class MenuBar {
 
     public JMenuBar build() {
         JMenuBar bar = new JMenuBar();
-        bar.add(fileMenu());
-        bar.add(editMenu());
-        bar.add(barMenu());
-        bar.add(trackMenu());
-        bar.add(noteMenu());
-        bar.add(effectsMenu());
-        bar.add(markersMenu());
-        bar.add(toolsMenu());
-        bar.add(soundMenu());
-        bar.add(viewMenu());
-        bar.add(optionsMenu());
-        bar.add(helpMenu());
+        MnemonicAssigner topLevelMnemonics = new MnemonicAssigner();
+        reserveAltLetterAccelerators(topLevelMnemonics);
+        addMenu(bar, topLevelMnemonics, fileMenu());
+        addMenu(bar, topLevelMnemonics, editMenu());
+        addMenu(bar, topLevelMnemonics, barMenu());
+        addMenu(bar, topLevelMnemonics, trackMenu());
+        addMenu(bar, topLevelMnemonics, noteMenu());
+        addMenu(bar, topLevelMnemonics, effectsMenu());
+        addMenu(bar, topLevelMnemonics, markersMenu());
+        addMenu(bar, topLevelMnemonics, toolsMenu());
+        addMenu(bar, topLevelMnemonics, soundMenu());
+        addMenu(bar, topLevelMnemonics, viewMenu());
+        addMenu(bar, topLevelMnemonics, optionsMenu());
+        addMenu(bar, topLevelMnemonics, helpMenu());
         return bar;
+    }
+
+    private void addMenu(JMenuBar bar, MnemonicAssigner assigner, JMenu menu) {
+        assigner.applyTo(menu);
+        bar.add(menu);
+    }
+
+    private void reserveAltLetterAccelerators(MnemonicAssigner assigner) {
+        for (Command command : commands.all().values()) {
+            KeyStroke accelerator = command.accelerator();
+            if (isAltLetterAccelerator(accelerator)) {
+                assigner.reserve((char) accelerator.getKeyCode());
+            }
+        }
+    }
+
+    private boolean isAltLetterAccelerator(KeyStroke accelerator) {
+        if (accelerator == null) {
+            return false;
+        }
+        int modifiers = accelerator.getModifiers();
+        int allowedBits = InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK;
+        boolean onlyAlt = (modifiers & InputEvent.ALT_DOWN_MASK) != 0 && (modifiers & ~allowedBits) == 0;
+        return onlyAlt && Character.isLetter((char) accelerator.getKeyCode());
     }
 
     private JMenu fileMenu() {
         JMenu menu = new JMenu("Archivo");
         add(menu, "file.new", "file.open", "file.browse");
-        recentFilesMenu().ifPresent(menu::add);
+        recentFilesMenu().ifPresent(recent -> addSubmenu(menu, recent));
         menu.addSeparator();
         add(menu, "file.save", "file.saveAs");
         menu.addSeparator();
         JMenu importMenu = new JMenu("Importar");
         add(importMenu, "file.importGuitarPro", "file.importTabEdit", "file.importPowerTab", "file.importMidi",
                 "file.importAscii", "file.importMusicXml");
-        menu.add(importMenu);
+        addSubmenu(menu, importMenu);
         JMenu exportMenu = new JMenu("Exportar");
         add(exportMenu, "file.exportMidi", "file.exportWave", "file.exportAscii", "file.exportMusicXml",
                 "file.exportGuitarPro",
                 "file.exportImage", "file.exportPdf");
-        menu.add(exportMenu);
+        addSubmenu(menu, exportMenu);
         menu.addSeparator();
         add(menu, "file.information", "file.pageSetup", "file.print");
         menu.addSeparator();
@@ -77,7 +109,7 @@ public final class MenuBar {
         menu.addSeparator();
         JMenu voices = new JMenu("Voces");
         add(voices, "edit.leadVoice", "edit.bassVoice");
-        menu.add(voices);
+        addSubmenu(menu, voices);
         menu.addSeparator();
         add(menu, "bar.insert", "bar.delete", "edit.emptyBar", "edit.emptyBarEveryTrack");
         return menu;
@@ -91,10 +123,10 @@ public final class MenuBar {
         menu.addSeparator();
         JMenu lineBreaks = new JMenu("Salto de línea");
         add(lineBreaks, "bar.forceLineBreak", "bar.preventLineBreak", "bar.resetLineBreak");
-        menu.add(lineBreaks);
+        addSubmenu(menu, lineBreaks);
         JMenu octave = new JMenu("Octava");
         add(octave, "bar.octave8va", "bar.octave8vb", "bar.octave15ma", "bar.octave15mb", "bar.octaveNone");
-        menu.add(octave);
+        addSubmenu(menu, octave);
         return menu;
     }
 
@@ -119,7 +151,7 @@ public final class MenuBar {
         add(durations, "note.longer", "note.shorter", "note.dot", "note.triplet",
                 "note.tuplet.5", "note.tuplet.6", "note.tuplet.7",
                 "note.tuplet.9", "note.tuplet.10", "note.tuplet.11", "note.tuplet.12", "note.tuplet.13");
-        menu.add(durations);
+        addSubmenu(menu, durations);
         menu.addSeparator();
         add(menu, "note.rest", "note.tie", "note.tieBeat");
         menu.addSeparator();
@@ -131,10 +163,10 @@ public final class MenuBar {
         menu.addSeparator();
         JMenu beams = new JMenu("Barra de unión");
         add(beams, "note.forceBeamBreak", "note.preventBeamBreak", "note.resetBeamBreak");
-        menu.add(beams);
+        addSubmenu(menu, beams);
         JMenu stems = new JMenu("Plica");
         add(stems, "note.stemUp", "note.stemDown", "note.stemAutomatic");
-        menu.add(stems);
+        addSubmenu(menu, stems);
         return menu;
     }
 
@@ -154,10 +186,10 @@ public final class MenuBar {
         JMenu strokes = new JMenu("Rasgueo y púa");
         add(strokes, "effect.strokeDown", "effect.strokeUp", "effect.strokeOptions",
                 "effect.pickstrokeDown", "effect.pickstrokeUp");
-        menu.add(strokes);
+        addSubmenu(menu, strokes);
         JMenu wah = new JMenu("Wah-wah");
         add(wah, "effect.wahOpen", "effect.wahClosed", "effect.wahOff");
-        menu.add(wah);
+        addSubmenu(menu, wah);
         menu.addSeparator();
         add(menu, "effect.text");
         return menu;
@@ -208,7 +240,7 @@ public final class MenuBar {
         add(menu, "view.fretboard", "view.keyboard", "view.percussion", "view.mixTable", "view.toggleView");
         menu.addSeparator();
         add(menu, "view.toolBars");
-        menu.add(toolBarsMenu());
+        addSubmenu(menu, toolBarsMenu());
         return menu;
     }
 
@@ -223,7 +255,7 @@ public final class MenuBar {
 
     private JMenu optionsMenu() {
         JMenu menu = new JMenu("Opciones");
-        themesMenu().ifPresent(menu::add);
+        themesMenu().ifPresent(theme -> addSubmenu(menu, theme));
         add(menu, "options.midiSetup", "options.preferences");
         return menu;
     }
@@ -265,10 +297,12 @@ public final class MenuBar {
     }
 
     private void add(JMenu menu, String... names) {
+        MnemonicAssigner assigner = itemMnemonicsOf(menu);
         for (String name : names) {
             Command command = commands.get(name);
             JMenuItem item = new JMenuItem(command);
             item.setIcon(null);
+            assigner.applyTo(item);
             menu.add(item);
         }
     }
@@ -277,6 +311,16 @@ public final class MenuBar {
         Command command = commands.get(name);
         javax.swing.JCheckBoxMenuItem item = new javax.swing.JCheckBoxMenuItem(command);
         item.setIcon(null);
+        itemMnemonicsOf(menu).applyTo(item);
         menu.add(item);
+    }
+
+    private void addSubmenu(JMenu parent, JMenu submenu) {
+        itemMnemonicsOf(parent).applyTo(submenu);
+        parent.add(submenu);
+    }
+
+    private MnemonicAssigner itemMnemonicsOf(JMenu menu) {
+        return itemMnemonics.computeIfAbsent(menu, key -> new MnemonicAssigner());
     }
 }

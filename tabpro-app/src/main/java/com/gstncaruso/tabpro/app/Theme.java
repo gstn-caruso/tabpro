@@ -1,7 +1,9 @@
 package com.gstncaruso.tabpro.app;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.FlatSystemProperties;
 import com.gstncaruso.tabpro.ui.theme.ThemeSwitch;
 import java.awt.Color;
 import java.awt.Font;
@@ -31,7 +33,20 @@ public final class Theme implements ThemeSwitch {
                     new Color(0x24262A), new Color(0x6B7078), new Color(0xFFFFFF), new Color(0x101010),
                     new Color(0xBE7B17)));
 
+    /**
+     * Preferencias [F12] > Accesibilidad > Alto contraste: negro puro y blanco puro, con un
+     * amarillo de acento que llega a 7:1 incluso con texto negro encima (seleccion de menu).
+     */
+    private static final Palette HIGH_CONTRAST_PALETTE = new Palette(
+            Color.BLACK, Color.BLACK, Color.BLACK, new Color(0x888888),
+            Color.WHITE, new Color(0xCCCCCC), Color.WHITE, Color.BLACK,
+            new Color(0xFFD400));
+
+    private static final int DEFAULT_FONT_SIZE = 12;
+
     private String current = DARK;
+    private int fontSize = DEFAULT_FONT_SIZE;
+    private boolean highContrast = false;
 
     public static Theme install() {
         Theme theme = new Theme();
@@ -53,15 +68,43 @@ public final class Theme implements ThemeSwitch {
         return PALETTES.getOrDefault(name, PALETTES.get(DARK));
     }
 
+    static Palette highContrastPalette() {
+        return HIGH_CONTRAST_PALETTE;
+    }
+
     @Override
     public void apply(String name) {
-        Palette palette = paletteFor(name);
         if (LIGHT.equals(name)) {
             FlatLightLaf.setup();
         } else {
             FlatDarkLaf.setup();
         }
         current = PALETTES.containsKey(name) ? name : DARK;
+        paintActivePalette();
+    }
+
+    @Override
+    public void useFontSize(int points) {
+        fontSize = points;
+        UIManager.put("defaultFont", interfaceFont());
+        FlatLaf.updateUI();
+    }
+
+    @Override
+    public void useHighContrast(boolean enabled) {
+        highContrast = enabled;
+        paintActivePalette();
+        FlatLaf.updateUI();
+    }
+
+    @Override
+    public void useAnimations(boolean enabled) {
+        System.setProperty(FlatSystemProperties.ANIMATION, String.valueOf(enabled));
+    }
+
+    /** El alto contraste manda sobre el tema oscuro/claro elegido mientras esta prendido. */
+    private void paintActivePalette() {
+        Palette palette = highContrast ? HIGH_CONTRAST_PALETTE : paletteFor(current);
         putPalette(palette);
         putFlatLafTweaks(palette.accent());
     }
@@ -87,7 +130,7 @@ public final class Theme implements ThemeSwitch {
         UIManager.put("SplitPaneDivider.gripColor", palette.mutedText());
     }
 
-    private static void putFlatLafTweaks(Color accent) {
+    private void putFlatLafTweaks(Color accent) {
         UIManager.put("Component.focusColor", accent);
         UIManager.put("Component.focusedBorderColor", accent);
         UIManager.put("Component.arc", 6);
@@ -112,10 +155,10 @@ public final class Theme implements ThemeSwitch {
         UIManager.put("defaultFont", interfaceFont());
     }
 
-    /** Una tipografia de interfaz chica y prolija, que es lo que pide una partitura. */
-    private static Font interfaceFont() {
+    /** Una tipografia de interfaz chica y prolija, al tamano que haya elegido Accesibilidad. */
+    private Font interfaceFont() {
         Font base = UIManager.getFont("defaultFont");
-        return base == null ? new Font(Font.SANS_SERIF, Font.PLAIN, 12) : base.deriveFont(12f);
+        return base == null ? new Font(Font.SANS_SERIF, Font.PLAIN, fontSize) : base.deriveFont((float) fontSize);
     }
 
     record Palette(

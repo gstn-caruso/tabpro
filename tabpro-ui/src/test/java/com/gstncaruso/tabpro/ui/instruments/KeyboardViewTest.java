@@ -15,11 +15,15 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class KeyboardViewTest {
@@ -187,6 +191,91 @@ class KeyboardViewTest {
         assertEquals(OptionalInt.empty(), view.keyAt(0, HEIGHT / 2));
         assertEquals(OptionalInt.empty(), view.keyAt(WIDTH / 2, 0));
         assertEquals(OptionalInt.empty(), view.keyAt(WIDTH / 2, HEIGHT - 1));
+    }
+
+    @Test
+    void theRightArrowKeyMovesTheCaretToTheNextSemitone() {
+        KeyboardView view = sized();
+
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals(OptionalInt.of(KeyboardView.LOWEST + 1), view.caretKey());
+    }
+
+    @Test
+    void theLeftArrowKeyMovesTheCaretToThePreviousSemitone() {
+        KeyboardView view = sized();
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+
+        pressShortcut(view, KeyStroke.getKeyStroke("LEFT"));
+
+        assertEquals(OptionalInt.of(KeyboardView.LOWEST + 1), view.caretKey());
+    }
+
+    @Test
+    void theEnterKeyNotifiesTheKeyUnderTheCaret() {
+        KeyboardView view = sized();
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+        List<Integer> activated = new java.util.ArrayList<>();
+        view.onCaretActivated(activated::add);
+
+        pressShortcut(view, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals(List.of(KeyboardView.LOWEST + 1), activated);
+    }
+
+    @Test
+    void theSpaceKeyAlsoNotifiesTheKeyUnderTheCaret() {
+        KeyboardView view = sized();
+        List<Integer> activated = new java.util.ArrayList<>();
+        view.onCaretActivated(activated::add);
+
+        pressShortcut(view, KeyStroke.getKeyStroke("SPACE"));
+
+        assertEquals(List.of(KeyboardView.LOWEST), activated);
+    }
+
+    @Test
+    void paintsAVisibleCaretRingWhenItGetsFocus() {
+        KeyboardView view = sized();
+        BufferedImage withoutFocus = paint(view);
+
+        gainFocus(view);
+        BufferedImage withFocus = paint(view);
+
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+    }
+
+    private static void gainFocus(KeyboardView view) {
+        for (var listener : view.getFocusListeners()) {
+            listener.focusGained(new FocusEvent(view, FocusEvent.FOCUS_GAINED));
+        }
+    }
+
+    private static boolean differsSomewhere(BufferedImage a, BufferedImage b) {
+        for (int x = 0; x < a.getWidth(); x++) {
+            for (int y = 0; y < a.getHeight(); y++) {
+                if (a.getRGB(x, y) != b.getRGB(x, y)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Test
+    void theAccessibleDescriptionNamesTheKeyUnderTheCaret() {
+        KeyboardView view = sized();
+
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals("A#0", view.getAccessibleContext().getAccessibleDescription());
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 
     private static BeatLocation locationOf(Track track, Beat beat) {

@@ -2,7 +2,9 @@ package com.gstncaruso.tabpro.ui.dialogs.style;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.awt.event.KeyEvent;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import org.junit.jupiter.api.Test;
 
@@ -32,5 +34,25 @@ class FormPanelTest {
         panel.addRow("Nombre", field, trailing);
 
         assertEquals("Nombre", field.getAccessibleContext().getAccessibleName());
+    }
+
+    @Test
+    void unaFilaSimpleLeDaMnemonicoASuEtiqueta() {
+        FormPanel panel = new FormPanel();
+        JTextField field = new JTextField();
+
+        panel.addRow("Título", field);
+
+        JLabel label = labelFor(panel, field);
+        assertEquals(KeyEvent.VK_T, label.getDisplayedMnemonic());
+    }
+
+    private JLabel labelFor(FormPanel panel, JTextField field) {
+        for (java.awt.Component component : panel.getComponents()) {
+            if (component instanceof JLabel label && label.getLabelFor() == field) {
+                return label;
+            }
+        }
+        throw new AssertionError("no se encontro una etiqueta para " + field);
     }
 }
