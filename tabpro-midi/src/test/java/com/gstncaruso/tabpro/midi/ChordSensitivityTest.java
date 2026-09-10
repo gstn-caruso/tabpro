@@ -5,11 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * La sensibilidad de "Enter Notes > Using a MIDI Instrument": cuanto puede
- * tardar la segunda nota de un acorde antes de que la captura la mande a
- * un beat nuevo.
- */
 class ChordSensitivityTest {
 
     @Test
