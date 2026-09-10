@@ -761,12 +761,12 @@ public final class Editor {
     public void startSelection(boolean wholeMeasures) {
         selectionAnchor = cursor;
         selectingWholeMeasures = wholeMeasures;
-        notifyListeners(EditorChange.CONTENT);
+        notifyListeners(EditorChange.CURSOR);
     }
 
     public void clearSelection() {
         selectionAnchor = null;
-        notifyListeners(EditorChange.CONTENT);
+        notifyListeners(EditorChange.CURSOR);
     }
 
     /**
