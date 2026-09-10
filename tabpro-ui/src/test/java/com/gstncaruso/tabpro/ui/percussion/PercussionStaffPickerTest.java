@@ -142,4 +142,17 @@ class PercussionStaffPickerTest {
         assertEquals(List.of(picker.soundOf(PercussionLine.HI_HAT)), played);
         assertEquals(List.of(), added);
     }
+
+    @Test
+    void theSpaceKeyAddsTheLineUnderTheCaretJustLikeADoubleClick() {
+        List<Integer> played = new ArrayList<>();
+        List<PercussionLine> added = new ArrayList<>();
+        PercussionStaffPicker picker = new PercussionStaffPicker(played::add, added::add);
+        picker.setSize(WIDTH, HEIGHT);
+        pressShortcut(picker, KeyStroke.getKeyStroke("DOWN"));
+
+        pressShortcut(picker, KeyStroke.getKeyStroke("SPACE"));
+
+        assertEquals(List.of(PercussionLine.HI_HAT), added);
+    }
 }
