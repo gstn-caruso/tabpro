@@ -1,3 +1,9 @@
+## [0.56.0](https://github.com/gstn-caruso/tabpro/compare/v0.55.0...v0.56.0) (2026-09-10)
+
+### Features
+
+* **harmony:** el constructor de acordes separa la inversión del bajo y elige posiciones y cejilla con radios, como Guitar Pro 5 ([#169](https://github.com/gstn-caruso/tabpro/issues/169)) ([2f75858](https://github.com/gstn-caruso/tabpro/commit/2f758583b403fa5378041b75407caab69418d0bf))
+
 ## [0.55.0](https://github.com/gstn-caruso/tabpro/compare/v0.54.0...v0.55.0) (2026-09-10)
 
 ### Features
