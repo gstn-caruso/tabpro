@@ -28,7 +28,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -45,7 +44,6 @@ final class StaffPainter {
     private static final double HALF_SPACE = SPACE / 2;
     private static final double NOTE_WIDTH = SPACE * 1.28;
     private static final double NOTE_HEIGHT = SPACE * 0.92;
-    private static final double NOTE_TILT = Math.toRadians(-20);
     private static final double STEM_LENGTH = SPACE * 3.4;
     private static final double BEAM_THICKNESS = SPACE * 0.52;
     private static final double BEAM_GAP = SPACE * 0.84;
@@ -215,8 +213,7 @@ final class StaffPainter {
             boolean dimmed,
             int octaveShift) {
         double centerX = noteCenterX(layout, trackIndex, measureIndex, beatIndex);
-        boolean hollow = beat.duration().value() == NoteValue.WHOLE
-                || beat.duration().value() == NoteValue.HALF;
+        String notehead = noteheadGlyphFor(beat.duration().value());
         // "Ver > Notas con dinamica [F11]": solo la cabeza de la nota cambia de tinta, y solo
         // cuando no esta atenuada -la voz que no se edita se sigue viendo pareja, sin importar
         // cuan fuerte suena cada una de sus notas.
@@ -231,7 +228,7 @@ final class StaffPainter {
                 paintAccidental(g, glyph, centerX - NOTE_WIDTH * 0.75 - SPACE * 0.55, y, ink);
             }
             Color headInk = colorsByDynamic ? ScoreColors.forDynamic(note.effects().dynamic()) : ink;
-            paintNotehead(g, centerX, y, hollow, headInk);
+            paintNotehead(g, centerX, y, notehead, headInk);
             if (beat.duration().dotted()) {
                 paintDot(g, layout, trackIndex, measureIndex, position, centerX, ink);
             }
@@ -268,21 +265,19 @@ final class StaffPainter {
         return chevron;
     }
 
-    private static void paintNotehead(Graphics2D g, double centerX, double y, boolean hollow, Color ink) {
-        Shape head = tiltedNotehead(centerX, y);
-        g.setColor(ink);
-        if (hollow) {
-            g.setStroke(new BasicStroke(1.6f));
-            g.draw(head);
-            return;
-        }
-        g.fill(head);
+    private static String noteheadGlyphFor(NoteValue value) {
+        return switch (value) {
+            case WHOLE -> MusicFont.noteheadWhole();
+            case HALF -> MusicFont.noteheadHalf();
+            default -> MusicFont.noteheadBlack();
+        };
     }
 
-    private static Shape tiltedNotehead(double centerX, double y) {
-        Ellipse2D head = new Ellipse2D.Double(
-                centerX - NOTE_WIDTH / 2, y - NOTE_HEIGHT / 2, NOTE_WIDTH, NOTE_HEIGHT);
-        return AffineTransform.getRotateInstance(NOTE_TILT, centerX, y).createTransformedShape(head);
+    private static void paintNotehead(Graphics2D g, double centerX, double y, String glyph, Color ink) {
+        g.setColor(ink);
+        g.setFont(MusicFont.sizedTo(SPACE));
+        double width = g.getFontMetrics().stringWidth(glyph);
+        g.drawString(glyph, (float) (centerX - width / 2), (float) y);
     }
 
     private static void paintLedgerLines(
