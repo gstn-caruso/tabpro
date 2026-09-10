@@ -454,6 +454,32 @@ class ScorePainterTest {
     }
 
     @Test
+    void theSelectionIsAlsoMarkedWithASolidBorder() {
+        Measure full = new Measure(TimeSignature.fourFour(), List.of(
+                Beat.of(Duration.quarter(), new Note(1, 0)),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3))));
+        Score score = scoreWith(full);
+        com.gstncaruso.tabpro.core.editing.Selection selection =
+                com.gstncaruso.tabpro.core.editing.Selection.ofMeasures(0, 0, 0);
+        ScoreLayout layout = ScoreLayout.of(score, WIDTH);
+        BufferedImage image = new BufferedImage(WIDTH, layout.totalHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+
+        ScorePainter.paint(
+                g, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent(), java.util.Optional.of(selection));
+        g.dispose();
+
+        Rectangle bounds = layout.measureBounds(0, 0);
+        int y = bounds.y + bounds.height / 2;
+        int edge = image.getRGB(bounds.x, y);
+        int centre = image.getRGB(bounds.x + bounds.width / 2, y);
+        assertNotEquals(edge, centre,
+                "la seleccion necesita un borde solido, distinto del relleno translucido");
+    }
+
+    @Test
     void aTrackThatIsNotShownIsNotDrawnAtAll() {
         Track guitar = Track.standardGuitar("Guitarra");
         Score two = new Score("", 120, List.of(guitar, guitar));

@@ -246,15 +246,13 @@ public final class ScorePainter {
 
     private static void paintSelection(Graphics2D g, ScoreLayout layout, Score score, Selection selection) {
         Track track = score.track(selection.track());
-        g.setColor(ScoreColors.SELECTION);
         for (int measure = selection.fromMeasure();
                 measure <= selection.toMeasure() && measure < track.measureCount(); measure++) {
             // Un compas entero se pinta de punta a punta, no solo donde caen los beats de la voz
             // principal: el manual dice que las acciones valen para las dos voces, y el compas
             // siempre deja un margen (cabecera, padding) que ningun beat pisa.
             if (selection.wholeMeasures()) {
-                Rectangle bounds = layout.measureBounds(selection.track(), measure);
-                g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+                paintSelectedArea(g, layout.measureBounds(selection.track(), measure));
                 continue;
             }
             int beatCount = track.measure(measure).beats().size();
@@ -264,9 +262,17 @@ public final class ScorePainter {
                 }
                 Rectangle bounds = layout.beatBounds(selection.track(), measure, beat);
                 int top = layout.staffTop(selection.track(), measure);
-                g.fillRect(bounds.x, top, bounds.width, layout.tabBottom(selection.track(), measure) - top);
+                paintSelectedArea(g, new Rectangle(
+                        bounds.x, top, bounds.width, layout.tabBottom(selection.track(), measure) - top));
             }
         }
+    }
+
+    private static void paintSelectedArea(Graphics2D g, Rectangle bounds) {
+        g.setColor(ScoreColors.SELECTION);
+        g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        g.setColor(ScoreColors.ACCENT);
+        g.drawRect(bounds.x, bounds.y, bounds.width - 1, bounds.height - 1);
     }
 
     /**
