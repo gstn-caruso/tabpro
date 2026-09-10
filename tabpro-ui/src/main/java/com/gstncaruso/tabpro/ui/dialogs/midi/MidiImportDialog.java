@@ -25,14 +25,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-/**
- * La ventana de "MIDI Import" del manual: a la izquierda las pistas del archivo elegido, con la
- * opcion de escuchar la o las que esten marcadas (tal como suenan en el MIDI, todavia sin
- * convertir) o de abrir otro archivo. El import rapido reemplaza la partitura entera con una
- * pista por cada pista elegida; el paso a paso no borra nada y deja traer el titulo y los
- * cambios de compas, agregar una pista nueva, y fusionar sobre la pista actual una o varias
- * pistas MIDI elegidas -- todo repetible.
- */
 public final class MidiImportDialog {
 
     private MidiImportDialog() {

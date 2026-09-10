@@ -28,14 +28,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-/**
- * Lo que las dos ventanas de import de MIDI del manual comparten: la lista de pistas del
- * archivo (con seleccion multiple, para poder fusionarlas), si hay que transportar una octava
- * para abajo lo que se importe, si cada pista usa dos canales de MIDI o uno solo -- el manual:
- * "handy if you plan on adding bend or slide effects to the tablature" -- y con que precision
- * se cuantiza la posicion y la duracion de las notas -- el manual: "Guitar Pro allows you to
- * precisely define the way it selects the position as well as the duration of the notes".
- */
 public final class MidiImportPanel extends JPanel {
 
     private static final NoteValue[] QUANTIZE_CHOICES = {
@@ -128,7 +120,6 @@ public final class MidiImportPanel extends JPanel {
         return button;
     }
 
-    /** Cambia el archivo elegido: "abrir otro archivo" del manual. */
     public void showTracks(List<MidiTrackInfo> tracks) {
         DefaultListModel<MidiTrackInfo> model = new DefaultListModel<>();
         tracks.forEach(model::addElement);
@@ -139,7 +130,6 @@ public final class MidiImportPanel extends JPanel {
         return trackList;
     }
 
-    /** Los indices (dentro del archivo MIDI) de las pistas marcadas en la lista, en su orden. */
     public List<Integer> selectedTrackIndices() {
         return trackList.getSelectedValuesList().stream().map(MidiTrackInfo::index).toList();
     }
@@ -148,7 +138,6 @@ public final class MidiImportPanel extends JPanel {
         return transpose.isSelected();
     }
 
-    /** El manual: dos canales por pista deja agregarle bend o slide sin correr las demas notas. */
     public boolean useTwoChannelsPerTrack() {
         return twoChannelsPerTrack.isSelected();
     }
