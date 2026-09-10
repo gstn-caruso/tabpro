@@ -18,11 +18,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import org.junit.jupiter.api.Test;
 
-/**
- * El recorredor de accesibilidad: encuentra controles interactivos sin nombre accesible o,
- * si no tienen texto visible, sin tooltip. Es la red que hace fallar el build cuando aparece
- * un control nuevo sin nombrar.
- */
 class AccessibilityWalkerTest {
 
     private final AccessibilityWalker walker = new AccessibilityWalker();

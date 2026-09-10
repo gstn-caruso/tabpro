@@ -19,13 +19,9 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 
-/**
- * Recorre un arbol de componentes Swing y devuelve los controles interactivos que no tienen
- * nombre accesible, o que no tienen tooltip cuando tampoco muestran texto propio.
- */
 public final class AccessibilityWalker {
 
-    /** "labeledBy" es la client property que JLabel#setLabelFor deja en el componente etiquetado. */
+    /** "labeledBy" is the client property that JLabel#setLabelFor leaves on the labeled component. */
     private static final String LABELED_BY_PROPERTY = "labeledBy";
 
     public List<Violation> walk(Container root) {
@@ -46,7 +42,7 @@ public final class AccessibilityWalker {
         }
     }
 
-    /** Los items de un JMenu viven en su JPopupMenu, no entre sus hijos AWT normales. */
+    /** A JMenu's items live in its JPopupMenu, not among its regular AWT children. */
     private Component[] childrenOf(Component component) {
         if (component instanceof JMenu menu) {
             return menu.getMenuComponents();
