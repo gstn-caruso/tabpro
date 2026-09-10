@@ -664,6 +664,10 @@ public final class Icons {
         return svgIcon("gauge");
     }
 
+    public static Icon handedness() {
+        return svgIcon("arrows-horizontal");
+    }
+
     public static Icon transpose() {
         return svgIcon("arrows-up-down");
     }

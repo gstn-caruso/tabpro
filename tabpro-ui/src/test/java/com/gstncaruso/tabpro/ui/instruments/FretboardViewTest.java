@@ -388,6 +388,49 @@ class FretboardViewTest {
         assertEquals("F", view.getAccessibleContext().getAccessibleDescription());
     }
 
+    @Test
+    void theNeckShowsAWoodGrainPattern() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        BufferedImage image = paint(view);
+
+        int x = view.fretCenterX(2);
+        boolean sawTheGrain = false;
+        for (int y = view.stringY(1) + 3; y <= view.stringY(2) - 3; y++) {
+            if (image.getRGB(x, y) != FretboardType.ELECTRIC.woodColor().getRGB()) {
+                sawTheGrain = true;
+                break;
+            }
+        }
+        assertTrue(sawTheGrain, "el mastil tiene que mostrar veta, no un color plano");
+    }
+
+    @Test
+    void theWoodGrainNeverChangesBetweenRepaints() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+
+        BufferedImage first = paint(view);
+        BufferedImage second = paint(view);
+
+        assertTrue(!differsSomewhere(first, second), "la veta tiene que ser reproducible, no aleatoria");
+    }
+
+    @Test
+    void theFretWiresLookMetallicWithAHighlightAndAShadow() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        BufferedImage image = paint(view);
+
+        int wireX = (view.fretCenterX(5) + view.fretCenterX(6)) / 2;
+        int y = (view.stringY(3) + view.stringY(4)) / 2;
+        Color fretWire = FretboardType.ELECTRIC.fretWireColor();
+
+        assertEquals(fretWire.brighter().getRGB(), image.getRGB(wireX - 1, y), "falta el brillo del traste");
+        assertEquals(fretWire.getRGB(), image.getRGB(wireX, y), "el cuerpo del traste tiene que seguir igual");
+        assertEquals(fretWire.darker().getRGB(), image.getRGB(wireX + 1, y), "falta la sombra del traste");
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));

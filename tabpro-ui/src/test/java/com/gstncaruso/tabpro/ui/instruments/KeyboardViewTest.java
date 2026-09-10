@@ -141,6 +141,82 @@ class KeyboardViewTest {
     }
 
     @Test
+    void marksThePressedKeyWithAPointNotTheWholeKey() {
+        KeyboardView view = sized();
+        view.show(locationOf(Track.standardGuitar("g"), Beat.of(Duration.quarter(), new Note(1, 0))));
+        BufferedImage image = paint(view);
+
+        Rectangle key = view.keyBounds(64).orElseThrow();
+
+        assertEquals(InstrumentColors.WHITE_KEY.getRGB(), image.getRGB(key.x + key.width / 2, key.y + 4),
+                "el punto no puede llegar hasta arriba de la tecla");
+        assertTrue(isPressed(image, key), "el punto tiene que verse cerca de la base de la tecla");
+    }
+
+    @Test
+    void thePointDoesNotSpanTheWholeWidthOfTheKey() {
+        KeyboardView view = sized();
+        view.show(locationOf(Track.standardGuitar("g"), Beat.of(Duration.quarter(), new Note(1, 0))));
+        BufferedImage image = paint(view);
+
+        Rectangle key = view.keyBounds(64).orElseThrow();
+        int dotRow = key.y + key.height - 6;
+
+        assertEquals(InstrumentColors.WHITE_KEY.getRGB(), image.getRGB(key.x + 1, dotRow),
+                "el punto no puede llegar hasta el borde izquierdo de la tecla");
+    }
+
+    @Test
+    void marksAPressedBlackKeyWithAPointThatKeepsItBlackAroundIt() {
+        KeyboardView view = sized();
+        view.show(locationOf(Track.standardGuitar("g"), Beat.of(Duration.quarter(), new Note(6, 2))));
+        BufferedImage image = paint(view);
+
+        Rectangle key = view.keyBounds(42).orElseThrow();
+
+        assertEquals(InstrumentColors.BLACK_KEY.getRGB(), image.getRGB(key.x + key.width / 2, key.y + 2),
+                "el punto no puede llegar hasta arriba de la tecla negra");
+        assertTrue(isPressed(image, key), "el punto tiene que verse en la tecla negra marcada");
+    }
+
+    @Test
+    void theTopEdgeOfAWhiteKeyCatchesLight() {
+        KeyboardView view = sized();
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        BufferedImage image = paint(view);
+
+        Rectangle c4 = view.keyBounds(60).orElseThrow();
+
+        assertEquals(InstrumentColors.WHITE_KEY.brighter().getRGB(), image.getRGB(c4.x + c4.width / 2, c4.y));
+    }
+
+    @Test
+    void theBottomEdgeOfAWhiteKeyFallsInShadow() {
+        KeyboardView view = sized();
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        BufferedImage image = paint(view);
+
+        Rectangle c4 = view.keyBounds(60).orElseThrow();
+
+        assertEquals(InstrumentColors.WHITE_KEY.darker().getRGB(),
+                image.getRGB(c4.x + c4.width / 2, c4.y + c4.height - 1));
+    }
+
+    @Test
+    void theBlackKeyHasTheSameBevelAsTheWhiteOnes() {
+        KeyboardView view = sized();
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        BufferedImage image = paint(view);
+
+        Rectangle cSharp4 = view.keyBounds(61).orElseThrow();
+
+        assertEquals(InstrumentColors.BLACK_KEY.brighter().getRGB(),
+                image.getRGB(cSharp4.x + cSharp4.width / 2, cSharp4.y));
+        assertEquals(InstrumentColors.BLACK_KEY.darker().getRGB(),
+                image.getRGB(cSharp4.x + cSharp4.width / 2, cSharp4.y + cSharp4.height - 1));
+    }
+
+    @Test
     void tracksTheKeyUnderTheMouseWithoutClicking() {
         KeyboardView view = sized();
         view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
