@@ -460,6 +460,78 @@ class ScoreCanvasTest {
         return new Editor(new Score("Prueba", 120, List.of(guitar)));
     }
 
+    /**
+     * Auditoria de rendimiento, hallazgo 4: cualquier movimiento de cursor disparaba un
+     * relayout+repaint completo, sin distinguir "cambio el modelo" de "solo se movio el cursor".
+     */
+    @Test
+    void movingTheCursorSkipsRevalidateAndRepaintsOnlyTheCursorArea() throws Exception {
+        Editor twoMeasures = editorWithTwoMeasures();
+        SpyingScoreCanvas spy = new SpyingScoreCanvas(twoMeasures);
+        spy.forgetCallsMadeWhileBuilding();
+        Rectangle before = expectedCursorBounds(twoMeasures, 0);
+
+        SwingUtilities.invokeAndWait(twoMeasures::moveToNextMeasure);
+
+        Rectangle after = expectedCursorBounds(twoMeasures, 1);
+        assertEquals(0, spy.revalidateCalls);
+        assertFalse(spy.fullRepaintCalled);
+        assertEquals(List.of(before.union(after)), spy.repaintedAreas);
+    }
+
+    @Test
+    void editingANoteStillRevalidatesAndRepaintsEverything() throws Exception {
+        Editor twoMeasures = editorWithTwoMeasures();
+        SpyingScoreCanvas spy = new SpyingScoreCanvas(twoMeasures);
+        spy.forgetCallsMadeWhileBuilding();
+
+        SwingUtilities.invokeAndWait(() -> twoMeasures.setFret(3));
+
+        assertEquals(1, spy.revalidateCalls);
+        assertTrue(spy.fullRepaintCalled);
+    }
+
+    private static Rectangle expectedCursorBounds(Editor editor, int measure) {
+        ScoreViewport viewport = ScoreViewport.of(ViewMode.SCREEN_VERTICAL, Zoom.whole(), 900);
+        return PageScorePainter.boundsOf(editor.score(), viewport, 0, measure, 0);
+    }
+
+    private static final class SpyingScoreCanvas extends ScoreCanvas {
+        private int revalidateCalls;
+        private boolean fullRepaintCalled;
+        private final List<Rectangle> repaintedAreas = new java.util.ArrayList<>();
+
+        SpyingScoreCanvas(Editor editor) {
+            super(editor);
+        }
+
+        @Override
+        public void revalidate() {
+            revalidateCalls++;
+            super.revalidate();
+        }
+
+        @Override
+        public void repaint() {
+            fullRepaintCalled = true;
+            super.repaint();
+        }
+
+        @Override
+        public void repaint(Rectangle area) {
+            repaintedAreas.add(area);
+            super.repaint(area);
+        }
+
+        /** El propio constructor de JComponent dispara un repaint (setBackground); lo que
+         * importa para estas pruebas es lo que pasa despues, con el lienzo ya armado. */
+        void forgetCallsMadeWhileBuilding() {
+            revalidateCalls = 0;
+            fullRepaintCalled = false;
+            repaintedAreas.clear();
+        }
+    }
+
     private static void press(ScoreCanvas target, int x, int y, boolean controlHeld) {
         target.dispatchEvent(new MouseEvent(target, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(),
                 controlHeld ? InputEvent.CTRL_DOWN_MASK : 0, x, y, 1, false));
