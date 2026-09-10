@@ -12,8 +12,10 @@ import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
+import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.instruments.FretboardDisplayMode;
 import com.gstncaruso.tabpro.ui.instruments.FretboardType;
 import com.gstncaruso.tabpro.ui.instruments.KeyboardDisplayMode;
@@ -23,6 +25,7 @@ import com.gstncaruso.tabpro.ui.instruments.ScaleType;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 import com.gstncaruso.tabpro.ui.page.Orientation;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -204,5 +207,19 @@ class LabelsTest {
 
         assertFalse(label.isBlank());
         assertNotEquals(value.name(), label);
+    }
+
+    @Test
+    void translatesTheTripletFeel() {
+        assertEquals("Corcheas con swing", Labels.of(TripletFeel.EIGHTH));
+    }
+
+    @ParameterizedTest
+    @EnumSource(TripletFeel.class)
+    void everyTripletFeelHasSpanishAndEnglishText(TripletFeel value) {
+        String key = "domain.TripletFeel." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
     }
 }
