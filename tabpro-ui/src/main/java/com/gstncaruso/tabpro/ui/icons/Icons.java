@@ -48,7 +48,7 @@ public final class Icons {
     // ---- edicion ----------------------------------------------------------
 
     public static Icon undo() {
-        return icon((graphics, size) -> curvedArrow(graphics, size, true));
+        return svgIcon("arrow-back-up");
     }
 
     public static Icon redo() {
