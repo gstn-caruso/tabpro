@@ -1,3 +1,9 @@
+## [0.35.0](https://github.com/gstn-caruso/tabpro/compare/v0.34.1...v0.35.0) (2026-09-10)
+
+### Features
+
+* **ui:** la perilla, el diapasón, el teclado y la grilla se operan por teclado con foco visible ([#122](https://github.com/gstn-caruso/tabpro/issues/122)) ([8292b90](https://github.com/gstn-caruso/tabpro/commit/8292b90bac3d8eed0d11ea9e2c071a1fd1cee0eb))
+
 ## [0.34.1](https://github.com/gstn-caruso/tabpro/compare/v0.34.0...v0.34.1) (2026-09-10)
 
 ### Bug Fixes
