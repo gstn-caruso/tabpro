@@ -15,8 +15,10 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.awt.Component;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -54,6 +56,33 @@ class ToolBarsIconContrastAuditTest {
         } finally {
             dispose(frame);
         }
+    }
+
+    @Test
+    void laEtiquetaDeTempoLeeContraSuFondoReal() throws Exception {
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        try {
+            JLabel tempoLabel = findLabel(frame.getContentPane(), "Tempo ");
+            assertReadsAgainstItsRealBackground(tempoLabel, "Tempo", frame.getContentPane());
+        } finally {
+            dispose(frame);
+        }
+    }
+
+    private JLabel findLabel(Container root, String text) {
+        for (Component child : root.getComponents()) {
+            if (child instanceof JLabel label && text.equals(label.getText())) {
+                return label;
+            }
+            if (child instanceof Container container) {
+                JLabel found = findLabel(container, text);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 
     private void assertReadsAgainstItsRealBackground(JComponent component, String description, Container contentPane) {

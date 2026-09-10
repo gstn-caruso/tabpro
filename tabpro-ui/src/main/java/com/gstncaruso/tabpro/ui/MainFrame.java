@@ -169,7 +169,9 @@ public final class MainFrame extends JFrame {
         // (Command.checkedByDefault); si la preferencia guardada la tenia escondida, el
         // casillero real tiene que arrancar destildado, no al reves de lo que muestra la barra.
         commands.get("view.toolBars.effects").putValue(javax.swing.Action.SELECTED_KEY, effectsToolBarVisible);
-        toolBars.addToSoundRow(new JLabel("Tempo "));
+        JLabel tempoLabel = new JLabel("Tempo ");
+        tempoLabel.setForeground(Palette.text());
+        toolBars.addToSoundRow(tempoLabel);
         toolBars.addToSoundRow(tempoSpinner);
         setJMenuBar(new MenuBar(commands, document::recentFiles, documentActions::openRecent).build());
 
