@@ -122,7 +122,7 @@ public final class DialogShell {
 
         dialog.getRootPane().setDefaultButton(close);
         dialog.getContentPane().setLayout(new BorderLayout());
-        dialog.getContentPane().add(content.apply(dialog::dispose), BorderLayout.CENTER);
+        dialog.getContentPane().add(fittedToScreen(content.apply(dialog::dispose), bar), BorderLayout.CENTER);
         dialog.getContentPane().add(bar, BorderLayout.SOUTH);
         dialog.pack();
         dialog.setLocationRelativeTo(parent);
