@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.app.smoke;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -146,6 +147,21 @@ class FixtureCorpusSmokeTest {
     private Score exportarYReabrirMusicXml(Score score, Path musicXmlPath) {
         exchange.exportMusicXml(score, musicXmlPath);
         return exchange.importMusicXml(musicXmlPath);
+    }
+
+    @Test
+    void unGuitarProSimpleSeGuardaComoTabproYSeReabreIgual(@TempDir Path tempDir) {
+        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
+        Score score = abrir(path);
+
+        Score reabierto = guardarComoTabproYReabrir(score, tempDir.resolve("reexportado.tabpro"));
+
+        assertEquals(score, reabierto, () -> path.getFileName() + ": el guardado como .tabpro se reabre igual");
+    }
+
+    private Score guardarComoTabproYReabrir(Score score, Path tabproPath) {
+        tabproFiles.save(score, tabproPath);
+        return tabproFiles.load(tabproPath);
     }
 
     private Score abrir(Path path) {
