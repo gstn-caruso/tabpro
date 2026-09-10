@@ -93,10 +93,10 @@ final class TabSymbolPainter {
             labels.add("tr");
         }
         if (beat.notes().stream().anyMatch(note -> note.effects().tremoloPicking().isPresent())) {
-            labels.add("ℇℇℇ");
+            labels.add("trem");
         }
         if (effects.wideVibrato() || has(beat, Ornament.VIBRATO)) {
-            labels.add(effects.wideVibrato() ? "⌇⌇" : "⌇");
+            labels.add(effects.wideVibrato() ? "~~" : "~");
         }
         effects.wah().ifPresent(wah -> labels.add("wah " + wah.label().toLowerCase(Locale.ROOT)));
         return labels;
