@@ -427,7 +427,7 @@ class ScorePainterTest {
         Painted painted = paintWithMarkerColor(markerColor);
 
         Rectangle square = markerSquareBounds(painted);
-        int textBaseline = painted.layout().staffTop(0, 0) - 16;
+        int textBaseline = painted.layout().staffTop(0, 0) - BarStructurePainter.MARKER_TEXT_CLEARANCE_ABOVE_STAFF;
 
         assertTrue(painted.hasColorIn(new Rectangle(square.x, textBaseline - 1, square.width, 1), markerColor),
                 "el cuadrado tiene que apoyar su base en la linea de base del texto del marcador");
@@ -485,7 +485,7 @@ class ScorePainterTest {
         int staffTop = painted.layout().staffTop(0, 0);
         FontMetrics metrics = painted.image().createGraphics().getFontMetrics(ScoreFonts.SECTION_MARK_FONT);
         int squareSize = metrics.getAscent();
-        int textBaseline = staffTop - 16;
+        int textBaseline = staffTop - BarStructurePainter.MARKER_TEXT_CLEARANCE_ABOVE_STAFF;
         return new Rectangle(x, textBaseline - squareSize, squareSize, squareSize);
     }
 

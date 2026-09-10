@@ -137,11 +137,13 @@ final class BarStructurePainter {
         g.drawString(label, left + 4, y - 2);
     }
 
+    static final int MARKER_TEXT_CLEARANCE_ABOVE_STAFF = 16;
+
     private static void paintMarker(Graphics2D g, int x, int staffTop, Marker marker) {
         g.setFont(ScoreFonts.SECTION_MARK_FONT);
         FontMetrics metrics = g.getFontMetrics();
         Color markerColor = ScoreColors.of(marker.color());
-        int textBaseline = staffTop - 16;
+        int textBaseline = staffTop - MARKER_TEXT_CLEARANCE_ABOVE_STAFF;
 
         int squareSize = metrics.getAscent();
         int squareTop = textBaseline - squareSize;
@@ -151,9 +153,9 @@ final class BarStructurePainter {
             g.setColor(ScoreColors.INK);
             g.drawRect(x, squareTop, squareSize - 1, squareSize - 1);
         }
-        int textX = x + squareSize + metrics.getHeight() / 4;
+        int squareToTextGap = metrics.getHeight() / 4;
         g.setColor(markerColor);
-        g.drawString(marker.name(), textX, textBaseline);
+        g.drawString(marker.name(), x + squareSize + squareToTextGap, textBaseline);
     }
 
     private static void paintDirectionSymbol(Graphics2D g, int left, int right, int staffTop, DirectionSymbol symbol) {
