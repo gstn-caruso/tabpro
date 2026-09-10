@@ -12,14 +12,17 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
@@ -51,6 +54,26 @@ class BeatViewsTest {
         JButton close = findButtonNamed(views, "Cerrar diapasón").orElseThrow();
 
         assertTrue(close.getIcon() != null, "el boton de cerrar tiene que mostrar un icono, no un caracter");
+    }
+
+    @Test
+    void theFretboardAndTheKeyboardEachHaveTheirOwnTitleBand() {
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+
+        assertEquals(2, opaquePanelsBackedBy(views, ScoreColors.TITLE_BAR).size());
+    }
+
+    private static List<JPanel> opaquePanelsBackedBy(Container container, java.awt.Color background) {
+        List<JPanel> found = new ArrayList<>();
+        for (Component component : container.getComponents()) {
+            if (component instanceof JPanel panel && panel.isOpaque() && background.equals(panel.getBackground())) {
+                found.add(panel);
+            }
+            if (component instanceof Container nested) {
+                found.addAll(opaquePanelsBackedBy(nested, background));
+            }
+        }
+        return found;
     }
 
     private static java.util.Optional<JButton> findButtonNamed(Container container, String name) {

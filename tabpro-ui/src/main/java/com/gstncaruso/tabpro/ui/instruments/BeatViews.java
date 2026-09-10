@@ -323,16 +323,18 @@ public final class BeatViews extends JPanel {
 
         JLabel label = new JLabel(title);
         label.setFont(label.getFont().deriveFont(Font.BOLD, 10f));
-        label.setForeground(ScoreColors.MUTED_INK);
+        label.setForeground(ScoreColors.TITLE_BAR_INK);
         label.setBorder(BorderFactory.createEmptyBorder(3, 12, 2, 0));
 
         JButton close = new JButton(Icons.closePanel());
         close.getAccessibleContext().setAccessibleName(closeAccessibleName);
         close.setToolTipText(closeAccessibleName);
+        close.setForeground(ScoreColors.TITLE_BAR_INK);
         close.addActionListener(e -> onClose.run());
 
         JPanel header = new JPanel(new BorderLayout());
-        header.setOpaque(false);
+        header.setOpaque(true);
+        header.setBackground(ScoreColors.TITLE_BAR);
         header.add(label, BorderLayout.WEST);
         header.add(toolbar, BorderLayout.CENTER);
         header.add(close, BorderLayout.EAST);
