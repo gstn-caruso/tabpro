@@ -23,13 +23,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Write a Score" (linea 481 del texto extraido): escribir notas con los digitos del
- * traste, moverse con las flechas, y los atajos de edicion basica (silencio, puntillo, ligadura,
- * tresillo, insertar/borrar compas y beat, voces). Cada comando se ejercita por su JMenuItem real
- * -boton real en el caso de los valores de figura, que no tienen menu propio en la barra- y por
- * el KeyEvent real de su atajo, nunca invocando el Action a mano.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class WriteAScoreAuditTest {
@@ -89,10 +82,9 @@ class WriteAScoreAuditTest {
     }
 
     /**
-     * El manual (linea 780 del texto extraido) pide que Tab alterne tablatura/pentagrama sin
-     * mover el cursor: {@code KeyboardEditing} tiene el binding, y {@code ScoreCanvas} desactiva
-     * sus teclas de foco (FORWARD_TRAVERSAL_KEYS) para que Tab, despachado de verdad sobre el
-     * lienzo real, llegue hasta el.
+     * Swing treats Tab as a focus traversal key by default; {@code ScoreCanvas} disables
+     * FORWARD_TRAVERSAL_KEYS so a real Tab, dispatched on the real canvas, reaches its own
+     * {@code KeyboardEditing} binding instead.
      */
     @Test
     void tabCrudoCambiaDeNotacionSinMoverElCursor() throws Exception {
@@ -145,9 +137,9 @@ class WriteAScoreAuditTest {
     }
 
     /**
-     * El JScrollPane que envuelve la partitura trae de fabrica un "scrollHome" para Ctrl+Home:
-     * AcceleratorGuard lo deja sin accion registrada (processKeyBinding devuelve false), asi que
-     * la tecla sigue subiendo hasta el atajo real de "Primer compás".
+     * The JScrollPane wrapping the score comes with a built-in "scrollHome" bound to Ctrl+Home;
+     * AcceleratorGuard leaves it with no action registered (processKeyBinding returns false), so
+     * the key keeps propagating up to the real "First measure" shortcut.
      */
     @Test
     void ctrlHomePorMenuYPorAtajoMuevenElCursorAlPrimerCompas() throws Exception {
@@ -158,7 +150,7 @@ class WriteAScoreAuditTest {
         });
     }
 
-    /** Mismo mecanismo que Ctrl+Home, con el "scrollEnd" de fabrica del JScrollPane. */
+    /** Same mechanism as Ctrl+Home, with the JScrollPane's built-in "scrollEnd". */
     @Test
     void ctrlFinPorMenuYPorAtajoMuevenElCursorAlUltimoCompas() throws Exception {
         assertAcceleratorMatchesMenu("Último compás", () -> editorWithMeasures(3));

@@ -16,12 +16,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Cut, Copy and Paste" (linea 1478 del texto extraido). Cortar (Ctrl+X) ya quedo
- * verificado uno a uno contra el menu en KeyboardShortcutsAuditTest; esta clase cierra el
- * capitulo con el round-trip real de Copiar/Pegar -Ctrl+C llena el portapapeles real, Ctrl+V lo
- * escribe en otro compas- despachado sobre el lienzo real.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class CutCopyPasteAuditTest {

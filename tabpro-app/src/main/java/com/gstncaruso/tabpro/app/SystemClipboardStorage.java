@@ -12,11 +12,8 @@ import java.io.IOException;
 import java.util.Optional;
 
 /**
- * El ClipboardStorage que cruza el portapapeles del sistema operativo, para que copiar
- * y pegar funcione entre dos sesiones de tabpro como pide el manual. Si no hay
- * portapapeles de sistema disponible -headless, como corre la CI- se degrada al
- * comportamiento de siempre (privado de esta sesion), igual que MidiPlayer se degrada
- * a silencio cuando no hay linea MIDI: nunca revienta por esto.
+ * Toolkit.getDefaultToolkit().getSystemClipboard() throws HeadlessException with no display, as
+ * in CI; this class falls back to an in-memory clipboard instead of failing.
  */
 public final class SystemClipboardStorage implements ClipboardStorage {
 
@@ -45,7 +42,6 @@ public final class SystemClipboardStorage implements ClipboardStorage {
         }
     }
 
-    /** El texto de un Transferable, o vacio si no tiene ninguno (una imagen, por ejemplo). */
     static Optional<String> textOf(Transferable transferable) {
         if (transferable == null || !transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             return Optional.empty();

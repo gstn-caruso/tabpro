@@ -12,10 +12,6 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.UIManager;
 
-/**
- * El aspecto de tabpro: plano y con un acento calido, en su version oscura o
- * clara. Es lo que el manual llama "skins", pero sin la estetica de Windows XP.
- */
 public final class Theme implements ThemeSwitch {
 
     public static final String DARK = "Oscuro";
@@ -33,10 +29,6 @@ public final class Theme implements ThemeSwitch {
                     new Color(0x24262A), new Color(0x6B7078), new Color(0xFFFFFF), new Color(0x101010),
                     new Color(0xBE7B17)));
 
-    /**
-     * Preferencias [F12] > Accesibilidad > Alto contraste: negro puro y blanco puro, con un
-     * amarillo de acento que llega a 7:1 incluso con texto negro encima (seleccion de menu).
-     */
     private static final Palette HIGH_CONTRAST_PALETTE = new Palette(
             Color.BLACK, Color.BLACK, Color.BLACK, new Color(0x888888),
             Color.WHITE, new Color(0xCCCCCC), Color.WHITE, Color.BLACK,
@@ -102,7 +94,6 @@ public final class Theme implements ThemeSwitch {
         System.setProperty(FlatSystemProperties.ANIMATION, String.valueOf(enabled));
     }
 
-    /** El alto contraste manda sobre el tema oscuro/claro elegido mientras esta prendido. */
     private void paintActivePalette() {
         Palette palette = highContrast ? HIGH_CONTRAST_PALETTE : paletteFor(current);
         putPalette(palette);
@@ -155,7 +146,6 @@ public final class Theme implements ThemeSwitch {
         UIManager.put("defaultFont", interfaceFont());
     }
 
-    /** Una tipografia de interfaz chica y prolija, al tamano que haya elegido Accesibilidad. */
     private Font interfaceFont() {
         Font base = UIManager.getFont("defaultFont");
         return base == null ? new Font(Font.SANS_SERIF, Font.PLAIN, fontSize) : base.deriveFont((float) fontSize);

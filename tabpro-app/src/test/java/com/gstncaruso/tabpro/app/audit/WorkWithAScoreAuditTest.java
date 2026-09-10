@@ -24,12 +24,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Work with a Score" (linea 1723 del texto extraido): agregar una pista (Pista >
- * Agregar, Ctrl+Shift+Insert) y sus propiedades (F6, ya documentado como atajo mudo en
- * KeyboardShortcutsAuditTest; aca se ejercita el menu, que si funciona). Ambos dialogos reales,
- * detectados por WINDOW_OPENED, con sus controles reales (campo de texto, radio buttons).
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class WorkWithAScoreAuditTest {

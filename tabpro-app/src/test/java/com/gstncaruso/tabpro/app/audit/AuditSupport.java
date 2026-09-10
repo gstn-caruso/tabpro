@@ -41,22 +41,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-/**
- * Lo que necesita cualquier test de la auditoria de uso real para llegar a la ventana principal
- * real por el camino del usuario: armar un MainFrame de verdad (con un Editor real, sin MIDI ni
- * disco), encontrar sus componentes reales (menu, canvas, dialogos) y despachar teclas reales en
- * vez de invocar un Action a mano.
- */
 final class AuditSupport {
 
     /**
-     * Swing tiene un solo EDT por maquina virtual, y la suite corre en una sola maquina virtual
-     * con las clases en paralelo (ver pom.xml raiz): sin este lock, un dialogo modal real que
-     * abre un test puede terminar cerrado por el AWTEventListener global de otro test que corre
-     * al mismo tiempo -Toolkit.addAWTEventListener no distingue de que test es cada ventana-, y
-     * la suite queda colgada esperando un WINDOW_OPENED que ya paso. Cada clase de la auditoria
-     * se anota con {@code @ResourceLock(AuditSupport.SWING_LOCK)} para que JUnit las serialice
-     * entre si, aunque sigan en paralelo con el resto de la suite (que no toca Swing de verdad).
+     * Swing has a single EDT per JVM, and this suite runs in one JVM with its classes in
+     * parallel (see the root pom.xml): without this lock, a real modal dialog opened by one test
+     * can end up closed by another test's global AWTEventListener running at the same time
+     * -Toolkit.addAWTEventListener cannot tell which test owns which window-, leaving the suite
+     * hanging on a WINDOW_OPENED that already happened. Every audit class is annotated with
+     * {@code @ResourceLock(AuditSupport.SWING_LOCK)} so JUnit serializes them against each other,
+     * while still running in parallel with the rest of the suite (which never touches real Swing).
      */
     static final String SWING_LOCK = "tabpro-audit-swing";
 
@@ -64,10 +58,10 @@ final class AuditSupport {
     }
 
     /**
-     * El atajo de un menu se resuelve con WHEN_IN_FOCUSED_WINDOW: Swing solo lo registra en su
-     * KeyboardManager global cuando el componente esta "showing" de verdad, y eso exige
-     * setVisible(true) -pack() solo no alcanza-. Por eso esta ventana se muestra de verdad (hay
-     * DISPLAY real) y el test que la pide tiene que cerrarla con dispose() al terminar.
+     * A menu accelerator resolves through WHEN_IN_FOCUSED_WINDOW: Swing only registers it in its
+     * global KeyboardManager once the component is really "showing", which requires
+     * setVisible(true) -pack() alone is not enough-. That is why this window is shown for real
+     * (a real DISPLAY is needed), and callers must dispose() it when done.
      */
     static MainFrame newFrame(Editor editor) throws Exception {
         MainFrame[] built = new MainFrame[1];
@@ -84,7 +78,6 @@ final class AuditSupport {
         SwingUtilities.invokeAndWait(frame::dispose);
     }
 
-    /** Como newFrame, pero con un Player que el test puede inspeccionar despues. */
     static MainFrame newFrame(Editor editor, Player player) throws Exception {
         MainFrame[] built = new MainFrame[1];
         SwingUtilities.invokeAndWait(() -> {
@@ -96,7 +89,6 @@ final class AuditSupport {
         return built[0];
     }
 
-    /** Como newFrame, pero con unos Devices que el test puede inspeccionar despues. */
     static MainFrame newFrame(Editor editor, com.gstncaruso.tabpro.ui.actions.Ports.Devices devices) throws Exception {
         MainFrame[] built = new MainFrame[1];
         SwingUtilities.invokeAndWait(() -> {
@@ -112,7 +104,6 @@ final class AuditSupport {
         return built[0];
     }
 
-    /** Como newFrame, pero con un Printing que el test puede inspeccionar despues. */
     static MainFrame newFrame(Editor editor, Printing printing) throws Exception {
         MainFrame[] built = new MainFrame[1];
         SwingUtilities.invokeAndWait(() -> {
@@ -129,11 +120,6 @@ final class AuditSupport {
         return built[0];
     }
 
-    /**
-     * Como newFrame, pero con un ScoreFiles y un ScoreExchange reales: los que necesita
-     * cualquier test que ejercite Abrir/Guardar/Importar/Exportar por el JFileChooser real,
-     * en vez de los dobles NoScoreFiles/ScoreExchange.NONE que tiran UnsupportedOperationException.
-     */
     static MainFrame newFrame(
             Editor editor, ScoreFiles files, com.gstncaruso.tabpro.core.files.ScoreExchange exchange) throws Exception {
         MainFrame[] built = new MainFrame[1];
@@ -149,7 +135,6 @@ final class AuditSupport {
         return built[0];
     }
 
-    /** Como newFrame, pero con un ThemeSwitch que el test puede inspeccionar despues. */
     static MainFrame newFrame(Editor editor, com.gstncaruso.tabpro.ui.theme.ThemeSwitch themes) throws Exception {
         MainFrame[] built = new MainFrame[1];
         SwingUtilities.invokeAndWait(() -> {
@@ -165,7 +150,6 @@ final class AuditSupport {
         return built[0];
     }
 
-    /** Un Devices sin MIDI real, salvo el banco de sonido: registra si lo prendieron/apagaron. */
     static final class RecordingDevices implements com.gstncaruso.tabpro.ui.actions.Ports.Devices {
         private boolean soundFontActive;
         private int toggleCount;
@@ -263,11 +247,6 @@ final class AuditSupport {
         }
     }
 
-    /**
-     * No termina la reproduccion sola -al reves del Player de {@link #newFrame(Editor)}-: se
-     * queda "sonando" hasta que el propio Transport la frene, para poder mirar desde afuera si
-     * Espacio de verdad la arranco y la freno.
-     */
     static final class RecordingPlayer implements Player {
         private volatile boolean playCalled;
         private volatile boolean stopCalled;
@@ -309,7 +288,6 @@ final class AuditSupport {
         }
     }
 
-    /** Un PrinterJob falso: registra lo que la ventana de Imprimir real le manda, sin abrir nada del sistema. */
     static final class RecordingPrinting implements Printing {
         private String jobName;
         private java.awt.print.Printable printable;
@@ -363,18 +341,15 @@ final class AuditSupport {
     }
 
     /**
-     * Un fixture real de otro modulo (tabpro-format/src/test/resources/...), para los tests que
-     * necesitan un archivo de verdad en disco -no del classpath de este modulo- para dárselo a un
-     * JFileChooser real. La suite corre agregada desde tabpro-tests (ver pom.xml raiz, "reunir
-     * los tests de los modulos"): copia las clases compiladas, pero los fixtures de
-     * src/test/resources se quedan en su propio modulo, un nivel arriba del directorio de trabajo
-     * real con el que corre surefire.
+     * The aggregated run in tabpro-tests (see the root pom.xml) copies compiled classes from
+     * every module, but leaves each module's src/test/resources in place, one level above the
+     * working directory surefire actually runs from. This resolves a fixture from another
+     * module's resources on disk, for tests that need a real file for a real JFileChooser.
      */
     static Path repoFile(String relativeFromRepoRoot) {
         return Path.of(System.getProperty("user.dir"), "..", relativeFromRepoRoot).normalize();
     }
 
-    /** Una partitura con varios compases, para que navegar entre ellos tenga algo que mostrar. */
     static Editor editorWithMeasures(int extraMeasures) {
         Editor editor = blankEditor();
         for (int i = 0; i < extraMeasures; i++) {
@@ -384,7 +359,6 @@ final class AuditSupport {
         return editor;
     }
 
-    /** Deja una nota real (no un silencio) parada en el cursor, para los efectos que la piden. */
     static Editor editorWithANote() {
         Editor editor = blankEditor();
         editor.setFret(3);
@@ -428,7 +402,6 @@ final class AuditSupport {
         return null;
     }
 
-    /** El JButton real cuyo nombre accesible es ese, para botones sin texto propio (solo icono). */
     static JButton findButtonByAccessibleName(Container root, String name) {
         if (root instanceof JButton button && name.equals(button.getAccessibleContext().getAccessibleName())) {
             return button;
@@ -448,7 +421,6 @@ final class AuditSupport {
         return null;
     }
 
-    /** El JMenuItem real cuya Action tiene esa etiqueta exacta, buscando en toda la barra. */
     static JMenuItem findMenuItem(JMenuBar menuBar, String label) {
         for (int i = 0; i < menuBar.getMenuCount(); i++) {
             JMenuItem found = findMenuItem(menuBar.getMenu(i), label);
@@ -459,11 +431,6 @@ final class AuditSupport {
         return null;
     }
 
-    /**
-     * El JMenuItem real dentro de un submenu puntual (por ejemplo "Importar" o "Exportar"), para
-     * cuando la misma etiqueta aparece en mas de un lado del menu Archivo (MIDI…, MusicXML… y
-     * Tablatura ASCII… existen tanto para importar como para exportar).
-     */
     static JMenuItem findMenuItem(JMenu menu, String label) {
         for (int i = 0; i < menu.getItemCount(); i++) {
             JMenuItem item = menu.getItem(i);
@@ -483,7 +450,6 @@ final class AuditSupport {
         return null;
     }
 
-    /** El contenido real de una solapa de un JTabbedPane, por su titulo. */
     static Container tabContent(Container root, String tabTitle) {
         javax.swing.JTabbedPane tabs = findComponent(root, javax.swing.JTabbedPane.class);
         if (tabs == null) {
@@ -493,18 +459,12 @@ final class AuditSupport {
         return index < 0 ? null : (Container) tabs.getComponentAt(index);
     }
 
-    /** Todos los componentes de ese tipo, en el orden en que aparecen en el arbol real. */
     static <T extends Component> List<T> findComponents(Container root, Class<T> type) {
         List<T> found = new ArrayList<>();
         collectComponents(root, type, found);
         return found;
     }
 
-    /**
-     * OJO: no agregar el hijo aca Y llamarse de nuevo sobre el si es Container -todo componente
-     * Swing lo es-, porque el chequeo de "es el tipo buscado" ya esta arriba, al entrar a la
-     * llamada recursiva: hacer las dos cosas cuenta cada componente dos veces.
-     */
     @SuppressWarnings("unchecked")
     private static <T extends Component> void collectComponents(Container root, Class<T> type, List<T> into) {
         if (type.isInstance(root)) {
@@ -553,7 +513,6 @@ final class AuditSupport {
         return null;
     }
 
-    /** El JButton real de una barra de herramientas cuya Action tiene ese nombre exacto. */
     static JButton findButtonByActionName(Container root, String label) {
         if (root instanceof JButton button
                 && button.getAction() != null
@@ -576,7 +535,6 @@ final class AuditSupport {
         return null;
     }
 
-    /** El JToggleButton real de una barra de herramientas cuya Action tiene ese nombre exacto. */
     static javax.swing.JToggleButton findToggleButtonByActionName(Container root, String label) {
         if (root instanceof javax.swing.JToggleButton button
                 && button.getAction() != null
@@ -599,7 +557,6 @@ final class AuditSupport {
         return null;
     }
 
-    /** Una foto del modelo observable: si dos de estas son iguales, el modelo no se movio. */
     private record ModelSnapshot(Score score, Object cursor) {
     }
 
@@ -607,12 +564,6 @@ final class AuditSupport {
         return new ModelSnapshot(editor.score(), editor.cursor());
     }
 
-    /**
-     * El comando del catalogo, ejercitado por su JMenuItem real y por el KeyEvent real de su
-     * acelerador, tiene que mover el modelo exactamente igual por los dos caminos -y tiene que
-     * moverlo de verdad, no ser un cambio que ya estaba en el estado inicial-. Arma una ventana
-     * nueva por cada camino para que uno no contamine al otro.
-     */
     static void assertAcceleratorMatchesMenu(String menuItemLabel, Supplier<Editor> setup) throws Exception {
         Editor viaMenu = setup.get();
         MainFrame menuFrame = newFrame(viaMenu);
@@ -645,7 +596,6 @@ final class AuditSupport {
         }
     }
 
-    /** Todos los JMenuItem de la barra, para las auditorias que recorren el menu entero. */
     static List<JMenuItem> allMenuItems(JMenuBar menuBar) {
         List<JMenuItem> items = new ArrayList<>();
         for (int i = 0; i < menuBar.getMenuCount(); i++) {
@@ -669,8 +619,8 @@ final class AuditSupport {
     }
 
     /**
-     * Despacha, sobre ese componente, la misma tecla que Swing recibiria del sistema operativo:
-     * un KEY_PRESSED con el codigo y los modificadores del acelerador. Nada de invocar la Action.
+     * Dispatches, on that component, the same key event Swing would receive from the operating
+     * system: a KEY_PRESSED with the accelerator's code and modifiers, never an Action invocation.
      */
     static void pressKey(Component target, KeyStroke accelerator) throws Exception {
         SwingUtilities.invokeAndWait(() -> target.dispatchEvent(new KeyEvent(
@@ -678,17 +628,17 @@ final class AuditSupport {
                 accelerator.getModifiers(), accelerator.getKeyCode(), KeyEvent.CHAR_UNDEFINED)));
     }
 
-    /** Los digitos de traste y el "*": no tienen KeyStroke, los resuelve un KeyListener crudo. */
+    /** Characters with no KeyStroke, like digits, resolve through a raw KeyListener on KEY_TYPED. */
     static void typeChar(Component target, char c) throws Exception {
         SwingUtilities.invokeAndWait(() -> target.dispatchEvent(new KeyEvent(
                 target, KeyEvent.KEY_TYPED, System.currentTimeMillis(), 0, KeyEvent.VK_UNDEFINED, c)));
     }
 
     /**
-     * Dispara la accion que abre un dialogo modal real y lo maneja apenas se abre, sin Robot:
-     * un AWTEventListener global agarra el WINDOW_OPENED del JDialog -que Swing entrega dentro
-     * del mismo bucle anidado que bloquea a setVisible(true)-, ahi mismo el test toca los
-     * controles reales del dialogo y lo cierra, y entonces el hilo que disparo la accion sigue.
+     * Triggers the action that opens a real modal dialog and handles it as soon as it opens, with
+     * no Robot needed: a global AWTEventListener catches the JDialog's WINDOW_OPENED -which Swing
+     * delivers inside the same nested loop that blocks setVisible(true)-, and right there the test
+     * operates the dialog's real controls and closes it, letting the triggering thread continue.
      */
     static void withDialog(Runnable trigger, Consumer<JDialog> onOpen) throws Exception {
         CountDownLatch opened = new CountDownLatch(1);
@@ -734,11 +684,11 @@ final class AuditSupport {
     }
 
     /**
-     * Como {@link #withDialog(Runnable, Consumer)}, pero devuelve el dialogo real ya abierto en
-     * vez de manejarlo y cerrarlo: dispara la accion sin bloquear -si bloqueara con
-     * invokeAndWait, el hilo del test quedaria preso del bucle anidado del modal- para que el
-     * hilo del test quede libre y pueda esperar eventos reales (por ejemplo el foco) mientras el
-     * EDT sigue bombeando ese bucle. El llamador es responsable de cerrarlo.
+     * Like {@link #withDialog(Runnable, Consumer)}, but returns the real dialog already open
+     * instead of handling and closing it: it triggers the action without blocking -blocking with
+     * invokeAndWait would trap the test thread in the modal's nested loop- so the test thread
+     * stays free to wait for real events (focus, for instance) while the EDT keeps pumping that
+     * loop. The caller is responsible for closing it.
      */
     static JDialog awaitDialog(Runnable trigger, long timeoutMillis) throws Exception {
         CountDownLatch opened = new CountDownLatch(1);
@@ -761,11 +711,6 @@ final class AuditSupport {
         }
     }
 
-    /**
-     * Despacha una tecla sin bloquear el hilo del test y dice si eso abrio una ventana real
-     * dentro del tiempo dado: para los atajos que deberian abrir un dialogo modal, sin arriesgar
-     * que el test quede colgado si el dialogo de verdad aparece y nadie lo cierra.
-     */
     static boolean dispatchKeyAndDetectDialog(Component target, KeyStroke keyStroke, long timeoutMillis)
             throws Exception {
         CountDownLatch opened = new CountDownLatch(1);
@@ -787,9 +732,9 @@ final class AuditSupport {
     }
 
     /**
-     * Le pide el foco de verdad al componente y espera el FocusEvent real (nada de sleep): con
-     * DISPLAY real el pedido de foco es asincronico, asi que el test no puede asumir que ya lo
-     * tiene apenas vuelve requestFocusInWindow.
+     * Requests real focus on the component and waits for the real FocusEvent (never a sleep):
+     * with a real DISPLAY, the focus request is asynchronous, so the test cannot assume it already
+     * has focus as soon as requestFocusInWindow returns.
      */
     static boolean requestFocusAndAwait(Component target, long timeoutMillis) throws Exception {
         if (target.isFocusOwner()) {
@@ -811,11 +756,6 @@ final class AuditSupport {
         }
     }
 
-    /**
-     * Como {@link #requestFocusAndAwait(Component, long)}, pero sin pedir el foco: para observar
-     * si alguien mas -por ejemplo la ventana que se acaba de abrir- ya se lo dio o esta por
-     * darselo, sin que el test mismo lo provoque.
-     */
     static boolean awaitFocusOwner(Component target, long timeoutMillis) throws Exception {
         if (target.isFocusOwner()) {
             return true;
@@ -835,10 +775,6 @@ final class AuditSupport {
         }
     }
 
-    /**
-     * Despacha una tecla sin bloquear el hilo del test y dice si eso le hizo perder el foco al
-     * componente dentro del tiempo dado: para los atajos que deberian ceder el foco a otro lado.
-     */
     static boolean pressKeyAndAwaitFocusLost(Component target, KeyStroke keyStroke, long timeoutMillis)
             throws Exception {
         CountDownLatch lost = new CountDownLatch(1);

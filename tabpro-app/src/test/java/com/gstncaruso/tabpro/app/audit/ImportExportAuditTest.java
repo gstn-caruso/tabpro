@@ -53,25 +53,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Import a Score" (linea 2293) y "Export a Score" (linea 2506), mas Abrir/Guardar/Guardar
- * como/Abrir reciente (mismo mecanismo de JFileChooser real que audita este archivo). El
- * JFileChooser real es un JDialog modal como cualquier otro: {@code withDialog} lo agarra por
- * WINDOW_OPENED, y ahi mismo se busca el JFileChooser real en el arbol, se le pone el archivo de
- * prueba con {@code setSelectedFile} y se aprueba con {@code approveSelection()} -sin Robot, sin
- * tocar el escritorio real. Cuando el comando abre un dialogo intermedio antes o despues del
- * chooser (import de MIDI, import/export de ASCII, export de WAVE), el mismo {@code onOpen} se
- * invoca una vez por cada ventana real que aparece, en el orden en que Swing las va abriendo.
- *
- * <p>Los formatos ajenos verifican el efecto real con el lector/escritor que corresponde:
- * MIDI con {@code javax.sound.midi.MidiSystem}, WAVE con {@code javax.sound.sampled.AudioSystem},
- * MusicXML y ASCII reimportando con el mismo {@link ScoreExchange} real de la ventana, Guitar Pro
- * con el propio {@link GuitarProFile} del repositorio -las mismas clases que ya usan las suites de
- * {@code tabpro-format}, sin repetir sus casos de bytes-. El archivo .tabpro propio se relee con
- * {@link JsonScoreFiles}. TablEdit no tiene ninguna muestra real en el repositorio (tampoco la
- * tiene {@code tabpro-format}, que arma la suya a mano): este archivo arma un TEF3 minimo con el
- * mismo layout binario, en {@link TabEditMinimalFixture}.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ImportExportAuditTest {
@@ -88,8 +69,6 @@ class ImportExportAuditTest {
     private MainFrame newFrame(Editor editor) throws Exception {
         return AuditSupport.newFrame(editor, new JsonScoreFiles(), exchange);
     }
-
-    // ---- Abrir / Guardar / Guardar como / Abrir reciente --------------------------------------
 
     @Test
     void abrirPorElMenuLeeUnArchivoTabproPropioIgualQueSeGuardo(@TempDir Path tempDir) throws Exception {
@@ -204,8 +183,6 @@ class ImportExportAuditTest {
             AuditSupport.dispose(secondFrame);
         }
     }
-
-    // ---- Import a Score -------------------------------------------------------------------
 
     @Test
     void importarMidiPorElMenuOfreceLasPistasRealesYElImportRapidoLasTraeAlModelo(@TempDir Path tempDir)
@@ -376,8 +353,6 @@ class ImportExportAuditTest {
             AuditSupport.dispose(frame);
         }
     }
-
-    // ---- Export a Score --------------------------------------------------------------------
 
     @Test
     void exportarMidiPorElMenuEscribeUnArchivoQueMidiSystemLeeConSusNotas(@TempDir Path tempDir) throws Exception {

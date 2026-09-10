@@ -8,18 +8,6 @@ import com.gstncaruso.tabpro.format.BeatDto;
 import com.gstncaruso.tabpro.format.MeasureDto;
 import java.util.List;
 
-/**
- * El Clipping en JSON, para que pueda cruzar el portapapeles del sistema operativo -que
- * solo entiende texto-. Reusa MeasureDto y BeatDto, los mismos con los que tabpro-format
- * ya lee y escribe compases y beats en los archivos .json de tabpro; no hace falta un
- * formato nuevo.
- *
- * <p>Lo que decodifica no es necesariamente un clipping de tabpro: puede ser texto suelto
- * copiado de cualquier otro lado, JSON de otra cosa, o de una version de este formato que
- * esta clase todavia no conoce. En todos esos casos {@link #decode} devuelve
- * {@link Clipping#EMPTY} en vez de romper -pegar un portapapeles vacio ya es, en
- * {@code Editor.paste}, una operacion que no hace nada.
- */
 final class ClippingJson {
 
     private static final String KIND = "tabpro-clipping";
@@ -38,10 +26,7 @@ final class ClippingJson {
                 return Clipping.EMPTY;
             }
             return envelope.toClipping();
-        } catch (RuntimeException e) {
-            // El texto vino de afuera del proceso (portapapeles del sistema operativo): una
-            // violacion de invariantes de dominio en un compas corrupto es tan "no es un
-            // clipping valido" como un JSON con otra forma. En ambos casos, portapapeles vacio.
+        } catch (RuntimeException notAValidClipping) {
             return Clipping.EMPTY;
         }
     }

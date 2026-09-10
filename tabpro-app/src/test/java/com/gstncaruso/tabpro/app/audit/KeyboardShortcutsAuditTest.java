@@ -28,24 +28,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
 /**
- * Manual, tablas "Keyboard Shortcuts" (Reference, pp. 79 a 81, transcritas ya letra por letra en
- * ManualKeyboardShortcutsTest contra el catalogo de comandos). Esta clase no repite esa
- * comparacion estatica: ejercita el camino real -KeyEvent despachado sobre el lienzo real de una
- * MainFrame real- para los atajos que la partitura vive adentro de un JScrollPane y un
- * JSplitPane, que traen atajos de fabrica propios.
+ * JScrollPane and JSplitPane come with their own built-in keyboard shortcuts, so this class
+ * dispatches real KeyEvents on a real MainFrame's canvas instead of only comparing accelerators
+ * against the command catalog statically.
  */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class KeyboardShortcutsAuditTest {
 
-    /**
-     * Barrido exhaustivo y no adivinado: recorre todos los JMenuItem reales de la barra real y
-     * pregunta, para cada acelerador, si el JScrollPane o el JSplitPane reales de esa misma
-     * ventana ya tienen esa tecla ocupada en su WHEN_ANCESTOR_OF_FOCUSED_COMPONENT -diga lo que
-     * diga la tecla-. Da exactamente cinco: Ctrl+Home, Ctrl+Fin, F6, F8 y Ctrl+Tab, las mismas
-     * que ya documenta el comentario de AcceleratorGuard. Si el dia de manana aparece una sexta,
-     * este test la va a mostrar en la salida sin que haga falta adivinarla a mano.
-     */
     @Test
     void lasUnicasCincoTeclasQueElScrollPaneYElSplitPaneYaOcupabanSonLasDocumentadas() throws Exception {
         Editor editor = AuditSupport.blankEditor();
@@ -134,8 +124,6 @@ class KeyboardShortcutsAuditTest {
         });
     }
 
-    // ---- una muestra amplia de atajos que NO viven adentro del JScrollPane/JSplitPane ---------
-
     @Test
     void deshacerPorMenuYPorAtajoCtrlZCoinciden() throws Exception {
         assertAcceleratorMatchesMenu("Deshacer", () -> {
@@ -182,7 +170,6 @@ class KeyboardShortcutsAuditTest {
 
     @Test
     void atenuarLaVozInactivaPorAtajoCtrlGCambiaElCanvasReal() throws Exception {
-        // No es un comando de modelo (Score/Cursor): pinta distinto, asi que se mira el canvas.
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -218,9 +205,8 @@ class KeyboardShortcutsAuditTest {
     }
 
     /**
-     * Tab ya esta reservado para alternar tablatura/pentagrama: Ctrl+F6 es la salida de foco de
-     * la partitura hacia el resto de la ventana (mesa de mezcla, instrumentos), con un
-     * KeyboardFocusManager real -no uno de prueba- y una ventana real con DISPLAY.
+     * Moving focus out for real requires a real KeyboardFocusManager, not a test double, and a
+     * real window with a DISPLAY.
      */
     @Test
     void ctrlF6SacaElFocoDeLaPartituraDeVerdad() throws Exception {

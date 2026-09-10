@@ -23,10 +23,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "MIDI Setup": el dialogo real de Configuracion MIDI nunca supera el area util de la
- * pantalla, con Aceptar y Cancelar siempre visibles fuera de cualquier scroll.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class MidiSetupFitsScreenAuditTest {
@@ -56,11 +52,9 @@ class MidiSetupFitsScreenAuditTest {
     }
 
     /**
-     * En el runner de CI (sin locale español instalado) el Look and Feel resuelve
-     * "OptionPane.okButtonText"/"OptionPane.cancelButtonText" en ingles: si el dialogo dependiera
-     * de esas claves, mostraria "OK"/"Cancel" en medio de una ventana en castellano, al reves de
-     * los demas dialogos del manual (todos con DialogShell y su "Aceptar"/"Cancelar" fijos). Este
-     * test lo reproduce sin depender del entorno, pisando esas dos claves del UIManager.
+     * The Look and Feel resolves "OptionPane.okButtonText"/"OptionPane.cancelButtonText" from the
+     * JVM locale, and the CI runner has no Spanish locale installed: this test reproduces that
+     * without depending on the environment, by overriding those two UIManager keys.
      */
     @Test
     void configuracionMidiMuestraAceptarYCancelarAunqueElLookAndFeelLosTraduzcaAOtroIdioma() throws Exception {
@@ -91,10 +85,6 @@ class MidiSetupFitsScreenAuditTest {
         }
     }
 
-    /**
-     * {@code Ports.Devices.NONE} da {@code sensitivityMillis()=0}, fuera del rango 1-2000 del
-     * spinner real (ver auditoria visual): un proxy que delega todo salvo ese valor.
-     */
     private static Ports.Devices devicesWithAValidSensitivity() {
         return (Ports.Devices) Proxy.newProxyInstance(
                 Ports.Devices.class.getClassLoader(),
@@ -104,7 +94,7 @@ class MidiSetupFitsScreenAuditTest {
                         : method.invoke(Ports.Devices.NONE, args));
     }
 
-    /** No alcanza con "showing": adentro de un scroll clippeado, el boton sigue teniendo peer. */
+    /** isShowing() is not enough: inside a clipped scroll pane, the button still has a peer. */
     private static void assertWithinTheDialog(JDialog dialog, JButton button, String label) {
         assertNotNull(button, "no encontre el boton real '" + label + "'");
         Rectangle onScreen = new Rectangle(button.getLocationOnScreen(), button.getSize());

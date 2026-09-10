@@ -21,12 +21,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Configure the Sound" (linea 1945 del texto extraido): F2 activa o desactiva el banco
- * de sonido cargado (Ports.Devices real, no el Devices.NONE de los demas capitulos, para poder
- * mirar desde afuera si el atajo real lo prendio), y el menu Sonido ofrece la configuracion del
- * metronomo (volumen y actividad), que se ejercita por el dialogo real.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ConfigureTheSoundAuditTest {
@@ -55,12 +49,6 @@ class ConfigureTheSoundAuditTest {
         }
     }
 
-    /**
-     * El test de arriba ya prueba que F2 llega al Devices real por el menu; este prueba que el
-     * conmutable de la barra -otro control, el mismo comando- se entera del cambio y lo muestra,
-     * no solo el item de menu que lo disparo. Una interfaz que no sincroniza sus controles entre
-     * si es la "interfaz que miente" que esta auditoria persigue.
-     */
     @Test
     void f2ConLaPartituraEnfocadaSincronizaElBotonRealDeLaBarra() throws Exception {
         Editor editor = blankEditor();
@@ -83,12 +71,6 @@ class ConfigureTheSoundAuditTest {
         }
     }
 
-    /**
-     * Manual, "Configure the Sound" (linea 1945): el volumen del metronomo se elige en su propio
-     * dialogo, abierto por el menu real y detectado por WINDOW_OPENED. El Transport no se puede
-     * mirar desde afuera de MainFrame salvo por su propio metodo publico transport(): ahi vive el
-     * volumen que el dialogo real, con su slider real, tiene que dejar despues de Aceptar.
-     */
     @Test
     void elMenuOfreceLaConfiguracionDelMetronomoYElVolumenElegidoLlegaAlTransporte() throws Exception {
         Editor editor = blankEditor();

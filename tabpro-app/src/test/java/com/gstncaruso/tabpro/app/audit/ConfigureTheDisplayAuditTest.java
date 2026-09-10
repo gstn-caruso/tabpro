@@ -24,12 +24,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Configure the Display" (linea 1886 del texto extraido): zoom, modo pagina, mesa de
- * mezcla y diapason/teclado, cada uno verificado contra el componente real que dice el manual
- * que tiene que cambiar (el zoom y el modo de ScoreCanvas, la visibilidad real de TrackPanel y
- * de BeatViews), nunca contra un getter de la Action.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ConfigureTheDisplayAuditTest {
@@ -126,11 +120,6 @@ class ConfigureTheDisplayAuditTest {
         }
     }
 
-    /**
-     * Cierra los dos paneles en una primera ventana (esten como esten al abrir) y comprueba que
-     * una segunda ventana, sin tocar nada, respeta ese cierre: la preferencia real es el puente
-     * entre una sesion y la siguiente, no la memoria del propio objeto BeatViews.
-     */
     @Test
     void elEstadoDeLosPanelesPersisteAlReabrirLaVentana() throws Exception {
         com.gstncaruso.tabpro.ui.Preferences preferences = new com.gstncaruso.tabpro.ui.Preferences();
@@ -246,7 +235,6 @@ class ConfigureTheDisplayAuditTest {
         }
     }
 
-    /** Se cuenta abajo apenas ese componente gana el foco de verdad, sin sondear con sleep. */
     private static java.util.concurrent.CountDownLatch focusGainedLatch(java.awt.Component component) {
         java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
         component.addFocusListener(new java.awt.event.FocusAdapter() {

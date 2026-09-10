@@ -24,12 +24,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * El manual, "Properties of the track" (pagina 13, seccion Style, "Force Horizontal Beams") [F6]:
- * el casillero real del dialogo real tiene que llegar al modelo real de la pista y de ahi al
- * pentagrama real -no solo quedar guardado. El detalle geometrico de la pendiente ya esta cubierto
- * por BeamSlopePaintingTest; esta auditoria solo verifica el camino completo del usuario.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class TrackPropertiesForceHorizontalBeamsAuditTest {
@@ -68,8 +62,6 @@ class TrackPropertiesForceHorizontalBeamsAuditTest {
         }
     }
 
-    /** Un compas con dos corcheas ascendentes en la misma cuerda: la barra que las une tiene
-     * pendiente por defecto, asi que forzarla a horizontal cambia el dibujo real. */
     private static Editor ascendingBeamEditor() {
         Editor editor = blankEditor();
         editor.moveTo(0, 0, 3);

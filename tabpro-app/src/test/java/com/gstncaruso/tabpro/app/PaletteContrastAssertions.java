@@ -8,11 +8,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * El mismo enumerado de pares de {@link Theme.Palette} que se somete a {@link Contrast.ratio},
- * pero contra los umbrales que le pase cada test: la paleta AA los pide a 4.5/3.0, la de alto
- * contraste a 7.0/4.5.
- */
 final class PaletteContrastAssertions {
 
     private PaletteContrastAssertions() {

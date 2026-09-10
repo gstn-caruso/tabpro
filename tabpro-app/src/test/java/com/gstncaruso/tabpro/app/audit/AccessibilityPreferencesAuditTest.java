@@ -15,10 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
 
 /**
- * Preferencias [F12] > Accesibilidad: lo que ya quedo guardado de una sesion anterior se aplica
- * de verdad al arrancar la ventana principal, y lo que se elige en el dialogo real se persiste y
- * se aplica al aceptar. {@code @Isolated} porque escribe en el mismo nodo de
- * {@code java.util.prefs} que usa cualquier {@code MainFrame} real de la suite.
+ * {@code @Isolated} because this writes to the same {@code java.util.prefs} node that any real
+ * {@code MainFrame} in the suite uses.
  */
 @Tag("integracion")
 @Isolated

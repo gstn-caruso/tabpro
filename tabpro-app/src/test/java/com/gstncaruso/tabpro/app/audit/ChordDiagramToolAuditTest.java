@@ -16,12 +16,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "The Chord Diagram Tool" (linea 2665 del texto extraido) y "Add Symbols" > Chords
- * (linea 988): el atajo real [A] del menu Note abre el dialogo real de acordes -detectado por su
- * WINDOW_OPENED, sin Robot-, y las posiciones se eligen con un boton de radio siempre visible
- * (zona A del manual: Simple/Medium/All), no con un combo colapsado.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class ChordDiagramToolAuditTest {

@@ -30,11 +30,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Red permanente sobre cada fixture del repo: abre por el camino real de importacion, renderiza,
- * exporta/reabre y guarda como .tabpro. Sin ventana, sin tag de integracion: corre en todo
- * mvn -B verify. Version descartable de docs/auditoria-corpus.md, con archivos propios del repo.
- */
 class FixtureCorpusSmokeTest {
 
     private static final Duration TIEMPO_MAXIMO_POR_ARCHIVO = Duration.ofSeconds(30);

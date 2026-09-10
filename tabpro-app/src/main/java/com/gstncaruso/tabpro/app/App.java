@@ -31,12 +31,6 @@ public class App {
         Theme theme = Theme.install();
         Editor editor = new Editor(Score.blank(), new SystemClipboardStorage());
 
-        /*
-         * Vacio: recien queda elegido cuando MainFrame se construye y aplica lo guardado en
-         * MidiSetupPreferences (ver useMidiSetup), igual que ya pasa con el dispositivo de cada
-         * puerto. Es global (no por puerto): cada puerto que use el sintetizador interno de
-         * tabpro le pide su propia instancia a este mismo banco (ver SoundFontBank).
-         */
         SoundFontBank soundBank = new SoundFontBank(Optional.empty());
         Optional<MidiPlayer> midiPlayer = openMidiPlayer(soundBank);
         midiPlayer.ifPresent(App::warmUpInBackground);
@@ -58,7 +52,6 @@ public class App {
         });
     }
 
-    /** El archivo que el escritorio pasa al abrir una partitura con tabpro. */
     private static Optional<Path> fileFrom(String[] args) {
         return args.length == 0 ? Optional.empty() : Optional.of(Path.of(args[0]));
     }
@@ -73,11 +66,6 @@ public class App {
         }
     }
 
-    /**
-     * El sintetizador que renderiza el WAVE: una instancia nueva de un solo uso (WaveRenderer la
-     * cierra sola al terminar) con el mismo banco de sonido global que esta sonando en vivo, para
-     * que el archivo suene igual que la reproduccion.
-     */
     private static Synthesizer synthesizerForWaveExport(SoundFontBank soundBank) {
         try {
             return soundBank.freshSynthesizer();

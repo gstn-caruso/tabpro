@@ -16,12 +16,6 @@ import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 
-/**
- * Los dispositivos MIDI de la maquina, tal como los ofrece la ventana de
- * configuracion: hasta cuatro puertos de salida (cada uno con su banco
- * SoundFont si usa el sintetizador interno), la entrada de captura y su
- * sensibilidad.
- */
 final class MidiDeviceSetup implements Ports.Devices {
 
     private final Optional<MidiPlayer> player;
@@ -140,10 +134,6 @@ final class MidiDeviceSetup implements Ports.Devices {
         return soundBank.file().map(Path::toString);
     }
 
-    /**
-     * El banco es global (ver SoundFontBank): un archivo vacio no apaga el sonido, vuelve a
-     * dejar que tabpro busque el que tenga instalado el sistema.
-     */
     @Override
     public void chooseSoundFontFile(Optional<String> path) {
         Optional<Path> resolved = path.map(Path::of).or(() -> SoundFonts.installed().stream().findFirst());

@@ -25,10 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
 /**
- * Guitar Pro 5, manual pagina 14: la barra de efectos va abajo de la partitura, pegada a la
- * mesa de mezcla, no arriba junto a las otras tres filas. MainFrame extiende JFrame, asi que
- * armarlo de verdad exige un toolkit no headless (ver AuditSupport); por eso esta auditoria, en
- * vez de un test comun.
+ * MainFrame extends JFrame, so building a real one requires a non-headless toolkit (see
+ * AuditSupport); that is why this is an audit test instead of an ordinary one.
  */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
@@ -62,11 +60,6 @@ class ToolBarsLayoutAuditTest {
         }
     }
 
-    /**
-     * Ver > Menus y barras sigue escondiendo y mostrando la fila real correspondiente ahora que
-     * son cuatro filas en vez de tres: este test no toca MenuBar, solo confirma que su cableado
-     * de siempre sigue funcionando contra el ToolBars nuevo.
-     */
     @Test
     void elMenuVerMenusYBarrasEscondeYMuestraLaFilaDeDocumentoReal() throws Exception {
         Editor editor = blankEditor();
@@ -90,11 +83,6 @@ class ToolBarsLayoutAuditTest {
         }
     }
 
-    /**
-     * Ver > Menus y barras > Efectos: la misma mecanica que las otras tres, mas la persistencia
-     * que pide el manual ("ninguna preferencia sin lector"). Al final del test se restaura la
-     * preferencia real a "visible", para no dejar la corrida siguiente con la barra escondida.
-     */
     @Test
     void elMenuEfectosEscondeLaBarraRealYRecuerdaLaPreferencia() throws Exception {
         Editor editor = blankEditor();

@@ -38,18 +38,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
 /**
- * Manual, "Print a Score" (linea 2207 del texto extraido): "Page Setup" (F8, papel, orientacion,
- * margenes, tamano de partitura) y "Print" (Ctrl+P, toda la partitura o un rango de paginas,
- * escala fija o Ajustar a la hoja).
- *
- * <p>El {@code PrinterJob} real de AWT no tiene costura: {@link ScorePrinting#print} y
- * {@link ScorePrinting#configurePrinterPage} llaman a {@code PrinterJob.getPrinterJob()}
- * directamente, y esa llamada abre el dialogo <em>nativo</em> del sistema operativo -no un
- * {@code JDialog} de Swing-, que ademas depende de que haya algun servicio de impresion instalado.
- * Por eso esta clase nunca aprieta "Imprimir" ni "Configurar…" en el dialogo real: verifica todo
- * el camino hasta ahi (que se abre con los datos reales de la partitura, que sus controles reales
- * reflejan lo que se elige) y despues cierra con Cancelar, que es la unica forma de probar el
- * camino sin arriesgar que el proceso quede esperando una ventana nativa que nadie va a atender.
+ * The real AWT {@code PrinterJob} has no seam: {@link ScorePrinting#print} and
+ * {@link ScorePrinting#configurePrinterPage} call {@code PrinterJob.getPrinterJob()} directly,
+ * and that call opens the operating system's <em>native</em> dialog, not a Swing
+ * {@code JDialog}, which also depends on some print service being installed. That is why this
+ * class never presses "Print" or "Configure…" in the real dialog: it verifies the whole path up
+ * to there (that it opens with the real score's data, that its real controls reflect what is
+ * chosen) and then closes with Cancel, the only way to exercise the path without risking the
+ * process waiting on a native window that nobody will handle.
  */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
@@ -96,13 +92,6 @@ class PrintAuditTest {
         }
     }
 
-    /**
-     * Con un {@link com.gstncaruso.tabpro.ui.print.Printing} falso inyectado en el MainFrame de
-     * prueba, apretar "Imprimir" de verdad -no Cancelar- es seguro: nunca se llega a un
-     * {@code PrinterJob} real. Prueba que el rango elegido en el dialogo real de tabpro llega tal
-     * cual al {@code Printable} que recibe el PrinterJob (falso), y que ese Printable pinta la
-     * partitura real y no una en blanco.
-     */
     @Test
     void alApretarImprimirLlegaAlPrinterJobFalsoConElRangoYLaPartituraRealElegidos() throws Exception {
         Editor editor = editorWithMeasures(60);
@@ -142,7 +131,6 @@ class PrintAuditTest {
     private record PrintResult(int pageResult, BufferedImage canvas) {
     }
 
-    /** Un papel bien grande, para que ninguna hoja real quede recortada por el tamano del papel. */
     private static PrintResult printOnLargeCanvas(Printable printable, int pageIndex) throws java.awt.print.PrinterException {
         Paper paper = new Paper();
         paper.setSize(5000, 7000);
@@ -174,12 +162,6 @@ class PrintAuditTest {
         return false;
     }
 
-    /**
-     * Manual, "Print" > [Position]: "Centered Document" centra la hoja en el papel cuando el
-     * ancho impreso es menor que el area imprimible. Se imprime dos veces con el mismo
-     * {@code Printing} falso -sin tildar el casillero real y despues tildandolo- y se compara,
-     * en un papel mas ancho que la hoja, donde arranca la tinta en cada caso.
-     */
     @Test
     void alTildarDocumentoCentradoElPrintableRealCorreLaHojaLaMitadDelSobranteHorizontal() throws Exception {
         Editor editor = editorWithMeasures(4);
@@ -272,13 +254,6 @@ class PrintAuditTest {
         }
     }
 
-    /**
-     * Manual, "Page Setup": papel, orientacion, margenes y tamano de partitura, con los tres
-     * botones extra (Actualizar partitura, Guardar como configuracion por defecto, Aplicar
-     * configuracion por defecto). Se ejercita solo el camino que el manual describe primero: F5
-     * [sic, F8] abre el dialogo real, cambiar el tamano de partitura y Aceptar deja la eleccion
-     * aplicada para la proxima vez que se abre la misma ventana.
-     */
     @Test
     void configurarPaginaPorElMenuAbreElDialogoRealYElTamanoElegidoQuedaAplicado() throws Exception {
         Editor editor = editorWithMeasures(4);

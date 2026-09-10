@@ -4,7 +4,6 @@ import com.gstncaruso.tabpro.midi.MicrophonePitch;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import java.util.function.Consumer;
 
-/** La entrada de audio de la maquina, tal como la usa el afinador digital. */
 final class Microphone implements Ports.Microphone {
 
     private final MicrophonePitch input = new MicrophonePitch();
