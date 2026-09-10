@@ -27,7 +27,7 @@ class TabEditFileTest {
     void readsTheTitleTheTempoAndTheBasicStructure() {
         Score score = file.read(minimalScore().bytes());
 
-        assertEquals("Cancion de prueba", score.title());
+        assertEquals("Test song", score.title());
         assertEquals(140, score.tempo());
         assertEquals(1, score.trackCount());
         assertEquals(1, score.measureCount());
@@ -37,7 +37,7 @@ class TabEditFileTest {
     void readsTheTrackAndItsTuning() {
         Score score = file.read(minimalScore().bytes());
 
-        assertEquals("Guitarra", score.track(0).name());
+        assertEquals("Guitar", score.track(0).name());
         assertEquals(6, score.track(0).stringCount());
         assertEquals(Tuning.standard().strings(), score.track(0).tuning().strings());
         assertFalse(score.track(0).isPercussion());
@@ -66,15 +66,15 @@ class TabEditFileTest {
 
     @Test
     void aFileThatIsNotTablEditFailsWithAClearMessage(@TempDir Path folder) throws Exception {
-        Path path = folder.resolve("roto.tef");
-        Files.writeString(path, "esto no es un archivo de TablEdit, ni de lejos");
+        Path path = folder.resolve("broken.tef");
+        Files.writeString(path, "this is nowhere close to a TablEdit file");
 
         assertThrows(ScoreFileException.class, () -> file.read(path));
     }
 
     @Test
     void aTruncatedFileFailsWithAClearMessage(@TempDir Path folder) throws Exception {
-        Path path = folder.resolve("cortado.tef");
+        Path path = folder.resolve("truncated.tef");
         byte[] whole = minimalScore().bytes();
         Files.write(path, java.util.Arrays.copyOf(whole, whole.length / 2));
 
@@ -92,6 +92,6 @@ class TabEditFileTest {
 
     private static TabEditFileWriter minimalScore() {
         return TabEditFixtures.oneTrackOneMeasureScore(
-                "Cancion de prueba", 140, "Guitarra", List.of(3, 5, 7, 8));
+                "Test song", 140, "Guitar", List.of(3, 5, 7, 8));
     }
 }

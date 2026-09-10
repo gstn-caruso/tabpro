@@ -16,13 +16,13 @@ class TabEditTrackReaderTest {
     @Test
     void readsTheMidiTuningAndTheTrackName() {
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(MAX_TRACK_SIZE).writeShort(1);
-        writeTrack(writer, 6, 25, 0, new int[] {64, 59, 55, 50, 45, 40}, "Guitarra");
+        writeTrack(writer, 6, 25, 0, new int[] {64, 59, 55, 50, 45, 40}, "Guitar");
 
         List<TabEditTrackHeader> tracks = reader.read(new TabEditByteReader(writer.bytes()));
 
         assertEquals(1, tracks.size());
         TabEditTrackHeader track = tracks.get(0);
-        assertEquals("Guitarra", track.name());
+        assertEquals("Guitar", track.name());
         assertEquals(6, track.stringCount());
         assertEquals(List.of(64, 59, 55, 50, 45, 40), track.tuningMidiNumbers());
         assertEquals(25, track.midiInstrument());
@@ -32,8 +32,8 @@ class TabEditTrackReaderTest {
     @Test
     void readsTheCapoAndRecognizesPercussionByInstrument96() {
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(MAX_TRACK_SIZE).writeShort(2);
-        writeTrack(writer, 6, 25, 3, new int[] {32, 37, 41, 46, 51, 56}, "Con cejilla");
-        writeTrack(writer, 4, 96, 0, new int[] {60, 55, 50, 45}, "Bateria");
+        writeTrack(writer, 6, 25, 3, new int[] {32, 37, 41, 46, 51, 56}, "With capo");
+        writeTrack(writer, 4, 96, 0, new int[] {60, 55, 50, 45}, "Drums");
 
         List<TabEditTrackHeader> tracks = reader.read(new TabEditByteReader(writer.bytes()));
 
@@ -45,14 +45,14 @@ class TabEditTrackReaderTest {
     @Test
     void severalTracksStayAlignedEachInItsOwnBlock() {
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(MAX_TRACK_SIZE).writeShort(2);
-        writeTrack(writer, 4, 33, 0, new int[] {45, 50, 55, 60}, "Bajo");
-        writeTrack(writer, 6, 25, 0, new int[] {32, 37, 41, 46, 51, 56}, "Guitarra 2");
+        writeTrack(writer, 4, 33, 0, new int[] {45, 50, 55, 60}, "Bass");
+        writeTrack(writer, 6, 25, 0, new int[] {32, 37, 41, 46, 51, 56}, "Guitar 2");
 
         List<TabEditTrackHeader> tracks = reader.read(new TabEditByteReader(writer.bytes()));
 
-        assertEquals("Bajo", tracks.get(0).name());
+        assertEquals("Bass", tracks.get(0).name());
         assertEquals(4, tracks.get(0).stringCount());
-        assertEquals("Guitarra 2", tracks.get(1).name());
+        assertEquals("Guitar 2", tracks.get(1).name());
         assertEquals(6, tracks.get(1).stringCount());
     }
 

@@ -57,9 +57,9 @@ class TabEditByteReaderTest {
 
     @Test
     void readsAShortLengthPrefixedString() {
-        TabEditByteReader reader = new TabEditByteReader(new TabEditFileWriter().writeShortString("Cancion").bytes());
+        TabEditByteReader reader = new TabEditByteReader(new TabEditFileWriter().writeShortString("Song").bytes());
 
-        assertEquals("Cancion", reader.readShortString());
+        assertEquals("Song", reader.readShortString());
     }
 
     @Test
@@ -70,7 +70,7 @@ class TabEditByteReaderTest {
         writer.writeUnsignedByte(99);
         TabEditByteReader reader = new TabEditByteReader(writer.bytes());
 
-        assertEquals("hola", reader.readShortString());
+        assertEquals("hey", reader.readShortString());
         assertEquals(99, reader.readUnsignedByte());
     }
 

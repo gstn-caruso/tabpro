@@ -44,10 +44,10 @@ final class TabEditFixtures {
 
     static byte[] scoreWithPercussionTrack() {
         TabEditFileWriter writer = minimalHeader(120);
-        writeSongMetadata(writer, "Con bateria", "", "", "");
+        writeSongMetadata(writer, "With drums", "", "", "");
         writeOneMeasure(writer, 4, 4);
         int percussionMidiInstrument = 96;
-        writeOneTrack(writer, 4, percussionMidiInstrument, 0, 8, 8, new int[] {49, 41, 32, 42}, "Bateria");
+        writeOneTrack(writer, 4, percussionMidiInstrument, 0, 8, 8, new int[] {49, 41, 32, 42}, "Drums");
         writePrintMetadata(writer);
         writer.writeInt(-1);
         return writer.bytes();
