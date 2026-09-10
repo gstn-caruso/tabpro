@@ -13,10 +13,10 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
 /**
- * Las barras de herramientas, en las mismas tres filas que usa Guitar Pro: el
- * archivo y la edicion, la estructura y el sonido, y las figuras y los efectos.
- * Ver > Menus y barras deja elegir cada fila por separado, ademas del interruptor
- * general que las esconde a todas juntas.
+ * Las barras de herramientas, con los mismos cuatro grupos que usa Guitar Pro 5: arriba, el
+ * archivo y la edicion, la estructura y el sonido, y las figuras; abajo, pegada a la mesa de
+ * mezcla, la barra de efectos ({@link #effectsComponent()}). Ver > Menus y barras deja elegir
+ * cada fila por separado, ademas del interruptor general que esconde las tres de arriba juntas.
  */
 public final class ToolBars {
 
@@ -25,12 +25,14 @@ public final class ToolBars {
     final JToolBar documentToolBar;
     final JToolBar structureToolBar;
     final JToolBar notationToolBar;
+    final JToolBar effectsToolBar;
 
     public ToolBars(Commands commands) {
         this.commands = commands;
         documentToolBar = leftAligned(documentRow());
         structureToolBar = leftAligned(structureRow());
         notationToolBar = leftAligned(notationRow());
+        effectsToolBar = leftAligned(effectsRow());
         rows.setLayout(new BoxLayout(rows, BoxLayout.Y_AXIS));
         rows.setBackground(Palette.panel());
         rows.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Palette.separator()));
@@ -39,8 +41,17 @@ public final class ToolBars {
         rows.add(notationToolBar);
     }
 
+    /** Las tres filas de arriba: documento y edicion, estructura y sonido, figuras. */
     public JComponent component() {
         return rows;
+    }
+
+    /**
+     * La barra de efectos, la cuarta fila del manual: en Guitar Pro 5 va abajo de la partitura,
+     * pegada a la mesa de mezcla, no arriba junto a las otras tres.
+     */
+    public JComponent effectsComponent() {
+        return effectsToolBar;
     }
 
     public void setVisible(boolean visible) {
@@ -76,6 +87,15 @@ public final class ToolBars {
 
     public boolean isNotationToolBarVisible() {
         return notationToolBar.isVisible();
+    }
+
+    /** Ver > Menus y barras: la fila de efectos, elegible por separado como las otras tres. */
+    public void setEffectsToolBarVisible(boolean visible) {
+        effectsToolBar.setVisible(visible);
+    }
+
+    public boolean isEffectsToolBarVisible() {
+        return effectsToolBar.isVisible();
     }
 
     /**
@@ -163,6 +183,30 @@ public final class ToolBars {
         add(bar, "bar.octave8va", "bar.octave8vb", "bar.octave15ma", "bar.octave15mb");
         bar.addSeparator();
         add(bar, "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak");
+        return bar;
+    }
+
+    /**
+     * Guitar Pro 5, manual pagina 14, barra de efectos: va abajo de la partitura, pegada a la
+     * mesa de mezcla, no junto a las otras tres filas de arriba.
+     */
+    private JToolBar effectsRow() {
+        JToolBar bar = emptyBar();
+        add(bar, "effect.deadNote", "effect.graceNote", "effect.ghostNote", "effect.accent",
+                "effect.heavyAccent", "effect.letRing", "effect.harmonics");
+        bar.addSeparator();
+        add(bar, "effect.hammer", "effect.legatoSlide", "effect.bend", "effect.tremoloBar",
+                "effect.vibrato", "effect.wideVibrato");
+        bar.addSeparator();
+        add(bar, "effect.trill", "effect.tremoloPicking", "effect.palmMute", "effect.staccato");
+        bar.addSeparator();
+        add(bar, "effect.tapping", "effect.slapping", "effect.popping");
+        bar.addSeparator();
+        add(bar, "effect.fadeIn");
+        bar.addSeparator();
+        add(bar, "note.chord", "effect.text", "note.mixTableChange", "note.fingering");
+        bar.addSeparator();
+        add(bar, "effect.strokeUp", "effect.strokeDown");
         return bar;
     }
 

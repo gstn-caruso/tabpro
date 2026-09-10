@@ -284,8 +284,27 @@ public final class Icons {
         return GlyphIcon.overlaid(SIZE, NOTEHEAD_BLACK, NOTEHEAD_PARENTHESIS);
     }
 
+    /** Una nota de adorno: la misma cabeza que las demas, mas chica y corrida hacia arriba. */
+    public static Icon graceNote() {
+        return icon((graphics, size) -> {
+            graphics.fill(Glyphs.noteHead(size * 0.4, size * 0.7, size * 0.28, false));
+            graphics.setStroke(thin());
+            graphics.draw(new Line2D.Double(size * 0.52, size * 0.58, size * 0.52, size * 0.22));
+            graphics.draw(new Line2D.Double(size * 0.52, size * 0.22, size * 0.68, size * 0.32));
+        });
+    }
+
     public static Icon accent() {
         return new GlyphIcon(SIZE, ARTIC_ACCENT_ABOVE);
+    }
+
+    /** El caret del acento marcado: mas alto y con trazo mas grueso que el acento simple. */
+    public static Icon heavyAccent() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(new BasicStroke(size / 9f));
+            graphics.draw(new Line2D.Double(size * 0.2, size * 0.7, size * 0.5, size * 0.28));
+            graphics.draw(new Line2D.Double(size * 0.5, size * 0.28, size * 0.8, size * 0.7));
+        });
     }
 
     public static Icon staccato() {
@@ -303,6 +322,15 @@ public final class Icons {
         return icon((graphics, size) -> {
             graphics.setStroke(new BasicStroke(size / 10f));
             graphics.draw(Glyphs.wave(size * 0.12, size * 0.88, size * 0.5, size * 0.28));
+        });
+    }
+
+    /** La palanca de tremolo: la misma onda del vibrato, con el mango que la mueve. */
+    public static Icon tremoloBar() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(thin());
+            graphics.draw(Glyphs.wave(size * 0.14, size * 0.7, size * 0.6, size * 0.14));
+            graphics.draw(new Line2D.Double(size * 0.7, size * 0.6, size * 0.9, size * 0.28));
         });
     }
 
@@ -337,6 +365,32 @@ public final class Icons {
 
     public static Icon harmonic() {
         return new GlyphIcon(SIZE, NOTEHEAD_DIAMOND_WHITE);
+    }
+
+    /** El trino, abreviado como en el manual. */
+    public static Icon trill() {
+        return letter("tr");
+    }
+
+    /** El tremolo de pua: tres trazos diagonales cortos, como los golpes repetidos. */
+    public static Icon tremoloPicking() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(thin());
+            for (int stroke = 0; stroke < 3; stroke++) {
+                double y = size * (0.3 + stroke * 0.22);
+                graphics.draw(new Line2D.Double(size * 0.24, y + size * 0.14, size * 0.76, y));
+            }
+        });
+    }
+
+    /** El "fade in" del manual, abreviado con el mismo signo que usa la partitura. */
+    public static Icon fadeIn() {
+        return letter("<");
+    }
+
+    /** La digitacion, con la misma mano que usa el manual para elegirla. */
+    public static Icon fingering() {
+        return svgIcon("hand-click");
     }
 
     public static Icon strokeDown() {

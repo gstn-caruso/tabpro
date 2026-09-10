@@ -72,6 +72,20 @@ class ToolBarsOrderTest {
                 "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak");
     }
 
+    @Test
+    void laFilaDeEfectosSigueElOrdenDeGuitarPro5() {
+        assertOrder(toolBars.effectsToolBar,
+                "effect.deadNote", "effect.graceNote", "effect.ghostNote", "effect.accent",
+                "effect.heavyAccent", "effect.letRing", "effect.harmonics", SEP,
+                "effect.hammer", "effect.legatoSlide", "effect.bend", "effect.tremoloBar",
+                "effect.vibrato", "effect.wideVibrato", SEP,
+                "effect.trill", "effect.tremoloPicking", "effect.palmMute", "effect.staccato", SEP,
+                "effect.tapping", "effect.slapping", "effect.popping", SEP,
+                "effect.fadeIn", SEP,
+                "note.chord", "effect.text", "note.mixTableChange", "note.fingering", SEP,
+                "effect.strokeUp", "effect.strokeDown");
+    }
+
     private void assertOrder(JToolBar bar, String... tokens) {
         List<Object> expected = new ArrayList<>();
         for (String token : tokens) {

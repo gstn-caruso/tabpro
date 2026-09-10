@@ -207,7 +207,7 @@ public final class Commands {
         define("note.dynamics", "Dinámica…", dialogs::dynamics);
         define("note.soundDuration", "Duración del sonido…", dialogs::soundDuration)
                 .withIcon(Icons.soundDuration());
-        define("note.fingering", "Digitación…", dialogs::fingering);
+        define("note.fingering", "Digitación…", dialogs::fingering).withIcon(Icons.fingering());
         define("note.chord", "Acorde…", dialogs::chordDiagram).withAccelerator("A").withIcon(Icons.chordDiagram());
         define("note.mixTableChange", "Cambio de parámetros…", dialogs::mixTableChange)
                 .withAccelerator("F10").withIcon(Icons.mixTable());
@@ -285,12 +285,13 @@ public final class Commands {
         define("effect.slideOutUpwards", "Saliendo hacia arriba", () -> editor.setSlide(SlideType.OUT_UPWARDS));
         define("effect.noSlide", "Sin slide", () -> editor.setSlide(null));
         define("effect.bend", "Bend…", dialogs::bend).withAccelerator("B").withIcon(Icons.bend());
-        define("effect.tremoloBar", "Palanca…", dialogs::tremoloBar);
+        define("effect.tremoloBar", "Palanca…", dialogs::tremoloBar).withIcon(Icons.tremoloBar());
         define("effect.vibrato", "Vibrato", () -> editor.toggleOrnament(Ornament.VIBRATO))
                 .withAccelerator("V").withIcon(Icons.vibrato());
         define("effect.wideVibrato", "Vibrato amplio", editor::toggleWideVibrato).withIcon(Icons.wideVibrato());
-        define("effect.trill", "Trino…", dialogs::trill);
-        define("effect.tremoloPicking", "Trémolo de púa…", dialogs::tremoloPicking);
+        define("effect.trill", "Trino…", dialogs::trill).withIcon(Icons.trill());
+        define("effect.tremoloPicking", "Trémolo de púa…", dialogs::tremoloPicking)
+                .withIcon(Icons.tremoloPicking());
         define("effect.palmMute", "Palm mute", () -> editor.toggleOrnament(Ornament.PALM_MUTE))
                 .withAccelerator("P").withIcon(Icons.letter("PM"));
         define("effect.letRing", "Let ring", () -> editor.toggleOrnament(Ornament.LET_RING))
@@ -303,9 +304,11 @@ public final class Commands {
                 .withAccelerator("O").withIcon(Icons.ghostNote());
         define("effect.accent", "Nota acentuada", () -> editor.toggleOrnament(Ornament.ACCENTED))
                 .withIcon(Icons.accent());
-        define("effect.heavyAccent", "Nota muy acentuada", () -> editor.toggleOrnament(Ornament.HEAVY_ACCENTED));
-        define("effect.fadeIn", "Fade in", editor::toggleFadeIn).withAccelerator("F");
-        define("effect.graceNote", "Nota de adorno…", dialogs::graceNote).withAccelerator("G");
+        define("effect.heavyAccent", "Nota muy acentuada", () -> editor.toggleOrnament(Ornament.HEAVY_ACCENTED))
+                .withIcon(Icons.heavyAccent());
+        define("effect.fadeIn", "Fade in", editor::toggleFadeIn).withAccelerator("F").withIcon(Icons.fadeIn());
+        define("effect.graceNote", "Nota de adorno…", dialogs::graceNote)
+                .withAccelerator("G").withIcon(Icons.graceNote());
         define("effect.harmonics", "Armónicos…", dialogs::harmonics).withIcon(Icons.harmonic());
         define("effect.tapping", "Tapping", editor::toggleTapping).withIcon(Icons.letter("T"));
         define("effect.slapping", "Slap", editor::toggleSlapping).withIcon(Icons.letter("S"));
