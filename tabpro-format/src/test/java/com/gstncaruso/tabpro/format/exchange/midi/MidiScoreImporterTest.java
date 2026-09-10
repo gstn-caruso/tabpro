@@ -305,11 +305,11 @@ class MidiScoreImporterTest {
         Path path = export(new Score("Prueba", 120, List.of(track)), tempDir);
         List<Integer> indices = importer.tracksIn(path).stream().map(MidiTrackSummary::index).toList();
 
-        Score sinRestringir = importer.importQuick(path, indices, false);
-        Score conPrecisionDeCorchea = importer.importQuick(path, indices, false, Optional.of(NoteValue.EIGHTH));
+        Score withoutQuantizing = importer.importQuick(path, indices, false);
+        Score withEighthNotePrecision = importer.importQuick(path, indices, false, Optional.of(NoteValue.EIGHTH));
 
-        assertEquals(new Duration(NoteValue.SIXTEENTH, true), sinRestringir.track(0).measure(0).beat(0).duration());
-        assertEquals(Duration.of(NoteValue.EIGHTH), conPrecisionDeCorchea.track(0).measure(0).beat(0).duration());
+        assertEquals(new Duration(NoteValue.SIXTEENTH, true), withoutQuantizing.track(0).measure(0).beat(0).duration());
+        assertEquals(Duration.of(NoteValue.EIGHTH), withEighthNotePrecision.track(0).measure(0).beat(0).duration());
     }
 
     @Test
