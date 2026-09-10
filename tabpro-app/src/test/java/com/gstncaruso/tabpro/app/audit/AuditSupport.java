@@ -224,6 +224,24 @@ final class AuditSupport {
         return null;
     }
 
+    static javax.swing.JRadioButton findRadioButton(Container root, String text) {
+        if (root instanceof javax.swing.JRadioButton button && text.equals(button.getText())) {
+            return button;
+        }
+        for (Component child : root.getComponents()) {
+            if (child instanceof javax.swing.JRadioButton button && text.equals(button.getText())) {
+                return button;
+            }
+            if (child instanceof Container container) {
+                javax.swing.JRadioButton found = findRadioButton(container, text);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
     static javax.swing.JCheckBox findCheckBox(Container root, String text) {
         if (root instanceof javax.swing.JCheckBox box && text.equals(box.getText())) {
             return box;
