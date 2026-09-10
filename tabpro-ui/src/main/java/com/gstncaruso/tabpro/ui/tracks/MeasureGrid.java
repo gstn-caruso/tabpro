@@ -35,7 +35,7 @@ public final class MeasureGrid extends JComponent {
      */
     public static final int NUMBERS_HEIGHT = TrackPanel.HEADER_HEIGHT - MarkerZone.HEIGHT;
 
-    private static final Color PLAYING_TINT = new Color(
+    static final Color PLAYING_TINT = new Color(
             ScoreColors.PLAYING_MEASURE.getRed(),
             ScoreColors.PLAYING_MEASURE.getGreen(),
             ScoreColors.PLAYING_MEASURE.getBlue(),

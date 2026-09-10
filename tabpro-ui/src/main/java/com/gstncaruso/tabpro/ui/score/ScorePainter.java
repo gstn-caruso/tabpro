@@ -224,6 +224,12 @@ public final class ScorePainter {
         g.fillRect(beat.x, top, 1, bottom - top);
     }
 
+    static final Color INCOMPLETE_MEASURE_TINT = new Color(
+            ScoreColors.INCOMPLETE_MEASURE.getRed(),
+            ScoreColors.INCOMPLETE_MEASURE.getGreen(),
+            ScoreColors.INCOMPLETE_MEASURE.getBlue(),
+            40);
+
     /** El compas que no suma lo que su medida pide se tine de rojo, salvo el que se esta editando. */
     private static void paintIncompleteMeasureBackground(
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, boolean beingEdited) {
@@ -232,8 +238,7 @@ public final class ScorePainter {
             return;
         }
         Rectangle bounds = layout.measureBounds(trackIndex, measureIndex);
-        Color warn = ScoreColors.INCOMPLETE_MEASURE;
-        g.setColor(new Color(warn.getRed(), warn.getGreen(), warn.getBlue(), 40));
+        g.setColor(INCOMPLETE_MEASURE_TINT);
         g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
     }
 
