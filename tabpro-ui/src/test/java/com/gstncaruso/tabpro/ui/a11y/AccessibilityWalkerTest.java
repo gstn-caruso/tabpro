@@ -300,10 +300,10 @@ class AccessibilityWalkerTest {
     }
 
     @Test
-    void unComboConRenderPropioNoEsUnaViolacionAunqueElTextoCoincidaConElToString() {
+    void unComboConRenderPropioQueMuestraElNombreCrudoDeUnEnumEsUnaViolacion() {
         JPanel panel = new JPanel();
         JLabel etiqueta = new JLabel("Figura");
-        JComboBox<Figura> combo = new JComboBox<>(Figura.values());
+        JComboBox<Figura> combo = new JComboBox<>(new Figura[] {Figura.NEGRA});
         etiqueta.setLabelFor(combo);
         combo.setRenderer(new DefaultListCellRenderer() {
 
@@ -318,7 +318,10 @@ class AccessibilityWalkerTest {
         panel.add(etiqueta);
         panel.add(combo);
 
-        assertTrue(walker.walk(panel).isEmpty());
+        List<Violation> violaciones = walker.walk(panel);
+
+        assertEquals(1, violaciones.size());
+        assertEquals("toString() crudo: NEGRA", violaciones.get(0).reason());
     }
 
     @Test

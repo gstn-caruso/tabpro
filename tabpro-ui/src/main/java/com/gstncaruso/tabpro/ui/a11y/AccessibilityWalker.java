@@ -28,15 +28,6 @@ public final class AccessibilityWalker {
     /** "labeledBy" es la client property que JLabel#setLabelFor deja en el componente etiquetado. */
     private static final String LABELED_BY_PROPERTY = "labeledBy";
 
-    /**
-     * La clase del renderer que trae un combo o una lista recien creados, sin importar que
-     * Look and Feel este instalado: si un componente real sigue teniendo esta misma clase, es
-     * que nadie le puso un renderer propio todavia.
-     */
-    private static final Class<?> DEFAULT_COMBO_RENDERER_CLASS = new JComboBox<>().getRenderer().getClass();
-
-    private static final Class<?> DEFAULT_LIST_RENDERER_CLASS = new JList<>().getCellRenderer().getClass();
-
     public List<Violation> walk(Container root) {
         List<Violation> violations = new ArrayList<>();
         visit(root, root.getClass().getSimpleName(), violations);
@@ -77,25 +68,18 @@ public final class AccessibilityWalker {
     }
 
     /**
-     * Un combo o una lista que todavia usa el renderer por defecto para pintar un enum o un
-     * record deja ver el toString() crudo del dominio (p.ej. "QUARTER" en vez de "Negra"). Si
-     * ya tiene un renderer propio no importa que su texto coincida por casualidad con el
-     * toString(): la UI dejo de depender de el.
+     * Un combo o una lista que pinta un enum o un record deja ver su toString() crudo
+     * (p.ej. "QUARTER" en vez de "Negra") sin importar si tiene el renderer por defecto o uno
+     * propio: un renderer propio puede seguir mostrando el toString() crudo por accidente.
      */
     private List<Violation> rawDomainTextViolations(Component component, String path) {
-        if (component instanceof JComboBox<?> combo
-                && isDefaultRenderer(combo.getRenderer(), DEFAULT_COMBO_RENDERER_CLASS)) {
+        if (component instanceof JComboBox<?> combo) {
             return rawDomainTextViolations(path, combo.getModel(), combo.getRenderer());
         }
-        if (component instanceof JList<?> list
-                && isDefaultRenderer(list.getCellRenderer(), DEFAULT_LIST_RENDERER_CLASS)) {
+        if (component instanceof JList<?> list) {
             return rawDomainTextViolations(path, list.getModel(), list.getCellRenderer());
         }
         return List.of();
-    }
-
-    private boolean isDefaultRenderer(ListCellRenderer<?> renderer, Class<?> defaultRendererClass) {
-        return renderer.getClass() == defaultRendererClass;
     }
 
     @SuppressWarnings("unchecked")
