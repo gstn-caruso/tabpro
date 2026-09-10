@@ -1,3 +1,9 @@
+## [0.33.1](https://github.com/gstn-caruso/tabpro/compare/v0.33.0...v0.33.1) (2026-09-10)
+
+### Bug Fixes
+
+* **ui:** la paleta cumple el contraste WCAG AA en los dos temas ([#116](https://github.com/gstn-caruso/tabpro/issues/116)) ([6d51236](https://github.com/gstn-caruso/tabpro/commit/6d512363c08dcce0268573c71308ec9f660209dc)), closes [#9](https://github.com/gstn-caruso/tabpro/issues/9) [ScoreColors#onPaper](https://github.com/gstn-caruso/ScoreColors/issues/onPaper)
+
 ## [0.33.0](https://github.com/gstn-caruso/tabpro/compare/v0.32.0...v0.33.0) (2026-09-10)
 
 ### Features
