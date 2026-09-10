@@ -11,6 +11,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 
 /**
  * La barra de abajo de la ventana: pagina, posicion del cursor, si el compas actual esta
@@ -24,6 +25,7 @@ public final class StatusBar extends JPanel {
     private final JLabel position = new JLabel();
     private final JLabel completeness = new JLabel();
     private final JLabel trackName = new JLabel();
+    private final JLabel duration = new JLabel();
     private final JLabel credits = new JLabel();
 
     public StatusBar(Editor editor) {
@@ -36,25 +38,21 @@ public final class StatusBar extends JPanel {
         this.pagination = pagination;
         setLayout(new BorderLayout());
         setBackground(ScoreColors.SURFACE);
-        setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, ScoreColors.BORDER),
-                BorderFactory.createEmptyBorder(3, 8, 3, 8)));
+        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, ScoreColors.BORDER));
 
         JPanel left = new JPanel();
         left.setOpaque(false);
         left.setLayout(new BoxLayout(left, BoxLayout.X_AXIS));
-        left.add(styled(page));
-        left.add(separator());
-        left.add(styled(position));
-        left.add(separator());
-        left.add(styled(completeness));
-        left.add(separator());
-        left.add(styled(trackName));
+        left.add(sunkenPanel(page, "Página"));
+        left.add(sunkenPanel(position, "Posición"));
+        left.add(sunkenPanel(completeness, "Estado del compás"));
+        left.add(sunkenPanel(trackName, "Pista"));
+        left.add(sunkenPanel(duration, "Duración del compás"));
 
-        styled(credits).setHorizontalAlignment(SwingConstants.RIGHT);
+        styled(credits).setHorizontalAlignment(SwingConstants.CENTER);
 
         add(left, BorderLayout.WEST);
-        add(credits, BorderLayout.EAST);
+        add(sunkenPanel(credits, "Título y autor"), BorderLayout.CENTER);
 
         refresh();
         editor.addListener(this::refresh);
@@ -76,6 +74,10 @@ public final class StatusBar extends JPanel {
         return trackName.getText();
     }
 
+    String durationText() {
+        return duration.getText();
+    }
+
     String creditsText() {
         return credits.getText();
     }
@@ -83,12 +85,12 @@ public final class StatusBar extends JPanel {
     public void refresh() {
         StatusInfo info = StatusInfo.of(editor, pagination.get());
         page.setText("Pág. " + info.pageNumber() + "/" + info.pageCount());
-        position.setText(
-                "Compás " + info.measureNumber() + "/" + info.measureCount() + " · Pista " + info.trackNumber());
-        completeness.setText(info.measureDurationText() + " (" + info.completeness().label() + ")");
+        position.setText(String.format("%03d : %03d", info.measureNumber(), info.measureCount()));
+        completeness.setText("Compás " + info.completeness().label());
         completeness.setForeground(
                 info.completeness() == MeasureCompleteness.COMPLETE ? ScoreColors.LABEL : ScoreColors.WARNING);
         trackName.setText(info.trackName());
+        duration.setText(info.measureBeatsRatioText());
         credits.setText(creditsOf(info));
         credits.setToolTipText(BeatDescription.describe(editor.cursor(), editor.currentBeat()));
     }
@@ -97,9 +99,16 @@ public final class StatusBar extends JPanel {
         return info.author().isBlank() ? info.title() : info.title() + " — " + info.author();
     }
 
-    private JLabel separator() {
-        JLabel separator = new JLabel(" · ");
-        return styled(separator);
+    private JPanel sunkenPanel(JLabel label, String accessibleName) {
+        styled(label);
+        label.getAccessibleContext().setAccessibleName(accessibleName);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createBevelBorder(BevelBorder.LOWERED, ScoreColors.KNOB_BODY, ScoreColors.BORDER),
+                BorderFactory.createEmptyBorder(4, 8, 4, 8)));
+        panel.add(label, BorderLayout.CENTER);
+        return panel;
     }
 
     private JLabel styled(JLabel label) {
