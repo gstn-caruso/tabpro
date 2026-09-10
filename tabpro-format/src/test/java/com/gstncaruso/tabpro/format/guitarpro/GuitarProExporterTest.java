@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
+import com.gstncaruso.tabpro.core.model.LyricLine;
+import com.gstncaruso.tabpro.core.model.Lyrics;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
@@ -216,6 +218,18 @@ class GuitarProExporterTest {
         Score reread = exportAndReread(original);
         assertFalse(reread.track(0).measure(0).usesTwoVoices());
         assertEquals(0, reread.track(0).measure(0).beat(0).noteOn(6).orElseThrow().fret());
+    }
+
+    @Test
+    void roundTripsMultilineLyricsText() {
+        Lyrics lyrics = Lyrics.none().onTrack(0).withLine(0, new LyricLine(1, "primera linea\nsegunda linea"));
+        Score original = new Score(
+                ScoreInfo.titled("Prueba"), 120, List.of(Track.standardGuitar("Guitarra").withMeasure(0, unaNota(6, 0))),
+                lyrics);
+
+        Score reread = exportAndReread(original);
+
+        assertEquals("primera linea\nsegunda linea", reread.lyrics().line(0).text());
     }
 
     @Test

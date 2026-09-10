@@ -1,29 +1,26 @@
 package com.gstncaruso.tabpro.ui.dialogs.info;
 
 import com.gstncaruso.tabpro.core.model.LyricLine;
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 
-/** Una linea de letra: su compas inicial y el texto con la sintaxis de silabas. */
-final class LyricLineRow extends JPanel {
+/** El contenido de una pestana de linea: su compas inicial y un bloque de texto multilinea con la sintaxis de silabas. */
+final class LyricLineRow extends FormPanel {
+
+    private static final int TEXT_ROWS = 12;
 
     private final JSpinner startingMeasure = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
-    private final JTextField text = new JTextField();
+    private final JTextArea text = new JTextArea(TEXT_ROWS, 0);
 
     LyricLineRow(LyricLine initial, int lineNumber) {
-        super(new BorderLayout(8, 0));
         setOpaque(false);
-        String startingMeasureName = "Compás inicial de la línea " + lineNumber;
-        startingMeasure.getAccessibleContext().setAccessibleName(startingMeasureName);
-        startingMeasure.setToolTipText(startingMeasureName);
-        String textName = "Línea " + lineNumber;
-        text.getAccessibleContext().setAccessibleName(textName);
-        text.setToolTipText(textName);
-        add(startingMeasure, BorderLayout.WEST);
-        add(text, BorderLayout.CENTER);
+        text.setLineWrap(true);
+        text.setWrapStyleWord(true);
+        addRow("Compás inicial de la línea " + lineNumber, startingMeasure);
+        addRow("Línea " + lineNumber, new JScrollPane(text));
         apply(initial);
     }
 
@@ -36,7 +33,7 @@ final class LyricLineRow extends JPanel {
         return new LyricLine((Integer) startingMeasure.getValue(), text.getText());
     }
 
-    JTextField textField() {
+    JTextArea textArea() {
         return text;
     }
 }

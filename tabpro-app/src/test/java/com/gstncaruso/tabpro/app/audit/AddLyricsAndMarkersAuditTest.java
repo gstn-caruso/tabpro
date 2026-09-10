@@ -16,6 +16,7 @@ import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import java.awt.Container;
 import javax.swing.JMenuItem;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -43,14 +44,12 @@ class AddLyricsAndMarkersAuditTest {
                 Container letra = tabContent(dialog, "Letra");
                 assertNotNull(letra, "no encontre la solapa real 'Letra'");
 
-                // Cada fila tiene ademas un JSpinner (compas inicial), y por adentro un
-                // JSpinner es, el, un JFormattedTextField: se lo saca para quedarse solo con
-                // los campos reales de texto de la letra.
-                var campos = findComponents(letra, JTextField.class).stream()
-                        .filter(field -> !(field instanceof javax.swing.JFormattedTextField))
-                        .toList();
-                assertTrue(campos.size() >= 1, "no encontre los campos reales de las lineas de letra");
-                campos.get(0).setText("Hola mundo");
+                Container primeraLinea = tabContent(letra, "Línea 1");
+                assertNotNull(primeraLinea, "no encontre la pestaña real de la linea 1");
+
+                var areas = findComponents(primeraLinea, JTextArea.class);
+                assertTrue(areas.size() >= 1, "no encontre el area real de texto de la primer linea");
+                areas.get(0).setText("Hola mundo");
 
                 findButton(dialog, "Aceptar").doClick();
             });
