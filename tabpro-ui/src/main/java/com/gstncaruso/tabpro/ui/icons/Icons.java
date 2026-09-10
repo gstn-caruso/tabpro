@@ -177,6 +177,11 @@ public final class Icons {
         return new GlyphIcon(SIZE, TIME_SIG_4, TIME_SIG_4);
     }
 
+    /** El feel de las corcheas (swing/shuffle), abreviado como no lo dice ningun glifo SMuFL. */
+    public static Icon tripletFeel() {
+        return letter("SW");
+    }
+
     public static Icon marker() {
         return svgIcon("flag-3");
     }
@@ -570,6 +575,10 @@ public final class Icons {
 
     public static Icon tuner() {
         return svgIcon("gauge");
+    }
+
+    public static Icon transpose() {
+        return svgIcon("arrows-up-down");
     }
 
     public static Icon scales() {

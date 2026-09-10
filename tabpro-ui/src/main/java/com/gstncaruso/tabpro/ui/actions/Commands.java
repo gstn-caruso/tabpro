@@ -139,7 +139,7 @@ public final class Commands {
         define("bar.delete", "Borrar el compás", editor::deleteMeasure).withIcon(Icons.deleteBar());
         define("bar.keySignature", "Armadura…", dialogs::keySignature).withIcon(Icons.keySignature());
         define("bar.timeSignature", "Medida del compás…", dialogs::timeSignature).withIcon(Icons.timeSignature());
-        define("bar.tripletFeel", "Triplet feel…", dialogs::tripletFeel);
+        define("bar.tripletFeel", "Triplet feel…", dialogs::tripletFeel).withIcon(Icons.tripletFeel());
         define("bar.doubleBar", "Doble barra", editor::toggleDoubleBar).withIcon(Icons.doubleBar());
         define("bar.repeatOpen", "Repetición: abrir", editor::toggleRepeatOpen).withIcon(Icons.repeatOpen());
         define("bar.repeatClose", "Repetición: cerrar…", dialogs::repeatClose).withIcon(Icons.repeatClose());
@@ -352,7 +352,7 @@ public final class Commands {
         define("tool.arrangeBars", "Organizador de compases…", dialogs::arrangeBars);
         define("tool.completeBars", "Completar y reducir compases con silencios…", dialogs::completeBarsWithRests);
         define("tool.automaticFingering", "Digitación automática…", dialogs::automaticFingering);
-        define("tool.transpose", "Transponer…", dialogs::transpose);
+        define("tool.transpose", "Transponer…", dialogs::transpose).withIcon(Icons.transpose());
         define("tool.checkBarDurations", "Verificar la duración de los compases", dialogs::checkBarDurations)
                 .withAccelerator("F4").withIcon(Icons.checkBarDurations());
         define("tool.scales", "Escalas…", dialogs::scales).withIcon(Icons.scales());

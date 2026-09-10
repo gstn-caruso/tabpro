@@ -148,7 +148,7 @@ public final class ToolBars {
      */
     private JToolBar structureRow() {
         JToolBar bar = emptyBar();
-        add(bar, "bar.keySignature", "bar.timeSignature");
+        add(bar, "bar.keySignature", "bar.timeSignature", "bar.tripletFeel");
         bar.addSeparator();
         add(bar, "bar.repeatOpen", "bar.repeatClose");
         bar.addSeparator();
@@ -156,10 +156,14 @@ public final class ToolBars {
         bar.addSeparator();
         add(bar, "bar.alternateEndings", "bar.forceLineBreak", "bar.preventLineBreak");
         bar.addSeparator();
-        add(bar, "marker.insert", "marker.previous", "marker.next", "marker.list");
+        // El manual trae "editar" y "lista" como botones distintos; el catalogo no distingue
+        // editar un marcador puntual de abrir la lista entera, asi que los dos abren marker.list.
+        add(bar, "marker.insert", "marker.list", "marker.previous", "marker.next", "marker.list");
         bar.addSeparator();
         add(bar, "sound.play", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
                 "sound.loop");
+        bar.addSeparator();
+        add(bar, "tool.transpose");
         bar.addSeparator();
         add(bar, "nav.previousBar", "nav.nextBar", "tool.scales", "tool.tuner");
         bar.addSeparator();
