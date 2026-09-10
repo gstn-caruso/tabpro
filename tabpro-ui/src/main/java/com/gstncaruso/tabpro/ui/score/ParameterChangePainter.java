@@ -35,6 +35,10 @@ final class ParameterChangePainter {
      */
     static void paintInitialTempo(
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, int scoreTempo) {
+        ParameterChange firstBeatChange = track.measure(measureIndex).beat(0).effects().parameterChange();
+        if (firstBeatChange.changes(SoundParameter.TEMPO)) {
+            return;
+        }
         Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, 0);
         int centerX = bounds.x + bounds.width / 2;
         int bottom = layout.staffTop(trackIndex, measureIndex) - STAFF_CLEARANCE;

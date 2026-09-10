@@ -112,6 +112,19 @@ class ParameterChangePainterTest {
     }
 
     @Test
+    void theInitialTempoIsSkippedWhenTheFirstBeatAlreadyChangesTempo() {
+        Measure measure = changingAt(0, change(SoundParameter.TEMPO, 90));
+        Track track = guitarWith(measure);
+        ScoreLayout layout = ScoreLayout.of(scoreWith(measure), WIDTH, VisibleTracks.all());
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        ParameterChangePainter.paintInitialTempo(lienzo, layout, track, 0, 0, 120);
+
+        assertFalse(lienzo.dibujaColor(ScoreColors.TEMPO),
+                "el cambio de tempo del beat 0 ya lo escribe; el tempo inicial no se duplica");
+    }
+
+    @Test
     void aChangeThatTouchesTempoAndPanShowsBothThings() {
         ParameterChange both = change(SoundParameter.TEMPO, 90).changing(SoundParameter.PAN, 20);
         Painted painted = paint(scoreWith(changingAt(1, both)));
