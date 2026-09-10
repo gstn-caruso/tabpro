@@ -55,6 +55,7 @@ import com.gstncaruso.tabpro.ui.sound.MidiSetupDialog;
 import com.gstncaruso.tabpro.ui.sound.MidiSetupPreferences;
 import com.gstncaruso.tabpro.ui.sound.StringAssignment;
 import com.gstncaruso.tabpro.ui.sound.RelativeTempoDialog;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.instruments.BeatViews;
 import com.gstncaruso.tabpro.ui.menu.MenuBar;
 import com.gstncaruso.tabpro.ui.score.HorizontalMultitrack;
@@ -355,8 +356,10 @@ public final class MainFrame extends JFrame {
 
     private void updateStepCommandLabels() {
         boolean playing = transport.isPlaying();
-        commands.get("sound.stepBack").renameTo(playing ? "Compás anterior" : "Nota anterior");
-        commands.get("sound.stepForward").renameTo(playing ? "Compás siguiente" : "Nota siguiente");
+        commands.get("sound.stepBack").renameTo(playing
+                ? Texts.get("menus.sound.stepBack.whilePlaying") : Texts.get("menus.sound.stepBack"));
+        commands.get("sound.stepForward").renameTo(playing
+                ? Texts.get("menus.sound.stepForward.whilePlaying") : Texts.get("menus.sound.stepForward"));
     }
 
     private void showError(ScoreFileException e) {
