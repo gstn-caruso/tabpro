@@ -151,6 +151,11 @@ public final class ChordEditorModel {
         applySelection(selection.withBass(bass));
     }
 
+    /** El bajo se fija a la nota que resulta de aplicar ese grado a la fundamental: la inversion. */
+    public void selectInversion(Interval degree) {
+        selectBass(degree.from(selection.root()));
+    }
+
     public void selectComplexity(ChordComplexity complexity) {
         applySelection(selection.withComplexity(complexity));
     }
