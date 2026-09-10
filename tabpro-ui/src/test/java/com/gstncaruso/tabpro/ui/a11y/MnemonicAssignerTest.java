@@ -17,4 +17,11 @@ class MnemonicAssignerTest {
     void unTextoDeUnaSolaPalabraEligeSuPrimeraLetra() {
         assertEquals(0, assigner.chooseIndex("Guardar"));
     }
+
+    @Test
+    void dosTextosDeUnaPalabraConLaMismaInicialElSegundoCaeEnOtraLetraDelTexto() {
+        assertEquals(0, assigner.chooseIndex("Sonido"));
+
+        assertEquals(1, assigner.chooseIndex("Salir"));
+    }
 }

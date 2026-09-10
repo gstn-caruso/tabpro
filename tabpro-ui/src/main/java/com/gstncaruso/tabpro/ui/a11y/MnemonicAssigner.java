@@ -23,6 +23,11 @@ public final class MnemonicAssigner {
     private List<Integer> candidateIndexes(String text) {
         List<Integer> wordInitials = wordInitialIndexes(text);
         List<Integer> candidates = new ArrayList<>(wordInitials);
+        for (int i = 0; i < text.length(); i++) {
+            if (Character.isLetter(text.charAt(i)) && !wordInitials.contains(i)) {
+                candidates.add(i);
+            }
+        }
         return candidates;
     }
 
