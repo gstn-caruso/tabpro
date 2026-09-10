@@ -28,6 +28,7 @@ public final class Preferences {
     private static final String FORCE_MULTITRACK_IN_HORIZONTAL_MODE = "forceMultitrackInHorizontalMode";
     private static final String EFFECTS_TOOL_BAR_VISIBLE = "effectsToolBarVisible";
     private static final String FRETBOARD_VISIBLE = "fretboardVisible";
+    private static final String KEYBOARD_VISIBLE = "keyboardVisible";
     private static final String SEPARATOR = "\n";
 
     private final java.util.prefs.Preferences stored;
@@ -153,5 +154,10 @@ public final class Preferences {
 
     public void setFretboardVisible(boolean visible) {
         stored.putBoolean(FRETBOARD_VISIBLE, visible);
+    }
+
+    /** Ver > Teclado [Ctrl+4]: cerrado por defecto, como en el manual, hasta que el usuario lo pide. */
+    public boolean keyboardVisible() {
+        return stored.getBoolean(KEYBOARD_VISIBLE, false);
     }
 }

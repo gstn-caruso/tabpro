@@ -174,4 +174,10 @@ class PreferencesTest {
 
         assertTrue(preferences.fretboardVisible());
     }
+
+    /** Guitar Pro 5: el teclado arranca cerrado hasta que el usuario lo pide con Ctrl+4 o Ver. */
+    @Test
+    void keyboardStartsHidden() {
+        assertFalse(preferences.keyboardVisible());
+    }
 }
