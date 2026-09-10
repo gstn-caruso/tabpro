@@ -278,6 +278,27 @@ class AccessibilityWalkerTest {
         assertTrue(walker.walk(panel).isEmpty());
     }
 
+    private enum Dinamica {
+        FORTE;
+
+        @Override
+        public String toString() {
+            return "f";
+        }
+    }
+
+    @Test
+    void unComboQueMuestraElToStringPersonalizadoDeUnEnumNoEsUnaViolacion() {
+        JPanel panel = new JPanel();
+        JLabel etiqueta = new JLabel("Dinamica");
+        JComboBox<Dinamica> combo = new JComboBox<>(new Dinamica[] {Dinamica.FORTE});
+        etiqueta.setLabelFor(combo);
+        panel.add(etiqueta);
+        panel.add(combo);
+
+        assertTrue(walker.walk(panel).isEmpty());
+    }
+
     @Test
     void unComboConRenderPropioNoEsUnaViolacionAunqueElTextoCoincidaConElToString() {
         JPanel panel = new JPanel();

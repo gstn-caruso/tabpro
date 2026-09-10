@@ -125,7 +125,7 @@ public final class AccessibilityWalker {
 
     private boolean matchesRawToString(Object item, String text) {
         if (item instanceof Enum<?> enumValue) {
-            return text.equals(enumValue.toString()) || text.equals(enumValue.name());
+            return text.equals(enumValue.name());
         }
         return text.equals(rawRecordText(item));
     }
