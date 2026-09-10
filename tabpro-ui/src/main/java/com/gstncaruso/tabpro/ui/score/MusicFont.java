@@ -76,6 +76,10 @@ final class MusicFont {
     private static final int ARTIC_STACCATO_BELOW = 0xE4A3;
     /** SMuFL U+E048 "coda": el simbolo de coda, arriba del sistema. */
     private static final int CODA = 0xE048;
+    /** SMuFL U+E0A9 "noteheadXBlack": la cabeza en X de percusion, para platillos y campanas. */
+    private static final int NOTEHEAD_X_BLACK = 0xE0A9;
+    /** SMuFL U+E0DB "noteheadDiamondBlack": la cabeza en rombo de percusion, para panderetas y afines. */
+    private static final int NOTEHEAD_DIAMOND_BLACK = 0xE0DB;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -231,6 +235,16 @@ final class MusicFont {
     /** El simbolo de coda, arriba del sistema. */
     static String coda() {
         return glyph(CODA);
+    }
+
+    /** La cabeza en X de percusion, para platillos y campanas. */
+    static String noteheadXBlack() {
+        return glyph(NOTEHEAD_X_BLACK);
+    }
+
+    /** La cabeza en rombo de percusion, para panderetas y afines. */
+    static String noteheadDiamondBlack() {
+        return glyph(NOTEHEAD_DIAMOND_BLACK);
     }
 
     /**
