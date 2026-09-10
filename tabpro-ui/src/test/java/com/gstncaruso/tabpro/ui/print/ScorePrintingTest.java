@@ -36,7 +36,7 @@ class ScorePrintingTest {
     private static final PageSetup A4 = PageSetup.defaults();
 
     @Test
-    void alAceptarElDialogoLlegaElTrabajoYElPrintableQueDibujaLaPartituraReal() throws PrinterException {
+    void acceptingTheDialogSendsTheJobAndThePrintableThatDrawsTheActualScore() throws PrinterException {
         Score score = scoreWithMeasures(4);
         PrintSettings settings = PrintSettings.everything(ScoreSheets.pageCount(score, A4));
         RecordingPrinting printing = new RecordingPrinting();
@@ -52,7 +52,7 @@ class ScorePrintingTest {
     }
 
     @Test
-    void siElDialogoDeImprimirSeCancelaNuncaLlegaAImprimirDeVerdad() throws PrinterException {
+    void ifThePrintDialogIsCancelledItNeverActuallyPrints() throws PrinterException {
         Score score = scoreWithMeasures(4);
         RecordingPrinting printing = new RecordingPrinting();
         printing.cancelPrintDialog();
@@ -64,54 +64,54 @@ class ScorePrintingTest {
     }
 
     @Test
-    void elPageFormatElegidoAlConfigurarSeConservaParaLaProximaImpresion() throws PrinterException {
+    void thePageFormatChosenWhileConfiguringIsKeptForTheNextPrint() throws PrinterException {
         Score score = scoreWithMeasures(4);
         RecordingPrinting printing = new RecordingPrinting();
-        PageFormat elegido = new PageFormat();
-        printing.chooseInPageDialog(elegido);
+        PageFormat chosen = new PageFormat();
+        printing.chooseInPageDialog(chosen);
         ScorePrinting scorePrinting = new ScorePrinting(printing);
 
         scorePrinting.configurePrinterPage();
         scorePrinting.print(score, A4, PrintSettings.everything(1), "mi-partitura.tab");
 
-        assertSame(elegido, printing.printableFormat(),
+        assertSame(chosen, printing.printableFormat(),
                 "el PageFormat elegido en Configurar tiene que ser el que se usa en la proxima impresion");
     }
 
     @Tag("integracion")
     @Test
-    void exportaUnBmpDeVerdadEnModoPagina(@TempDir Path tempDir) throws IOException {
+    void exportsAnActualBmpInPageMode(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(4);
         Path path = tempDir.resolve("partitura.bmp");
 
         ScorePrinting.exportImage(score, A4, path, ViewMode.PAGE, Zoom.whole());
 
         assertTrue(Files.exists(path));
-        BufferedImage esperada = ScoreSheets.render(score, Zoom.whole(), A4);
-        BufferedImage leida = ImageIO.read(path.toFile());
+        BufferedImage expected = ScoreSheets.render(score, Zoom.whole(), A4);
+        BufferedImage read = ImageIO.read(path.toFile());
 
-        assertEquals(esperada.getWidth(), leida.getWidth());
-        assertEquals(esperada.getHeight(), leida.getHeight());
-        assertEquals(pixelsOf(esperada), pixelsOf(leida), "el bmp tiene que verse igual que el render en memoria");
-        assertTrue(distinctColorsOf(leida).size() > 1, "la imagen no puede salir de un solo color");
+        assertEquals(expected.getWidth(), read.getWidth());
+        assertEquals(expected.getHeight(), read.getHeight());
+        assertEquals(pixelsOf(expected), pixelsOf(read), "el bmp tiene que verse igual que el render en memoria");
+        assertTrue(distinctColorsOf(read).size() > 1, "la imagen no puede salir de un solo color");
     }
 
     @Tag("integracion")
     @Test
-    void elBmpExportadoEsIdenticoAlQueEscribeBmpDocument(@TempDir Path tempDir) throws IOException {
+    void theExportedBmpIsIdenticalToWhatBmpDocumentWrites(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(4);
         Path path = tempDir.resolve("partitura.bmp");
 
         ScorePrinting.exportImage(score, A4, path, ViewMode.PAGE, Zoom.whole());
 
-        java.io.ByteArrayOutputStream esperado = new java.io.ByteArrayOutputStream();
-        BmpDocument.writeTo(ScoreSheets.render(score, Zoom.whole(), A4), esperado);
-        assertArrayEquals(esperado.toByteArray(), Files.readAllBytes(path),
+        java.io.ByteArrayOutputStream expected = new java.io.ByteArrayOutputStream();
+        BmpDocument.writeTo(ScoreSheets.render(score, Zoom.whole(), A4), expected);
+        assertArrayEquals(expected.toByteArray(), Files.readAllBytes(path),
                 "el bmp exportado tiene que ser el que escribe BmpDocument, no otro codec");
     }
 
     @Test
-    void bmpFueraDelModoPaginaAvisaYNoEscribeNada(@TempDir Path tempDir) {
+    void bmpOutsidePageModeWarnsAndWritesNothing(@TempDir Path tempDir) {
         Score score = scoreWithMeasures(4);
         Path path = tempDir.resolve("partitura.bmp");
 
@@ -124,7 +124,7 @@ class ScorePrintingTest {
 
     @Tag("integracion")
     @Test
-    void pngFueraDelModoPaginaSeExportaSinProblema(@TempDir Path tempDir) {
+    void pngOutsidePageModeExportsWithoutIssue(@TempDir Path tempDir) {
         Score score = scoreWithMeasures(4);
         Path path = tempDir.resolve("partitura.png");
 
@@ -135,47 +135,47 @@ class ScorePrintingTest {
 
     @Tag("integracion")
     @Test
-    void exportaLaImagenConElZoomQueTieneLaVentana(@TempDir Path tempDir) throws IOException {
+    void exportsTheImageWithTheWindowsZoom(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(4);
-        Path al100 = tempDir.resolve("al-100.png");
-        Path al200 = tempDir.resolve("al-200.png");
+        Path at100 = tempDir.resolve("al-100.png");
+        Path at200 = tempDir.resolve("al-200.png");
 
-        ScorePrinting.exportImage(score, A4, al100, ViewMode.PAGE, new Zoom(100));
-        ScorePrinting.exportImage(score, A4, al200, ViewMode.PAGE, new Zoom(200));
+        ScorePrinting.exportImage(score, A4, at100, ViewMode.PAGE, new Zoom(100));
+        ScorePrinting.exportImage(score, A4, at200, ViewMode.PAGE, new Zoom(200));
 
-        BufferedImage imagenAl100 = ImageIO.read(al100.toFile());
-        BufferedImage imagenAl200 = ImageIO.read(al200.toFile());
+        BufferedImage imageAt100 = ImageIO.read(at100.toFile());
+        BufferedImage imageAt200 = ImageIO.read(at200.toFile());
 
-        assertNotEquals(imagenAl100.getWidth(), imagenAl200.getWidth(),
+        assertNotEquals(imageAt100.getWidth(), imageAt200.getWidth(),
                 "la misma partitura al 100% y al 200% no puede dar el mismo ancho en pixeles");
-        assertNotEquals(imagenAl100.getHeight(), imagenAl200.getHeight(),
+        assertNotEquals(imageAt100.getHeight(), imageAt200.getHeight(),
                 "la misma partitura al 100% y al 200% no puede dar el mismo alto en pixeles");
     }
 
     @Tag("integracion")
     @Test
-    void exportaLaImagenConElModoPergaminoSinSaltosDePagina(@TempDir Path tempDir) throws IOException {
+    void exportsTheImageInParchmentModeWithoutPageBreaks(@TempDir Path tempDir) throws IOException {
         Score score = scoreWithMeasures(16);
-        Path enPagina = tempDir.resolve("pagina.png");
-        Path enPergamino = tempDir.resolve("pergamino.png");
+        Path pagePath = tempDir.resolve("pagina.png");
+        Path parchmentPath = tempDir.resolve("pergamino.png");
 
-        ScorePrinting.exportImage(score, A4, enPagina, ViewMode.PAGE, Zoom.whole());
-        ScorePrinting.exportImage(score, A4, enPergamino, ViewMode.PARCHMENT, Zoom.whole());
+        ScorePrinting.exportImage(score, A4, pagePath, ViewMode.PAGE, Zoom.whole());
+        ScorePrinting.exportImage(score, A4, parchmentPath, ViewMode.PARCHMENT, Zoom.whole());
 
-        BufferedImage imagenEnPagina = ImageIO.read(enPagina.toFile());
-        BufferedImage imagenEnPergamino = ImageIO.read(enPergamino.toFile());
+        BufferedImage pageImage = ImageIO.read(pagePath.toFile());
+        BufferedImage parchmentImage = ImageIO.read(parchmentPath.toFile());
 
-        assertNotEquals(imagenEnPagina.getHeight(), imagenEnPergamino.getHeight(),
+        assertNotEquals(pageImage.getHeight(), parchmentImage.getHeight(),
                 "en pergamino no hay saltos de pagina: el alto tiene que ser otro que en modo Pagina");
     }
 
     @Test
-    void unaImagenQueImageIoNoPuedeCodificarEnBmpAvisaEnVezDeQuedarseCallada(@TempDir Path tempDir) {
+    void anImageThatImageIoCannotEncodeAsBmpWarnsInsteadOfStayingSilent(@TempDir Path tempDir) {
         Path path = tempDir.resolve("no-se-puede.bmp");
-        BufferedImage imagenConAlfaReal = imagenConTransparenciaReal();
+        BufferedImage imageWithRealAlpha = imageWithRealTransparency();
 
         ImageExportException error = assertThrows(ImageExportException.class,
-                () -> ScorePrinting.writeImage(imagenConAlfaReal, "bmp", path));
+                () -> ScorePrinting.writeImage(imageWithRealAlpha, "bmp", path));
 
         assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("bmp"),
                 "el mensaje tiene que decir en que formato fallo");
@@ -183,22 +183,22 @@ class ScorePrintingTest {
     }
 
     @Test
-    void unaImagenQueImageIoNoPuedeCodificarEnJpgAvisaEnVezDeQuedarseCallada(@TempDir Path tempDir) {
+    void anImageThatImageIoCannotEncodeAsJpgWarnsInsteadOfStayingSilent(@TempDir Path tempDir) {
         Path path = tempDir.resolve("no-se-puede.jpg");
-        BufferedImage imagenConAlfaReal = imagenConTransparenciaReal();
+        BufferedImage imageWithRealAlpha = imageWithRealTransparency();
 
         ImageExportException error = assertThrows(ImageExportException.class,
-                () -> ScorePrinting.writeImage(imagenConAlfaReal, "jpg", path));
+                () -> ScorePrinting.writeImage(imageWithRealAlpha, "jpg", path));
 
         assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("jpg"),
                 "el mensaje tiene que decir en que formato fallo");
         assertFalse(Files.exists(path), "si ImageIO no pudo escribir nada, no puede quedar un archivo");
     }
 
-    private static BufferedImage imagenConTransparenciaReal() {
-        BufferedImage imagen = new BufferedImage(4, 4, BufferedImage.TYPE_INT_ARGB);
-        imagen.setRGB(0, 0, 0x80FF0000);
-        return imagen;
+    private static BufferedImage imageWithRealTransparency() {
+        BufferedImage image = new BufferedImage(4, 4, BufferedImage.TYPE_INT_ARGB);
+        image.setRGB(0, 0, 0x80FF0000);
+        return image;
     }
 
     private static java.util.Set<Integer> distinctColorsOf(BufferedImage image) {
