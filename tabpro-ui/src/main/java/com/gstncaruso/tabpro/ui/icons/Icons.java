@@ -42,11 +42,7 @@ public final class Icons {
     }
 
     public static Icon pageSetup() {
-        return icon((graphics, size) -> {
-            page(graphics, size);
-            graphics.setStroke(dashed());
-            graphics.draw(new Rectangle2D.Double(size * 0.32, size * 0.28, size * 0.36, size * 0.46));
-        });
+        return svgIcon("file-settings");
     }
 
     // ---- edicion ----------------------------------------------------------
