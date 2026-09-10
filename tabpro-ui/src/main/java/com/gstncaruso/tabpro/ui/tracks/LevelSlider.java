@@ -33,8 +33,8 @@ import javax.swing.UIManager;
  */
 public final class LevelSlider extends JComponent implements AccessibleControl {
 
-    private static final Color BADGE_BORDER = ScoreColors.MUTED_INK;
-    private static final Color BADGE_TEXT = ScoreColors.INK;
+    private static final Color BADGE_BACKGROUND = ScoreColors.PAGE_PAPER;
+    private static final Color BADGE_TEXT = ScoreColors.PAGE_INK;
 
     private final int min;
     private final int max;
@@ -111,9 +111,10 @@ public final class LevelSlider extends JComponent implements AccessibleControl {
         int badgeX = Math.max(0, Math.min(width - badgeWidth, centerX - badgeWidth / 2));
         int badgeY = (height - badgeHeight) / 2;
 
-        g.setColor(BADGE_BORDER);
-        g.drawRect(badgeX, badgeY, badgeWidth - 1, badgeHeight - 1);
+        g.setColor(BADGE_BACKGROUND);
+        g.fillRect(badgeX, badgeY, badgeWidth, badgeHeight);
         g.setColor(BADGE_TEXT);
+        g.drawRect(badgeX, badgeY, badgeWidth - 1, badgeHeight - 1);
         int textX = badgeX + (badgeWidth - metrics.stringWidth(text)) / 2;
         int textY = badgeY + (badgeHeight + metrics.getAscent() - metrics.getDescent()) / 2;
         g.drawString(text, textX, textY);
