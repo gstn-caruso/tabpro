@@ -308,8 +308,7 @@ public final class Icons {
     }
 
     public static Icon stop() {
-        return icon((graphics, size) ->
-                graphics.fill(new RoundRectangle2D.Double(size * 0.24, size * 0.24, size * 0.52, size * 0.52, 2, 2)));
+        return svgIcon("player-stop");
     }
 
     public static Icon loop() {
