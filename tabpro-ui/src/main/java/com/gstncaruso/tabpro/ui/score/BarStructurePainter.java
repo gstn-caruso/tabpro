@@ -70,12 +70,6 @@ final class BarStructurePainter {
     /**
      * Lo que vale para toda la partitura y se dibuja una unica vez, arriba del primer pentagrama
      * del sistema: finales alternativos, direcciones, saltos y marcadores.
-     *
-     * <p>Limitacion conocida: comparten la misma franja de aire reservada para la clave y la
-     * etiqueta de la pista (STAFF_HEADROOM); si un compas de arranque de sistema trae ademas un
-     * marcador o una direccion, pueden superponerse visualmente. Resolverlo del todo pide que el
-     * layout reserve una franja de altura variable segun el contenido, que queda fuera de esta
-     * pasada.
      */
     static void paintScoreWide(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
         MeasureAttributes attributes = track.measure(measureIndex).attributes();
@@ -143,22 +137,25 @@ final class BarStructurePainter {
         g.drawString(label, left + 4, y - 2);
     }
 
+    static final int MARKER_TEXT_CLEARANCE_ABOVE_STAFF = 16;
+
     private static void paintMarker(Graphics2D g, int x, int staffTop, Marker marker) {
         g.setFont(ScoreFonts.SECTION_MARK_FONT);
         FontMetrics metrics = g.getFontMetrics();
         Color markerColor = ScoreColors.of(marker.color());
-        int textBaseline = staffTop - 26;
+        int textBaseline = staffTop - MARKER_TEXT_CLEARANCE_ABOVE_STAFF;
 
         int squareSize = metrics.getAscent();
-        int squareTop = textBaseline - metrics.getAscent() - 4 - squareSize;
+        int squareTop = textBaseline - squareSize;
         g.setColor(markerColor);
         g.fillRect(x, squareTop, squareSize, squareSize);
         if (Contrast.ratio(markerColor, ScoreColors.BACKGROUND) < Contrast.GRAPHICAL_MINIMUM_RATIO) {
             g.setColor(ScoreColors.INK);
             g.drawRect(x, squareTop, squareSize - 1, squareSize - 1);
         }
+        int squareToTextGap = metrics.getHeight() / 4;
         g.setColor(markerColor);
-        g.drawString(marker.name(), x, textBaseline);
+        g.drawString(marker.name(), x + squareSize + squareToTextGap, textBaseline);
     }
 
     private static void paintDirectionSymbol(Graphics2D g, int left, int right, int staffTop, DirectionSymbol symbol) {
