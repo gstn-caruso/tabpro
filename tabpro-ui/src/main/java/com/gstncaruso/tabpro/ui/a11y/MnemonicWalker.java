@@ -1,10 +1,13 @@
 package com.gstncaruso.tabpro.ui.a11y;
 
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 public final class MnemonicWalker {
 
@@ -12,6 +15,16 @@ public final class MnemonicWalker {
         List<Entry> entries = new ArrayList<>();
         for (int i = 0; i < bar.getMenuCount(); i++) {
             entries.add(new Entry(bar.getMenu(i).getText(), bar.getMenu(i).getMnemonic()));
+        }
+        return violationsOf(entries);
+    }
+
+    public List<Violation> walkMenu(JMenu menu) {
+        List<Entry> entries = new ArrayList<>();
+        for (Component component : menu.getMenuComponents()) {
+            if (component instanceof JMenuItem item) {
+                entries.add(new Entry(item.getText(), item.getMnemonic()));
+            }
         }
         return violationsOf(entries);
     }

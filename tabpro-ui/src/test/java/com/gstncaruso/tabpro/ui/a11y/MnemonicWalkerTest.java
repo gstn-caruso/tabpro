@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import org.junit.jupiter.api.Test;
 
 class MnemonicWalkerTest {
@@ -51,5 +52,13 @@ class MnemonicWalkerTest {
         List<Violation> violaciones = walker.walkMenuBar(bar);
 
         assertEquals(2, violaciones.stream().filter(v -> v.reason().equals("mnemónico repetido")).count());
+    }
+
+    @Test
+    void unItemDeMenuSinMnemonicoEsUnHallazgo() {
+        JMenu menu = new JMenu("Archivo");
+        menu.add(new JMenuItem("Nuevo"));
+
+        assertTrue(walker.walkMenu(menu).stream().anyMatch(v -> v.reason().equals("sin mnemónico")));
     }
 }
