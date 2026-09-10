@@ -83,12 +83,7 @@ class ScoreColorsContrastTest {
     private static List<Pair> instrumentPairs() {
         Color whiteKey = InstrumentColors.WHITE_KEY;
         Color blackKey = InstrumentColors.BLACK_KEY;
-        Color neck = FretboardType.ELECTRIC.woodColor();
-        return List.of(
-                new Pair("digito sobre nota marcada (PRESSED_INK) / marca (PRESSED)", InstrumentColors.PRESSED_INK,
-                        InstrumentColors.PRESSED, Contrast.TEXT_MINIMUM_RATIO),
-                new Pair("digito sobre nota de contexto (CONTEXT_INK) / marca (CONTEXT)",
-                        InstrumentColors.CONTEXT_INK, InstrumentColors.CONTEXT, Contrast.TEXT_MINIMUM_RATIO),
+        List<Pair> pairs = new ArrayList<>(List.of(
                 new Pair("nota marcada (PRESSED) / tecla blanca", InstrumentColors.PRESSED, whiteKey,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("nota marcada (PRESSED) / tecla negra", InstrumentColors.PRESSED, blackKey,
@@ -105,21 +100,27 @@ class ScoreColorsContrastTest {
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("borde de tecla (KEY_EDGE) / tecla negra", InstrumentColors.KEY_EDGE, blackKey,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("traste (FRET_WIRE) / mastil electrico", InstrumentColors.FRET_WIRE, neck,
-                        Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("cejilla (NUT) / mastil electrico", InstrumentColors.NUT, neck,
-                        Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("cuerda (STRING) / mastil electrico", InstrumentColors.STRING, neck,
-                        Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("incrustacion (INLAY) / mastil electrico", InstrumentColors.INLAY, neck,
-                        Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("borde del mastil electrico / mastil electrico", FretboardType.ELECTRIC.edgeColor(), neck,
-                        Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("nota marcada (PRESSED) / mastil electrico", InstrumentColors.PRESSED, neck,
-                        Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("nota de contexto (CONTEXT) / mastil electrico", InstrumentColors.CONTEXT, neck,
-                        Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("anillo del mouse (HOVER) / mastil electrico", InstrumentColors.HOVER, neck,
-                        Contrast.GRAPHICAL_MINIMUM_RATIO));
+                new Pair("cejilla (NUT) / mastil electrico", InstrumentColors.NUT, FretboardType.ELECTRIC.woodColor(),
+                        Contrast.GRAPHICAL_MINIMUM_RATIO)));
+        pairs.addAll(fretboardPairs(FretboardType.ELECTRIC));
+        return pairs;
+    }
+
+    private static List<Pair> fretboardPairs(FretboardType type) {
+        Color wood = type.woodColor();
+        String neck = "mastil " + type.label().toLowerCase();
+        return List.of(
+                new Pair("digito sobre nota marcada / marca - " + type.label(), type.markInkColor(),
+                        type.markColor(), Contrast.TEXT_MINIMUM_RATIO),
+                new Pair("digito de contexto / marca de contexto - " + type.label(), type.contextInkColor(),
+                        type.contextColor(), Contrast.TEXT_MINIMUM_RATIO),
+                new Pair("cuerda / " + neck, type.stringColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("traste / " + neck, type.fretWireColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("incrustacion / " + neck, type.inlayColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("borde / " + neck, type.edgeColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("nota marcada / " + neck, type.markColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("nota de contexto / " + neck, type.contextColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("anillo de foco / " + neck, type.hoverColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("caret / " + neck, type.hoverColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO));
     }
 }
