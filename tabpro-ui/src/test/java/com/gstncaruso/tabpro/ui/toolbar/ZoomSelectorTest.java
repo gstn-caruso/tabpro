@@ -1,6 +1,8 @@
 package com.gstncaruso.tabpro.ui.toolbar;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -80,6 +82,16 @@ class ZoomSelectorTest {
         zoomHolder.setZoom(new Zoom(150));
 
         assertEquals("150%", String.valueOf(selector.getEditor().getItem()));
+    }
+
+    @Test
+    void tieneNombreAccesibleYTooltipConLosAtajosDeAcercarYAlejar() {
+        ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
+
+        assertEquals("Zoom", selector.getAccessibleContext().getAccessibleName());
+        assertFalse(selector.getToolTipText().isBlank());
+        assertTrue(selector.getToolTipText().contains(commands.get("view.zoomIn").acceleratorText()));
+        assertTrue(selector.getToolTipText().contains(commands.get("view.zoomOut").acceleratorText()));
     }
 
     private static void type(ZoomSelector selector, String text) {
