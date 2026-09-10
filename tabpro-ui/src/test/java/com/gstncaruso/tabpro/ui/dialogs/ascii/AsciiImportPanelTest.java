@@ -77,7 +77,7 @@ class AsciiImportPanelTest {
     void theIntervalsPerQuarterNoteAreOnlyRelevantWhenTheRhythmIsVariable() {
         AsciiImportPanel panel = new AsciiImportPanel();
 
-        assertFalse(panel.intervalsPerQuarterNoteEditable(), "por defecto el ritmo es fijo");
+        assertFalse(panel.intervalsPerQuarterNoteEditable(), "by default the rhythm is fixed");
 
         panel.chooseVariableRhythm();
         assertTrue(panel.intervalsPerQuarterNoteEditable());

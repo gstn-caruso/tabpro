@@ -76,7 +76,7 @@ class DigitalTunerPanelTest {
         gainFocus(panel);
         BufferedImage withFocus = paint(panel);
 
-        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "the focus must be visible in the drawing");
     }
 
     private static void gainFocus(DigitalTunerPanel panel) {

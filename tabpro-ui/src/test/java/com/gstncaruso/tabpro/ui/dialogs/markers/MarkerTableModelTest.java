@@ -35,13 +35,13 @@ class MarkerTableModelTest {
         editor.moveToFirstMeasure();
         editor.setMarker(Marker.named("Intro"));
         editor.moveToLastMeasure();
-        editor.setMarker(Marker.named("Estribillo"));
+        editor.setMarker(Marker.named("Chorus"));
 
         MarkerTableModel model = new MarkerTableModel(editor.score());
 
         assertEquals(2, model.getRowCount());
         assertEquals("Intro", model.getValueAt(0, 1));
-        assertEquals("Estribillo", model.getValueAt(1, 1));
+        assertEquals("Chorus", model.getValueAt(1, 1));
     }
 
     @Test

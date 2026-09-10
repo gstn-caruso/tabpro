@@ -116,7 +116,7 @@ class PreferencesPanelTest {
                 return box;
             }
         }
-        throw new AssertionError("no hay ninguna casilla que hable de \"" + words + "\"");
+        throw new AssertionError("there is no checkbox that mentions \"" + words + "\"");
     }
 
     @Test

@@ -104,7 +104,7 @@ class MidiImportPanelTest {
     @Test
     void listeningWithNoTrackSelectedDoesNotAskForATimelineNorPlayAnything() {
         MidiImportPanel panel = new MidiImportPanel(
-                List.of(track(3, "Guitarra")), player, indices -> fail("no debia pedir el timeline sin seleccion"));
+                List.of(track(3, "Guitarra")), player, indices -> fail("should not request the timeline without a selection"));
 
         panel.listen();
 
@@ -116,7 +116,7 @@ class MidiImportPanelTest {
         Timeline timeline = new Timeline(120, 480, List.of());
         MidiImportPanel panel = new MidiImportPanel(
                 List.of(track(3, "Guitarra"), track(7, "Bajo")), player,
-                indices -> indices.equals(List.of(3)) ? timeline : fail("indices inesperados: " + indices));
+                indices -> indices.equals(List.of(3)) ? timeline : fail("unexpected indices: " + indices));
         panel.trackList().setSelectedIndex(0);
 
         panel.listen();
@@ -129,7 +129,7 @@ class MidiImportPanelTest {
         Timeline timeline = new Timeline(120, 480, List.of());
         MidiImportPanel panel = new MidiImportPanel(
                 List.of(track(3, "Guitarra"), track(7, "Bajo")), player,
-                indices -> indices.equals(List.of(3, 7)) ? timeline : fail("indices inesperados: " + indices));
+                indices -> indices.equals(List.of(3, 7)) ? timeline : fail("unexpected indices: " + indices));
         panel.selectAllTracks();
 
         panel.listen();
@@ -158,7 +158,7 @@ class MidiImportPanelTest {
     }
 
     private MidiImportPanel panel(List<MidiTrackInfo> tracks) {
-        return new MidiImportPanel(tracks, player, indices -> fail("este test no escucha ninguna pista"));
+        return new MidiImportPanel(tracks, player, indices -> fail("this test does not listen to any track"));
     }
 
     private static MidiTrackInfo track(int index, String name) {

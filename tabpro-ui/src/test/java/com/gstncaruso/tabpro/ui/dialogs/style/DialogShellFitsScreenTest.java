@@ -38,8 +38,8 @@ class DialogShellFitsScreenTest {
         try {
             assertFitsTheScreen(dialog);
             JButton accept = findButton(dialog, "Aceptar");
-            assertNotNull(accept, "no encontre el boton Aceptar real dentro del dialogo");
-            assertTrue(accept.isShowing(), "Aceptar tiene que quedar visible fuera de cualquier scroll");
+            assertNotNull(accept, "could not find the real Aceptar button inside the dialog");
+            assertTrue(accept.isShowing(), "Aceptar must stay visible outside of any scroll");
         } finally {
             SwingUtilities.invokeAndWait(dialog::dispose);
             owner.dispose();
@@ -57,8 +57,8 @@ class DialogShellFitsScreenTest {
         try {
             assertFitsTheScreen(dialog);
             JButton close = findButton(dialog, "Cerrar");
-            assertNotNull(close, "no encontre el boton Cerrar real dentro del dialogo");
-            assertTrue(close.isShowing(), "Cerrar tiene que quedar visible fuera de cualquier scroll");
+            assertNotNull(close, "could not find the real Cerrar button inside the dialog");
+            assertTrue(close.isShowing(), "Cerrar must stay visible outside of any scroll");
         } finally {
             SwingUtilities.invokeAndWait(dialog::dispose);
             owner.dispose();
@@ -79,7 +79,7 @@ class DialogShellFitsScreenTest {
                 owner, () -> DialogShell.ask(anchor, "Prueba", tallContent, extraButtons, "Aceptar", null));
         try {
             assertFitsTheScreen(dialog);
-            assertTrue(extra.isShowing(), "el boton extra tiene que quedar visible fuera de cualquier scroll");
+            assertTrue(extra.isShowing(), "the extra button must stay visible outside of any scroll");
             assertTrue(findButton(dialog, "Aceptar").isShowing());
         } finally {
             SwingUtilities.invokeAndWait(dialog::dispose);
@@ -107,7 +107,7 @@ class DialogShellFitsScreenTest {
         Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);
         try {
             new Thread(trigger).start();
-            assertTrue(opened.await(5, TimeUnit.SECONDS), "el dialogo real nunca abrio");
+            assertTrue(opened.await(5, TimeUnit.SECONDS), "the real dialog never opened");
             return captured[0];
         } finally {
             Toolkit.getDefaultToolkit().removeAWTEventListener(listener);
@@ -117,7 +117,7 @@ class DialogShellFitsScreenTest {
     private static void assertFitsTheScreen(JDialog dialog) {
         Dimension screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getSize();
         assertTrue(dialog.getHeight() <= screen.height,
-                "el dialogo real (" + dialog.getHeight() + "px) no puede ser mas alto que la pantalla (" + screen.height + "px)");
+                "the real dialog (" + dialog.getHeight() + "px) cannot be taller than the screen (" + screen.height + "px)");
     }
 
     private static JButton findButton(Container root, String text) {

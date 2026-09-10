@@ -56,7 +56,7 @@ class FormPanelTest {
                 return label;
             }
         }
-        throw new AssertionError("no se encontro una etiqueta para " + field);
+        throw new AssertionError("could not find a label for " + field);
     }
 
     @Test
@@ -76,7 +76,7 @@ class FormPanelTest {
                 return candidate;
             }
         }
-        throw new AssertionError("no se encontro una seccion titulada " + title);
+        throw new AssertionError("could not find a section titled " + title);
     }
 
     @Test
@@ -165,6 +165,6 @@ class FormPanelTest {
                 return label;
             }
         }
-        throw new AssertionError("no se encontro una etiqueta para " + field + " dentro de " + root);
+        throw new AssertionError("could not find a label for " + field + " inside " + root);
     }
 }

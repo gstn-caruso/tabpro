@@ -32,10 +32,10 @@ class ShortcutListTest {
         List<ShortcutList.Group> groups = ShortcutList.of(commands);
 
         groups.forEach(group -> {
-            assertFalse(group.entries().isEmpty(), "el grupo " + group.title() + " quedo vacio");
+            assertFalse(group.entries().isEmpty(), "group " + group.title() + " ended up empty");
             group.entries().forEach(entry -> {
                 assertFalse(entry.label().isBlank());
-                assertFalse(entry.shortcut().isBlank(), entry.label() + " no tiene atajo");
+                assertFalse(entry.shortcut().isBlank(), entry.label() + " has no shortcut");
             });
         });
     }
@@ -46,7 +46,7 @@ class ShortcutListTest {
                 .flatMap(group -> group.entries().stream())
                 .anyMatch(entry -> entry.label().equals(commands.get("note.dynamics").label()));
 
-        assertFalse(listed, "la dinámica no tiene atajo, no va en la lista");
+        assertFalse(listed, "dynamics has no shortcut, it should not be listed");
     }
 
     @Test
@@ -57,8 +57,8 @@ class ShortcutListTest {
                 .map(ShortcutList.Entry::shortcut)
                 .toList();
 
-        assertTrue(shortcuts.contains("H"), "falta el ligado: " + shortcuts);
-        assertTrue(shortcuts.contains("B"), "falta el bend: " + shortcuts);
+        assertTrue(shortcuts.contains("H"), "missing the hammer-on/pull-off: " + shortcuts);
+        assertTrue(shortcuts.contains("B"), "missing the bend: " + shortcuts);
     }
 
     @SuppressWarnings("unchecked")

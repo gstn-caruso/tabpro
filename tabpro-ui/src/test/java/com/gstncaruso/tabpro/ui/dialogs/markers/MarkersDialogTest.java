@@ -39,10 +39,10 @@ class MarkersDialogTest {
         editor.moveTo(2, 0, 1);
 
         JPanel content = MarkersDialog.buildContentEditing(editor, 0);
-        formOf(content).apply(new Marker("Estribillo", Marker.DEFAULT_COLOR));
+        formOf(content).apply(new Marker("Chorus", Marker.DEFAULT_COLOR));
         buttonLabeled(content, "Guardar cambios").doClick();
 
-        assertEquals("Estribillo", editor.score().attributesOf(0).marker().get().name());
+        assertEquals("Chorus", editor.score().attributesOf(0).marker().get().name());
     }
 
     private Score scoreWithMeasures(int count) {

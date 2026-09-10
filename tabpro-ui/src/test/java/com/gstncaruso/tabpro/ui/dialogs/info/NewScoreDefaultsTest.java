@@ -45,11 +45,11 @@ class NewScoreDefaultsTest {
     @Test
     void withDefaultTitleAndArtistTheNewScoreCarriesThem() {
         NewScoreDefaults defaults = new NewScoreDefaults(
-                120, TimeSignature.fourFour(), KeySignature.cMajor(), "Improvisando", "Yo");
+                120, TimeSignature.fourFour(), KeySignature.cMajor(), "Improvising", "Me");
 
         Score newScore = defaults.newScore();
 
-        assertEquals("Improvisando", newScore.info().title());
-        assertEquals("Yo", newScore.info().artist());
+        assertEquals("Improvising", newScore.info().title());
+        assertEquals("Me", newScore.info().artist());
     }
 }

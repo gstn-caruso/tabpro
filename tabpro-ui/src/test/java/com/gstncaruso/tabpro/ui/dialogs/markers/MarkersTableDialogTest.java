@@ -74,7 +74,7 @@ class MarkersTableDialogTest {
         Editor editor = new Editor(Score.blank());
         editor.insertMeasure();
         editor.moveToLastMeasure();
-        editor.setMarker(Marker.named("Estribillo"));
+        editor.setMarker(Marker.named("Chorus"));
         editor.moveToFirstMeasure();
         boolean[] closed = {false};
 

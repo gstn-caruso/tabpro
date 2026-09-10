@@ -23,14 +23,14 @@ class MarkerListTest {
         editor.moveToFirstMeasure();
         editor.setMarker(Marker.named("Intro"));
         editor.moveToLastMeasure();
-        editor.setMarker(Marker.named("Estribillo"));
+        editor.setMarker(Marker.named("Chorus"));
 
         List<MarkerList.Positioned> markers = MarkerList.collect(editor.score());
 
         assertEquals(2, markers.size());
         assertEquals("Intro", markers.get(0).marker().name());
         assertEquals(0, markers.get(0).measureIndex());
-        assertEquals("Estribillo", markers.get(1).marker().name());
+        assertEquals("Chorus", markers.get(1).marker().name());
         assertEquals(1, markers.get(1).measureIndex());
     }
 

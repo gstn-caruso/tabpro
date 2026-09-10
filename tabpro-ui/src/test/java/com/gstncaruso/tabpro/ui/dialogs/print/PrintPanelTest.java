@@ -103,6 +103,6 @@ class PrintPanelTest {
         panel.configureButton().addActionListener(event -> clicked.set(true));
         panel.configureButton().doClick();
 
-        assertTrue(clicked.get(), "el boton Configurar tiene que avisar a quien lo escuche");
+        assertTrue(clicked.get(), "the Configurar button must notify its listener");
     }
 }

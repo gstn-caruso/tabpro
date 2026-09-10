@@ -106,7 +106,7 @@ public final class AsciiImportPanel extends JPanel {
                 return value;
             }
         }
-        throw new IllegalStateException("figura desconocida: " + label);
+        throw new IllegalStateException("unknown figure: " + label);
     }
 
     private static String figureName(NoteValue value) {
