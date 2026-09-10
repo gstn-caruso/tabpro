@@ -140,10 +140,18 @@ public final class ScorePrinting {
             Graphics2D canvas = (Graphics2D) graphics.create();
             canvas.translate(format.getImageableX(), format.getImageableY());
             canvas.clipRect(0, 0, (int) format.getImageableWidth(), (int) format.getImageableHeight());
+            canvas.translate(horizontalCenteringOffset(format, sheet, scale), 0);
             canvas.scale(scale, scale);
             ScoreSheets.paintPageOn(canvas, score, Zoom.whole(), setup, settings.sheetAt(pageIndex) - 1);
             canvas.dispose();
             return PAGE_EXISTS;
+        }
+
+        private double horizontalCenteringOffset(PageFormat format, Dimension sheet, double scale) {
+            if (!settings.centeredDocument()) {
+                return 0;
+            }
+            return Math.max(0, (format.getImageableWidth() - sheet.width * scale) / 2);
         }
     }
 

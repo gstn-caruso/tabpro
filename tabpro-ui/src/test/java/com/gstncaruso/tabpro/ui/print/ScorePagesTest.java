@@ -167,6 +167,37 @@ class ScorePagesTest {
                 "el papel grande que da la impresora deja entrar el pie de pagina");
     }
 
+    /**
+     * Papel de la impresora mas ancho que la hoja: sin "Documento centrado" el dibujo arranca
+     * pegado al margen izquierdo, como siempre; con el casillero tildado, se tiene que correr la
+     * mitad del sobrante horizontal para quedar centrado en el papel.
+     */
+    @Test
+    void elDocumentoCentradoCorreElDibujoLaMitadDelSobranteHorizontal() {
+        Score score = scoreWithMeasures(4);
+        Dimension sheet = ScoreSheets.pageSize(Zoom.whole(), A4);
+        int sobranteHorizontal = 200;
+        PageFormat papelAncho = pageFormatOf(sheet.width + sobranteHorizontal, sheet.height);
+
+        ScorePrinting.ScorePages sinCentrar = new ScorePrinting.ScorePages(
+                score, A4, PrintSettings.of(1, 1, 1, 100, false, false));
+        ScorePrinting.ScorePages centrado = new ScorePrinting.ScorePages(
+                score, A4, PrintSettings.of(1, 1, 1, 100, false, true));
+
+        BufferedImage imagenSinCentrar = blankPage(papelAncho);
+        BufferedImage imagenCentrada = blankPage(papelAncho);
+        imprimir(sinCentrar, imagenSinCentrar, papelAncho, 0);
+        imprimir(centrado, imagenCentrada, papelAncho, 0);
+
+        int columnaSinCentrar = firstInkColumnOf(imagenSinCentrar);
+        int columnaCentrada = firstInkColumnOf(imagenCentrada);
+
+        assertTrue(
+                Math.abs((columnaCentrada - columnaSinCentrar) - sobranteHorizontal / 2) <= 3,
+                "con 'Documento centrado' tildado el dibujo se tiene que correr la mitad del sobrante horizontal "
+                        + "respecto de donde arranca sin centrar");
+    }
+
     private static int imprimirEnLienzo(ScorePrinting.ScorePages paginas, PageFormat format, int pageIndex) {
         return paginas.print(new LienzoDePrueba(), format, pageIndex);
     }
@@ -222,6 +253,18 @@ class ScorePagesTest {
             for (int x = 0; x < image.getWidth(); x++) {
                 if (esTinta(image.getRGB(x, y))) {
                     return y;
+                }
+            }
+        }
+        throw new IllegalStateException("la imagen no tiene tinta en ningun lado");
+    }
+
+    /** La primera columna de la imagen que tiene tinta: donde arranca el dibujo horizontalmente. */
+    private static int firstInkColumnOf(BufferedImage image) {
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                if (esTinta(image.getRGB(x, y))) {
+                    return x;
                 }
             }
         }
