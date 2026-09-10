@@ -423,6 +423,20 @@ class MidiScoreImporterTest {
         assertEquals(1, track.measure(0).beat(1).notes().size());
     }
 
+    @Test
+    void chordPositionQuantizeMergesTwoNearbyAttacksIntoAChord(@TempDir Path tempDir) throws Exception {
+        Path path = rawMidiFile(tempDir, "casi-simultaneas.mid", new long[] {900, 60, 100}, new long[] {1020, 64, 100});
+
+        Score imported = importer.importQuick(
+                path, indicesOf(path), false, Optional.of(NoteValue.QUARTER), Optional.empty(), true);
+
+        Track track = imported.track(0);
+        long beatsWithNotes = track.measure(0).beats().stream().filter(beat -> !beat.notes().isEmpty()).count();
+        assertEquals(1, beatsWithNotes, "las dos notas casi simultaneas tienen que caer en un unico beat");
+        Beat chord = track.measure(0).beats().stream().filter(beat -> !beat.notes().isEmpty()).findFirst().orElseThrow();
+        assertEquals(2, chord.notes().size());
+    }
+
     private static Path rawMidiFile(Path dir, String fileName, long[]... notes) throws Exception {
         Sequence sequence = new Sequence(Sequence.PPQ, (int) Duration.TICKS_PER_QUARTER);
         sequence.createTrack();
