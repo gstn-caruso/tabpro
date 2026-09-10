@@ -26,7 +26,7 @@ class PercussionAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Asistente de percusión");
-            assertNotNull(item, "no encontre 'Asistente de percusión' en el menu real");
+            assertNotNull(item, "could not find 'Asistente de percusión' in the real menu");
 
             withDialog(item::doClick, dialog -> dialog.dispose());
         } finally {
@@ -40,7 +40,7 @@ class PercussionAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Asistente de percusión");
-            assertNotNull(item, "no encontre 'Asistente de percusión' en el menu real");
+            assertNotNull(item, "could not find 'Asistente de percusión' in the real menu");
 
             withDialog(item::doClick, dialog -> dialog.dispose());
         } finally {
