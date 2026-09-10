@@ -15,16 +15,15 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Arma la secuencia de beats de cada compas a partir de los eventos posicionados
- * de TablEdit. TablEdit no lleva un "compas actual" mientras graba: cada nota
- * o silencio trae su propia posicion en una grilla de dieciseisavos. tabpro,
- * en cambio, pide una lista de beats consecutivos por voz. Cualquier lugar de
- * la grilla que el archivo no haya marcado con nada se rellena con silencio:
- * eso no es adivinar musica, es completar lo que ya era silencio.
+ * Assembles the beat sequence of each measure from TablEdit's positioned events.
+ * TablEdit keeps no "current measure" while recording: every note or rest carries its
+ * own position on a sixteenth-note grid. tabpro, on the other hand, expects a list of
+ * consecutive beats per voice. Any grid spot the file left unmarked is filled with a
+ * rest: that is not guessing music, it is completing what was already silence.
  */
 final class TabEditBeatAssembler {
 
-    /** Un lugar de grilla es siempre un dieciseisavo, sin importar la medida del compas. */
+    /** A grid spot is always a sixteenth note, regardless of the measure's time signature. */
     private static final long TICKS_PER_GRID_POSITION = Duration.TICKS_PER_QUARTER / 4;
 
     private static final long[] FILLER_TICKS = {3840, 1920, 960, 480, 240, 120, 60};
@@ -105,7 +104,6 @@ final class TabEditBeatAssembler {
         return notes.isEmpty() ? Beat.rest(duration) : new Beat(duration, notes, effects);
     }
 
-    /** La voz principal de un compas no puede quedar sin beats. */
     private static Voice usable(Voice voice, TabEditMeasure measure) {
         if (!voice.isUnused()) {
             return voice;
@@ -126,7 +124,5 @@ final class TabEditBeatAssembler {
                 i++;
             }
         }
-        // Lo que sobre por debajo de una fusa (60 ticks) no tiene figura estandar que lo
-        // anote: es un resto de cuantizacion tan chico que no hay nada razonable que hacer.
     }
 }
