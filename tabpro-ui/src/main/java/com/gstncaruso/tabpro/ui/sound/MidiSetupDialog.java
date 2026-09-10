@@ -60,6 +60,21 @@ public final class MidiSetupDialog {
     }
 
     public static Optional<Setup> ask(Component parent, Ports.Devices devices, Setup current) {
+        Fields fields = buildPanel(devices, current);
+
+        int answer = JOptionPane.showConfirmDialog(
+                parent, fields.panel(), "Configuración MIDI", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (answer != JOptionPane.OK_OPTION) {
+            return Optional.empty();
+        }
+        List<PortSetup> ports = fields.rows().stream().map(PortRow::toSetup).toList();
+        return Optional.of(new Setup(
+                fields.soundFont().file(), fields.soundFont().active(), ports, selectionOf(fields.inputs()),
+                (Integer) fields.sensitivity().getValue(), (StringAssignment) fields.assignment().getSelectedItem()));
+    }
+
+    /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
+    static Fields buildPanel(Ports.Devices devices, Setup current) {
         FormPanel panel = new FormPanel();
 
         SoundFontRow soundFont = new SoundFontRow(current.soundFontFile(), current.soundFontActive());
@@ -83,15 +98,16 @@ public final class MidiSetupDialog {
         assignment.setRenderer(labelledBy(StringAssignment::label));
         panel.addRow("Cuerdas al capturar", assignment);
 
-        int answer = JOptionPane.showConfirmDialog(
-                parent, panel, "Configuración MIDI", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (answer != JOptionPane.OK_OPTION) {
-            return Optional.empty();
-        }
-        List<PortSetup> ports = rows.stream().map(PortRow::toSetup).toList();
-        return Optional.of(new Setup(
-                soundFont.file(), soundFont.active(), ports, selectionOf(inputs),
-                (Integer) sensitivity.getValue(), (StringAssignment) assignment.getSelectedItem()));
+        return new Fields(panel, soundFont, rows, inputs, sensitivity, assignment);
+    }
+
+    record Fields(
+            FormPanel panel,
+            SoundFontRow soundFont,
+            List<PortRow> rows,
+            JComboBox<String> inputs,
+            JSpinner sensitivity,
+            JComboBox<StringAssignment> assignment) {
     }
 
     /**
