@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.dialogs.style;
 
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
@@ -24,7 +25,7 @@ public final class DialogShell {
     }
 
     public static boolean ask(Component parent, String title, JComponent content) {
-        return ask(parent, title, content, "Aceptar", null);
+        return ask(parent, title, content, Texts.get("common.accept"), null);
     }
 
     public static boolean ask(Component parent, String title, JComponent content, String acceptLabel) {
@@ -32,7 +33,7 @@ public final class DialogShell {
     }
 
     public static boolean ask(Component parent, String title, JComponent content, JComponent initialFocus) {
-        return ask(parent, title, content, "Aceptar", initialFocus);
+        return ask(parent, title, content, Texts.get("common.accept"), initialFocus);
     }
 
     public static boolean ask(
@@ -115,7 +116,7 @@ public final class DialogShell {
 
     public static void show(Component parent, String title, java.util.function.Function<Runnable, JComponent> content) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title, Dialog.ModalityType.APPLICATION_MODAL);
-        javax.swing.JButton close = DialogStyle.flatButton("Cerrar");
+        javax.swing.JButton close = DialogStyle.flatButton(Texts.get("common.close"));
         close.addActionListener(event -> dialog.dispose());
         javax.swing.JPanel bar = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, DialogStyle.GAP_S, DialogStyle.GAP_S));
         bar.add(close);
