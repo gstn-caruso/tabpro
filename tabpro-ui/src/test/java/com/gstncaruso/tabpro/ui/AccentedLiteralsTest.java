@@ -32,7 +32,7 @@ class AccentedLiteralsTest {
             "configuracion", "cromatica", "pentatonica", "percusion", "arabe", "hungara",
             "enigmatica", "diapason", "simbolo", "renglon", "repeticion", "reproduccion",
             "direccion", "transicion", "violin", "album", "asi", "aqui", "despues", "encontro",
-            "ningun", "alteracion", "pua", "recuperacion", "espanola");
+            "ningun", "alteracion", "pua", "recuperacion", "espanola", "margenes");
 
     /** Archivos enteros que son un protocolo externo en ingles, no texto de interfaz. */
     private static final Set<String> EXCLUDED_FILES = Set.of(
@@ -50,8 +50,6 @@ class AccentedLiteralsTest {
      */
     private static final Set<String> PENDING_FILES = Set.of(
             "tabpro-core/src/main/java/com/gstncaruso/tabpro/core/editing/wizards/MeasureRange.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/pagesetup/PageSetupDialog.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/pagesetup/PageSetupPanel.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/preferences/PreferencesPanel.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/print/PrintPanel.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/track/TrackPropertiesPanel.java",
