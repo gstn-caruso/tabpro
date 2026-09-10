@@ -68,6 +68,16 @@ class TrackPropertiesPanelTest {
     }
 
     @Test
+    void forceChannels11to16RoundTrips() {
+        Track track = Track.standardGuitar("Guitarra").mappingSettings(
+                settings -> settings.withForceChannels11to16(true));
+
+        TrackPropertiesPanel panel = new TrackPropertiesPanel(track, player);
+
+        assertTrue(panel.toTrackSettings().forceChannels11to16());
+    }
+
+    @Test
     void colorRoundTrips() {
         ScoreColor color = new ScoreColor(10, 20, 30);
         Track track = Track.standardGuitar("Guitarra").mappingSettings(settings -> settings.withColor(color));
