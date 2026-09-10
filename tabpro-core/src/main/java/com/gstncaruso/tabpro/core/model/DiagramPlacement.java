@@ -17,6 +17,20 @@ public enum DiagramPlacement {
         return label;
     }
 
+    /** Los dos casilleros "Diagrams In the Score" y "Diagrams List On Top" del manual, combinados. */
+    public static DiagramPlacement of(boolean onTheScore, boolean underTheTitle) {
+        if (onTheScore && underTheTitle) {
+            return BOTH;
+        }
+        if (onTheScore) {
+            return ABOVE_THE_STAFF;
+        }
+        if (underTheTitle) {
+            return UNDER_THE_TITLE;
+        }
+        return HIDDEN;
+    }
+
     public boolean showsOnTheScore() {
         return this == ABOVE_THE_STAFF || this == BOTH;
     }
