@@ -52,7 +52,7 @@ public final class Icons {
     }
 
     public static Icon redo() {
-        return icon((graphics, size) -> curvedArrow(graphics, size, false));
+        return svgIcon("arrow-forward-up");
     }
 
     public static Icon cut() {
