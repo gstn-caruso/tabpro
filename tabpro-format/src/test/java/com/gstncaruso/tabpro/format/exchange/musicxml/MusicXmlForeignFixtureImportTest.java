@@ -30,7 +30,7 @@ class MusicXmlForeignFixtureImportTest {
     }
 
     @Test
-    void laArmaduraDelArchivoSeRespeta() {
+    void theFileKeySignatureIsRespected() {
         Score score = importFixture("armadura-en-fa");
 
         assertEquals(-1, score.attributesOf(0).keySignature().accidentals(),
@@ -46,7 +46,7 @@ class MusicXmlForeignFixtureImportTest {
     }
 
     @Test
-    void unSilencioDeCompasEnteroSinTypeOcupaTodoElCompas() {
+    void aFullBarRestWithoutTypeFillsTheWholeBar() {
         Score score = importFixture("silencio-de-compas-completo");
 
         Measure measure = score.track(0).measure(0);
@@ -59,23 +59,23 @@ class MusicXmlForeignFixtureImportTest {
     }
 
     @Test
-    void laLigaduraYElPuntilloCruzanElCompas() {
+    void theTieAndTheDotCrossTheBar() {
         Score score = importFixture("ligadura-entre-compases");
         Track track = score.track(0);
 
-        Beat primerCompas = track.measure(0).beat(0);
-        assertFalse(primerCompas.notes().get(0).tied(), "la nota que ataca no viene marcada como ligada");
-        assertEquals(NoteValue.QUARTER, primerCompas.duration().value());
-        assertTrue(primerCompas.duration().dotted(), "quarter+dot en el archivo es una negra con puntillo");
+        Beat firstBar = track.measure(0).beat(0);
+        assertFalse(firstBar.notes().get(0).tied(), "la nota que ataca no viene marcada como ligada");
+        assertEquals(NoteValue.QUARTER, firstBar.duration().value());
+        assertTrue(firstBar.duration().dotted(), "quarter+dot en el archivo es una negra con puntillo");
 
-        Beat segundoCompas = track.measure(1).beat(0);
-        assertTrue(segundoCompas.notes().get(0).tied(), "tie type=\"stop\" es la continuacion, no un nuevo ataque");
-        assertEquals(NoteValue.QUARTER, segundoCompas.duration().value());
-        assertFalse(segundoCompas.duration().dotted());
+        Beat secondBar = track.measure(1).beat(0);
+        assertTrue(secondBar.notes().get(0).tied(), "tie type=\"stop\" es la continuacion, no un nuevo ataque");
+        assertEquals(NoteValue.QUARTER, secondBar.duration().value());
+        assertFalse(secondBar.duration().dotted());
     }
 
     @Test
-    void elTresilloDeCorcheasSeLeeConDivisionsAjenas() {
+    void theEighthNoteTripletIsReadWithForeignDivisions() {
         Score score = importFixture("tresillo-de-corcheas");
         Measure measure = score.track(0).measure(0);
 
@@ -88,7 +88,7 @@ class MusicXmlForeignFixtureImportTest {
     }
 
     @Test
-    void laTablaturaEnDropDNoUsaLaAfinacionEstandar() {
+    void theTablatureInDropDDoesNotUseStandardTuning() {
         Score score = importFixture("tablatura-en-drop-d");
         Track track = score.track(0);
 
@@ -96,19 +96,19 @@ class MusicXmlForeignFixtureImportTest {
                 track.tuning().strings().stream().map(Pitch::midiNumber).toList(),
                 "staff-tuning listado de la linea 1 a la 6 tiene que armar Drop D, no la estandar");
 
-        Beat primera = track.measure(0).beat(0);
-        assertEquals(4, primera.notes().get(0).string(),
+        Beat firstBeat = track.measure(0).beat(0);
+        assertEquals(4, firstBeat.notes().get(0).string(),
                 "el archivo pone la nota explicita en la cuerda 4; recalcular la mejor cuerda la pondria en la 3");
-        assertEquals(7, primera.notes().get(0).fret());
+        assertEquals(7, firstBeat.notes().get(0).fret());
 
-        Beat acorde = track.measure(0).beat(1);
-        assertEquals(2, acorde.notes().size(), "el chord/ suma la segunda nota al mismo beat");
-        assertEquals(0, acorde.noteOn(3).orElseThrow().fret());
-        assertEquals(0, acorde.noteOn(4).orElseThrow().fret());
+        Beat chordBeat = track.measure(0).beat(1);
+        assertEquals(2, chordBeat.notes().size(), "el chord/ suma la segunda nota al mismo beat");
+        assertEquals(0, chordBeat.noteOn(3).orElseThrow().fret());
+        assertEquals(0, chordBeat.noteOn(4).orElseThrow().fret());
 
-        Beat sinTecnica = track.measure(0).beat(2);
-        assertEquals(6, sinTecnica.notes().get(0).string(),
+        Beat beatWithoutTechnical = track.measure(0).beat(2);
+        assertEquals(6, beatWithoutTechnical.notes().get(0).string(),
                 "sin <technical>, Re2 solo puede resolverse al aire en la cuerda 6 de la Drop D");
-        assertEquals(0, sinTecnica.notes().get(0).fret());
+        assertEquals(0, beatWithoutTechnical.notes().get(0).fret());
     }
 }
