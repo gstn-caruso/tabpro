@@ -495,21 +495,6 @@ public final class Icons {
         graphics.fill(new Ellipse2D.Double(dots, size * 0.56, size * 0.1, size * 0.1));
     }
 
-    private static void skip(Graphics2D graphics, int size, boolean backwards, boolean toTheEnd) {
-        double direction = backwards ? -1 : 1;
-        double center = size * 0.5;
-        Path2D triangle = new Path2D.Double();
-        triangle.moveTo(center - direction * size * 0.22, size * 0.2);
-        triangle.lineTo(center + direction * size * 0.24, size * 0.5);
-        triangle.lineTo(center - direction * size * 0.22, size * 0.8);
-        triangle.closePath();
-        graphics.fill(triangle);
-        if (toTheEnd) {
-            double wall = backwards ? size * 0.18 : size * 0.74;
-            graphics.fill(new Rectangle2D.Double(wall, size * 0.2, size * 0.08, size * 0.6));
-        }
-    }
-
     private static BasicStroke thin() {
         return new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     }
