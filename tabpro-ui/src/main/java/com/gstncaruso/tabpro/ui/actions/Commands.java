@@ -468,8 +468,8 @@ public final class Commands {
     }
 
     private void defineHelpCommands() {
-        define("help.contents", "Ayuda de tabpro", dialogs::help).withAccelerator("F1");
-        define("help.about", "Acerca de tabpro", dialogs::about);
+        define("help.contents", Texts.get("menus.help.contents"), dialogs::help).withAccelerator("F1");
+        define("help.about", Texts.get("menus.help.about"), dialogs::about);
     }
 
     private Command define(String name, String label, Runnable body) {
