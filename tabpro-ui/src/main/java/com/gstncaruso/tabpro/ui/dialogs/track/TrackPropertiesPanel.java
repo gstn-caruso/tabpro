@@ -39,6 +39,7 @@ public final class TrackPropertiesPanel extends JPanel {
     private final JCheckBox diagramsOnTheScore = new JCheckBox("Diagramas en la partitura");
     private final JCheckBox diagramsUnderTheTitle = new JCheckBox("Lista de diagramas arriba de la partitura");
     private final JCheckBox diagramsBelowStandardNotation = new JCheckBox("Diagramas debajo del pentagrama");
+    private final JCheckBox forceHorizontalBeams = new JCheckBox("Forzar barras horizontales");
     private final JCheckBox forceChannels11to16 = new JCheckBox("Forzar canales 11 a 16");
 
     private final boolean initialPercussion;
@@ -62,6 +63,7 @@ public final class TrackPropertiesPanel extends JPanel {
         diagramsOnTheScore.setSelected(display.diagrams().showsOnTheScore());
         diagramsUnderTheTitle.setSelected(display.diagrams().showsUnderTheTitle());
         diagramsBelowStandardNotation.setSelected(display.diagramsBelowStandardNotation());
+        forceHorizontalBeams.setSelected(display.forceHorizontalBeams());
         forceChannels11to16.setSelected(track.settings().forceChannels11to16());
         keepAtLeastOneStaffVisible();
 
@@ -95,6 +97,7 @@ public final class TrackPropertiesPanel extends JPanel {
         column.addFullWidthRow(diagramsOnTheScore);
         column.addFullWidthRow(diagramsUnderTheTitle);
         column.addFullWidthRow(diagramsBelowStandardNotation);
+        column.addFullWidthRow(forceHorizontalBeams);
         column.addSection("Canales");
         column.addFullWidthRow(forceChannels11to16);
         return column;
@@ -130,7 +133,7 @@ public final class TrackPropertiesPanel extends JPanel {
                 rhythmOnTablature.isSelected(),
                 DiagramPlacement.of(diagramsOnTheScore.isSelected(), diagramsUnderTheTitle.isSelected()),
                 diagramsBelowStandardNotation.isSelected(),
-                false);
+                forceHorizontalBeams.isSelected());
         return new TrackSettings(
                 color.toScoreColor(),
                 (Integer) capo.getValue(),
