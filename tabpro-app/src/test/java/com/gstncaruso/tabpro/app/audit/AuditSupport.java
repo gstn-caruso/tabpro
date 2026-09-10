@@ -106,6 +106,22 @@ final class AuditSupport {
         return built[0];
     }
 
+    /** Como newFrame, pero con un ThemeSwitch que el test puede inspeccionar despues. */
+    static MainFrame newFrame(Editor editor, com.gstncaruso.tabpro.ui.theme.ThemeSwitch themes) throws Exception {
+        MainFrame[] built = new MainFrame[1];
+        SwingUtilities.invokeAndWait(() -> {
+            MainFrame frame = new MainFrame(
+                    editor, new NoScoreFiles(), new SilentPlayer(),
+                    themes, com.gstncaruso.tabpro.ui.actions.Ports.Devices.NONE,
+                    com.gstncaruso.tabpro.core.files.ScoreExchange.NONE,
+                    com.gstncaruso.tabpro.ui.actions.Ports.Microphone.NONE);
+            frame.pack();
+            frame.setVisible(true);
+            built[0] = frame;
+        });
+        return built[0];
+    }
+
     /** Un Devices sin MIDI real, salvo el banco de sonido: registra si lo prendieron/apagaron. */
     static final class RecordingDevices implements com.gstncaruso.tabpro.ui.actions.Ports.Devices {
         private boolean soundFontActive;

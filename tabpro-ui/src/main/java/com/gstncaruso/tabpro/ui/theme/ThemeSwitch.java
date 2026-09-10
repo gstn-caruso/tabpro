@@ -24,6 +24,18 @@ public interface ThemeSwitch {
         @Override
         public void apply(String name) {
         }
+
+        @Override
+        public void useFontSize(int points) {
+        }
+
+        @Override
+        public void useHighContrast(boolean enabled) {
+        }
+
+        @Override
+        public void useAnimations(boolean enabled) {
+        }
     };
 
     List<String> names();
@@ -31,4 +43,13 @@ public interface ThemeSwitch {
     String current();
 
     void apply(String name);
+
+    /** Preferencias [F12] > Accesibilidad: la fuente base de toda la interfaz. */
+    void useFontSize(int points);
+
+    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
+    void useHighContrast(boolean enabled);
+
+    /** Preferencias [F12] > Accesibilidad: "Sin animaciones" apaga las de FlatLaf. */
+    void useAnimations(boolean enabled);
 }

@@ -18,6 +18,9 @@ public final class PreferencesPanel extends FormPanel {
     private final JCheckBox forceMultitrack =
             new JCheckBox("Forzar la vista multipista en la pantalla horizontal");
     private final JSpinner autosaveEvery = new JSpinner(new SpinnerNumberModel(20, 0, 1000, 1));
+    private final JSpinner interfaceFontSize = new JSpinner(new SpinnerNumberModel(12, 10, 20, 1));
+    private final JCheckBox highContrast = new JCheckBox("Alto contraste");
+    private final JCheckBox disableAnimations = new JCheckBox("Sin animaciones");
 
     public PreferencesPanel(Preferences initial) {
         addRow("Figura por defecto al insertar", defaultNoteValue);
@@ -26,6 +29,10 @@ public final class PreferencesPanel extends FormPanel {
         addFullWidthRow(undoEnabled);
         addFullWidthRow(forceMultitrack);
         addRow("Guardado automatico cada N acciones", autosaveEvery);
+        addSection("Accesibilidad");
+        addRow("Tamano de letra de la interfaz", interfaceFontSize);
+        addFullWidthRow(highContrast);
+        addFullWidthRow(disableAnimations);
         apply(initial);
     }
 
@@ -36,6 +43,9 @@ public final class PreferencesPanel extends FormPanel {
         undoEnabled.setSelected(preferences.undoEnabled());
         autosaveEvery.setValue(preferences.autosaveEvery());
         forceMultitrack.setSelected(preferences.forceMultitrackInHorizontalMode());
+        interfaceFontSize.setValue(preferences.interfaceFontSize());
+        highContrast.setSelected(preferences.highContrastEnabled());
+        disableAnimations.setSelected(preferences.animationsDisabled());
     }
 
     public Preferences toPreferences() {
@@ -45,6 +55,9 @@ public final class PreferencesPanel extends FormPanel {
                 showBassInChordName.isSelected(),
                 undoEnabled.isSelected(),
                 (Integer) autosaveEvery.getValue(),
-                forceMultitrack.isSelected());
+                forceMultitrack.isSelected(),
+                (Integer) interfaceFontSize.getValue(),
+                highContrast.isSelected(),
+                disableAnimations.isSelected());
     }
 }

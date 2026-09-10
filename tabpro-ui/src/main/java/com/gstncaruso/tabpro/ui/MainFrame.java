@@ -146,6 +146,7 @@ public final class MainFrame extends JFrame {
         useMidiSetup(midiSetupFromPreferences());
         setSize(windowSize());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        AccessibilitySettings.applyFrom(preferences, themes);
 
         canvas = new ScoreCanvas(editor, visibleTracks);
         canvas.setAutoScrollDuringPlayback(preferences.autoScrollDuringPlayback());
@@ -1013,7 +1014,10 @@ public final class MainFrame extends JFrame {
                     .withAutoScrollDuringPlayback(preferences.autoScrollDuringPlayback())
                     .withUndoEnabled(preferences.undoEnabled())
                     .withAutosaveEvery(preferences.autosaveEvery())
-                    .withForceMultitrackInHorizontalMode(preferences.forceMultitrackInHorizontalMode());
+                    .withForceMultitrackInHorizontalMode(preferences.forceMultitrackInHorizontalMode())
+                    .withInterfaceFontSize(preferences.interfaceFontSize())
+                    .withHighContrastEnabled(preferences.highContrastEnabled())
+                    .withAnimationsDisabled(preferences.animationsDisabled());
             PreferencesDialog.ask(MainFrame.this, current).ifPresent(updated -> {
                 editingPreferences = updated;
                 preferences.setDefaultNoteValue(updated.defaultNoteValue());
@@ -1028,6 +1032,10 @@ public final class MainFrame extends JFrame {
                 // tiene que prender la vista multipista sin esperar al proximo cambio de modo.
                 HorizontalMultitrack.applyTo(
                         visibleTracks, canvas.viewMode(), updated.forceMultitrackInHorizontalMode());
+                preferences.setInterfaceFontSize(updated.interfaceFontSize());
+                preferences.setHighContrastEnabled(updated.highContrastEnabled());
+                preferences.setAnimationsDisabled(updated.animationsDisabled());
+                AccessibilitySettings.applyFrom(preferences, themes);
             });
             backToTheScore();
         }

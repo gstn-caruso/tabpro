@@ -105,4 +105,43 @@ class PreferencesTest {
     void metronomeStartsOffByDefault() {
         assertFalse(preferences.metronomeEnabled());
     }
+
+    /** Preferencias [F12] > Accesibilidad: la fuente base de la interfaz, hoy fija en 12pt. */
+    @Test
+    void interfaceFontSizeStartsAtTwelvePoints() {
+        assertEquals(12, preferences.interfaceFontSize());
+    }
+
+    @Test
+    void remembersTheInterfaceFontSize() {
+        preferences.setInterfaceFontSize(16);
+
+        assertEquals(16, preferences.interfaceFontSize());
+    }
+
+    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
+    @Test
+    void highContrastStartsOff() {
+        assertFalse(preferences.highContrastEnabled());
+    }
+
+    @Test
+    void remembersThatHighContrastIsOn() {
+        preferences.setHighContrastEnabled(true);
+
+        assertTrue(preferences.highContrastEnabled());
+    }
+
+    /** Preferencias [F12] > Accesibilidad: "Sin animaciones" apaga las de FlatLaf y las propias. */
+    @Test
+    void animationsStartEnabled() {
+        assertFalse(preferences.animationsDisabled());
+    }
+
+    @Test
+    void remembersThatAnimationsAreDisabled() {
+        preferences.setAnimationsDisabled(true);
+
+        assertTrue(preferences.animationsDisabled());
+    }
 }

@@ -19,6 +19,10 @@ public final class Preferences {
     private static final String AUTOSAVE_EVERY = "autosaveEvery";
     private static final String UNDO_ENABLED = "undoEnabled";
     private static final String METRONOME_ENABLED = "metronomeEnabled";
+    private static final String INTERFACE_FONT_SIZE = "interfaceFontSize";
+    private static final int DEFAULT_INTERFACE_FONT_SIZE = 12;
+    private static final String HIGH_CONTRAST_ENABLED = "highContrastEnabled";
+    private static final String ANIMATIONS_DISABLED = "animationsDisabled";
     private static final String DEFAULT_NOTE_VALUE = "defaultNoteValue";
     private static final String AUTO_SCROLL_DURING_PLAYBACK = "autoScrollDuringPlayback";
     private static final String FORCE_MULTITRACK_IN_HORIZONTAL_MODE = "forceMultitrackInHorizontalMode";
@@ -75,6 +79,33 @@ public final class Preferences {
 
     public void setMetronomeEnabled(boolean enabled) {
         stored.putBoolean(METRONOME_ENABLED, enabled);
+    }
+
+    /** Preferencias [F12] > Accesibilidad: la fuente base de la interfaz, la aplica Theme. */
+    public int interfaceFontSize() {
+        return stored.getInt(INTERFACE_FONT_SIZE, DEFAULT_INTERFACE_FONT_SIZE);
+    }
+
+    public void setInterfaceFontSize(int points) {
+        stored.putInt(INTERFACE_FONT_SIZE, points);
+    }
+
+    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
+    public boolean highContrastEnabled() {
+        return stored.getBoolean(HIGH_CONTRAST_ENABLED, false);
+    }
+
+    public void setHighContrastEnabled(boolean enabled) {
+        stored.putBoolean(HIGH_CONTRAST_ENABLED, enabled);
+    }
+
+    /** Preferencias [F12] > Accesibilidad: "Sin animaciones" apaga las de FlatLaf y las propias. */
+    public boolean animationsDisabled() {
+        return stored.getBoolean(ANIMATIONS_DISABLED, false);
+    }
+
+    public void setAnimationsDisabled(boolean disabled) {
+        stored.putBoolean(ANIMATIONS_DISABLED, disabled);
     }
 
     /** Preferencias [F12], "Figura por defecto al insertar": la usa {@code Editor.insertBeat}. */

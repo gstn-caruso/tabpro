@@ -101,4 +101,34 @@ class PreferencesPanelTest {
         }
         throw new AssertionError("no hay ninguna casilla que hable de \"" + words + "\"");
     }
+
+    /** Preferencias [F12] > Accesibilidad: la fuente base de la interfaz, hoy fija en 12pt. */
+    @Test
+    void offersToChooseTheInterfaceFontSize() {
+        Preferences preferences = Preferences.defaults().withInterfaceFontSize(16);
+
+        PreferencesPanel panel = new PreferencesPanel(preferences);
+
+        assertEquals(16, panel.toPreferences().interfaceFontSize());
+    }
+
+    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
+    @Test
+    void offersToTurnHighContrastOn() {
+        Preferences preferences = Preferences.defaults().withHighContrastEnabled(true);
+
+        PreferencesPanel panel = new PreferencesPanel(preferences);
+
+        assertTrue(panel.toPreferences().highContrastEnabled());
+    }
+
+    /** Preferencias [F12] > Accesibilidad: apaga las de FlatLaf y las propias de tabpro. */
+    @Test
+    void offersToTurnAnimationsOff() {
+        Preferences preferences = Preferences.defaults().withAnimationsDisabled(true);
+
+        PreferencesPanel panel = new PreferencesPanel(preferences);
+
+        assertTrue(panel.toPreferences().animationsDisabled());
+    }
 }
