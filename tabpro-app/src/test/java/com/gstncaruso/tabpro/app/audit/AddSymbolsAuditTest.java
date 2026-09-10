@@ -83,6 +83,43 @@ class AddSymbolsAuditTest {
     }
 
     @Test
+    void palancaPorElMenuAbreElDialogoRealYElTipoPropioElegidoLlegaAlModelo() throws Exception {
+        Editor editor = editorWithANote();
+        MainFrame frame = newFrame(editor);
+        try {
+            JMenuItem item = findMenuItem(frame.getJMenuBar(), "Palanca…");
+            assertNotNull(item, "no encontre 'Palanca…' en el menu real");
+
+            withDialog(item::doClick, dialog -> {
+                Container tremoloBarTab = tabContent(dialog, "Palanca");
+                assertNotNull(tremoloBarTab, "no encontre la solapa Palanca en el dialogo real");
+
+                JCheckBox activo = findComponent(tremoloBarTab, JCheckBox.class);
+                assertNotNull(activo);
+                if (!activo.isSelected()) {
+                    activo.doClick();
+                }
+
+                @SuppressWarnings("unchecked")
+                JComboBox<BendType> tipo = (JComboBox<BendType>) findComponent(tremoloBarTab, JComboBox.class);
+                assertNotNull(tipo);
+                assertEquals(BendType.tremoloBarTypes(), comboValues(tipo),
+                        "la solapa Palanca tiene que ofrecer sus seis tipos propios, no los del Bend");
+                tipo.setSelectedItem(BendType.DIVE);
+
+                findButton(dialog, "Aceptar").doClick();
+            });
+
+            var tremoloBar = editor.currentBeat().effects().tremoloBar();
+            assertTrue(tremoloBar.isPresent(), "la palanca elegida en el dialogo real tiene que llegar al modelo");
+            assertEquals(BendType.DIVE, tremoloBar.get().type(),
+                    "el tipo elegido en el combo real de la palanca tiene que ser el que quedo en el modelo");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
     void trinoPorElMenuAbreElDialogoRealYElValorElegidoLlegaAlModelo() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
@@ -156,5 +193,13 @@ class AddSymbolsAuditTest {
 
     private static KeyEvent pressed(java.awt.Component target, int keyCode) {
         return new KeyEvent(target, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, keyCode, KeyEvent.CHAR_UNDEFINED);
+    }
+
+    private static java.util.List<BendType> comboValues(JComboBox<BendType> combo) {
+        java.util.List<BendType> values = new java.util.ArrayList<>();
+        for (int i = 0; i < combo.getItemCount(); i++) {
+            values.add(combo.getItemAt(i));
+        }
+        return values;
     }
 }
