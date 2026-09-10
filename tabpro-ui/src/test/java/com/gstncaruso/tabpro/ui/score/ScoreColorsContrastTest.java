@@ -103,6 +103,7 @@ class ScoreColorsContrastTest {
                 new Pair("cejilla (NUT) / mastil electrico", InstrumentColors.NUT, FretboardType.ELECTRIC.woodColor(),
                         Contrast.GRAPHICAL_MINIMUM_RATIO)));
         pairs.addAll(fretboardPairs(FretboardType.ELECTRIC));
+        pairs.addAll(fretboardPairs(FretboardType.ACOUSTIC));
         return pairs;
     }
 

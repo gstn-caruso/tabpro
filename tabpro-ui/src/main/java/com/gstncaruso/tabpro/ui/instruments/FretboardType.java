@@ -10,8 +10,16 @@ import java.awt.Color;
 public enum FretboardType {
     ELECTRIC("Electrica", new Color(0x3A2F28), new Color(0x8D7665), InlayStyle.DOTS, 1.0,
             FretboardPalette.sharedWithElectric()),
-    ACOUSTIC("Acustica", new Color(0x8A5A34), new Color(0xA9764C), InlayStyle.DOTS, 1.1,
-            FretboardPalette.sharedWithElectric()),
+    ACOUSTIC("Acustica", new Color(0x8A5A34), new Color(0xD4B79F), InlayStyle.DOTS, 1.1,
+            new FretboardPalette(
+                    new Color(0xBEBBB5),
+                    new Color(0xC2BAB4),
+                    new Color(0xC1BBB4),
+                    new Color(0xF3A8AA),
+                    InstrumentColors.PRESSED_INK,
+                    new Color(0x9DBCF8),
+                    InstrumentColors.CONTEXT_INK,
+                    new Color(0xB6BCC5))),
     CLASSICAL("Clasica", new Color(0xC9A66B), new Color(0xDDBF8E), InlayStyle.NONE, 1.25,
             FretboardPalette.sharedWithElectric()),
     BASIC("Basica", new Color(0x5B5F66), new Color(0x74787F), InlayStyle.DIAMONDS, 0.9,
