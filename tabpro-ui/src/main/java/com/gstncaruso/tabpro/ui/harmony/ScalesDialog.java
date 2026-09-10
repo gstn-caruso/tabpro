@@ -10,9 +10,11 @@ import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
+import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -101,8 +103,26 @@ public final class ScalesDialog {
         private JPanel degreesZone() {
             JPanel zone = new JPanel(new BorderLayout());
             zone.setBorder(BorderFactory.createTitledBorder("Grados de la escala"));
+            zone.add(listenBar(), BorderLayout.NORTH);
             zone.add(degrees, BorderLayout.CENTER);
             return zone;
+        }
+
+        private JPanel listenBar() {
+            JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            JButton listen = new JButton(Icons.play());
+            listen.setToolTipText("Escuchar la escala");
+            listen.getAccessibleContext().setAccessibleName("Escuchar");
+            listen.addActionListener(event -> listenToScale());
+            bar.add(listen);
+            return bar;
+        }
+
+        private void listenToScale() {
+            List<Pitch> pitches = chosen.tones().stream()
+                    .map(tone -> new Pitch(LISTENING_OCTAVE + tone.pitchClass().semitone()))
+                    .toList();
+            player.playSequence(pitches, editor.currentTrack().channel().program());
         }
 
         private JPanel finderZone() {
