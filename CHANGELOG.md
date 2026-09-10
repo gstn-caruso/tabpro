@@ -1,3 +1,9 @@
+## [0.58.1](https://github.com/gstn-caruso/tabpro/compare/v0.58.0...v0.58.1) (2026-09-10)
+
+### Bug Fixes
+
+* **editing:** mover el cursor limpia la selección, Shift la extiende, y Ctrl+A se pinta de verdad ([#176](https://github.com/gstn-caruso/tabpro/issues/176)) ([6cc994c](https://github.com/gstn-caruso/tabpro/commit/6cc994c71bee87cf3a868dd97c60a6002cd29ed9))
+
 ## [0.58.0](https://github.com/gstn-caruso/tabpro/compare/v0.57.0...v0.58.0) (2026-09-10)
 
 ### Features
