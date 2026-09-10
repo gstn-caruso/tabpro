@@ -1,0 +1,14 @@
+package com.gstncaruso.tabpro.ui.i18n;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.MissingResourceException;
+import org.junit.jupiter.api.Test;
+
+class TextsTest {
+
+    @Test
+    void aKeyWithNoTranslationThrows() {
+        assertThrows(MissingResourceException.class, () -> Texts.get("common.doesNotExist"));
+    }
+}
