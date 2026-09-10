@@ -19,13 +19,19 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 /**
  * La regla general de {@link DialogShell} de punta a punta, con un dialogo real: necesita un
  * toolkit no headless (por eso "integracion", igual que la auditoria de uso real de tabpro-app).
+ * Mismo {@code ResourceLock} que {@code AuditSupport.SWING_LOCK} (tabpro-app no es accesible
+ * desde tabpro-ui): un toolkit Swing real no se comparte entre tests que abren ventanas de golpe.
  */
 @Tag("integracion")
+@ResourceLock(DialogShellFitsScreenTest.SWING_LOCK)
 class DialogShellFitsScreenTest {
+
+    static final String SWING_LOCK = "tabpro-audit-swing";
 
     @Test
     void unContenidoMasAltoQueLaPantallaNoHaceQueElDialogoLaSupereYAceptarSigueVisible() throws Exception {
