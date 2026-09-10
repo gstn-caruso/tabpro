@@ -62,7 +62,7 @@ class ScorePainterTest {
 
         for (int line = 0; line <= 4; line++) {
             int y = painted.layout().staffLineY(0, 0, line);
-            assertTrue(painted.hasInkNear(x, y, 1), "falta la linea " + line + " del pentagrama");
+            assertTrue(painted.hasInkNear(x, y, 1), "missing staff line " + line);
         }
     }
 
@@ -73,7 +73,7 @@ class ScorePainterTest {
 
         for (int string = 1; string <= 6; string++) {
             int y = painted.layout().stringY(0, 0, string);
-            assertTrue(painted.hasInkNear(x, y, 1), "falta la cuerda " + string);
+            assertTrue(painted.hasInkNear(x, y, 1), "missing string " + string);
         }
     }
 
@@ -87,7 +87,7 @@ class ScorePainterTest {
         Rectangle beat = painted.layout().beatBounds(0, 0, 0);
         int y = painted.layout().stepY(0, 0, position.step());
 
-        assertTrue(painted.hasInkNear(beat.x + beat.width / 2, y, 4), "falta la cabeza de la nota");
+        assertTrue(painted.hasInkNear(beat.x + beat.width / 2, y, 4), "missing the notehead");
     }
 
     @Test
@@ -96,7 +96,7 @@ class ScorePainterTest {
         int guitarStep = StaffPosition.of(Tuning.standard().pitchOf(new Note(3, 2)), Clef.TREBLE).step();
         int bassStep = StaffPosition.of(Tuning.standardBass().pitchOf(openA), Clef.BASS).step();
 
-        assertFalse(guitarStep == bassStep, "las dos claves no pueden dar el mismo grado");
+        assertFalse(guitarStep == bassStep, "the two clefs cannot give the same degree");
         assertDoesNotThrow(() -> paint(
                 new Score("", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo"))),
                 new Cursor(0, 0, 0, 1),
@@ -113,9 +113,9 @@ class ScorePainterTest {
         int nearTheTablature = painted.layout().tabBottom(0, 0) - 2;
 
         assertEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x, nearTheStaff),
-                "la linea del cursor tiene que cruzar el pentagrama");
+                "the cursor line has to cross the staff");
         assertEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x, nearTheTablature),
-                "la linea del cursor tiene que cruzar tambien la tablatura");
+                "the cursor line also has to cross the tablature");
     }
 
     @Test
@@ -128,7 +128,7 @@ class ScorePainterTest {
         int farFromTheLine = beat.x + beat.width - 2;
 
         assertNotEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(farFromTheLine, y),
-                "el cursor no puede tapar el beat entero como el recuadro de antes");
+                "the cursor cannot cover the entire beat like the old box did");
     }
 
     @Test
@@ -141,9 +141,9 @@ class ScorePainterTest {
         int onAnotherString = painted.layout().stringY(0, 0, 5);
 
         assertEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x - 2, onItsString),
-                "en su cuerda la marca tiene que ser mas ancha que la linea");
+                "on its own string the mark has to be wider than the line");
         assertNotEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x - 2, onAnotherString),
-                "en otra cuerda no tiene que aparecer esa marca ancha");
+                "on another string that wide mark must not appear");
     }
 
     @Test
@@ -157,9 +157,9 @@ class ScorePainterTest {
 
         assertTrue(
                 nearTheOtherTrack < painted.layout().staffTop(1, 0),
-                "el punto de control tiene que estar arriba de la pista de abajo, no adentro");
+                "the control point has to be above the track below, not inside it");
         assertTrue(painted.hasInkNear(x, nearTheOtherTrack, 0),
-                "la linea del cursor tiene que cruzar tambien la pista que no se esta editando");
+                "the cursor line also has to cross the track that is not being edited");
     }
 
     @Test
@@ -172,7 +172,7 @@ class ScorePainterTest {
         int onTheOtherTrack = painted.layout().staffTop(1, 0) + 2;
 
         assertNotEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x, onTheOtherTrack),
-                "sobre la pista que no se edita el cursor tiene que quedar atenuado, no pleno");
+                "over the track that is not being edited the cursor has to look dimmed, not full");
     }
 
     @Test
@@ -185,7 +185,7 @@ class ScorePainterTest {
         int onItsOwnTrack = painted.layout().staffTop(0, 0) + 2;
 
         assertEquals(ScoreColors.CURSOR.getRGB(), painted.image().getRGB(x, onItsOwnTrack),
-                "sobre su propia pista el cursor tiene que seguir siendo el rojo pleno");
+                "over its own track the cursor has to stay the full red");
     }
 
     @Test
@@ -202,10 +202,10 @@ class ScorePainterTest {
 
         assertNotEquals(
                 silent.image().getRGB(lineX, y), playing.image().getRGB(lineX, y),
-                "la linea de reproduccion tiene que marcar donde arranca el beat que suena");
+                "the playback line has to mark where the sounding beat starts");
         assertEquals(
                 silent.image().getRGB(elsewhereX, y), playing.image().getRGB(elsewhereX, y),
-                "el resto del beat no puede quedar tapado por un bloque relleno como antes");
+                "the rest of the beat cannot be covered by a filled block like before");
     }
 
     @Test
@@ -219,10 +219,10 @@ class ScorePainterTest {
 
         assertTrue(
                 nearSystemTop < painted.layout().staffTop(1, 0),
-                "el punto de control tiene que estar arriba de la pista que suena, no adentro");
+                "the control point has to be above the sounding track, not inside it");
         assertTrue(
                 painted.hasInkNear(beat.x, nearSystemTop, 0),
-                "la linea tiene que cruzar tambien la pista de arriba, no solo la que suena");
+                "the line also has to cross the track above, not just the sounding one");
     }
 
     @Test
@@ -235,7 +235,7 @@ class ScorePainterTest {
                 beat.x, staffTop - ScoreLayout.STAFF_HEADROOM, beat.width, ScoreLayout.STAFF_HEADROOM);
 
         assertTrue(painted.hasColorIn(above, ScoreColors.TEMPO),
-                "el tempo global de la partitura tiene que verse arriba del primer compas");
+                "the score's global tempo has to appear above the first measure");
     }
 
     @Test
@@ -258,7 +258,7 @@ class ScorePainterTest {
         long tempoGlyphs = canvas.drawnTexts().stream()
                 .filter(drawnText -> MusicFont.metNoteQuarterUp().equals(drawnText.text()))
                 .count();
-        assertEquals(1, tempoGlyphs, "el compas 1 solo tiene que mostrar un tempo, el del cambio explicito");
+        assertEquals(1, tempoGlyphs, "measure 1 only has to show one tempo, the explicit change");
     }
 
     @Test
@@ -321,15 +321,15 @@ class ScorePainterTest {
         for (com.gstncaruso.tabpro.core.model.effects.SlideType type :
                 com.gstncaruso.tabpro.core.model.effects.SlideType.values()) {
             Painted painted = paint(scoreWith(measureWithSlide(type)), new Cursor(0, 0, 0, 1), Playhead.silent());
-            assertFalse(painted.looksLike(withoutSlide), "el " + type + " no dibuja nada distinto de no tener slide");
+            assertFalse(painted.looksLike(withoutSlide), "the " + type + " draws nothing different from having no slide");
             withEachType.add(painted);
         }
 
         for (int i = 0; i < withEachType.size(); i++) {
             for (int j = i + 1; j < withEachType.size(); j++) {
                 assertFalse(withEachType.get(i).looksLike(withEachType.get(j)),
-                        "el pintor dibuja lo mismo para "
-                                + com.gstncaruso.tabpro.core.model.effects.SlideType.values()[i] + " y "
+                        "the painter draws the same thing for "
+                                + com.gstncaruso.tabpro.core.model.effects.SlideType.values()[i] + " and "
                                 + com.gstncaruso.tabpro.core.model.effects.SlideType.values()[j]);
             }
         }
@@ -400,7 +400,7 @@ class ScorePainterTest {
 
         assertEquals(markerColor.getRGB(),
                 painted.image().getRGB(square.x + square.width / 2, square.y + square.height / 2),
-                "el marcador tiene que dibujar un cuadrado solido con su propio color junto al nombre");
+                "the marker has to draw a solid square with its own color next to the name");
     }
 
     @Test
@@ -412,7 +412,7 @@ class ScorePainterTest {
         int textBaseline = painted.layout().staffTop(0, 0) - BarStructurePainter.MARKER_TEXT_CLEARANCE_ABOVE_STAFF;
 
         assertTrue(painted.hasColorIn(new Rectangle(square.x, textBaseline - 1, square.width, 1), markerColor),
-                "el cuadrado tiene que apoyar su base en la linea de base del texto del marcador");
+                "the square has to rest its base on the marker text's baseline");
     }
 
     @Test
@@ -423,7 +423,7 @@ class ScorePainterTest {
         Rectangle trackName = trackNameBounds(painted, "Guitarra");
 
         assertFalse(painted.hasColorIn(trackName, markerColor),
-                "el cuadrado del marcador no puede pisar el nombre de la pista");
+                "the marker's square cannot overlap the track name");
     }
 
     @Test
@@ -437,7 +437,7 @@ class ScorePainterTest {
                 square.x + square.width / 2, square.y + square.height / 2));
 
         assertNotEquals(edge.getRGB(), interior.getRGB(),
-                "un marcador que no contrasta con el fondo necesita un borde de tinta alrededor del cuadrado");
+                "a marker that does not contrast with the background needs an ink border around the square");
     }
 
     @Test
@@ -451,7 +451,7 @@ class ScorePainterTest {
                 square.x + square.width / 2, square.y + square.height / 2));
 
         assertEquals(edge.getRGB(), interior.getRGB(),
-                "un marcador que ya contrasta con el fondo no necesita un borde extra");
+                "a marker that already contrasts with the background does not need an extra border");
     }
 
     @Test
@@ -461,8 +461,8 @@ class ScorePainterTest {
 
         Rectangle square = solidMarkerSquareBounds(painted, markerColor);
 
-        assertEquals(8, square.width, "el cuadrado tiene que medir 8 px de ancho, como en el manual");
-        assertEquals(12, square.height, "el cuadrado tiene que medir 12 px de alto, como en el manual");
+        assertEquals(8, square.width, "the square has to measure 8 px wide, as in the manual");
+        assertEquals(12, square.height, "the square has to measure 12 px tall, as in the manual");
     }
 
     private static Rectangle solidMarkerSquareBounds(Painted painted, Color markerColor) {
@@ -538,7 +538,7 @@ class ScorePainterTest {
         Score score = scoreWith(measure).withLyrics(
                 com.gstncaruso.tabpro.core.model.Lyrics.none().onTrack(0)
                         .withLine(0, com.gstncaruso.tabpro.core.model.LyricLine.empty()
-                                .startingAt(1).saying("La vi-da es un sue-no")));
+                                .startingAt(1).saying("Life is but a dream")));
 
         assertDoesNotThrow(() -> paint(score, new Cursor(0, 0, 0, 1), Playhead.silent()));
     }
@@ -564,8 +564,8 @@ class ScorePainterTest {
         int x = beat.x + beat.width / 2;
         int aboveTheStaff = painted.layout().staffTop(0, 0) - 12;
         int belowTheStaff = painted.layout().staffBottom(0, 0) + 20;
-        assertFalse(painted.hasInkNear(x, aboveTheStaff, 3), "no deberia dibujarse arriba del pentagrama");
-        assertTrue(painted.hasInkNear(x, belowTheStaff, 8), "deberia dibujarse debajo del pentagrama");
+        assertFalse(painted.hasInkNear(x, aboveTheStaff, 3), "should not be drawn above the staff");
+        assertTrue(painted.hasInkNear(x, belowTheStaff, 8), "should be drawn below the staff");
     }
 
     @Test
@@ -584,7 +584,7 @@ class ScorePainterTest {
         int edge = painted.image().getRGB(bounds.x + bounds.width / 2, bounds.y);
         int centre = painted.image().getRGB(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
         assertNotEquals(edge, centre,
-                "el borde de aviso tiene que verse distinto del tinte que cubre el resto del compas");
+                "the warning border has to look different from the tint covering the rest of the measure");
     }
 
     @Test
@@ -630,7 +630,7 @@ class ScorePainterTest {
         int y = measureBounds.y + measureBounds.height / 2;
 
         assertNotEquals(ScoreColors.BACKGROUND.getRGB(), image.getRGB(marginX, y),
-                "el margen izquierdo del compas tiene que quedar pintado tambien");
+                "the measure's left margin also has to be painted");
     }
 
     @Test
@@ -656,7 +656,7 @@ class ScorePainterTest {
         int edge = image.getRGB(bounds.x, y);
         int centre = image.getRGB(bounds.x + bounds.width / 2, y);
         assertNotEquals(edge, centre,
-                "la seleccion necesita un borde solido, distinto del relleno translucido");
+                "the selection needs a solid border, distinct from the translucent fill");
     }
 
     @Test
@@ -684,7 +684,7 @@ class ScorePainterTest {
                 new Color(0xFF, 0xFF, 0x00, 0x50), ScoreColors.BACKGROUND);
 
         assertEquals(expectedFill.getRGB(), image.getRGB(interiorX, interiorY),
-                "el manual mide la seleccion de Guitar Pro 5 en amarillo #FFFF00, no en azul");
+                "the manual measures Guitar Pro 5's selection in yellow #FFFF00, not in blue");
     }
 
     @Test
@@ -710,8 +710,8 @@ class ScorePainterTest {
         Color edge = new Color(image.getRGB(bounds.x, y));
 
         assertTrue(edge.getRed() > 180 && edge.getGreen() > 180 && edge.getBlue() < 60,
-                "el borde de la seleccion tiene que ser amarillo solido (rojo y verde altos, azul bajo), "
-                        + "no el azul de ACCENT: " + edge);
+                "the selection border has to be solid yellow (high red and green, low blue), "
+                        + "not ACCENT's blue: " + edge);
     }
 
     @Test
@@ -741,9 +741,9 @@ class ScorePainterTest {
         int rightEdge = image.getRGB(second.x + second.width - 1, y);
 
         assertEquals(interior, internalBoundary,
-                "no tiene que haber una linea de borde entre los dos beats seleccionados y contiguos");
-        assertNotEquals(interior, leftEdge, "el borde izquierdo del area completa tiene que verse");
-        assertNotEquals(interior, rightEdge, "el borde derecho del area completa tiene que verse");
+                "there must be no border line between the two adjacent selected beats");
+        assertNotEquals(interior, leftEdge, "the left border of the whole area has to be visible");
+        assertNotEquals(interior, rightEdge, "the right border of the whole area has to be visible");
     }
 
     @Test
@@ -757,7 +757,7 @@ class ScorePainterTest {
         Painted alone = paint(one, new Cursor(0, 0, 0, 1), Playhead.silent(), VisibleTracks.all());
 
         assertTrue(withoutTheFirst.looksLike(alone),
-                "apagar una pista tiene que dar la misma hoja que no tenerla");
+                "muting a track has to give the same sheet as not having it");
     }
 
     @Test
@@ -769,7 +769,7 @@ class ScorePainterTest {
         Painted byDefault = paint(new Score("", 120, List.of(guitar)), new Cursor(0, 0, 0, 1), Playhead.silent());
         Painted off = paint(new Score("", 120, List.of(withLegendOff)), new Cursor(0, 0, 0, 1), Playhead.silent());
 
-        assertTrue(byDefault.looksLike(off), "una pista nueva no tiene que mostrar los nombres de cuerda");
+        assertTrue(byDefault.looksLike(off), "a new track must not show the string names");
     }
 
     @Test
@@ -782,7 +782,7 @@ class ScorePainterTest {
         Painted withLegend = paint(new Score("", 120, List.of(withLegendOn)), new Cursor(0, 0, 0, 1), Playhead.silent());
 
         assertFalse(withoutLegend.looksLike(withLegend),
-                "tildar la casilla de afinacion tiene que dibujar los nombres de cuerda");
+                "checking the tuning box has to draw the string names");
     }
 
     @Test
@@ -800,7 +800,7 @@ class ScorePainterTest {
 
         int x = painted.layout().measureX(0) + 2;
         int y = (painted.layout().staffTop(1, 0) + painted.layout().tabBottom(1, 0)) / 2;
-        assertTrue(painted.hasInkNear(x, y, 3), "falta la barra de repeticion de la pista que si se ve");
+        assertTrue(painted.hasInkNear(x, y, 3), "missing the repeat bar of the track that is visible");
     }
 
     @Test
@@ -811,7 +811,7 @@ class ScorePainterTest {
 
         assertTrue(
                 inkAboveTheTablature(withFade) > inkAboveTheTablature(withoutFade),
-                "el fade in tiene que dejar su etiqueta arriba de la tablatura");
+                "the fade in has to leave its label above the tablature");
     }
 
     @Test
@@ -824,7 +824,7 @@ class ScorePainterTest {
 
         assertTrue(
                 inkUnderTheTablature(withTremoloBar) > inkUnderTheTablature(withoutTremoloBar),
-                "la palanca suena pero no se ve: falta su curva bajo la tablatura");
+                "the whammy bar sounds but is not visible: missing its curve under the tablature");
     }
 
     @Test
@@ -835,16 +835,16 @@ class ScorePainterTest {
 
         assertTrue(
                 inkAboveTheTablature(withWah) > inkAboveTheTablature(withoutWah),
-                "el pedal de wah-wah tiene que quedar anotado arriba de la tablatura");
+                "the wah-wah pedal has to be annotated above the tablature");
     }
 
     @Test
     void theGraceNoteTransitionIsDrawnUpToTheNote() {
         int withoutTransition = inkBetweenTheGraceNoteAndTheNote(GraceTransition.NONE);
 
-        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.SLIDE) > withoutTransition, "falta el slide");
-        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.BEND) > withoutTransition, "falta el bend");
-        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.HAMMER) > withoutTransition, "falta el ligado");
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.SLIDE) > withoutTransition, "missing the slide");
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.BEND) > withoutTransition, "missing the bend");
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.HAMMER) > withoutTransition, "missing the slur");
     }
 
     private static int inkBetweenTheGraceNoteAndTheNote(GraceTransition transition) {
@@ -901,10 +901,10 @@ class ScorePainterTest {
         int acrossTheBass = painted.layout().tabTop(1, 0) + 3;
         List<Integer> lines = painted.playingColumnsAt(acrossTheBass);
 
-        assertEquals(1, lines.size(), "una sola linea de reproduccion, no una por pista");
+        assertEquals(1, lines.size(), "a single playback line, not one per track");
         assertEquals(
                 painted.layout().beatBounds(0, 0, 2).x, lines.get(0),
-                "la linea va donde arranco el beat que suena mas tarde");
+                "the line goes where the later-sounding beat started");
     }
 
     @Test
@@ -919,8 +919,8 @@ class ScorePainterTest {
 
         Set<Integer> painted = measureNumbersPaintedIn(canvas);
         assertFalse(painted.contains(layout.measureCount()),
-                "el ultimo compas, lejos del clip, no tiene que pintarse");
-        assertTrue(painted.contains(1), "el primer compas, adentro del clip, si se tiene que pintar");
+                "the last measure, far from the clip, must not be painted");
+        assertTrue(painted.contains(1), "the first measure, inside the clip, does have to be painted");
     }
 
     @Test
@@ -937,12 +937,12 @@ class ScorePainterTest {
         ScorePainter.paint(canvas, layout, score, new Cursor(-1, 0, 0, 1), Playhead.silent());
 
         Set<Integer> painted = measureNumbersPaintedIn(canvas);
-        assertFalse(painted.isEmpty(), "algo tiene que pintarse dentro del clip");
+        assertFalse(painted.isEmpty(), "something has to be painted inside the clip");
         for (int measureNumber : painted) {
             int system = layout.systemOf(measureNumber - 1);
             assertTrue(system >= firstVisibleSystem && system <= lastVisibleSystem,
-                    "el compas " + measureNumber + " esta en el sistema " + system
-                            + ", fuera del rango visible [" + firstVisibleSystem + "," + lastVisibleSystem + "]");
+                    "measure " + measureNumber + " is in system " + system
+                            + ", outside the visible range [" + firstVisibleSystem + "," + lastVisibleSystem + "]");
         }
     }
 
