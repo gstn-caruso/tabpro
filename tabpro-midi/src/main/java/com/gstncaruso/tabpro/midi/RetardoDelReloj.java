@@ -5,7 +5,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-/** El Retardo de produccion: programa la accion en un hilo propio, contado por el reloj del sistema. */
 final class RetardoDelReloj implements Retardo, AutoCloseable {
 
     private final ScheduledExecutorService reloj = Executors.newSingleThreadScheduledExecutor(daemonThreads());

@@ -4,10 +4,6 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
-/**
- * El boton de altavoz de "Configure the Sound &gt; MIDI Setup": prueba un
- * dispositivo tocandole una nota con el programa elegido para ese puerto.
- */
 public final class MidiTestTone {
 
     public static final int TEST_PITCH = 60;
@@ -21,12 +17,10 @@ public final class MidiTestTone {
         play(receiver, program, DEFAULT_DURATION_MILLIS);
     }
 
-    /** Manda el programa y la nota de prueba ya, y la corta sola pasado ese tiempo. */
     public static void play(Receiver receiver, int program, long durationMillis) {
         play(receiver, program, durationMillis, () -> { });
     }
 
-    /** Lo mismo, pero avisando cuando termina -por ejemplo, para cerrar el dispositivo de prueba. */
     public static void play(Receiver receiver, int program, long durationMillis, Runnable afterward) {
         play(receiver, program, durationMillis, afterward, new RetardoDelReloj());
     }
