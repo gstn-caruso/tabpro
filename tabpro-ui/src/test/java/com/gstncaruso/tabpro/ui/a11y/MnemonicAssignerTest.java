@@ -12,4 +12,9 @@ class MnemonicAssignerTest {
     void unTextoSinLetrasNoTieneIndiceLibre() {
         assertEquals(-1, assigner.chooseIndex("123…"));
     }
+
+    @Test
+    void unTextoDeUnaSolaPalabraEligeSuPrimeraLetra() {
+        assertEquals(0, assigner.chooseIndex("Guardar"));
+    }
 }
