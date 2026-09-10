@@ -7,7 +7,7 @@ public record MetronomeSettings(boolean active, int volume) {
 
     public MetronomeSettings {
         if (volume < MIN_VOLUME || volume > MAX_VOLUME) {
-            throw new IllegalArgumentException("volume debe estar entre " + MIN_VOLUME + " y " + MAX_VOLUME + ": " + volume);
+            throw new IllegalArgumentException("volume must be between " + MIN_VOLUME + " and " + MAX_VOLUME + ": " + volume);
         }
     }
 
