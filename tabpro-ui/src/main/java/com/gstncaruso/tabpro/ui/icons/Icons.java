@@ -477,14 +477,6 @@ public final class Icons {
         return svgIcon("hand-click");
     }
 
-    /**
-     * El mismo dialogo de digitacion, para el boton de la mano derecha del manual: una mano
-     * distinta para que los dos botones no se vean identicos, aunque abran el mismo dialogo.
-     */
-    public static Icon fingeringOtherHand() {
-        return svgIcon("hand-two-fingers");
-    }
-
     public static Icon strokeDown() {
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
