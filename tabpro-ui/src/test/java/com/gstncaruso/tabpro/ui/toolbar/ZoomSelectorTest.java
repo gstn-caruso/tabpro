@@ -73,6 +73,15 @@ class ZoomSelectorTest {
         assertEquals("100%", String.valueOf(selector.getEditor().getItem()));
     }
 
+    @Test
+    void unCambioDeZoomPorOtroCaminoActualizaElCombo() {
+        ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
+
+        zoomHolder.setZoom(new Zoom(150));
+
+        assertEquals("150%", String.valueOf(selector.getEditor().getItem()));
+    }
+
     private static void type(ZoomSelector selector, String text) {
         selector.getEditor().setItem(text);
         selector.actionPerformed(new java.awt.event.ActionEvent(selector, java.awt.event.ActionEvent.ACTION_PERFORMED, ""));

@@ -18,6 +18,7 @@ public final class ZoomSelector extends JComboBox<String> {
         super(presetLabels());
         this.zoomHolder = zoomHolder;
         addActionListener(event -> applyEnteredZoom());
+        zoomHolder.onZoomChange(this::refresh);
         refresh();
     }
 
