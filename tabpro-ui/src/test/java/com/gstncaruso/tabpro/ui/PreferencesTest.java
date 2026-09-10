@@ -111,4 +111,11 @@ class PreferencesTest {
     void interfaceFontSizeStartsAtTwelvePoints() {
         assertEquals(12, preferences.interfaceFontSize());
     }
+
+    @Test
+    void remembersTheInterfaceFontSize() {
+        preferences.setInterfaceFontSize(16);
+
+        assertEquals(16, preferences.interfaceFontSize());
+    }
 }
