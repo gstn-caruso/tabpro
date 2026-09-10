@@ -13,12 +13,13 @@ public final class ScoreColors {
     public static final Color SURFACE = new Color(0x2B2D30);
     public static final Color SURFACE_HIGHLIGHT = new Color(0x35373B);
     public static final Color BORDER = new Color(0x71, 0x77, 0x80);
+    public static final Color KNOB_BODY = new Color(0x7E838B);
 
     public static final Color STAFF_LINE = new Color(0x72, 0x76, 0x7F);
     public static final Color BAR_LINE = new Color(0x7E828A);
     public static final Color INK = new Color(0xE8EAED);
     public static final Color LABEL = new Color(0x9DA1A8);
-    public static final Color MUTED_INK = new Color(0x91, 0x94, 0x9A);
+    public static final Color MUTED_INK = new Color(0x9E, 0xA0, 0xA6);
 
     public static final Color ACCENT = new Color(0x3574F0);
     /**
