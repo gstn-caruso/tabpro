@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.gstncaruso.tabpro.core.harmony.ChordType;
+import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
@@ -77,5 +78,17 @@ class LabelsTest {
 
         assertFalse(etiqueta.isBlank());
         assertNotEquals(value.name(), etiqueta);
+    }
+
+    @Test
+    void traduceLaNotaConSuNombreEnCastellanoEntreParentesis() {
+        assertEquals("C (Do)", Labels.of(PitchClass.of("C")));
+    }
+
+    @Test
+    void laEtiquetaDeUnaNotaNuncaCoincideConSuToString() {
+        PitchClass fSharp = PitchClass.of("F#");
+
+        assertNotEquals(fSharp.toString(), Labels.of(fSharp));
     }
 }

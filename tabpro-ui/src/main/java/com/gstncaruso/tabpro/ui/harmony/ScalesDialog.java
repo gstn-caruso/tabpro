@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.harmony.ScaleTone;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -62,6 +63,7 @@ public final class ScalesDialog {
             int lastMeasure = editor.currentTrack().measureCount();
             fromMeasure = new JSpinner(new SpinnerNumberModel(1, 1, lastMeasure, 1));
             toMeasure = new JSpinner(new SpinnerNumberModel(lastMeasure, 1, lastMeasure, 1));
+            tonics.setRenderer(new LabeledListCellRenderer());
             PitchClasses.chromatic().forEach(tonics::addItem);
             chosen.tonic().ifPresent(tonics::setSelectedItem);
             chosen.scale().ifPresent(scales::setSelectedItem);

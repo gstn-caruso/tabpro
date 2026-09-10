@@ -88,6 +88,8 @@ public final class ChordDialog {
                 roots.addItem(pitchClass);
                 basses.addItem(pitchClass);
             });
+            roots.setRenderer(new LabeledListCellRenderer());
+            basses.setRenderer(new LabeledListCellRenderer());
             types.setRenderer(new LabeledListCellRenderer());
             complexities.setRenderer(new LabeledListCellRenderer());
             barres.setRenderer(new LabeledListCellRenderer());

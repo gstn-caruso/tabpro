@@ -1,8 +1,16 @@
 package com.gstncaruso.tabpro.ui.harmony;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.testsupport.Combos;
+import java.awt.Component;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import org.junit.jupiter.api.Test;
 
 class ScalesDialogTest {
@@ -14,5 +22,19 @@ class ScalesDialogTest {
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), new ChosenScale());
 
         AccessibilityAssertions.assertNoViolations(panel);
+    }
+
+    @Test
+    void elComboDeTonalidadMuestraElNombreDeLaNotaEnCastellano() {
+        Editor editor = new Editor(Score.blank());
+
+        ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), new ChosenScale());
+
+        @SuppressWarnings("unchecked")
+        JComboBox<PitchClass> tonics = Combos.firstWithItemType(panel, PitchClass.class);
+        Component rendered = tonics.getRenderer()
+                .getListCellRendererComponent(new JList<>(), PitchClass.of("C"), 0, false, false);
+
+        assertEquals("C (Do)", ((JLabel) rendered).getText());
     }
 }

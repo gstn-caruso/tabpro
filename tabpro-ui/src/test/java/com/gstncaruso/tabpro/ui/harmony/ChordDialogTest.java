@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
+import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
@@ -85,5 +86,21 @@ class ChordDialogTest {
                 .getListCellRendererComponent(new JList<>(), BarrePreference.ANY, 0, false, false);
 
         assertEquals("Cualquiera", ((JLabel) rendered).getText());
+    }
+
+    @Test
+    void elComboDeFundamentalMuestraElNombreDeLaNotaEnCastellano() {
+        Editor editor = new Editor(Score.blank());
+        ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
+        ChordLibrary library = new ChordLibrary(scratch);
+
+        ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
+
+        @SuppressWarnings("unchecked")
+        JComboBox<PitchClass> roots = Combos.firstWithItemType(panel, PitchClass.class);
+        Component rendered = roots.getRenderer()
+                .getListCellRendererComponent(new JList<>(), PitchClass.of("C"), 0, false, false);
+
+        assertEquals("C (Do)", ((JLabel) rendered).getText());
     }
 }
