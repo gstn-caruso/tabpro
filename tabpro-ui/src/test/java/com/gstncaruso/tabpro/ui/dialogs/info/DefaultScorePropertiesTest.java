@@ -47,10 +47,6 @@ class DefaultScorePropertiesTest {
         assertEquals(ultimo, stored.get());
     }
 
-    /**
-     * El bug de siempre en este repo: un valor que se guarda pero nadie lee. Esta cadena
-     * completa -guardar, leer y construir la partitura- es la que prueba que no pasa aca.
-     */
     @Test
     void loQueSeGuardaComoPropiedadesPorDefectoTerminaEnLaPartituraQueArchivoNuevoCrea() {
         stored.save(new NewScoreDefaults(90, new TimeSignature(3, 4), KeySignature.cMajor(), "", ""));

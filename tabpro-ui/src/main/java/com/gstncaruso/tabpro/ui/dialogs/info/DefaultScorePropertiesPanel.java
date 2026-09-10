@@ -8,10 +8,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * La solapa "Propiedades por defecto" de Informacion de la partitura: lo que usa la proxima
- * partitura nueva, tal como describe el manual en New Score.
- */
 public final class DefaultScorePropertiesPanel extends FormPanel {
 
     private final JSpinner tempo = new JSpinner(new SpinnerNumberModel(120, 20, 400, 1));
