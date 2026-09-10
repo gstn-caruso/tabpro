@@ -1,36 +1,36 @@
-# Fixtures de Guitar Pro
+# Guitar Pro fixtures
 
 ## `tabpro-synthetic.*`
 
-Los tres archivos tienen el mismo contenido musical escrito en
-las tres generaciones del formato: una pista de guitarra en afinación estándar,
-dos compases de 4/4 en negras, con una escala de Do mayor ascendente sobre la
-quinta cuerda.
+All three files carry the same musical content written in the three format
+generations: one guitar track in standard tuning, two 4/4 measures of quarter
+notes, with an ascending C major scale on the fifth string.
 
 ## `tabpro-features.*`
 
-Los mismos tres formatos, con cuatro compases y tres pistas que ejercitan lo que
-el lector tiene que entender: dinámica, bend, ligado, slide, armónico natural,
-segunda voz (sólo en gp5, que es donde el formato la tiene), cambio de compás a
-3/4, repetición con finales alternativos, diagrama de acorde, una pista de bajo
-de cuatro cuerdas y una de percusión en el canal 10.
+The same three formats, with four measures and three tracks that exercise
+everything the reader has to understand: dynamics, bend, tie, slide, natural
+harmonic, a second voice (only in gp5, the only generation where the format
+has one), a time signature change to 3/4, a repeat with alternate endings, a
+chord diagram, a four-string bass track and a percussion track on channel 10.
 
 ## `tabpro-effects2.*`
 
-Tres compases con los efectos que el lector ramifica por versión: un par de notas
-ligadas que arma un ligado real, vibrato, trino, trémolo de púa y los armónicos
-artificial, tapped, pinch y semitono. GP3 no soporta el trino, el trémolo ni los
-armónicos que no sean natural o artificial: ahí se pierden al grabar, y no es un
-error del lector.
+Three measures with the effects the reader branches on by version: a pair of
+tied notes that forms a real tie, vibrato, trill, tremolo bar and the
+artificial, tapped, pinch and semitone harmonics. GP3 does not support the
+trill, the tremolo bar or any harmonic other than natural or artificial: they
+get lost on save there, and that is not a reader bug.
 
 ## `tabpro-features-v5.00.gp5`
 
-El mismo contenido que `tabpro-features.gp5` pero grabado como v5.00, que guarda
-las pistas de otra manera: el byte de banderas va delante de todas y no sólo de
-la primera, y el instrumento de RSE ocupa un byte menos.
+The same content as `tabpro-features.gp5` but saved as v5.00, which stores
+tracks differently: the flags byte comes before all of them instead of just
+the first one, and the RSE instrument takes one byte less.
 
-## Origen
+## Origin
 
-Son **contenido original**, generado a propósito para probar el lector de tabpro.
-No son material de Guitar Pro ni de Arobas Music, así que se pueden versionar y
-redistribuir con el resto del proyecto bajo la licencia MIT.
+This is **original content**, generated on purpose to test tabpro's reader.
+It is not material from Guitar Pro or Arobas Music, so it can be versioned
+and redistributed with the rest of the project under the MIT license.
+</content>
