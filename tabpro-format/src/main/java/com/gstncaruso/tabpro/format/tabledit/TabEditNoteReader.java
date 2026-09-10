@@ -13,15 +13,15 @@ import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 
 /**
- * Lee los siete bytes de carga util de una nota (el byte de tipo ya lo leyo
- * quien orquesta, porque tambien lo necesita para decidir que clase de
- * componente es). TablEdit no guarda la altura de un bend ni la velocidad de
- * un tremolo: donde el formato no trae el dato, se documenta el valor fijo que
- * se asume, igual que hace el propio TuxGuitar.
+ * Reads the seven payload bytes of a note (the type byte was already read by the
+ * orchestrator, since it also needs it to decide what kind of component it is).
+ * TablEdit stores neither the pitch of a bend nor the speed of a tremolo: where the
+ * format carries no data, the fixed value assumed is documented, the same as TuxGuitar
+ * itself does.
  */
 final class TabEditNoteReader {
 
-    /** Un tono entero (2 semitonos), el bend mas comun, en las unidades de cuarto de tono de tabpro. */
+    /** A whole tone (2 semitones), the most common bend, in tabpro's quarter-tone units. */
     private static final int DEFAULT_BEND_QUARTER_TONES = 4;
 
     TabEditNoteFields read(TabEditByteReader input, int type) {
@@ -44,13 +44,13 @@ final class TabEditNoteReader {
         int effect2 = byte4 & 0x0F;
         int effect3 = (byte4 >> 4) & 0x0F;
 
-        input.skip(2); // fuente/resaltado y digitacion/rasgueo: solo afectan el dibujo.
+        input.skip(2); // font/highlight and fingering/strumming: only affect the drawing.
 
         int byte7 = input.readUnsignedByte();
         boolean tied = ((byte7 >> 5) & 0x01) != 0;
 
         Dynamic dynamic = dynamicOf(dynamicsCode);
-        // TablEdit usa la dinamica PPP tambien como marca de ligadura, ademas del bit de tie.
+        // TablEdit also uses the PPP dynamic as a tie mark, in addition to the tie bit.
         boolean reallyTied = tied || dynamic == Dynamic.PIANO_PIANISSIMO;
 
         VoicePart voice = attributes == 3 ? VoicePart.BASS : VoicePart.LEAD;
@@ -71,17 +71,17 @@ final class TabEditNoteReader {
 
     private static NoteEffects applyEffect1(NoteEffects effects, int code) {
         return switch (code) {
-            case 1, 2 -> effects.with(Ornament.HAMMER_ON_PULL_OFF); // TablEdit no distingue ligado de bajada.
-            case 3 -> effects.withSlide(SlideType.LEGATO); // el formato no guarda el tipo de slide.
+            case 1, 2 -> effects.with(Ornament.HAMMER_ON_PULL_OFF); // TablEdit does not distinguish hammer-on from pull-off.
+            case 3 -> effects.withSlide(SlideType.LEGATO); // the format does not store the slide type.
             case 6 -> effects.withHarmonic(HarmonicType.NATURAL);
             case 7 -> effects.withHarmonic(HarmonicType.ARTIFICIAL);
             case 8 -> effects.with(Ornament.PALM_MUTE);
             case 10 -> effects.with(Ornament.VIBRATO);
-            case 11 -> effects.withTremoloPicking(new TremoloPicking(NoteValue.SIXTEENTH)); // sin dato de velocidad.
+            case 11 -> effects.withTremoloPicking(new TremoloPicking(NoteValue.SIXTEENTH)); // no speed data.
             case 12 -> effects.withBend(Bend.of(BendType.BEND, DEFAULT_BEND_QUARTER_TONES));
             case 13 -> effects.withBend(Bend.of(BendType.BEND_RELEASE, DEFAULT_BEND_QUARTER_TONES));
             case 15 -> effects.with(Ornament.DEAD);
-            // 0 sin efecto; 4 choke, 5 brush, 9 tap (marca de beat), 14 roll: no tienen equivalente de nota.
+            // 0 no effect; 4 choke, 5 brush, 9 tap (beat mark), 14 roll: have no note equivalent.
             default -> effects;
         };
     }
@@ -91,8 +91,8 @@ final class TabEditNoteReader {
             case 1 -> effects.with(Ornament.LET_RING);
             case 4 -> effects.with(Ornament.GHOST);
             case 7 -> effects.with(Ornament.STACCATO);
-            // 2 slap y 8 fade in son marcas de beat; 3 rasgueado, 5/6 palanca, 9 fade out, 15 ocultar:
-            // sin equivalente en el modelo de tabpro.
+            // 2 slap and 8 fade in are beat marks; 3 strum, 5/6 tremolo bar, 9 fade out, 15 hide:
+            // have no equivalent in the tabpro model.
             default -> effects;
         };
     }
@@ -105,13 +105,13 @@ final class TabEditNoteReader {
             case 8 -> effects.with(Ornament.LET_RING);
             case 9 -> effects.with(Ornament.GHOST);
             case 10 -> effects.with(Ornament.DEAD);
-            // 3 roll, 4 choke, 5 brush, 11 variacion: sin equivalente.
+            // 3 roll, 4 choke, 5 brush, 11 variation: have no equivalent.
             default -> effects;
         };
     }
 
     private static Dynamic dynamicOf(int code) {
-        // TablEdit numera FFF..PPP (0..7); tabpro numera al reves, de ppp a fff.
+        // TablEdit numbers FFF..PPP (0..7); tabpro numbers the other way, from ppp to fff.
         Dynamic[] values = Dynamic.values();
         return values[values.length - 1 - Math.clamp(code, 0, values.length - 1)];
     }
