@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.score;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.awt.Font;
 import java.io.InputStream;
@@ -21,5 +22,34 @@ class MusicFontTest {
             Font bravura = Font.createFont(Font.TRUETYPE_FONT, resource);
             assertEquals("Bravura", bravura.getFamily());
         }
+    }
+
+    @Test
+    void trebleClefIsTheGClefGlyph() {
+        assertEquals(0xE050, MusicFont.trebleClef().codePointAt(0));
+    }
+
+    @Test
+    void bassClefIsTheFClefGlyph() {
+        assertEquals(0xE062, MusicFont.bassClef().codePointAt(0));
+    }
+
+    @Test
+    void timeSignatureDigitReturnsTheMatchingGlyphForEachDigit() {
+        for (int digit = 0; digit <= 9; digit++) {
+            assertEquals(0xE080 + digit, MusicFont.timeSignatureDigit(digit).codePointAt(0));
+        }
+    }
+
+    @Test
+    void theSizedFontFollowsTheSmuflEmSquareConvention() {
+        Font sized = MusicFont.sizedTo(8);
+        assertEquals("Bravura", sized.getFamily());
+        assertEquals(32f, sized.getSize2D());
+    }
+
+    @Test
+    void theSizedFontIsCachedPerSize() {
+        assertSame(MusicFont.sizedTo(8), MusicFont.sizedTo(8));
     }
 }
