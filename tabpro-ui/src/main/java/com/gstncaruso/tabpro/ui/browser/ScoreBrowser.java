@@ -11,13 +11,6 @@ import java.util.function.Consumer;
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
-/**
- * La ventana del explorador de partituras. El manual: "it is possible to set the number of bars
- * to play before jumping to the next file" -escuchar no suena la partitura entera, sino esa
- * cantidad de compases y sigue solo con la siguiente de la lista, hasta que alguien para o se
- * acaba la lista-. La ventana solo muestra el {@link ScoreBrowserPanel}; el contenido se puede
- * armar y probar sin ella.
- */
 public final class ScoreBrowser extends JDialog {
 
     private final ScoreBrowserPanel panel;
