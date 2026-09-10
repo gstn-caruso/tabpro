@@ -99,8 +99,6 @@ class ScoreColorsContrastTest {
                 new Pair("borde de tecla (KEY_EDGE) / tecla blanca", InstrumentColors.KEY_EDGE, whiteKey,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("borde de tecla (KEY_EDGE) / tecla negra", InstrumentColors.KEY_EDGE, blackKey,
-                        Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("cejilla (NUT) / mastil electrico", InstrumentColors.NUT, FretboardType.ELECTRIC.woodColor(),
                         Contrast.GRAPHICAL_MINIMUM_RATIO)));
         pairs.addAll(fretboardPairs(FretboardType.ELECTRIC));
         pairs.addAll(fretboardPairs(FretboardType.ACOUSTIC));
@@ -124,6 +122,7 @@ class ScoreColorsContrastTest {
                 new Pair("nota marcada / " + neck, type.markColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("nota de contexto / " + neck, type.contextColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("anillo de foco / " + neck, type.hoverColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("caret / " + neck, type.hoverColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO));
+                new Pair("caret / " + neck, type.hoverColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("cejilla / " + neck, type.nutColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO));
     }
 }

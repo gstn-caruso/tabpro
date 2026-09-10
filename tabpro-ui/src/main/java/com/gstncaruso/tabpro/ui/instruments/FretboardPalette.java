@@ -10,7 +10,8 @@ record FretboardPalette(
         Color markInk,
         Color context,
         Color contextInk,
-        Color hover) {
+        Color hover,
+        Color nut) {
 
     static FretboardPalette electric() {
         return new FretboardPalette(
@@ -21,6 +22,7 @@ record FretboardPalette(
                 InstrumentColors.PRESSED_INK,
                 InstrumentColors.CONTEXT,
                 InstrumentColors.CONTEXT_INK,
-                InstrumentColors.HOVER);
+                InstrumentColors.HOVER,
+                InstrumentColors.NUT);
     }
 }

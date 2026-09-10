@@ -19,7 +19,8 @@ public enum FretboardType {
                     InstrumentColors.PRESSED_INK,
                     new Color(0x9DBCF8),
                     InstrumentColors.CONTEXT_INK,
-                    new Color(0xB6BCC5))),
+                    new Color(0xB6BCC5),
+                    InstrumentColors.NUT)),
     CLASSICAL("Clasica", new Color(0xC9A66B), new Color(0x715322), InlayStyle.NONE, 1.25,
             new FretboardPalette(
                     new Color(0x5D5852),
@@ -29,7 +30,8 @@ public enum FretboardType {
                     Color.WHITE,
                     new Color(0x0F4ECB),
                     Color.WHITE,
-                    new Color(0x515967))),
+                    new Color(0x515967),
+                    new Color(0x564F43))),
     BASIC("Basica", new Color(0x5B5F66), new Color(0xB1B3B7), InlayStyle.DIAMONDS, 0.9,
             new FretboardPalette(
                     new Color(0xB7B2AD),
@@ -39,7 +41,8 @@ public enum FretboardType {
                     InstrumentColors.PRESSED_INK,
                     new Color(0x91B3F7),
                     InstrumentColors.CONTEXT_INK,
-                    new Color(0xADB4BF)));
+                    new Color(0xADB4BF),
+                    InstrumentColors.NUT));
 
     private final String label;
     private final Color woodColor;
@@ -109,6 +112,10 @@ public enum FretboardType {
 
     public Color hoverColor() {
         return palette.hover();
+    }
+
+    public Color nutColor() {
+        return palette.nut();
     }
 
     @Override
