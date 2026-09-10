@@ -191,7 +191,7 @@ public final class Potentiometer extends JComponent implements AccessibleControl
         double centerX = x + size / 2.0;
         double centerY = y + size / 2.0;
         double radius = size / 2.0;
-        g.setColor(ScoreColors.SURFACE_HIGHLIGHT);
+        g.setColor(ScoreColors.KNOB_BODY);
         g.fill(new Ellipse2D.Double(centerX - radius * 0.55, centerY - radius * 0.55, radius * 1.1, radius * 1.1));
 
         double angleRadians = Math.toRadians(angleDegrees(value, min, max));
