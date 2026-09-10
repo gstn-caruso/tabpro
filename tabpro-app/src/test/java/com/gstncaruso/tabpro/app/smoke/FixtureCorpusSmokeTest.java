@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.gstncaruso.tabpro.app.CombinedExchange;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.format.JsonScoreFiles;
 import com.gstncaruso.tabpro.format.exchange.NotationExchange;
 import com.gstncaruso.tabpro.midi.SoundExchange;
 import com.gstncaruso.tabpro.midi.WaveRenderer;
@@ -23,6 +24,7 @@ class FixtureCorpusSmokeTest {
     private final ScoreExchange exchange = new CombinedExchange(
             new NotationExchange(),
             new SoundExchange(new WaveRenderer(FixtureCorpusSmokeTest::noHaceFaltaUnSintetizadorReal)));
+    private final JsonScoreFiles tabproFiles = new JsonScoreFiles();
 
     @Test
     void unGuitarProSimpleAbrePorElCaminoRealDeImportacion() {
@@ -37,6 +39,16 @@ class FixtureCorpusSmokeTest {
     @Test
     void unPowerTabSimpleAbrePorElCaminoRealDeImportacion() {
         Path path = repoFile("tabpro-format/src/test/resources/powertab/guitars.ptb");
+
+        Score score = abrir(path);
+
+        assertNotNull(score, () -> path.getFileName() + ": abre por el camino real de importacion");
+        assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
+    }
+
+    @Test
+    void unTabproPropioAbrePorElCaminoRealDeImportacion() {
+        Path path = repoFile("tabpro-format/src/test/resources/v1-one-measure.tabpro");
 
         Score score = abrir(path);
 
@@ -64,6 +76,9 @@ class FixtureCorpusSmokeTest {
         }
         if (nombre.endsWith(".musicxml")) {
             return exchange.importMusicXml(path);
+        }
+        if (nombre.endsWith(".tabpro")) {
+            return tabproFiles.load(path);
         }
         throw new UnsupportedOperationException("todavia no resuelve la extension de " + nombre);
     }
