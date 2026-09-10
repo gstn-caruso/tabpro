@@ -86,6 +86,13 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
                     return;
                 }
                 requestFocusInWindow();
+                // El manual: Shift mas clic extiende la seleccion desde donde estaba el cursor,
+                // igual que Shift mas flecha; sin Shift, el clic la limpia como cualquier otro
+                // movimiento del cursor.
+                if (e.isShiftDown()) {
+                    editor.whileExtendingSelection(() -> moveCursorTo(e.getX(), e.getY()));
+                    return;
+                }
                 editor.clearSelection();
                 moveCursorTo(e.getX(), e.getY());
                 // El manual: "para seleccionar compases completos, apreta Ctrl mientras haces la
