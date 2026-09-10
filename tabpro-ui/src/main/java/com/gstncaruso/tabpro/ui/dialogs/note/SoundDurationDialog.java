@@ -21,11 +21,20 @@ public final class SoundDurationDialog {
         int current = editor.currentNote()
                 .map(note -> note.effects().soundDurationPercent())
                 .orElse(NoteEffects.FULL_SOUND);
-        JSpinner percent = new JSpinner(new SpinnerNumberModel(current, 1, 200, 5));
+        Fields fields = buildFields(current);
 
-        FormPanel form = new FormPanel().addRow("Duración del sonido (%)", percent);
-        if (DialogShell.ask(parent, "Duración del sonido", form)) {
-            editor.setSoundDuration((Integer) percent.getValue());
+        if (DialogShell.ask(parent, "Duración del sonido", fields.form())) {
+            editor.setSoundDuration((Integer) fields.percent().getValue());
         }
+    }
+
+    /** Arma el formulario y el campo que hay que releer si se acepta; sin abrir ningun dialogo. */
+    static Fields buildFields(int current) {
+        JSpinner percent = new JSpinner(new SpinnerNumberModel(current, 1, 200, 5));
+        FormPanel form = new FormPanel().addRow("Duración del sonido (%)", percent);
+        return new Fields(form, percent);
+    }
+
+    record Fields(FormPanel form, JSpinner percent) {
     }
 }
