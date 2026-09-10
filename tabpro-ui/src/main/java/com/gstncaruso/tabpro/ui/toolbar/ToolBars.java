@@ -166,9 +166,7 @@ public final class ToolBars {
         bar.addSeparator();
         add(bar, "bar.alternateEndings", "bar.forceLineBreak", "bar.preventLineBreak");
         bar.addSeparator();
-        // El manual trae "editar" y "lista" como botones distintos; el catalogo no tiene un
-        // comando de editar un marcador puntual, asi que ese lugar queda como hueco funcional.
-        add(bar, "marker.insert", "marker.previous", "marker.next", "marker.list");
+        add(bar, "marker.insert", "marker.edit", "marker.previous", "marker.next", "marker.list");
         bar.addSeparator();
         add(bar, "sound.play", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
                 "sound.loop");
