@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format;
 
+import com.google.gson.annotations.SerializedName;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -137,7 +138,7 @@ public record BeatDto(
         }
     }
 
-    public record StrokeDto(String direction, String speed, Boolean rasgueado) {
+    public record StrokeDto(String direction, String speed, @SerializedName("rasgueado") Boolean strummed) {
 
         public static StrokeDto from(Stroke stroke) {
             return new StrokeDto(stroke.direction().name(), stroke.speed().name(),
@@ -148,7 +149,7 @@ public record BeatDto(
             return new Stroke(
                     Enums.required(StrokeDirection.class, direction),
                     Enums.required(NoteValue.class, speed),
-                    rasgueado != null && rasgueado);
+                    strummed != null && strummed);
         }
     }
 
