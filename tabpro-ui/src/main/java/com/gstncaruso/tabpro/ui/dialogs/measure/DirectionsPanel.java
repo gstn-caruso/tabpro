@@ -20,7 +20,7 @@ public final class DirectionsPanel extends FormPanel {
         jump.setRenderer((list, value, index, isSelected, hasFocus) ->
                 new javax.swing.JLabel(value == null ? "(Ninguno)" : value.label()));
 
-        addRow("Simbolo", symbol);
+        addRow("Símbolo", symbol);
         addRow("Salto", jump);
         symbol.setSelectedItem(initialSymbol.orElse(null));
         jump.setSelectedItem(initialJump.orElse(null));

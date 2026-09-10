@@ -50,10 +50,6 @@ class AccentedLiteralsTest {
      */
     private static final Set<String> PENDING_FILES = Set.of(
             "tabpro-core/src/main/java/com/gstncaruso/tabpro/core/editing/wizards/MeasureRange.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/measure/DirectionsPanel.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/measure/MeasurePropertiesDialog.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/measure/RepeatPanel.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/measure/TimeSignaturePanel.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/metronome/MetronomeDialog.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/metronome/MetronomePanel.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/pagesetup/PageSetupDialog.java",
