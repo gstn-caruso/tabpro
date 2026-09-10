@@ -6,8 +6,6 @@ import java.awt.Color;
 /** Los colores del diapason y del teclado, aparte de los de la partitura. */
 public final class InstrumentColors {
 
-    public static final Color NECK = new Color(0x3A2F28);
-    public static final Color NECK_EDGE = new Color(0x54463C);
     public static final Color FRET_WIRE = new Color(0x86786D);
     public static final Color STRING = new Color(0x9A948C);
     public static final Color NUT = new Color(0xCFCAC2);

@@ -18,7 +18,6 @@ final class ChordDiagramColors {
     static final Color OPEN_STRING = new Color(0x63BD63);
     static final Color MUTED_STRING = new Color(0xE05C5C);
     static final Color LABEL = new Color(0xD7D9DD);
-    static final Color MUTED_LABEL = new Color(0x8B8F96);
 
     private ChordDiagramColors() {
     }
