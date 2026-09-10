@@ -62,6 +62,17 @@ class PercussionSoundPaletteTest {
         assertTrue(yPerIndex.get(1) > yPerIndex.get(0), "el segundo sonido va debajo del primero, como en GP5");
     }
 
+    @Test
+    void elTamanoDeCeldaQuedaFijoDesdeLaConstruccionYNoSeMideEnCadaLayout() {
+        PercussionSoundPalette palette = new PercussionSoundPalette(sound -> { }, sound -> { });
+        JList<Integer> list = palette.soundList();
+
+        assertTrue(list.getFixedCellHeight() > 0,
+                "el alto de fila deberia quedar fijo desde la construccion, no medido en cada layout");
+        assertTrue(list.getFixedCellWidth() > 0,
+                "el ancho de columna deberia quedar fijo desde la construccion, no medido en cada layout");
+    }
+
     /**
      * El alto de fila se fija a mano a proposito. Sin fijarlo, JList lo deduce del alto que pide
      * el renderer, que depende de la fuente de la maquina: el test medi­a la celda con una fuente
