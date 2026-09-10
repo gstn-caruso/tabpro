@@ -6,7 +6,6 @@ import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.notation.VerticalStack;
 import java.awt.BasicStroke;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -20,8 +19,6 @@ import java.awt.geom.Line2D;
  * simbolo propio y se anuncia con el rectangulito rojo que describe el manual.
  */
 final class ParameterChangePainter {
-
-    private static final Font TEMPO_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 10);
 
     /** Cuanto se despegan del pentagrama, para no pisar las notas que asoman por arriba. */
     private static final int STAFF_CLEARANCE = 16;
@@ -77,7 +74,7 @@ final class ParameterChangePainter {
 
     private static void paintTempo(Graphics2D g, int bpm, int centerX, int baselineY) {
         String label = "= " + bpm;
-        g.setFont(TEMPO_FONT);
+        g.setFont(ScoreFonts.TEMPO_FONT);
         FontMetrics metrics = g.getFontMetrics();
         int left = centerX - (QUARTER_NOTE_WIDTH + metrics.stringWidth(label)) / 2;
         paintQuarterNote(g, left, baselineY);

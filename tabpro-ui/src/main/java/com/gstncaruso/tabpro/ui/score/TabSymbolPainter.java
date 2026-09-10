@@ -10,7 +10,6 @@ import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.notation.VerticalStack;
 import java.awt.BasicStroke;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -29,8 +28,6 @@ import java.util.Optional;
  */
 final class TabSymbolPainter {
 
-    private static final Font SYMBOL_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 9);
-    private static final Font TEXT_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 10);
     private static final int ROW_HEIGHT = 11;
     private static final int ROW_GAP = 1;
 
@@ -114,14 +111,14 @@ final class TabSymbolPainter {
     }
 
     private static void paintLabel(Graphics2D g, String text, int centerX, int baselineY) {
-        g.setFont(text.length() > 3 ? TEXT_FONT : SYMBOL_FONT);
+        g.setFont(text.length() > 3 ? ScoreFonts.EFFECT_TEXT_FONT : ScoreFonts.EFFECT_SYMBOL_FONT);
         g.setColor(ScoreColors.LABEL);
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(text, centerX - metrics.stringWidth(text) / 2, baselineY);
     }
 
     private static void paintFreeText(Graphics2D g, String text, int centerX, int baselineY) {
-        g.setFont(TEXT_FONT);
+        g.setFont(ScoreFonts.EFFECT_TEXT_FONT);
         g.setColor(ScoreColors.INK);
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(text, centerX - metrics.stringWidth(text) / 2, baselineY);
@@ -141,7 +138,7 @@ final class TabSymbolPainter {
         head.lineTo(centerX + 3, arrowY + (downwards ? -3 : 3));
         g.draw(head);
         if (rasgueado) {
-            g.setFont(SYMBOL_FONT);
+            g.setFont(ScoreFonts.EFFECT_SYMBOL_FONT);
             g.drawString("R", centerX + 5, y - 2);
         }
     }

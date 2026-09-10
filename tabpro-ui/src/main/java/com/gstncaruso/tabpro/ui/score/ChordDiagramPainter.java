@@ -5,7 +5,6 @@ import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import java.awt.BasicStroke;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -26,8 +25,6 @@ final class ChordDiagramPainter {
     private static final int VISIBLE_FRETS = 4;
     /** Separacion horizontal entre diagramas cuando se dibujan en fila, en el encabezado. */
     private static final int ROW_GAP = 30;
-    private static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 10);
-    private static final Font FRET_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
 
     private ChordDiagramPainter() {
     }
@@ -82,7 +79,7 @@ final class ChordDiagramPainter {
         int x = centerX - gridWidth / 2;
         int top = gridBottom - VISIBLE_FRETS * FRET_GAP;
 
-        g.setFont(NAME_FONT);
+        g.setFont(ScoreFonts.CHORD_NAME_FONT);
         g.setColor(ScoreColors.INK);
         FontMetrics nameMetrics = g.getFontMetrics();
         g.drawString(chord.name(), x + gridWidth / 2 - nameMetrics.stringWidth(chord.name()) / 2, top - 14);
@@ -91,7 +88,7 @@ final class ChordDiagramPainter {
         paintOpenAndMutedMarks(g, chord, x, top, stringCount);
         paintFingerDots(g, chord, x, top, stringCount);
         if (chord.baseFret() > 1) {
-            g.setFont(FRET_FONT);
+            g.setFont(ScoreFonts.CHORD_FRET_FONT);
             g.drawString(chord.baseFret() + "fr", x + gridWidth + 3, top + FRET_GAP);
         }
     }

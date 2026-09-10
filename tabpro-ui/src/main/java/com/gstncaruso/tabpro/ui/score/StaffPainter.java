@@ -60,7 +60,7 @@ final class StaffPainter {
     private static final BasicStroke CLEF = new BasicStroke(1.7f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private static final BasicStroke DOTTED = new BasicStroke(
             1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] {1.5f, 2.5f}, 0f);
-    private static final Font OCTAVE_MARK_FONT = new Font(Font.SERIF, Font.ITALIC, (int) Math.round(SPACE * 1.7));
+    private static final Font OCTAVE_MARK_FONT = ScoreFonts.octaveMarkFont(SPACE);
     /** El aire entre el pentagrama y la marca de octava (rotulo + linea de puntos). */
     private static final double OCTAVE_MARK_GAP = SPACE * 0.8;
 
@@ -104,7 +104,7 @@ final class StaffPainter {
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, double x) {
         Measure measure = track.measure(measureIndex);
         g.setColor(ScoreColors.INK);
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) Math.round(SPACE * 2.1)));
+        g.setFont(ScoreFonts.timeSignatureFont(SPACE));
         FontMetrics metrics = g.getFontMetrics();
 
         String top = String.valueOf(measure.timeSignature().beats());
@@ -422,7 +422,7 @@ final class StaffPainter {
             g.draw(new Line2D.Double(midX + 6, y, xEnd, y));
             g.draw(new Line2D.Double(xEnd, y, xEnd, y + 4));
 
-            g.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 10));
+            g.setFont(ScoreFonts.TUPLET_FONT);
             FontMetrics metrics = g.getFontMetrics();
             String label = String.valueOf(group.tuplet().enters());
             g.drawString(label, (float) (midX - metrics.stringWidth(label) / 2.0), (float) (y + 4));
