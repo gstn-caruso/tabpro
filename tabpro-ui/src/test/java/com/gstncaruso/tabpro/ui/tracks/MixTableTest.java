@@ -7,10 +7,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.awt.event.MouseEvent;
 import org.junit.jupiter.api.Test;
 
 class MixTableTest {
+
+    @Test
+    void ningunControlDeLaMesaDeMezclaQuedaSinNombreNiTooltipAccesible() {
+        Editor editor = new Editor(Score.blank());
+        editor.addTrack(Track.standardBass("Bajo"));
+        MixTable table = new MixTable(editor);
+
+        AccessibilityAssertions.assertNoViolations(table);
+    }
 
     @Test
     void listsOneRowPerTrack() {
