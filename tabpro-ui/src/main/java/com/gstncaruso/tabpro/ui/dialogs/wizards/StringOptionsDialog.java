@@ -20,9 +20,23 @@ public final class StringOptionsDialog {
     public enum Option { LET_RING, PALM_MUTE, DYNAMIC }
 
     public static void show(Component parent, Editor editor) {
+        open(parent, editor, Option.LET_RING);
+    }
+
+    /** Como {@link #show(Component, Editor)}, pero arranca con el foco en el combo de palm mute. */
+    public static void showFocusedOnPalmMute(Component parent, Editor editor) {
+        open(parent, editor, Option.PALM_MUTE);
+    }
+
+    /** Como {@link #show(Component, Editor)}, pero arranca con el foco en el combo de dinamica. */
+    public static void showFocusedOnDynamic(Component parent, Editor editor) {
+        open(parent, editor, Option.DYNAMIC);
+    }
+
+    private static void open(Component parent, Editor editor, Option option) {
         StringOptionsPanel panel = new StringOptionsPanel(editor.currentTrack().stringCount(), editor.currentTrack().measureCount());
 
-        boolean accepted = DialogShell.ask(parent, "Opciones por cuerda", panel, "Aplicar");
+        boolean accepted = DialogShell.ask(parent, titleFor(option), panel, "Aplicar", panel.comboFor(option));
         if (!accepted) {
             return;
         }
@@ -31,6 +45,14 @@ public final class StringOptionsDialog {
         Set<Integer> strings = panel.selectedStrings();
 
         editor.apply(score -> apply(score, trackIndex, range, strings, panel));
+    }
+
+    static String titleFor(Option option) {
+        return switch (option) {
+            case LET_RING -> "Opciones de let ring";
+            case PALM_MUTE -> "Opciones de palm mute";
+            case DYNAMIC -> "Opciones de dinámica";
+        };
     }
 
     private static Score apply(Score score, int trackIndex, MeasureRange range, Set<Integer> strings, StringOptionsPanel panel) {
