@@ -25,6 +25,7 @@ final class MarkerTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        return null;
+        MarkerList.Positioned positioned = rows.get(row);
+        return column == 0 ? positioned.measureIndex() + 1 : positioned.marker().name();
     }
 }
