@@ -13,6 +13,8 @@ public final class ScoreColors {
     public static final Color SURFACE = new Color(0x2B2D30);
     public static final Color SURFACE_HIGHLIGHT = new Color(0x35373B);
     public static final Color BORDER = new Color(0x71, 0x77, 0x80);
+    /** El tinte claro del bisel hundido en los paneles de la barra de estado. */
+    public static final Color BEVEL_SHADE = new Color(0x7E, 0x83, 0x8B);
 
     public static final Color STAFF_LINE = new Color(0x72, 0x76, 0x7F);
     public static final Color BAR_LINE = new Color(0x7E828A);
