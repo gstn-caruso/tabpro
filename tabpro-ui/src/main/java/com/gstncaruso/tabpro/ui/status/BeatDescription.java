@@ -3,7 +3,7 @@ package com.gstncaruso.tabpro.ui.status;
 import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
-import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 
 /**
  * Describe en una linea donde esta parado el cursor: compas, beat, cuerda y la figura que suena.
@@ -26,19 +26,7 @@ public final class BeatDescription {
     }
 
     private static String nameOf(Duration duration) {
-        String name = figureName(duration.value());
+        String name = Labels.of(duration.value());
         return duration.dotted() ? name + " con puntillo" : name;
-    }
-
-    private static String figureName(NoteValue value) {
-        return switch (value) {
-            case WHOLE -> "Redonda";
-            case HALF -> "Blanca";
-            case QUARTER -> "Negra";
-            case EIGHTH -> "Corchea";
-            case SIXTEENTH -> "Semicorchea";
-            case THIRTY_SECOND -> "Fusa";
-            case SIXTY_FOURTH -> "Semifusa";
-        };
     }
 }
