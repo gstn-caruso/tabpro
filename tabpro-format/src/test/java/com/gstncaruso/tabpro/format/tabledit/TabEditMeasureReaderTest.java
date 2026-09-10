@@ -12,7 +12,7 @@ class TabEditMeasureReaderTest {
     private final TabEditMeasureReader reader = new TabEditMeasureReader();
 
     @Test
-    void leeLaMedidaYLaArmaduraDeCadaCompas() {
+    void readsTheTimeSignatureAndKeySignatureOfEachBar() {
         TabEditFileWriter writer = new TabEditFileWriter()
                 .writeShort(12)
                 .writeShort(2)
@@ -30,7 +30,7 @@ class TabEditMeasureReaderTest {
     }
 
     @Test
-    void unaArmaduraConBemolesYModoMenor() {
+    void aKeySignatureWithFlatsAndMinorMode() {
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(12).writeShort(1).writeInt(0);
         writeMeasure(writer, -2, true, 4, 4);
 
@@ -41,7 +41,7 @@ class TabEditMeasureReaderTest {
     }
 
     @Test
-    void respetaElRellenoExtraDeCadaRegistro() {
+    void respectsTheExtraPaddingOfEachRecord() {
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(16).writeShort(1).writeInt(0);
         writeMeasureWithPadding(writer, 0, false, 4, 4, 4);
         writer.writeUnsignedByte(55);
