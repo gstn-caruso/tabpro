@@ -53,6 +53,41 @@ class ScoreCanvasTest {
         assertFalse(canvas.getFocusTraversalKeysEnabled());
     }
 
+    /**
+     * Con Tab reservado para alternar tablatura/pentagrama, la partitura necesita otra forma de
+     * ceder el foco. Ctrl+Tab y Shift+Tab ya son "Marcador siguiente/anterior" del manual, y F6
+     * ya es "Propiedades de la pista": el primer par libre, en el orden que pide el manual de
+     * atajos, es Ctrl+F6 / Ctrl+Shift+F6.
+     */
+    @Test
+    void ctrlF6PideAlAdministradorDeFocoQueVayaAlSiguienteComponente() {
+        RecordingFocusManager recorder = new RecordingFocusManager();
+        java.awt.KeyboardFocusManager previous = java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        java.awt.KeyboardFocusManager.setCurrentKeyboardFocusManager(recorder);
+        try {
+            pressShortcut(canvas, javax.swing.KeyStroke.getKeyStroke("ctrl F6"));
+
+            assertEquals(canvas, recorder.nextRequestedFrom);
+        } finally {
+            java.awt.KeyboardFocusManager.setCurrentKeyboardFocusManager(previous);
+        }
+    }
+
+    private static void pressShortcut(javax.swing.JComponent component, javax.swing.KeyStroke keyStroke) {
+        Object name = component.getInputMap(javax.swing.JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name)
+                .actionPerformed(new java.awt.event.ActionEvent(component, java.awt.event.ActionEvent.ACTION_PERFORMED, ""));
+    }
+
+    private static final class RecordingFocusManager extends java.awt.DefaultKeyboardFocusManager {
+        private java.awt.Component nextRequestedFrom;
+
+        @Override
+        public void focusNextComponent(java.awt.Component aComponent) {
+            nextRequestedFrom = aComponent;
+        }
+    }
+
     @Test
     void leavingTheMultitrackViewLeavesRoomForOneTrackOnly() {
         int everyTrack = canvas.getPreferredSize().height;

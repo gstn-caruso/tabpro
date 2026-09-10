@@ -12,15 +12,21 @@ import com.gstncaruso.tabpro.ui.tab.KeyboardEditing;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
 import java.util.function.Consumer;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
 import javax.swing.Scrollable;
 
 /**
@@ -103,6 +109,32 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
         };
         addMouseListener(mouse);
         addMouseMotionListener(mouse);
+        installFocusExit();
+    }
+
+    /**
+     * Tab queda reservado para alternar tablatura/pentagrama (KeyboardEditing), asi que la
+     * partitura necesita otra tecla para cederle el foco a la mesa de mezcla o a los
+     * instrumentos. Ctrl+Tab/Shift+Tab ya son "Marcador siguiente/anterior" y F6 ya es
+     * "Propiedades de la pista" (ver AcceleratorGuard): el primer par libre es Ctrl+F6 hacia
+     * adelante y Ctrl+Shift+F6 hacia atras.
+     */
+    private void installFocusExit() {
+        InputMap inputMap = getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = getActionMap();
+        bindFocusExit(inputMap, actionMap, "ctrl F6",
+                () -> KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent(this));
+    }
+
+    private void bindFocusExit(InputMap inputMap, ActionMap actionMap, String keyStroke, Runnable action) {
+        String name = "scorecanvas.focusexit." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action.run();
+            }
+        });
     }
 
     @Override
