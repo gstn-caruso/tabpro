@@ -437,15 +437,7 @@ public final class Icons {
     }
 
     public static Icon mixTable() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            for (int slider = 0; slider < 3; slider++) {
-                double x = size * (0.25 + slider * 0.25);
-                graphics.draw(new Line2D.Double(x, size * 0.14, x, size * 0.86));
-                double knob = size * (0.3 + slider * 0.18);
-                graphics.fill(new RoundRectangle2D.Double(x - size * 0.09, knob, size * 0.18, size * 0.1, 2, 2));
-            }
-        });
+        return svgIcon("adjustments");
     }
 
     public static Icon addTrack() {
