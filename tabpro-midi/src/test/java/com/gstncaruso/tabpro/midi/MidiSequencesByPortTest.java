@@ -19,12 +19,6 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro permite usar 4 puertos MIDI a la vez, cada uno con su propio
- * dispositivo. Cada puerto necesita su propia secuencia -son 16 canales
- * MIDI por puerto, no 16 en total- para poder mandarla a un dispositivo
- * distinto durante la reproduccion.
- */
 class MidiSequencesByPortTest {
 
     private static final int TEMPO_META_TYPE = 0x51;
@@ -53,7 +47,6 @@ class MidiSequencesByPortTest {
 
     @Test
     void eachPortUsesTheChannelsItsTracksConfiguredRegardlessOfTheOtherPorts() {
-        // program, volumen, pan, chorus, reverb, phaser, tremolo, percusion, puerto, canal, canal de efectos, ...
         TrackTimeline primeraDelPuerto1 = new TrackTimeline(
                 25, 100, 64, 0, 0, 0, 0, false, 1, 1, 2, List.of(), List.of(), List.of(), List.of());
         TrackTimeline segundaDelPuerto1 = new TrackTimeline(
@@ -65,7 +58,6 @@ class MidiSequencesByPortTest {
 
         Map<Integer, Sequence> byPort = MidiSequences.sequencesByPort(timeline, Set.of());
 
-        // el mismo canal 1 usado en los dos puertos no los hace interferir: cada uno arma su propia secuencia.
         Track[] puerto1 = byPort.get(1).getTracks();
         assertEquals(0, channelOf(puerto1[1]));
         assertEquals(2, channelOf(puerto1[2]));
