@@ -494,27 +494,45 @@ final class StaffPainter {
             stems.add(stemOf(layout, track, clef, trackIndex, measureIndex, lane, beats.get(beatIndex), up, octaveShift));
         }
 
-        double beamY = up
-                ? stems.stream().mapToDouble(Stem::endY).min().orElseThrow()
-                : stems.stream().mapToDouble(Stem::endY).max().orElseThrow();
+        BeamLine beamLine = flatBeamLine(stems, up);
 
         g.setColor(ink);
         g.setStroke(STEM);
         for (Stem stem : stems) {
-            g.draw(new Line2D.Double(stem.x(), stem.rootY(), stem.x(), beamY));
+            g.draw(new Line2D.Double(stem.x(), stem.rootY(), stem.x(), beamLine.yAt(stem.x())));
         }
 
         int beams = sharedBeamCount(beats, group);
         double direction = up ? 1 : -1;
         for (int beam = 0; beam < beams; beam++) {
-            double y = beamY + direction * beam * BEAM_GAP;
-            g.fill(new java.awt.geom.Rectangle2D.Double(
-                    stems.get(0).x() - 0.5,
-                    Math.min(y, y + BEAM_THICKNESS) - (up ? 0 : BEAM_THICKNESS),
-                    stems.get(stems.size() - 1).x() - stems.get(0).x() + 1,
-                    BEAM_THICKNESS));
+            double offset = direction * beam * BEAM_GAP;
+            fillBeam(g, beamLine.firstX(), beamLine.firstY() + offset, beamLine.lastX(), beamLine.lastY() + offset,
+                    direction);
         }
-        paintPartialBeams(g, stems, beats, group, beamY, direction, beams);
+        paintPartialBeams(g, stems, beats, group, beamLine, direction, beams);
+    }
+
+    /** La barra sin pendiente: al ras del extremo mas lejos de todas las cabezas de nota, para que
+     * ninguna plica quede mas corta que el largo minimo estandar. */
+    private static BeamLine flatBeamLine(List<Stem> stems, boolean up) {
+        double flatY = up
+                ? stems.stream().mapToDouble(Stem::endY).min().orElseThrow()
+                : stems.stream().mapToDouble(Stem::endY).max().orElseThrow();
+        return new BeamLine(stems.get(0).x(), flatY, stems.get(stems.size() - 1).x(), flatY);
+    }
+
+    /** El cuerpo de una barra entre sus dos extremos: un rectangulo cuando es horizontal, un
+     * paralelogramo cuando tiene pendiente. El espesor crece en la direccion de {@code direction}
+     * (hacia las cabezas de nota), nunca hacia afuera de la plica. */
+    private static void fillBeam(Graphics2D g, double x1, double y1, double x2, double y2, double direction) {
+        double dy = direction * BEAM_THICKNESS;
+        java.awt.geom.Path2D.Double body = new java.awt.geom.Path2D.Double();
+        body.moveTo(x1 - 0.5, y1);
+        body.lineTo(x2 + 0.5, y2);
+        body.lineTo(x2 + 0.5, y2 + dy);
+        body.lineTo(x1 - 0.5, y1 + dy);
+        body.closePath();
+        g.fill(body);
     }
 
     private static int sharedBeamCount(List<Beat> beats, BeamGroup group) {
@@ -530,7 +548,7 @@ final class StaffPainter {
             List<Stem> stems,
             List<Beat> beats,
             BeamGroup group,
-            double beamY,
+            BeamLine beamLine,
             double direction,
             int sharedBeams) {
         for (int index = 0; index < stems.size(); index++) {
@@ -539,7 +557,7 @@ final class StaffPainter {
             double x = stems.get(index).x();
             boolean toTheLeft = index == stems.size() - 1;
             for (int beam = sharedBeams; beam < beams; beam++) {
-                double y = beamY + direction * beam * BEAM_GAP;
+                double y = beamLine.yAt(x) + direction * beam * BEAM_GAP;
                 double stub = SPACE * 0.85;
                 g.fill(new java.awt.geom.Rectangle2D.Double(
                         toTheLeft ? x - stub : x - 0.5,
@@ -547,6 +565,16 @@ final class StaffPainter {
                         stub + 1,
                         BEAM_THICKNESS));
             }
+        }
+    }
+
+    /** Los dos extremos de una barra de union, con la pendiente que dan sus dos puntas. */
+    private record BeamLine(double firstX, double firstY, double lastX, double lastY) {
+        double yAt(double x) {
+            if (lastX == firstX) {
+                return firstY;
+            }
+            return firstY + (lastY - firstY) * (x - firstX) / (lastX - firstX);
         }
     }
 
