@@ -34,14 +34,14 @@ class MenuBarTest {
             record(Ports.Playback.class), record(Ports.View.class));
 
     @Test
-    void sinArchivosRecientesElMenuArchivoNoOfreceElSubmenu() {
+    void withNoRecentFilesTheFileMenuDoesNotOfferTheSubmenu() {
         JMenuBar bar = new MenuBar(commands, List::of, opened::add).build();
 
         assertNull(recentFilesMenuOf(bar));
     }
 
     @Test
-    void ofreceCadaArchivoRecienteConSuNombre() {
+    void offersEveryRecentFileWithItsName() {
         List<Path> recent = List.of(Path.of("/tmp/una.tabpro"), Path.of("/tmp/otra.tabpro"));
         JMenuBar bar = new MenuBar(commands, () -> recent, opened::add).build();
 
@@ -53,7 +53,7 @@ class MenuBarTest {
     }
 
     @Test
-    void alElegirUnArchivoRecienteSeLoAbre() {
+    void choosingARecentFileOpensIt() {
         Path path = Path.of("/tmp/una.tabpro");
         JMenuBar bar = new MenuBar(commands, () -> List.of(path), opened::add).build();
 
@@ -63,68 +63,68 @@ class MenuBarTest {
     }
 
     @Test
-    void todoComandoConAceleradorCuelgaDeAlgunMenu() {
+    void everyCommandWithAnAcceleratorHangsFromSomeMenu() {
         JMenuBar bar = new MenuBar(commands).build();
-        Set<Command> enElMenu = new HashSet<>();
+        Set<Command> inTheMenu = new HashSet<>();
         for (int i = 0; i < bar.getMenuCount(); i++) {
-            recolectar(bar.getMenu(i), enElMenu);
+            collect(bar.getMenu(i), inTheMenu);
         }
 
-        long conAcelerador = commands.all().values().stream().filter(c -> c.accelerator() != null).count();
-        List<String> sueltos = commands.all().entrySet().stream()
-                .filter(entrada -> entrada.getValue().accelerator() != null)
-                .filter(entrada -> !enElMenu.contains(entrada.getValue()))
+        long withAccelerator = commands.all().values().stream().filter(c -> c.accelerator() != null).count();
+        List<String> stray = commands.all().entrySet().stream()
+                .filter(entry -> entry.getValue().accelerator() != null)
+                .filter(entry -> !inTheMenu.contains(entry.getValue()))
                 .map(Map.Entry::getKey)
                 .toList();
 
-        assertTrue(conAcelerador > 0, "ningun comando tiene acelerador: no habria nada que verificar");
-        assertEquals(List.of(), sueltos, "hay atajos que no cuelgan de ningun menu");
+        assertTrue(withAccelerator > 0, "ningun comando tiene acelerador: no habria nada que verificar");
+        assertEquals(List.of(), stray, "hay atajos que no cuelgan de ningun menu");
     }
 
     @Test
-    void ningunItemDeMenuQuedaSinNombreNiTooltipAccesible() {
+    void noMenuItemIsLeftWithoutAnAccessibleNameOrTooltip() {
         JMenuBar bar = new MenuBar(commands).build();
 
         AccessibilityAssertions.assertNoViolations(bar);
     }
 
     @Test
-    void todosLosMenusDeLaBarraTienenMnemonicoYSinChoques() {
+    void everyMenuInTheBarHasAMnemonicAndNoClashes() {
         JMenuBar bar = new MenuBar(commands).build();
 
         assertEquals(List.of(), new MnemonicWalker().walkMenuBar(bar));
     }
 
     @Test
-    void ningunMenuDeNivelSuperiorUsaLaMismaLetraQueUnAceleradorAltExistente() {
+    void noTopLevelMenuUsesTheSameLetterAsAnExistingAltAccelerator() {
         JMenuBar bar = new MenuBar(commands).build();
-        Set<Integer> mnemonicosDeMenus = new HashSet<>();
+        Set<Integer> menuMnemonics = new HashSet<>();
         for (int i = 0; i < bar.getMenuCount(); i++) {
-            mnemonicosDeMenus.add(bar.getMenu(i).getMnemonic());
+            menuMnemonics.add(bar.getMenu(i).getMnemonic());
         }
 
-        List<javax.swing.KeyStroke> aceleradoresAltLetra = commands.all().values().stream()
+        List<javax.swing.KeyStroke> altLetterAccelerators = commands.all().values().stream()
                 .map(Command::accelerator)
                 .filter(java.util.Objects::nonNull)
                 .filter(accelerator -> (accelerator.getModifiers() & java.awt.event.InputEvent.ALT_DOWN_MASK) != 0)
                 .toList();
 
-        assertTrue(!aceleradoresAltLetra.isEmpty(), "no hay ningun acelerador Alt+letra para verificar");
-        assertTrue(aceleradoresAltLetra.stream().noneMatch(a -> mnemonicosDeMenus.contains(a.getKeyCode())));
+        assertTrue(!altLetterAccelerators.isEmpty(), "no hay ningun acelerador Alt+letra para verificar");
+        assertTrue(altLetterAccelerators.stream().noneMatch(a -> menuMnemonics.contains(a.getKeyCode())));
     }
 
     @Test
-    void ningunItemDeNingunMenuChocaConOtroDeSuMismoMenu() {
-        List<Violation> violaciones = mnemonicViolationsOfEveryItem(new MenuBar(commands).build());
+    void noItemOfAnyMenuClashesWithAnotherInTheSameMenu() {
+        List<Violation> violations = mnemonicViolationsOfEveryItem(new MenuBar(commands).build());
 
-        assertTrue(violaciones.stream().noneMatch(v -> v.reason().equals("mnemónico repetido")));
+        assertTrue(violations.stream().noneMatch(v -> v.reason().equals("mnemónico repetido")));
     }
 
     @Test
-    void soloLosItemsDeLosMenusMasPobladosQuedanSinLetraLibre() {
-        List<Violation> violaciones = mnemonicViolationsOfEveryItem(new MenuBar(commands).build());
+    void onlyItemsOfTheMostCrowdedMenusAreLeftWithoutAFreeLetter() {
+        List<Violation> violations = mnemonicViolationsOfEveryItem(new MenuBar(commands).build());
 
-        Set<String> sinMnemonico = violaciones.stream()
+        Set<String> withoutMnemonic = violations.stream()
                 .filter(v -> v.reason().equals("sin mnemónico"))
                 .map(Violation::path)
                 .collect(java.util.stream.Collectors.toCollection(HashSet::new));
@@ -136,62 +136,62 @@ class MenuBarTest {
                 "Slap", "Pop", "Rasgueo y púa",
                 "Último compás",
                 "Mesa de mezcla",
-                "pp", "p", "mp", "f", "ff", "fff"), sinMnemonico);
+                "pp", "p", "mp", "f", "ff", "fff"), withoutMnemonic);
     }
 
     private List<Violation> mnemonicViolationsOfEveryItem(JMenuBar bar) {
         MnemonicWalker walker = new MnemonicWalker();
-        List<Violation> violaciones = new ArrayList<>();
+        List<Violation> violations = new ArrayList<>();
         for (int i = 0; i < bar.getMenuCount(); i++) {
-            collectMnemonicViolations(bar.getMenu(i), walker, violaciones);
+            collectMnemonicViolations(bar.getMenu(i), walker, violations);
         }
-        return violaciones;
+        return violations;
     }
 
-    private void collectMnemonicViolations(JMenu menu, MnemonicWalker walker, List<Violation> violaciones) {
-        violaciones.addAll(walker.walkMenu(menu));
+    private void collectMnemonicViolations(JMenu menu, MnemonicWalker walker, List<Violation> violations) {
+        violations.addAll(walker.walkMenu(menu));
         for (int i = 0; i < menu.getItemCount(); i++) {
             JMenuItem item = menu.getItem(i);
             if (item instanceof JMenu submenu) {
-                collectMnemonicViolations(submenu, walker, violaciones);
+                collectMnemonicViolations(submenu, walker, violations);
             }
         }
     }
 
-    private void recolectar(JMenu menu, Set<Command> encontrados) {
+    private void collect(JMenu menu, Set<Command> found) {
         for (int i = 0; i < menu.getItemCount(); i++) {
             JMenuItem item = menu.getItem(i);
             if (item == null) {
                 continue;
             }
             if (item instanceof JMenu submenu) {
-                recolectar(submenu, encontrados);
-            } else if (item.getAction() instanceof Command comando) {
-                encontrados.add(comando);
+                collect(submenu, found);
+            } else if (item.getAction() instanceof Command command) {
+                found.add(command);
             }
         }
     }
 
     @Test
-    void elMenuSonidoOfreceLaConfiguracionDelMetronomo() {
+    void theSoundMenuOffersTheMetronomeSettings() {
         JMenuBar bar = new MenuBar(commands).build();
 
-        JMenu sonido = menuNamed(bar, "Sonido");
+        JMenu sound = menuNamed(bar, "Sonido");
 
-        assertTrue(itemLabels(sonido).contains("Configuración del metrónomo…"));
+        assertTrue(itemLabels(sound).contains("Configuración del metrónomo…"));
     }
 
     @Test
-    void elMenuDeMarcadoresOfreceEditarElMarcadorVigente() {
+    void theMarkersMenuOffersEditingTheCurrentMarker() {
         JMenuBar bar = new MenuBar(commands).build();
 
-        JMenu marcadores = menuNamed(bar, "Marcadores");
+        JMenu markers = menuNamed(bar, "Marcadores");
 
-        assertTrue(itemLabels(marcadores).contains("Editar el marcador…"));
+        assertTrue(itemLabels(markers).contains("Editar el marcador…"));
     }
 
     @Test
-    void elMenuNotaOfreceLasOchoDinamicasJuntoALaEntradaExistente() {
+    void theNoteMenuOffersTheEightDynamicsAlongsideTheExistingEntry() {
         JMenuBar bar = new MenuBar(commands).build();
 
         Set<String> labels = itemLabels(menuNamed(bar, "Nota"));
@@ -201,7 +201,7 @@ class MenuBarTest {
     }
 
     @Test
-    void elMenuNotaOfreceLaDigitacionDeManoDerechaJuntoALaExistente() {
+    void theNoteMenuOffersRightHandFingeringAlongsideTheExistingOne() {
         JMenuBar bar = new MenuBar(commands).build();
 
         Set<String> labels = itemLabels(menuNamed(bar, "Nota"));
