@@ -330,10 +330,15 @@ partitura; la cuarta, el corpus; la quinta, en curso, los diálogos.
 | G · propiedades de pista en dos columnas, «Forzar canales 11 a 16» y estilos de diagramas | `feat/propiedades-de-pista-como-gp5` | #164 | mergeado |
 | G · asistente de percusión en grilla de cuatro columnas | `feat/asistente-de-percusion-en-grilla-como-gp5` | #165 | mergeado |
 | F · el harness falla limpio en vez de colgar la suite | `test/el-harness-falla-limpio-en-vez-de-colgarse` | #166 | mergeado |
-| G · el oráculo de combos no exime renderers propios («Orientación» mostraba PORTRAIT) | `fix/el-oraculo-de-combos-no-exime-renderers-propios` | — | en curso |
-| G · importar MIDI con escucha previa y cuantización por radios | `feat/importar-midi-como-gp5` | — | en curso |
-| G · herramienta de escalas con listas, diagrama de grados y escuchar | — | — | pendiente |
-| G · constructor de acordes con controles finos | — | — | pendiente |
+| G · el oráculo de combos no exime renderers propios; Orientación y Papel con etiquetas | `fix/el-oraculo-de-combos-no-exime-renderers-propios` | #168 | mergeado |
+| G · constructor de acordes: inversión separada del bajo, posiciones y cejilla con radios | `feat/constructor-de-acordes-como-gp5` | #169 | mergeado |
+| G · importar MIDI con escucha previa, marcar todas y cuantización por radios con efecto real | `feat/importar-midi-como-gp5` | #170 | mergeado |
+| G · herramienta de escalas con listas, diagrama de grados y escuchar | `feat/herramienta-de-escalas-como-gp5` | #171 | mergeado |
+| F · `ScoreDocumentTest` sin las Preferences reales; tests de Preferences serializados | `test/metronomo-y-documento-sin-flakiness` | #172 | mergeado |
+| G · separar «Tipo» de acorde en extensión, alteraciones y «add» (toca nombrado, diagramas y formatos GP) | — | — | anotado, pieza grande |
+| G · botones de ayuda «?» y «Aplicar» en los diálogos | — | — | descartado: no hay ayuda que mostrar |
+| H · auditoría visual fresca de toda la app tras los 61 PRs | — | — | en curso |
+| H · barras de unión inclinadas como GP5, con «Forzar barras horizontales» por pista | — | — | en curso |
 | G · «Forzar barras horizontales» (pide barras inclinadas, pieza grande de render) | — | — | anotado |
 
 Lo que queda anotado para después: digitación de mano derecha como botón
@@ -342,8 +347,9 @@ GP5 que no se distinguen, `doubleBar` y `tuplet` en Java2D por ser sub-píxel en
 Bravura, los valores predefinidos del combo de zoom (el manual no los lista), y
 la fuente del dígito de traste, que la resolución del manual no permite afirmar.
 
-**Estado (2026-09-10, noche):** 55 PRs de la etapa (#112–#166) en `main`, CI
-verde, ~2890 tests. Tres auditorías hechas, todas con oráculo externo: uso
+**Estado (2026-09-11, madrugada):** 61 PRs de la etapa (#112–#172) en `main`,
+CI verde, ~2920 tests. Cinco auditorías con oráculo externo agotadas: uso real,
+ventana, partitura, corpus real y diálogos. Tres auditorías hechas, todas con oráculo externo: uso
 real de los 15 capítulos del manual (harness que corre en el CI bajo Xvfb),
 visual zona por zona y de la partitura contra las capturas del manual, medidas
 en píxeles. Lo que las tres encontraron está cerrado o anotado arriba.
