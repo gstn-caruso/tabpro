@@ -465,7 +465,7 @@ final class StaffPainter {
             case 1 -> paintFlagGlyph(g, stem, MusicFont.flag8thUp(), MusicFont.flag8thDown(), ink);
             case 2 -> paintFlagGlyph(g, stem, MusicFont.flag16thUp(), MusicFont.flag16thDown(), ink);
             case 3 -> paintFlagGlyph(g, stem, MusicFont.flag32ndUp(), MusicFont.flag32ndDown(), ink);
-            default -> paintGeometricFlags(g, stem, flags, ink);
+            default -> paintFlagGlyph(g, stem, MusicFont.flag64thUp(), MusicFont.flag64thDown(), ink);
         }
     }
 
@@ -473,22 +473,6 @@ final class StaffPainter {
         g.setColor(ink);
         g.setFont(MusicFont.sizedTo(SPACE));
         g.drawString(stem.up() ? up : down, (float) stem.x(), (float) stem.endY());
-    }
-
-    private static void paintGeometricFlags(Graphics2D g, Stem stem, int flags, Color ink) {
-        double direction = stem.up() ? 1 : -1;
-        g.setColor(ink);
-        g.setStroke(new BasicStroke(1.6f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        for (int flag = 0; flag < flags; flag++) {
-            double y = stem.endY() + direction * flag * BEAM_GAP;
-            Path2D hook = new Path2D.Double();
-            hook.moveTo(stem.x(), y);
-            hook.curveTo(
-                    stem.x() + SPACE * 0.95, y - direction * SPACE * 0.15,
-                    stem.x() + SPACE * 1.05, y - direction * SPACE * 0.75,
-                    stem.x() + SPACE * 0.75, y - direction * SPACE * 1.5);
-            g.draw(hook);
-        }
     }
 
     private static void paintBeamGroup(
