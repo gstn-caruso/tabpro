@@ -40,13 +40,13 @@ class BeamBreakAndStemOverridePaintingTest {
         Painted plain = paintEighthsWithOverrideAt(1, BeamBreak.AUTOMATIC);
         Painted forced = paintEighthsWithOverrideAt(1, BeamBreak.FORCED);
 
-        assertFalse(plain.looksLike(forced), "forzar el corte tiene que cambiar la hoja pintada");
+        assertFalse(plain.looksLike(forced), "forcing the break has to change the painted sheet");
 
         int midX = plain.midXBetween(0, 1);
         int y = plain.stemTipBelow(MIDDLE_NOTE);
-        assertTrue(plain.hasInkNear(midX, y, BEAM_SEARCH_RADIUS), "sin forzar, la barra conecta el primer par de corcheas");
+        assertTrue(plain.hasInkNear(midX, y, BEAM_SEARCH_RADIUS), "without forcing, the beam connects the first pair of eighth notes");
         assertFalse(forced.hasInkNear(midX, y, BEAM_SEARCH_RADIUS),
-                "forzado, ya no tiene que quedar barra entre esas dos corcheas");
+                "once forced, there must be no beam left between those two eighth notes");
     }
 
     @Test
@@ -54,13 +54,13 @@ class BeamBreakAndStemOverridePaintingTest {
         Painted plain = paintEighthsWithOverrideAt(2, BeamBreak.AUTOMATIC);
         Painted prevented = paintEighthsWithOverrideAt(2, BeamBreak.PREVENTED);
 
-        assertFalse(plain.looksLike(prevented), "impedir el corte tiene que cambiar la hoja pintada");
+        assertFalse(plain.looksLike(prevented), "preventing the break has to change the painted sheet");
 
         int midX = plain.midXBetween(1, 2);
         int y = plain.stemTipBelow(MIDDLE_NOTE);
         assertFalse(plain.hasInkNear(midX, y, BEAM_SEARCH_RADIUS),
-                "automaticamente el primer y el segundo par no comparten barra");
-        assertTrue(prevented.hasInkNear(midX, y, BEAM_SEARCH_RADIUS), "impedido, el corte entre esos dos pares desaparece");
+                "automatically the first and second pair do not share a beam");
+        assertTrue(prevented.hasInkNear(midX, y, BEAM_SEARCH_RADIUS), "once prevented, the break between those two pairs disappears");
     }
 
     @Test
@@ -68,18 +68,18 @@ class BeamBreakAndStemOverridePaintingTest {
         Painted automatic = paintSingleQuarter(StemOverride.AUTOMATIC);
         Painted forcedUp = paintSingleQuarter(StemOverride.UP);
 
-        assertFalse(automatic.looksLike(forcedUp), "forzar la plica tiene que cambiar la hoja pintada");
+        assertFalse(automatic.looksLike(forcedUp), "forcing the stem has to change the painted sheet");
 
         int x = automatic.noteX(0);
         assertTrue(automatic.hasInkNear(x, automatic.stemTipBelow(MIDDLE_NOTE), 6),
-                "automatica, la plica de esta nota apunta para abajo");
+                "automatic, this note's stem points down");
         assertFalse(automatic.hasInkNear(x, automatic.stemTipAbove(MIDDLE_NOTE), 6),
-                "automatica, no hay nada arriba de la nota");
+                "automatic, there is nothing above the note");
 
         assertTrue(forcedUp.hasInkNear(x, forcedUp.stemTipAbove(MIDDLE_NOTE), 6),
-                "forzada para arriba, la plica ahora tiene que apuntar para arriba");
+                "forced up, the stem now has to point up");
         assertFalse(forcedUp.hasInkNear(x, forcedUp.stemTipBelow(MIDDLE_NOTE), 6),
-                "forzada para arriba, ya no puede quedar nada abajo de la nota");
+                "forced up, there can no longer be anything below the note");
     }
 
     private static Painted paintEighthsWithOverrideAt(int beatIndex, BeamBreak beamBreak) {
