@@ -128,4 +128,18 @@ class PercussionStaffPickerTest {
 
         assertEquals(PercussionLine.HI_HAT, picker.caret());
     }
+
+    @Test
+    void theEnterKeyPlaysTheSoundUnderTheCaretJustLikeASingleClick() {
+        List<Integer> played = new ArrayList<>();
+        List<PercussionLine> added = new ArrayList<>();
+        PercussionStaffPicker picker = new PercussionStaffPicker(played::add, added::add);
+        picker.setSize(WIDTH, HEIGHT);
+        pressShortcut(picker, KeyStroke.getKeyStroke("DOWN"));
+
+        pressShortcut(picker, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals(List.of(picker.soundOf(PercussionLine.HI_HAT)), played);
+        assertEquals(List.of(), added);
+    }
 }
