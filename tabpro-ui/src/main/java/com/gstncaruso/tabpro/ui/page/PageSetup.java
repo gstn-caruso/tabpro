@@ -1,12 +1,5 @@
 package com.gstncaruso.tabpro.ui.page;
 
-/**
- * La configuracion de pagina para imprimir: la ventana de Configurar pagina [F8]. Guarda el papel,
- * la orientacion, los cuatro margenes en milimetros, el tamano de la partitura en porcentaje y que
- * lleva impreso el encabezado y el pie de cada hoja.
- *
- * <p>Es independiente de la impresora: describe el documento, no el aparato que lo saca.
- */
 public record PageSetup(
         PaperFormat paperFormat,
         Orientation orientation,

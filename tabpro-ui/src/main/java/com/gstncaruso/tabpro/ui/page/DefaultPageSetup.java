@@ -2,11 +2,6 @@ package com.gstncaruso.tabpro.ui.page;
 
 import java.util.prefs.Preferences;
 
-/**
- * La configuracion de pagina por defecto: la que el manual guarda con "Save As Default Setup" y
- * aplica con "Apply Default Setup". Vive entre sesiones en java.util.prefs, igual que la lista de
- * acordes del usuario, y si lo guardado no se entiende se vuelve a la que trae tabpro.
- */
 public final class DefaultPageSetup {
 
     private static final String SAVED = "saved";
