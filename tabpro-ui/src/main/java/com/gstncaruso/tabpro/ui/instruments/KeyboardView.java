@@ -71,6 +71,7 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         bindCaretMove(inputMap, actionMap, "RIGHT", 1);
         bindCaretMove(inputMap, actionMap, "LEFT", -1);
         bindCaretActivation(inputMap, actionMap, "ENTER");
+        bindCaretActivation(inputMap, actionMap, "SPACE");
     }
 
     private void bindCaretActivation(InputMap inputMap, ActionMap actionMap, String keyStroke) {

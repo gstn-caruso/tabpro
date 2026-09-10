@@ -224,6 +224,17 @@ class KeyboardViewTest {
         assertEquals(List.of(KeyboardView.LOWEST + 1), activated);
     }
 
+    @Test
+    void theSpaceKeyAlsoNotifiesTheKeyUnderTheCaret() {
+        KeyboardView view = sized();
+        List<Integer> activated = new java.util.ArrayList<>();
+        view.onCaretActivated(activated::add);
+
+        pressShortcut(view, KeyStroke.getKeyStroke("SPACE"));
+
+        assertEquals(List.of(KeyboardView.LOWEST), activated);
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
