@@ -58,7 +58,7 @@ class GuitarProTrackHeaderTest {
 
     private static GuitarProTrackHeader trackOn(int channelIndex, int effectChannelIndex, boolean percussion) {
         return new GuitarProTrackHeader(
-                "Pista", List.of(64, 59, 55, 50, 45, 40), channelIndex, effectChannelIndex, 24, 0,
+                "Track", List.of(64, 59, 55, 50, 45, 40), channelIndex, effectChannelIndex, 24, 0,
                 ScoreColor.rgb(0xFF0000), percussion, false, false,
                 new TrackDisplay(true, true, true, false, DiagramPlacement.ABOVE_THE_STAFF, false, false));
     }
