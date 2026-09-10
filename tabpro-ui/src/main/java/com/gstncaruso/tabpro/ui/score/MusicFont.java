@@ -46,6 +46,10 @@ final class MusicFont {
     private static final int REST_8TH = 0xE4E6;
     /** SMuFL U+E4E7 "rest16th": el silencio de semicorchea, centrado en el pentagrama. */
     private static final int REST_16TH = 0xE4E7;
+    /** SMuFL U+E4E8 "rest32nd": el silencio de fusa, centrado en el pentagrama. */
+    private static final int REST_32ND = 0xE4E8;
+    /** SMuFL U+E4E9 "rest64th": el silencio de semifusa, centrado en el pentagrama. */
+    private static final int REST_64TH = 0xE4E9;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -126,6 +130,16 @@ final class MusicFont {
     /** El silencio de semicorchea, centrado en el pentagrama. */
     static String rest16th() {
         return glyph(REST_16TH);
+    }
+
+    /** El silencio de fusa, centrado en el pentagrama. */
+    static String rest32nd() {
+        return glyph(REST_32ND);
+    }
+
+    /** El silencio de semifusa, centrado en el pentagrama. */
+    static String rest64th() {
+        return glyph(REST_64TH);
     }
 
     /**
