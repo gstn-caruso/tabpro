@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui;
 
 import com.gstncaruso.tabpro.core.editing.EditorListener;
+import javax.swing.SwingUtilities;
 
 public final class EdtEditorListener implements EditorListener {
 
@@ -16,6 +17,10 @@ public final class EdtEditorListener implements EditorListener {
 
     @Override
     public void editorChanged() {
-        delegate.editorChanged();
+        if (SwingUtilities.isEventDispatchThread()) {
+            delegate.editorChanged();
+        } else {
+            SwingUtilities.invokeLater(delegate::editorChanged);
+        }
     }
 }
