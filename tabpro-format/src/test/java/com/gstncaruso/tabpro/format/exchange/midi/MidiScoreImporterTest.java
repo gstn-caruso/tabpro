@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.format.exchange.midi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -435,6 +436,20 @@ class MidiScoreImporterTest {
         assertEquals(1, beatsWithNotes, "las dos notas casi simultaneas tienen que caer en un unico beat");
         Beat chord = track.measure(0).beats().stream().filter(beat -> !beat.notes().isEmpty()).findFirst().orElseThrow();
         assertEquals(2, chord.notes().size());
+    }
+
+    @Test
+    void chordPositionQuantizeCanPushANoteIntoTheNextMeasureAtTheEdgeOfAMeasure(@TempDir Path tempDir) throws Exception {
+        Path path = rawMidiFile(tempDir, "borde-de-compas.mid", new long[] {3800, 64, 60});
+
+        Score imported = importer.importQuick(
+                path, indicesOf(path), false, Optional.of(NoteValue.QUARTER), Optional.empty(), true);
+
+        Track track = imported.track(0);
+        assertEquals(2, track.measureCount(), "el archivo tiene que traer un segundo compas para que la nota se pueda mover ahi");
+        boolean firstMeasureHasNotes = track.measure(0).beats().stream().anyMatch(beat -> !beat.notes().isEmpty());
+        assertFalse(firstMeasureHasNotes, "la nota cuantizada se movio, asi que el primer compas queda en silencio");
+        assertEquals(1, track.measure(1).beat(0).notes().size());
     }
 
     private static Path rawMidiFile(Path dir, String fileName, long[]... notes) throws Exception {
