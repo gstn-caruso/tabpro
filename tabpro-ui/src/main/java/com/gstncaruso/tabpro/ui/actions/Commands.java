@@ -198,56 +198,57 @@ public final class Commands {
     }
 
     private void defineNoteCommands() {
-        define("note.shorter", "Acortar la figura", editor::shortenDuration).withAccelerator("PLUS");
-        define("note.longer", "Alargar la figura", editor::lengthenDuration).withAccelerator("MINUS");
-        define("note.dot", "Puntillo", editor::toggleDot).withAccelerator("PERIOD").withIcon(Icons.dottedNote());
-        define("note.rest", "Silencio", editor::clearBeat).withAccelerator("R").withIcon(Icons.rest());
-        define("note.triplet", "Tresillo", editor::toggleTriplet).withAccelerator("SLASH").withIcon(Icons.tuplet(3));
+        define("note.shorter", Texts.get("menus.note.shorter"), editor::shortenDuration)
+                .withAccelerator("PLUS");
+        define("note.longer", Texts.get("menus.note.longer"), editor::lengthenDuration)
+                .withAccelerator("MINUS");
+        define("note.dot", Texts.get("menus.note.dot"), editor::toggleDot)
+                .withAccelerator("PERIOD").withIcon(Icons.dottedNote());
+        define("note.rest", Texts.get("menus.note.rest"), editor::clearBeat)
+                .withAccelerator("R").withIcon(Icons.rest());
+        define("note.triplet", Texts.get("menus.note.triplet"), editor::toggleTriplet)
+                .withAccelerator("SLASH").withIcon(Icons.tuplet(3));
         defineTupletCommands();
-        define("note.tie", "Ligar la nota", editor::toggleTie).withAccelerator("L").withIcon(Icons.tie());
-        define("note.tieBeat", "Ligar el beat", editor::tieWholeBeat)
+        define("note.tie", Texts.get("menus.note.tie"), editor::toggleTie)
+                .withAccelerator("L").withIcon(Icons.tie());
+        define("note.tieBeat", Texts.get("menus.note.tieBeat"), editor::tieWholeBeat)
                 .withAccelerator("ctrl L").withIcon(Icons.tieBeat());
-        define("note.insertBeat", "Insertar un beat", editor::insertBeat).withAccelerator("INSERT");
-        define("note.deleteNote", "Borrar la nota", editor::clearNote).withAccelerator("DELETE");
-        define("note.deleteBeat", "Borrar el beat", editor::deleteBeat).withAccelerator("ctrl DELETE");
-        define("note.up", "Subir un semitono", () -> editor.transposeNote(1)).withAccelerator("shift PLUS");
-        define("note.down", "Bajar un semitono", () -> editor.transposeNote(-1)).withAccelerator("shift MINUS");
-        define("note.toUpperString", "Mover a la cuerda de arriba", editor::moveNoteUpOneString)
+        define("note.insertBeat", Texts.get("menus.note.insertBeat"), editor::insertBeat)
+                .withAccelerator("INSERT");
+        define("note.deleteNote", Texts.get("menus.note.deleteNote"), editor::clearNote)
+                .withAccelerator("DELETE");
+        define("note.deleteBeat", Texts.get("menus.note.deleteBeat"), editor::deleteBeat)
+                .withAccelerator("ctrl DELETE");
+        define("note.up", Texts.get("menus.note.up"), () -> editor.transposeNote(1))
+                .withAccelerator("shift PLUS");
+        define("note.down", Texts.get("menus.note.down"), () -> editor.transposeNote(-1))
+                .withAccelerator("shift MINUS");
+        define("note.toUpperString", Texts.get("menus.note.toUpperString"), editor::moveNoteUpOneString)
                 .withAccelerator("alt UP");
-        define("note.toLowerString", "Mover a la cuerda de abajo", editor::moveNoteDownOneString)
+        define("note.toLowerString", Texts.get("menus.note.toLowerString"), editor::moveNoteDownOneString)
                 .withAccelerator("alt DOWN");
-        define("note.repeatToEndOfBar", "Copiar el beat hasta el final del compás",
+        define("note.repeatToEndOfBar", Texts.get("menus.note.repeatToEndOfBar"),
                 editor::repeatBeatToTheEndOfTheMeasure).withAccelerator("C");
-        define("note.dynamics", "Dinámica…", dialogs::dynamics);
+        define("note.dynamics", Texts.get("menus.note.dynamics"), dialogs::dynamics);
         for (Dynamic dynamic : Dynamic.values()) {
-            define("note.dynamic." + dynamic.name(), dynamic.symbol(), () -> editor.setDynamic(dynamic))
-                    .withIcon(Icons.italicLetter(dynamic.symbol()));
+            define("note.dynamic." + dynamic.name(), Texts.get("menus.note.dynamic." + dynamic.name()),
+                    () -> editor.setDynamic(dynamic)).withIcon(Icons.italicLetter(dynamic.symbol()));
         }
-        define("note.soundDuration", "Duración del sonido…", dialogs::soundDuration)
+        define("note.soundDuration", Texts.get("menus.note.soundDuration"), dialogs::soundDuration)
                 .withIcon(Icons.soundDuration());
-        define("note.fingering", "Digitación…", dialogs::fingering).withIcon(Icons.fingering());
-        define("note.fingeringRightHand", "Digitación (mano derecha)…", dialogs::fingeringRightHand)
+        define("note.fingering", Texts.get("menus.note.fingering"), dialogs::fingering)
+                .withIcon(Icons.fingering());
+        define("note.fingeringRightHand", Texts.get("menus.note.fingeringRightHand"), dialogs::fingeringRightHand)
                 .withIcon(Icons.fingeringRightHand());
-        define("note.chord", "Acorde…", dialogs::chordDiagram).withAccelerator("A").withIcon(Icons.chordDiagram());
-        define("note.mixTableChange", "Cambio de parámetros…", dialogs::mixTableChange)
+        define("note.chord", Texts.get("menus.note.chord"), dialogs::chordDiagram)
+                .withAccelerator("A").withIcon(Icons.chordDiagram());
+        define("note.mixTableChange", Texts.get("menus.note.mixTableChange"), dialogs::mixTableChange)
                 .withAccelerator("F10").withIcon(Icons.mixTable());
         defineBeamAndStemCommands();
         for (NoteValue value : NoteValue.values()) {
-            define("note.value." + value.name(), nameOf(value), () -> editor.setNoteValue(value))
-                    .withIcon(Icons.note(value));
+            define("note.value." + value.name(), Texts.get("menus.note.value." + value.name()),
+                    () -> editor.setNoteValue(value)).withIcon(Icons.note(value));
         }
-    }
-
-    private static String nameOf(NoteValue value) {
-        return switch (value) {
-            case WHOLE -> "Redonda";
-            case HALF -> "Blanca";
-            case QUARTER -> "Negra";
-            case EIGHTH -> "Corchea";
-            case SIXTEENTH -> "Semicorchea";
-            case THIRTY_SECOND -> "Fusa";
-            case SIXTY_FOURTH -> "Semifusa";
-        };
     }
 
     private void defineTupletCommands() {
@@ -255,33 +256,24 @@ public final class Commands {
             if (enters == 1 || enters == 3) {
                 continue;
             }
-            define("note.tuplet." + enters, tupletName(enters), () -> editor.toggleTuplet(enters))
-                    .withIcon(Icons.tuplet(enters));
+            define("note.tuplet." + enters, Texts.get("menus.note.tuplet." + enters),
+                    () -> editor.toggleTuplet(enters)).withIcon(Icons.tuplet(enters));
         }
     }
 
-    private static String tupletName(int enters) {
-        return switch (enters) {
-            case 5 -> "Quintillo";
-            case 6 -> "Seisillo";
-            case 7 -> "Septillo";
-            default -> "Grupo de " + enters;
-        };
-    }
-
     private void defineBeamAndStemCommands() {
-        define("note.forceBeamBreak", "Forzar corte de barra", () -> editor.setBeamBreak(BeamBreak.FORCED))
-                .withIcon(Icons.forceBeamBreak());
-        define("note.preventBeamBreak", "Impedir corte de barra", () -> editor.setBeamBreak(BeamBreak.PREVENTED))
-                .withIcon(Icons.preventBeamBreak());
-        define("note.resetBeamBreak", "Barra automática", () -> editor.setBeamBreak(BeamBreak.AUTOMATIC))
-                .withIcon(Icons.resetBeamBreak());
-        define("note.stemUp", "Plica hacia arriba", () -> editor.setStemOverride(StemOverride.UP))
+        define("note.forceBeamBreak", Texts.get("menus.note.forceBeamBreak"),
+                () -> editor.setBeamBreak(BeamBreak.FORCED)).withIcon(Icons.forceBeamBreak());
+        define("note.preventBeamBreak", Texts.get("menus.note.preventBeamBreak"),
+                () -> editor.setBeamBreak(BeamBreak.PREVENTED)).withIcon(Icons.preventBeamBreak());
+        define("note.resetBeamBreak", Texts.get("menus.note.resetBeamBreak"),
+                () -> editor.setBeamBreak(BeamBreak.AUTOMATIC)).withIcon(Icons.resetBeamBreak());
+        define("note.stemUp", Texts.get("menus.note.stemUp"), () -> editor.setStemOverride(StemOverride.UP))
                 .withIcon(Icons.stemUp());
-        define("note.stemDown", "Plica hacia abajo", () -> editor.setStemOverride(StemOverride.DOWN))
+        define("note.stemDown", Texts.get("menus.note.stemDown"), () -> editor.setStemOverride(StemOverride.DOWN))
                 .withIcon(Icons.stemDown());
-        define("note.stemAutomatic", "Plica automática", () -> editor.setStemOverride(StemOverride.AUTOMATIC))
-                .withIcon(Icons.stemAutomatic());
+        define("note.stemAutomatic", Texts.get("menus.note.stemAutomatic"),
+                () -> editor.setStemOverride(StemOverride.AUTOMATIC)).withIcon(Icons.stemAutomatic());
     }
 
     private void defineEffectCommands() {
