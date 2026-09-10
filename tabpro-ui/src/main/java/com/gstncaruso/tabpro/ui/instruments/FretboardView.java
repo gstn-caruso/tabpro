@@ -407,16 +407,12 @@ public final class FretboardView extends JComponent implements AccessibleControl
         int width = getWidth() - SIDE_MARGIN - logicalNutX();
         g.setColor(fretboardType.woodColor());
         g.fillRect(left, top, width, bottom - top);
-        paintGrain(g, left, top, width, bottom - top);
+        paintWoodGrain(g, left, top, width, bottom - top);
         g.setColor(fretboardType.edgeColor());
         g.drawRect(left, top, width, bottom - top);
     }
 
-    /**
-     * La veta de la madera: lineas horizontales mas oscuras a intervalo fijo, siempre las
-     * mismas filas, para que el dibujo sea reproducible en cada repintado.
-     */
-    private void paintGrain(Graphics2D g, int x, int y, int width, int height) {
+    private void paintWoodGrain(Graphics2D g, int x, int y, int width, int height) {
         g.setColor(towardBlack(fretboardType.woodColor(), GRAIN_DARKENING));
         for (int row = y; row < y + height; row++) {
             if (Math.floorMod(row, GRAIN_PERIOD) == 0) {

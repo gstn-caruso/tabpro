@@ -308,21 +308,19 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
             g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
             g.setColor(InstrumentColors.KEY_EDGE);
             g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
-            paintBevel(g, bounds, base);
-            marks.kindOf(key).ifPresent(kind -> paintMark(g, bounds, kind));
+            paintKeyBevel(g, bounds, base);
+            marks.kindOf(key).ifPresent(kind -> paintMarkDot(g, bounds, kind));
         }
     }
 
-    /** El degrade que le da volumen a la tecla: clarea arriba, donde le pega la luz, y oscurece abajo. */
-    private void paintBevel(Graphics2D g, Rectangle bounds, Color base) {
+    private void paintKeyBevel(Graphics2D g, Rectangle bounds, Color base) {
         g.setColor(base.brighter());
         g.fillRect(bounds.x, bounds.y, bounds.width, BEVEL_THICKNESS);
         g.setColor(base.darker());
         g.fillRect(bounds.x, bounds.y + bounds.height - BEVEL_THICKNESS, bounds.width, BEVEL_THICKNESS);
     }
 
-    /** El punto que marca una tecla, chico y pegado a su base: la tecla conserva su color. */
-    private void paintMark(Graphics2D g, Rectangle bounds, MarkKind kind) {
+    private void paintMarkDot(Graphics2D g, Rectangle bounds, MarkKind kind) {
         int radius = Math.max(MARK_RADIUS_MIN, (int) Math.round(bounds.width * MARK_RADIUS_RATIO));
         int marginBottom = Math.max(MARK_MARGIN_MIN, (int) Math.round(bounds.height * MARK_MARGIN_RATIO));
         int centerX = bounds.x + bounds.width / 2;
