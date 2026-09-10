@@ -86,7 +86,6 @@ class AccentedLiteralsTest {
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/BarDurationReport.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/MeasureRangePanel.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/StringOptionsPanel.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/page/PageElement.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/score/ViewMode.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/ScoreDocument.java");
 

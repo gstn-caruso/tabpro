@@ -6,14 +6,14 @@ package com.gstncaruso.tabpro.ui.page;
  * valor de Informacion de la partitura.
  */
 public enum PageElement {
-    TITLE("Titulo", "[%title]"),
-    SUBTITLE("Subtitulo", "[%subtitle]"),
+    TITLE("Título", "[%title]"),
+    SUBTITLE("Subtítulo", "[%subtitle]"),
     ARTIST("Artista", "[%artist]"),
-    ALBUM("Album", "[%album]"),
+    ALBUM("Álbum", "[%album]"),
     WORDS("Letra de", "Letra: [%words]"),
-    MUSIC("Musica de", "Musica: [%music]"),
+    MUSIC("Música de", "Música: [%music]"),
     COPYRIGHT("Copyright", "[%copyright]"),
-    PAGE_NUMBER("Numero de pagina", "Pagina [%page] de [%pages]");
+    PAGE_NUMBER("Número de página", "Página [%page] de [%pages]");
 
     private final String label;
     private final String defaultText;

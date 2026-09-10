@@ -61,7 +61,7 @@ class PageFieldsTest {
     void thePageAndTheTotalComeFromTheSheetBeingPrinted() {
         PageFields fields = new PageFields(SULTANS, 4, 7);
 
-        assertEquals("Pagina 4 de 7", fields.fillIn("Pagina [%page] de [%pages]"));
+        assertEquals("Página 4 de 7", fields.fillIn("Página [%page] de [%pages]"));
     }
 
     @Test
