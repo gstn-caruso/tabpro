@@ -94,7 +94,8 @@ class ToolBarsOrderTest {
                 "effect.trill", "effect.tremoloPicking", "effect.palmMute", "effect.staccato", SEP,
                 "effect.tapping", "effect.slapping", "effect.popping", SEP,
                 "effect.fadeIn", "effect.pickstrokeDown", "effect.pickstrokeUp", SEP,
-                "note.chord", "effect.text", "note.mixTableChange", "note.fingering", SEP,
+                "note.chord", "effect.text", "note.mixTableChange", "note.fingering",
+                "note.fingeringRightHand", SEP,
                 "effect.strokeUp", "effect.strokeDown");
     }
 
