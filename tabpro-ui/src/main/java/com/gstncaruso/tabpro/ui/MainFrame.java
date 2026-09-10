@@ -168,7 +168,7 @@ public final class MainFrame extends JFrame {
         Document documentActions = new Document();
         commands = new Commands(
                 editor, documentActions, new Windows(), new Playback(), new View(), themes.names());
-        toolBars = new ToolBars(editor, commands);
+        toolBars = new ToolBars(editor, commands, canvas);
         boolean effectsToolBarVisible = preferences.effectsToolBarVisible();
         toolBars.setEffectsToolBarVisible(effectsToolBarVisible);
         // El casillero de "Efectos" en Ver > Menus y barras arranca marcado por defecto

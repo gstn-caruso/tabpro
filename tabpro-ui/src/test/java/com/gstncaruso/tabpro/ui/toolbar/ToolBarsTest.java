@@ -10,6 +10,8 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import com.gstncaruso.tabpro.ui.score.Zoom;
+import com.gstncaruso.tabpro.ui.score.ZoomHolder;
 import java.awt.Component;
 import java.awt.Container;
 import java.lang.reflect.InvocationHandler;
@@ -29,7 +31,7 @@ class ToolBarsTest {
     private final Commands commands = new Commands(
             editor, record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
-    private final ToolBars toolBars = new ToolBars(editor, commands);
+    private final ToolBars toolBars = new ToolBars(editor, commands, new FakeZoomHolder());
 
     @Test
     void lasCuatroFilasArrancanVisibles() {
@@ -133,7 +135,8 @@ class ToolBarsTest {
         Ports.Playback playback = (Ports.Playback) Proxy.newProxyInstance(
                 Ports.Playback.class.getClassLoader(), new Class<?>[] {Ports.Playback.class}, handler);
         ToolBars otraBarra = new ToolBars(editor, new Commands(
-                editor, record(Ports.Document.class), record(Ports.Dialogs.class), playback, record(Ports.View.class)));
+                editor, record(Ports.Document.class), record(Ports.Dialogs.class), playback, record(Ports.View.class)),
+                new FakeZoomHolder());
         JToggleButton button = toggleButtonNamed(otraBarra.structureToolBar, "Banco de sonido");
 
         assertTrue(button.isSelected(), "tiene que arrancar mostrando que el banco esta prendido");
@@ -156,13 +159,17 @@ class ToolBarsTest {
         throw new AssertionError("no encontre un boton conmutable llamado " + name);
     }
 
+    /**
+     * El JComboBox del zoom trae su propia flecha de despliegue, un boton del look-and-feel sin
+     * icono e irrelevante para esta auditoria: no hay que bajar a mirar adentro suyo.
+     */
     private java.util.List<AbstractButton> buttonsOf(Container root) {
         java.util.List<AbstractButton> found = new java.util.ArrayList<>();
         for (Component child : root.getComponents()) {
             if (child instanceof AbstractButton button) {
                 found.add(button);
             }
-            if (child instanceof Container container) {
+            if (child instanceof Container container && !(child instanceof javax.swing.JComboBox)) {
                 found.addAll(buttonsOf(container));
             }
         }
@@ -173,5 +180,20 @@ class ToolBarsTest {
     private <T> T record(Class<T> port) {
         InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
         return (T) Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[] {port}, handler);
+    }
+
+    private static final class FakeZoomHolder implements ZoomHolder {
+        @Override
+        public Zoom zoom() {
+            return Zoom.whole();
+        }
+
+        @Override
+        public void setZoom(Zoom zoom) {
+        }
+
+        @Override
+        public void onZoomChange(Runnable listener) {
+        }
     }
 }
