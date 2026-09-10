@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.app.smoke;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.app.CombinedExchange;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
@@ -12,6 +13,7 @@ import com.gstncaruso.tabpro.midi.SoundExchange;
 import com.gstncaruso.tabpro.midi.WaveRenderer;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.print.ScoreSheets;
+import com.gstncaruso.tabpro.ui.score.ViewMode;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
@@ -83,6 +85,21 @@ class FixtureCorpusSmokeTest {
 
     private List<BufferedImage> renderizarPaginas(Score score) {
         return ScoreSheets.renderPages(score, Zoom.whole(), PageSetup.defaults());
+    }
+
+    @Test
+    void unGuitarProSimpleRenderizaEnModoPergamino() {
+        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
+        Score score = abrir(path);
+
+        BufferedImage pergamino = renderizarPergamino(score);
+
+        assertTrue(pergamino.getWidth() > 0 && pergamino.getHeight() > 0,
+                () -> path.getFileName() + ": renderiza en modo Pergamino");
+    }
+
+    private BufferedImage renderizarPergamino(Score score) {
+        return ScoreSheets.render(score, ViewMode.PARCHMENT, Zoom.whole(), PageSetup.defaults());
     }
 
     private Score abrir(Path path) {
