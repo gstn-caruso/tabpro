@@ -326,7 +326,7 @@ public final class Icons {
     // ---- navegacion y vista -----------------------------------------------
 
     public static Icon firstBar() {
-        return icon((graphics, size) -> skip(graphics, size, true, true));
+        return svgIcon("player-skip-back");
     }
 
     public static Icon previousBar() {
