@@ -22,11 +22,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-/**
- * La grilla clicable de un bend o una palanca. Toda la decision vive en
- * BendCurveEditor; esto solo traduce pixeles a posiciones de la grilla y dibuja
- * la curva resultante.
- */
 public final class BendGridPanel extends JComponent implements AccessibleControl {
 
     private static final int MIN_QUARTER_TONES = -BendPoint.MAX_QUARTER_TONES;
@@ -76,12 +71,10 @@ public final class BendGridPanel extends JComponent implements AccessibleControl
         });
     }
 
-    /** Donde esta parado el caret de teclado, en la misma escala de posicion que un clic. */
     public int caretPosition() {
         return caretPosition;
     }
 
-    /** Cuantos cuartos de tono marca el caret de teclado, en la misma escala que un clic. */
     public int caretQuarterTones() {
         return caretQuarterTones;
     }

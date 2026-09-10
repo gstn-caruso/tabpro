@@ -8,7 +8,6 @@ import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
-/** El rasgueo: hacia donde barre, que tan rapido y si es un rasgueado de guitarra. */
 public final class StrokePanel extends FormPanel {
 
     private final JComboBox<StrokeDirection> direction = new JComboBox<>(StrokeDirection.values());

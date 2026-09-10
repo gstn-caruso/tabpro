@@ -8,7 +8,6 @@ import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/** El trino: con que otro traste alterna y a que velocidad. */
 public final class TrillPanel extends FormPanel {
 
     private final JSpinner fret = new JSpinner(new SpinnerNumberModel(0, 0, 99, 1));

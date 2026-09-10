@@ -11,7 +11,6 @@ import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/** La notita de adorno: su traste, cuando cae, cuanto dura, que tan fuerte suena y como enlaza. */
 public final class GraceNotePanel extends FormPanel {
 
     private final JSpinner fret = new JSpinner(new SpinnerNumberModel(0, 0, 99, 1));

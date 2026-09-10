@@ -16,13 +16,11 @@ import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import java.awt.Component;
 import javax.swing.JTabbedPane;
 
-/** La ventana de efectos de nota: bend, palanca, adorno, rasgueo, trino, tremolo de pua y armonicos. */
 public final class NoteEffectsDialog {
 
     private NoteEffectsDialog() {
     }
 
-    /** Los nombres de las solapas, para que cada comando del menu abra la suya. */
     public static final String BEND = "Bend";
     public static final String TREMOLO_BAR = "Palanca";
     public static final String GRACE_NOTE = "Nota de adorno";
@@ -88,7 +86,6 @@ public final class NoteEffectsDialog {
         return Bend.of(BendType.DIP, 4);
     }
 
-    /** Abre la ventana ya parada en la solapa que pidio el menu. */
     private static void selectTab(JTabbedPane tabs, String title) {
         int index = tabs.indexOfTab(title);
         if (index >= 0) {
