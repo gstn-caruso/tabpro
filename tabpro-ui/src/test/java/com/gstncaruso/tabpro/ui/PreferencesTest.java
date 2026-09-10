@@ -180,4 +180,11 @@ class PreferencesTest {
     void keyboardStartsHidden() {
         assertFalse(preferences.keyboardVisible());
     }
+
+    @Test
+    void remembersThatTheKeyboardIsVisible() {
+        preferences.setKeyboardVisible(true);
+
+        assertTrue(preferences.keyboardVisible());
+    }
 }

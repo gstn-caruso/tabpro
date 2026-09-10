@@ -160,4 +160,8 @@ public final class Preferences {
     public boolean keyboardVisible() {
         return stored.getBoolean(KEYBOARD_VISIBLE, false);
     }
+
+    public void setKeyboardVisible(boolean visible) {
+        stored.putBoolean(KEYBOARD_VISIBLE, visible);
+    }
 }
