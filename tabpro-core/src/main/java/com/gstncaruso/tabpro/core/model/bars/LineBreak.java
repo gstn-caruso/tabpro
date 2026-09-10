@@ -2,7 +2,7 @@ package com.gstncaruso.tabpro.core.model.bars;
 
 /** Como se decide si este compas empieza un renglon nuevo. */
 public enum LineBreak {
-    AUTOMATIC("Automatico"),
+    AUTOMATIC("Automático"),
     FORCED("Forzar salto"),
     PREVENTED("Impedir salto");
 

@@ -12,7 +12,7 @@ public record Tuning(String name, List<Pitch> strings) {
 
     public Tuning {
         if (strings.isEmpty()) {
-            throw new IllegalArgumentException("una afinacion necesita al menos una cuerda");
+            throw new IllegalArgumentException("una afinación necesita al menos una cuerda");
         }
         strings = List.copyOf(strings);
     }
