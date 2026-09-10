@@ -84,9 +84,9 @@ class StatusBarTest {
 
     private static void assertHasASunkenPanel(Container root, String accessibleName) {
         JLabel label = findLabelByAccessibleName(root, accessibleName);
-        assertNotNull(label, "no se encontro ningun panel llamado " + accessibleName);
-        assertNotNull(label.getParent(), accessibleName + " no esta dentro de un panel");
-        assertNotNull(((JPanel) label.getParent()).getBorder(), accessibleName + " no tiene borde hundido");
+        assertNotNull(label, "found no panel named " + accessibleName);
+        assertNotNull(label.getParent(), accessibleName + " is not inside a panel");
+        assertNotNull(((JPanel) label.getParent()).getBorder(), accessibleName + " has no sunken border");
     }
 
     private static JLabel findLabelByAccessibleName(Container root, String accessibleName) {
