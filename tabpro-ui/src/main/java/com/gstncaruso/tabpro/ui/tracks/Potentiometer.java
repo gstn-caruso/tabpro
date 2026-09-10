@@ -16,6 +16,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleValue;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -111,14 +112,43 @@ public final class Potentiometer extends JComponent implements AccessibleControl
     @Override
     public AccessibleContext getAccessibleContext() {
         if (accessibleContext == null) {
-            accessibleContext = new AccessibleJComponent() {
-                @Override
-                public AccessibleRole getAccessibleRole() {
-                    return AccessibleRole.SLIDER;
-                }
-            };
+            accessibleContext = new AccessiblePotentiometer();
         }
         return accessibleContext;
+    }
+
+    private final class AccessiblePotentiometer extends AccessibleJComponent implements AccessibleValue {
+        @Override
+        public AccessibleRole getAccessibleRole() {
+            return AccessibleRole.SLIDER;
+        }
+
+        @Override
+        public AccessibleValue getAccessibleValue() {
+            return this;
+        }
+
+        @Override
+        public Number getCurrentAccessibleValue() {
+            return value;
+        }
+
+        @Override
+        public boolean setCurrentAccessibleValue(Number number) {
+            setValue(number.intValue());
+            onUserChange.run();
+            return true;
+        }
+
+        @Override
+        public Number getMinimumAccessibleValue() {
+            return min;
+        }
+
+        @Override
+        public Number getMaximumAccessibleValue() {
+            return max;
+        }
     }
 
     @Override

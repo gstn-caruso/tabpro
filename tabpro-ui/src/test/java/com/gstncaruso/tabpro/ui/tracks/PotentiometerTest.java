@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import javax.accessibility.AccessibleValue;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
@@ -142,6 +143,17 @@ class PotentiometerTest {
         pressShortcut(knob, KeyStroke.getKeyStroke("END"));
 
         assertEquals(127, knob.getValue());
+    }
+
+    @Test
+    void exposesItsCurrentValueToAssistiveTechnology() {
+        Potentiometer knob = new Potentiometer(0, 127, 64);
+
+        AccessibleValue accessibleValue = (AccessibleValue) knob.getAccessibleContext();
+
+        assertEquals(64, accessibleValue.getCurrentAccessibleValue().intValue());
+        assertEquals(0, accessibleValue.getMinimumAccessibleValue().intValue());
+        assertEquals(127, accessibleValue.getMaximumAccessibleValue().intValue());
     }
 
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
