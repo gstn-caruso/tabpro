@@ -377,6 +377,12 @@ public final class ScoreLayout {
         return system < firstMeasureOfEachSystem.length ? firstMeasureOfEachSystem[system] : measureCount();
     }
 
+    /** El ultimo compas de ese sistema: el limite opuesto a {@link #firstMeasureOfSystem}, para
+     * que quien pinta una hoja sepa donde parar sin seguir de largo hacia la hoja siguiente. */
+    public int lastMeasureOfSystem(int system) {
+        return system + 1 < systemCount ? firstMeasureOfSystem(system + 1) - 1 : measureCount() - 1;
+    }
+
     public int trackTop(int track, int measure) {
         int systemY = TOP_MARGIN + systemOf(measure) * (blockHeightTotal + SYSTEM_GAP);
         return systemY + blockTop[track];

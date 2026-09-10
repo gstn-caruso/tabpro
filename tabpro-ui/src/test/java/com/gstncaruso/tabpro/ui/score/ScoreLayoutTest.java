@@ -79,6 +79,17 @@ class ScoreLayoutTest {
     }
 
     @Test
+    void lastMeasureOfSystemFindsWhereEachSystemEnds() {
+        Score score = scoreWithMeasures(12);
+        ScoreLayout layout = ScoreLayout.of(score, 800);
+
+        assertEquals(2, layout.lastMeasureOfSystem(0));
+        assertEquals(5, layout.lastMeasureOfSystem(1));
+        assertEquals(8, layout.lastMeasureOfSystem(2));
+        assertEquals(11, layout.lastMeasureOfSystem(3), "el ultimo sistema termina en el ultimo compas");
+    }
+
+    @Test
     void everySystemStartsAtTheLeftMargin() {
         Score score = scoreWithMeasures(12);
 
