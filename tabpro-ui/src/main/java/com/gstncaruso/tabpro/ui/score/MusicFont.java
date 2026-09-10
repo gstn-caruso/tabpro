@@ -36,6 +36,10 @@ final class MusicFont {
     private static final int ACCIDENTAL_NATURAL = 0xE261;
     /** SMuFL U+E1E7 "augmentationDot": el puntillo que alarga una figura o un silencio. */
     private static final int AUGMENTATION_DOT = 0xE1E7;
+    /** SMuFL U+E4E3 "restWhole": el silencio de redonda, colgado de la cuarta linea. */
+    private static final int REST_WHOLE = 0xE4E3;
+    /** SMuFL U+E4E4 "restHalf": el silencio de blanca, apoyado en la linea del medio. */
+    private static final int REST_HALF = 0xE4E4;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -91,6 +95,16 @@ final class MusicFont {
     /** El puntillo que alarga una figura o un silencio. */
     static String augmentationDot() {
         return glyph(AUGMENTATION_DOT);
+    }
+
+    /** El silencio de redonda, colgado de la cuarta linea. */
+    static String restWhole() {
+        return glyph(REST_WHOLE);
+    }
+
+    /** El silencio de blanca, apoyado en la linea del medio. */
+    static String restHalf() {
+        return glyph(REST_HALF);
     }
 
     /**
