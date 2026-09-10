@@ -221,12 +221,12 @@ class PageScorePainterTest {
         PageMetrics sheet = PageMetrics.of(PageSetup.defaults());
         int stride = sheet.pageHeight() + PageMetrics.PAGE_GAP;
         Rectangle clipOnTheMiddlePage = new Rectangle(0, stride, sheet.pageWidth(), sheet.pageHeight());
-        RecordingCanvas lienzo = new RecordingCanvas(clipOnTheMiddlePage);
+        RecordingCanvas canvas = new RecordingCanvas(clipOnTheMiddlePage);
 
         PageScorePainter.paint(
-                lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
+                canvas, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
 
-        Set<String> footersPainted = footersPaintedIn(lienzo);
+        Set<String> footersPainted = footersPaintedIn(canvas);
 
         assertFalse(footersPainted.contains(footerOf(1, total)),
                 "la primera hoja, fuera del clip, no tiene que pintarse");
@@ -249,12 +249,12 @@ class PageScorePainterTest {
 
         int measureOnlyOnTheFirstPage = pagination.firstMeasureOfPage().get(0) + 1;
         int measureOnlyOnTheThirdPage = pagination.firstMeasureOfPage().get(2) + 1;
-        RecordingCanvas lienzo = new RecordingCanvas();
+        RecordingCanvas canvas = new RecordingCanvas();
 
         PageScorePainter.paintPage(
-                lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport, 1);
+                canvas, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport, 1);
 
-        Set<Integer> painted = measureNumbersPaintedIn(lienzo);
+        Set<Integer> painted = measureNumbersPaintedIn(canvas);
         assertFalse(painted.contains(measureOnlyOnTheFirstPage),
                 "la hoja del medio no tiene que tocar un compas que solo esta en la primera");
         assertFalse(painted.contains(measureOnlyOnTheThirdPage),
@@ -262,15 +262,15 @@ class PageScorePainterTest {
         assertFalse(painted.isEmpty(), "la hoja del medio tiene que pintar sus propios compases");
     }
 
-    private static Set<Integer> measureNumbersPaintedIn(RecordingCanvas lienzo) {
-        return lienzo.drawnTexts().stream()
+    private static Set<Integer> measureNumbersPaintedIn(RecordingCanvas canvas) {
+        return canvas.drawnTexts().stream()
                 .filter(drawnText -> ScoreFonts.MEASURE_NUMBER_FONT.equals(drawnText.font()))
                 .map(drawnText -> Integer.parseInt(drawnText.text()))
                 .collect(Collectors.toSet());
     }
 
-    private static Set<String> footersPaintedIn(RecordingCanvas lienzo) {
-        return lienzo.drawnTexts().stream()
+    private static Set<String> footersPaintedIn(RecordingCanvas canvas) {
+        return canvas.drawnTexts().stream()
                 .map(RecordingCanvas.DrawnText::text)
                 .collect(Collectors.toSet());
     }
@@ -304,37 +304,37 @@ class PageScorePainterTest {
 
     @Test
     void theParameterChangeMarkIsRedOnPaperJustLikeOnScreen() {
-        RecordingCanvas lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
+        RecordingCanvas canvas = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
 
-        assertTrue(lienzo.drawsColorInRegion(ScoreColors.PARAMETER_CHANGE, musicRegionOf(PageSetup.defaults())),
+        assertTrue(canvas.drawsColorInRegion(ScoreColors.PARAMETER_CHANGE, musicRegionOf(PageSetup.defaults())),
                 "el cambio de parametro se anuncia en rojo");
     }
 
     @Test
     void thePlayingLineIsTheSameGreenOnPaperAsOnScreen() {
-        RecordingCanvas lienzo = renderConLienzo(
+        RecordingCanvas canvas = renderConLienzo(
                 scoreWithAParameterChange(), PageSetup.defaults(),
                 Playhead.silent().advancedTo(new com.gstncaruso.tabpro.core.playback.BeatPosition(0, 0, 0)));
 
-        assertTrue(lienzo.drawsColorInRegion(ScoreColors.PLAYING, musicRegionOf(PageSetup.defaults())),
+        assertTrue(canvas.drawsColorInRegion(ScoreColors.PLAYING, musicRegionOf(PageSetup.defaults())),
                 "la linea de reproduccion tiene que verse verde en la hoja");
     }
 
     @Test
     void theEditingCursorIsTheSameRedOnPaperAsOnScreen() {
-        RecordingCanvas lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
+        RecordingCanvas canvas = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
 
-        assertTrue(lienzo.drawsColorInRegion(ScoreColors.CURSOR, musicRegionOf(PageSetup.defaults())),
+        assertTrue(canvas.drawsColorInRegion(ScoreColors.CURSOR, musicRegionOf(PageSetup.defaults())),
                 "el cursor de edicion tiene que verse rojo en la hoja");
     }
 
     @Test
     void theScoreIsWrittenInDarkInkOnPaper() {
-        RecordingCanvas lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
+        RecordingCanvas canvas = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
         Rectangle music = musicRegionOf(PageSetup.defaults());
 
-        assertTrue(lienzo.drawsColorInRegion(ScoreColors.PAGE_INK, music), "la partitura se escribe con la tinta de la hoja");
-        assertFalse(lienzo.drawsColorInRegion(ScoreColors.INK, music), "y no con la tinta clara de la pantalla");
+        assertTrue(canvas.drawsColorInRegion(ScoreColors.PAGE_INK, music), "la partitura se escribe con la tinta de la hoja");
+        assertFalse(canvas.drawsColorInRegion(ScoreColors.INK, music), "y no con la tinta clara de la pantalla");
     }
 
     @Test
@@ -410,9 +410,9 @@ class PageScorePainterTest {
 
     private static RecordingCanvas renderConLienzo(Score score, PageSetup setup, Playhead playhead) {
         ScoreViewport viewport = pageViewport(setup);
-        RecordingCanvas lienzo = new RecordingCanvas();
-        PageScorePainter.paint(lienzo, score, new Cursor(0, 0, 0, 1), playhead, Optional.empty(), viewport);
-        return lienzo;
+        RecordingCanvas canvas = new RecordingCanvas();
+        PageScorePainter.paint(canvas, score, new Cursor(0, 0, 0, 1), playhead, Optional.empty(), viewport);
+        return canvas;
     }
 
     private static Rectangle musicRegionOf(PageSetup setup) {

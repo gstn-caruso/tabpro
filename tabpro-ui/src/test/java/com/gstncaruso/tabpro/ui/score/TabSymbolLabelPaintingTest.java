@@ -41,11 +41,11 @@ class TabSymbolLabelPaintingTest {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score score = new Score("", 120, List.of(track));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        RecordingCanvas lienzo = new RecordingCanvas();
+        RecordingCanvas canvas = new RecordingCanvas();
 
-        TabSymbolPainter.paintMeasure(lienzo, layout, track, 0, 0);
+        TabSymbolPainter.paintMeasure(canvas, layout, track, 0, 0);
 
-        List<RecordingCanvas.DrawnText> drawnTexts = lienzo.drawnTexts();
+        List<RecordingCanvas.DrawnText> drawnTexts = canvas.drawnTexts();
         assertEquals(1, drawnTexts.size(), "el efecto tiene que escribir exactamente una sigla");
         RecordingCanvas.DrawnText drawnText = drawnTexts.get(0);
         assertEquals(-1, drawnText.font().canDisplayUpTo(drawnText.text()),

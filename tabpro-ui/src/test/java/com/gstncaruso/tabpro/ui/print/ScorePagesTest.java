@@ -179,15 +179,15 @@ class ScorePagesTest {
     }
 
     private static RecordingCanvas lienzoDeLaHojaImpresa(ScorePrinting.ScorePages paginas, PageFormat format, int pageIndex) {
-        RecordingCanvas lienzo = new RecordingCanvas();
-        paginas.print(lienzo, format, pageIndex);
-        return lienzo;
+        RecordingCanvas canvas = new RecordingCanvas();
+        paginas.print(canvas, format, pageIndex);
+        return canvas;
     }
 
     private static RecordingCanvas lienzoDeLaHojaReal(Score score, int page) {
-        RecordingCanvas lienzo = new RecordingCanvas();
-        ScoreSheets.paintPageOn(lienzo, score, Zoom.whole(), A4, page);
-        return lienzo;
+        RecordingCanvas canvas = new RecordingCanvas();
+        ScoreSheets.paintPageOn(canvas, score, Zoom.whole(), A4, page);
+        return canvas;
     }
 
     private static int imprimir(

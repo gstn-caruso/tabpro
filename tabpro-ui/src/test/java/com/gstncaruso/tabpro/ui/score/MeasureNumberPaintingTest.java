@@ -21,25 +21,25 @@ class MeasureNumberPaintingTest {
 
     @Test
     void aCompleteMeasureWritesItsNumberInCoral() {
-        RecordingCanvas lienzo = paintMeasureNumber(guitarWith(fullMeasure()));
+        RecordingCanvas canvas = paintMeasureNumber(guitarWith(fullMeasure()));
 
-        assertTrue(lienzo.drawsColor(ScoreColors.MEASURE_NUMBER));
-        assertFalse(lienzo.drawsColor(ScoreColors.MUTED_INK));
+        assertTrue(canvas.drawsColor(ScoreColors.MEASURE_NUMBER));
+        assertFalse(canvas.drawsColor(ScoreColors.MUTED_INK));
     }
 
     @Test
     void anIncompleteMeasureKeepsWarningInsteadOfCoral() {
-        RecordingCanvas lienzo = paintMeasureNumber(guitarWith(incompleteMeasure()));
+        RecordingCanvas canvas = paintMeasureNumber(guitarWith(incompleteMeasure()));
 
-        assertTrue(lienzo.drawsColor(ScoreColors.WARNING));
-        assertFalse(lienzo.drawsColor(ScoreColors.MEASURE_NUMBER));
+        assertTrue(canvas.drawsColor(ScoreColors.WARNING));
+        assertFalse(canvas.drawsColor(ScoreColors.MEASURE_NUMBER));
     }
 
     private static RecordingCanvas paintMeasureNumber(Track track) {
         ScoreLayout layout = ScoreLayout.of(new Score("", 120, List.of(track)), WIDTH);
-        RecordingCanvas lienzo = new RecordingCanvas();
-        TabPainter.paintMeasureNumber(lienzo, layout, track, 0, 0);
-        return lienzo;
+        RecordingCanvas canvas = new RecordingCanvas();
+        TabPainter.paintMeasureNumber(canvas, layout, track, 0, 0);
+        return canvas;
     }
 
     private static Measure fullMeasure() {

@@ -20,30 +20,30 @@ class TimeSignaturePaintingTest {
     @Test
     void writesTheBeatsGlyphAboveTheBeatUnitGlyphOnTheMiddleStaffLines() {
         ScoreLayout layout = layoutFor(new TimeSignature(4, 4));
-        RecordingCanvas lienzo = paint(new TimeSignature(4, 4), layout);
+        RecordingCanvas canvas = paint(new TimeSignature(4, 4), layout);
 
         String four = MusicFont.timeSignatureDigit(4);
-        assertTrue(lienzo.writesTextInRegion(four, new Rectangle(0, layout.staffLineY(0, 0, 3) - 2, WIDTH, 4)),
+        assertTrue(canvas.writesTextInRegion(four, new Rectangle(0, layout.staffLineY(0, 0, 3) - 2, WIDTH, 4)),
                 "el numerador tiene que escribir el digito de Bravura sobre la linea del medio de arriba");
-        assertTrue(lienzo.writesTextInRegion(four, new Rectangle(0, layout.staffLineY(0, 0, 1) - 2, WIDTH, 4)),
+        assertTrue(canvas.writesTextInRegion(four, new Rectangle(0, layout.staffLineY(0, 0, 1) - 2, WIDTH, 4)),
                 "el denominador tiene que escribir el digito de Bravura sobre la linea del medio de abajo");
     }
 
     @Test
     void aTwoDigitBeatCountIsAssembledGlyphByGlyph() {
         ScoreLayout layout = layoutFor(new TimeSignature(12, 8));
-        RecordingCanvas lienzo = paint(new TimeSignature(12, 8), layout);
+        RecordingCanvas canvas = paint(new TimeSignature(12, 8), layout);
 
         String twelve = MusicFont.timeSignatureDigit(1) + MusicFont.timeSignatureDigit(2);
-        assertTrue(lienzo.writesTextInRegion(twelve, new Rectangle(0, layout.staffLineY(0, 0, 3) - 2, WIDTH, 4)),
+        assertTrue(canvas.writesTextInRegion(twelve, new Rectangle(0, layout.staffLineY(0, 0, 3) - 2, WIDTH, 4)),
                 "12 se arma con el digito 1 y el digito 2 de Bravura, uno detras del otro");
     }
 
     private static RecordingCanvas paint(TimeSignature signature, ScoreLayout layout) {
-        RecordingCanvas lienzo = new RecordingCanvas();
+        RecordingCanvas canvas = new RecordingCanvas();
         Track track = trackWith(signature);
-        StaffPainter.paintTimeSignature(lienzo, layout, track, 0, 0, layout.measureX(0) + 4);
-        return lienzo;
+        StaffPainter.paintTimeSignature(canvas, layout, track, 0, 0, layout.measureX(0) + 4);
+        return canvas;
     }
 
     private static ScoreLayout layoutFor(TimeSignature signature) {

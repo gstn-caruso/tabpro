@@ -51,9 +51,9 @@ class RichScoreFontSafetyTest {
 
     @Test
     void everyTextInARichScoreIsShownByAFontThatCanDisplayIt() {
-        RecordingCanvas lienzo = paint(richScore());
+        RecordingCanvas canvas = paint(richScore());
 
-        List<RecordingCanvas.DrawnText> drawnTexts = lienzo.drawnTexts();
+        List<RecordingCanvas.DrawnText> drawnTexts = canvas.drawnTexts();
         assertFalse(drawnTexts.isEmpty(), "la partitura rica tiene que haber escrito algo");
         for (RecordingCanvas.DrawnText drawnText : drawnTexts) {
             assertEquals(-1, drawnText.font().canDisplayUpTo(drawnText.text()),
@@ -64,9 +64,9 @@ class RichScoreFontSafetyTest {
 
     private static RecordingCanvas paint(Score score) {
         ScoreViewport viewport = ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), WIDTH).withPageSetup(PageSetup.defaults());
-        RecordingCanvas lienzo = new RecordingCanvas();
-        PageScorePainter.paint(lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
-        return lienzo;
+        RecordingCanvas canvas = new RecordingCanvas();
+        PageScorePainter.paint(canvas, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
+        return canvas;
     }
 
     private static Score richScore() {

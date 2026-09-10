@@ -20,25 +20,25 @@ class ClefPaintingTest {
 
     @Test
     void theTrebleClefIsTheBravuraGClefGlyphAnchoredOnTheGLine() {
-        RecordingCanvas lienzo = new RecordingCanvas();
+        RecordingCanvas canvas = new RecordingCanvas();
         ScoreLayout layout = layout();
 
-        StaffPainter.paintClef(lienzo, layout, Clef.TREBLE, 0, 0);
+        StaffPainter.paintClef(canvas, layout, Clef.TREBLE, 0, 0);
 
         int gLine = layout.staffLineY(0, 0, 1);
-        assertTrue(lienzo.writesTextInRegion(MusicFont.trebleClef(), new Rectangle(0, gLine - 2, WIDTH, 4)),
+        assertTrue(canvas.writesTextInRegion(MusicFont.trebleClef(), new Rectangle(0, gLine - 2, WIDTH, 4)),
                 "la clave de sol tiene que escribir el glifo gClef apoyado en la linea de Sol");
     }
 
     @Test
     void theBassClefIsTheBravuraFClefGlyphAnchoredOnTheFLine() {
-        RecordingCanvas lienzo = new RecordingCanvas();
+        RecordingCanvas canvas = new RecordingCanvas();
         ScoreLayout layout = layout();
 
-        StaffPainter.paintClef(lienzo, layout, Clef.BASS, 0, 0);
+        StaffPainter.paintClef(canvas, layout, Clef.BASS, 0, 0);
 
         int fLine = layout.staffLineY(0, 0, 3);
-        assertTrue(lienzo.writesTextInRegion(MusicFont.bassClef(), new Rectangle(0, fLine - 2, WIDTH, 4)),
+        assertTrue(canvas.writesTextInRegion(MusicFont.bassClef(), new Rectangle(0, fLine - 2, WIDTH, 4)),
                 "la clave de fa tiene que escribir el glifo fClef apoyado en la linea de Fa");
     }
 
