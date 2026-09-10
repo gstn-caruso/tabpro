@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -58,6 +59,19 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
         Track first = track(0);
         int clamped = Math.clamp(measureIndex, 0, first.measureCount() - 1);
         return first.attributesOf(clamped);
+    }
+
+    /**
+     * El marcador que rige un compas: el que tiene puesto, o si no tiene el del marcador anterior
+     * mas cercano. Nunca mira hacia adelante.
+     */
+    public OptionalInt measureOfMarkerInEffectAt(int measureIndex) {
+        for (int measure = measureIndex; measure >= 0; measure--) {
+            if (attributesOf(measure).marker().isPresent()) {
+                return OptionalInt.of(measure);
+            }
+        }
+        return OptionalInt.empty();
     }
 
     public TimeSignature timeSignatureOf(int measureIndex) {

@@ -60,7 +60,7 @@ class ToolBarsOrderTest {
                 "bar.repeatOpen", "bar.repeatClose", SEP,
                 "bar.doubleBar", SEP,
                 "bar.alternateEndings", "bar.forceLineBreak", "bar.preventLineBreak", SEP,
-                "marker.insert", "marker.previous", "marker.next", "marker.list", SEP,
+                "marker.insert", "marker.edit", "marker.previous", "marker.next", "marker.list", SEP,
                 "sound.play", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
                 "sound.loop", "sound.soundFont", SEP,
                 "tool.transpose", SEP,

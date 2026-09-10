@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import java.awt.Container;
 import javax.swing.JMenuItem;
@@ -83,6 +84,37 @@ class AddLyricsAndMarkersAuditTest {
             assertTrue(marker.isPresent(), "el boton real 'Insertar aqui' tiene que dejar un marcador en el modelo");
             assertEquals("Estribillo", marker.get().name(),
                     "el nombre tecleado en el campo real tiene que ser el del marcador");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    /**
+     * Guitar Pro 5, manual pagina 14, fila 2: el boton de "editar" abre el mismo dialogo ya
+     * posicionado en el marcador vigente en el compas del cursor.
+     */
+    @Test
+    void editarElMarcadorDelCursorEnElDialogoRealDejaElNombreNuevoEnElModelo() throws Exception {
+        Editor editor = blankEditor();
+        editor.setMarker(Marker.named("Intro"));
+        MainFrame frame = newFrame(editor);
+        try {
+            JMenuItem item = findMenuItem(frame.getJMenuBar(), "Editar el marcador…");
+            assertNotNull(item, "no encontre 'Editar el marcador…' en el menu real");
+
+            withDialog(item::doClick, dialog -> {
+                JTextField nombre = AuditSupport.findComponent(dialog, JTextField.class);
+                assertNotNull(nombre, "no encontre el campo real de nombre del marcador");
+                nombre.setText("Estribillo");
+
+                findButton(dialog, "Guardar cambios").doClick();
+                findButton(dialog, "Cerrar").doClick();
+            });
+
+            var marker = editor.score().attributesOf(0).marker();
+            assertTrue(marker.isPresent(), "el boton real 'Guardar cambios' tiene que dejar el marcador en el modelo");
+            assertEquals("Estribillo", marker.get().name(),
+                    "el nombre editado en el campo real tiene que quedar en el modelo");
         } finally {
             AuditSupport.dispose(frame);
         }

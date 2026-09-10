@@ -186,6 +186,10 @@ public final class Icons {
         return svgIcon("flag-3");
     }
 
+    public static Icon markerEdit() {
+        return svgIcon("marker-edit");
+    }
+
     public static Icon markerList() {
         return svgIcon("list-details");
     }

@@ -1240,6 +1240,13 @@ public final class MainFrame extends JFrame {
         }
 
         @Override
+        public void editMarker() {
+            editor.score().measureOfMarkerInEffectAt(editor.cursor().measure())
+                    .ifPresent(measureIndex -> MarkersDialog.showEditing(MainFrame.this, editor, measureIndex));
+            backToTheScore();
+        }
+
+        @Override
         public void markerList() {
             insertMarker();
         }

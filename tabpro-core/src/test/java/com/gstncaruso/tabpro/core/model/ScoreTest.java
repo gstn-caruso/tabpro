@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.model.bars.Marker;
+import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -184,5 +186,34 @@ class ScoreTest {
     @Test
     void rejectsAScoreWithoutTracks() {
         assertThrows(IllegalArgumentException.class, () -> new Score("", 120, List.of()));
+    }
+
+    @Test
+    void hasNoMarkerInEffectWhenTheScoreHasNone() {
+        Score score = Score.blank();
+
+        assertTrue(score.measureOfMarkerInEffectAt(0).isEmpty());
+    }
+
+    @Test
+    void theMarkerInEffectIsTheOneOnTheSameMeasure() {
+        Score score = Score.blank().withAttributesInEveryTrackAt(
+                0, MeasureAttributes.plain().withMarker(Marker.named("Intro")));
+
+        assertEquals(0, score.measureOfMarkerInEffectAt(0).getAsInt());
+    }
+
+    @Test
+    void theMarkerInEffectOnAMeasureWithoutOneIsTheClosestBeforeItAndNeverOneAfter() {
+        Score score = Score.blank();
+        for (int i = 1; i < 5; i++) {
+            score = score.withMeasureInsertedInEveryTrackAt(i);
+        }
+        score = score.withAttributesInEveryTrackAt(1, MeasureAttributes.plain().withMarker(Marker.named("Intro")));
+        score = score.withAttributesInEveryTrackAt(
+                3, MeasureAttributes.plain().withMarker(Marker.named("Estribillo")));
+
+        assertEquals(1, score.measureOfMarkerInEffectAt(2).getAsInt());
+        assertTrue(score.measureOfMarkerInEffectAt(0).isEmpty());
     }
 }
