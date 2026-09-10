@@ -22,6 +22,7 @@ public final class Preferences {
     private static final String INTERFACE_FONT_SIZE = "interfaceFontSize";
     private static final int DEFAULT_INTERFACE_FONT_SIZE = 12;
     private static final String HIGH_CONTRAST_ENABLED = "highContrastEnabled";
+    private static final String ANIMATIONS_DISABLED = "animationsDisabled";
     private static final String DEFAULT_NOTE_VALUE = "defaultNoteValue";
     private static final String AUTO_SCROLL_DURING_PLAYBACK = "autoScrollDuringPlayback";
     private static final String FORCE_MULTITRACK_IN_HORIZONTAL_MODE = "forceMultitrackInHorizontalMode";
@@ -96,6 +97,11 @@ public final class Preferences {
 
     public void setHighContrastEnabled(boolean enabled) {
         stored.putBoolean(HIGH_CONTRAST_ENABLED, enabled);
+    }
+
+    /** Preferencias [F12] > Accesibilidad: "Sin animaciones" apaga las de FlatLaf y las propias. */
+    public boolean animationsDisabled() {
+        return stored.getBoolean(ANIMATIONS_DISABLED, false);
     }
 
     /** Preferencias [F12], "Figura por defecto al insertar": la usa {@code Editor.insertBeat}. */

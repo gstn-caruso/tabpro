@@ -131,4 +131,10 @@ class PreferencesTest {
 
         assertTrue(preferences.highContrastEnabled());
     }
+
+    /** Preferencias [F12] > Accesibilidad: "Sin animaciones" apaga las de FlatLaf y las propias. */
+    @Test
+    void animationsStartEnabled() {
+        assertFalse(preferences.animationsDisabled());
+    }
 }
