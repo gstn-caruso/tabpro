@@ -1,3 +1,9 @@
+## [0.33.0](https://github.com/gstn-caruso/tabpro/compare/v0.32.0...v0.33.0) (2026-09-10)
+
+### Features
+
+* **ui:** todo control de la interfaz tiene nombre accesible y tooltip ([#115](https://github.com/gstn-caruso/tabpro/issues/115)) ([1f79f98](https://github.com/gstn-caruso/tabpro/commit/1f79f98795e21375c685cd8f7f95da7e52450a41)), closes [AbstractButton#getAccessibleName](https://github.com/gstn-caruso/AbstractButton/issues/getAccessibleName)
+
 ## [0.32.0](https://github.com/gstn-caruso/tabpro/compare/v0.31.0...v0.32.0) (2026-09-10)
 
 ### Features
