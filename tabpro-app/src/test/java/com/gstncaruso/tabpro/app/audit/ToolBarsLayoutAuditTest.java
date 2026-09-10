@@ -3,7 +3,9 @@ package com.gstncaruso.tabpro.app.audit;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.blankEditor;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findButtonByActionName;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findComponent;
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.findMenuItem;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.newFrame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,7 +16,10 @@ import com.gstncaruso.tabpro.ui.tracks.TrackPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
@@ -55,5 +60,43 @@ class ToolBarsLayoutAuditTest {
         } finally {
             AuditSupport.dispose(frame);
         }
+    }
+
+    /**
+     * Ver > Menus y barras sigue escondiendo y mostrando la fila real correspondiente ahora que
+     * son cuatro filas en vez de tres: este test no toca MenuBar, solo confirma que su cableado
+     * de siempre sigue funcionando contra el ToolBars nuevo.
+     */
+    @Test
+    void elMenuVerMenusYBarrasEscondeYMuestraLaFilaDeDocumentoReal() throws Exception {
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        try {
+            JToolBar documentBar = toolBarContaining(frame.getContentPane(), "Nuevo");
+            assertTrue(documentBar.isVisible(), "la fila de documento arranca visible");
+
+            JMenuItem item = findMenuItem(frame.getJMenuBar(), "Documento y edición");
+            assertNotNull(item, "no encontre 'Documento y edición' en Ver > Menus y barras");
+
+            SwingUtilities.invokeAndWait(item::doClick);
+            assertEquals(false, documentBar.isVisible(),
+                    "el menu real tiene que esconder la fila de documento real");
+
+            SwingUtilities.invokeAndWait(item::doClick);
+            assertEquals(true, documentBar.isVisible(),
+                    "el menu real tiene que volver a mostrar la fila de documento real");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    private JToolBar toolBarContaining(Container root, String actionLabel) {
+        JButton button = findButtonByActionName(root, actionLabel);
+        assertNotNull(button, "no encontre ningun boton real de accion \"" + actionLabel + "\"");
+        Container parent = button.getParent();
+        while (parent != null && !(parent instanceof JToolBar)) {
+            parent = parent.getParent();
+        }
+        return (JToolBar) parent;
     }
 }
