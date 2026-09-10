@@ -79,4 +79,22 @@ class EditorSelectionTest {
 
         assertTrue(editor.selection().isEmpty());
     }
+
+    /**
+     * {@link Editor#change} y {@link Editor#restore} nunca tocan el ancla -solo
+     * {@link Editor#moveCursor} lo hace-, asi que deshacer una edicion que tambien movio el
+     * cursor (acá, {@link Editor#deleteBeat}) tiene que devolver la seleccion tal como estaba
+     * antes de esa edicion, no la que quedo achicada despues de ella.
+     */
+    @Test
+    void undoRestoresTheSelectionThatWasActiveBeforeTheEdit() {
+        editor.whileExtendingSelection(editor::moveRight);
+        Selection selectionBeforeTheEdit = editor.selection().orElseThrow();
+
+        editor.deleteBeat();
+
+        editor.undo();
+
+        assertEquals(selectionBeforeTheEdit, editor.selection().orElseThrow());
+    }
 }
