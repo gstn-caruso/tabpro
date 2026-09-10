@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.AwaitEdt;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import java.lang.reflect.InvocationHandler;
@@ -123,6 +124,7 @@ class TrackSelectorTest {
         TrackSelector selector = new TrackSelector(editor, commands);
 
         editor.selectTrack(2);
+        AwaitEdt.flush();
 
         assertFalse(selector.trackButtons().get(0).isSelected());
         assertTrue(selector.trackButtons().get(2).isSelected());
@@ -133,6 +135,7 @@ class TrackSelectorTest {
         TrackSelector selector = new TrackSelector(editor, commands);
 
         editor.addTrack(Track.standardBass("Bajo"));
+        AwaitEdt.flush();
 
         assertEquals(2, selector.trackButtons().size());
         assertTrue(selector.trackButtons().get(1).isSelected());
@@ -144,6 +147,7 @@ class TrackSelectorTest {
         TrackSelector selector = new TrackSelector(editor, commands);
 
         editor.removeCurrentTrack();
+        AwaitEdt.flush();
 
         assertEquals(1, selector.trackButtons().size());
         assertTrue(selector.trackButtons().get(0).isSelected());
@@ -165,6 +169,7 @@ class TrackSelectorTest {
         TrackSelector selector = new TrackSelector(editor, commands);
 
         editor.moveCurrentTrack(-1);
+        AwaitEdt.flush();
 
         assertEquals("Pista 1: Bajo", selector.trackButtons().get(0).getAccessibleContext().getAccessibleName());
         assertEquals("Pista 2: Guitarra", selector.trackButtons().get(1).getAccessibleContext().getAccessibleName());
