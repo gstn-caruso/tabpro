@@ -5,8 +5,10 @@ Escribís la música, la ves como en un cancionero publicado y la escuchás sona
 
 ![La ventana de tabpro](docs/capturas/tabpro.png)
 
-Está inspirado en Guitar Pro 5.2, del que toma la forma de la pantalla y los
-atajos de teclado, con una estética propia, oscura y plana.
+Está inspirado en Guitar Pro 5.2, del que toma la disposición de las barras
+—con la de efectos pegada debajo de la partitura, como el original— y los
+atajos de teclado. Tema oscuro, con los pictogramas de Tabler Icons y los
+símbolos musicales de la fuente Bravura.
 
 ## Qué hace
 
@@ -106,6 +108,22 @@ el **asistente de percusión** y los asistentes del menú Herramientas: let ring
 palm mute y dinámica por cuerda sobre un rango de compases, acomodar los compases,
 completar con silencios, digitación automática, transportar y revisar la duración
 de los compases.
+
+## Accesibilidad
+
+**Todo se maneja sin mouse.** Los menús y los formularios se navegan por
+mnemónico (`Alt` + la letra subrayada); las perillas de la mesa de mezcla, el
+diapasón, el teclado, la grilla de la vista global, los marcadores, el
+asistente de percusión, los bends y el afinador se operan por teclado y
+muestran el foco. Desde la partitura, `Ctrl+F6` le cede el foco al resto de la
+ventana.
+
+**Todo control tiene nombre y descripción accesibles**, además de su tooltip,
+para que un lector de pantalla lo anuncie aunque no lleve texto.
+
+**Las dos paletas, clara y oscura, cumplen el contraste WCAG AA.**
+`Preferencias > Accesibilidad` suma tamaño de letra ajustable, alto contraste
+y la opción de apagar las animaciones.
 
 ## Archivos
 
