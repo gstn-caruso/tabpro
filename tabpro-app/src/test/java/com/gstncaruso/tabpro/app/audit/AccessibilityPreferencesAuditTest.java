@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.MainFrame;
+import com.gstncaruso.tabpro.ui.dialogs.preferences.PreferencesPanel;
 import com.gstncaruso.tabpro.ui.theme.ThemeSwitch;
 import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -13,9 +16,9 @@ import org.junit.jupiter.api.parallel.Isolated;
 
 /**
  * Preferencias [F12] > Accesibilidad: lo que ya quedo guardado de una sesion anterior se aplica
- * de verdad al arrancar la ventana principal, no solo al aceptar el dialogo.
- * {@code @Isolated} porque escribe en el mismo nodo de {@code java.util.prefs} que usa cualquier
- * {@code MainFrame} real de la suite.
+ * de verdad al arrancar la ventana principal, y lo que se elige en el dialogo real se persiste y
+ * se aplica al aceptar. {@code @Isolated} porque escribe en el mismo nodo de
+ * {@code java.util.prefs} que usa cualquier {@code MainFrame} real de la suite.
  */
 @Tag("integracion")
 @Isolated
@@ -40,6 +43,34 @@ class AccessibilityPreferencesAuditTest {
         MainFrame frame = AuditSupport.newFrame(new Editor(com.gstncaruso.tabpro.core.model.Score.blank()), themes);
         try {
             assertEquals(18, themes.lastFontSize);
+            assertEquals(true, themes.lastHighContrast);
+            assertEquals(false, themes.lastAnimationsEnabled);
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
+    void acceptingPreferencesPersistsAndAppliesTheAccessibilityChoices() throws Exception {
+        RecordingThemeSwitch themes = new RecordingThemeSwitch();
+        MainFrame frame = AuditSupport.newFrame(
+                new Editor(com.gstncaruso.tabpro.core.model.Score.blank()), themes);
+        try {
+            JMenuItem preferencesItem = AuditSupport.findMenuItem(frame.getJMenuBar(), "Preferencias…");
+            AuditSupport.withDialog(preferencesItem::doClick, dialog -> {
+                PreferencesPanel panel = AuditSupport.findComponent(dialog, PreferencesPanel.class);
+                panel.apply(panel.toPreferences()
+                        .withInterfaceFontSize(16)
+                        .withHighContrastEnabled(true)
+                        .withAnimationsDisabled(true));
+                JButton accept = AuditSupport.findButton(dialog, "Aceptar");
+                accept.doClick();
+            });
+
+            assertEquals(16, new com.gstncaruso.tabpro.ui.Preferences().interfaceFontSize());
+            assertEquals(true, new com.gstncaruso.tabpro.ui.Preferences().highContrastEnabled());
+            assertEquals(true, new com.gstncaruso.tabpro.ui.Preferences().animationsDisabled());
+            assertEquals(16, themes.lastFontSize);
             assertEquals(true, themes.lastHighContrast);
             assertEquals(false, themes.lastAnimationsEnabled);
         } finally {
