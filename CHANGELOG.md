@@ -1,3 +1,9 @@
+## [0.47.0](https://github.com/gstn-caruso/tabpro/compare/v0.46.2...v0.47.0) (2026-09-10)
+
+### Features
+
+* **score:** el tempo inicial se escribe sobre el primer compás, y tempo y números de compás van en rojo como en Guitar Pro 5 ([#148](https://github.com/gstn-caruso/tabpro/issues/148)) ([0eb6fc6](https://github.com/gstn-caruso/tabpro/commit/0eb6fc6a79b16d09111e1f3fc76cd2a4e82d1dfe))
+
 ## [0.46.2](https://github.com/gstn-caruso/tabpro/compare/v0.46.1...v0.46.2) (2026-09-10)
 
 ### Bug Fixes
