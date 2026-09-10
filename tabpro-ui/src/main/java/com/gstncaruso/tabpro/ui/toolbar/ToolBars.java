@@ -246,6 +246,7 @@ public final class ToolBars {
     private static JButton button(Command command) {
         JButton button = new JButton(command);
         button.setText(null);
+        button.setForeground(Palette.text());
         button.setFocusable(false);
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
