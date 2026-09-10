@@ -215,6 +215,43 @@ class ScoreCanvasTest {
     }
 
     /**
+     * Como en Guitar Pro 5 y en cualquier editor: un clic sin Shift limpia cualquier seleccion
+     * vieja, aunque no arrastre a ningun lado.
+     */
+    @Test
+    void clickingSomewhereClearsAnyActiveSelection() {
+        Editor twoMeasures = editorWithTwoMeasures();
+        twoMeasures.selectAll();
+        ScoreCanvas canvasWithTwoMeasures = new ScoreCanvas(twoMeasures);
+        ScoreLayout layout = ScoreLayout.of(twoMeasures.score(), 900);
+        Rectangle firstBeat = layout.beatBounds(0, 0, 0);
+
+        press(canvasWithTwoMeasures, centerX(firstBeat), centerY(firstBeat), false);
+
+        assertTrue(canvasWithTwoMeasures.selection().isEmpty());
+    }
+
+    /**
+     * Como en Guitar Pro 5 y en cualquier editor: Shift mas clic no limpia la seleccion, la
+     * extiende desde donde estaba el cursor hasta donde cayo el clic.
+     */
+    @Test
+    void shiftClickExtendsTheSelectionInsteadOfClearingIt() {
+        Editor twoMeasures = editorWithTwoMeasures();
+        ScoreCanvas canvasWithTwoMeasures = new ScoreCanvas(twoMeasures);
+        ScoreLayout layout = ScoreLayout.of(twoMeasures.score(), 900);
+        Rectangle firstBeat = layout.beatBounds(0, 0, 0);
+        Rectangle secondMeasureBeat = layout.beatBounds(0, 1, 0);
+
+        press(canvasWithTwoMeasures, centerX(firstBeat), centerY(firstBeat), false);
+        shiftClick(canvasWithTwoMeasures, centerX(secondMeasureBeat), centerY(secondMeasureBeat));
+
+        Selection selection = canvasWithTwoMeasures.selection().orElseThrow();
+        assertEquals(0, selection.fromMeasure());
+        assertEquals(1, selection.toMeasure());
+    }
+
+    /**
      * El manual, en Using the Mouse: "Note > 0 to 30 (clic derecho sobre la tablatura)". El
      * menu tiene que ofrecer los trastes de la cuerda donde cayo el clic.
      */
@@ -431,6 +468,11 @@ class ScoreCanvasTest {
     private static void drag(ScoreCanvas target, int x, int y, boolean controlHeld) {
         target.dispatchEvent(new MouseEvent(target, MouseEvent.MOUSE_DRAGGED, System.currentTimeMillis(),
                 controlHeld ? InputEvent.CTRL_DOWN_MASK : 0, x, y, 1, false));
+    }
+
+    private static void shiftClick(ScoreCanvas target, int x, int y) {
+        target.dispatchEvent(new MouseEvent(target, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(),
+                InputEvent.SHIFT_DOWN_MASK, x, y, 1, false));
     }
 
     private static int centerX(Rectangle rectangle) {

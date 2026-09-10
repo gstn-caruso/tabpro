@@ -79,6 +79,32 @@ class KeyboardEditingTest {
         assertEquals(Notation.TABLATURE, editor.cursor().notation());
     }
 
+    /**
+     * Como en Guitar Pro 5 y en cualquier editor: la flecha sola mueve el cursor y limpia
+     * cualquier seleccion vieja; con Shift, en cambio, la extiende desde el ancla.
+     */
+    @Test
+    void bindsShiftRightToExtendTheSelectionInsteadOfClearingIt() {
+        Editor editor = new Editor(Score.blank());
+        Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
+
+        bindings.get(KeyStroke.getKeyStroke("shift RIGHT")).run();
+
+        assertEquals(0, editor.selection().orElseThrow().fromBeat());
+        assertEquals(1, editor.selection().orElseThrow().toBeat());
+    }
+
+    @Test
+    void bindsPlainRightToClearAnyActiveSelection() {
+        Editor editor = new Editor(Score.blank());
+        editor.startSelection(false);
+        Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
+
+        bindings.get(KeyStroke.getKeyStroke("RIGHT")).run();
+
+        assertTrue(editor.selection().isEmpty());
+    }
+
     @Test
     void bindsHomeAndEndToMeasureEdges() {
         Editor editor = new Editor(Score.blank());

@@ -35,6 +35,10 @@ public final class KeyboardEditing {
         bindings.put(KeyStroke.getKeyStroke("DOWN"), editor::moveDown);
         bindings.put(KeyStroke.getKeyStroke("HOME"), editor::moveToMeasureStart);
         bindings.put(KeyStroke.getKeyStroke("END"), editor::moveToMeasureEnd);
+        bindings.put(KeyStroke.getKeyStroke("shift RIGHT"), extending(editor::moveRight));
+        bindings.put(KeyStroke.getKeyStroke("shift LEFT"), extending(editor::moveLeft));
+        bindings.put(KeyStroke.getKeyStroke("shift UP"), extending(editor::moveUp));
+        bindings.put(KeyStroke.getKeyStroke("shift DOWN"), extending(editor::moveDown));
         bindings.put(KeyStroke.getKeyStroke("BACK_SPACE"), editor::clearNote);
         bindings.put(KeyStroke.getKeyStroke("TAB"), editor::toggleNotation);
         bindings.replaceAll((keyStroke, action) -> resettingDigitsBefore(action));
@@ -46,6 +50,10 @@ public final class KeyboardEditing {
             digits.reset();
             action.run();
         };
+    }
+
+    private Runnable extending(Runnable movement) {
+        return () -> editor.whileExtendingSelection(movement);
     }
 
     /**

@@ -52,9 +52,6 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
     private ViewMode viewMode = ViewMode.SCREEN_VERTICAL;
     private Zoom zoom = Zoom.whole();
     private PageSetup pageSetup = PageSetup.defaults();
-    private Cursor selectionAnchor;
-    private Selection selection;
-    private boolean selectingWholeMeasures;
 
     public ScoreCanvas(Editor editor) {
         this(editor, new TrackVisibility());
@@ -89,14 +86,19 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
                     return;
                 }
                 requestFocusInWindow();
-                clearSelection();
+                // El manual: Shift mas clic extiende la seleccion desde donde estaba el cursor,
+                // igual que Shift mas flecha; sin Shift, el clic la limpia como cualquier otro
+                // movimiento del cursor.
+                if (e.isShiftDown()) {
+                    editor.whileExtendingSelection(() -> moveCursorTo(e.getX(), e.getY()));
+                    return;
+                }
+                editor.clearSelection();
                 moveCursorTo(e.getX(), e.getY());
-                selectionAnchor = editor.cursor();
                 // El manual: "para seleccionar compases completos, apreta Ctrl mientras haces la
                 // seleccion". Un clic sin arrastrar ya alcanza para seleccionar el compas entero.
-                selectingWholeMeasures = e.isControlDown();
-                if (selectingWholeMeasures) {
-                    setSelection(Selection.of(selectionAnchor, selectionAnchor, true));
+                if (e.isControlDown()) {
+                    editor.startSelection(true);
                 }
             }
 
@@ -290,20 +292,10 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
         repaint();
     }
 
-    // ---- Seleccion multiple: la ventana principal puede leerla, fijarla o limpiarla ----
+    // ---- Seleccion multiple: el Editor es quien la guarda, el lienzo solo la pinta ----
 
     public Optional<Selection> selection() {
-        return Optional.ofNullable(selection);
-    }
-
-    public void setSelection(Selection selection) {
-        this.selection = selection;
-        repaint();
-    }
-
-    public void clearSelection() {
-        selection = null;
-        repaint();
+        return editor.selection();
     }
 
     @Override
@@ -389,15 +381,11 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
     }
 
     private void extendSelectionTo(int x, int y) {
-        if (selectionAnchor == null) {
-            return;
-        }
         PageScorePainter.hitTest(editor.score(), viewport(), x, y).ifPresent(hit -> {
-            if (hit.track() != selectionAnchor.track()) {
+            if (hit.track() != editor.cursor().track()) {
                 return;
             }
-            setSelection(Selection.of(
-                    selectionAnchor, selectionAnchor.at(hit.measure(), hit.beat()), selectingWholeMeasures));
+            editor.whileExtendingSelection(() -> editor.moveTo(hit.measure(), hit.beat(), hit.string()));
         });
     }
 
