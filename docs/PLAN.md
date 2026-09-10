@@ -337,8 +337,18 @@ partitura; la cuarta, el corpus; la quinta, en curso, los diálogos.
 | F · `ScoreDocumentTest` sin las Preferences reales; tests de Preferences serializados | `test/metronomo-y-documento-sin-flakiness` | #172 | mergeado |
 | G · separar «Tipo» de acorde en extensión, alteraciones y «add» (toca nombrado, diagramas y formatos GP) | — | — | anotado, pieza grande |
 | G · botones de ayuda «?» y «Aplicar» en los diálogos | — | — | descartado: no hay ayuda que mostrar |
-| H · auditoría visual fresca de toda la app tras los 61 PRs | — | — | en curso |
-| H · barras de unión inclinadas como GP5, con «Forzar barras horizontales» por pista | — | — | en curso |
+| H · auditoría visual fresca de toda la app tras los 61 PRs (diez hallazgos, más quince de la sub-auditoría de ventana) | — | — | hecha, no se commitea |
+| H · barras de unión inclinadas, con «Forzar barras horizontales» por pista | `feat/barras-de-union-inclinadas-como-gp5` | #174 | mergeado |
+| H · la vista previa ASCII se verifica con el diálogo real (era artefacto del fixture) | `fix/la-vista-previa-ascii-muestra-la-tablatura` | #175 | mergeado |
+| H · mover el cursor limpia la selección, Shift extiende, Ctrl+A se pinta | `fix/la-seleccion-se-limpia-al-mover-el-cursor` | #176 | mergeado |
+| H · la mesa muestra puerto y canal con dos dígitos y el instrumento entero | `fix/la-mesa-muestra-los-canales-y-el-instrumento-enteros` | #177 | mergeado |
+| H · textos de efecto sin pisar el traste, marcador de 8×12, staccato opuesto a la plica | `fix/textos-de-efecto-marcador-y-staccato-como-gp5` | #178 | mergeado |
+| H · diapasón y teclado cerrados por defecto con estado recordado; Escalas con Do mayor | `fix/valores-iniciales-como-gp5` | #179 | mergeado |
+| H · tildes y eñes en 107 literales de 47 archivos, con guardián | `fix/tildes-en-los-textos-de-la-interfaz` | #180 | mergeado |
+| F · la grilla de percusión fija su tamaño de celda (flaky bajo la suite paralela) | `test/la-grilla-de-percusion-sin-flakiness` | #181 | mergeado |
+| H · ningún diálogo supera la pantalla; Configurar página y MIDI enteros; MIDI sin `JOptionPane` dependiente del locale | `fix/configurar-pagina-y-midi-entran-en-pantalla` | #182 | mergeado |
+| H · palanca con sus seis tipos y códigos GP5 exactos; opciones de let ring/palm mute/dinámica con título y foco propios | `fix/palanca-con-sus-tipos-y-opciones-por-pestana` | #183 | mergeado |
+| F · guardián: todo test que mute el look and feel lleva `@Isolated` | `test/los-tests-que-instalan-un-tema-corren-aislados` | #184 | en CI |
 | G · «Forzar barras horizontales» (pide barras inclinadas, pieza grande de render) | — | — | anotado |
 
 Lo que queda anotado para después: digitación de mano derecha como botón
@@ -347,14 +357,21 @@ GP5 que no se distinguen, `doubleBar` y `tuplet` en Java2D por ser sub-píxel en
 Bravura, los valores predefinidos del combo de zoom (el manual no los lista), y
 la fuente del dígito de traste, que la resolución del manual no permite afirmar.
 
-**Estado (2026-09-11, madrugada):** 61 PRs de la etapa (#112–#172) en `main`,
-CI verde, ~2920 tests. Cinco auditorías con oráculo externo agotadas: uso real,
-ventana, partitura, corpus real y diálogos. Tres auditorías hechas, todas con oráculo externo: uso
+**Estado (2026-09-11):** 72 PRs de la etapa (#112–#184) en `main`, CI verde,
+~2970 tests. Seis auditorías con oráculo externo agotadas: uso real, ventana,
+partitura, corpus real, diálogos y la pasada fresca tras los 61 PRs. Tres auditorías hechas, todas con oráculo externo: uso
 real de los 15 capítulos del manual (harness que corre en el CI bajo Xvfb),
 visual zona por zona y de la partitura contra las capturas del manual, medidas
 en píxeles. Lo que las tres encontraron está cerrado o anotado arriba.
 
-**Lo que enseñó esta tanda:** un worker que termina sin cambios pierde su
+**Lo que enseñó la sexta tanda:** una pasada fresca después de una tanda grande
+encuentra regresiones que ninguna auditoría anterior podía ver (la mesa nueva
+escondía los dígitos, las cajas de grupo enterraron botones); el `JOptionPane`
+saca sus botones del locale de la JVM y el runner no tiene español; y la suite
+en una sola JVM en paralelo castiga a cualquier componente que mida contra
+`UIManager` en su layout.
+
+**Lo que enseñó la quinta tanda:** un worker que termina sin cambios pierde su
 worktree, y retomado por mensaje trabaja en el checkout principal: se lanza uno
 nuevo. Un worker se negó con razón a implementar las dinámicas escritas porque
 el manual dice lo contrario: el oráculo manda sobre el brief. Dos PRs se lastimaron por comandos encadenados sin condición: uno se mergeó con
