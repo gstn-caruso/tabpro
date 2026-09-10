@@ -7,7 +7,6 @@ import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.Track;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.geom.Ellipse2D;
 
 /** La notacion propia de percusion: cada linea es un sonido y la cabeza cambia de forma segun
  * de que sonido se trata (platillos con X, panderetas y afines con rombo, el resto con ovalo). */
@@ -41,7 +40,7 @@ final class PercussionPainter {
         switch (shapeFor(note.fret())) {
             case CROSS -> paintGlyphNotehead(g, centerX, y, MusicFont.noteheadXBlack());
             case DIAMOND -> paintGlyphNotehead(g, centerX, y, MusicFont.noteheadDiamondBlack());
-            default -> g.fill(new Ellipse2D.Double(centerX - RADIUS, y - RADIUS, RADIUS * 2.0, RADIUS * 2.0));
+            default -> paintGlyphNotehead(g, centerX, y, MusicFont.noteheadBlack());
         }
     }
 

@@ -38,6 +38,15 @@ class PercussionNoteheadPaintingTest {
         assertGlyphAt(TAMBOURINE, MusicFont.noteheadDiamondBlack());
     }
 
+    /** 38 = "Caja acustica": shapeFor no la reconoce ni como platillo ni como pandereta, asi que
+     * cae en el ovalo comun. */
+    private static final int ACOUSTIC_SNARE = 38;
+
+    @Test
+    void anythingElseGetsTheOrdinaryBlackNoteheadGlyph() {
+        assertGlyphAt(ACOUSTIC_SNARE, MusicFont.noteheadBlack());
+    }
+
     private static void assertGlyphAt(int sound, String glyph) {
         Note note = new Note(1, sound);
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), note)));
