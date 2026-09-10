@@ -323,6 +323,19 @@ class FretboardViewTest {
         assertEquals(Optional.of(new Note(2, 0)), view.caretNote());
     }
 
+    @Test
+    void theEnterKeyNotifiesTheNoteUnderTheCaret() {
+        FretboardView view = sized(new FretboardView());
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        pressShortcut(view, KeyStroke.getKeyStroke("RIGHT"));
+        List<Note> activated = new java.util.ArrayList<>();
+        view.onCaretActivated(activated::add);
+
+        pressShortcut(view, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals(List.of(new Note(1, 1)), activated);
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));

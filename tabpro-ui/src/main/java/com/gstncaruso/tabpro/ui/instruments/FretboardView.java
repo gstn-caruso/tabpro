@@ -56,6 +56,8 @@ public final class FretboardView extends JComponent implements AccessibleControl
     private Optional<Note> hovered = Optional.empty();
     private int caretString = 1;
     private int caretFret = 0;
+    private Consumer<Note> onCaretActivated = note -> {
+    };
 
     public FretboardView() {
         setOpaque(true);
@@ -76,6 +78,23 @@ public final class FretboardView extends JComponent implements AccessibleControl
         bindCaretMove(inputMap, actionMap, "LEFT", 0, -1);
         bindCaretMove(inputMap, actionMap, "DOWN", 1, 0);
         bindCaretMove(inputMap, actionMap, "UP", -1, 0);
+        bindCaretActivation(inputMap, actionMap, "ENTER");
+    }
+
+    private void bindCaretActivation(InputMap inputMap, ActionMap actionMap, String keyStroke) {
+        String name = "fretboard.activate." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                caretNote().ifPresent(onCaretActivated);
+            }
+        });
+    }
+
+    /** Lo que se llama, con la nota bajo el caret, cuando Enter o Espacio lo activan. */
+    public void onCaretActivated(Consumer<Note> listener) {
+        this.onCaretActivated = listener;
     }
 
     private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int stringDelta, int fretDelta) {
