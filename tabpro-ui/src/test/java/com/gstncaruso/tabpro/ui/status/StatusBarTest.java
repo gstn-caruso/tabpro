@@ -1,12 +1,17 @@
 package com.gstncaruso.tabpro.ui.status;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import java.awt.Component;
+import java.awt.Container;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import org.junit.jupiter.api.Test;
 
 class StatusBarTest {
@@ -63,5 +68,35 @@ class StatusBarTest {
 
         assertEquals("001 : 001", bar.positionText());
         assertEquals("Bajo", bar.trackNameText());
+    }
+
+    @Test
+    void thePagePanelHasAnAccessibleNameAndASunkenBorder() {
+        StatusBar bar = new StatusBar(new Editor(Score.blank()));
+
+        assertHasASunkenPanel(bar, "Página");
+    }
+
+    private static void assertHasASunkenPanel(Container root, String accessibleName) {
+        JLabel label = findLabelByAccessibleName(root, accessibleName);
+        assertNotNull(label, "no se encontro ningun panel llamado " + accessibleName);
+        assertNotNull(label.getParent(), accessibleName + " no esta dentro de un panel");
+        assertNotNull(((JPanel) label.getParent()).getBorder(), accessibleName + " no tiene borde hundido");
+    }
+
+    private static JLabel findLabelByAccessibleName(Container root, String accessibleName) {
+        for (Component child : root.getComponents()) {
+            if (child instanceof JLabel label
+                    && accessibleName.equals(label.getAccessibleContext().getAccessibleName())) {
+                return label;
+            }
+            if (child instanceof Container container) {
+                JLabel found = findLabelByAccessibleName(container, accessibleName);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 }
