@@ -11,7 +11,10 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -25,6 +28,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 /**
  * La zona (2) del asistente de percusion: un pentagrama en miniatura donde cada
@@ -44,6 +48,7 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
     private boolean preferElectric;
     private Optional<PercussionLine> hovered = Optional.empty();
     private PercussionLine caret = PercussionLine.values()[0];
+    private boolean showsFocusRing;
 
     /** Para geometria y tests: sin acciones al clickear. */
     public PercussionStaffPicker() {
@@ -65,6 +70,23 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
         trackTheMouse();
         installClicking(onPlay, onAdd);
         installKeyboardShortcuts(onPlay, onAdd);
+        installFocusRing();
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
     }
 
     @Override
@@ -205,6 +227,23 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
 
         paintStaffLines(g);
         paintSounds(g);
+        if (showsFocusRing) {
+            paintCaretRing(g);
+        }
+    }
+
+    private void paintCaretRing(Graphics2D g) {
+        int x = getWidth() / 2;
+        int y = yOf(caret);
+        g.setColor(focusRingColor());
+        g.setStroke(new BasicStroke(2));
+        int radius = NOTE_RADIUS + 3;
+        g.drawOval(x - radius, y - radius, radius * 2, radius * 2);
+    }
+
+    private Color focusRingColor() {
+        Color fromLookAndFeel = UIManager.getColor("Component.focusColor");
+        return fromLookAndFeel != null ? fromLookAndFeel : ScoreColors.ACCENT;
     }
 
     private void paintStaffLines(Graphics2D g) {

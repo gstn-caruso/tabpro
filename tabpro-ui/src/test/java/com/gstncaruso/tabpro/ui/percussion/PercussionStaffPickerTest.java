@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -154,5 +157,41 @@ class PercussionStaffPickerTest {
         pressShortcut(picker, KeyStroke.getKeyStroke("SPACE"));
 
         assertEquals(List.of(PercussionLine.HI_HAT), added);
+    }
+
+    @Test
+    void paintsAVisibleCaretRingWhenItGetsFocus() {
+        PercussionStaffPicker picker = sized();
+        BufferedImage withoutFocus = paint(picker);
+
+        gainFocus(picker);
+        BufferedImage withFocus = paint(picker);
+
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+    }
+
+    private static void gainFocus(PercussionStaffPicker picker) {
+        for (var listener : picker.getFocusListeners()) {
+            listener.focusGained(new FocusEvent(picker, FocusEvent.FOCUS_GAINED));
+        }
+    }
+
+    private static BufferedImage paint(PercussionStaffPicker picker) {
+        BufferedImage image = new BufferedImage(picker.getWidth(), picker.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = image.createGraphics();
+        picker.paint(g);
+        g.dispose();
+        return image;
+    }
+
+    private static boolean differsSomewhere(BufferedImage a, BufferedImage b) {
+        for (int x = 0; x < a.getWidth(); x++) {
+            for (int y = 0; y < a.getHeight(); y++) {
+                if (a.getRGB(x, y) != b.getRGB(x, y)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
