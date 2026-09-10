@@ -30,12 +30,7 @@ public final class Icons {
     }
 
     public static Icon save() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new RoundRectangle2D.Double(size * 0.15, size * 0.15, size * 0.7, size * 0.7, 3, 3));
-            graphics.fill(new Rectangle2D.Double(size * 0.32, size * 0.15, size * 0.36, size * 0.24));
-            graphics.draw(new Rectangle2D.Double(size * 0.3, size * 0.55, size * 0.4, size * 0.3));
-        });
+        return svgIcon("device-floppy");
     }
 
     public static Icon print() {
