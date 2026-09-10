@@ -7,7 +7,6 @@ import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
-import com.gstncaruso.tabpro.ui.instruments.FretboardDisplayMode;
 import com.gstncaruso.tabpro.ui.instruments.FretboardType;
 import com.gstncaruso.tabpro.ui.instruments.KeyboardDisplayMode;
 import com.gstncaruso.tabpro.ui.instruments.NoteNameMode;
@@ -30,7 +29,6 @@ public final class Labels {
             case Scale scale -> scale.name();
             case Tuning tuning -> tuning.name() + " (" + stringLetters(tuning) + ")";
             case Dynamic dynamic -> dynamic.symbol();
-            case FretboardDisplayMode fretboardDisplayMode -> fretboardDisplayMode.label();
             case NoteNameMode noteNameMode -> noteNameMode.label();
             case ScaleLabelMode scaleLabelMode -> scaleLabelMode.label();
             case FretboardType fretboardType -> fretboardType.label();

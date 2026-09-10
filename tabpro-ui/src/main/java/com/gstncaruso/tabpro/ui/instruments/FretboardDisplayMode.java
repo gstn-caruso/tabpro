@@ -9,13 +9,13 @@ import java.util.Optional;
 import java.util.Set;
 
 public enum FretboardDisplayMode {
-    ONLY_BEAT("Solo el beat") {
+    ONLY_BEAT {
         @Override
         public FretMarks marks(BeatLocation location, int fretCount, Optional<Scale> scale) {
             return FretMarks.of(positionsOf(location.beat()), Set.of());
         }
     },
-    BEAT_AND_MEASURE("Beat y compás") {
+    BEAT_AND_MEASURE {
         @Override
         public FretMarks marks(BeatLocation location, int fretCount, Optional<Scale> scale) {
             Set<FretPosition> ofMeasure = new HashSet<>();
@@ -25,7 +25,7 @@ public enum FretboardDisplayMode {
             return FretMarks.of(positionsOf(location.beat()), ofMeasure);
         }
     },
-    BEAT_AND_CHORD("Beat y diagrama de acorde") {
+    BEAT_AND_CHORD {
         @Override
         public FretMarks marks(BeatLocation location, int fretCount, Optional<Scale> scale) {
             Set<FretPosition> ofChord =
@@ -33,14 +33,14 @@ public enum FretboardDisplayMode {
             return FretMarks.of(positionsOf(location.beat()), ofChord);
         }
     },
-    BEAT_AND_NEXT_BEAT("Beat y beat siguiente") {
+    BEAT_AND_NEXT_BEAT {
         @Override
         public FretMarks marks(BeatLocation location, int fretCount, Optional<Scale> scale) {
             Set<FretPosition> ofNext = location.nextBeat().map(FretboardDisplayMode::positionsOf).orElse(Set.of());
             return FretMarks.of(positionsOf(location.beat()), ofNext);
         }
     },
-    BEAT_AND_SCALE("Beat y escala") {
+    BEAT_AND_SCALE {
         @Override
         public FretMarks marks(BeatLocation location, int fretCount, Optional<Scale> scale) {
             Set<FretPosition> ofScale = scale
@@ -49,16 +49,6 @@ public enum FretboardDisplayMode {
             return FretMarks.of(positionsOf(location.beat()), ofScale);
         }
     };
-
-    private final String label;
-
-    FretboardDisplayMode(String label) {
-        this.label = label;
-    }
-
-    public String label() {
-        return label;
-    }
 
     public abstract FretMarks marks(BeatLocation location, int fretCount, Optional<Scale> scale);
 

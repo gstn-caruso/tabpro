@@ -205,6 +205,15 @@ class LabelsTest {
         assertEquals("Solo el beat", Labels.of(KeyboardDisplayMode.ONLY_BEAT));
     }
 
+    @ParameterizedTest
+    @EnumSource(FretboardDisplayMode.class)
+    void everyFretboardDisplayModeHasSpanishAndEnglishText(FretboardDisplayMode value) {
+        String key = "domain.FretboardDisplayMode." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
     @Test
     void translatesTheOrientationToItsSpanishName() {
         assertEquals("Vertical", Labels.of(Orientation.PORTRAIT));
