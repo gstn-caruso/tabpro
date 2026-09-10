@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.toolbar;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
+import com.gstncaruso.tabpro.ui.score.ZoomHolder;
 import com.gstncaruso.tabpro.ui.theme.Palette;
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
@@ -24,15 +25,17 @@ public final class ToolBars {
 
     private final Commands commands;
     private final Editor editor;
+    private final ZoomHolder zoomHolder;
     private final JPanel rows = new JPanel();
     final JToolBar documentToolBar;
     final JToolBar structureToolBar;
     final JToolBar notationToolBar;
     final JToolBar effectsToolBar;
 
-    public ToolBars(Editor editor, Commands commands) {
+    public ToolBars(Editor editor, Commands commands, ZoomHolder zoomHolder) {
         this.commands = commands;
         this.editor = editor;
+        this.zoomHolder = zoomHolder;
         documentToolBar = leftAligned(documentRow());
         structureToolBar = leftAligned(structureRow());
         notationToolBar = leftAligned(notationRow());
@@ -138,7 +141,7 @@ public final class ToolBars {
         bar.addSeparator();
         add(bar, "view.page", "view.parchment", "view.verticalScreen", "view.horizontalScreen");
         bar.addSeparator();
-        add(bar, "view.zoomOut", "view.resetZoom", "view.zoomIn");
+        bar.add(new ZoomSelector(zoomHolder, commands));
         bar.addSeparator();
         add(bar, "view.fretboard", "view.keyboard", "view.mixTable");
         bar.addSeparator();

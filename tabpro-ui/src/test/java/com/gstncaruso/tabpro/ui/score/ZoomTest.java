@@ -40,4 +40,11 @@ class ZoomTest {
     void outStopsAtTheMinimum() {
         assertTrue(new Zoom(Zoom.MIN_PERCENT).out().isAtMinimum());
     }
+
+    @Test
+    void presetsIncludeTheWholeValueAndStayWithinRange() {
+        assertTrue(Zoom.presets().contains(100));
+        assertTrue(Zoom.presets().stream().allMatch(
+                percent -> percent >= Zoom.MIN_PERCENT && percent <= Zoom.MAX_PERCENT));
+    }
 }

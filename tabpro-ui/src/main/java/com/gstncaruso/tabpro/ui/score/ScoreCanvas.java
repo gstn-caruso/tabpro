@@ -33,7 +33,7 @@ import javax.swing.Scrollable;
  * {@link Zoom} y las {@link VisibleTracks} elegidas, y traduce los clics a movimientos del
  * cursor o, arrastrando, a una seleccion multiple.
  */
-public final class ScoreCanvas extends JComponent implements Scrollable, AccessibleControl {
+public final class ScoreCanvas extends JComponent implements Scrollable, AccessibleControl, ZoomHolder {
 
     private static final int FALLBACK_WIDTH = 900;
 
@@ -41,6 +41,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
     private final TrackVisibility visibleTracks;
     private final FocusTraversal focusTraversal;
     private final java.util.List<Runnable> paginationListeners = new java.util.ArrayList<>();
+    private final java.util.List<Runnable> zoomListeners = new java.util.ArrayList<>();
     private final java.util.List<Consumer<ScoreLayout.Hit>> clickListeners = new java.util.ArrayList<>();
     private VisibleNotations visibleNotations = VisibleNotations.both();
     private boolean graysTheInactiveVoice = true;
@@ -168,14 +169,17 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
         repaginate();
     }
 
+    @Override
     public Zoom zoom() {
         return zoom;
     }
 
+    @Override
     public void setZoom(Zoom zoom) {
         this.zoom = zoom;
         revalidate();
         repaint();
+        zoomListeners.forEach(Runnable::run);
     }
 
     public void zoomIn() {
@@ -184,6 +188,12 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
 
     public void zoomOut() {
         setZoom(zoom.out());
+    }
+
+    /** Avisar cuando cambia el zoom, que es lo que muestra el combo de la fila 1. */
+    @Override
+    public void onZoomChange(Runnable listener) {
+        zoomListeners.add(listener);
     }
 
     // ---- Configurar pagina: el papel sobre el que se reparte la partitura ----
