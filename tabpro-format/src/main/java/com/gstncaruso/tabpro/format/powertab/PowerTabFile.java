@@ -277,7 +277,7 @@ public final class PowerTabFile {
     private static TrackSettings settingsOf(PowerTabGuitar guitar, int staffIndex) {
         return new TrackSettings(
                 Track.colorFor(staffIndex), guitar.capo(), TrackSettings.DEFAULT_FRET_COUNT,
-                false, false, false, TrackDisplay.standard());
+                false, false, false, TrackDisplay.standard(), false);
     }
 
     // ---- compases -------------------------------------------------------------

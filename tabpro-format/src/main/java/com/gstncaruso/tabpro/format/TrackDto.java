@@ -40,6 +40,8 @@ public record TrackDto(
         Boolean showTuning,
         Boolean showRhythm,
         String diagrams,
+        Boolean diagramsBelowStandardNotation,
+        Boolean forceChannels11to16,
         List<MeasureDto> measures) {
 
     public static TrackDto from(Track track) {
@@ -73,6 +75,8 @@ public record TrackDto(
                 display.tuningLegend(),
                 display.rhythmOnTablature(),
                 display.diagrams().name(),
+                display.diagramsBelowStandardNotation(),
+                settings.forceChannels11to16(),
                 track.measures().stream().map(MeasureDto::from).toList());
     }
 
@@ -112,7 +116,8 @@ public record TrackDto(
                 orElse(showTablature, true),
                 orElse(showTuning, false),
                 orElse(showRhythm, false),
-                Enums.read(DiagramPlacement.class, diagrams, DiagramPlacement.ABOVE_THE_STAFF));
+                Enums.read(DiagramPlacement.class, diagrams, DiagramPlacement.ABOVE_THE_STAFF),
+                orElse(diagramsBelowStandardNotation, false));
         return new TrackSettings(
                 color == null ? Track.colorFor(index) : ScoreColor.rgb(color),
                 orElse(capo, 0),
@@ -120,7 +125,8 @@ public record TrackDto(
                 isSet(percussion),
                 isSet(twelveString),
                 isSet(banjoFifthString),
-                display);
+                display,
+                isSet(forceChannels11to16));
     }
 
     private static int orElse(Integer value, int fallback) {

@@ -201,7 +201,8 @@ public final class GuitarProFile {
                 header.percussion(),
                 header.twelveString(),
                 header.banjoFifthString(),
-                header.display());
+                header.display(),
+                false);
         return new Track(header.name(), tuning, header.channelIn(channels), settings, usable(measures));
     }
 

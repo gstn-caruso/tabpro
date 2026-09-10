@@ -516,6 +516,31 @@ class ScorePainterTest {
     }
 
     @Test
+    void chordDiagramPaintsBelowTheStaffWhenTheTrackAsksFor() {
+        Measure measure = measureOf(
+                Beat.of(Duration.quarter(), new Note(1, 0)).withEffects(
+                        com.gstncaruso.tabpro.core.model.effects.BeatEffects.none().withChord(
+                                com.gstncaruso.tabpro.core.model.chords.ChordDiagram.named(
+                                        "Do", List.of(-1, 3, 2, 0, 1, 0)))),
+                Beat.of(Duration.quarter(), new Note(1, 1)),
+                Beat.of(Duration.quarter(), new Note(1, 2)),
+                Beat.of(Duration.quarter(), new Note(1, 3)));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure))
+                .mappingSettings(settings -> settings.withDisplay(
+                        settings.display().withDiagramsBelowStandardNotation(true)));
+        Score score = new Score("", 120, List.of(track));
+
+        Painted painted = paint(score, new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        Rectangle beat = painted.layout().beatBounds(0, 0, 0);
+        int x = beat.x + beat.width / 2;
+        int aboveTheStaff = painted.layout().staffTop(0, 0) - 12;
+        int belowTheStaff = painted.layout().staffBottom(0, 0) + 20;
+        assertFalse(painted.hasInkNear(x, aboveTheStaff, 3), "no deberia dibujarse arriba del pentagrama");
+        assertTrue(painted.hasInkNear(x, belowTheStaff, 8), "deberia dibujarse debajo del pentagrama");
+    }
+
+    @Test
     void anIncompleteMeasureThatIsNotBeingEditedIsOutlinedInItsWarningColour() {
         Measure incomplete = measureOf(Beat.of(Duration.quarter(), new Note(1, 0)));
         Measure complete = measureOf(

@@ -177,6 +177,15 @@ class ChannelTest {
         assertEquals(channel.number(), channel.effectChannel());
     }
 
+    /** Con "Forzar canales 11 a 16" activo, el primer par libre arranca en el 11, no en el 1. */
+    @Test
+    void aForcedChannelPairStartsAtEleven() {
+        Channel channel = Channel.playing(25).withNextFreeChannelPairAfter(Set.of(), true);
+
+        assertEquals(11, channel.number());
+        assertEquals(12, channel.effectChannel());
+    }
+
     @Test
     void usingTwoChannelsPerTrackPutsTheEffectChannelNextToTheirs() {
         assertEquals(2, Channel.effectChannelFor(1, true));
