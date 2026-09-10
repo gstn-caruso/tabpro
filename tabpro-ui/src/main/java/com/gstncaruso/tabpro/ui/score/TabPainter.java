@@ -139,7 +139,7 @@ final class TabPainter {
     static void paintMeasureNumber(
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
         boolean complete = track.measure(measureIndex).isComplete();
-        Color color = complete ? ScoreColors.MUTED_INK : ScoreColors.WARNING;
+        Color color = complete ? ScoreColors.MEASURE_NUMBER : ScoreColors.WARNING;
         g.setColor(color);
         g.setFont(ScoreFonts.MEASURE_NUMBER_FONT);
         g.drawString(
