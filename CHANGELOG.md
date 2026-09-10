@@ -1,3 +1,9 @@
+## [0.59.4](https://github.com/gstn-caruso/tabpro/compare/v0.59.3...v0.59.4) (2026-09-10)
+
+### Performance Improvements
+
+* **score:** cada hoja itera sólo sus compases y los acordes bajo el título se cachean con el layout ([#189](https://github.com/gstn-caruso/tabpro/issues/189)) ([134ee1f](https://github.com/gstn-caruso/tabpro/commit/134ee1f0fe973b73cb732931858ced9755d29231))
+
 ## [0.59.3](https://github.com/gstn-caruso/tabpro/compare/v0.59.2...v0.59.3) (2026-09-10)
 
 ### Performance Improvements
