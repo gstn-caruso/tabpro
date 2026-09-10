@@ -681,8 +681,8 @@ final class StaffPainter {
         double centerX = noteCenterX(layout, trackIndex, measureIndex, beatIndex);
         g.setColor(ink);
         switch (beat.duration().value()) {
-            case WHOLE -> fillRestBar(g, layout, trackIndex, measureIndex, centerX, 6, true, ink);
-            case HALF -> fillRestBar(g, layout, trackIndex, measureIndex, centerX, 4, false, ink);
+            case WHOLE -> paintRestGlyph(g, layout, trackIndex, measureIndex, centerX, MusicFont.restWhole(), 6, ink);
+            case HALF -> paintRestGlyph(g, layout, trackIndex, measureIndex, centerX, MusicFont.restHalf(), 4, ink);
             case QUARTER -> paintQuarterRest(g, layout, trackIndex, measureIndex, centerX, ink);
             default -> paintHookedRest(g, layout, trackIndex, measureIndex, centerX,
                     Beaming.beamCount(beat.duration().value()), ink);
@@ -692,14 +692,14 @@ final class StaffPainter {
         }
     }
 
-    private static void fillRestBar(
-            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, double centerX, int step,
-            boolean hanging, Color ink) {
+    private static void paintRestGlyph(
+            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, double centerX, String glyph,
+            int step, Color ink) {
         double y = layout.stepY(trackIndex, measureIndex, step);
-        double height = SPACE * 0.5;
         g.setColor(ink);
-        g.fill(new java.awt.geom.Rectangle2D.Double(
-                centerX - SPACE * 0.6, hanging ? y : y - height, SPACE * 1.2, height));
+        g.setFont(MusicFont.sizedTo(SPACE));
+        double width = g.getFontMetrics().stringWidth(glyph);
+        g.drawString(glyph, (float) (centerX - width / 2), (float) y);
     }
 
     private static void paintQuarterRest(
