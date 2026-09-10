@@ -79,10 +79,6 @@ class MidiPlayerTest {
         withFakeSynth.close();
     }
 
-    /**
-     * El secuenciador tiene que sonar por el mismo receiver que la preview, para que un banco
-     * SoundFont cargado ahi se escuche en la partitura entera y no solo al escribir una nota.
-     */
     @Tag("integracion")
     @Test
     void playingTheTimelineReachesTheSameReceiverAsThePreview() throws InterruptedException {
@@ -108,11 +104,6 @@ class MidiPlayerTest {
         withFakeSynth.close();
     }
 
-    /**
-     * El test que hace falta no es "las tres notas llegaron" sino "no llegaron todas juntas":
-     * el reproductor por defecto de Player las tocaria todas de una, asi que la separacion real
-     * en el tiempo es lo unico que distingue a este puerto de esa implementacion generica.
-     */
     @Tag("integracion")
     @Test
     void soundsASequenceOfNotesInOrderWithRealTimingBetweenThem() throws InterruptedException {
@@ -239,12 +230,6 @@ class MidiPlayerTest {
         assertEquals(new BeatPosition(0, 0, 0), firstBeat.get());
     }
 
-    /**
-     * El test que hace falta no es "el player recibio la orden de saltar" sino "despues de
-     * saltar, lo que suena es el compas pedido": el primer compas es una nota larga que a este
-     * tempo tardaria cuatro segundos en terminar sola; si el salto funciona, la nota del segundo
-     * compas se escucha mucho antes de eso.
-     */
     @Tag("integracion")
     @Test
     void afterSeekingWhatSoundsIsTheRequestedMeasure() throws Exception {
@@ -280,17 +265,6 @@ class MidiPlayerTest {
                 "el segundo compas -de cuatro segundos de largo el primero- tendria que sonar bien antes");
     }
 
-    /**
-     * La reproduccion arma una secuencia por puerto MIDI, con un secuenciador por puerto: el
-     * salto tiene que alcanzarlos a todos, no solo al principal, o el puerto secundario se queda
-     * sonando donde estaba antes de saltar.
-     */
-    /**
-     * El puerto secundario arma su propio secuenciador conectado al sintetizador del sistema, y
-     * en una maquina sin placa de sonido -la CI, por ejemplo- ese secuenciador no existe y el
-     * puerto queda mudo. Para que el test hable del salto y no de si la maquina tiene sonido, se
-     * le inyecta la misma clase de secuenciador suelto que ya usa el puerto principal.
-     */
     @Test
     void seekingReachesEverySequencerNotJustThePrimaryPort() {
         player = new MidiPlayer(sequencer, port -> silentReceiver(), MidiPlayerTest::unconnectedSequencer);
@@ -350,12 +324,6 @@ class MidiPlayerTest {
         assertTrue(player.isPlaying());
     }
 
-    /**
-     * El camino sin ningun banco de sonido, con dos puertos usando cada uno su propio
-     * sintetizador interno: el que mas importa probar de verdad, porque es el de casi todos los
-     * usuarios (y el del CI, que no tiene ningun SoundFont instalado). Corre siempre, sin
-     * Assumptions: apunta el banco directamente a "ningun archivo".
-     */
     @Test
     void withoutAnySoundFontBothPortsStillPlayThroughTheirOwnInternalSynth() {
         SoundFontBank bank = new SoundFontBank(Optional.empty(), FakeSynthesizer::new);
@@ -427,7 +395,6 @@ class MidiPlayerTest {
         return Timeline.of(score);
     }
 
-    /** Un secuenciador que no pide sintetizador: el unico que una maquina sin sonido puede dar. */
     private static Sequencer unconnectedSequencer() {
         try {
             return MidiSystem.getSequencer(false);
