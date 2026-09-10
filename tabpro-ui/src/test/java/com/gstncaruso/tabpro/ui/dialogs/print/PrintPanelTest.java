@@ -57,6 +57,17 @@ class PrintPanelTest {
     }
 
     @Test
+    void centeredDocumentStartsOffAndTravelsToTheSettingsWhenChecked() {
+        PrintPanel panel = new PrintPanel(SEVEN_SHEETS);
+
+        assertFalse(panel.toPrintSettings().centeredDocument());
+
+        panel.centerDocument();
+
+        assertTrue(panel.toPrintSettings().centeredDocument());
+    }
+
+    @Test
     void fitToPageWorksOutTheScaleSoTheFieldStopsBeingEditable() {
         PrintPanel panel = new PrintPanel(SEVEN_SHEETS);
 
