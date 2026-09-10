@@ -179,6 +179,7 @@ public final class ToolBars {
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setToolTipText(tooltipOf(command));
+        button.getAccessibleContext().setAccessibleName(command.label());
         button.setPreferredSize(new Dimension(26, 24));
         button.setMaximumSize(new Dimension(26, 24));
         button.addChangeListener(event -> button.setContentAreaFilled(
