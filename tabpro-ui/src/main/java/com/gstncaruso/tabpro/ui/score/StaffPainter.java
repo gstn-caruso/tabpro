@@ -57,7 +57,6 @@ final class StaffPainter {
 
     private static final BasicStroke THIN = new BasicStroke(1f);
     private static final BasicStroke STEM = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    private static final BasicStroke CLEF = new BasicStroke(1.7f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private static final BasicStroke DOTTED = new BasicStroke(
             1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] {1.5f, 2.5f}, 0f);
     private static final Font OCTAVE_MARK_FONT = ScoreFonts.octaveMarkFont(SPACE);
@@ -88,17 +87,10 @@ final class StaffPainter {
     static void paintClef(Graphics2D g, ScoreLayout layout, Clef clef, int trackIndex, int measureIndex) {
         double x = layout.measureX(measureIndex) + 4.0;
         g.setColor(ScoreColors.INK);
-        if (clef == Clef.TREBLE) {
-            g.setFont(MusicFont.sizedTo(SPACE));
-            g.drawString(MusicFont.trebleClef(), (float) x, layout.staffLineY(trackIndex, measureIndex, 1));
-            return;
-        }
-        g.setStroke(CLEF);
-        double fLineY = layout.staffLineY(trackIndex, measureIndex, 3);
-        g.draw(bassClef(x, fLineY));
-        double dotX = x + 1.85 * SPACE;
-        fill(g, dot(dotX, fLineY - HALF_SPACE, SPACE * 0.17));
-        fill(g, dot(dotX, fLineY + HALF_SPACE, SPACE * 0.17));
+        g.setFont(MusicFont.sizedTo(SPACE));
+        String glyph = clef == Clef.TREBLE ? MusicFont.trebleClef() : MusicFont.bassClef();
+        int line = clef == Clef.TREBLE ? 1 : 3;
+        g.drawString(glyph, (float) x, layout.staffLineY(trackIndex, measureIndex, line));
     }
 
     static void paintTimeSignature(
@@ -761,22 +753,6 @@ final class StaffPainter {
 
     private static void fill(Graphics2D g, Shape shape) {
         g.fill(shape);
-    }
-
-    private static Shape bassClef(double x, double fLineY) {
-        double u = SPACE;
-        double cx = x + 1.05 * u;
-        Path2D clef = new Path2D.Double();
-        clef.moveTo(cx - 0.95 * u, fLineY - 0.35 * u);
-        clef.curveTo(
-                cx - 0.60 * u, fLineY - 1.25 * u,
-                cx + 0.60 * u, fLineY - 1.10 * u,
-                cx + 0.58 * u, fLineY - 0.10 * u);
-        clef.curveTo(
-                cx + 0.56 * u, fLineY + 1.15 * u,
-                cx - 0.30 * u, fLineY + 1.95 * u,
-                cx - 1.20 * u, fLineY + 2.25 * u);
-        return clef;
     }
 
     private record Stem(double x, double rootY, double endY, boolean up) {

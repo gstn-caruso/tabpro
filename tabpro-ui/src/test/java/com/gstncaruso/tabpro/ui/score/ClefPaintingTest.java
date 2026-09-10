@@ -34,6 +34,18 @@ class ClefPaintingTest {
                 "la clave de sol tiene que escribir el glifo gClef apoyado en la linea de Sol");
     }
 
+    @Test
+    void theBassClefIsTheBravuraFClefGlyphAnchoredOnTheFLine() {
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+        ScoreLayout layout = layout();
+
+        StaffPainter.paintClef(lienzo, layout, Clef.BASS, 0, 0);
+
+        int fLine = layout.staffLineY(0, 0, 3);
+        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.bassClef(), new Rectangle(0, fLine - 2, WIDTH, 4)),
+                "la clave de fa tiene que escribir el glifo fClef apoyado en la linea de Fa");
+    }
+
     private static ScoreLayout layout() {
         Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
