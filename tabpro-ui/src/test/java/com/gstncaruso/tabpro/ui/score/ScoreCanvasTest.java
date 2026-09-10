@@ -22,9 +22,11 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Test;
 
 class ScoreCanvasTest {
@@ -332,7 +334,7 @@ class ScoreCanvasTest {
         horizontal.setViewMode(ViewMode.SCREEN_HORIZONTAL);
         JScrollPane pane = new JScrollPane(horizontal);
 
-        javax.swing.SwingUtilities.invokeAndWait(manyMeasures::moveToLastMeasure);
+        SwingUtilities.invokeAndWait(manyMeasures::moveToLastMeasure);
 
         assertEquals(0, pane.getViewport().getViewPosition().x,
                 "sin layout todavia (viewport 0x0) no hay que mover el scroll a un lugar sin sentido");
@@ -352,6 +354,12 @@ class ScoreCanvasTest {
         horizontal.setViewMode(ViewMode.SCREEN_HORIZONTAL);
         JScrollPane pane = paneShowing(horizontal);
 
+        // Frena el EDT antes de que el hilo de fondo encole su aviso, para que quede detras en
+        // la cola: sin esto, en una corrida real (con otros tests moviendo el mismo EDT) el
+        // aviso podria despacharse entre el join() y la asercion, y la prueba seria un flake.
+        CountDownLatch releaseEdt = new CountDownLatch(1);
+        SwingUtilities.invokeLater(() -> await(releaseEdt));
+
         Thread background = new Thread(manyMeasures::moveToLastMeasure);
         background.start();
         background.join();
@@ -359,10 +367,19 @@ class ScoreCanvasTest {
         assertEquals(0, pane.getViewport().getViewPosition().x,
                 "todavia no llego al EDT: el scroll de otro hilo no se puede haber aplicado ya");
 
-        javax.swing.SwingUtilities.invokeAndWait(() -> { });
+        releaseEdt.countDown();
+        SwingUtilities.invokeAndWait(() -> { });
 
         assertTrue(pane.getViewport().getViewPosition().x > 0,
                 "una vez que el EDT proceso la cola, el scroll real tiene que haber llegado");
+    }
+
+    private static void await(CountDownLatch latch) {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /** Treinta compases en Pantalla Horizontal -que nunca envuelve- para que el ultimo quede
