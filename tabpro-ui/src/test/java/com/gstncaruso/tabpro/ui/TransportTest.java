@@ -194,12 +194,12 @@ class TransportTest {
     }
 
     @Test
-    void elMetronomoArrancaConUnVolumenPorDefecto() {
+    void theMetronomeStartsWithADefaultVolume() {
         assertEquals(100, transport.metronomeVolume());
     }
 
     @Test
-    void setMetronomeVolumeCambiaElVolumenSinTocarSiEstaEncendido() {
+    void setMetronomeVolumeChangesTheVolumeWithoutTouchingWhetherItIsOn() {
         transport.toggleMetronome();
 
         transport.setMetronomeVolume(42);
@@ -221,7 +221,7 @@ class TransportTest {
     }
 
     @Test
-    void setMetronomeEnabledPrendeYApagaSinTocarElVolumen() {
+    void setMetronomeEnabledTurnsItOnAndOffWithoutTouchingTheVolume() {
         transport.setMetronomeVolume(42);
 
         transport.setMetronomeEnabled(true);
@@ -283,15 +283,15 @@ class TransportTest {
 
     @Test
     void showsTheNewTempoAfterAMidScoreChange() {
-        Editor editorConCambioDeTempo = new Editor(scoreThatSlowsDownOnItsSecondBeat());
-        Transport transportConCambioDeTempo = new Transport(editorConCambioDeTempo, player, Runnable::run);
-        transportConCambioDeTempo.toggle();
+        Editor editorWithATempoChange = new Editor(scoreThatSlowsDownOnItsSecondBeat());
+        Transport transportWithATempoChange = new Transport(editorWithATempoChange, player, Runnable::run);
+        transportWithATempoChange.toggle();
 
         player.emitBeat(new BeatPosition(0, 0, 0));
-        assertEquals(java.util.OptionalInt.of(120), transportConCambioDeTempo.currentTempoBpm());
+        assertEquals(java.util.OptionalInt.of(120), transportWithATempoChange.currentTempoBpm());
 
         player.emitBeat(new BeatPosition(0, 0, 1));
-        assertEquals(java.util.OptionalInt.of(90), transportConCambioDeTempo.currentTempoBpm());
+        assertEquals(java.util.OptionalInt.of(90), transportWithATempoChange.currentTempoBpm());
     }
 
     @Test
@@ -342,11 +342,11 @@ class TransportTest {
 
     @Test
     void clickingDuringPlaybackAsksThePlayerToJumpToThatTick() {
-        Editor editorDeDosCompases = new Editor(twoMeasureScore());
-        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
-        transportDeDosCompases.toggle();
+        Editor editorWithTwoBars = new Editor(twoMeasureScore());
+        Transport transportWithTwoBars = new Transport(editorWithTwoBars, player, Runnable::run);
+        transportWithTwoBars.toggle();
 
-        transportDeDosCompases.seekTo(1, 0);
+        transportWithTwoBars.seekTo(1, 0);
 
         assertEquals(Long.valueOf(Duration.quarter().ticks() * 4), player.lastSeekTick);
     }
@@ -369,53 +369,53 @@ class TransportTest {
 
     @Test
     void duringPlaybackStepForwardGoesToTheNextMeasureWithoutStopping() {
-        Editor editorDeDosCompases = new Editor(twoMeasureScore());
-        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
-        transportDeDosCompases.toggle();
+        Editor editorWithTwoBars = new Editor(twoMeasureScore());
+        Transport transportWithTwoBars = new Transport(editorWithTwoBars, player, Runnable::run);
+        transportWithTwoBars.toggle();
 
-        transportDeDosCompases.stepForward();
+        transportWithTwoBars.stepForward();
 
-        assertEquals(1, editorDeDosCompases.cursor().measure(), "tiene que saltar al compas siguiente");
+        assertEquals(1, editorWithTwoBars.cursor().measure(), "tiene que saltar al compas siguiente");
         assertEquals(Long.valueOf(Duration.quarter().ticks() * 4), player.lastSeekTick);
-        assertTrue(transportDeDosCompases.isPlaying(), "no se tiene que frenar");
+        assertTrue(transportWithTwoBars.isPlaying(), "no se tiene que frenar");
     }
 
     @Test
     void duringPlaybackStepBackGoesToThePreviousMeasureWithoutStopping() {
-        Editor editorDeDosCompases = new Editor(twoMeasureScore());
-        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
-        transportDeDosCompases.toggle();
-        transportDeDosCompases.stepForward();
+        Editor editorWithTwoBars = new Editor(twoMeasureScore());
+        Transport transportWithTwoBars = new Transport(editorWithTwoBars, player, Runnable::run);
+        transportWithTwoBars.toggle();
+        transportWithTwoBars.stepForward();
 
-        transportDeDosCompases.stepBack();
+        transportWithTwoBars.stepBack();
 
-        assertEquals(0, editorDeDosCompases.cursor().measure(), "tiene que saltar al compas anterior");
+        assertEquals(0, editorWithTwoBars.cursor().measure(), "tiene que saltar al compas anterior");
         assertEquals(Long.valueOf(0), player.lastSeekTick);
-        assertTrue(transportDeDosCompases.isPlaying(), "no se tiene que frenar");
+        assertTrue(transportWithTwoBars.isPlaying(), "no se tiene que frenar");
     }
 
     @Test
     void duringPlaybackStepBackAtTheFirstMeasureStaysThereAndStillSeeks() {
-        Editor editorDeDosCompases = new Editor(twoMeasureScore());
-        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
-        transportDeDosCompases.toggle();
+        Editor editorWithTwoBars = new Editor(twoMeasureScore());
+        Transport transportWithTwoBars = new Transport(editorWithTwoBars, player, Runnable::run);
+        transportWithTwoBars.toggle();
 
-        transportDeDosCompases.stepBack();
+        transportWithTwoBars.stepBack();
 
-        assertEquals(0, editorDeDosCompases.cursor().measure());
+        assertEquals(0, editorWithTwoBars.cursor().measure());
         assertEquals(Long.valueOf(0), player.lastSeekTick);
     }
 
     @Test
     void duringPlaybackStepForwardAtTheLastMeasureStaysThereAndStillSeeks() {
-        Editor editorDeDosCompases = new Editor(twoMeasureScore());
-        Transport transportDeDosCompases = new Transport(editorDeDosCompases, player, Runnable::run);
-        transportDeDosCompases.toggle();
-        transportDeDosCompases.stepForward();
+        Editor editorWithTwoBars = new Editor(twoMeasureScore());
+        Transport transportWithTwoBars = new Transport(editorWithTwoBars, player, Runnable::run);
+        transportWithTwoBars.toggle();
+        transportWithTwoBars.stepForward();
 
-        transportDeDosCompases.stepForward();
+        transportWithTwoBars.stepForward();
 
-        assertEquals(1, editorDeDosCompases.cursor().measure());
+        assertEquals(1, editorWithTwoBars.cursor().measure());
         assertEquals(Long.valueOf(Duration.quarter().ticks() * 4), player.lastSeekTick);
     }
 
