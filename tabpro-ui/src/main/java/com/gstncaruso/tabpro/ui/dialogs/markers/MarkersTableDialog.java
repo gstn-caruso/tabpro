@@ -48,6 +48,12 @@ public final class MarkersTableDialog {
             model.refresh(editor.score());
         });
 
+        goTo.addActionListener(event -> {
+            MarkerList.Positioned positioned = model.rowAt(table.getSelectedRow());
+            editor.moveTo(positioned.measureIndex(), 0, 1);
+            onClose.run();
+        });
+
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
         buttons.add(add);

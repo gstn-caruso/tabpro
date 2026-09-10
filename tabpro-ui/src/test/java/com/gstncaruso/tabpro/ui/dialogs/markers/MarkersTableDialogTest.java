@@ -59,6 +59,23 @@ class MarkersTableDialogTest {
         assertTrue(editor.score().attributesOf(0).marker().isEmpty());
     }
 
+    @Test
+    void goingToTheSelectedRowMovesTheCursorAndCloses() {
+        Editor editor = new Editor(Score.blank());
+        editor.insertMeasure();
+        editor.moveToLastMeasure();
+        editor.setMarker(Marker.named("Estribillo"));
+        editor.moveToFirstMeasure();
+        boolean[] closed = {false};
+
+        JPanel content = MarkersTableDialog.buildContent(editor, () -> closed[0] = true);
+        tableOf(content).setRowSelectionInterval(0, 0);
+        buttonLabeled(content, "Ir a").doClick();
+
+        assertEquals(1, editor.cursor().measure());
+        assertTrue(closed[0]);
+    }
+
     private JTable tableOf(Container root) {
         for (Component component : root.getComponents()) {
             if (component instanceof JTable table) {
