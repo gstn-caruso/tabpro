@@ -22,6 +22,8 @@ import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.StemOverride;
+import com.gstncaruso.tabpro.core.model.effects.Stroke;
+import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -332,6 +334,37 @@ class JsonScoreFilesTest {
     private static Score scoreWithStemOverride(StemOverride stemOverride) {
         Beat beat = Beat.of(Duration.quarter(), new Note(6, 0))
                 .withEffects(com.gstncaruso.tabpro.core.model.effects.BeatEffects.none().withStemOverride(stemOverride));
+        Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
+        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Prueba", 120, List.of(track));
+    }
+
+    @Test
+    void aStrummedStrokeIsStillSavedUnderTheRasgueadoJsonKey(@TempDir Path tempDir) throws IOException {
+        Score score = scoreWithStrummedStroke();
+        Path path = tempDir.resolve("score.tabpro");
+
+        scoreFiles.save(score, path);
+
+        String content = Files.readString(path);
+        assertTrue(content.contains("\"rasgueado\": true"));
+    }
+
+    @Test
+    void aStrokeMarkedRasgueadoInJsonStillLoadsAsStrummed(@TempDir Path tempDir) {
+        Score score = scoreWithStrummedStroke();
+        Path path = tempDir.resolve("score.tabpro");
+        scoreFiles.save(score, path);
+
+        Score loaded = scoreFiles.load(path);
+
+        assertTrue(loaded.track(0).measure(0).beat(0).effects().stroke().orElseThrow().rasgueado());
+    }
+
+    private static Score scoreWithStrummedStroke() {
+        Beat beat = Beat.of(Duration.quarter(), new Note(6, 0)).withEffects(
+                com.gstncaruso.tabpro.core.model.effects.BeatEffects.none()
+                        .withStroke(new Stroke(StrokeDirection.DOWN, NoteValue.THIRTY_SECOND, true)));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         return new Score("Prueba", 120, List.of(track));
