@@ -77,4 +77,25 @@ public final class StringOptionsPanel extends FormPanel {
     public void setStringSelected(int string, boolean selected) {
         strings.get(string - 1).setSelected(selected);
     }
+
+    public JComboBox<ToggleChoice> letRingCombo() {
+        return letRing;
+    }
+
+    public JComboBox<ToggleChoice> palmMuteCombo() {
+        return palmMute;
+    }
+
+    public JComboBox<Dynamic> dynamicCombo() {
+        return dynamic;
+    }
+
+    /** El control que corresponde a esa opcion: donde arranca el foco cuando el menu la pide. */
+    public JComboBox<?> comboFor(StringOptionsDialog.Option option) {
+        return switch (option) {
+            case LET_RING -> letRing;
+            case PALM_MUTE -> palmMute;
+            case DYNAMIC -> dynamic;
+        };
+    }
 }

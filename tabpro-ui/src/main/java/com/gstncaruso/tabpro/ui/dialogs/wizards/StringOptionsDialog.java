@@ -16,6 +16,9 @@ public final class StringOptionsDialog {
     private StringOptionsDialog() {
     }
 
+    /** Cual de las tres opciones pidio el menu: decide el titulo y donde arranca el foco. */
+    public enum Option { LET_RING, PALM_MUTE, DYNAMIC }
+
     public static void show(Component parent, Editor editor) {
         StringOptionsPanel panel = new StringOptionsPanel(editor.currentTrack().stringCount(), editor.currentTrack().measureCount());
 

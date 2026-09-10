@@ -40,4 +40,13 @@ class StringOptionsPanelTest {
         assertTrue(panel.palmMuteChange().isEmpty());
         assertTrue(panel.dynamicChange().isEmpty());
     }
+
+    @Test
+    void cadaOpcionSeñalaSuPropioCombo() {
+        StringOptionsPanel panel = new StringOptionsPanel(6, 4);
+
+        assertEquals(panel.letRingCombo(), panel.comboFor(StringOptionsDialog.Option.LET_RING));
+        assertEquals(panel.palmMuteCombo(), panel.comboFor(StringOptionsDialog.Option.PALM_MUTE));
+        assertEquals(panel.dynamicCombo(), panel.comboFor(StringOptionsDialog.Option.DYNAMIC));
+    }
 }
