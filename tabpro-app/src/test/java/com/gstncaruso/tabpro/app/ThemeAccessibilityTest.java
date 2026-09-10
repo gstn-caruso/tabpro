@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.app;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.formdev.flatlaf.FlatSystemProperties;
 import java.awt.Color;
@@ -66,5 +67,14 @@ class ThemeAccessibilityTest {
         theme.useAnimations(false);
 
         assertFalse(FlatSystemProperties.getBoolean(FlatSystemProperties.ANIMATION, true));
+    }
+
+    @Test
+    void enablingAnimationsAgainSetsTheFlatLafSystemPropertyBackOn() {
+        theme.useAnimations(false);
+
+        theme.useAnimations(true);
+
+        assertTrue(FlatSystemProperties.getBoolean(FlatSystemProperties.ANIMATION, false));
     }
 }
