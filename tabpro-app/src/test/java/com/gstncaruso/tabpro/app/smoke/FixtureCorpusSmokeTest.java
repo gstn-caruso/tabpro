@@ -76,42 +76,41 @@ class FixtureCorpusSmokeTest {
     }
 
     @Test
-    void unGuitarProSimpleRenderizaTodasSusPaginasEnModoPagina() {
-        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
+    void unGuitarProSimpleCompletaTodoElPipelineDeLaRedPermanente(@TempDir Path tempDir) {
+        ejecutarPipeline(repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5"), tempDir);
+    }
+
+    private void ejecutarPipeline(Path path, Path tempDir) {
         Score score = abrir(path);
+        assertNotNull(score, () -> path.getFileName() + ": abre por el camino real de importacion");
+        assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
 
         List<BufferedImage> paginas = renderizarPaginas(score);
-
         assertFalse(paginas.isEmpty(), () -> path.getFileName() + ": renderiza al menos una pagina en modo Pagina");
+
+        BufferedImage pergamino = renderizarPergamino(score);
+        assertTrue(pergamino.getWidth() > 0 && pergamino.getHeight() > 0,
+                () -> path.getFileName() + ": renderiza en modo Pergamino");
+
+        Score reabiertoGp4 = exportarYReabrirGp4(score, tempDir.resolve("reexportado.gp4"));
+        assertNotNull(reabiertoGp4, () -> path.getFileName() + ": el export a .gp4 se reabre");
+
+        Score reabiertoMidi = exportarYReabrirMidi(score, tempDir.resolve("reexportado.mid"));
+        assertNotNull(reabiertoMidi, () -> path.getFileName() + ": el export a MIDI se reabre");
+
+        Score reabiertoMusicXml = exportarYReabrirMusicXml(score, tempDir.resolve("reexportado.musicxml"));
+        assertNotNull(reabiertoMusicXml, () -> path.getFileName() + ": el export a MusicXML se reabre");
+
+        Score reabiertoTabpro = guardarComoTabproYReabrir(score, tempDir.resolve("reexportado.tabpro"));
+        assertEquals(score, reabiertoTabpro, () -> path.getFileName() + ": el guardado como .tabpro se reabre igual");
     }
 
     private List<BufferedImage> renderizarPaginas(Score score) {
         return ScoreSheets.renderPages(score, Zoom.whole(), PageSetup.defaults());
     }
 
-    @Test
-    void unGuitarProSimpleRenderizaEnModoPergamino() {
-        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
-        Score score = abrir(path);
-
-        BufferedImage pergamino = renderizarPergamino(score);
-
-        assertTrue(pergamino.getWidth() > 0 && pergamino.getHeight() > 0,
-                () -> path.getFileName() + ": renderiza en modo Pergamino");
-    }
-
     private BufferedImage renderizarPergamino(Score score) {
         return ScoreSheets.render(score, ViewMode.PARCHMENT, Zoom.whole(), PageSetup.defaults());
-    }
-
-    @Test
-    void unGuitarProSimpleSeExportaAGp4YSeReabre(@TempDir Path tempDir) {
-        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
-        Score score = abrir(path);
-
-        Score reabierto = exportarYReabrirGp4(score, tempDir.resolve("reexportado.gp4"));
-
-        assertNotNull(reabierto, () -> path.getFileName() + ": el export a .gp4 se reabre");
     }
 
     private Score exportarYReabrirGp4(Score score, Path gp4Path) {
@@ -119,44 +118,14 @@ class FixtureCorpusSmokeTest {
         return exchange.importGuitarPro(gp4Path);
     }
 
-    @Test
-    void unGuitarProSimpleSeExportaAMidiYSeReabre(@TempDir Path tempDir) {
-        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
-        Score score = abrir(path);
-
-        Score reabierto = exportarYReabrirMidi(score, tempDir.resolve("reexportado.mid"));
-
-        assertNotNull(reabierto, () -> path.getFileName() + ": el export a MIDI se reabre");
-    }
-
     private Score exportarYReabrirMidi(Score score, Path midiPath) {
         exchange.exportMidi(score, midiPath);
         return exchange.importMidi(midiPath);
     }
 
-    @Test
-    void unGuitarProSimpleSeExportaAMusicXmlYSeReabre(@TempDir Path tempDir) {
-        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
-        Score score = abrir(path);
-
-        Score reabierto = exportarYReabrirMusicXml(score, tempDir.resolve("reexportado.musicxml"));
-
-        assertNotNull(reabierto, () -> path.getFileName() + ": el export a MusicXML se reabre");
-    }
-
     private Score exportarYReabrirMusicXml(Score score, Path musicXmlPath) {
         exchange.exportMusicXml(score, musicXmlPath);
         return exchange.importMusicXml(musicXmlPath);
-    }
-
-    @Test
-    void unGuitarProSimpleSeGuardaComoTabproYSeReabreIgual(@TempDir Path tempDir) {
-        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
-        Score score = abrir(path);
-
-        Score reabierto = guardarComoTabproYReabrir(score, tempDir.resolve("reexportado.tabpro"));
-
-        assertEquals(score, reabierto, () -> path.getFileName() + ": el guardado como .tabpro se reabre igual");
     }
 
     private Score guardarComoTabproYReabrir(Score score, Path tabproPath) {
