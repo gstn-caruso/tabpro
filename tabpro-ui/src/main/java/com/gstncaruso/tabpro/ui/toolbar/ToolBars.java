@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.toolbar;
 
+import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.theme.Palette;
@@ -22,14 +23,16 @@ import javax.swing.JToolBar;
 public final class ToolBars {
 
     private final Commands commands;
+    private final Editor editor;
     private final JPanel rows = new JPanel();
     final JToolBar documentToolBar;
     final JToolBar structureToolBar;
     final JToolBar notationToolBar;
     final JToolBar effectsToolBar;
 
-    public ToolBars(Commands commands) {
+    public ToolBars(Editor editor, Commands commands) {
         this.commands = commands;
+        this.editor = editor;
         documentToolBar = leftAligned(documentRow());
         structureToolBar = leftAligned(structureRow());
         notationToolBar = leftAligned(notationRow());
@@ -109,9 +112,10 @@ public final class ToolBars {
     }
 
     /**
-     * Guitar Pro 5, manual pagina 14, fila 1: archivo, edicion, pistas, compases, vistas, zoom
-     * y paneles. Copiar y pegar no estan en esta fila del manual; se conservan al final, que es
-     * donde ya vivian antes de este orden.
+     * Guitar Pro 5, manual pagina 14, fila 1: archivo, edicion, pistas, compases, vistas, zoom,
+     * paneles y, al final, el selector de pista («‹ 1 2 3 4 5 ›»). Copiar y pegar no estan en
+     * esta fila del manual; se conservan antes del selector, que es donde ya vivian antes de
+     * este orden.
      */
     private JToolBar documentRow() {
         JToolBar bar = emptyBar();
@@ -139,6 +143,8 @@ public final class ToolBars {
         add(bar, "view.fretboard", "view.keyboard", "view.mixTable");
         bar.addSeparator();
         add(bar, "edit.copy", "edit.paste");
+        bar.addSeparator();
+        bar.add(new TrackSelector(editor, commands));
         return bar;
     }
 
