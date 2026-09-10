@@ -14,13 +14,21 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
 import java.util.OptionalInt;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 /**
  * Un cuadradito por compas y por pista: marcado si esa pista toca algo ahi, rodeado de un borde
@@ -46,9 +54,12 @@ public final class MeasureGrid extends JComponent implements AccessibleControl {
 
     private final Editor editor;
     private OptionalInt playingMeasure = OptionalInt.empty();
+    private Cell caret;
+    private boolean showsFocusRing;
 
     public MeasureGrid(Editor editor) {
         this.editor = editor;
+        this.caret = new Cell(editor.cursor().track(), editor.cursor().measure());
         setOpaque(true);
         setBackground(ScoreColors.SURFACE);
         setToolTipText("Grilla de compases");
@@ -59,6 +70,73 @@ public final class MeasureGrid extends JComponent implements AccessibleControl {
                 hitTest(e.getX(), e.getY()).ifPresent(MeasureGrid.this::goTo);
             }
         });
+        installKeyboardShortcuts();
+        installFocusRing();
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
+    }
+
+    /** Donde esta parado el caret de teclado: no se confunde con el cursor real hasta Enter. */
+    public Cell caret() {
+        return caret;
+    }
+
+    private void installKeyboardShortcuts() {
+        InputMap inputMap = getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = getActionMap();
+        bindCaretMove(inputMap, actionMap, "RIGHT", 0, 1);
+        bindCaretMove(inputMap, actionMap, "LEFT", 0, -1);
+        bindCaretMove(inputMap, actionMap, "DOWN", 1, 0);
+        bindCaretMove(inputMap, actionMap, "UP", -1, 0);
+        bindCaretActivation(inputMap, actionMap, "ENTER");
+    }
+
+    private void bindCaretActivation(InputMap inputMap, ActionMap actionMap, String keyStroke) {
+        String name = "measuregrid.activate." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                goTo(caret);
+            }
+        });
+    }
+
+    private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int trackDelta, int measureDelta) {
+        String name = "measuregrid.caret." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moveCaret(trackDelta, measureDelta);
+            }
+        });
+    }
+
+    private void moveCaret(int trackDelta, int measureDelta) {
+        Score score = editor.score();
+        int track = clampIndex(caret.track() + trackDelta, score.trackCount());
+        int measure = clampIndex(caret.measure() + measureDelta, score.measureCount());
+        caret = new Cell(track, measure);
+        repaint();
+    }
+
+    private static int clampIndex(int candidate, int count) {
+        return Math.max(0, Math.min(count - 1, candidate));
     }
 
     @Override
@@ -124,6 +202,21 @@ public final class MeasureGrid extends JComponent implements AccessibleControl {
         }
         outlineCursorCell(g, score);
         playingMeasure.ifPresent(measure -> outlinePlayingColumn(g, score, measure));
+        if (showsFocusRing) {
+            outlineCaretCell(g);
+        }
+    }
+
+    private void outlineCaretCell(Graphics2D g) {
+        Rectangle cell = cellBounds(caret.track(), caret.measure());
+        g.setColor(focusRingColor());
+        g.setStroke(new BasicStroke(2));
+        g.drawRect(cell.x + 1, cell.y + 1, cell.width - 3, cell.height - 3);
+    }
+
+    private Color focusRingColor() {
+        Color fromLookAndFeel = UIManager.getColor("Component.focusColor");
+        return fromLookAndFeel != null ? fromLookAndFeel : ScoreColors.ACCENT;
     }
 
     private void tintPlayingColumn(Graphics2D g, Score score, int measure) {

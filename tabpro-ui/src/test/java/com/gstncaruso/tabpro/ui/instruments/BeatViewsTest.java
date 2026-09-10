@@ -13,8 +13,11 @@ import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class BeatViewsTest {
@@ -176,6 +179,47 @@ class BeatViewsTest {
         clickKey(views, 64);
 
         assertEquals(1, editor.currentBeat().notes().size());
+    }
+
+    @Test
+    void pressingEnterOnTheFretboardWritesTheNoteUnderTheCaretLikeAClickWould() {
+        Editor editor = new Editor(Score.blank());
+        BeatViews views = new BeatViews(editor, new RecordingPlayer());
+        FretboardView fretboard = views.fretboard();
+        fretboard.setSize(900, FretboardView.PREFERRED_HEIGHT);
+        pressShortcut(fretboard, KeyStroke.getKeyStroke("RIGHT"));
+
+        pressShortcut(fretboard, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals(List.of(new Note(1, 1)), editor.currentBeat().notes());
+    }
+
+    @Test
+    void pressingEnterOnTheKeyboardWritesTheKeyUnderTheCaretLikeAClickWould() {
+        Editor editor = new Editor(Score.blank());
+        BeatViews views = new BeatViews(editor, new RecordingPlayer());
+        KeyboardView keyboard = views.keyboard();
+        keyboard.setSize(900, KeyboardView.PREFERRED_HEIGHT);
+        moveCaretTo(keyboard, 60);
+
+        pressShortcut(keyboard, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals(
+                List.of(60),
+                editor.currentBeat().notes().stream()
+                        .map(note -> editor.currentTrack().tuning().pitchOf(note).midiNumber())
+                        .toList());
+    }
+
+    private static void moveCaretTo(KeyboardView keyboard, int midiNumber) {
+        for (int key = KeyboardView.LOWEST; key < midiNumber; key++) {
+            pressShortcut(keyboard, KeyStroke.getKeyStroke("RIGHT"));
+        }
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 
     /** El gesto real: un clic en el centro de esa tecla del piano. */

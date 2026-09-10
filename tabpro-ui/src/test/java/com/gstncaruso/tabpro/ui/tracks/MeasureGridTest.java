@@ -6,9 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.Optional;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class MeasureGridTest {
@@ -87,6 +93,104 @@ class MeasureGridTest {
         MeasureGrid grid = new MeasureGrid(editor);
 
         assertTrue(grid.hitTest(grid.cellBounds(1, 1).x + 2, grid.cellBounds(1, 1).y + 2).isPresent());
+    }
+
+    @Test
+    void theRightArrowKeyMovesTheCaretToTheNextMeasure() {
+        Editor editor = editorWithTwoTracksAndThreeMeasures();
+        MeasureGrid grid = new MeasureGrid(editor);
+
+        pressShortcut(grid, KeyStroke.getKeyStroke("RIGHT"));
+
+        assertEquals(new MeasureGrid.Cell(0, 1), grid.caret());
+    }
+
+    @Test
+    void theLeftArrowKeyMovesTheCaretToThePreviousMeasure() {
+        Editor editor = editorWithTwoTracksAndThreeMeasures();
+        editor.moveTo(2, 0, 1);
+        MeasureGrid grid = new MeasureGrid(editor);
+
+        pressShortcut(grid, KeyStroke.getKeyStroke("LEFT"));
+
+        assertEquals(new MeasureGrid.Cell(0, 1), grid.caret());
+    }
+
+    @Test
+    void theDownArrowKeyMovesTheCaretToTheNextTrack() {
+        Editor editor = editorWithTwoTracksAndThreeMeasures();
+        MeasureGrid grid = new MeasureGrid(editor);
+
+        pressShortcut(grid, KeyStroke.getKeyStroke("DOWN"));
+
+        assertEquals(new MeasureGrid.Cell(1, 0), grid.caret());
+    }
+
+    @Test
+    void theUpArrowKeyMovesTheCaretToThePreviousTrack() {
+        Editor editor = editorWithTwoTracksAndThreeMeasures();
+        editor.selectTrack(1);
+        MeasureGrid grid = new MeasureGrid(editor);
+
+        pressShortcut(grid, KeyStroke.getKeyStroke("UP"));
+
+        assertEquals(new MeasureGrid.Cell(0, 0), grid.caret());
+    }
+
+    @Test
+    void theEnterKeyMovesTheCursorToTheCaretLikeAClickWould() {
+        Editor editor = editorWithTwoTracksAndThreeMeasures();
+        MeasureGrid grid = new MeasureGrid(editor);
+        pressShortcut(grid, KeyStroke.getKeyStroke("RIGHT"));
+        pressShortcut(grid, KeyStroke.getKeyStroke("DOWN"));
+
+        pressShortcut(grid, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals(1, editor.cursor().track());
+        assertEquals(1, editor.cursor().measure());
+    }
+
+    @Test
+    void paintsAVisibleCaretRingWhenItGetsFocus() {
+        Editor editor = editorWithTwoTracksAndThreeMeasures();
+        MeasureGrid grid = new MeasureGrid(editor);
+        grid.setSize(grid.getPreferredSize());
+        BufferedImage withoutFocus = paint(grid);
+
+        gainFocus(grid);
+        BufferedImage withFocus = paint(grid);
+
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+    }
+
+    private static void gainFocus(MeasureGrid grid) {
+        for (var listener : grid.getFocusListeners()) {
+            listener.focusGained(new FocusEvent(grid, FocusEvent.FOCUS_GAINED));
+        }
+    }
+
+    private static BufferedImage paint(MeasureGrid grid) {
+        BufferedImage image = new BufferedImage(grid.getWidth(), grid.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = image.createGraphics();
+        grid.paint(g);
+        g.dispose();
+        return image;
+    }
+
+    private static boolean differsSomewhere(BufferedImage a, BufferedImage b) {
+        for (int x = 0; x < a.getWidth(); x++) {
+            for (int y = 0; y < a.getHeight(); y++) {
+                if (a.getRGB(x, y) != b.getRGB(x, y)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 
     private static MouseEvent pressAt(MeasureGrid grid, int x, int y) {

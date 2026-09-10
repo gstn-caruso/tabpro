@@ -1,16 +1,22 @@
 package com.gstncaruso.tabpro.ui.instruments;
 
+import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.core.notation.PitchName;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -19,9 +25,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.function.IntConsumer;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 /** El teclado, con las teclas del beat en el que estas parado hundidas. */
 public final class KeyboardView extends JComponent implements AccessibleControl {
@@ -43,6 +55,10 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
     private KeyboardDisplayMode displayMode = KeyboardDisplayMode.ONLY_BEAT;
     private Optional<Scale> scale = Optional.empty();
     private OptionalInt hovered = OptionalInt.empty();
+    private int caretKey = LOWEST;
+    private IntConsumer onCaretActivated = key -> {
+    };
+    private boolean showsFocusRing;
 
     public KeyboardView() {
         setOpaque(true);
@@ -53,6 +69,72 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         setToolTipText("Teclado");
         getAccessibleContext().setAccessibleName("Teclado");
         trackTheMouse();
+        installKeyboardShortcuts();
+        installFocusRing();
+        updateCaretAccessibleDescription();
+    }
+
+    private void updateCaretAccessibleDescription() {
+        getAccessibleContext().setAccessibleDescription(PitchName.of(new Pitch(caretKey)).textWithOctave());
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
+    }
+
+    private void installKeyboardShortcuts() {
+        InputMap inputMap = getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = getActionMap();
+        bindCaretMove(inputMap, actionMap, "RIGHT", 1);
+        bindCaretMove(inputMap, actionMap, "LEFT", -1);
+        bindCaretActivation(inputMap, actionMap, "ENTER");
+        bindCaretActivation(inputMap, actionMap, "SPACE");
+    }
+
+    private void bindCaretActivation(InputMap inputMap, ActionMap actionMap, String keyStroke) {
+        String name = "keyboard.activate." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onCaretActivated.accept(caretKey);
+            }
+        });
+    }
+
+    /** Lo que se llama, con la tecla bajo el caret, cuando Enter o Espacio lo activan. */
+    public void onCaretActivated(IntConsumer listener) {
+        this.onCaretActivated = listener;
+    }
+
+    private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int delta) {
+        String name = "keyboard.caret." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                caretKey = Math.max(LOWEST, Math.min(HIGHEST, caretKey + delta));
+                updateCaretAccessibleDescription();
+                repaint();
+            }
+        });
+    }
+
+    /** La tecla que hay bajo el caret de teclado ahora mismo. */
+    public OptionalInt caretKey() {
+        return OptionalInt.of(caretKey);
     }
 
     @Override
@@ -195,6 +277,22 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         paintKeys(g, marks, true);
         paintKeys(g, marks, false);
         paintHover(g);
+        if (showsFocusRing) {
+            paintCaret(g);
+        }
+    }
+
+    private void paintCaret(Graphics2D g) {
+        keyBounds(caretKey).ifPresent(bounds -> {
+            g.setColor(focusRingColor());
+            g.setStroke(new BasicStroke(2f));
+            g.drawRect(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2);
+        });
+    }
+
+    private Color focusRingColor() {
+        Color fromLookAndFeel = UIManager.getColor("Component.focusColor");
+        return fromLookAndFeel != null ? fromLookAndFeel : InstrumentColors.HOVER;
     }
 
     private void paintKeys(Graphics2D g, KeyMarks marks, boolean white) {
