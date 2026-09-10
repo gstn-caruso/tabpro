@@ -1,3 +1,10 @@
+## [0.36.0](https://github.com/gstn-caruso/tabpro/compare/v0.35.0...v0.36.0) (2026-09-10)
+
+### Features
+
+* **preferences:** sección Accesibilidad con tamaño de letra, alto contraste y sin animaciones ([#123](https://github.com/gstn-caruso/tabpro/issues/123)) ([9f4f234](https://github.com/gstn-caruso/tabpro/commit/9f4f234072d29ad5ac09e26887fc64b50b200e11))
+* **ui:** menús y formularios se navegan con Alt+letra ([#124](https://github.com/gstn-caruso/tabpro/issues/124)) ([5e0fae6](https://github.com/gstn-caruso/tabpro/commit/5e0fae607c822f965dc91ff3d57bdcb518468506))
+
 ## [0.35.0](https://github.com/gstn-caruso/tabpro/compare/v0.34.1...v0.35.0) (2026-09-10)
 
 ### Features
