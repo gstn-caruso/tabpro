@@ -32,6 +32,11 @@ public final class MnemonicAssigner {
                 candidates.add(i);
             }
         }
+        for (int i = 0; i < text.length(); i++) {
+            if (Character.isDigit(text.charAt(i))) {
+                candidates.add(i);
+            }
+        }
         return candidates;
     }
 

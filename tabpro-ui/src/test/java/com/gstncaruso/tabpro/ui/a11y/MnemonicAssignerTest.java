@@ -9,8 +9,8 @@ class MnemonicAssignerTest {
     private final MnemonicAssigner assigner = new MnemonicAssigner();
 
     @Test
-    void unTextoSinLetrasNoTieneIndiceLibre() {
-        assertEquals(-1, assigner.chooseIndex("123…"));
+    void unTextoSinLetrasNiDigitosNoTieneIndiceLibre() {
+        assertEquals(-1, assigner.chooseIndex("…"));
     }
 
     @Test
@@ -30,5 +30,14 @@ class MnemonicAssignerTest {
         assigner.reserve('S');
 
         assertEquals(1, assigner.chooseIndex("Salir"));
+    }
+
+    @Test
+    void agotadasLasLetrasCaeEnUnDigitoDelTexto() {
+        for (char letra : "grupode".toCharArray()) {
+            assigner.reserve(letra);
+        }
+
+        assertEquals(9, assigner.chooseIndex("Grupo de 12"));
     }
 }
