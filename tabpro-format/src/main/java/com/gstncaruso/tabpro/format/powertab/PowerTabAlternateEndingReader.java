@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Lee un final alternativo: hereda de "system symbol" (sistema, posicion y un
- * dato de 32 bits) y guarda los numeros de vuelta en la mitad alta de ese
- * dato, un bit por numero. El D.C./D.S. que puede traer el mismo campo
- * (numeros 9, 10 y 11) no tiene destino en el modelo y se ignora.
+ * Reads an alternate ending: inherits from "system symbol" (system, position, and a
+ * 32-bit datum) and stores the round numbers in the upper half of that datum, one bit
+ * per number. The D.C./D.S. that the same field can carry (numbers 9, 10, and 11) has
+ * no place in the model and is ignored.
  */
 final class PowerTabAlternateEndingReader {
 

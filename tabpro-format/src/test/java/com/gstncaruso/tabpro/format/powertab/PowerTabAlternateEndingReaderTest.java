@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/** Replica los valores del alternate_endings.ptb real: vueltas 2a y 3a, y D.C. (que se ignora). */
 class PowerTabAlternateEndingReaderTest {
 
     private final PowerTabAlternateEndingReader reader = new PowerTabAlternateEndingReader();
@@ -14,10 +13,10 @@ class PowerTabAlternateEndingReaderTest {
     @Test
     void readsTheNumbersAndIgnoresDaCapo() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(0); // sistema.
         out.write(0);
-        out.write(5); // posicion.
-        int numbersMask = (1 << 1) | (1 << 2) | (1 << 8); // vueltas 2 y 3, mas D.C. (numero 9).
+        out.write(0);
+        out.write(5);
+        int numbersMask = (1 << 1) | (1 << 2) | (1 << 8);
         int data = numbersMask << 16;
         out.write(data & 0xFF);
         out.write((data >>> 8) & 0xFF);
