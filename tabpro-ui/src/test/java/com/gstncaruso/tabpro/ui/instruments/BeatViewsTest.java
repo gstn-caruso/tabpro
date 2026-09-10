@@ -18,12 +18,38 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class BeatViewsTest {
+
+    @Test
+    void closingTheFretboardTitleBarHidesTheFretboard() {
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+
+        findButtonNamed(views, "Cerrar diapasón").orElseThrow().doClick();
+
+        assertFalse(views.isFretboardVisible());
+    }
+
+    private static java.util.Optional<JButton> findButtonNamed(Container container, String name) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof JButton button
+                    && name.equals(button.getAccessibleContext().getAccessibleName())) {
+                return java.util.Optional.of(button);
+            }
+            if (component instanceof Container nested) {
+                java.util.Optional<JButton> found = findButtonNamed(nested, name);
+                if (found.isPresent()) {
+                    return found;
+                }
+            }
+        }
+        return java.util.Optional.empty();
+    }
 
     @Test
     void ningunControlDelDiapasonNiDelTecladoQuedaSinNombreNiTooltipAccesible() {

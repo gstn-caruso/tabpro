@@ -53,8 +53,10 @@ public final class BeatViews extends JPanel {
         setBackground(ScoreColors.SURFACE);
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ScoreColors.BORDER));
 
-        fretboardBox = titled("Diapasón", fretboard, FretboardView.PREFERRED_HEIGHT, fretboardToolbar());
-        keyboardBox = titled("Teclado", keyboard, KeyboardView.PREFERRED_HEIGHT, keyboardToolbar());
+        fretboardBox = titled("Diapasón", fretboard, FretboardView.PREFERRED_HEIGHT, fretboardToolbar(),
+                "Cerrar diapasón", () -> setFretboardVisible(false));
+        keyboardBox = titled("Teclado", keyboard, KeyboardView.PREFERRED_HEIGHT, keyboardToolbar(),
+                "Cerrar teclado", () -> setKeyboardVisible(false));
         add(fretboardBox);
         add(keyboardBox);
 
@@ -309,7 +311,13 @@ public final class BeatViews extends JPanel {
         return button;
     }
 
-    private JPanel titled(String title, JComponent view, int viewHeight, JComponent toolbar) {
+    private JPanel titled(
+            String title,
+            JComponent view,
+            int viewHeight,
+            JComponent toolbar,
+            String closeAccessibleName,
+            Runnable onClose) {
         JPanel box = new JPanel(new BorderLayout());
         box.setBackground(ScoreColors.SURFACE);
 
@@ -318,10 +326,16 @@ public final class BeatViews extends JPanel {
         label.setForeground(ScoreColors.MUTED_INK);
         label.setBorder(BorderFactory.createEmptyBorder(3, 12, 2, 0));
 
+        JButton close = new JButton("✕");
+        close.getAccessibleContext().setAccessibleName(closeAccessibleName);
+        close.setToolTipText(closeAccessibleName);
+        close.addActionListener(e -> onClose.run());
+
         JPanel header = new JPanel(new BorderLayout());
         header.setOpaque(false);
         header.add(label, BorderLayout.WEST);
-        header.add(toolbar, BorderLayout.EAST);
+        header.add(toolbar, BorderLayout.CENTER);
+        header.add(close, BorderLayout.EAST);
         header.setPreferredSize(new Dimension(0, TITLE_HEIGHT));
 
         box.add(header, BorderLayout.NORTH);
