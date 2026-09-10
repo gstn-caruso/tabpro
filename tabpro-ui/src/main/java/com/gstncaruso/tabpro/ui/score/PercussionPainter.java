@@ -5,11 +5,9 @@ import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.Track;
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 
 /** La notacion propia de percusion: cada linea es un sonido y la cabeza cambia de forma segun
@@ -42,16 +40,16 @@ final class PercussionPainter {
 
         g.setColor(ScoreColors.INK);
         switch (shapeFor(note.fret())) {
-            case CROSS -> paintCross(g, centerX, y);
+            case CROSS -> paintGlyphNotehead(g, centerX, y, MusicFont.noteheadXBlack());
             case DIAMOND -> paintDiamond(g, centerX, y);
             default -> g.fill(new Ellipse2D.Double(centerX - RADIUS, y - RADIUS, RADIUS * 2.0, RADIUS * 2.0));
         }
     }
 
-    private static void paintCross(Graphics2D g, int centerX, int y) {
-        g.setStroke(new BasicStroke(1.6f));
-        g.draw(new Line2D.Double(centerX - RADIUS, y - RADIUS, centerX + RADIUS, y + RADIUS));
-        g.draw(new Line2D.Double(centerX - RADIUS, y + RADIUS, centerX + RADIUS, y - RADIUS));
+    private static void paintGlyphNotehead(Graphics2D g, int centerX, int y, String glyph) {
+        g.setFont(MusicFont.sizedTo(ScoreLayout.STAFF_LINE_SPACING));
+        double width = g.getFontMetrics().stringWidth(glyph);
+        g.drawString(glyph, (float) (centerX - width / 2), y);
     }
 
     private static void paintDiamond(Graphics2D g, int centerX, int y) {
