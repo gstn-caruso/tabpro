@@ -26,7 +26,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class ViewSwitchThenCursorMoveAuditTest {
 
     @Test
-    void lasCuatroVistasYMoverElCursorAlUltimoCompasNoCuelganNiTiran() throws Exception {
+    void theFourViewsAndMovingTheCursorToTheLastBarNeitherHangNorThrow() throws Exception {
         Editor editor = editorWithDirections();
         MainFrame frame = newFrame(editor);
         try {
