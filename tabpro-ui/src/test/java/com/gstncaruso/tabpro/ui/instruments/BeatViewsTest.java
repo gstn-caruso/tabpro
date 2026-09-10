@@ -35,6 +35,15 @@ class BeatViewsTest {
         assertFalse(views.isFretboardVisible());
     }
 
+    @Test
+    void closingTheKeyboardTitleBarHidesTheKeyboard() {
+        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+
+        findButtonNamed(views, "Cerrar teclado").orElseThrow().doClick();
+
+        assertFalse(views.isKeyboardVisible());
+    }
+
     private static java.util.Optional<JButton> findButtonNamed(Container container, String name) {
         for (Component component : container.getComponents()) {
             if (component instanceof JButton button
