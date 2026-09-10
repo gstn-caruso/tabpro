@@ -11,7 +11,10 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.Icon;
 
-/** El juego de iconos de las barras de herramientas, dibujado con Java2D. */
+/**
+ * El juego de iconos de las barras de herramientas: las acciones genericas vienen de un SVG
+ * de Tabler Icons y los simbolos propios de la notacion musical se dibujan con Java2D.
+ */
 public final class Icons {
 
     public static final int SIZE = 18;
@@ -22,98 +25,49 @@ public final class Icons {
     // ---- archivo ----------------------------------------------------------
 
     public static Icon newScore() {
-        return icon((graphics, size) -> {
-            page(graphics, size);
-            plus(graphics, size * 0.68, size * 0.7, size * 0.18);
-        });
+        return svgIcon("file-plus");
     }
 
     public static Icon open() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            Path2D folder = new Path2D.Double();
-            folder.moveTo(size * 0.12, size * 0.78);
-            folder.lineTo(size * 0.12, size * 0.26);
-            folder.lineTo(size * 0.42, size * 0.26);
-            folder.lineTo(size * 0.52, size * 0.38);
-            folder.lineTo(size * 0.88, size * 0.38);
-            folder.lineTo(size * 0.88, size * 0.78);
-            folder.closePath();
-            graphics.draw(folder);
-        });
+        return svgIcon("folder-open");
     }
 
     public static Icon save() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new RoundRectangle2D.Double(size * 0.15, size * 0.15, size * 0.7, size * 0.7, 3, 3));
-            graphics.fill(new Rectangle2D.Double(size * 0.32, size * 0.15, size * 0.36, size * 0.24));
-            graphics.draw(new Rectangle2D.Double(size * 0.3, size * 0.55, size * 0.4, size * 0.3));
-        });
+        return svgIcon("device-floppy");
     }
 
     public static Icon print() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Rectangle2D.Double(size * 0.28, size * 0.12, size * 0.44, size * 0.22));
-            graphics.draw(new RoundRectangle2D.Double(size * 0.12, size * 0.34, size * 0.76, size * 0.34, 3, 3));
-            graphics.draw(new Rectangle2D.Double(size * 0.28, size * 0.6, size * 0.44, size * 0.28));
-        });
+        return svgIcon("printer");
     }
 
     public static Icon scoreInformation() {
-        return icon((graphics, size) -> {
-            page(graphics, size);
-            graphics.setStroke(thin());
-            for (int line = 0; line < 3; line++) {
-                double y = size * (0.42 + line * 0.15);
-                graphics.draw(new Line2D.Double(size * 0.3, y, size * 0.7, y));
-            }
-        });
+        return svgIcon("info-circle");
     }
 
     public static Icon pageSetup() {
-        return icon((graphics, size) -> {
-            page(graphics, size);
-            graphics.setStroke(dashed());
-            graphics.draw(new Rectangle2D.Double(size * 0.32, size * 0.28, size * 0.36, size * 0.46));
-        });
+        return svgIcon("file-settings");
     }
 
     // ---- edicion ----------------------------------------------------------
 
     public static Icon undo() {
-        return icon((graphics, size) -> curvedArrow(graphics, size, true));
+        return svgIcon("arrow-back-up");
     }
 
     public static Icon redo() {
-        return icon((graphics, size) -> curvedArrow(graphics, size, false));
+        return svgIcon("arrow-forward-up");
     }
 
     public static Icon cut() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Line2D.Double(size * 0.28, size * 0.14, size * 0.68, size * 0.66));
-            graphics.draw(new Line2D.Double(size * 0.72, size * 0.14, size * 0.32, size * 0.66));
-            graphics.draw(new Ellipse2D.Double(size * 0.16, size * 0.66, size * 0.22, size * 0.22));
-            graphics.draw(new Ellipse2D.Double(size * 0.62, size * 0.66, size * 0.22, size * 0.22));
-        });
+        return svgIcon("scissors");
     }
 
     public static Icon copy() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Rectangle2D.Double(size * 0.14, size * 0.14, size * 0.48, size * 0.56));
-            graphics.draw(new Rectangle2D.Double(size * 0.34, size * 0.3, size * 0.48, size * 0.56));
-        });
+        return svgIcon("copy");
     }
 
     public static Icon paste() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new RoundRectangle2D.Double(size * 0.18, size * 0.2, size * 0.64, size * 0.68, 3, 3));
-            graphics.fill(new Rectangle2D.Double(size * 0.36, size * 0.1, size * 0.28, size * 0.16));
-        });
+        return svgIcon("clipboard");
     }
 
     // ---- compases ---------------------------------------------------------
@@ -177,16 +131,7 @@ public final class Icons {
     }
 
     public static Icon marker() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Line2D.Double(size * 0.24, size * 0.12, size * 0.24, size * 0.88));
-            Path2D flag = new Path2D.Double();
-            flag.moveTo(size * 0.24, size * 0.16);
-            flag.lineTo(size * 0.82, size * 0.28);
-            flag.lineTo(size * 0.24, size * 0.44);
-            flag.closePath();
-            graphics.fill(flag);
-        });
+        return svgIcon("flag-3");
     }
 
     // ---- figuras ----------------------------------------------------------
@@ -356,82 +301,47 @@ public final class Icons {
     }
 
     public static Icon text() {
-        return icon((graphics, size) -> {
-            graphics.setFont(big(size));
-            graphics.drawString("T", (float) (size * 0.32), (float) (size * 0.78));
-        });
+        return svgIcon("typography");
     }
 
     // ---- sonido -----------------------------------------------------------
 
     public static Icon play() {
-        return icon((graphics, size) -> {
-            Path2D triangle = new Path2D.Double();
-            triangle.moveTo(size * 0.28, size * 0.18);
-            triangle.lineTo(size * 0.84, size * 0.5);
-            triangle.lineTo(size * 0.28, size * 0.82);
-            triangle.closePath();
-            graphics.fill(triangle);
-        });
+        return svgIcon("player-play");
     }
 
     public static Icon stop() {
-        return icon((graphics, size) ->
-                graphics.fill(new RoundRectangle2D.Double(size * 0.24, size * 0.24, size * 0.52, size * 0.52, 2, 2)));
+        return svgIcon("player-stop");
     }
 
     public static Icon loop() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new RoundRectangle2D.Double(size * 0.16, size * 0.28, size * 0.68, size * 0.44, size * 0.4, size * 0.4));
-            Path2D head = new Path2D.Double();
-            head.moveTo(size * 0.52, size * 0.14);
-            head.lineTo(size * 0.72, size * 0.28);
-            head.lineTo(size * 0.52, size * 0.42);
-            head.closePath();
-            graphics.fill(head);
-        });
+        return svgIcon("repeat");
     }
 
     public static Icon metronome() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            Path2D body = new Path2D.Double();
-            body.moveTo(size * 0.34, size * 0.16);
-            body.lineTo(size * 0.66, size * 0.16);
-            body.lineTo(size * 0.84, size * 0.86);
-            body.lineTo(size * 0.16, size * 0.86);
-            body.closePath();
-            graphics.draw(body);
-            graphics.draw(new Line2D.Double(size * 0.44, size * 0.82, size * 0.66, size * 0.26));
-        });
+        return svgIcon("metronome");
     }
 
     public static Icon countDown() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Ellipse2D.Double(size * 0.16, size * 0.16, size * 0.68, size * 0.68));
-            graphics.draw(new Line2D.Double(size * 0.5, size * 0.5, size * 0.5, size * 0.28));
-            graphics.draw(new Line2D.Double(size * 0.5, size * 0.5, size * 0.68, size * 0.6));
-        });
+        return svgIcon("clock");
     }
 
     // ---- navegacion y vista -----------------------------------------------
 
     public static Icon firstBar() {
-        return icon((graphics, size) -> skip(graphics, size, true, true));
+        return svgIcon("player-skip-back");
     }
 
     public static Icon previousBar() {
-        return icon((graphics, size) -> skip(graphics, size, true, false));
+        return svgIcon("player-track-prev");
     }
 
     public static Icon nextBar() {
-        return icon((graphics, size) -> skip(graphics, size, false, false));
+        return svgIcon("player-track-next");
     }
 
     public static Icon lastBar() {
-        return icon((graphics, size) -> skip(graphics, size, false, true));
+        return svgIcon("player-skip-forward");
     }
 
     public static Icon pageMode() {
@@ -467,15 +377,15 @@ public final class Icons {
     }
 
     public static Icon zoomIn() {
-        return icon((graphics, size) -> magnifier(graphics, size, 1));
+        return svgIcon("zoom-in");
     }
 
     public static Icon zoomOut() {
-        return icon((graphics, size) -> magnifier(graphics, size, -1));
+        return svgIcon("zoom-out");
     }
 
     public static Icon zoomReset() {
-        return icon((graphics, size) -> magnifier(graphics, size, 0));
+        return svgIcon("zoom-reset");
     }
 
     public static Icon multitrack() {
@@ -498,25 +408,11 @@ public final class Icons {
     }
 
     public static Icon keyboard() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Rectangle2D.Double(size * 0.08, size * 0.3, size * 0.84, size * 0.42));
-            for (int key = 1; key < 5; key++) {
-                double x = size * (0.08 + key * 0.168);
-                graphics.draw(new Line2D.Double(x, size * 0.3, x, size * 0.72));
-            }
-            graphics.fill(new Rectangle2D.Double(size * 0.2, size * 0.3, size * 0.09, size * 0.24));
-            graphics.fill(new Rectangle2D.Double(size * 0.53, size * 0.3, size * 0.09, size * 0.24));
-        });
+        return svgIcon("piano");
     }
 
     public static Icon tuner() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new java.awt.geom.Arc2D.Double(
-                    size * 0.12, size * 0.24, size * 0.76, size * 0.76, 20, 140, java.awt.geom.Arc2D.OPEN));
-            graphics.draw(new Line2D.Double(size * 0.5, size * 0.78, size * 0.62, size * 0.32));
-        });
+        return svgIcon("gauge");
     }
 
     public static Icon scales() {
@@ -530,15 +426,7 @@ public final class Icons {
     }
 
     public static Icon mixTable() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            for (int slider = 0; slider < 3; slider++) {
-                double x = size * (0.25 + slider * 0.25);
-                graphics.draw(new Line2D.Double(x, size * 0.14, x, size * 0.86));
-                double knob = size * (0.3 + slider * 0.18);
-                graphics.fill(new RoundRectangle2D.Double(x - size * 0.09, knob, size * 0.18, size * 0.1, 2, 2));
-            }
-        });
+        return svgIcon("adjustments");
     }
 
     public static Icon addTrack() {
@@ -549,23 +437,6 @@ public final class Icons {
     }
 
     // ---- trazos compartidos -----------------------------------------------
-
-    /** La lupa del zoom: con mas, con menos, o vacia para volver al 100%. */
-    private static void magnifier(Graphics2D graphics, int size, int sign) {
-        graphics.setStroke(thin());
-        double diameter = size * 0.52;
-        graphics.draw(new Ellipse2D.Double(size * 0.12, size * 0.12, diameter, diameter));
-        graphics.draw(new Line2D.Double(size * 0.6, size * 0.6, size * 0.86, size * 0.86));
-        double centerX = size * 0.12 + diameter / 2;
-        double centerY = size * 0.12 + diameter / 2;
-        double arm = size * 0.13;
-        if (sign != 0) {
-            graphics.draw(new Line2D.Double(centerX - arm, centerY, centerX + arm, centerY));
-        }
-        if (sign > 0) {
-            graphics.draw(new Line2D.Double(centerX, centerY - arm, centerX, centerY + arm));
-        }
-    }
 
     private static void page(Graphics2D graphics, int size) {
         graphics.setStroke(thin());
@@ -588,42 +459,8 @@ public final class Icons {
         graphics.fill(new Ellipse2D.Double(dots, size * 0.56, size * 0.1, size * 0.1));
     }
 
-    private static void curvedArrow(Graphics2D graphics, int size, boolean backwards) {
-        graphics.setStroke(thin());
-        java.awt.geom.Arc2D arc = new java.awt.geom.Arc2D.Double(
-                size * 0.18, size * 0.26, size * 0.64, size * 0.5,
-                backwards ? 20 : 160, backwards ? 140 : -140, java.awt.geom.Arc2D.OPEN);
-        graphics.draw(arc);
-        double tipX = backwards ? size * 0.22 : size * 0.78;
-        Path2D head = new Path2D.Double();
-        head.moveTo(tipX, size * 0.34);
-        head.lineTo(tipX + (backwards ? size * 0.18 : -size * 0.18), size * 0.4);
-        head.lineTo(tipX + (backwards ? size * 0.04 : -size * 0.04), size * 0.56);
-        head.closePath();
-        graphics.fill(head);
-    }
-
-    private static void skip(Graphics2D graphics, int size, boolean backwards, boolean toTheEnd) {
-        double direction = backwards ? -1 : 1;
-        double center = size * 0.5;
-        Path2D triangle = new Path2D.Double();
-        triangle.moveTo(center - direction * size * 0.22, size * 0.2);
-        triangle.lineTo(center + direction * size * 0.24, size * 0.5);
-        triangle.lineTo(center - direction * size * 0.22, size * 0.8);
-        triangle.closePath();
-        graphics.fill(triangle);
-        if (toTheEnd) {
-            double wall = backwards ? size * 0.18 : size * 0.74;
-            graphics.fill(new Rectangle2D.Double(wall, size * 0.2, size * 0.08, size * 0.6));
-        }
-    }
-
     private static BasicStroke thin() {
         return new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    }
-
-    private static BasicStroke dashed() {
-        return new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] {2f, 2f}, 0f);
     }
 
     private static Font small(int size) {
@@ -636,5 +473,9 @@ public final class Icons {
 
     private static Icon icon(ToolIcon.Drawing drawing) {
         return new ToolIcon(SIZE, drawing);
+    }
+
+    private static Icon svgIcon(String name) {
+        return new SvgIcon("/icons/tabler/" + name + ".svg", SIZE);
     }
 }
