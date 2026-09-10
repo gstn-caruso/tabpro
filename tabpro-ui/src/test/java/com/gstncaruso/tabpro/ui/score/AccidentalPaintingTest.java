@@ -57,6 +57,19 @@ class AccidentalPaintingTest {
                 "el fa sostenido de la armadura tiene que llevar el glifo del sostenido");
     }
 
+    @Test
+    void aFlatKeySignatureIsWrittenWithTheFlatGlyph() {
+        ScoreLayout layout = layoutFor(new KeySignature(-1, Mode.MAJOR));
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        StaffPainter.paintKeySignature(
+                lienzo, layout, Clef.TREBLE, new KeySignature(-1, Mode.MAJOR), 0, 0, layout.measureX(0) + 4);
+
+        int y = layout.stepY(0, 0, 4);
+        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.accidentalFlat(), new Rectangle(0, y - 2, WIDTH, 4)),
+                "el si bemol de la armadura tiene que llevar el glifo del bemol");
+    }
+
     private static ScoreLayout layoutFor(KeySignature key) {
         Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));

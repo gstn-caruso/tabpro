@@ -336,13 +336,7 @@ final class StaffPainter {
     }
 
     private static void paintFlat(Graphics2D g, double x, double y, Color ink) {
-        g.setColor(ink);
-        g.setStroke(new BasicStroke(1.3f));
-        g.draw(new Line2D.Double(x, y - SPACE * 1.1, x, y + SPACE * 0.6));
-        Path2D bowl = new Path2D.Double();
-        bowl.moveTo(x, y + SPACE * 0.55);
-        bowl.curveTo(x + SPACE * 0.6, y + SPACE * 0.4, x + SPACE * 0.6, y - SPACE * 0.3, x, y - SPACE * 0.1);
-        g.draw(bowl);
+        paintAccidentalGlyph(g, MusicFont.accidentalFlat(), x, y, ink);
     }
 
     private static void paintNatural(Graphics2D g, double x, double y, Color ink) {
