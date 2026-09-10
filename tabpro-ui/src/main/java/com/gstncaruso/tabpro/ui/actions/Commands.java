@@ -370,17 +370,17 @@ public final class Commands {
     }
 
     private void defineToolCommands() {
-        define("tool.letRingOptions", "Opciones de let ring…", dialogs::letRingOptions);
-        define("tool.palmMuteOptions", "Opciones de palm mute…", dialogs::palmMuteOptions);
-        define("tool.dynamicOptions", "Opciones de dinámica…", dialogs::dynamicOptions);
-        define("tool.arrangeBars", "Organizador de compases…", dialogs::arrangeBars);
-        define("tool.completeBars", "Completar y reducir compases con silencios…", dialogs::completeBarsWithRests);
-        define("tool.automaticFingering", "Digitación automática…", dialogs::automaticFingering);
-        define("tool.transpose", "Transponer…", dialogs::transpose).withIcon(Icons.transpose());
-        define("tool.checkBarDurations", "Verificar la duración de los compases", dialogs::checkBarDurations)
+        define("tool.letRingOptions", Texts.get("menus.tool.letRingOptions"), dialogs::letRingOptions);
+        define("tool.palmMuteOptions", Texts.get("menus.tool.palmMuteOptions"), dialogs::palmMuteOptions);
+        define("tool.dynamicOptions", Texts.get("menus.tool.dynamicOptions"), dialogs::dynamicOptions);
+        define("tool.arrangeBars", Texts.get("menus.tool.arrangeBars"), dialogs::arrangeBars);
+        define("tool.completeBars", Texts.get("menus.tool.completeBars"), dialogs::completeBarsWithRests);
+        define("tool.automaticFingering", Texts.get("menus.tool.automaticFingering"), dialogs::automaticFingering);
+        define("tool.transpose", Texts.get("menus.tool.transpose"), dialogs::transpose).withIcon(Icons.transpose());
+        define("tool.checkBarDurations", Texts.get("menus.tool.checkBarDurations"), dialogs::checkBarDurations)
                 .withAccelerator("F4").withIcon(Icons.checkBarDurations());
-        define("tool.scales", "Escalas…", dialogs::scales).withIcon(Icons.scales());
-        define("tool.tuner", "Afinador…", dialogs::tuner).withIcon(Icons.tuner());
+        define("tool.scales", Texts.get("menus.tool.scales"), dialogs::scales).withIcon(Icons.scales());
+        define("tool.tuner", Texts.get("menus.tool.tuner"), dialogs::tuner).withIcon(Icons.tuner());
     }
 
     private void defineSoundCommands() {
