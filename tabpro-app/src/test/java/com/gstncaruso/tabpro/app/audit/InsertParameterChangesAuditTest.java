@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.app.audit;
 
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.dispatchKeyAndDetectDialog;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.editorWithANote;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findButton;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findCheckBox;
@@ -68,32 +69,28 @@ class InsertParameterChangesAuditTest {
     }
 
     /**
-     * HALLAZGO (ver docs/auditoria-uso-real.md, "Insert Parameter Changes"): F10 sin modificador
-     * es, de fabrica en Swing/FlatLaf, la tecla que activa el propio JMenuBar para navegarlo con
-     * las flechas -confirmado abajo: el modelo de seleccion del menu pasa de -1 a 0, y ademas
-     * Swing llega a abrir el desplegable del primer menu (un javax.swing.Popup$HeavyWeightWindow,
-     * visto en un diagnostico aparte)-. Con la partitura enfocada, F10 no deja ningun cambio de
-     * parametros en el modelo: el menu (arriba) funciona perfecto: el atajo documentado en el
-     * manual, no.
+     * F10 sin modificador es, de fabrica en Swing (BasicMenuBarUI), la tecla que activa el
+     * propio JMenuBar para navegarlo con las flechas. AcceleratorGuard neutraliza esa tecla en
+     * la barra de menus real, asi que el atajo documentado en el manual gana: abre el dialogo
+     * real de Cambio de parametros, sin activar la barra de menus.
      */
     @Test
-    void f10ConLaPartituraEnfocadaActivaElMenuEnVezDeAbrirElCambioDeParametros() throws Exception {
+    void f10ConLaPartituraEnfocadaAbreElCambioDeParametrosEnVezDeActivarElMenu() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             KeyStroke f10 = KeyStroke.getKeyStroke("F10");
-            var antesDelAtajo = editor.currentBeat().effects().parameterChange();
             int seleccionAntes = frame.getJMenuBar().getSelectionModel().getSelectedIndex();
 
-            AuditSupport.pressKey(canvas, f10);
+            boolean abrioUnDialogo = dispatchKeyAndDetectDialog(canvas, f10, 800);
 
             int seleccionDespues = frame.getJMenuBar().getSelectionModel().getSelectedIndex();
             assertEquals(-1, seleccionAntes);
-            assertEquals(0, seleccionDespues,
-                    "F10 activa el primer menu de la barra en vez de disparar el comando del manual");
-            assertEquals(antesDelAtajo, editor.currentBeat().effects().parameterChange(),
-                    "HALLAZGO: F10 con la partitura enfocada no deja ningun cambio de parametros en el modelo (ver informe)");
+            assertTrue(abrioUnDialogo,
+                    "F10 con la partitura enfocada tiene que abrir 'Cambio de parámetros'");
+            assertEquals(-1, seleccionDespues,
+                    "F10 no tiene que activar la barra de menus para navegarla con las flechas");
         } finally {
             AuditSupport.dispose(frame);
         }

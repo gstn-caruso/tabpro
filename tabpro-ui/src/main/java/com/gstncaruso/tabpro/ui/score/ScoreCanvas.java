@@ -61,6 +61,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
         });
         setOpaque(true);
         setFocusable(true);
+        setFocusTraversalKeysEnabled(false);
         setBackground(ScoreColors.BACKGROUND);
         setToolTipText("Partitura");
         getAccessibleContext().setAccessibleName("Partitura");

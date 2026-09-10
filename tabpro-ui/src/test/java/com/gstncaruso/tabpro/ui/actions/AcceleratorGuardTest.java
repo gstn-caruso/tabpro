@@ -1,15 +1,17 @@
 package com.gstncaruso.tabpro.ui.actions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import java.awt.event.KeyEvent;
 import java.lang.reflect.Proxy;
-import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
@@ -83,18 +85,31 @@ class AcceleratorGuardTest {
         assertNotEquals("focusOutForward", inputMap.get(ctrlTab));
     }
 
-    /** La tecla bloqueada resuelve a una accion real que no hace nada, no queda un nombre colgado. */
+    /**
+     * No alcanza con que el JScrollPane deje de decir "scrollHome": si la tecla bloqueada
+     * resuelve a una Action real (aunque no haga nada), Swing la da por atendida y el atajo real
+     * del menu nunca llega a mirarse. Lo que importa es que processKeyBinding, el metodo que usa
+     * Swing para decidir si una tecla ya quedo resuelta en ese antepasado, devuelva false.
+     */
     @Test
-    void laTeclaBloqueadaResuelveAUnaAccionQueNoHaceNada() {
-        JScrollPane scrollPane = new JScrollPane();
+    void laTeclaBloqueadaYaNoQuedaAtendidaPorElAncestro() {
+        ExposedJScrollPane scrollPane = new ExposedJScrollPane();
         KeyStroke ctrlHome = commands.get("nav.firstBar").accelerator();
 
         AcceleratorGuard.letCommandsWin(commands, scrollPane);
 
-        Object nombreDeLaAccion = scrollPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .get(ctrlHome);
-        Action accion = scrollPane.getActionMap().get(nombreDeLaAccion);
-        assertNotNull(accion, "la tecla bloqueada tiene que resolver a una accion, no a null");
+        KeyEvent event = new KeyEvent(scrollPane, KeyEvent.KEY_PRESSED, System.currentTimeMillis(),
+                ctrlHome.getModifiers(), ctrlHome.getKeyCode(), KeyEvent.CHAR_UNDEFINED);
+        assertFalse(
+                scrollPane.processKeyBinding(ctrlHome, event, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, true),
+                "la tecla bloqueada no puede quedar atendida por el ancestro: el atajo real tiene que poder seguir subiendo");
+    }
+
+    private static final class ExposedJScrollPane extends JScrollPane {
+        @Override
+        public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+            return super.processKeyBinding(ks, e, condition, pressed);
+        }
     }
 
     /** Una tecla que ningun comando usa (Page Up, por ejemplo) queda intacta. */
@@ -117,6 +132,34 @@ class AcceleratorGuardTest {
         JScrollPane otro = new JScrollPane();
         assertEquals("scrollHome", otro.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .get(commands.get("nav.firstBar").accelerator()));
+    }
+
+    /**
+     * F10 sin modificador es, de fabrica en Swing (BasicMenuBarUI, heredado por cualquier L&amp;F
+     * -Metal o FlatLaf-), la tecla que activa la barra de menus para navegarla con las flechas:
+     * vive en el WHEN_IN_FOCUSED_WINDOW propio del JMenuBar, no en el WHEN_ANCESTOR_OF_FOCUSED
+     * _COMPONENT de un ancestro de la partitura, asi que necesita su propio barrido.
+     */
+    @Test
+    void neutralizaF10EnLaBarraDeMenuParaQueGaneElCambioDeParametros() {
+        ExposedJMenuBar menuBar = new ExposedJMenuBar();
+        KeyStroke f10 = commands.get("note.mixTableChange").accelerator();
+
+        AcceleratorGuard.letCommandsWinOverTheMenuBar(commands, menuBar);
+
+        KeyEvent event = new KeyEvent(menuBar, KeyEvent.KEY_PRESSED, System.currentTimeMillis(),
+                f10.getModifiers(), f10.getKeyCode(), KeyEvent.CHAR_UNDEFINED);
+        assertFalse(
+                menuBar.processKeyBinding(f10, event, JComponent.WHEN_IN_FOCUSED_WINDOW, true),
+                "F10 no puede quedar atendido por la barra de menus: el atajo real de Cambio de "
+                        + "parametros tiene que poder seguir subiendo");
+    }
+
+    private static final class ExposedJMenuBar extends JMenuBar {
+        @Override
+        public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+            return super.processKeyBinding(ks, e, condition, pressed);
+        }
     }
 
     @SuppressWarnings("unchecked")

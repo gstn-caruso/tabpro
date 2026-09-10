@@ -1,11 +1,9 @@
 package com.gstncaruso.tabpro.ui.actions;
 
-import java.awt.event.ActionEvent;
 import java.util.Objects;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
 
 /**
@@ -17,40 +15,51 @@ import javax.swing.KeyStroke;
  * catalogo usa esa misma tecla, mientras la partitura tiene el foco -que es la situacion normal
  * al editar- ese atajo queda muerto sin que nada lo avise.
  *
- * <p>Este barrido tapa, en cada antepasado dado, cualquier tecla que el catalogo ya use, para
- * que gane siempre el atajo del manual. No toca nada compartido entre instancias: cada
- * componente Swing tiene su propio InputMap y ActionMap, asi que un JScrollPane que no se le
- * pasa a {@link #letCommandsWin} sigue con el comportamiento de fabrica.
+ * <p>Este barrido, en cada antepasado dado, deja sin resolver cualquier tecla que el catalogo ya
+ * use ({@code inputMap.put(tecla, "none")}, la convencion de Swing para "no hay accion registrada
+ * con este nombre"): {@code processKeyBinding} encuentra un binding pero ninguna Action para el,
+ * asi que devuelve false y la tecla sigue subiendo hasta el atajo del menu. No toca nada
+ * compartido entre instancias: cada componente Swing tiene su propio InputMap y ActionMap, asi
+ * que un JScrollPane que no se le pasa a {@link #letCommandsWin} sigue con el comportamiento de
+ * fabrica.
  */
 public final class AcceleratorGuard {
 
-    private static final Action NO_HACE_NADA = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent event) {
-        }
-    };
+    private static final String SIN_ACCION_REGISTRADA = "none";
 
     private AcceleratorGuard() {
     }
 
     /** Le saca a cada antepasado dado cualquier tecla que ya use un comando del catalogo. */
     public static void letCommandsWin(Commands commands, JComponent... ancestorsOfTheFocusedComponent) {
+        blockEachAccelerator(commands, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, ancestorsOfTheFocusedComponent);
+    }
+
+    /**
+     * F10 sin modificador activa de fabrica la barra de menus (BasicMenuBarUI la instala en el
+     * WHEN_IN_FOCUSED_WINDOW propio del JMenuBar, para cualquier L&amp;F derivado de
+     * BasicLookAndFeel): le saca esa tecla a la barra para que el atajo real de Cambio de
+     * parametros pueda seguir subiendo.
+     */
+    public static void letCommandsWinOverTheMenuBar(Commands commands, JMenuBar menuBar) {
+        blockEachAccelerator(commands, JComponent.WHEN_IN_FOCUSED_WINDOW, menuBar);
+    }
+
+    private static void blockEachAccelerator(Commands commands, int condition, JComponent... components) {
         commands.all().values().stream()
                 .map(Command::accelerator)
                 .filter(Objects::nonNull)
                 .distinct()
-                .forEach(accelerator -> block(accelerator, ancestorsOfTheFocusedComponent));
+                .forEach(accelerator -> block(accelerator, condition, components));
     }
 
-    private static void block(KeyStroke accelerator, JComponent[] ancestors) {
-        for (JComponent ancestor : ancestors) {
-            InputMap inputMap = ancestor.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    private static void block(KeyStroke accelerator, int condition, JComponent[] components) {
+        for (JComponent component : components) {
+            InputMap inputMap = component.getInputMap(condition);
             if (inputMap.get(accelerator) == null) {
                 continue;
             }
-            String name = "tabpro.reservado." + accelerator;
-            inputMap.put(accelerator, name);
-            ancestor.getActionMap().put(name, NO_HACE_NADA);
+            inputMap.put(accelerator, SIN_ACCION_REGISTRADA);
         }
     }
 }

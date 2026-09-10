@@ -189,6 +189,10 @@ public final class MainFrame extends JFrame {
         // mientras la partitura tiene el foco. Sin este barrido, Ctrl+Home, Ctrl+Fin, F6, F8 y
         // Ctrl+Tab quedan muertos justo cuando mas se los usa: editando.
         AcceleratorGuard.letCommandsWin(commands, scrollPane, scoreMixSplit.component());
+        // F10 sin modificador activa de fabrica la barra de menus (BasicMenuBarUI): sin este
+        // barrido, se come el atajo real de Cambio de parametros mientras la partitura esta
+        // enfocada.
+        AcceleratorGuard.letCommandsWinOverTheMenuBar(commands, getJMenuBar());
 
         JPanel top = new JPanel(new BorderLayout());
         top.add(toolBars.component(), BorderLayout.NORTH);
