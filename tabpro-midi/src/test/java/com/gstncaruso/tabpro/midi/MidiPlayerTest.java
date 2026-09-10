@@ -108,6 +108,42 @@ class MidiPlayerTest {
         withFakeSynth.close();
     }
 
+    /**
+     * El test que hace falta no es "las tres notas llegaron" sino "no llegaron todas juntas":
+     * el reproductor por defecto de Player las tocaria todas de una, asi que la separacion real
+     * en el tiempo es lo unico que distingue a este puerto de esa implementacion generica.
+     */
+    @Tag("integracion")
+    @Test
+    void soundsASequenceOfNotesInOrderWithRealTimingBetweenThem() throws InterruptedException {
+        List<Long> noteOnTimestamps = new CopyOnWriteArrayList<>();
+        CountDownLatch lastNoteSounded = new CountDownLatch(1);
+        MidiPlayer withFakeSynth = new MidiPlayer(sequencer, port -> new Receiver() {
+            @Override
+            public void send(MidiMessage message, long timeStamp) {
+                if (message instanceof ShortMessage sm && sm.getCommand() == ShortMessage.NOTE_ON) {
+                    noteOnTimestamps.add(System.currentTimeMillis());
+                    if (sm.getData1() == 64) {
+                        lastNoteSounded.countDown();
+                    }
+                }
+            }
+
+            @Override
+            public void close() {
+            }
+        });
+
+        withFakeSynth.playSequence(List.of(new Pitch(60), new Pitch(62), new Pitch(64)), 25);
+
+        assertTrue(lastNoteSounded.await(2, TimeUnit.SECONDS));
+        assertEquals(3, noteOnTimestamps.size());
+        assertTrue(
+                noteOnTimestamps.get(2) - noteOnTimestamps.get(0) >= 600,
+                "las notas de la secuencia tendrian que sonar espaciadas en el tiempo, no todas juntas");
+        withFakeSynth.close();
+    }
+
     @Test
     void isNotPlayingBeforeStart() {
         assertFalse(player.isPlaying());

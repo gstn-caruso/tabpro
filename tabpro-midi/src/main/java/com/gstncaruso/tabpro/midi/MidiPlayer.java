@@ -128,6 +128,11 @@ public final class MidiPlayer implements Player, AutoCloseable {
         preview().play(pitch, program);
     }
 
+    @Override
+    public void playSequence(java.util.List<Pitch> pitches, int program) {
+        preview().playSequence(pitches, program);
+    }
+
     /**
      * Salta la reproduccion en curso a ese tick sin frenarla. La reproduccion arma una secuencia
      * por puerto MIDI, con un secuenciador por puerto, asi que el salto tiene que alcanzarlos a
