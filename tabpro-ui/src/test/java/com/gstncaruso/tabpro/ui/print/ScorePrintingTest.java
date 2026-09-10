@@ -17,6 +17,7 @@ import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.score.ViewMode;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.image.BufferedImage;
+import java.awt.print.PrinterException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +31,22 @@ import org.junit.jupiter.api.io.TempDir;
 class ScorePrintingTest {
 
     private static final PageSetup A4 = PageSetup.defaults();
+
+    @Test
+    void alAceptarElDialogoLlegaElTrabajoYElPrintableQueDibujaLaPartituraReal() throws PrinterException {
+        Score score = scoreWithMeasures(4);
+        PrintSettings settings = PrintSettings.everything(ScoreSheets.pageCount(score, A4));
+        RecordingPrinting printing = new RecordingPrinting();
+        ScorePrinting scorePrinting = new ScorePrinting(printing);
+
+        scorePrinting.print(score, A4, settings, "mi-partitura.tab");
+
+        assertEquals("mi-partitura.tab", printing.jobName());
+        assertTrue(printing.printCalled(), "si el dialogo se acepta, tiene que llegar a imprimir de verdad");
+        assertEquals(
+                new ScorePrinting.ScorePages(score, A4, settings), printing.printable(),
+                "el Printable recibido tiene que ser el que pinta esta partitura real (ver ScorePagesTest)");
+    }
 
     @Tag("integracion")
     @Test
