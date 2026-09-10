@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.model.DiagramPlacement;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
+import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
@@ -293,6 +294,20 @@ class LabelsTest {
     @EnumSource(DiagramPlacement.class)
     void everyDiagramPlacementHasSpanishAndEnglishText(DiagramPlacement value) {
         String key = "domain.DiagramPlacement." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheVoicePart() {
+        assertEquals("Voz 1", Labels.of(VoicePart.LEAD));
+    }
+
+    @ParameterizedTest
+    @EnumSource(VoicePart.class)
+    void everyVoicePartHasSpanishAndEnglishText(VoicePart value) {
+        String key = "domain.VoicePart." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
