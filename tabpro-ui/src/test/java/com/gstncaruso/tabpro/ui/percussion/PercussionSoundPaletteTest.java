@@ -57,9 +57,9 @@ class PercussionSoundPaletteTest {
             yPerIndex.add(bounds.y);
         }
 
-        assertEquals(4, xPerIndex.stream().distinct().count(), "la grilla no tiene cuatro columnas");
-        assertEquals(xPerIndex.get(0), xPerIndex.get(1), "el primer y segundo sonido van en la misma columna");
-        assertTrue(yPerIndex.get(1) > yPerIndex.get(0), "el segundo sonido va debajo del primero, como en GP5");
+        assertEquals(4, xPerIndex.stream().distinct().count(), "the grid does not have four columns");
+        assertEquals(xPerIndex.get(0), xPerIndex.get(1), "the first and second sounds are not in the same column");
+        assertTrue(yPerIndex.get(1) > yPerIndex.get(0), "the second sound is not below the first, as in GP5");
     }
 
     @Test
@@ -68,9 +68,9 @@ class PercussionSoundPaletteTest {
         JList<Integer> list = palette.soundList();
 
         assertTrue(list.getFixedCellHeight() > 0,
-                "el alto de fila deberia quedar fijo desde la construccion, no medido en cada layout");
+                "row height should stay fixed from construction, not measured on every layout");
         assertTrue(list.getFixedCellWidth() > 0,
-                "el ancho de columna deberia quedar fijo desde la construccion, no medido en cada layout");
+                "column width should stay fixed from construction, not measured on every layout");
     }
 
     private static final int CELL_HEIGHT = 20;
@@ -84,7 +84,7 @@ class PercussionSoundPaletteTest {
             Rectangle bounds = list.getCellBounds(index, index);
             Point center = new Point(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
 
-            assertEquals(index, list.locationToIndex(center), "la fila " + index + " no se resuelve a si misma");
+            assertEquals(index, list.locationToIndex(center), "row " + index + " does not resolve to itself");
         }
     }
 
