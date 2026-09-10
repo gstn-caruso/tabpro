@@ -9,10 +9,10 @@ real y su `Action`, el `KeyEvent` real despachado sobre el `ScoreCanvas` real (n
 (detectado por `WINDOW_OPENED`, sin `Robot`). El harness vive en
 `tabpro-app/src/test/java/com/gstncaruso/tabpro/app/audit/`, tagueado `@Tag("integracion")`.
 
-Código auditado: rama `docs/auditoria-uso-real` sobre `main` = `64f9ac5`, versión 0.31.0.
-Harness: 13 clases, 54 tests, todos verdes juntos (`mvn -B -pl tabpro-tests -am test
--Dtests.headless=false -Dtests.excluded.groups=ninguno -Dgroups=integracion`).
-`mvn -B verify` por defecto: **BUILD SUCCESS, 2240 tests, ~3 s** (idéntico antes y después).
+Código auditado: rama `docs/auditoria-uso-real-print-e-import-export` sobre `main` = `609e7d0`,
+versión 0.35.0. Harness: 15 clases, 89 tests, todos verdes juntos (`mvn -B -pl tabpro-tests -am
+test -Dtests.headless=false -Dtests.excluded.groups=ninguno -Dgroups=integracion`).
+`mvn -B verify` por defecto: **BUILD SUCCESS, 2543 tests, ~6 s** (idéntico antes y después).
 
 ---
 
@@ -33,9 +33,9 @@ Harness: 13 clases, 54 tests, todos verdes juntos (`mvn -B -pl tabpro-tests -am 
 | Percussion (1670) | 2 | 0 | 0 | 0 |
 | Configure the Sound (1945) | 1 | 0 | 1 | 0 |
 | Tools for the Guitarist (2665) | 2 | 0 | 0 | 0 |
-| Print a Score (2207) | 0 | 0 | 0 | no cubierto |
-| Import / Export a Score (2293 / 2506) | 0 | 0 | 0 | no cubierto |
-| **Total** | **47** | **7** | **1** | **2 capítulos** |
+| Print a Score (2207) | 3 | 0 | 0 | 1 |
+| Import / Export a Score (2293 / 2506) | 17 | 0 | 0 | 0 |
+| **Total** | **67** | **7** | **1** | **1** |
 
 (La fila "Keyboard Shortcuts" no cuenta aparte el test de barrido exhaustivo
 `lasUnicasCincoTeclasQueElScrollPaneYElSplitPaneYaOcupabanSonLasDocumentadas`, que no verifica un
@@ -137,29 +137,39 @@ las únicas dos apariciones son la interfaz y la implementación.
 `Commands.java` (cerca de `sound.metronome`, línea ~364) y su entrada en `MenuBar.java`.
 **Tamaño:** chico.
 
+**Print a Score e Import / Export a Score no agregan hallazgos nuevos.** Los dos capítulos que
+quedaban sin cubrir (`PrintAuditTest`, `ImportExportAuditTest`) dieron **OK** en los veinte casos
+ejercitados: Archivo > Imprimir y Configurar página abren los diálogos reales de tabpro con sus
+controles reales y lo elegido queda aplicado; Abrir/Guardar/Guardar como/Abrir reciente y los seis
+formatos ajenos que el manual nombra (MIDI, ASCII, MusicXML, PowerTab, TablEdit, Guitar Pro) más
+WAVE/Imagen/PDF escriben o leen un archivo real que el lector o escritor correspondiente reconoce.
+Lo único que quedó sin poder confirmarse de verdad es el propio `PrinterJob`, detallado abajo.
+
 ---
 
 ## NO VERIFICABLE
 
-### Print a Score (línea 2207)
-No se llegó a cubrir por límite de tiempo dentro del orden de prioridad pedido (es el
-anteúltimo capítulo). Nota a favor: `ScorePrintingTest` (con `@Tag("integracion")` ya existente,
-`tabpro-ui/src/test/.../print/ScorePrintingTest.java`) compara el render en memoria contra un
-BMP exportado a disco, lo que ya cubre el **renderizado**; lo que falta específicamente es el
-camino de usuario (Archivo > Imprimir, Ctrl+P) sobre el `PrinterJob`/diálogo de impresión real de
-Swing, que además depende de que la máquina tenga algún servicio de impresión instalado
+### El `PrinterJob` real, dentro de Print a Score (línea 2207)
+`ScorePrinting.print` (`tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/print/ScorePrinting.java:35`)
+y `ScorePrinting.configurePrinterPage` (línea 54) llaman a `PrinterJob.getPrinterJob()`
+directamente: no hay ningún puerto ni costura de por medio, así que un test no puede darle a
+`MainFrame` un `PrinterJob` falso. Ese objeto real abre, además, un diálogo **nativo** del sistema
+operativo (no un `JDialog` de Swing) apenas se le pide `job.printDialog()` o `job.pageDialog(...)`,
+y depende de que la máquina tenga algún servicio de impresión instalado
 (`PrinterJob.getPrinterJob().getPrintService()`), algo que no se verificó que exista en este
-entorno.
+entorno ni en el de CI. Por eso `PrintAuditTest` ejercita todo el camino real hasta ese punto —el
+menú, el atajo Ctrl+P, el diálogo real de tabpro (`PrintPanel`) con sus controles reales
+reflejando la cantidad real de hojas de la partitura— y siempre cierra con "Cancelar" antes de
+llegar al `PrinterJob`: apretar "Imprimir" de verdad, o el botón "Configurar…" del diálogo (que
+llama a `configurePrinterPage`), habría significado abrir una ventana nativa que ningún test puede
+atender seguro, con riesgo real de dejar la suite colgada.
 
-### Import / Export a Score (líneas 2293 / 2506)
-Tampoco se llegó a cubrir por límite de tiempo (último capítulo del orden pedido). Estos
-comandos (`document::importXxx` / `document::exportXxx`) abren un `JFileChooser` real antes de
-llegar al lector/escritor — un camino de usuario genuino que esta auditoría no ejerció — pero
-cada formato (`.tabpro`/JSON, MIDI, ASCII, MusicXML, PowerTab, TablEdit, Guitar Pro) ya tiene
-suites unitarias extensas contra el propio lector/escritor (`tabpro-format/src/test/...`), y
-`CombinedExchangeTest`/`ClippingJsonTest` (en `tabpro-app`) cubren la orquestación. Ejercitar el
-`JFileChooser` real de forma segura (sin tocar archivos del usuario ni depender de un gestor de
-ventanas para sus diálogos nativos) hubiera necesitado más tiempo del que quedaba.
+Lo que **sí** quedó verificado de ese mismo camino: el render que recibe el `Printable`
+(`ScorePages`) según la escala y el rango elegidos ya lo cubre `ScorePrintingTest`
+(`tabpro-ui/src/test/.../print/ScorePrintingTest.java`, comparando el render en memoria contra una
+imagen exportada a disco), y `PrintAuditTest` confirma que esos mismos valores (rango de páginas,
+escala fija o "Ajustar a la hoja") se arman de verdad a partir de los controles reales del
+diálogo — sólo falta el tramo final, adentro del `PrinterJob`, que no tiene costura.
 
 ---
 
@@ -168,12 +178,23 @@ ventanas para sus diálogos nativos) hubiera necesitado más tiempo del que qued
 `tabpro-app/src/test/java/com/gstncaruso/tabpro/app/audit/`:
 
 - `AuditSupport.java`: fábrica de `MainFrame` real (con `ScoreFiles`/`Player`/`Devices` falsos
-  inyectables), recorrido del árbol de componentes real (`findComponent`, `findComponents`,
-  `findMenuItem`, `findButton`, `findCheckBox`, `findRadioButton`, `tabContent`), despacho de
-  `KeyEvent` real (`pressKey`, `typeChar`) y el manejo de diálogos modales reales sin `Robot`
-  (`withDialog`, `dispatchKeyAndDetectDialog`): un `AWTEventListener` global agarra el
-  `WINDOW_OPENED` del `JDialog` -que Swing entrega dentro del mismo bucle anidado que bloquea a
-  `setVisible(true)`- y ahí mismo se tocan sus controles reales.
+  inyectables, más un `newFrame(Editor, ScoreFiles, ScoreExchange)` para los tests que necesitan
+  un `ScoreFiles`/`ScoreExchange` real -Abrir/Guardar/Importar/Exportar-), recorrido del árbol de
+  componentes real (`findComponent`, `findComponents`, `findMenuItem` -con la variante que busca
+  dentro de un `JMenu` puntual, para cuando la misma etiqueta existe tanto en Importar como en
+  Exportar-, `findButton`, `findCheckBox`, `findRadioButton`, `tabContent`), un `repoFile` para los
+  fixtures reales de otro módulo (`tabpro-format/src/test/resources/...`, resueltos desde el
+  directorio de trabajo real de `tabpro-tests`), despacho de `KeyEvent` real (`pressKey`,
+  `typeChar`) y el manejo de diálogos modales reales sin `Robot` (`withDialog`,
+  `dispatchKeyAndDetectDialog`): un `AWTEventListener` global agarra el `WINDOW_OPENED` del
+  `JDialog` -que Swing entrega dentro del mismo bucle anidado que bloquea a `setVisible(true)`- y
+  ahí mismo se tocan sus controles reales. Cuando un comando abre más de un diálogo en cadena
+  (import de MIDI, import/export de ASCII, export de WAVE), el mismo `onOpen` de `withDialog` se
+  invoca una vez por cada ventana real que aparece, en el orden en que Swing las va abriendo.
+- `TabEditMinimalFixture.java`: un archivo TEF3 mínimo armado a mano, con el mismo layout binario
+  que entiende el lector real (`TabEditByteReader`), para el import de TablEdit -que no tiene
+  ninguna muestra real en el repositorio (tampoco la tiene `tabpro-format`, que arma la suya
+  igual a mano, en un test de otro módulo, package-private y no reusable desde acá)-.
 - Un archivo de test por capítulo, todos `@Tag("integracion")` y
   `@ResourceLock(AuditSupport.SWING_LOCK)`.
 - Dos cambios de infraestructura en el `pom.xml` raíz (con el mismo valor por defecto que antes,
@@ -186,7 +207,7 @@ ventanas para sus diálogos nativos) hubiera necesitado más tiempo del que qued
     real lee/escribe las `Preferences` reales del usuario y busca su archivo de recuperación en
     el `tmpdir` real; sin aislarlos, un archivo de recuperación real dispara un diálogo real en
     cada test (se reprodujo una vez).
-  - `@ResourceLock` con una clave compartida en las 13 clases: Swing tiene un solo EDT por
+  - `@ResourceLock` con una clave compartida en las 15 clases: Swing tiene un solo EDT por
     máquina virtual y la suite corre las clases en paralelo — sin el lock, dos clases que abren
     diálogos modales al mismo tiempo se pisan el `AWTEventListener` global (`Toolkit` no
     distingue de qué test es cada ventana) y la suite queda colgada (se reprodujo una vez, sin
