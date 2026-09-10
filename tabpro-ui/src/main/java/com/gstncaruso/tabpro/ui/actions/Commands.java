@@ -353,13 +353,13 @@ public final class Commands {
     }
 
     private void defineMarkerCommands() {
-        define("marker.insert", "Insertar un marcador…", dialogs::insertMarker)
+        define("marker.insert", Texts.get("menus.marker.insert"), dialogs::insertMarker)
                 .withAccelerator("shift INSERT").withIcon(Icons.marker());
-        define("marker.edit", "Editar el marcador…", dialogs::editMarker).withIcon(Icons.markerEdit());
-        define("marker.list", "Lista de marcadores…", dialogs::markerList).withIcon(Icons.markerList());
-        define("marker.previous", "Marcador anterior", editor::moveToPreviousMarker)
+        define("marker.edit", Texts.get("menus.marker.edit"), dialogs::editMarker).withIcon(Icons.markerEdit());
+        define("marker.list", Texts.get("menus.marker.list"), dialogs::markerList).withIcon(Icons.markerList());
+        define("marker.previous", Texts.get("menus.marker.previous"), editor::moveToPreviousMarker)
                 .withAccelerator("shift TAB").withIcon(Icons.markerPrevious());
-        define("marker.next", "Marcador siguiente", editor::moveToNextMarker)
+        define("marker.next", Texts.get("menus.marker.next"), editor::moveToNextMarker)
                 .withAccelerator("ctrl TAB").withIcon(Icons.markerNext());
         editor.addListener(EdtEditorListener.onEdt(this::refreshEditMarkerCommand));
         refreshEditMarkerCommand();
