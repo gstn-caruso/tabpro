@@ -17,6 +17,7 @@ import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
+import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
@@ -353,6 +354,20 @@ class LabelsTest {
     @EnumSource(StrokeDirection.class)
     void everyStrokeDirectionHasSpanishAndEnglishText(StrokeDirection value) {
         String key = "domain.StrokeDirection." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheBendType() {
+        assertEquals("Bend y suelta", Labels.of(BendType.BEND_RELEASE));
+    }
+
+    @ParameterizedTest
+    @EnumSource(BendType.class)
+    void everyBendTypeHasSpanishAndEnglishText(BendType value) {
+        String key = "domain.BendType." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
