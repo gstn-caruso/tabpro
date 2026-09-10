@@ -8,17 +8,17 @@ import org.junit.jupiter.api.Test;
 class CountInTest {
 
     @Test
-    void desactivadaNoAgregaTiempo() {
+    void whenOffAddsNoTime() {
         assertEquals(0, CountIn.off().leadInTicks(TimeSignature.fourFour()));
     }
 
     @Test
-    void activadaDuraUnCompasEntero() {
+    void whenOnLastsAWholeBar() {
         assertEquals(TimeSignature.fourFour().ticksPerMeasure(), CountIn.on().leadInTicks(TimeSignature.fourFour()));
     }
 
     @Test
-    void respetaLaMedidaDelCompas() {
+    void respectsTheBarTimeSignature() {
         TimeSignature threeFour = new TimeSignature(3, 4);
         assertEquals(threeFour.ticksPerMeasure(), CountIn.on().leadInTicks(threeFour));
     }

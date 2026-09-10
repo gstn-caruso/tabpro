@@ -11,42 +11,42 @@ class HarmonicPitchTest {
     private static final Pitch OPEN_STRING = new Pitch(40);
 
     @Test
-    void elArmonicoNaturalDelTraste12EsUnaOctavaSobreLaCuerdaAlAire() {
+    void theNaturalHarmonicAtFret12IsAnOctaveAboveTheOpenString() {
         Pitch pitch = HarmonicPitch.of(HarmonicType.NATURAL, OPEN_STRING, new Pitch(52), 12);
 
         assertEquals(new Pitch(52), pitch);
     }
 
     @Test
-    void elArmonicoNaturalDelTraste7EsUnaDuodecimaSobreLaCuerdaAlAire() {
+    void theNaturalHarmonicAtFret7IsATwelfthAboveTheOpenString() {
         Pitch pitch = HarmonicPitch.of(HarmonicType.NATURAL, OPEN_STRING, new Pitch(47), 7);
 
         assertEquals(new Pitch(59), pitch);
     }
 
     @Test
-    void elArmonicoNaturalDelTraste19EsElMismoNodoQueElDelTraste7() {
+    void theNaturalHarmonicAtFret19IsTheSameNodeAsFret7() {
         Pitch pitch = HarmonicPitch.of(HarmonicType.NATURAL, OPEN_STRING, new Pitch(59), 19);
 
         assertEquals(new Pitch(59), pitch);
     }
 
     @Test
-    void elArmonicoNaturalDelTraste5EsDosOctavas() {
+    void theNaturalHarmonicAtFret5IsTwoOctaves() {
         Pitch pitch = HarmonicPitch.of(HarmonicType.NATURAL, OPEN_STRING, new Pitch(45), 5);
 
         assertEquals(new Pitch(64), pitch);
     }
 
     @Test
-    void elArmonicoNaturalDelTraste4EsDosOctavasYTercera() {
+    void theNaturalHarmonicAtFret4IsTwoOctavesAndAThird() {
         Pitch pitch = HarmonicPitch.of(HarmonicType.NATURAL, OPEN_STRING, new Pitch(44), 4);
 
         assertEquals(new Pitch(68), pitch);
     }
 
     @Test
-    void unTrasteSinNodoConocidoSuenaComoLaNotaPisada() {
+    void aFretWithoutAKnownNodeSoundsLikeTheFrettedNote() {
         Pitch fretted = new Pitch(43);
         Pitch pitch = HarmonicPitch.of(HarmonicType.NATURAL, OPEN_STRING, fretted, 3);
 
@@ -54,7 +54,7 @@ class HarmonicPitchTest {
     }
 
     @Test
-    void elArmonicoArtificialSuenaUnaOctavaSobreLaNotaPisada() {
+    void theArtificialHarmonicSoundsAnOctaveAboveTheFrettedNote() {
         Pitch fretted = new Pitch(50);
         Pitch pitch = HarmonicPitch.of(HarmonicType.ARTIFICIAL, OPEN_STRING, fretted, 10);
 
@@ -62,7 +62,7 @@ class HarmonicPitchTest {
     }
 
     @Test
-    void elArmonicoPellizcadoTambienSeTransportaUnaOctava() {
+    void thePinchHarmonicAlsoTransposesAnOctave() {
         Pitch fretted = new Pitch(55);
         Pitch pitch = HarmonicPitch.of(HarmonicType.PINCH, OPEN_STRING, fretted, 15);
 
