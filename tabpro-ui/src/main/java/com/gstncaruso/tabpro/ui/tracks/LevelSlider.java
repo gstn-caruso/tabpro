@@ -3,6 +3,9 @@ package com.gstncaruso.tabpro.ui.tracks;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleValue;
@@ -36,6 +39,33 @@ public final class LevelSlider extends JComponent implements AccessibleControl {
         this.fillColor = fillColor;
         this.trackColor = trackColor;
         installKeyboardShortcuts();
+        addMouseListener(jumpToClick());
+        addMouseMotionListener(followDrag());
+    }
+
+    private MouseAdapter jumpToClick() {
+        return new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                setValue(valueAt(e.getX()));
+                onUserChange.run();
+            }
+        };
+    }
+
+    private MouseMotionAdapter followDrag() {
+        return new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                setValue(valueAt(e.getX()));
+                onUserChange.run();
+            }
+        };
+    }
+
+    private int valueAt(int x) {
+        double fraction = x / (double) (getWidth() - 1);
+        return min + (int) Math.round(fraction * (max - min));
     }
 
     private void installKeyboardShortcuts() {

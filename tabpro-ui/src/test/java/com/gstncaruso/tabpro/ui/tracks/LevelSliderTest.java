@@ -3,7 +3,9 @@ package com.gstncaruso.tabpro.ui.tracks;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleValue;
 import javax.swing.JComponent;
@@ -74,6 +76,37 @@ class LevelSliderTest {
         assertEquals(64, accessibleValue.getCurrentAccessibleValue().intValue());
         assertEquals(0, accessibleValue.getMinimumAccessibleValue().intValue());
         assertEquals(127, accessibleValue.getMaximumAccessibleValue().intValue());
+    }
+
+    @Test
+    void clickingAlongTheTrackJumpsToThatPosition() {
+        LevelSlider slider = new LevelSlider(0, 100, 50, Color.ORANGE, Color.GRAY);
+        slider.setSize(101, 20);
+
+        slider.dispatchEvent(pressAt(slider, 0));
+        assertEquals(0, slider.getValue());
+
+        slider.dispatchEvent(pressAt(slider, 100));
+        assertEquals(100, slider.getValue());
+    }
+
+    @Test
+    void draggingFollowsTheMouseAcrossTheTrack() {
+        LevelSlider slider = new LevelSlider(0, 100, 0, Color.ORANGE, Color.GRAY);
+        slider.setSize(101, 20);
+
+        slider.dispatchEvent(pressAt(slider, 0));
+        slider.dispatchEvent(dragTo(slider, 40));
+
+        assertEquals(40, slider.getValue());
+    }
+
+    private static MouseEvent pressAt(Component target, int x) {
+        return new MouseEvent(target, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, x, 10, 1, false);
+    }
+
+    private static MouseEvent dragTo(Component target, int x) {
+        return new MouseEvent(target, MouseEvent.MOUSE_DRAGGED, System.currentTimeMillis(), 0, x, 10, 1, false);
     }
 
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
