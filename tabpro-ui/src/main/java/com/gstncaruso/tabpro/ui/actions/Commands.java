@@ -422,45 +422,48 @@ public final class Commands {
     }
 
     private void defineViewCommands() {
-        define("view.page", "Modo página", view::pageMode).withIcon(Icons.pageMode());
-        define("view.parchment", "Modo pergamino", view::parchmentMode).withIcon(Icons.parchmentMode());
-        define("view.verticalScreen", "Pantalla vertical", view::verticalScreenMode)
+        define("view.page", Texts.get("menus.view.page"), view::pageMode).withIcon(Icons.pageMode());
+        define("view.parchment", Texts.get("menus.view.parchment"), view::parchmentMode)
+                .withIcon(Icons.parchmentMode());
+        define("view.verticalScreen", Texts.get("menus.view.verticalScreen"), view::verticalScreenMode)
                 .withIcon(Icons.verticalScreen());
-        define("view.horizontalScreen", "Pantalla horizontal", view::horizontalScreenMode)
+        define("view.horizontalScreen", Texts.get("menus.view.horizontalScreen"), view::horizontalScreenMode)
                 .withIcon(Icons.horizontalScreen());
-        define("view.zoomIn", "Acercar", view::zoomIn).withAccelerator("ctrl EQUALS");
-        define("view.zoomOut", "Alejar", view::zoomOut).withAccelerator("ctrl MINUS");
-        define("view.resetZoom", "Zoom al 100%", view::resetZoom).withAccelerator("ctrl 0");
-        define("view.multitrack", "Vista multipista", view::toggleMultitrack).withIcon(Icons.multitrack());
-        define("view.grayInactiveVoice", "Atenuar la voz inactiva", view::toggleGrayInactiveVoice)
+        define("view.zoomIn", Texts.get("menus.view.zoomIn"), view::zoomIn).withAccelerator("ctrl EQUALS");
+        define("view.zoomOut", Texts.get("menus.view.zoomOut"), view::zoomOut).withAccelerator("ctrl MINUS");
+        define("view.resetZoom", Texts.get("menus.view.resetZoom"), view::resetZoom).withAccelerator("ctrl 0");
+        define("view.multitrack", Texts.get("menus.view.multitrack"), view::toggleMultitrack)
+                .withIcon(Icons.multitrack());
+        define("view.grayInactiveVoice", Texts.get("menus.view.grayInactiveVoice"), view::toggleGrayInactiveVoice)
                 .withAccelerator("ctrl G");
-        define("view.dynamicNotes", "Notas con dinámica", view::toggleShowsDynamicNotes)
+        define("view.dynamicNotes", Texts.get("menus.view.dynamicNotes"), view::toggleShowsDynamicNotes)
                 .withAccelerator("F11");
-        define("view.hideStandardNotation", "Ocultar el pentagrama", view::toggleStandardNotation)
+        define("view.hideStandardNotation", Texts.get("menus.view.hideStandardNotation"), view::toggleStandardNotation)
                 .withIcon(Icons.hideStandardNotation());
-        define("view.hideTablature", "Ocultar la tablatura", view::toggleTablature)
+        define("view.hideTablature", Texts.get("menus.view.hideTablature"), view::toggleTablature)
                 .withIcon(Icons.hideTablature());
-        define("view.fretboard", "Diapasón", view::toggleFretboard).withAccelerator("ctrl 3")
-                .withIcon(Icons.fretboard());
-        define("view.keyboard", "Teclado", view::toggleKeyboard).withAccelerator("ctrl 4")
-                .withIcon(Icons.keyboard());
-        define("view.percussion", "Asistente de percusión", view::togglePercussionAssistant);
-        define("view.mixTable", "Mesa de mezcla", view::toggleMixTable).withIcon(Icons.mixTable());
-        define("view.toggleView", "Intercambiar vistas", view::toggleView);
-        define("view.toolBars", "Barras de herramientas", view::toggleToolBars);
-        define("view.toolBars.document", "Documento y edición", view::toggleDocumentToolBar)
+        define("view.fretboard", Texts.get("menus.view.fretboard"), view::toggleFretboard)
+                .withAccelerator("ctrl 3").withIcon(Icons.fretboard());
+        define("view.keyboard", Texts.get("menus.view.keyboard"), view::toggleKeyboard)
+                .withAccelerator("ctrl 4").withIcon(Icons.keyboard());
+        define("view.percussion", Texts.get("menus.view.percussion"), view::togglePercussionAssistant);
+        define("view.mixTable", Texts.get("menus.view.mixTable"), view::toggleMixTable)
+                .withIcon(Icons.mixTable());
+        define("view.toggleView", Texts.get("menus.view.toggleView"), view::toggleView);
+        define("view.toolBars", Texts.get("menus.view.toolBars"), view::toggleToolBars);
+        define("view.toolBars.document", Texts.get("menus.view.toolBars.document"), view::toggleDocumentToolBar)
                 .checkedByDefault();
-        define("view.toolBars.structure", "Estructura y sonido", view::toggleStructureToolBar)
+        define("view.toolBars.structure", Texts.get("menus.view.toolBars.structure"), view::toggleStructureToolBar)
                 .checkedByDefault();
-        define("view.toolBars.notation", "Figuras", view::toggleNotationToolBar)
+        define("view.toolBars.notation", Texts.get("menus.view.toolBars.notation"), view::toggleNotationToolBar)
                 .checkedByDefault();
-        define("view.toolBars.effects", "Efectos", view::toggleEffectsToolBar)
+        define("view.toolBars.effects", Texts.get("menus.view.toolBars.effects"), view::toggleEffectsToolBar)
                 .checkedByDefault();
         for (String theme : themes) {
             define("view.theme." + theme, theme, () -> view.useTheme(theme));
         }
-        define("options.midiSetup", "Configuración MIDI…", dialogs::midiSetup);
-        define("options.preferences", "Preferencias…", dialogs::preferences)
+        define("options.midiSetup", Texts.get("menus.options.midiSetup"), dialogs::midiSetup);
+        define("options.preferences", Texts.get("menus.options.preferences"), dialogs::preferences)
                 .withAccelerator("F12").withIcon(Icons.preferences());
     }
 
