@@ -36,7 +36,7 @@ public final class PercussionSoundPalette extends JPanel {
         list.setForeground(ScoreColors.INK);
         list.setCellRenderer(new SoundRenderer());
         list.setLayoutOrientation(JList.VERTICAL_WRAP);
-        list.setVisibleRowCount(rowsFor(list.getModel().getSize()));
+        list.setVisibleRowCount(rowsToFitFourColumns(list.getModel().getSize()));
         list.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -63,8 +63,7 @@ public final class PercussionSoundPalette extends JPanel {
         return list;
     }
 
-    /** Filas para que entren en cuatro columnas, como el asistente del manual. */
-    private static int rowsFor(int soundCount) {
+    private static int rowsToFitFourColumns(int soundCount) {
         return (soundCount + COLUMNS - 1) / COLUMNS;
     }
 
