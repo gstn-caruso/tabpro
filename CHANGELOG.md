@@ -1,3 +1,9 @@
+## [0.49.1](https://github.com/gstn-caruso/tabpro/compare/v0.49.0...v0.49.1) (2026-09-10)
+
+### Bug Fixes
+
+* **score:** el cuadrado del marcador comparte renglón con su texto y no pisa el nombre de pista ([#151](https://github.com/gstn-caruso/tabpro/issues/151)) ([e00b69d](https://github.com/gstn-caruso/tabpro/commit/e00b69d553794372413da3c01310f24085387962)), closes [#150](https://github.com/gstn-caruso/tabpro/issues/150) [#150](https://github.com/gstn-caruso/tabpro/issues/150)
+
 ## [0.49.0](https://github.com/gstn-caruso/tabpro/compare/v0.48.0...v0.49.0) (2026-09-10)
 
 ### Features
