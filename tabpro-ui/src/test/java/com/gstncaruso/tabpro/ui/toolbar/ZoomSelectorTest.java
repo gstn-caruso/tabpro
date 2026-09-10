@@ -44,6 +44,15 @@ class ZoomSelectorTest {
         assertEquals(Zoom.presets().stream().map(percent -> percent + "%").toList(), items);
     }
 
+    @Test
+    void elegirUnValorDelDesplegableAplicaEseZoom() {
+        ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
+
+        selector.setSelectedItem("150%");
+
+        assertEquals(150, zoomHolder.zoom().percent());
+    }
+
     private static final class FakeZoomHolder implements com.gstncaruso.tabpro.ui.score.ZoomHolder {
         private Zoom zoom = Zoom.whole();
         private final List<Runnable> listeners = new ArrayList<>();

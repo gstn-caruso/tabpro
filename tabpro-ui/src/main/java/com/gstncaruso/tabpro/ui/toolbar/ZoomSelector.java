@@ -16,7 +16,13 @@ public final class ZoomSelector extends JComboBox<String> {
     public ZoomSelector(ZoomHolder zoomHolder, Commands commands) {
         super(presetLabels());
         this.zoomHolder = zoomHolder;
+        addActionListener(event -> applyEnteredZoom());
         refresh();
+    }
+
+    private void applyEnteredZoom() {
+        String enteredPercent = String.valueOf(getEditor().getItem()).strip().replace("%", "");
+        zoomHolder.setZoom(new Zoom(Integer.parseInt(enteredPercent)));
     }
 
     private void refresh() {
