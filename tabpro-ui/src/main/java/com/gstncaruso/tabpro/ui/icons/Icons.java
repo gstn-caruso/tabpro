@@ -316,17 +316,7 @@ public final class Icons {
     }
 
     public static Icon metronome() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            Path2D body = new Path2D.Double();
-            body.moveTo(size * 0.34, size * 0.16);
-            body.lineTo(size * 0.66, size * 0.16);
-            body.lineTo(size * 0.84, size * 0.86);
-            body.lineTo(size * 0.16, size * 0.86);
-            body.closePath();
-            graphics.draw(body);
-            graphics.draw(new Line2D.Double(size * 0.44, size * 0.82, size * 0.66, size * 0.26));
-        });
+        return svgIcon("metronome");
     }
 
     public static Icon countDown() {
