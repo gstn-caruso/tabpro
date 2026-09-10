@@ -207,3 +207,61 @@ es derivable de lo que quedó guardado?"**
 - **Los canales no perdieron nada.** El canal real era una función determinística
   del orden de las pistas, así que el programa lo recalcula al abrir y el usuario
   no se entera. No va en la nota del release.
+
+---
+
+## Etapa: se ve y se usa como Guitar Pro 5 (arrancó el 2026-09-10)
+
+Objetivo declarado por Gastón: **un programa lo más parecido posible a Guitar
+Pro 5.2** (abandonware), con el manual como guía de producto. Tres frentes: lo
+que el manual describe y todavía no funciona *al usarlo*, el aspecto visual
+(barras e íconos) y la accesibilidad, que hoy es cero.
+
+### Decisiones (2026-09-10)
+
+- **Estética:** disposición, tamaños y semántica de barras e íconos se miden de
+  las capturas del manual (`pdfimages`, ver la nota de tipografía); se mantiene
+  FlatLaf Darcula. No se copia el tema claro de Windows.
+- **Íconos:** las acciones genéricas (archivo, edición, zoom, transporte, vista)
+  salen de **Tabler Icons** (MIT, SVG) dibujadas con `FlatSVGIcon` de
+  `flatlaf-extras` 3.7.2 (trae `jsvg` 2.1.0; verificado en Maven Central). Los
+  símbolos musicales salen de **Bravura**, que ya está en el repo. Los efectos
+  sin glifo SMuFL (P.M., let ring, tapping…) van como texto abreviado, como en
+  GP5. Se commitean sólo los SVG que se usan, con su licencia al lado.
+- **Accesibilidad, los cuatro frentes:** teclado completo (mnemónicos, orden de
+  tabulación, foco visible, ningún control sólo alcanzable con el mouse); lector
+  de pantalla (nombre y descripción accesible en cada control); contraste y
+  tamaño (WCAG AA sobre el tema oscuro, tooltip en todo ícono, escala de la UI);
+  y una sección **Accesibilidad** en Preferencias (tamaño de fuente, alto
+  contraste, sin animaciones). Cada preferencia nace con su lector y su test:
+  la regla de la etapa anterior sigue vigente.
+- **Cómo se encuentra lo que falla:** una auditoría de **uso real** — cada
+  acción del manual ejercitada por el camino del usuario (menú, atajo, botón,
+  diálogo) verificando el efecto observable — y no otra lectura estática del
+  código. Informe en `docs/auditoria-uso-real.md`, harness bajo el tag
+  `integracion`.
+- **Flujo:** autónomo (DIY) y en loop. El principal planifica, briefea, abre el
+  PR, espera el CI y mergea. El agente `worker` (`~/.claude/agents/worker.md`:
+  sonnet, worktree propio, TDD + TCR, push en cada verde, sin PR) escribe el
+  código. Una feature branch por cambio, un PR por tipo de cambio.
+
+### Frentes y orden
+
+| # | Frente | Cortes en PR |
+|---|---|---|
+| A | Auditoría de uso real | el informe y el harness; después un `fix/` por hallazgo, los MIENTE primero |
+| B | Íconos | B1 puerto `IconSet` + `flatlaf-extras` + primeros SVG · B2 barras genéricas a Tabler · B3 figuras, claves y efectos a Bravura · B4 barras agrupadas y ordenadas como la "Main Screen" del manual · B5 color por tema, estado deshabilitado y HiDPI |
+| C | Accesibilidad | C1 test que recorre el árbol de componentes y exige tooltip y nombre accesible en cada control sin texto · C2 mnemónicos en menús y diálogos con test de no-colisión · C3 teclado en los componentes custom (perillas, diapasón, piano, grilla) y foco visible · C4 test de contraste WCAG AA sobre la paleta · C5 sección Accesibilidad en Preferencias |
+| D | Lo visual que salga de la auditoría | barra de estado, mesa de mezcla, vista global: medidos contra las capturas |
+
+Los inventarios que alimentan B y C (íconos actuales contra barras de GP5;
+componentes sin tooltip, nombre accesible ni teclado; paleta) se generan con
+agentes de un solo pase y no se commitean: lo que vale de ellos entra en el
+PR que lo usa.
+
+### Estado
+
+| Ítem | Branch | PR | Estado |
+|---|---|---|---|
+| Plan de la etapa | `docs/plan-etapa-visual` | — | abierto |
+| A · auditoría de uso real | `docs/auditoria-uso-real` | — | en curso |
