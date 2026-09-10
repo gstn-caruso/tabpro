@@ -29,7 +29,7 @@ class ToolBarsTest {
     private final Commands commands = new Commands(
             editor, record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
-    private final ToolBars toolBars = new ToolBars(commands);
+    private final ToolBars toolBars = new ToolBars(editor, commands);
 
     @Test
     void lasCuatroFilasArrancanVisibles() {
@@ -132,7 +132,7 @@ class ToolBarsTest {
         };
         Ports.Playback playback = (Ports.Playback) Proxy.newProxyInstance(
                 Ports.Playback.class.getClassLoader(), new Class<?>[] {Ports.Playback.class}, handler);
-        ToolBars otraBarra = new ToolBars(new Commands(
+        ToolBars otraBarra = new ToolBars(editor, new Commands(
                 editor, record(Ports.Document.class), record(Ports.Dialogs.class), playback, record(Ports.View.class)));
         JToggleButton button = toggleButtonNamed(otraBarra.structureToolBar, "Banco de sonido");
 

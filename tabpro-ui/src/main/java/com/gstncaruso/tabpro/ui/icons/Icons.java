@@ -722,6 +722,14 @@ public final class Icons {
         return svgIcon("trash");
     }
 
+    public static Icon chevronLeft() {
+        return svgIcon("chevron-left");
+    }
+
+    public static Icon chevronRight() {
+        return svgIcon("chevron-right");
+    }
+
     /** El casillero verde del manual: "Verificar la duracion de los compases". */
     public static Icon checkBarDurations() {
         return icon((graphics, size) -> {

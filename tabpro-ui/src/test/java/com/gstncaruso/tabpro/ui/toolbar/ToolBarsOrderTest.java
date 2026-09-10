@@ -23,12 +23,13 @@ import org.junit.jupiter.api.Test;
 class ToolBarsOrderTest {
 
     private static final String SEP = "|";
+    private static final String SELECTOR = "@selector";
 
     private final Editor editor = new Editor(Score.blank());
     private final Commands commands = new Commands(
             editor, record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
-    private final ToolBars toolBars = new ToolBars(commands);
+    private final ToolBars toolBars = new ToolBars(editor, commands);
 
     @Test
     void laFilaDeDocumentoYEdicionSigueElOrdenDeGuitarPro5() {
@@ -45,7 +46,8 @@ class ToolBarsOrderTest {
                 "view.page", "view.parchment", "view.verticalScreen", "view.horizontalScreen", SEP,
                 "view.zoomOut", "view.resetZoom", "view.zoomIn", SEP,
                 "view.fretboard", "view.keyboard", "view.mixTable", SEP,
-                "edit.copy", "edit.paste");
+                "edit.copy", "edit.paste", SEP,
+                SELECTOR);
     }
 
     @Test
@@ -96,7 +98,7 @@ class ToolBarsOrderTest {
     private void assertOrder(JToolBar bar, String... tokens) {
         List<Object> expected = new ArrayList<>();
         for (String token : tokens) {
-            expected.add(token.equals(SEP) ? SEP : commands.get(token));
+            expected.add(token.equals(SEP) || token.equals(SELECTOR) ? token : commands.get(token));
         }
         assertEquals(expected, actualOrderOf(bar));
     }
@@ -106,6 +108,8 @@ class ToolBarsOrderTest {
         for (Component component : bar.getComponents()) {
             if (component instanceof JToolBar.Separator) {
                 actual.add(SEP);
+            } else if (component instanceof TrackSelector) {
+                actual.add(SELECTOR);
             } else if (component instanceof AbstractButton button) {
                 actual.add(button.getAction());
             }
