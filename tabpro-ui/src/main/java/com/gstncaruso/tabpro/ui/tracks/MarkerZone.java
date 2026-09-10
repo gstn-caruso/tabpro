@@ -10,7 +10,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
@@ -167,27 +166,11 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
         return fromLookAndFeel != null ? fromLookAndFeel : ScoreColors.ACCENT;
     }
 
+    /** Como en Guitar Pro 5: el nombre del marcador se lee en rojo sobre la cabecera de la grilla. */
     private void paintSegment(Graphics2D g, MarkerSegments.Segment segment) {
-        Rectangle bounds = new Rectangle(
-                segment.fromMeasure() * MeasureGrid.CELL_WIDTH,
-                0,
-                (segment.toMeasureExclusive() - segment.fromMeasure()) * MeasureGrid.CELL_WIDTH,
-                HEIGHT);
-        Color color = colorOf(segment.marker());
-        g.setColor(color);
-        g.fillRect(bounds.x, bounds.y + 1, bounds.width - 1, bounds.height - 2);
-        g.setColor(readableInkOver(color));
-        g.drawString(segment.marker().name(), bounds.x + 3, HEIGHT - 4);
-    }
-
-    private Color colorOf(Marker marker) {
-        return new Color(marker.color().red(), marker.color().green(), marker.color().blue());
-    }
-
-    /** Texto negro o blanco segun que se lea mejor sobre el color del marcador. */
-    private Color readableInkOver(Color background) {
-        double brightness = (0.299 * background.getRed() + 0.587 * background.getGreen() + 0.114 * background.getBlue()) / 255;
-        return brightness > 0.6 ? Color.BLACK : Color.WHITE;
+        int x = segment.fromMeasure() * MeasureGrid.CELL_WIDTH;
+        g.setColor(ScoreColors.WARNING);
+        g.drawString(segment.marker().name(), x + 3, HEIGHT - 4);
     }
 
     private void editMarkerAt(int measureIndex) {
