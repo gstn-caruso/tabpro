@@ -20,7 +20,7 @@ class TabEditComponentsReaderTest {
     private final TabEditComponentsReader reader = new TabEditComponentsReader();
 
     @Test
-    void leeUnaNotaYUnSilencioYValidaElPie() {
+    void readsANoteAndARestAndValidatesTheFooter() {
         TabEditFileWriter writer = new TabEditFileWriter();
         writeNote(writer, 0, 3, 6);
         writeRest(writer, 32 * 6, 9);
@@ -36,7 +36,7 @@ class TabEditComponentsReaderTest {
     }
 
     @Test
-    void descartaComponentesConocidosPeroNoSoportadosSinPerderLaAlineacion() {
+    void discardsKnownButUnsupportedComponentsWithoutLosingAlignment() {
         TabEditFileWriter writer = new TabEditFileWriter();
         writeUnsupported(writer, 0xFE);
         writeUnsupported(writer, 0xB7);
@@ -51,7 +51,7 @@ class TabEditComponentsReaderTest {
     }
 
     @Test
-    void descartaLasNotasDeAdornoPorAhora() {
+    void discardsGraceNotesForNow() {
         TabEditFileWriter writer = new TabEditFileWriter();
         writeGraceNote(writer, 0, 2);
         writeNote(writer, 32 * 6, 5, 6);
@@ -64,7 +64,7 @@ class TabEditComponentsReaderTest {
     }
 
     @Test
-    void unTipoDeComponenteDesconocidoSeDeclaraEnVezDeIgnorarse() {
+    void anUnknownComponentTypeIsReportedInsteadOfIgnored() {
         TabEditFileWriter writer = new TabEditFileWriter();
         writeUnsupported(writer, 0x60);
         writeFooter(writer);
@@ -76,7 +76,7 @@ class TabEditComponentsReaderTest {
     }
 
     @Test
-    void unPieDeArchivoQueNoEsElEsperadoSeDeclara() {
+    void aFooterThatIsNotTheExpectedOneIsReported() {
         TabEditFileWriter writer = new TabEditFileWriter();
         writeNote(writer, 0, 3, 6);
         writer.writeInt(0);
