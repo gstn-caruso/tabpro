@@ -17,27 +17,27 @@ import org.junit.jupiter.api.Test;
 class BmpDocumentTest {
 
     @Test
-    void unaImagenSinCanalAlfaSePuedeCodificar() {
+    void anImageWithoutAnAlphaChannelCanBeEncoded() {
         assertTrue(BmpDocument.canEncode(opaquePage(3, 2)));
     }
 
     @Test
-    void unaImagenConTransparenciaRealNoSePuedeCodificar() {
-        BufferedImage translucida = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
-        translucida.setRGB(0, 0, 0x80FF0000);
+    void anImageWithRealTransparencyCannotBeEncoded() {
+        BufferedImage translucent = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
+        translucent.setRGB(0, 0, 0x80FF0000);
 
-        assertFalse(BmpDocument.canEncode(translucida));
+        assertFalse(BmpDocument.canEncode(translucent));
     }
 
     @Test
-    void elBmpEscritoEsIdenticoByteAByteAlDeImageIo() throws IOException {
+    void theWrittenBmpIsByteForByteIdenticalToImageIos() throws IOException {
         BufferedImage image = opaquePage(5, 3);
 
         assertArrayEquals(writeWithImageIo(image), writeWithBmpDocument(image));
     }
 
     @Test
-    void writeToPideLosPixelesPorFilaNoUnoPorUno() throws IOException {
+    void writeToAsksForPixelsRowByRowNotOneByOne() throws IOException {
         PixelAccessCountingImage image = new PixelAccessCountingImage(9, 4);
 
         writeWithBmpDocument(image);

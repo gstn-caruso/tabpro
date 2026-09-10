@@ -10,7 +10,7 @@ class HorizontalMultitrackTest {
     private final TrackVisibility visibleTracks = new TrackVisibility();
 
     @Test
-    void conLaPreferenciaPrendidaEntrarAPantallaHorizontalPrendeLaVistaMultipista() {
+    void withThePreferenceOnEnteringHorizontalScreenTurnsOnTheMultitrackView() {
         visibleTracks.setMultitrack(false);
 
         HorizontalMultitrack.applyTo(visibleTracks, ViewMode.SCREEN_HORIZONTAL, true);
@@ -19,7 +19,7 @@ class HorizontalMultitrackTest {
     }
 
     @Test
-    void conLaPreferenciaApagadaEntrarAPantallaHorizontalNoTocaLaVistaMultipista() {
+    void withThePreferenceOffEnteringHorizontalScreenDoesNotTouchTheMultitrackView() {
         visibleTracks.setMultitrack(false);
 
         HorizontalMultitrack.applyTo(visibleTracks, ViewMode.SCREEN_HORIZONTAL, false);
@@ -28,7 +28,7 @@ class HorizontalMultitrackTest {
     }
 
     @Test
-    void laPreferenciaNoHaceNadaFueraDePantallaHorizontal() {
+    void thePreferenceDoesNothingOutsideHorizontalScreen() {
         visibleTracks.setMultitrack(false);
 
         HorizontalMultitrack.applyTo(visibleTracks, ViewMode.SCREEN_VERTICAL, true);
@@ -39,7 +39,7 @@ class HorizontalMultitrackTest {
     }
 
     @Test
-    void apagarLaVistaMultipistaAManoSigueFuncionandoDespuesDeForzarla() {
+    void turningOffTheMultitrackViewByHandStillWorksAfterForcingIt() {
         HorizontalMultitrack.applyTo(visibleTracks, ViewMode.SCREEN_HORIZONTAL, true);
         assertTrue(visibleTracks.isMultitrack());
 

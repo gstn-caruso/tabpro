@@ -30,39 +30,39 @@ class AccidentalPaintingTest {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score score = new Score("", 120, List.of(track));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas canvas = new RecordingCanvas();
 
-        StaffPainter.paintMeasure(lienzo, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
+        StaffPainter.paintMeasure(canvas, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
 
         int step = StaffPainter.positionOf(track, Clef.TREBLE, note, 0).step();
         int y = layout.stepY(0, 0, step);
-        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.accidentalSharp(), new Rectangle(0, y - 2, WIDTH, 4)),
+        assertTrue(canvas.writesTextInRegion(MusicFont.accidentalSharp(), new Rectangle(0, y - 2, WIDTH, 4)),
                 "la nota fuera de la armadura tiene que llevar el glifo del sostenido");
     }
 
     @Test
     void aSharpKeySignatureIsWrittenWithTheSharpGlyph() {
         ScoreLayout layout = layoutFor(new KeySignature(1, Mode.MAJOR));
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas canvas = new RecordingCanvas();
 
         StaffPainter.paintKeySignature(
-                lienzo, layout, Clef.TREBLE, new KeySignature(1, Mode.MAJOR), 0, 0, layout.measureX(0) + 4);
+                canvas, layout, Clef.TREBLE, new KeySignature(1, Mode.MAJOR), 0, 0, layout.measureX(0) + 4);
 
         int y = layout.stepY(0, 0, 8);
-        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.accidentalSharp(), new Rectangle(0, y - 2, WIDTH, 4)),
+        assertTrue(canvas.writesTextInRegion(MusicFont.accidentalSharp(), new Rectangle(0, y - 2, WIDTH, 4)),
                 "el fa sostenido de la armadura tiene que llevar el glifo del sostenido");
     }
 
     @Test
     void aFlatKeySignatureIsWrittenWithTheFlatGlyph() {
         ScoreLayout layout = layoutFor(new KeySignature(-1, Mode.MAJOR));
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas canvas = new RecordingCanvas();
 
         StaffPainter.paintKeySignature(
-                lienzo, layout, Clef.TREBLE, new KeySignature(-1, Mode.MAJOR), 0, 0, layout.measureX(0) + 4);
+                canvas, layout, Clef.TREBLE, new KeySignature(-1, Mode.MAJOR), 0, 0, layout.measureX(0) + 4);
 
         int y = layout.stepY(0, 0, 4);
-        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.accidentalFlat(), new Rectangle(0, y - 2, WIDTH, 4)),
+        assertTrue(canvas.writesTextInRegion(MusicFont.accidentalFlat(), new Rectangle(0, y - 2, WIDTH, 4)),
                 "el si bemol de la armadura tiene que llevar el glifo del bemol");
     }
 
@@ -75,13 +75,13 @@ class AccidentalPaintingTest {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score score = new Score("", 120, List.of(track));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas canvas = new RecordingCanvas();
 
-        StaffPainter.paintMeasure(lienzo, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
+        StaffPainter.paintMeasure(canvas, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
 
         int step = StaffPainter.positionOf(track, Clef.TREBLE, backToNatural, 0).step();
         int y = layout.stepY(0, 0, step);
-        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.accidentalNatural(), new Rectangle(0, y - 2, WIDTH, 4)),
+        assertTrue(canvas.writesTextInRegion(MusicFont.accidentalNatural(), new Rectangle(0, y - 2, WIDTH, 4)),
                 "la nota que vuelve a la armadura tiene que llevar el glifo del becuadro");
     }
 

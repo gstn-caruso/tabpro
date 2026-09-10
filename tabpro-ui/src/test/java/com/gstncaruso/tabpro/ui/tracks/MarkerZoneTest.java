@@ -74,7 +74,7 @@ class MarkerZoneTest {
     }
 
     @Test
-    void tieneNombreYTooltipAccesibles() {
+    void hasAnAccessibleNameAndTooltip() {
         MarkerZone zone = new MarkerZone(new Editor(Score.blank()));
 
         assertEquals("Zona de marcadores", zone.getAccessibleContext().getAccessibleName());

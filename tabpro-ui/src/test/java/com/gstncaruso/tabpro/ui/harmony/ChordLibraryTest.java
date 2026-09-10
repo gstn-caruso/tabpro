@@ -17,17 +17,17 @@ class ChordLibraryTest {
     private final ChordLibrary library = new ChordLibrary(scratch);
 
     @AfterEach
-    void limpiarElNodoDePrueba() throws BackingStoreException {
+    void clearsTheScratchNode() throws BackingStoreException {
         scratch.removeNode();
     }
 
     @Test
-    void empiezaVacia() {
+    void startsEmpty() {
         assertTrue(library.all().isEmpty());
     }
 
     @Test
-    void agregaUnAcordeYLoConserva() {
+    void addingAChordKeepsIt() {
         ChordDiagram am = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
 
         library.add(am);
@@ -36,54 +36,54 @@ class ChordLibraryTest {
     }
 
     @Test
-    void conservaLaDigitacion() {
-        ChordDiagram conDedos = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1))
+    void keepsTheFingering() {
+        ChordDiagram withFingers = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1))
                 .withFingering(java.util.Arrays.asList(null, Finger.INDEX, Finger.MIDDLE, Finger.RING, null, null));
 
-        library.add(conDedos);
+        library.add(withFingers);
 
-        assertEquals(conDedos.fingering(), library.all().get(0).fingering());
+        assertEquals(withFingers.fingering(), library.all().get(0).fingering());
     }
 
     @Test
-    void agregaVariosEnElOrdenEnQueSeAgregaron() {
+    void addingSeveralKeepsTheOrderTheyWereAdded() {
         ChordDiagram am = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
-        ChordDiagram do_ = ChordDiagram.named("C", List.of(0, 1, 0, 2, 3, -1));
+        ChordDiagram c = ChordDiagram.named("C", List.of(0, 1, 0, 2, 3, -1));
 
         library.add(am);
-        library.add(do_);
+        library.add(c);
 
-        assertEquals(List.of(am, do_), library.all());
+        assertEquals(List.of(am, c), library.all());
     }
 
     @Test
-    void borraElQueEligieron() {
+    void removingDeletesTheChosenOne() {
         ChordDiagram am = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
-        ChordDiagram do_ = ChordDiagram.named("C", List.of(0, 1, 0, 2, 3, -1));
+        ChordDiagram c = ChordDiagram.named("C", List.of(0, 1, 0, 2, 3, -1));
         library.add(am);
-        library.add(do_);
+        library.add(c);
 
         library.remove(0);
 
-        assertEquals(List.of(do_), library.all());
+        assertEquals(List.of(c), library.all());
     }
 
     @Test
-    void actualizaElQueEligieronConElDiagramaNuevo() {
+    void updatingReplacesTheChosenOneWithTheNewDiagram() {
         ChordDiagram am = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
         library.add(am);
-        ChordDiagram amCejilla = ChordDiagram.named("Am", List.of(5, 5, 5, 7, 7, 5));
+        ChordDiagram amBarre = ChordDiagram.named("Am", List.of(5, 5, 5, 7, 7, 5));
 
-        library.update(0, amCejilla);
+        library.update(0, amBarre);
 
-        assertEquals(List.of(amCejilla), library.all());
+        assertEquals(List.of(amBarre), library.all());
     }
 
     @Test
-    void ordenaAlfabeticamentePorNombre() {
-        ChordDiagram sol = ChordDiagram.named("G", List.of(3, 0, 0, 0, 2, 3));
+    void sortsAlphabeticallyByName() {
+        ChordDiagram gChord = ChordDiagram.named("G", List.of(3, 0, 0, 0, 2, 3));
         ChordDiagram am = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
-        library.add(sol);
+        library.add(gChord);
         library.add(am);
 
         library.sortByName();
@@ -92,12 +92,12 @@ class ChordLibraryTest {
     }
 
     @Test
-    void loQueQuedaGuardadoSobreviveAUnaBibliotecaNueva() {
+    void whatWasStoredSurvivesANewLibrary() {
         ChordDiagram am = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
         library.add(am);
 
-        ChordLibrary otraInstancia = new ChordLibrary(scratch);
+        ChordLibrary anotherInstance = new ChordLibrary(scratch);
 
-        assertEquals(List.of(am), otraInstancia.all());
+        assertEquals(List.of(am), anotherInstance.all());
     }
 }

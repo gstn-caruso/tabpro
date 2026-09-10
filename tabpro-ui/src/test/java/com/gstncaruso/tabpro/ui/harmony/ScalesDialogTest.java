@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 class ScalesDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         Editor editor = new Editor(Score.blank());
 
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), new ChosenScale());
@@ -29,7 +29,7 @@ class ScalesDialogTest {
     }
 
     @Test
-    void laListaDeTonalidadMuestraElNombreDeLaNotaEnCastellano() {
+    void theTonicListShowsTheNoteNameInSpanish() {
         Editor editor = new Editor(Score.blank());
 
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), new ChosenScale());
@@ -40,7 +40,7 @@ class ScalesDialogTest {
     }
 
     @Test
-    void laListaDeEscalaMuestraElNombreEnCastellanoEnVezDelRecordCrudo() {
+    void theScaleListShowsTheNameInSpanishInsteadOfTheRawRecord() {
         Editor editor = new Editor(Score.blank());
 
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), new ChosenScale());
@@ -51,7 +51,7 @@ class ScalesDialogTest {
     }
 
     @Test
-    void sinEleccionPreviaAbreConDoMayorYElDiagramaYaPintado() {
+    void withoutAPreviousChoiceItOpensWithCMajorAndTheDiagramAlreadyPainted() {
         Editor editor = new Editor(Score.blank());
         ChosenScale chosen = new ChosenScale();
 
@@ -64,7 +64,7 @@ class ScalesDialogTest {
     }
 
     @Test
-    void conUnaEleccionPreviaLaRespetaEnVezDeForzarDoMayor() {
+    void withAPreviousChoiceItRespectsItInsteadOfForcingCMajor() {
         Editor editor = new Editor(Score.blank());
         ChosenScale chosen = new ChosenScale();
         chosen.choose(PitchClass.of("D"), ScaleLibrary.dorian());
@@ -76,7 +76,7 @@ class ScalesDialogTest {
     }
 
     @Test
-    void alElegirTonicaYEscalaEnLasListasLaEleccionLlegaAChosenScale() {
+    void pickingTonicAndScaleInTheListsReachesChosenScale() {
         Editor editor = new Editor(Score.blank());
         ChosenScale chosen = new ChosenScale();
 
@@ -95,7 +95,7 @@ class ScalesDialogTest {
     }
 
     @Test
-    void alElegirUnaEscalaElDiagramaDeGradosMuestraSusNotas() {
+    void pickingAScaleMakesTheDegreeDiagramShowItsNotes() {
         Editor editor = new Editor(Score.blank());
         ChosenScale chosen = new ChosenScale();
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), chosen);
@@ -113,7 +113,7 @@ class ScalesDialogTest {
     }
 
     @Test
-    void elBotonEscucharTocaLaEscalaElegidaAscendente() {
+    void theListenButtonPlaysTheChosenScaleAscending() {
         Editor editor = new Editor(Score.blank());
         ChosenScale chosen = new ChosenScale();
         RecordingPlayer player = new RecordingPlayer();

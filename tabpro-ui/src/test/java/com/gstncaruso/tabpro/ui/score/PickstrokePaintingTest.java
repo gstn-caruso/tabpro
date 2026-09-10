@@ -38,14 +38,14 @@ class PickstrokePaintingTest {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score score = new Score("", 120, List.of(track));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas canvas = new RecordingCanvas();
 
-        TabSymbolPainter.paintMeasure(lienzo, layout, track, 0, 0);
+        TabSymbolPainter.paintMeasure(canvas, layout, track, 0, 0);
 
         Rectangle bounds = layout.beatBounds(0, 0, 0);
         int centerX = bounds.x + bounds.width / 2;
         int tabTop = layout.tabTop(0, 0);
-        assertTrue(lienzo.escribeTextoEnRegion(glyph, new Rectangle(centerX - 10, tabTop - 20, 20, 20)),
+        assertTrue(canvas.writesTextInRegion(glyph, new Rectangle(centerX - 10, tabTop - 20, 20, 20)),
                 "el pickstroke tiene que escribir el glifo de Bravura que corresponde a la direccion de la pua");
     }
 }

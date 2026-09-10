@@ -16,7 +16,7 @@ class ChordDiagramCanvasTest {
     private static final int HEIGHT = 260;
 
     @Test
-    void laCuerdaSeisQuedaALaIzquierdaYLaUnoALaDerecha() {
+    void stringSixStaysOnTheLeftAndStringOneOnTheRight() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
 
         assertTrue(canvas.stringX(6) < canvas.stringX(1), "la mas grave va a la izquierda, como en el manual");
@@ -24,7 +24,7 @@ class ChordDiagramCanvasTest {
     }
 
     @Test
-    void lasCuerdasEstanParejas() {
+    void theStringsAreEvenlySpaced() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
 
         assertEquals(
@@ -33,7 +33,7 @@ class ChordDiagramCanvasTest {
     }
 
     @Test
-    void cadaFilaDeTrasteQuedaDebajoDeLaAnterior() {
+    void eachFretRowStaysBelowThePrevious() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
 
         assertTrue(canvas.fretRowY(0) < canvas.fretRowY(1));
@@ -41,16 +41,16 @@ class ChordDiagramCanvasTest {
     }
 
     @Test
-    void identificaLaCuerdaDelClicPorSuPosicionX() {
+    void identifiesTheClickedStringByItsXPosition() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
 
-        for (int cuerda = 1; cuerda <= 6; cuerda++) {
-            assertEquals(OptionalInt.of(cuerda), canvas.stringAt(canvas.stringX(cuerda)));
+        for (int string = 1; string <= 6; string++) {
+            assertEquals(OptionalInt.of(string), canvas.stringAt(canvas.stringX(string)));
         }
     }
 
     @Test
-    void noHayCuerdaFueraDelDiagrama() {
+    void noStringIsFoundOutsideTheDiagram() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
 
         assertEquals(OptionalInt.empty(), canvas.stringAt(-100));
@@ -58,7 +58,7 @@ class ChordDiagramCanvasTest {
     }
 
     @Test
-    void unClicEnLaGrillaDaElTrasteAbsolutoSegunElTrasteBase() {
+    void aClickOnTheGridGivesTheAbsoluteFretAccordingToTheBaseFret() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
         canvas.show(ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1)), Tuning.standard());
 
@@ -67,18 +67,18 @@ class ChordDiagramCanvasTest {
     }
 
     @Test
-    void unDiagramaEnPosicionAltaEmpiezaLaGrillaEnSuTrasteBase() {
+    void aDiagramInAHighPositionStartsTheGridAtItsBaseFret() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
-        ChordDiagram enQuintoTraste = ChordDiagrams.withBaseFret(
+        ChordDiagram atTheFifthFret = ChordDiagrams.withBaseFret(
                 ChordDiagram.named("Am (cejilla)", List.of(5, 5, 5, 7, 7, 5)), 5);
-        canvas.show(enQuintoTraste, Tuning.standard());
+        canvas.show(atTheFifthFret, Tuning.standard());
 
         assertEquals(OptionalInt.of(5), canvas.fretAt(canvas.fretRowY(0)));
         assertEquals(OptionalInt.of(6), canvas.fretAt(canvas.fretRowY(1)));
     }
 
     @Test
-    void elEncabezadoSoloApareceCuandoElTrasteBaseEsUno() {
+    void theHeaderOnlyAppearsWhenTheBaseFretIsOne() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
         canvas.show(ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1)), Tuning.standard());
         assertTrue(canvas.hasHeader());
@@ -88,7 +88,7 @@ class ChordDiagramCanvasTest {
     }
 
     @Test
-    void laFilaDeDigitacionQuedaDebajoDeLaUltimaFilaDeTrastes() {
+    void theFingeringRowStaysBelowTheLastFretRow() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
         canvas.show(ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1)), Tuning.standard());
 
@@ -98,21 +98,21 @@ class ChordDiagramCanvasTest {
     }
 
     @Test
-    void unClicEnLaFilaDeDigitacionAvisaConLaCuerda() {
+    void aClickOnTheFingeringRowReportsTheString() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
         canvas.show(ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1)), Tuning.standard());
-        java.util.concurrent.atomic.AtomicInteger avisada = new java.util.concurrent.atomic.AtomicInteger(-1);
-        canvas.onFingerClick(avisada::set);
+        java.util.concurrent.atomic.AtomicInteger reportedString = new java.util.concurrent.atomic.AtomicInteger(-1);
+        canvas.onFingerClick(reportedString::set);
 
         canvas.dispatchEvent(new java.awt.event.MouseEvent(
                 canvas, java.awt.event.MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0,
                 canvas.stringX(2), canvas.fingerRowY(), 1, false));
 
-        assertEquals(2, avisada.get());
+        assertEquals(2, reportedString.get());
     }
 
     @Test
-    void identificaElEncabezadoDeCadaCuerda() {
+    void identifiesTheHeaderOfEachString() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
         canvas.show(ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1)), Tuning.standard());
 

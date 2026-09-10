@@ -251,12 +251,12 @@ class ScorePainterTest {
         Score score = new Score("", 120, List.of(
                 new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(withExplicitChange))));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas canvas = new RecordingCanvas();
 
-        ScorePainter.paint(lienzo, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent());
+        ScorePainter.paint(canvas, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent());
 
-        long tempoGlyphs = lienzo.textosDibujados().stream()
-                .filter(texto -> MusicFont.metNoteQuarterUp().equals(texto.texto()))
+        long tempoGlyphs = canvas.drawnTexts().stream()
+                .filter(drawnText -> MusicFont.metNoteQuarterUp().equals(drawnText.text()))
                 .count();
         assertEquals(1, tempoGlyphs, "el compas 1 solo tiene que mostrar un tempo, el del cambio explicito");
     }
@@ -315,19 +315,19 @@ class ScorePainterTest {
 
     @Test
     void everySlideTypeDrawsSomethingDifferentOnTheTablature() {
-        Painted sinSlide = paint(scoreWith(measureWithSlide(null)), new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted withoutSlide = paint(scoreWith(measureWithSlide(null)), new Cursor(0, 0, 0, 1), Playhead.silent());
 
-        List<Painted> conCadaTipo = new ArrayList<>();
-        for (com.gstncaruso.tabpro.core.model.effects.SlideType tipo :
+        List<Painted> withEachType = new ArrayList<>();
+        for (com.gstncaruso.tabpro.core.model.effects.SlideType type :
                 com.gstncaruso.tabpro.core.model.effects.SlideType.values()) {
-            Painted painted = paint(scoreWith(measureWithSlide(tipo)), new Cursor(0, 0, 0, 1), Playhead.silent());
-            assertFalse(painted.looksLike(sinSlide), "el " + tipo + " no dibuja nada distinto de no tener slide");
-            conCadaTipo.add(painted);
+            Painted painted = paint(scoreWith(measureWithSlide(type)), new Cursor(0, 0, 0, 1), Playhead.silent());
+            assertFalse(painted.looksLike(withoutSlide), "el " + type + " no dibuja nada distinto de no tener slide");
+            withEachType.add(painted);
         }
 
-        for (int i = 0; i < conCadaTipo.size(); i++) {
-            for (int j = i + 1; j < conCadaTipo.size(); j++) {
-                assertFalse(conCadaTipo.get(i).looksLike(conCadaTipo.get(j)),
+        for (int i = 0; i < withEachType.size(); i++) {
+            for (int j = i + 1; j < withEachType.size(); j++) {
+                assertFalse(withEachType.get(i).looksLike(withEachType.get(j)),
                         "el pintor dibuja lo mismo para "
                                 + com.gstncaruso.tabpro.core.model.effects.SlideType.values()[i] + " y "
                                 + com.gstncaruso.tabpro.core.model.effects.SlideType.values()[j]);
@@ -335,10 +335,10 @@ class ScorePainterTest {
         }
     }
 
-    private static Measure measureWithSlide(com.gstncaruso.tabpro.core.model.effects.SlideType tipo) {
-        Note primera = tipo == null ? new Note(1, 3) : new Note(1, 3).withSlide(tipo);
+    private static Measure measureWithSlide(com.gstncaruso.tabpro.core.model.effects.SlideType type) {
+        Note firstNote = type == null ? new Note(1, 3) : new Note(1, 3).withSlide(type);
         return measureOf(
-                Beat.of(Duration.quarter(), primera),
+                Beat.of(Duration.quarter(), firstNote),
                 Beat.of(Duration.quarter(), new Note(1, 7)),
                 Beat.rest(Duration.quarter()),
                 Beat.rest(Duration.quarter()));
@@ -804,47 +804,47 @@ class ScorePainterTest {
     }
 
     @Test
-    void unFadeInSeAnunciaSobreLaTablatura() {
-        Beat conFade = Beat.of(Duration.quarter(), new Note(1, 5))
+    void aFadeInIsAnnouncedAboveTheTablature() {
+        Beat withFade = Beat.of(Duration.quarter(), new Note(1, 5))
                 .withEffects(BeatEffects.none().withFadeIn(true));
-        Beat sinFade = Beat.of(Duration.quarter(), new Note(1, 5));
+        Beat withoutFade = Beat.of(Duration.quarter(), new Note(1, 5));
 
         assertTrue(
-                inkAboveTheTablature(conFade) > inkAboveTheTablature(sinFade),
+                inkAboveTheTablature(withFade) > inkAboveTheTablature(withoutFade),
                 "el fade in tiene que dejar su etiqueta arriba de la tablatura");
     }
 
     @Test
-    void laPalancaSeDibujaBajoLaTablatura() {
+    void theTremoloBarIsDrawnBelowTheTablature() {
         Bend dive = new Bend(BendType.BEND_RELEASE, List.of(
                 BendPoint.at(0, 0), BendPoint.at(30, -4), BendPoint.at(BendPoint.LAST_POSITION, 0)));
-        Beat conPalanca = Beat.of(Duration.quarter(), new Note(1, 5))
+        Beat withTremoloBar = Beat.of(Duration.quarter(), new Note(1, 5))
                 .withEffects(BeatEffects.none().withTremoloBar(dive));
-        Beat sinPalanca = Beat.of(Duration.quarter(), new Note(1, 5));
+        Beat withoutTremoloBar = Beat.of(Duration.quarter(), new Note(1, 5));
 
         assertTrue(
-                inkUnderTheTablature(conPalanca) > inkUnderTheTablature(sinPalanca),
+                inkUnderTheTablature(withTremoloBar) > inkUnderTheTablature(withoutTremoloBar),
                 "la palanca suena pero no se ve: falta su curva bajo la tablatura");
     }
 
     @Test
-    void elWahWahSeAnunciaSobreLaTablatura() {
-        Beat conWah = Beat.of(Duration.quarter(), new Note(1, 5))
+    void theWahWahIsAnnouncedAboveTheTablature() {
+        Beat withWah = Beat.of(Duration.quarter(), new Note(1, 5))
                 .withEffects(BeatEffects.none().withWah(Wah.OPEN));
-        Beat sinWah = Beat.of(Duration.quarter(), new Note(1, 5));
+        Beat withoutWah = Beat.of(Duration.quarter(), new Note(1, 5));
 
         assertTrue(
-                inkAboveTheTablature(conWah) > inkAboveTheTablature(sinWah),
+                inkAboveTheTablature(withWah) > inkAboveTheTablature(withoutWah),
                 "el pedal de wah-wah tiene que quedar anotado arriba de la tablatura");
     }
 
     @Test
-    void laTransicionDeLaNotaDeAdornoSeDibujaHastaLaNota() {
-        int sinTransicion = inkBetweenTheGraceNoteAndTheNote(GraceTransition.NONE);
+    void theGraceNoteTransitionIsDrawnUpToTheNote() {
+        int withoutTransition = inkBetweenTheGraceNoteAndTheNote(GraceTransition.NONE);
 
-        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.SLIDE) > sinTransicion, "falta el slide");
-        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.BEND) > sinTransicion, "falta el bend");
-        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.HAMMER) > sinTransicion, "falta el ligado");
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.SLIDE) > withoutTransition, "falta el slide");
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.BEND) > withoutTransition, "falta el bend");
+        assertTrue(inkBetweenTheGraceNoteAndTheNote(GraceTransition.HAMMER) > withoutTransition, "falta el ligado");
     }
 
     private static int inkBetweenTheGraceNoteAndTheNote(GraceTransition transition) {
@@ -913,11 +913,11 @@ class ScorePainterTest {
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
         Rectangle clipOnTheFirstSystem = new Rectangle(
                 0, 0, WIDTH, ScoreLayout.TOP_MARGIN + layout.systemHeight());
-        LienzoDePrueba lienzo = new LienzoDePrueba(clipOnTheFirstSystem);
+        RecordingCanvas canvas = new RecordingCanvas(clipOnTheFirstSystem);
 
-        ScorePainter.paint(lienzo, layout, score, new Cursor(-1, 0, 0, 1), Playhead.silent());
+        ScorePainter.paint(canvas, layout, score, new Cursor(-1, 0, 0, 1), Playhead.silent());
 
-        Set<Integer> painted = measureNumbersPaintedIn(lienzo);
+        Set<Integer> painted = measureNumbersPaintedIn(canvas);
         assertFalse(painted.contains(layout.measureCount()),
                 "el ultimo compas, lejos del clip, no tiene que pintarse");
         assertTrue(painted.contains(1), "el primer compas, adentro del clip, si se tiene que pintar");
@@ -932,11 +932,11 @@ class ScorePainterTest {
         Rectangle screenClip = new Rectangle(0, clipTop, WIDTH, screenHeight);
         int firstVisibleSystem = layout.systemAt(clipTop);
         int lastVisibleSystem = layout.systemAt(clipTop + screenHeight);
-        LienzoDePrueba lienzo = new LienzoDePrueba(screenClip);
+        RecordingCanvas canvas = new RecordingCanvas(screenClip);
 
-        ScorePainter.paint(lienzo, layout, score, new Cursor(-1, 0, 0, 1), Playhead.silent());
+        ScorePainter.paint(canvas, layout, score, new Cursor(-1, 0, 0, 1), Playhead.silent());
 
-        Set<Integer> painted = measureNumbersPaintedIn(lienzo);
+        Set<Integer> painted = measureNumbersPaintedIn(canvas);
         assertFalse(painted.isEmpty(), "algo tiene que pintarse dentro del clip");
         for (int measureNumber : painted) {
             int system = layout.systemOf(measureNumber - 1);
@@ -946,10 +946,10 @@ class ScorePainterTest {
         }
     }
 
-    private static Set<Integer> measureNumbersPaintedIn(LienzoDePrueba lienzo) {
-        return lienzo.textosDibujados().stream()
-                .filter(texto -> ScoreFonts.MEASURE_NUMBER_FONT.equals(texto.fuente()))
-                .map(texto -> Integer.parseInt(texto.texto()))
+    private static Set<Integer> measureNumbersPaintedIn(RecordingCanvas canvas) {
+        return canvas.drawnTexts().stream()
+                .filter(drawnText -> ScoreFonts.MEASURE_NUMBER_FONT.equals(drawnText.font()))
+                .map(drawnText -> Integer.parseInt(drawnText.text()))
                 .collect(Collectors.toSet());
     }
 

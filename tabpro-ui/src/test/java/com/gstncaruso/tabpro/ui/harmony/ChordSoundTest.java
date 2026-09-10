@@ -13,10 +13,10 @@ class ChordSoundTest {
     private final RecordingPlayer player = new RecordingPlayer();
 
     @Test
-    void tocaCadaCuerdaQueSuenaEnSuAltura() {
-        ChordDiagram amAbierto = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
+    void playsEachSoundingStringAtItsPitch() {
+        ChordDiagram openAm = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
 
-        ChordSound.play(amAbierto, Tuning.standard(), player, 25);
+        ChordSound.play(openAm, Tuning.standard(), player, 25);
 
         assertEquals(
                 List.of(
@@ -29,19 +29,19 @@ class ChordSoundTest {
     }
 
     @Test
-    void noTocaLasCuerdasMudas() {
-        ChordDiagram amAbierto = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
+    void doesNotPlayMutedStrings() {
+        ChordDiagram openAm = ChordDiagram.named("Am", List.of(0, 1, 2, 2, 0, -1));
 
-        ChordSound.play(amAbierto, Tuning.standard(), player, 25);
+        ChordSound.play(openAm, Tuning.standard(), player, 25);
 
         assertEquals(5, player.sounded().size());
     }
 
     @Test
-    void usaElInstrumentoIndicado() {
-        ChordDiagram solo = ChordDiagram.named("E", List.of(0, -1, -1, -1, -1, -1));
+    void usesTheGivenInstrument() {
+        ChordDiagram single = ChordDiagram.named("E", List.of(0, -1, -1, -1, -1, -1));
 
-        ChordSound.play(solo, Tuning.standard(), player, 33);
+        ChordSound.play(single, Tuning.standard(), player, 33);
 
         assertEquals(33, player.sounded().get(0).program());
     }

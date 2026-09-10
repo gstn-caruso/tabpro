@@ -169,7 +169,7 @@ class MixTableRowTest {
     }
 
     @Test
-    void losControlesSinEtiquetaVisibleNombranLaPista() {
+    void controlsWithoutAVisibleLabelNameTheTrack() {
         Editor editor = twoTrackEditor();
         MixTableRow row = new MixTableRow(editor, new MixTableModel(), 1);
 
@@ -184,7 +184,7 @@ class MixTableRowTest {
     }
 
     @Test
-    void elCampoDeCadaSpinnerMuestraDosDigitosCompletos() {
+    void eachSpinnersFieldShowsTwoFullDigits() {
         Editor editor = twoTrackEditor();
         MixTableRow row = new MixTableRow(editor, new MixTableModel(), 0);
         row.setSize(row.getPreferredSize());
@@ -202,7 +202,7 @@ class MixTableRowTest {
     }
 
     @Test
-    void elComboDeInstrumentoMuestraElNombreMasLargoDelBancoGeneralMidiSinTruncarlo() {
+    void theInstrumentComboShowsTheLongestGeneralMidiBankNameWithoutTruncatingIt() {
         Editor editor = twoTrackEditor();
         MixTableRow row = new MixTableRow(editor, new MixTableModel(), 0);
         String longest =

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class MixTableTest {
 
     @Test
-    void ningunControlDeLaMesaDeMezclaQuedaSinNombreNiTooltipAccesible() {
+    void everyControlOfTheMixTableHasAnAccessibleNameAndTooltip() {
         Editor editor = new Editor(Score.blank());
         editor.addTrack(Track.standardBass("Bajo"));
         MixTable table = new MixTable(editor);
@@ -89,7 +89,7 @@ class MixTableTest {
     }
 
     @Test
-    void ningunaCabeceraDeColumnaInvadeALaSiguiente() {
+    void noColumnHeaderEncroachesOnTheNext() {
         Editor editor = new Editor(Score.blank());
         editor.addTrack(Track.standardBass("Bajo"));
         MixTable table = new MixTable(editor);

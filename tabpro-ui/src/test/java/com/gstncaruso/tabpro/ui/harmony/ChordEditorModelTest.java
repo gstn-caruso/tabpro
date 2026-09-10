@@ -26,12 +26,12 @@ class ChordEditorModelTest {
     private final ChordEditorModel model = new ChordEditorModel(Tuning.standard(), true, fingeringMemory);
 
     @AfterEach
-    void limpiarElNodoDePrueba() throws BackingStoreException {
+    void clearsTheScratchNode() throws BackingStoreException {
         scratch.removeNode();
     }
 
     @Test
-    void empiezaEnDoMayorConTodosLosDiagramas() {
+    void startsOnCMajorWithAllTheDiagrams() {
         assertEquals(PitchClass.of("C"), model.selection().root());
         assertEquals(ChordType.MAJOR, model.selection().type());
         assertFalse(model.isCustom());
@@ -40,7 +40,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void elegirOtraFundamentalRearmaLosDiagramas() {
+    void pickingAnotherRootRebuildsTheDiagrams() {
         model.selectRoot(PitchClass.of("G"));
 
         assertEquals(PitchClass.of("G"), model.selection().root());
@@ -49,7 +49,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void elegirElTipoRearmaLosDiagramas() {
+    void pickingTheTypeRebuildsTheDiagrams() {
         model.selectType(ChordType.MINOR_SEVENTH);
 
         assertEquals(ChordType.MINOR_SEVENTH, model.selection().type());
@@ -57,7 +57,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void elegirElBajoArmaUnaInversion() {
+    void pickingTheBassBuildsAnInversion() {
         model.selectBass(PitchClass.of("E"));
 
         assertEquals("C/E", model.current().name());
@@ -65,7 +65,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void elegirLaInversionPorGradoArmaElBajoConLaNotaDeEseGrado() {
+    void pickingTheInversionByDegreeSetsTheBassToThatDegreesNote() {
         model.selectInversion(Interval.MAJOR_THIRD);
 
         assertEquals(PitchClass.of("E"), model.selection().bass());
@@ -73,7 +73,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void elFiltroDeComplejidadDejaAfueraLosDificiles() {
+    void theComplexityFilterLeavesOutTheHardOnes() {
         model.selectType(ChordType.MAJOR_SEVENTH);
         model.selectComplexity(ChordComplexity.SIMPLE);
 
@@ -81,7 +81,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void elFiltroDeCejillaSoloDejaLosQueLaNecesitan() {
+    void theBarreFilterOnlyKeepsTheOnesThatNeedIt() {
         model.selectRoot(PitchClass.of("F"));
         model.selectBarrePreference(BarrePreference.FORCE);
 
@@ -90,7 +90,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void elFiltroDeCejillaProhibidaSacaLosQueLaNecesitan() {
+    void theForbiddenBarreFilterRemovesTheOnesThatNeedIt() {
         model.selectRoot(PitchClass.of("F"));
         model.selectBarrePreference(BarrePreference.FORBID);
 
@@ -98,27 +98,27 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void elegirUnDiagramaDeLaListaCLoHaceElPrincipal() {
+    void pickingADiagramFromTheListMakesItTheCurrentOne() {
         model.selectType(ChordType.SEVENTH);
-        ChordDiagram otro = model.candidates().get(model.candidates().size() - 1);
+        ChordDiagram another = model.candidates().get(model.candidates().size() - 1);
 
-        model.pickCandidate(otro);
+        model.pickCandidate(another);
 
-        assertEquals(otro, model.current());
+        assertEquals(another, model.current());
         assertFalse(model.isCustom());
     }
 
     @Test
-    void ofreceNombresAlternativosParaElDiagramaPrincipal() {
+    void offersAlternativeNamesForTheCurrentDiagram() {
         assertTrue(model.alternativeNames().stream().anyMatch(chord -> chord.name().equals("C")));
     }
 
     @Test
-    void elegirUnNombreAlternativoRearmaLaZonaA() {
+    void pickingAnAlternativeNameRebuildsZoneA() {
         model.selectType(ChordType.MINOR_SEVENTH);
-        Chord alternativo = Chord.of(PitchClass.of("F"), ChordType.SIXTH);
+        Chord alternative = Chord.of(PitchClass.of("F"), ChordType.SIXTH);
 
-        model.pickAlternativeName(alternativo);
+        model.pickAlternativeName(alternative);
 
         assertEquals(PitchClass.of("F"), model.selection().root());
         assertEquals(ChordType.SIXTH, model.selection().type());
@@ -126,7 +126,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void tocarUnaCuerdaEnUnTrastePasaAModoPersonalizado() {
+    void pressingAStringOnAFretSwitchesToCustomMode() {
         model.toggleFret(1, 3);
 
         assertTrue(model.isCustom());
@@ -135,7 +135,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void tocarLaMismaNotaDeNuevoLaSaca() {
+    void pressingTheSameNoteAgainRemovesIt() {
         model.toggleFret(1, 0);
 
         model.toggleFret(1, 0);
@@ -144,7 +144,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void elEncabezadoAlternaEntreCuerdaAlAireYCuerdaMuda() {
+    void theHeaderTogglesBetweenOpenStringAndMutedString() {
         model.toggleFret(2, 3);
 
         model.toggleOpenOrMuted(2);
@@ -158,14 +158,14 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void editarUnDedoQuedaEnLaDigitacion() {
+    void editingAFingerStaysInTheFingering() {
         model.setFinger(1, Finger.LITTLE);
 
         assertEquals(Finger.LITTLE, model.current().fingerOfString(1).orElseThrow());
     }
 
     @Test
-    void clickearElNumeroPasaAlDedoSiguienteYLuegoVuelveASinDedo() {
+    void clickingTheNumberMovesToTheNextFingerThenBackToNoFinger() {
         model.toggleFret(1, 3);
         model.setFinger(1, null);
 
@@ -182,7 +182,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void unaCuerdaAlAireOMudaNoSeDigita() {
+    void anOpenOrMutedStringIsNotFingered() {
         model.toggleOpenOrMuted(1);
 
         model.cycleFinger(1);
@@ -191,28 +191,28 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void editarUnDedoLoMemorizaParaLaMismaFormaEnOtroAcorde() {
+    void editingAFingerRemembersItForTheSameShapeInAnotherChord() {
         model.selectRoot(PitchClass.of("F"));
-        ChordDiagram cejillaDeFa = model.candidates().stream()
+        ChordDiagram fBarreDiagram = model.candidates().stream()
                 .filter(ChordDiagram::requiresBarre)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("hace falta una posicion con cejilla para Fa mayor"));
-        model.pickCandidate(cejillaDeFa);
+        model.pickCandidate(fBarreDiagram);
 
         model.setFinger(1, Finger.LITTLE);
 
         model.selectRoot(PitchClass.of("G"));
-        List<ChordDiagram> mismaForma = model.candidates().stream()
-                .filter(diagrama -> diagrama.shape().equals(cejillaDeFa.shape()))
+        List<ChordDiagram> sameShapeDiagrams = model.candidates().stream()
+                .filter(diagram -> diagram.shape().equals(fBarreDiagram.shape()))
                 .toList();
-        assertFalse(mismaForma.isEmpty(), "Sol mayor tiene que ofrecer la misma forma de cejilla que Fa");
+        assertFalse(sameShapeDiagrams.isEmpty(), "Sol mayor tiene que ofrecer la misma forma de cejilla que Fa");
         assertTrue(
-                mismaForma.stream().allMatch(diagrama -> diagrama.fingerOfString(1).equals(Optional.of(Finger.LITTLE))),
+                sameShapeDiagrams.stream().allMatch(diagram -> diagram.fingerOfString(1).equals(Optional.of(Finger.LITTLE))),
                 "la digitacion corregida a mano se reusa en la forma parecida");
     }
 
     @Test
-    void cambiarDeAcordeEmpiezaSinNingunTonoOmitido() {
+    void changingChordsStartsWithNoOmittedTone() {
         model.setToneOmitted(Interval.PERFECT_FIFTH, true);
 
         model.selectType(ChordType.MINOR);
@@ -221,7 +221,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void losTonosQueSePuedenOmitirSonLosDeLaFormulaDelAcorde() {
+    void theTonesThatCanBeOmittedAreTheChordFormulaOnes() {
         model.selectType(ChordType.SEVENTH);
 
         assertEquals(
@@ -230,17 +230,17 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void omitirUnTonoOfreceDiagramasQueNoLoNecesitan() {
-        int sinOmitir = model.candidates().size();
+    void omittingAToneOffersDiagramsThatDoNotNeedIt() {
+        int beforeOmitting = model.candidates().size();
 
         model.setToneOmitted(Interval.PERFECT_FIFTH, true);
 
-        assertTrue(model.candidates().size() > sinOmitir, "omitir la quinta suma posiciones nuevas");
+        assertTrue(model.candidates().size() > beforeOmitting, "omitir la quinta suma posiciones nuevas");
         assertTrue(model.omittedTones().contains(Interval.PERFECT_FIFTH));
     }
 
     @Test
-    void destildarUnTonoLoVuelveAExigir() {
+    void uncheckingAToneRequiresItAgain() {
         model.setToneOmitted(Interval.PERFECT_FIFTH, true);
 
         model.setToneOmitted(Interval.PERFECT_FIFTH, false);
@@ -249,7 +249,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void moverElTrasteBaseNoTocaLoQueYaEstaPisado() {
+    void movingTheBaseFretDoesNotTouchWhatIsAlreadyFretted() {
         var frets = model.current().frets();
 
         model.setBaseFret(5);
@@ -259,7 +259,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void escribirElNombreACualquierCosaSoloValeEnModoPersonalizado() {
+    void typingAnyNameOnlyAppliesInCustomMode() {
         model.toggleFret(1, 3);
 
         model.setCustomName("Mi acorde raro");
@@ -268,7 +268,7 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void siNoSeUsaElDiagramaElResultadoSoloMuestraElNombre() {
+    void whenTheDiagramIsUnusedTheResultOnlyShowsTheName() {
         model.setUseDiagram(false);
 
         assertFalse(model.result().shown());
@@ -276,25 +276,25 @@ class ChordEditorModelTest {
     }
 
     @Test
-    void siNoSeUsaLaDigitacionElResultadoNoLaLleva() {
+    void whenFingeringIsUnusedTheResultDoesNotCarryIt() {
         model.setShowFingering(false);
 
         assertTrue(model.result().fingering().stream().allMatch(finger -> finger == null));
     }
 
     @Test
-    void porDefectoElResultadoUsaDiagramaYDigitacion() {
-        ChordDiagram resultado = model.result();
+    void byDefaultTheResultUsesDiagramAndFingering() {
+        ChordDiagram result = model.result();
 
-        assertTrue(resultado.shown());
-        assertEquals(model.current().fingering(), resultado.fingering());
+        assertTrue(result.shown());
+        assertEquals(model.current().fingering(), result.fingering());
     }
 
     @Test
-    void laPreferenciaDeMostrarElBajoSePuedeApagar() {
-        ChordEditorModel sinBajo = new ChordEditorModel(Tuning.standard(), false, fingeringMemory);
-        sinBajo.selectBass(PitchClass.of("E"));
+    void theShowBassPreferenceCanBeTurnedOff() {
+        ChordEditorModel noBassModel = new ChordEditorModel(Tuning.standard(), false, fingeringMemory);
+        noBassModel.selectBass(PitchClass.of("E"));
 
-        assertEquals("C", sinBajo.current().name());
+        assertEquals("C", noBassModel.current().name());
     }
 }

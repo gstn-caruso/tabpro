@@ -30,13 +30,13 @@ class AugmentationDotPaintingTest {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score score = new Score("", 120, List.of(track));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas canvas = new RecordingCanvas();
 
-        StaffPainter.paintMeasure(lienzo, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
+        StaffPainter.paintMeasure(canvas, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
 
         int step = StaffPainter.positionOf(track, Clef.TREBLE, note, 0).step();
         int y = layout.stepY(0, 0, step);
-        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.augmentationDot(), new Rectangle(0, y - 2, WIDTH, 4)),
+        assertTrue(canvas.writesTextInRegion(MusicFont.augmentationDot(), new Rectangle(0, y - 2, WIDTH, 4)),
                 "la nota con puntillo tiene que llevar el glifo del puntillo junto a su cabeza");
     }
 
@@ -47,12 +47,12 @@ class AugmentationDotPaintingTest {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score score = new Score("", 120, List.of(track));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas canvas = new RecordingCanvas();
 
-        StaffPainter.paintMeasure(lienzo, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
+        StaffPainter.paintMeasure(canvas, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
 
         int y = layout.stepY(0, 0, 5);
-        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.augmentationDot(), new Rectangle(0, y - 2, WIDTH, 4)),
+        assertTrue(canvas.writesTextInRegion(MusicFont.augmentationDot(), new Rectangle(0, y - 2, WIDTH, 4)),
                 "el silencio con puntillo tiene que llevar el glifo del puntillo");
     }
 }

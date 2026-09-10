@@ -31,7 +31,7 @@ class ParameterCellTest {
     }
 
     @Test
-    void elNombreAccesibleDelNumeroIncluyeElParametroYLaPista() {
+    void theNumberFieldsAccessibleNameIncludesTheParameterAndTheTrack() {
         Editor editor = new Editor(Score.blank());
         editor.addTrack(Track.standardBass("Bajo"));
         ParameterCell cell = new ParameterCell(editor, MixParameter.REVERB, 1);

@@ -12,14 +12,14 @@ import org.junit.jupiter.api.Test;
 class ScaleDegreesViewTest {
 
     @Test
-    void sinEscalaElegidaNoHayNingunGradoQuePintar() {
+    void withoutAChosenScaleThereIsNoDegreeToPaint() {
         ScaleDegreesView view = new ScaleDegreesView();
 
         assertEquals(0, view.degreeCount());
     }
 
     @Test
-    void muestraElNombreDeNotaYElIntervaloDeCadaGrado() {
+    void showsTheNoteNameAndIntervalOfEachDegree() {
         ScaleDegreesView view = new ScaleDegreesView();
 
         view.show(List.of(
@@ -34,7 +34,7 @@ class ScaleDegreesViewTest {
     }
 
     @Test
-    void lasColumnasQuedanParejasYEnOrdenCreciente() {
+    void theColumnsAreEvenlySpacedAndInIncreasingOrder() {
         ScaleDegreesView view = new ScaleDegreesView();
         view.setSize(420, 70);
         view.show(List.of(
@@ -48,7 +48,7 @@ class ScaleDegreesViewTest {
     }
 
     @Test
-    void tieneNombreAccesibleFijoYUnaDescripcionQueEnumeraLosGrados() {
+    void hasAFixedAccessibleNameAndADescriptionThatListsTheDegrees() {
         ScaleDegreesView view = new ScaleDegreesView();
 
         assertEquals("Grados de la escala", view.getAccessibleContext().getAccessibleName());

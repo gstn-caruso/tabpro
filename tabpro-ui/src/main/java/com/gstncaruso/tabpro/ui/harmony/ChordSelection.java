@@ -16,8 +16,8 @@ public record ChordSelection(PitchClass root, ChordType type, PitchClass bass, C
     }
 
     public ChordSelection withRoot(PitchClass root) {
-        PitchClass nuevoBajo = bass.equals(this.root) ? root : bass;
-        return new ChordSelection(root, type, nuevoBajo, complexity);
+        PitchClass newBass = bass.equals(this.root) ? root : bass;
+        return new ChordSelection(root, type, newBass, complexity);
     }
 
     public ChordSelection withType(ChordType type) {

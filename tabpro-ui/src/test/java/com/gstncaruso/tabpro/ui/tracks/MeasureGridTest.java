@@ -208,7 +208,7 @@ class MeasureGridTest {
     }
 
     @Test
-    void tieneNombreYTooltipAccesibles() {
+    void hasAnAccessibleNameAndTooltip() {
         MeasureGrid grid = new MeasureGrid(new Editor(Score.blank()));
 
         assertEquals("Grilla de compases", grid.getAccessibleContext().getAccessibleName());

@@ -45,14 +45,14 @@ class PercussionNoteheadPaintingTest {
         Track track = new Track("Bateria", PercussionKit.tuning(), Channel.percussion(), List.of(measure));
         Score score = new Score("", 120, List.of(track));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas canvas = new RecordingCanvas();
 
-        PercussionPainter.paintMeasure(lienzo, layout, track, 0, 0);
+        PercussionPainter.paintMeasure(canvas, layout, track, 0, 0);
 
         Rectangle bounds = layout.beatBounds(0, 0, 0);
         int centerX = bounds.x + bounds.width / 2;
         int y = layout.stringY(0, 0, note.string());
-        assertTrue(lienzo.escribeTextoEnRegion(glyph, new Rectangle(centerX - 8, y - 8, 16, 16)),
+        assertTrue(canvas.writesTextInRegion(glyph, new Rectangle(centerX - 8, y - 8, 16, 16)),
                 "la cabeza de percusion tiene que escribir el glifo de Bravura que corresponde a su forma");
     }
 }

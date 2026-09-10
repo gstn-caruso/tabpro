@@ -32,16 +32,16 @@ import org.junit.jupiter.api.Test;
 class BeatViewsTest {
 
     @Test
-    void elComboDeTipoDeEscalaMuestraSuNombreEnCastellano() {
+    void theScaleTypeComboShowsItsNameInSpanish() {
         BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
 
-        String texto = Combos.renderedTextOf(views, ScaleType.class, ScaleType.MAJOR);
+        String renderedText = Combos.renderedTextOf(views, ScaleType.class, ScaleType.MAJOR);
 
-        assertEquals("Mayor", texto);
+        assertEquals("Mayor", renderedText);
     }
 
     @Test
-    void losCombosArmadosPorComboOfMuestranSuEtiquetaEnCastellano() {
+    void combosBuiltByComboOfShowTheirLabelInSpanish() {
         BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
 
         assertEquals("Solo el beat",
@@ -139,7 +139,7 @@ class BeatViewsTest {
     }
 
     @Test
-    void ningunControlDelDiapasonNiDelTecladoQuedaSinNombreNiTooltipAccesible() {
+    void everyControlOnTheFretboardAndKeyboardHasAnAccessibleNameAndTooltip() {
         BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
 
         AccessibilityAssertions.assertNoViolations(views);

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class PrintSettingsTest {
 
     private static final int SEVEN_SHEETS = 7;
-    private static final double EXACTO = 0.0001;
+    private static final double TOLERANCE = 0.0001;
 
     @Test
     void printingEverythingPrintsEverySheetInOrder() {
@@ -63,21 +63,21 @@ class PrintSettingsTest {
     void theScaleIsTheOneAsked() {
         PrintSettings half = PrintSettings.of(1, 7, SEVEN_SHEETS, 50, false);
 
-        assertEquals(0.5, half.scaleFor(1000, 2000, 500, 500), EXACTO);
+        assertEquals(0.5, half.scaleFor(1000, 2000, 500, 500), TOLERANCE);
     }
 
     @Test
     void fitToPageShrinksUntilTheWholeSheetFits() {
         PrintSettings fitted = PrintSettings.of(1, 7, SEVEN_SHEETS, 100, true);
 
-        assertEquals(0.25, fitted.scaleFor(1000, 2000, 500, 500), EXACTO);
+        assertEquals(0.25, fitted.scaleFor(1000, 2000, 500, 500), TOLERANCE);
     }
 
     @Test
     void fitToPageAlsoGrowsASheetThatIsSmallerThanThePaper() {
         PrintSettings fitted = PrintSettings.of(1, 7, SEVEN_SHEETS, 100, true);
 
-        assertEquals(2.0, fitted.scaleFor(100, 100, 200, 400), EXACTO);
+        assertEquals(2.0, fitted.scaleFor(100, 100, 200, 400), TOLERANCE);
     }
 
     @Test
@@ -100,10 +100,10 @@ class PrintSettingsTest {
 
     @Test
     void centeredDocumentDefaultsToOffButCanBeAskedExplicitly() {
-        PrintSettings sinCentrar = PrintSettings.of(1, 7, SEVEN_SHEETS, 100, false);
-        PrintSettings centrado = PrintSettings.of(1, 7, SEVEN_SHEETS, 100, false, true);
+        PrintSettings notCentered = PrintSettings.of(1, 7, SEVEN_SHEETS, 100, false);
+        PrintSettings centered = PrintSettings.of(1, 7, SEVEN_SHEETS, 100, false, true);
 
-        assertEquals(false, sinCentrar.centeredDocument());
-        assertEquals(true, centrado.centeredDocument());
+        assertEquals(false, notCentered.centeredDocument());
+        assertEquals(true, centered.centeredDocument());
     }
 }

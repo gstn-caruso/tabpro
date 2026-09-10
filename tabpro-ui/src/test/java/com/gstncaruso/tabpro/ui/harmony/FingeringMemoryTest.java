@@ -13,64 +13,64 @@ import org.junit.jupiter.api.Test;
 
 class FingeringMemoryTest {
 
-    private static final List<Integer> FORMA_CEJILLA_DE_MI = List.of(1, 1, 2, 3, 3, 1);
+    private static final List<Integer> E_BARRE_SHAPE = List.of(1, 1, 2, 3, 3, 1);
 
     private final Preferences scratch = Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
     private final FingeringMemory memory = new FingeringMemory(scratch);
 
     @AfterEach
-    void limpiarElNodoDePrueba() throws BackingStoreException {
+    void clearsTheScratchNode() throws BackingStoreException {
         scratch.removeNode();
     }
 
     @Test
-    void unaFormaQueNuncaSeCorrigioNoTieneDigitacionGuardada() {
-        assertTrue(memory.fingeringFor(FORMA_CEJILLA_DE_MI).isEmpty());
+    void aShapeThatWasNeverCorrectedHasNoStoredFingering() {
+        assertTrue(memory.fingeringFor(E_BARRE_SHAPE).isEmpty());
     }
 
     @Test
-    void recuerdaLaDigitacionQueSeCorrigio() {
-        List<Finger> digitacion = Arrays.asList(
+    void remembersTheFingeringThatWasCorrected() {
+        List<Finger> fingering = Arrays.asList(
                 Finger.INDEX, Finger.INDEX, Finger.MIDDLE, Finger.RING, Finger.LITTLE, Finger.INDEX);
 
-        memory.remember(FORMA_CEJILLA_DE_MI, digitacion);
+        memory.remember(E_BARRE_SHAPE, fingering);
 
-        assertEquals(digitacion, memory.fingeringFor(FORMA_CEJILLA_DE_MI).orElseThrow());
+        assertEquals(fingering, memory.fingeringFor(E_BARRE_SHAPE).orElseThrow());
     }
 
     @Test
-    void formasDistintasNoComparteDigitacion() {
-        memory.remember(FORMA_CEJILLA_DE_MI, Arrays.asList(Finger.INDEX, Finger.INDEX, Finger.MIDDLE, Finger.RING, Finger.LITTLE, Finger.INDEX));
+    void differentShapesDoNotShareFingering() {
+        memory.remember(E_BARRE_SHAPE, Arrays.asList(Finger.INDEX, Finger.INDEX, Finger.MIDDLE, Finger.RING, Finger.LITTLE, Finger.INDEX));
 
         assertTrue(memory.fingeringFor(List.of(0, 1, 2, 2, 0, -1)).isEmpty());
     }
 
     @Test
-    void unaDigitacionNuevaReemplazaLaAnterior() {
-        memory.remember(FORMA_CEJILLA_DE_MI, Arrays.asList(Finger.INDEX, Finger.INDEX, Finger.MIDDLE, Finger.RING, Finger.LITTLE, Finger.INDEX));
+    void aNewFingeringReplacesThePrevious() {
+        memory.remember(E_BARRE_SHAPE, Arrays.asList(Finger.INDEX, Finger.INDEX, Finger.MIDDLE, Finger.RING, Finger.LITTLE, Finger.INDEX));
 
-        memory.remember(FORMA_CEJILLA_DE_MI, Arrays.asList(Finger.THUMB, Finger.INDEX, Finger.MIDDLE, Finger.RING, Finger.LITTLE, Finger.THUMB));
+        memory.remember(E_BARRE_SHAPE, Arrays.asList(Finger.THUMB, Finger.INDEX, Finger.MIDDLE, Finger.RING, Finger.LITTLE, Finger.THUMB));
 
-        assertEquals(Finger.THUMB, memory.fingeringFor(FORMA_CEJILLA_DE_MI).orElseThrow().get(0));
+        assertEquals(Finger.THUMB, memory.fingeringFor(E_BARRE_SHAPE).orElseThrow().get(0));
     }
 
     @Test
-    void unDedoAusenteSeGuardaComoNull() {
-        List<Finger> digitacion = Arrays.asList(Finger.INDEX, null, Finger.MIDDLE, null, null, null);
+    void aMissingFingerIsStoredAsNull() {
+        List<Finger> fingering = Arrays.asList(Finger.INDEX, null, Finger.MIDDLE, null, null, null);
 
-        memory.remember(List.of(1, 0, 2, -1, -1, -1), digitacion);
+        memory.remember(List.of(1, 0, 2, -1, -1, -1), fingering);
 
-        assertEquals(digitacion, memory.fingeringFor(List.of(1, 0, 2, -1, -1, -1)).orElseThrow());
+        assertEquals(fingering, memory.fingeringFor(List.of(1, 0, 2, -1, -1, -1)).orElseThrow());
     }
 
     @Test
-    void loQueQuedaGuardadoSobreviveAUnaMemoriaNueva() {
-        memory.remember(FORMA_CEJILLA_DE_MI, Arrays.asList(Finger.INDEX, Finger.INDEX, Finger.MIDDLE, Finger.RING, Finger.LITTLE, Finger.INDEX));
+    void whatWasStoredSurvivesANewMemory() {
+        memory.remember(E_BARRE_SHAPE, Arrays.asList(Finger.INDEX, Finger.INDEX, Finger.MIDDLE, Finger.RING, Finger.LITTLE, Finger.INDEX));
 
-        FingeringMemory otraInstancia = new FingeringMemory(scratch);
+        FingeringMemory anotherInstance = new FingeringMemory(scratch);
 
         assertEquals(
                 Finger.INDEX,
-                otraInstancia.fingeringFor(FORMA_CEJILLA_DE_MI).orElseThrow().get(0));
+                anotherInstance.fingeringFor(E_BARRE_SHAPE).orElseThrow().get(0));
     }
 }

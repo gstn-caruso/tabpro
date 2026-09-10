@@ -51,14 +51,14 @@ class ArticulationPaintingTest {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score score = new Score("", 120, List.of(track));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas canvas = new RecordingCanvas();
 
-        StaffPainter.paintMeasure(lienzo, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
+        StaffPainter.paintMeasure(canvas, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
 
         int step = StaffPainter.positionOf(track, Clef.TREBLE, marked, 0).step();
         int noteY = layout.stepY(0, 0, step);
         int markY = (int) Math.round(above ? noteY - MARK_OFFSET : noteY + MARK_OFFSET);
-        assertTrue(lienzo.escribeTextoEnRegion(glyph, new Rectangle(0, markY - 4, WIDTH, 8)),
+        assertTrue(canvas.writesTextInRegion(glyph, new Rectangle(0, markY - 4, WIDTH, 8)),
                 "la marca tiene que escribir el glifo de Bravura del lado que corresponde de la nota");
     }
 }
