@@ -27,12 +27,12 @@ class CutCopyPasteAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
-            assertTrue(editor.clipboard().content().isEmpty(), "el portapapeles arranca vacio");
+            assertTrue(editor.clipboard().content().isEmpty(), "the clipboard starts empty");
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl C"));
 
             assertFalse(editor.clipboard().content().isEmpty(),
-                    "Ctrl+C, despachado de verdad sobre el lienzo, tiene que llenar el portapapeles real");
+                    "Ctrl+C, really dispatched on the canvas, must fill the real clipboard");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -51,12 +51,12 @@ class CutCopyPasteAuditTest {
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl C"));
 
             editor.moveToFirstMeasure();
-            assertTrue(editor.currentNote().isEmpty(), "el primer compas arranca en silencio");
+            assertTrue(editor.currentNote().isEmpty(), "the first bar starts silent");
 
             pressKey(canvas, KeyStroke.getKeyStroke("ctrl V"));
 
             assertEquals(7, editor.currentNote().orElseThrow().fret(),
-                    "Ctrl+V, despachado de verdad, tiene que escribir la nota copiada en el compas de destino");
+                    "Ctrl+V, really dispatched, must write the copied note in the destination bar");
         } finally {
             AuditSupport.dispose(frame);
         }

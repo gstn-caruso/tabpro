@@ -33,16 +33,16 @@ class FingeringRightHandAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JButton button = findButtonByAccessibleName(frame.getContentPane(), "Digitación (mano derecha)…");
-            assertNotNull(button, "no encontre el boton real de digitacion de mano derecha");
+            assertNotNull(button, "could not find the real right-hand fingering button");
 
             JDialog dialog = awaitDialog(button::doClick, 5000);
             try {
                 @SuppressWarnings({"unchecked", "rawtypes"})
                 List<JComboBox> combos = findComponents(dialog, JComboBox.class);
-                assertEquals(2, combos.size(), "el dialogo real tiene que traer los dos campos de digitacion");
+                assertEquals(2, combos.size(), "the real dialog must bring the two fingering fields");
 
                 assertTrue(awaitFocusOwner(combos.get(1), 2000),
-                        "el campo de mano derecha tiene que arrancar con el foco real");
+                        "the right-hand field must start with the real focus");
             } finally {
                 SwingUtilities.invokeAndWait(() -> findButton(dialog, "Cancelar").doClick());
             }
