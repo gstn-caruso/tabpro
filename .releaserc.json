@@ -40,7 +40,7 @@
       "@semantic-release/git",
       {
         "assets": ["pom.xml", "*/pom.xml", "README.md", "CHANGELOG.md"],
-        "message": "chore(release): versión ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        "message": "chore(release): version ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
     [

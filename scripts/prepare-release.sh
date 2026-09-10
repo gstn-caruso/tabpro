@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Invocado por @semantic-release/exec (prepareCmd) con la versión nueva ya
-# decidida por el commit-analyzer. Deja el árbol de trabajo con:
-#   - todos los poms (raíz + módulos) en esa versión
-#   - las menciones de versión del README actualizadas
-#   - el .deb ya construido con ese nombre
+# Invoked by @semantic-release/exec (prepareCmd) with the new version already
+# decided by commit-analyzer. Leaves the working tree with:
+#   - all poms (root and modules) at that version
+#   - version mentions in README updated
+#   - the .deb already built with that name
 set -euo pipefail
 
 VERSION="$1"

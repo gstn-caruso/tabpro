@@ -1,20 +1,12 @@
 target/
 *.class
 node_modules/
-
-# IDE
 .idea/
 *.iml
 .vscode/
 .settings/
 .classpath
 .project
-
-# OS
 .DS_Store
-
-# Worktrees de agentes
 .claude/worktrees/
-
-# Material de referencia (no se versiona)
 assets/
