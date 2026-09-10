@@ -228,7 +228,7 @@ public final class ScorePainter {
             ScoreColors.INCOMPLETE_MEASURE.getRed(),
             ScoreColors.INCOMPLETE_MEASURE.getGreen(),
             ScoreColors.INCOMPLETE_MEASURE.getBlue(),
-            40);
+            215);
 
     /** El compas que no suma lo que su medida pide se tine de rojo, salvo el que se esta editando. */
     private static void paintIncompleteMeasureBackground(

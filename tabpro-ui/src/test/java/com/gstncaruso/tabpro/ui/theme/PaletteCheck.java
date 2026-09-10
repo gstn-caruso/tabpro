@@ -18,6 +18,14 @@ public final class PaletteCheck {
     public record Pair(String description, Color foreground, Color background, double minimumRatio) {
     }
 
+    public static Color compositeOver(Color translucent, Color background) {
+        double alpha = translucent.getAlpha() / 255.0;
+        int red = (int) Math.round(translucent.getRed() * alpha + background.getRed() * (1 - alpha));
+        int green = (int) Math.round(translucent.getGreen() * alpha + background.getGreen() * (1 - alpha));
+        int blue = (int) Math.round(translucent.getBlue() * alpha + background.getBlue() * (1 - alpha));
+        return new Color(red, green, blue);
+    }
+
     public static void assertEveryPairReads(List<Pair> pairs) {
         List<String> failures = new ArrayList<>();
         for (Pair pair : pairs) {
