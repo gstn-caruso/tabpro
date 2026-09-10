@@ -15,7 +15,7 @@ class GuitarProHeaderReaderTest {
     private final GuitarProHeaderReader reader = new GuitarProHeaderReader();
 
     @Test
-    void unFormatoSinDireccionesNoLeeNadaYNoTraeNinguna() {
+    void aFormatWithoutDirectionsReadsNothingAndBringsNone() {
         GuitarProByteReader empty = new GuitarProByteReader(new byte[0]);
 
         GuitarProDirections directions = reader.readDirections(empty, GuitarProVersion.GP3);
@@ -25,7 +25,7 @@ class GuitarProHeaderReaderTest {
     }
 
     @Test
-    void unSimboloDeDestinoSeAtaAlCompasQueIndicaSuSlot() {
+    void aTargetSymbolBindsToTheBarItsSlotPointsTo() {
         GuitarProByteReader byteReader = new GuitarProByteReader(directionsBlock(Map.of(0, 3)));
 
         GuitarProDirections directions = reader.readDirections(byteReader, GuitarProVersion.GP5_00);
@@ -35,7 +35,7 @@ class GuitarProHeaderReaderTest {
     }
 
     @Test
-    void elCompasUnoEsElPrimeroDeLaPartitura() {
+    void barOneIsTheFirstOfTheScore() {
         GuitarProByteReader byteReader = new GuitarProByteReader(directionsBlock(Map.of(0, 1)));
 
         GuitarProDirections directions = reader.readDirections(byteReader, GuitarProVersion.GP5_00);
@@ -44,7 +44,7 @@ class GuitarProHeaderReaderTest {
     }
 
     @Test
-    void unSaltoSeAtaAlCompasQueIndicaSuSlot() {
+    void aJumpBindsToTheBarItsSlotPointsTo() {
         int daCapoAlCodaSlot = 6;
         int fifthMeasure = 5;
         GuitarProByteReader byteReader =
@@ -57,7 +57,7 @@ class GuitarProHeaderReaderTest {
     }
 
     @Test
-    void unSlotEnCeroNoAtaNada() {
+    void aSlotAtZeroBindsNothing() {
         GuitarProByteReader byteReader = new GuitarProByteReader(directionsBlock(Map.of(0, 0)));
 
         GuitarProDirections directions = reader.readDirections(byteReader, GuitarProVersion.GP5_00);
@@ -66,7 +66,7 @@ class GuitarProHeaderReaderTest {
     }
 
     @Test
-    void unSlotEnMenosUnoNoAtaNada() {
+    void aSlotAtMinusOneBindsNothing() {
         GuitarProByteReader byteReader = new GuitarProByteReader(directionsBlock(Map.of()));
 
         GuitarProDirections directions = reader.readDirections(byteReader, GuitarProVersion.GP5_00);
@@ -76,7 +76,7 @@ class GuitarProHeaderReaderTest {
     }
 
     @Test
-    void dejaElReaderListoParaLoQueSigueDespuesDelBloque() {
+    void leavesTheReaderReadyForWhatFollowsTheBlock() {
         GuitarProFileWriter writer = new GuitarProFileWriter();
         for (int slot = 0; slot < 19; slot++) {
             writer.writeShort(-1);
@@ -91,7 +91,7 @@ class GuitarProHeaderReaderTest {
     }
 
     @Test
-    void unaArmaduraConBemolesEnLaCabeceraSigueSiendoMayor() {
+    void aKeySignatureWithFlatsInTheHeaderIsStillMajor() {
         GuitarProByteReader byteReader = new GuitarProByteReader(gp4HeaderWithKey(-3));
 
         GuitarProHeader header = reader.read(byteReader, GuitarProVersion.GP4);
@@ -101,7 +101,7 @@ class GuitarProHeaderReaderTest {
     }
 
     @Test
-    void unaArmaduraConSostenidosEnLaCabeceraTambienEsMayor() {
+    void aKeySignatureWithSharpsInTheHeaderIsAlsoMajor() {
         GuitarProByteReader byteReader = new GuitarProByteReader(gp4HeaderWithKey(4));
 
         GuitarProHeader header = reader.read(byteReader, GuitarProVersion.GP4);

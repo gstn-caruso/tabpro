@@ -37,7 +37,7 @@ class GuitarProExporterFixtureRoundTripTest {
     }
 
     @Test
-    void elFixtureSintéticoDeGp4SobreviveElViajeCompleto() {
+    void theSyntheticFixtureInGp4SurvivesTheFullRoundTrip() {
         Score original = readFixture("tabpro-synthetic", "gp4");
 
         Score reread = roundTrip(original);
@@ -50,7 +50,7 @@ class GuitarProExporterFixtureRoundTripTest {
     }
 
     @Test
-    void elFixtureDeFeaturesEnGp4SobreviveElViajeCompleto() {
+    void theFeaturesFixtureInGp4SurvivesTheFullRoundTrip() {
         Score original = readFixture("tabpro-features", "gp4");
 
         Score reread = roundTrip(original);
@@ -86,7 +86,7 @@ class GuitarProExporterFixtureRoundTripTest {
     }
 
     @Test
-    void elFixtureDeFeaturesEnGp5PierdeLaSegundaVozAlExportarAGp4() {
+    void theFeaturesFixtureInGp5LosesTheSecondVoiceWhenExportedToGp4() {
         Score original = readFixture("tabpro-features", "gp5");
         assertTrue(original.track(0).measure(0).usesTwoVoices(), "el fixture de origen trae segunda voz");
 
@@ -101,7 +101,7 @@ class GuitarProExporterFixtureRoundTripTest {
     }
 
     @Test
-    void elFixtureDeEfectosEnGp4SobreviveElViajeCompleto() {
+    void theEffectsFixtureInGp4SurvivesTheFullRoundTrip() {
         Score original = readFixture("tabpro-effects2", "gp4");
 
         Score reread = roundTrip(original);

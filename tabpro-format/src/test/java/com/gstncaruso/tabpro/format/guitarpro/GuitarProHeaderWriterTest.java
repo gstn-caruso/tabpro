@@ -17,12 +17,12 @@ class GuitarProHeaderWriterTest {
     private final GuitarProHeaderWriter writer = new GuitarProHeaderWriter();
 
     @Test
-    void unaArmaduraMenorSeEscribeSoloConSusAlteraciones() {
+    void aMinorKeySignatureIsWrittenOnlyWithItsAccidentals() {
         assertEquals(-3, keyWritten(new KeySignature(-3, Mode.MINOR)));
     }
 
     @Test
-    void unaArmaduraMayorTambien() {
+    void aMajorKeySignatureToo() {
         assertEquals(4, keyWritten(new KeySignature(4, Mode.MAJOR)));
     }
 

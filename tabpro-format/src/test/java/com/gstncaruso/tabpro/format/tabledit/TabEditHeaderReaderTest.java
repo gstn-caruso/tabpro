@@ -13,7 +13,7 @@ class TabEditHeaderReaderTest {
     private final TabEditHeaderReader reader = new TabEditHeaderReader();
 
     @Test
-    void leeElTempoInicialYLasBanderasDeSeccionesOpcionales() {
+    void readsTheInitialTempoAndTheOptionalSectionFlags() {
         TabEditByteReader input = new TabEditByteReader(TabEditFixtures.minimalHeader(140).bytes());
 
         TabEditHeader header = reader.read(input);
@@ -28,7 +28,7 @@ class TabEditHeaderReaderTest {
     }
 
     @Test
-    void reconoceLasBanderasDeSeccionesOpcionalesPresentes() {
+    void recognizesThePresentOptionalSectionFlags() {
         TabEditFileWriter writer = TabEditFixtures.minimalHeader(120);
         byte[] bytes = writer.bytes();
         int posOfTextEvents = 84;
@@ -52,7 +52,7 @@ class TabEditHeaderReaderTest {
     }
 
     @Test
-    void unArchivoQueNoEsTablEditFallaConMensajeClaro() {
+    void aFileThatIsNotTablEditFailsWithAClearMessage() {
         TabEditByteReader input = new TabEditByteReader(new byte[256]);
 
         ScoreFileException exception = assertThrows(ScoreFileException.class, () -> reader.read(input));
@@ -61,7 +61,7 @@ class TabEditHeaderReaderTest {
     }
 
     @Test
-    void unArchivoDemasiadoCortoFallaConMensajeClaro() {
+    void aTooShortFileFailsWithAClearMessage() {
         TabEditByteReader input = new TabEditByteReader(new byte[10]);
 
         assertThrows(ScoreFileException.class, () -> reader.read(input));

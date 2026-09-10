@@ -31,24 +31,24 @@ class MusicXmlExportShapeTest {
     private final MusicXmlScoreExporter exporter = new MusicXmlScoreExporter();
 
     @Test
-    void elTieVaDespuesDeLaDuracionYAntesDelType() throws Exception {
-        Beat atacada = Beat.of(Duration.quarter(), new Note(3, 7));
-        Beat continuada = Beat.of(Duration.quarter(), new Note(3, 7).tied(true));
-        Score score = scoreWith(atacada, continuada);
+    void theTieComesAfterTheDurationAndBeforeTheType() throws Exception {
+        Beat attackedBeat = Beat.of(Duration.quarter(), new Note(3, 7));
+        Beat tiedBeat = Beat.of(Duration.quarter(), new Note(3, 7).tied(true));
+        Score score = scoreWith(attackedBeat, tiedBeat);
 
         Document document = parse(exporter.toXml(score));
-        Element notaConTie = notesWithChild(document, "tie").get(0);
-        List<String> hijos = childNames(notaConTie);
+        Element noteWithTie = notesWithChild(document, "tie").get(0);
+        List<String> children = childNames(noteWithTie);
 
-        assertTrue(hijos.indexOf("tie") > hijos.indexOf("duration"),
-                "<tie> tiene que venir despues de <duration>: " + hijos);
-        assertTrue(hijos.indexOf("tie") < hijos.indexOf("type"),
+        assertTrue(children.indexOf("tie") > children.indexOf("duration"),
+                "<tie> tiene que venir despues de <duration>: " + children);
+        assertTrue(children.indexOf("tie") < children.indexOf("type"),
                 "el content model de <note> en el DTD de MusicXML pone (tie, tie?) antes de type/dot/"
-                        + "time-modification, no despues: " + hijos);
+                        + "time-modification, no despues: " + children);
     }
 
     @Test
-    void losHijosDeAttributesSiguenElOrdenDelEsquema() throws Exception {
+    void theChildrenOfAttributesFollowTheSchemaOrder() throws Exception {
         Score score = scoreWith(Beat.rest(Duration.quarter()));
 
         Document document = parse(exporter.toXml(score));
@@ -60,7 +60,7 @@ class MusicXmlExportShapeTest {
     }
 
     @Test
-    void unCompasQueNoCambiaNadaNoEscribeAttributes() throws Exception {
+    void aBarThatChangesNothingWritesNoAttributes() throws Exception {
         Score score = scoreWithMeasures(measureInC(), measureInC());
 
         Document document = parse(exporter.toXml(score));
@@ -70,22 +70,22 @@ class MusicXmlExportShapeTest {
     }
 
     @Test
-    void unCambioDeSoloElCompasNoRepiteLaArmadura() throws Exception {
+    void aChangeOfOnlyTheTimeSignatureDoesNotRepeatTheKeySignature() throws Exception {
         Score score = scoreWithMeasures(measureInC(), measureInC())
                 .withTimeSignatureFrom(1, new TimeSignature(3, 4));
 
         Document document = parse(exporter.toXml(score));
         Element part = (Element) document.getElementsByTagName("part").item(0);
-        Element segundoCompas = elementsNamed(part, "measure").get(1);
-        Element attributes = firstChild(segundoCompas, "attributes").orElseThrow();
+        Element secondBar = elementsNamed(part, "measure").get(1);
+        Element attributes = firstChild(secondBar, "attributes").orElseThrow();
 
         assertEquals(List.of("time"), childNames(attributes),
                 "solo cambio el compas: <attributes> no tiene que repetir <key> si la armadura sigue igual");
     }
 
     @Test
-    void laDuracionDeCadaFiguraEsCoherenteConLasDivisionsDeclaradas() throws Exception {
-        List<Duration> figuras = List.of(
+    void theDurationOfEachFigureIsConsistentWithTheDeclaredDivisions() throws Exception {
+        List<Duration> figures = List.of(
                 Duration.of(NoteValue.WHOLE),
                 Duration.of(NoteValue.HALF),
                 Duration.quarter(),
@@ -93,17 +93,17 @@ class MusicXmlExportShapeTest {
                 new Duration(NoteValue.EIGHTH, true),
                 Duration.of(NoteValue.EIGHTH).in(Tuplet.of(3)),
                 Duration.of(NoteValue.SIXTEENTH));
-        Beat[] beats = figuras.stream().map(figura -> Beat.of(figura, new Note(1, 0))).toArray(Beat[]::new);
+        Beat[] beats = figures.stream().map(figure -> Beat.of(figure, new Note(1, 0))).toArray(Beat[]::new);
         Score score = scoreWith(beats);
 
         Document document = parse(exporter.toXml(score));
         int divisions = Integer.parseInt(document.getElementsByTagName("divisions").item(0).getTextContent().strip());
-        List<Element> notas = elementsNamed(document.getDocumentElement(), "note");
+        List<Element> notes = elementsNamed(document.getDocumentElement(), "note");
 
-        for (int i = 0; i < notas.size(); i++) {
-            long declarado = Long.parseLong(textOf(notas.get(i), "duration").orElseThrow());
-            long esperado = expectedDurationUnits(notas.get(i), divisions);
-            assertEquals(esperado, declarado, "figura " + i + ": " + figuras.get(i));
+        for (int i = 0; i < notes.size(); i++) {
+            long declaredDuration = Long.parseLong(textOf(notes.get(i), "duration").orElseThrow());
+            long expectedDuration = expectedDurationUnits(notes.get(i), divisions);
+            assertEquals(expectedDuration, declaredDuration, "figura " + i + ": " + figures.get(i));
         }
     }
 

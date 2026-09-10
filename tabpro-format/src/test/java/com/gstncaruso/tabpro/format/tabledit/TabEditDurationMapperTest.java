@@ -30,7 +30,7 @@ class TabEditDurationMapperTest {
             "16, SIXTY_FOURTH, true",
             "31, WHOLE, true",
     })
-    void mapeaLasFigurasSimplesYPunteadas(int code, NoteValue value, boolean dotted) {
+    void mapsPlainAndDottedFigures(int code, NoteValue value, boolean dotted) {
         Duration duration = TabEditDurationMapper.toDuration(code);
 
         assertEquals(value, duration.value());
@@ -39,7 +39,7 @@ class TabEditDurationMapperTest {
 
     @ParameterizedTest
     @CsvSource({"2, WHOLE", "5, HALF", "8, QUARTER", "11, EIGHTH", "14, SIXTEENTH", "17, THIRTY_SECOND"})
-    void mapeaLosTresillos(int code, NoteValue value) {
+    void mapsTriplets(int code, NoteValue value) {
         Duration duration = TabEditDurationMapper.toDuration(code);
 
         assertEquals(value, duration.value());
@@ -50,7 +50,7 @@ class TabEditDurationMapperTest {
     @ParameterizedTest
     @CsvSource({"20, SIXTEENTH", "23, SIXTEENTH", "26, SIXTEENTH", "29, SIXTEENTH",
             "21, SIXTY_FOURTH", "24, SIXTY_FOURTH", "27, SIXTY_FOURTH", "30, SIXTY_FOURTH"})
-    void losCodigosDeRellenoCaenEnUnaFiguraSimple(int code, NoteValue value) {
+    void theFillerCodesFallIntoAPlainFigure(int code, NoteValue value) {
         Duration duration = TabEditDurationMapper.toDuration(code);
 
         assertEquals(value, duration.value());
@@ -60,7 +60,7 @@ class TabEditDurationMapperTest {
 
     @ParameterizedTest
     @CsvSource({"19", "22", "25", "28"})
-    void elDoblePuntilloNoSePuedeRepresentarYSeDeclara(int code) {
+    void aDoubleDotCannotBeRepresentedAndIsReported(int code) {
         ScoreFileException exception =
                 assertThrows(ScoreFileException.class, () -> TabEditDurationMapper.toDuration(code));
 
@@ -68,7 +68,7 @@ class TabEditDurationMapperTest {
     }
 
     @Test
-    void unCodigoFueraDeRangoTambienSeDeclara() {
+    void anOutOfRangeCodeIsAlsoReported() {
         assertThrows(ScoreFileException.class, () -> TabEditDurationMapper.toDuration(99));
     }
 }

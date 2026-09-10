@@ -18,7 +18,7 @@ class GuitarProBendReaderTest {
     private final GuitarProBendReader reader = new GuitarProBendReader();
 
     @Test
-    void cienUnidadesSonUnTonoEntero() {
+    void oneHundredUnitsAreAWholeTone() {
         Bend bend = read(new GuitarProFileWriter()
                 .writeSignedByte(BEND)
                 .writeInt(WHOLE_TONE)
@@ -30,7 +30,7 @@ class GuitarProBendReaderTest {
     }
 
     @Test
-    void cincuentaUnidadesSonMedioTono() {
+    void fiftyUnitsAreAHalfTone() {
         Bend bend = read(new GuitarProFileWriter()
                 .writeSignedByte(BEND)
                 .writeInt(HALF_TONE)
@@ -42,7 +42,7 @@ class GuitarProBendReaderTest {
     }
 
     @Test
-    void cadaCodigoDeLaPalancaLlegaASuPropioTipoSinAproximar() {
+    void eachTremoloBarCodeMapsToItsOwnTypeWithoutApproximating() {
         Map<Integer, BendType> tremoloBarCodes = Map.of(
                 6, BendType.DIP,
                 7, BendType.DIVE,

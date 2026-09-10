@@ -11,7 +11,7 @@ class TabEditRestReaderTest {
     private final TabEditRestReader reader = new TabEditRestReader();
 
     @Test
-    void leeLaDuracionDeUnSilencioEnLaVozPrincipal() {
+    void readsTheDurationOfARestInThePrimaryVoice() {
         TabEditRestFields fields = reader.read(new TabEditByteReader(rest(6, false, false)));
 
         assertEquals(NoteValue.QUARTER, fields.duration().value());
@@ -19,7 +19,7 @@ class TabEditRestReaderTest {
     }
 
     @Test
-    void unSilencioDeLaVozSecundaria() {
+    void aRestInTheSecondaryVoice() {
         TabEditRestFields fields = reader.read(new TabEditByteReader(rest(9, true, true)));
 
         assertEquals(NoteValue.EIGHTH, fields.duration().value());

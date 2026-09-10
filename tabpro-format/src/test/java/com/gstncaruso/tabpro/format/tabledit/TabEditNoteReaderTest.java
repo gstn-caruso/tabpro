@@ -17,7 +17,7 @@ class TabEditNoteReaderTest {
     private final TabEditNoteReader reader = new TabEditNoteReader();
 
     @Test
-    void leeElTrasteLaDuracionLaDinamicaYLaVoz() {
+    void readsTheFretTheDurationTheDynamicAndTheVoice() {
         TabEditNoteFields fields = read(note(false, 3, 6, 0, 0, 0, 0, 0, 0, false));
 
         assertEquals(3, fields.fret());
@@ -28,21 +28,21 @@ class TabEditNoteReaderTest {
     }
 
     @Test
-    void laVozSeSacaDelAtributoDeLaNota() {
+    void theVoiceComesFromTheNoteAttribute() {
         TabEditNoteFields fields = read(note(false, 0, 6, 3, 0, 0, 0, 0, 0, false));
 
         assertEquals(VoicePart.BASS, fields.voice());
     }
 
     @Test
-    void unaNotaLigadaPorElBitDeTieQuedaMarcada() {
+    void aNoteWithTheTieBitSetIsMarkedTied() {
         TabEditNoteFields fields = read(note(false, 0, 6, 0, 0, 0, 0, 0, 0, true));
 
         assertTrue(fields.tied());
     }
 
     @Test
-    void laDinamicaPppTambienMarcaLaLigaduraSegunLaConvencionDeTablEdit() {
+    void thePppDynamicAlsoMarksTheTieByTablEditConvention() {
         TabEditNoteFields fields = read(note(false, 0, 6, 0, 7, 0, 0, 0, 0, false));
 
         assertEquals(Dynamic.PIANO_PIANISSIMO, fields.dynamic());
@@ -50,7 +50,7 @@ class TabEditNoteReaderTest {
     }
 
     @Test
-    void ligadoArmonicosYPalmMuteDesdeElPrimerEfecto() {
+    void hammerOnHarmonicsAndPalmMuteFromTheFirstEffect() {
         assertTrue(read(note(false, 0, 6, 0, 0, 1, 0, 0, 0, false))
                 .effects().has(Ornament.HAMMER_ON_PULL_OFF));
         assertTrue(read(note(false, 0, 6, 0, 0, 2, 0, 0, 0, false))
@@ -65,28 +65,28 @@ class TabEditNoteReaderTest {
     }
 
     @Test
-    void unSlideNoTraeDireccionYSeAproximaComoLegato() {
+    void aSlideWithoutADirectionDefaultsToLegato() {
         TabEditNoteFields fields = read(note(false, 0, 6, 0, 0, 3, 0, 0, 0, false));
 
         assertEquals(SlideType.LEGATO, fields.effects().slide().orElseThrow());
     }
 
     @Test
-    void letRingFantasmaYStaccatoDesdeElSegundoEfecto() {
+    void letRingGhostAndStaccatoFromTheSecondEffect() {
         assertTrue(read(note(false, 0, 6, 0, 0, 0, 1, 0, 0, false)).effects().has(Ornament.LET_RING));
         assertTrue(read(note(false, 0, 6, 0, 0, 0, 4, 0, 0, false)).effects().has(Ornament.GHOST));
         assertTrue(read(note(false, 0, 6, 0, 0, 0, 7, 0, 0, false)).effects().has(Ornament.STACCATO));
     }
 
     @Test
-    void tapSlapYFadeInSonMarcasDeTodoElBeat() {
+    void tapSlapAndFadeInAreMarksOfTheWholeBeat() {
         assertTrue(read(note(false, 0, 6, 0, 0, 9, 0, 0, 0, false)).tapping());
         assertTrue(read(note(false, 0, 6, 0, 0, 0, 2, 0, 0, false)).slapping());
         assertTrue(read(note(false, 0, 6, 0, 0, 0, 8, 0, 0, false)).fadeIn());
     }
 
     @Test
-    void elTercerEfectoSumaLigadoYArmonicosSiElPrimeroNoLosTrajo() {
+    void theThirdEffectAddsHammerOnAndHarmonicsWhenTheFirstDidNotBringThem() {
         assertTrue(read(note(false, 0, 6, 0, 0, 0, 0, 1, 0, false))
                 .effects().has(Ornament.HAMMER_ON_PULL_OFF));
         assertEquals(HarmonicType.NATURAL,
@@ -94,7 +94,7 @@ class TabEditNoteReaderTest {
     }
 
     @Test
-    void unaNotaDeAdornoTraeSuTrasteYSuTransicion() {
+    void aGraceNoteCarriesItsFretAndItsTransition() {
         TabEditNoteFields fields = read(note(true, 0, 6, 0, 0, 0, 0, 0, 5, false));
 
         assertTrue(fields.isGraceNote());

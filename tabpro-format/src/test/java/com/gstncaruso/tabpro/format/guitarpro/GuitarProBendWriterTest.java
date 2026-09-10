@@ -17,7 +17,7 @@ class GuitarProBendWriterTest {
     private final GuitarProBendWriter writer = new GuitarProBendWriter();
 
     @Test
-    void unTonoEnteroSeEscribeComoCien() {
+    void aWholeToneIsWrittenAsOneHundred() {
         Bend bend = new Bend(BendType.BEND, List.of(
                 BendPoint.at(0, 0),
                 BendPoint.at(BendPoint.LAST_POSITION, WHOLE_TONE_IN_QUARTER_TONES)));
@@ -37,7 +37,7 @@ class GuitarProBendWriterTest {
     }
 
     @Test
-    void cadaTipoDeLaPalancaSeEscribeConSuPropioCodigo() {
+    void eachTremoloBarTypeIsWrittenWithItsOwnCode() {
         Map<BendType, Integer> tremoloBarCodes = Map.of(
                 BendType.DIP, 6,
                 BendType.DIVE, 7,
