@@ -17,11 +17,11 @@ class DynamicsDialogTest {
     }
 
     @Test
-    void elComboDeDinamicaMuestraElSimboloMusicalEnVezDelEnumCrudo() {
+    void theDynamicComboShowsTheMusicalSymbolInsteadOfTheRawEnum() {
         DynamicsDialog.Fields fields = DynamicsDialog.buildFields(Dynamic.defaultDynamic());
 
-        String texto = Combos.renderedTextOf(fields.form(), Dynamic.class, Dynamic.MEZZO_FORTE);
+        String renderedText = Combos.renderedTextOf(fields.form(), Dynamic.class, Dynamic.MEZZO_FORTE);
 
-        assertEquals("mf", texto);
+        assertEquals("mf", renderedText);
     }
 }

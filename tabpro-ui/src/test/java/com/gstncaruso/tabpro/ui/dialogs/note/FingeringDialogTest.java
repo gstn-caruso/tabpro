@@ -16,14 +16,14 @@ class FingeringDialogTest {
     }
 
     @Test
-    void porDefectoElFocoInicialQuedaEnElCampoDeManoIzquierda() {
+    void byDefaultTheInitialFocusIsOnTheLeftHandField() {
         FingeringDialog.Fields fields = FingeringDialog.buildFields(Optional.empty(), Optional.empty());
 
         assertSame(fields.leftHand(), fields.initialFocus());
     }
 
     @Test
-    void siSePideElFocoEnManoDerechaElCampoInicialEsElDeManoDerecha() {
+    void whenTheRightHandFocusIsRequestedTheInitialFieldIsTheRightHandOne() {
         FingeringDialog.Fields fields = FingeringDialog.buildFields(
                 Optional.empty(), Optional.empty(), FingeringDialog.Hand.RIGHT);
 
