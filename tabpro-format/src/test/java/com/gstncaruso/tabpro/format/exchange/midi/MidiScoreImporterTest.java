@@ -410,6 +410,19 @@ class MidiScoreImporterTest {
         assertEquals(64, track.pitchOf(track.measure(0).beat(0).notes().get(0)).midiNumber());
     }
 
+    @Test
+    void chordPositionQuantizeWithASixteenthNoteGridLeavesAnAlreadyAlignedNoteWhereItIs(@TempDir Path tempDir) throws Exception {
+        Path path = rawMidiFile(tempDir, "ya-alineada.mid", new long[] {240, 64, 100});
+
+        Score imported = importer.importQuick(
+                path, indicesOf(path), false, Optional.of(NoteValue.SIXTEENTH), Optional.empty(), true);
+
+        Track track = imported.track(0);
+        assertTrue(track.measure(0).beat(0).notes().isEmpty(), "sigue habiendo un silencio antes: la nota no se movio");
+        assertEquals(Duration.of(NoteValue.SIXTEENTH), track.measure(0).beat(0).duration());
+        assertEquals(1, track.measure(0).beat(1).notes().size());
+    }
+
     private static Path rawMidiFile(Path dir, String fileName, long[]... notes) throws Exception {
         Sequence sequence = new Sequence(Sequence.PPQ, (int) Duration.TICKS_PER_QUARTER);
         sequence.createTrack();
