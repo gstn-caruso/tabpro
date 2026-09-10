@@ -9,7 +9,7 @@ class TrackTuningGuessTest {
 
     @Test
     void guessesBassFromTheGeneralMidiProgram() {
-        assertEquals(Tuning.standardBass(), TrackTuningGuess.forQuickImport("Pista 2", 33));
+        assertEquals(Tuning.standardBass(), TrackTuningGuess.forQuickImport("Track 2", 33));
     }
 
     @Test

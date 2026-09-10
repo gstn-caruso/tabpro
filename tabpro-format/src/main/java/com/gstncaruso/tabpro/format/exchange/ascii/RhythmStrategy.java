@@ -24,7 +24,7 @@ public sealed interface RhythmStrategy {
     record FromSpacing(int intervalsPerQuarterNote) implements RhythmStrategy {
         public FromSpacing {
             if (intervalsPerQuarterNote < 1) {
-                throw new IllegalArgumentException("intervalsPerQuarterNote debe ser >= 1: " + intervalsPerQuarterNote);
+                throw new IllegalArgumentException("intervalsPerQuarterNote must be >= 1: " + intervalsPerQuarterNote);
             }
         }
     }

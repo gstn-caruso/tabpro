@@ -34,15 +34,15 @@ class MusicXmlForeignFixtureImportTest {
         Score score = importFixture("armadura-en-fa");
 
         assertEquals(-1, score.attributesOf(0).keySignature().accidentals(),
-                "fa mayor son 1 bemol (fifths=-1), no la armadura de do mayor por defecto");
+                "F major is 1 flat (fifths=-1), not the default C major key signature");
 
         Track track = score.track(0);
         Measure measure = track.measure(0);
         List<Beat> beats = measure.beats();
-        assertEquals(65, track.pitchOf(beats.get(0).notes().get(0)).midiNumber(), "Fa4");
-        assertEquals(67, track.pitchOf(beats.get(1).notes().get(0)).midiNumber(), "Sol4");
-        assertEquals(69, track.pitchOf(beats.get(2).notes().get(0)).midiNumber(), "La4");
-        assertEquals(70, track.pitchOf(beats.get(3).notes().get(0)).midiNumber(), "Si b4, con su alteracion explicita");
+        assertEquals(65, track.pitchOf(beats.get(0).notes().get(0)).midiNumber(), "F4");
+        assertEquals(67, track.pitchOf(beats.get(1).notes().get(0)).midiNumber(), "G4");
+        assertEquals(69, track.pitchOf(beats.get(2).notes().get(0)).midiNumber(), "A4");
+        assertEquals(70, track.pitchOf(beats.get(3).notes().get(0)).midiNumber(), "Bb4, with its explicit alteration");
     }
 
     @Test
@@ -52,9 +52,9 @@ class MusicXmlForeignFixtureImportTest {
         Measure measure = score.track(0).measure(0);
         Beat beat = measure.beat(0);
 
-        assertTrue(beat.isRest(), "el unico note del compas es <rest measure=\"yes\"/>");
+        assertTrue(beat.isRest(), "the only note of the measure is <rest measure=\"yes\"/>");
         assertTrue(measure.isComplete(),
-                "un silencio de compas entero en 3/4 tiene que ocupar los 3 tiempos, no 1 negra por defecto");
+                "a whole-measure rest in 3/4 must occupy all 3 beats, not a default 1 quarter note");
         assertFalse(measure.isTooShort());
     }
 
@@ -64,12 +64,12 @@ class MusicXmlForeignFixtureImportTest {
         Track track = score.track(0);
 
         Beat firstBar = track.measure(0).beat(0);
-        assertFalse(firstBar.notes().get(0).tied(), "la nota que ataca no viene marcada como ligada");
+        assertFalse(firstBar.notes().get(0).tied(), "the attacking note is not marked as tied");
         assertEquals(NoteValue.QUARTER, firstBar.duration().value());
-        assertTrue(firstBar.duration().dotted(), "quarter+dot en el archivo es una negra con puntillo");
+        assertTrue(firstBar.duration().dotted(), "quarter+dot in the file is a dotted quarter note");
 
         Beat secondBar = track.measure(1).beat(0);
-        assertTrue(secondBar.notes().get(0).tied(), "tie type=\"stop\" es la continuacion, no un nuevo ataque");
+        assertTrue(secondBar.notes().get(0).tied(), "tie type=\"stop\" is the continuation, not a new attack");
         assertEquals(NoteValue.QUARTER, secondBar.duration().value());
         assertFalse(secondBar.duration().dotted());
     }
@@ -82,9 +82,9 @@ class MusicXmlForeignFixtureImportTest {
         for (int i = 0; i < 3; i++) {
             Beat beat = measure.beat(i);
             assertEquals(NoteValue.EIGHTH, beat.duration().value(), "beat " + i);
-            assertEquals(Tuplet.of(3), beat.duration().tuplet(), "beat " + i + ": 3 en el tiempo de 2");
+            assertEquals(Tuplet.of(3), beat.duration().tuplet(), "beat " + i + ": 3 in the time of 2");
         }
-        assertTrue(measure.isComplete(), "el tresillo mas las tres negras tienen que completar el 4/4");
+        assertTrue(measure.isComplete(), "the triplet plus the three quarter notes must complete the 4/4");
     }
 
     @Test
@@ -94,21 +94,21 @@ class MusicXmlForeignFixtureImportTest {
 
         assertEquals(List.of(64, 59, 55, 50, 45, 38),
                 track.tuning().strings().stream().map(Pitch::midiNumber).toList(),
-                "staff-tuning listado de la linea 1 a la 6 tiene que armar Drop D, no la estandar");
+                "staff-tuning listed from line 1 to 6 must build Drop D, not the standard tuning");
 
         Beat firstBeat = track.measure(0).beat(0);
         assertEquals(4, firstBeat.notes().get(0).string(),
-                "el archivo pone la nota explicita en la cuerda 4; recalcular la mejor cuerda la pondria en la 3");
+                "the file places the note explicitly on string 4; recalculating the best string would put it on string 3");
         assertEquals(7, firstBeat.notes().get(0).fret());
 
         Beat chordBeat = track.measure(0).beat(1);
-        assertEquals(2, chordBeat.notes().size(), "el chord/ suma la segunda nota al mismo beat");
+        assertEquals(2, chordBeat.notes().size(), "the chord/ adds the second note to the same beat");
         assertEquals(0, chordBeat.noteOn(3).orElseThrow().fret());
         assertEquals(0, chordBeat.noteOn(4).orElseThrow().fret());
 
         Beat beatWithoutTechnical = track.measure(0).beat(2);
         assertEquals(6, beatWithoutTechnical.notes().get(0).string(),
-                "sin <technical>, Re2 solo puede resolverse al aire en la cuerda 6 de la Drop D");
+                "without <technical>, D2 can only resolve open on string 6 of Drop D");
         assertEquals(0, beatWithoutTechnical.notes().get(0).fret());
     }
 }

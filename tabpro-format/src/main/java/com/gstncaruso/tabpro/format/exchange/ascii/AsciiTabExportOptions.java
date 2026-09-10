@@ -7,7 +7,7 @@ public record AsciiTabExportOptions(int columnsPerLine) {
 
     public AsciiTabExportOptions {
         if (columnsPerLine < MIN_COLUMNS_PER_LINE) {
-            throw new IllegalArgumentException("columnsPerLine debe ser >= " + MIN_COLUMNS_PER_LINE + ": " + columnsPerLine);
+            throw new IllegalArgumentException("columnsPerLine must be >= " + MIN_COLUMNS_PER_LINE + ": " + columnsPerLine);
         }
     }
 

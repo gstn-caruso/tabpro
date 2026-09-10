@@ -19,9 +19,9 @@ class GuitarProDirectionSlotsTest {
                         DirectionSymbol.SEGNO_SEGNO,
                         DirectionSymbol.FINE),
                 GuitarProHeaderReader.SYMBOL_SLOTS,
-                "El formato de Guitar Pro 5 fija este orden para los simbolos de destino. "
-                        + "Cambiarlo hace que los .gp5 se lean mal en silencio: el archivo abre, "
-                        + "pero cada simbolo cae en el compas de otro.");
+                "The Guitar Pro 5 format fixes this order for the target symbols. "
+                        + "Changing it makes .gp5 files read wrong in silence: the file opens, "
+                        + "but each symbol lands on the wrong measure.");
     }
 
     @Test
@@ -43,8 +43,8 @@ class GuitarProDirectionSlotsTest {
                         DirectionJump.DA_CODA,
                         DirectionJump.DA_DOUBLE_CODA),
                 GuitarProHeaderReader.JUMP_SLOTS,
-                "El formato de Guitar Pro 5 fija este orden para los saltos. "
-                        + "Cambiarlo hace que los .gp5 se lean mal en silencio.");
+                "The Guitar Pro 5 format fixes this order for the jumps. "
+                        + "Changing it makes .gp5 files read wrong in silence.");
     }
 
     @Test
@@ -52,8 +52,8 @@ class GuitarProDirectionSlotsTest {
         assertEquals(
                 19,
                 GuitarProHeaderReader.SYMBOL_SLOTS.size() + GuitarProHeaderReader.JUMP_SLOTS.size(),
-                "El bloque del archivo tiene diecinueve casilleros de dos bytes. "
-                        + "Leer de menos corre todo lo que viene despues.");
+                "The file block has nineteen two-byte slots. "
+                        + "Reading fewer shifts everything that comes after.");
     }
 
     @Test
@@ -61,10 +61,10 @@ class GuitarProDirectionSlotsTest {
         assertEquals(
                 DirectionSymbol.values().length,
                 GuitarProHeaderReader.SYMBOL_SLOTS.size(),
-                "Si el modelo suma un simbolo, hay que decidir en que casillero del archivo cae.");
+                "If the model adds a symbol, we have to decide which slot of the file it lands on.");
         assertEquals(
                 DirectionJump.values().length,
                 GuitarProHeaderReader.JUMP_SLOTS.size(),
-                "Si el modelo suma un salto, hay que decidir en que casillero del archivo cae.");
+                "If the model adds a jump, we have to decide which slot of the file it lands on.");
     }
 }

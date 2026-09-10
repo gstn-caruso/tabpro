@@ -43,7 +43,7 @@ final class PitchSpelling {
             case 'G' -> 7;
             case 'A' -> 9;
             case 'B' -> 11;
-            default -> throw new IllegalArgumentException("step invalido: " + step);
+            default -> throw new IllegalArgumentException("invalid step: " + step);
         };
     }
 }

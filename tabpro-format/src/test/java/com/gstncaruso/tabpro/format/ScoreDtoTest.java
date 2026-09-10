@@ -146,61 +146,61 @@ class ScoreDtoTest {
                 .withAlternateEndings(List.of(1, 2))
                 .withSymbol(DirectionSymbol.SEGNO)
                 .withJump(DirectionJump.DA_SEGNO_AL_CODA)
-                .withMarker(Marker.named("Estribillo"));
+                .withMarker(Marker.named("Chorus"));
         Measure measure = Measure.empty(TimeSignature.fourFour(), Duration.quarter()).withAttributes(attributes);
         assertRoundTrips(scoreWith(measure));
     }
 
     @Test
     void roundTripsTheSettingsOfATrack() {
-        Track track = Track.standardGuitar("Guitarra")
+        Track track = Track.standardGuitar("Guitar")
                 .mappingSettings(settings -> settings.withCapo(3).withFretCount(22).withTwelveString(true))
                 .withChannel(Channel.playing(30).withChorus(40).withReverb(50).withPort(2).withNumber(5));
-        assertRoundTrips(new Score(ScoreInfo.titled("Prueba"), 120, List.of(track), Lyrics.none()));
+        assertRoundTrips(new Score(ScoreInfo.titled("Test"), 120, List.of(track), Lyrics.none()));
     }
 
     @Test
     void roundTripsThePercussionTrack() {
         assertRoundTrips(new Score(
-                ScoreInfo.titled("Prueba"), 120, List.of(Track.percussion("Bateria")), Lyrics.none()));
+                ScoreInfo.titled("Test"), 120, List.of(Track.percussion("Drums")), Lyrics.none()));
     }
 
     @Test
     void roundTripsTheScoreInformationAndTheLyrics() {
-        ScoreInfo info = ScoreInfo.titled("Prueba")
-                .withArtist("Alguien")
-                .withAlbum("Un disco")
-                .withMusicAuthor("Otro")
+        ScoreInfo info = ScoreInfo.titled("Test")
+                .withArtist("Someone")
+                .withAlbum("An album")
+                .withMusicAuthor("Another")
                 .withCopyright("2026");
-        Lyrics lyrics = Lyrics.none().onTrack(0).withLine(0, new LyricLine(2, "es-to es una le-tra"));
-        assertRoundTrips(new Score(info, 120, List.of(Track.standardGuitar("Guitarra")), lyrics));
+        Lyrics lyrics = Lyrics.none().onTrack(0).withLine(0, new LyricLine(2, "syl-la-ble test"));
+        assertRoundTrips(new Score(info, 120, List.of(Track.standardGuitar("Guitar")), lyrics));
     }
 
     @Test
     void roundTripsMultilineLyricsText() {
-        Lyrics lyrics = Lyrics.none().onTrack(0).withLine(0, new LyricLine(1, "primera linea\nsegunda linea"));
-        assertRoundTrips(new Score(ScoreInfo.titled("Prueba"), 120, List.of(Track.standardGuitar("Guitarra")), lyrics));
+        Lyrics lyrics = Lyrics.none().onTrack(0).withLine(0, new LyricLine(1, "first line\nsecond line"));
+        assertRoundTrips(new Score(ScoreInfo.titled("Test"), 120, List.of(Track.standardGuitar("Guitar")), lyrics));
     }
 
     @Test
     void roundTripsSeveralTracks() {
         assertRoundTrips(new Score(
-                "Prueba", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo"))));
+                "Test", 120, List.of(Track.standardGuitar("Guitar"), Track.standardBass("Bass"))));
     }
 
     @Test
     void rejectsAMissingTracksField() {
         ScoreDto dto = new ScoreDto(
-                ScoreDto.CURRENT_FORMAT, "Prueba", null, null, null, null, null, null, null, null, null, 120, null, null);
+                ScoreDto.CURRENT_FORMAT, "Test", null, null, null, null, null, null, null, null, null, 120, null, null);
 
         assertThrows(ScoreFileException.class, dto::toScore);
     }
 
     @Test
     void wrapsDomainInvariantsInScoreFileException() {
-        TrackDto track = TrackDto.from(Track.standardGuitar("Guitarra"));
+        TrackDto track = TrackDto.from(Track.standardGuitar("Guitar"));
         ScoreDto dto = new ScoreDto(
-                ScoreDto.CURRENT_FORMAT, "Prueba", null, null, null, null, null, null, null, null, null, 0,
+                ScoreDto.CURRENT_FORMAT, "Test", null, null, null, null, null, null, null, null, null, 0,
                 List.of(track), null);
 
         ScoreFileException thrown = assertThrows(ScoreFileException.class, dto::toScore);
@@ -209,8 +209,8 @@ class ScoreDtoTest {
     }
 
     private static Score scoreWith(Measure measure) {
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        return new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Test", 120, List.of(track));
     }
 
     private static void assertRoundTrips(Score score) {

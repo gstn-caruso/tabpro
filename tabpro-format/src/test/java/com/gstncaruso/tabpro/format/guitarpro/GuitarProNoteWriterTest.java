@@ -27,10 +27,10 @@ class GuitarProNoteWriterTest {
         byte[] bytes = write(new Note(1, 5, false, NoteEffects.none().withGrace(grace)));
 
         int at = BYTES_BEFORE_THE_GRACE_NOTE;
-        assertEquals(7, bytes[at] & 0xFF, "traste del adorno");
-        assertEquals(Dynamic.FORTE.ordinal() + 1, bytes[at + 1] & 0xFF, "dinamica del adorno");
-        assertEquals(THIRTY_SECOND, bytes[at + 2] & 0xFF, "duracion del adorno");
-        assertEquals(HAMMER, bytes[at + 3] & 0xFF, "transicion del adorno");
+        assertEquals(7, bytes[at] & 0xFF, "grace note fret");
+        assertEquals(Dynamic.FORTE.ordinal() + 1, bytes[at + 1] & 0xFF, "grace note dynamic");
+        assertEquals(THIRTY_SECOND, bytes[at + 2] & 0xFF, "grace note duration");
+        assertEquals(HAMMER, bytes[at + 3] & 0xFF, "grace note transition");
     }
 
     private byte[] write(Note note) {

@@ -115,7 +115,7 @@ class PowerTabFileTest {
 
     @Test
     void aFileThatIsNotPowerTabIsReported() {
-        assertThrows(ScoreFileException.class, () -> files.read("esto no es PowerTab".getBytes()));
+        assertThrows(ScoreFileException.class, () -> files.read("this is not PowerTab".getBytes()));
     }
 
     private Score read(String name) {

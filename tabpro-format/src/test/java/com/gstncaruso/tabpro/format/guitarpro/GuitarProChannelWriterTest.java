@@ -23,8 +23,8 @@ class GuitarProChannelWriterTest {
                 .withPan(Channel.CENTER_PAN));
 
         written.skip(PROGRAM_BYTES);
-        assertEquals(13, written.readUnsignedByte(), "el volumen de siempre de Guitar Pro");
-        assertEquals(8, written.readUnsignedByte(), "el paneo al centro");
+        assertEquals(13, written.readUnsignedByte(), "Guitar Pro's usual volume");
+        assertEquals(8, written.readUnsignedByte(), "pan centered");
     }
 
     @Test

@@ -64,15 +64,15 @@ class GuitarProByteWriterTest {
     @Test
     void writesAndRereadsAFixedSizeStringWithItsPadding() {
         GuitarProByteReader reader =
-                new GuitarProByteReader(new GuitarProByteWriter().writeFixedString("Guitarra", 40).bytes());
+                new GuitarProByteReader(new GuitarProByteWriter().writeFixedString("Guitar", 40).bytes());
 
-        assertEquals("Guitarra", reader.readFixedString(40));
+        assertEquals("Guitar", reader.readFixedString(40));
         assertEquals(41, reader.position());
     }
 
     @Test
     void aFixedSizeStringLongerThanTheBlockIsTruncated() {
-        String longName = "Un nombre de pista demasiado largo para entrar";
+        String longName = "A track name too long to fit";
         GuitarProByteReader reader = new GuitarProByteReader(new GuitarProByteWriter().writeFixedString(longName, 10).bytes());
 
         assertEquals(longName.substring(0, 10), reader.readFixedString(10));
@@ -81,17 +81,17 @@ class GuitarProByteWriterTest {
     @Test
     void writesAndRereadsAnIntPrefixedStringWithoutAnExtraByte() {
         GuitarProByteReader reader =
-                new GuitarProByteReader(new GuitarProByteWriter().writeIntPrefixedString("hola mundo").bytes());
+                new GuitarProByteReader(new GuitarProByteWriter().writeIntPrefixedString("hello world").bytes());
 
-        assertEquals("hola mundo", reader.readIntPrefixedString());
+        assertEquals("hello world", reader.readIntPrefixedString());
     }
 
     @Test
     void writesAndRereadsALengthPrefixedStringWithARedundantLengthByte() {
         GuitarProByteReader reader = new GuitarProByteReader(
-                new GuitarProByteWriter().writeLengthPrefixedString("Cancion de prueba").bytes());
+                new GuitarProByteWriter().writeLengthPrefixedString("Test song").bytes());
 
-        assertEquals("Cancion de prueba", reader.readLengthPrefixedString());
+        assertEquals("Test song", reader.readLengthPrefixedString());
     }
 
     @Test

@@ -26,9 +26,9 @@ class PowerTabByteReaderTest {
 
     @Test
     void readsAShortMfcString() {
-        byte[] data = {0x05, 'H', 'o', 'l', 'a', '!'};
+        byte[] data = {0x05, 'H', 'e', 'y', '!', '!'};
 
-        assertEquals("Hola!", new PowerTabByteReader(data).readMfcString());
+        assertEquals("Hey!!", new PowerTabByteReader(data).readMfcString());
     }
 
     @Test

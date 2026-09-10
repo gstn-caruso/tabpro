@@ -189,7 +189,7 @@ class GuitarProBeatReaderTest {
         assertEquals(OptionalInt.of(30), change.valueOf(SoundParameter.PROGRAM));
         assertEquals(OptionalInt.of(40), change.valueOf(SoundParameter.VOLUME));
         assertEquals(OptionalInt.of(90), change.valueOf(SoundParameter.TEMPO));
-        assertFalse(change.changes(SoundParameter.PAN), "lo que viene en -1 no cambia");
+        assertFalse(change.changes(SoundParameter.PAN), "what comes in as -1 does not change");
     }
 
     @Test
@@ -485,7 +485,7 @@ class GuitarProBeatReaderTest {
                 .writeUnsignedByte(NO_STRINGS));
 
         Bend tremoloBar = beat.effects().tremoloBar().orElseThrow();
-        assertEquals(-4, tremoloBar.points().get(1).quarterTones(), "un tono entero hacia abajo");
+        assertEquals(-4, tremoloBar.points().get(1).quarterTones(), "a whole tone downward");
         assertEquals(0, tremoloBar.points().getFirst().quarterTones());
         assertEquals(0, tremoloBar.points().getLast().quarterTones());
     }

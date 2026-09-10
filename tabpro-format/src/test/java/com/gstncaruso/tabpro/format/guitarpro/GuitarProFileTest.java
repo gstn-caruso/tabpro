@@ -82,7 +82,7 @@ class GuitarProFileTest {
 
         assertEquals(TimeSignature.fourFour(), measure.timeSignature());
         assertEquals(4, measure.beats().size());
-        assertTrue(measure.isComplete(), "el compás no suma lo que su medida pide");
+        assertTrue(measure.isComplete(), "the measure does not add up to what its time signature requires");
         assertTrue(measure.beats().stream().noneMatch(beat -> beat.isRest()));
     }
 
@@ -96,15 +96,15 @@ class GuitarProFileTest {
 
     @Test
     void aFileThatIsNotGuitarProIsReported(@TempDir Path folder) throws Exception {
-        Path path = folder.resolve("roto.gp5");
-        Files.writeString(path, "esto no es un archivo de Guitar Pro, ni de lejos");
+        Path path = folder.resolve("broken.gp5");
+        Files.writeString(path, "this is nowhere close to a Guitar Pro file");
 
         assertThrows(ScoreFileException.class, () -> files.read(path));
     }
 
     @Test
     void aTruncatedFileIsReported(@TempDir Path folder) throws Exception {
-        Path path = folder.resolve("cortado.gp5");
+        Path path = folder.resolve("truncated.gp5");
         byte[] whole = Files.readAllBytes(fixture("gp5"));
         Files.write(path, java.util.Arrays.copyOf(whole, whole.length / 2));
 
@@ -113,7 +113,7 @@ class GuitarProFileTest {
 
     @Test
     void readsAGp5ThatEndsWithoutTheLineBreakOfItsLastMeasure(@TempDir Path folder) throws Exception {
-        Path path = folder.resolve("sin-salto-final.gp5");
+        Path path = folder.resolve("no-final-line-break.gp5");
         byte[] whole = Files.readAllBytes(fixture("gp5"));
         Files.write(path, java.util.Arrays.copyOf(whole, whole.length - 1));
 

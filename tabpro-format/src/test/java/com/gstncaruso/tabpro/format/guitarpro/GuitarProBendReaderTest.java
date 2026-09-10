@@ -57,7 +57,7 @@ class GuitarProBendReaderTest {
                 .writeInt(2)
                 .writeInt(0).writeInt(0).writeUnsignedByte(NO_VIBRATO)
                 .writeInt(BendPoint.LAST_POSITION).writeInt(WHOLE_TONE).writeUnsignedByte(NO_VIBRATO)).type(),
-                "el codigo " + code + " tiene que llegar a " + expected));
+                "code " + code + " must resolve to " + expected));
     }
 
     private Bend read(GuitarProFileWriter written) {

@@ -88,7 +88,7 @@ class GuitarProExporterFixtureRoundTripTest {
     @Test
     void theFeaturesFixtureInGp5LosesTheSecondVoiceWhenExportedToGp4() {
         Score original = readFixture("tabpro-features", "gp5");
-        assertTrue(original.track(0).measure(0).usesTwoVoices(), "el fixture de origen trae segunda voz");
+        assertTrue(original.track(0).measure(0).usesTwoVoices(), "the source fixture carries a second voice");
 
         assertTrue(exporter.warningsFor(original).stream().anyMatch(w -> w.contains("segunda voz")));
 

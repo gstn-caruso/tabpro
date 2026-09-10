@@ -31,7 +31,7 @@ class PowerTabHeaderReaderTest {
 
     @Test
     void aFileThatIsNotPowerTabIsReported() {
-        PowerTabByteReader bytes = new PowerTabByteReader("esto no es un archivo de PowerTab".getBytes());
+        PowerTabByteReader bytes = new PowerTabByteReader("this is not a PowerTab file".getBytes());
 
         assertThrows(ScoreFileException.class, () -> reader.read(bytes));
     }

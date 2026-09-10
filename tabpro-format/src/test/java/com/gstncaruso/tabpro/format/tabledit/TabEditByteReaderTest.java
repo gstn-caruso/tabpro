@@ -57,20 +57,20 @@ class TabEditByteReaderTest {
 
     @Test
     void readsAShortLengthPrefixedString() {
-        TabEditByteReader reader = new TabEditByteReader(new TabEditFileWriter().writeShortString("Cancion").bytes());
+        TabEditByteReader reader = new TabEditByteReader(new TabEditFileWriter().writeShortString("Song").bytes());
 
-        assertEquals("Cancion", reader.readShortString());
+        assertEquals("Song", reader.readShortString());
     }
 
     @Test
     void aShortLengthPrefixedStringIsCutAtTheFirstNull() {
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(10);
-        writer.writeUnsignedByte('h').writeUnsignedByte('o').writeUnsignedByte('l').writeUnsignedByte('a');
+        writer.writeUnsignedByte('h').writeUnsignedByte('e').writeUnsignedByte('y').writeUnsignedByte('!');
         writer.writeUnsignedByte(0);
         writer.writeUnsignedByte(99);
         TabEditByteReader reader = new TabEditByteReader(writer.bytes());
 
-        assertEquals("hola", reader.readShortString());
+        assertEquals("hey!", reader.readShortString());
         assertEquals(99, reader.readUnsignedByte());
     }
 

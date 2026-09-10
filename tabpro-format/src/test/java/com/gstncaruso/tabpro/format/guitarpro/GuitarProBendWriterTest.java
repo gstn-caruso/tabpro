@@ -27,7 +27,7 @@ class GuitarProBendWriterTest {
         GuitarProByteReader reader = new GuitarProByteReader(bytes.bytes());
 
         reader.readSignedByte();
-        assertEquals(WHOLE_TONE_RAW, reader.readInt(), "la profundidad general");
+        assertEquals(WHOLE_TONE_RAW, reader.readInt(), "the overall depth");
         assertEquals(2, reader.readInt());
         reader.readInt();
         assertEquals(0, reader.readInt());
@@ -52,7 +52,7 @@ class GuitarProBendWriterTest {
             writer.write(bytes, bend);
 
             int actualCode = new GuitarProByteReader(bytes.bytes()).readSignedByte();
-            assertEquals(expectedCode, actualCode, "el tipo " + type + " tiene que escribirse con su propio codigo");
+            assertEquals(expectedCode, actualCode, "type " + type + " must be written with its own code");
         });
     }
 }

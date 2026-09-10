@@ -28,8 +28,8 @@ class AsciiTabRoundTripTest {
         Beat third = Beat.of(Duration.of(NoteValue.QUARTER), new Note(4, 7));
         Beat fourth = Beat.of(Duration.of(NoteValue.QUARTER), new Note(5, 2));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(chord, first, second, third, fourth));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        Score original = new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        Score original = new Score("Test", 120, List.of(track));
 
         String tab = exporter.export(original, AsciiTabExportOptions.standard());
         int intervalsPerQuarterNoteMatchingTheExportersColumnWidth = 4;

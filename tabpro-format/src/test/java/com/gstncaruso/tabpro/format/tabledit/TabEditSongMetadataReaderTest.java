@@ -11,19 +11,19 @@ class TabEditSongMetadataReaderTest {
     @Test
     void readsTitleAuthorCommentsAndNotes() {
         TabEditFileWriter writer = new TabEditFileWriter()
-                .writeShortString("Mi cancion")
-                .writeShortString("Un autor")
-                .writeShortString("unos comentarios")
-                .writeShortString("unas notas")
+                .writeShortString("My song")
+                .writeShortString("Some author")
+                .writeShortString("some comments")
+                .writeShortString("some notes")
                 .writeShortString("");
         TabEditHeader header = header(false, false, false);
 
         TabEditSongMetadata metadata = reader.read(new TabEditByteReader(writer.bytes()), header);
 
-        assertEquals("Mi cancion", metadata.title());
-        assertEquals("Un autor", metadata.author());
-        assertEquals("unos comentarios", metadata.comments());
-        assertEquals("unas notas", metadata.notes());
+        assertEquals("My song", metadata.title());
+        assertEquals("Some author", metadata.author());
+        assertEquals("some comments", metadata.comments());
+        assertEquals("some notes", metadata.notes());
         assertEquals("", metadata.copyright());
     }
 
@@ -34,14 +34,14 @@ class TabEditSongMetadataReaderTest {
                 .writeShortString("A")
                 .writeShortString("")
                 .writeShortString("")
-                .writeShortString("http://ejemplo.com")
-                .writeShortString("(c) alguien")
+                .writeShortString("http://example.com")
+                .writeShortString("(c) someone")
                 .writeShortString("");
         TabEditHeader header = header(true, true, false);
 
         TabEditSongMetadata metadata = reader.read(new TabEditByteReader(writer.bytes()), header);
 
-        assertEquals("(c) alguien", metadata.copyright());
+        assertEquals("(c) someone", metadata.copyright());
     }
 
     @Test
@@ -53,8 +53,8 @@ class TabEditSongMetadataReaderTest {
                 .writeShortString("")
                 .writeShortString("")
                 .writeShort(2)
-                .writeShortString("primer evento")
-                .writeShortString("segundo evento");
+                .writeShortString("first event")
+                .writeShortString("second event");
         writer.writeUnsignedByte(77);
         TabEditHeader header = headerWithTextEvents();
         TabEditByteReader input = new TabEditByteReader(writer.bytes());

@@ -55,26 +55,26 @@ class GuitarProByteReaderTest {
     @Test
     void readsAFixedSizeStringWithItsPadding() {
         GuitarProByteReader reader =
-                new GuitarProByteReader(new GuitarProFileWriter().writeFixedString("Guitarra", 40).bytes());
+                new GuitarProByteReader(new GuitarProFileWriter().writeFixedString("Guitar", 40).bytes());
 
-        assertEquals("Guitarra", reader.readFixedString(40));
+        assertEquals("Guitar", reader.readFixedString(40));
         assertEquals(41, reader.position());
     }
 
     @Test
     void readsAnIntPrefixedStringWithoutAnExtraByte() {
         GuitarProByteReader reader =
-                new GuitarProByteReader(new GuitarProFileWriter().writeIntPrefixedString("hola mundo").bytes());
+                new GuitarProByteReader(new GuitarProFileWriter().writeIntPrefixedString("hello world").bytes());
 
-        assertEquals("hola mundo", reader.readIntPrefixedString());
+        assertEquals("hello world", reader.readIntPrefixedString());
     }
 
     @Test
     void readsALengthPrefixedStringWithARedundantLengthByte() {
         GuitarProByteReader reader = new GuitarProByteReader(
-                new GuitarProFileWriter().writeLengthPrefixedString("Cancion de prueba").bytes());
+                new GuitarProFileWriter().writeLengthPrefixedString("Test song").bytes());
 
-        assertEquals("Cancion de prueba", reader.readLengthPrefixedString());
+        assertEquals("Test song", reader.readLengthPrefixedString());
     }
 
     @Test

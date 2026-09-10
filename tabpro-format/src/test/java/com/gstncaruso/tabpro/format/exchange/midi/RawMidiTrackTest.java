@@ -52,7 +52,7 @@ class RawMidiTrackTest {
     }
 
     private static RawMidiTrack trackWith(TreeMap<Long, List<RawNote>> notesByTick) {
-        return new RawMidiTrack(0, "Guitarra", 25, 1, 1, 100, 64, 0, 0, 0, 0, false, notesByTick);
+        return new RawMidiTrack(0, "Guitar", 25, 1, 1, 100, 64, 0, 0, 0, 0, false, notesByTick);
     }
 
     private static TreeMap<Long, List<RawNote>> notesByTick(long tick, RawNote... notes) {

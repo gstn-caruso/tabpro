@@ -29,7 +29,7 @@ class GuitarProChordReaderTest {
         assertEquals("C", chord.name());
         assertEquals(1, chord.baseFret());
         assertEquals(List.of(0, 0, 1, 1, 2, 0), chord.frets());
-        assertEquals(STRING_MASK, reader.readUnsignedByte(), "la mascara de cuerdas queda intacta");
+        assertEquals(STRING_MASK, reader.readUnsignedByte(), "the string mask stays intact");
     }
 
     @Test
@@ -44,7 +44,7 @@ class GuitarProChordReaderTest {
         ChordDiagram chord = chords.read(reader, GuitarProVersion.GP3, 6);
 
         assertEquals("Cmaj7", chord.name());
-        assertEquals(STRING_MASK, reader.readUnsignedByte(), "la mascara de cuerdas queda intacta");
+        assertEquals(STRING_MASK, reader.readUnsignedByte(), "the string mask stays intact");
     }
 
     @Test
@@ -59,7 +59,7 @@ class GuitarProChordReaderTest {
 
         assertEquals("C", chord.name());
         assertEquals(Collections.nCopies(6, ChordDiagram.MUTED), chord.frets());
-        assertEquals(STRING_MASK, reader.readUnsignedByte(), "la mascara de cuerdas queda intacta");
+        assertEquals(STRING_MASK, reader.readUnsignedByte(), "the string mask stays intact");
     }
 
     @Test
@@ -73,7 +73,7 @@ class GuitarProChordReaderTest {
         ChordDiagram chord = chords.read(reader, GuitarProVersion.GP5_10, 6);
 
         assertEquals("Em", chord.name());
-        assertEquals(STRING_MASK, reader.readUnsignedByte(), "la mascara de cuerdas queda intacta");
+        assertEquals(STRING_MASK, reader.readUnsignedByte(), "the string mask stays intact");
     }
 
     private static GuitarProByteReader reading(GuitarProFileWriter written) {
