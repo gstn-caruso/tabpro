@@ -1,0 +1,104 @@
+package com.gstncaruso.tabpro.app.audit;
+
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.blankEditor;
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.findComponent;
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.findMenuItem;
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.newFrame;
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.withDialog;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.ui.MainFrame;
+import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
+import java.awt.Container;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import javax.swing.JCheckBox;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
+
+/**
+ * El manual, "Properties of the track" (pagina 13, seccion Style, "Force Horizontal Beams") [F6]:
+ * el casillero real del dialogo real tiene que llegar al modelo real de la pista y de ahi al
+ * pentagrama real -no solo quedar guardado. El detalle geometrico de la pendiente ya esta cubierto
+ * por BeamSlopePaintingTest; esta auditoria solo verifica el camino completo del usuario.
+ */
+@Tag("integracion")
+@ResourceLock(AuditSupport.SWING_LOCK)
+class TrackPropertiesForceHorizontalBeamsAuditTest {
+
+    @Test
+    void theCheckboxInTheRealDialogFlattensTheRealBeamThroughF6() throws Exception {
+        Editor editor = ascendingBeamEditor();
+        MainFrame frame = newFrame(editor);
+        try {
+            ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
+            assertFalse(editor.score().track(0).settings().display().forceHorizontalBeams(),
+                    "arranca sin forzar barras horizontales");
+            BufferedImage before = renderingOf(canvas);
+
+            JMenuItem item = findMenuItem(frame.getJMenuBar(), "Propiedades de la pista…");
+            assertNotNull(item, "no encontre 'Propiedades de la pista…' en el menu real");
+            assertEquals(KeyStroke.getKeyStroke("F6"), item.getAccelerator());
+
+            withDialog(item::doClick, dialog -> {
+                JCheckBox checkbox = AuditSupport.findCheckBox(dialog, "Forzar barras horizontales");
+                assertNotNull(checkbox, "no encontre el casillero real de 'Forzar barras horizontales'");
+                assertFalse(checkbox.isSelected(), "el casillero arranca destildado");
+
+                checkbox.setSelected(true);
+                AuditSupport.findButton(dialog, "Aceptar").doClick();
+            });
+
+            assertTrue(editor.score().track(0).settings().display().forceHorizontalBeams(),
+                    "el casillero real, tildado y aceptado, tiene que llegar al modelo real de la pista");
+
+            BufferedImage after = renderingOf(canvas);
+            assertFalse(imagesLookTheSame(before, after),
+                    "con la barra ahora forzada a horizontal, el pentagrama real tiene que pintarse distinto");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    /** Un compas con dos corcheas ascendentes en la misma cuerda: la barra que las une tiene
+     * pendiente por defecto, asi que forzarla a horizontal cambia el dibujo real. */
+    private static Editor ascendingBeamEditor() {
+        Editor editor = blankEditor();
+        editor.moveTo(0, 0, 3);
+        editor.setNoteValue(NoteValue.EIGHTH);
+        editor.setFret(0);
+        editor.moveRight();
+        editor.setFret(2);
+        return editor;
+    }
+
+    private static BufferedImage renderingOf(Container root) {
+        BufferedImage image = new BufferedImage(root.getWidth(), root.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D canvas = image.createGraphics();
+        root.printAll(canvas);
+        canvas.dispose();
+        return image;
+    }
+
+    private static boolean imagesLookTheSame(BufferedImage first, BufferedImage second) {
+        if (first.getWidth() != second.getWidth() || first.getHeight() != second.getHeight()) {
+            return false;
+        }
+        for (int x = 0; x < first.getWidth(); x++) {
+            for (int y = 0; y < first.getHeight(); y++) {
+                if (first.getRGB(x, y) != second.getRGB(x, y)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}

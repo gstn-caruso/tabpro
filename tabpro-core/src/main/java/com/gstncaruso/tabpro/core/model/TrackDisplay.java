@@ -7,10 +7,11 @@ public record TrackDisplay(
         boolean tuningLegend,
         boolean rhythmOnTablature,
         DiagramPlacement diagrams,
-        boolean diagramsBelowStandardNotation) {
+        boolean diagramsBelowStandardNotation,
+        boolean forceHorizontalBeams) {
 
     private static final TrackDisplay DEFAULT =
-            new TrackDisplay(true, true, false, false, DiagramPlacement.ABOVE_THE_STAFF, false);
+            new TrackDisplay(true, true, false, false, DiagramPlacement.ABOVE_THE_STAFF, false, false);
 
     public static TrackDisplay standard() {
         return DEFAULT;
@@ -23,32 +24,37 @@ public record TrackDisplay(
     }
 
     public TrackDisplay withStandardNotation(boolean standardNotation) {
-        return new TrackDisplay(
-                standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams, diagramsBelowStandardNotation);
+        return new TrackDisplay(standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams,
+                diagramsBelowStandardNotation, forceHorizontalBeams);
     }
 
     public TrackDisplay withTablature(boolean tablature) {
-        return new TrackDisplay(
-                standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams, diagramsBelowStandardNotation);
+        return new TrackDisplay(standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams,
+                diagramsBelowStandardNotation, forceHorizontalBeams);
     }
 
     public TrackDisplay withTuningLegend(boolean tuningLegend) {
-        return new TrackDisplay(
-                standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams, diagramsBelowStandardNotation);
+        return new TrackDisplay(standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams,
+                diagramsBelowStandardNotation, forceHorizontalBeams);
     }
 
     public TrackDisplay withRhythmOnTablature(boolean rhythmOnTablature) {
-        return new TrackDisplay(
-                standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams, diagramsBelowStandardNotation);
+        return new TrackDisplay(standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams,
+                diagramsBelowStandardNotation, forceHorizontalBeams);
     }
 
     public TrackDisplay withDiagrams(DiagramPlacement diagrams) {
-        return new TrackDisplay(
-                standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams, diagramsBelowStandardNotation);
+        return new TrackDisplay(standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams,
+                diagramsBelowStandardNotation, forceHorizontalBeams);
     }
 
     public TrackDisplay withDiagramsBelowStandardNotation(boolean diagramsBelowStandardNotation) {
-        return new TrackDisplay(
-                standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams, diagramsBelowStandardNotation);
+        return new TrackDisplay(standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams,
+                diagramsBelowStandardNotation, forceHorizontalBeams);
+    }
+
+    public TrackDisplay withForceHorizontalBeams(boolean forceHorizontalBeams) {
+        return new TrackDisplay(standardNotation, tablature, tuningLegend, rhythmOnTablature, diagrams,
+                diagramsBelowStandardNotation, forceHorizontalBeams);
     }
 }

@@ -84,6 +84,7 @@ final class GuitarProTrackReader {
             tablature = true;
             standardNotation = true;
         }
-        return new TrackDisplay(standardNotation, tablature, false, false, DiagramPlacement.ABOVE_THE_STAFF, false);
+        return new TrackDisplay(
+                standardNotation, tablature, false, false, DiagramPlacement.ABOVE_THE_STAFF, false, false);
     }
 }

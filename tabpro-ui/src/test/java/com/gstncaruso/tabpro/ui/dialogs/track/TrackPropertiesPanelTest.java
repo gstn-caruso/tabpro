@@ -101,6 +101,16 @@ class TrackPropertiesPanelTest {
         assertTrue(panel.toTrackSettings().display().diagramsBelowStandardNotation());
     }
 
+    @Test
+    void forceHorizontalBeamsRoundTrips() {
+        Track track = Track.standardGuitar("Guitarra").mappingSettings(
+                settings -> settings.withDisplay(settings.display().withForceHorizontalBeams(true)));
+
+        TrackPropertiesPanel panel = new TrackPropertiesPanel(track, player);
+
+        assertTrue(panel.toTrackSettings().display().forceHorizontalBeams());
+    }
+
     /** GP5 usa dos casilleros de Estilo para la posicion de los diagramas, no un combo. */
     @Test
     void showsTheDiagramPlacementAsTwoCheckboxesInsteadOfACombo() {

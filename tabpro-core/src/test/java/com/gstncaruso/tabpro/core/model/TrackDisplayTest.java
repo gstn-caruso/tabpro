@@ -25,4 +25,16 @@ class TrackDisplayTest {
         assertEquals(original.rhythmOnTablature(), updated.rhythmOnTablature());
         assertEquals(original.diagrams(), updated.diagrams());
     }
+
+    @Test
+    void forceHorizontalBeamsRoundTripsAndKeepsTheRest() {
+        TrackDisplay original = TrackDisplay.standard();
+
+        TrackDisplay updated = original.withForceHorizontalBeams(true);
+
+        assertEquals(true, updated.forceHorizontalBeams());
+        assertEquals(original.standardNotation(), updated.standardNotation());
+        assertEquals(original.tablature(), updated.tablature());
+        assertEquals(original.diagramsBelowStandardNotation(), updated.diagramsBelowStandardNotation());
+    }
 }
