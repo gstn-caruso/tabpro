@@ -55,6 +55,7 @@ public final class Potentiometer extends JComponent implements AccessibleControl
         InputMap inputMap = getInputMap(WHEN_FOCUSED);
         ActionMap actionMap = getActionMap();
         bindStep(inputMap, actionMap, "RIGHT", 1);
+        bindStep(inputMap, actionMap, "UP", 1);
     }
 
     private void bindStep(InputMap inputMap, ActionMap actionMap, String keyStroke, int step) {
