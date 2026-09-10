@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.notation.PitchName;
+import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
@@ -20,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
 import javax.swing.JComponent;
 
 /**
@@ -27,7 +30,7 @@ import javax.swing.JComponent;
  * de vista elegido. Respeta la cejilla, la cantidad de trastes y de cuerdas de la
  * pista activa, y se puede dar vuelta para zurdos.
  */
-public final class FretboardView extends JComponent {
+public final class FretboardView extends JComponent implements AccessibleControl {
 
     public static final int PREFERRED_HEIGHT = 118;
 
@@ -53,7 +56,22 @@ public final class FretboardView extends JComponent {
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setPreferredSize(new Dimension(0, PREFERRED_HEIGHT));
         setMinimumSize(new Dimension(0, PREFERRED_HEIGHT));
+        setToolTipText("Diapasón");
+        getAccessibleContext().setAccessibleName("Diapasón");
         trackTheMouse();
+    }
+
+    @Override
+    public AccessibleContext getAccessibleContext() {
+        if (accessibleContext == null) {
+            accessibleContext = new AccessibleJComponent() {
+                @Override
+                public AccessibleRole getAccessibleRole() {
+                    return AccessibleRole.PANEL;
+                }
+            };
+        }
+        return accessibleContext;
     }
 
     private static BeatLocation defaultLocation() {
