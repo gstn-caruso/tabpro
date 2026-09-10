@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.dialogs.style;
 
+import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 
 /**
@@ -14,8 +15,14 @@ public final class Labels {
     public static String of(Object value) {
         return switch (value) {
             case NoteValue noteValue -> noteValueLabel(noteValue);
+            case ChordType chordType -> chordTypeLabel(chordType);
             default -> throw new IllegalArgumentException("Sin etiqueta para " + value);
         };
+    }
+
+    /** El sufijo con que el manual nombra el tipo de acorde: "M" para el mayor, "m7", "sus4"... */
+    private static String chordTypeLabel(ChordType value) {
+        return value == ChordType.MAJOR ? "M" : value.suffix();
     }
 
     private static String noteValueLabel(NoteValue value) {

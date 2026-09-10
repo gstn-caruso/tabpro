@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -87,6 +88,7 @@ public final class ChordDialog {
                 roots.addItem(pitchClass);
                 basses.addItem(pitchClass);
             });
+            types.setRenderer(new LabeledListCellRenderer());
             name.getAccessibleContext().setAccessibleName("Nombre del acorde");
             name.setToolTipText("Nombre del acorde");
             baseFret.getAccessibleContext().setAccessibleName("Traste base");

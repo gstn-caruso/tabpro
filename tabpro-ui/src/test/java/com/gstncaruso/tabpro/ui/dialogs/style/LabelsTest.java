@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,6 +24,25 @@ class LabelsTest {
     @ParameterizedTest
     @EnumSource(NoteValue.class)
     void todaFiguraDeNotaTieneUnaEtiquetaPropia(NoteValue value) {
+        String etiqueta = Labels.of(value);
+
+        assertFalse(etiqueta.isBlank());
+        assertNotEquals(value.name(), etiqueta);
+    }
+
+    @Test
+    void traduceElTipoDeAcordeMayorAlSufijoQueUsaElManual() {
+        assertEquals("M", Labels.of(ChordType.MAJOR));
+    }
+
+    @Test
+    void traduceElTipoDeAcordeASuSufijoMusical() {
+        assertEquals("m7", Labels.of(ChordType.MINOR_SEVENTH));
+    }
+
+    @ParameterizedTest
+    @EnumSource(ChordType.class)
+    void todoTipoDeAcordeTieneUnaEtiquetaPropia(ChordType value) {
         String etiqueta = Labels.of(value);
 
         assertFalse(etiqueta.isBlank());
