@@ -32,4 +32,14 @@ class ThemeAccessibilityTest {
 
         assertEquals(Color.BLACK, UIManager.getColor("tabpro.background"));
     }
+
+    @Test
+    void turningHighContrastOffRestoresTheChosenTheme() {
+        theme.apply(Theme.LIGHT);
+        theme.useHighContrast(true);
+
+        theme.useHighContrast(false);
+
+        assertEquals(Theme.paletteFor(Theme.LIGHT).background(), UIManager.getColor("tabpro.background"));
+    }
 }
