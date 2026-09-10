@@ -6,10 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
+import java.util.Locale;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,11 @@ class BendGridPanelTest {
     @Test
     void hasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new BendGridPanel(BendCurveEditor.blank(BendType.BEND, 4)));
+    }
+
+    @Test
+    void theTitleIsAvailableInEnglish() {
+        assertEquals("Bend Grid", Texts.forLocale(Locale.ENGLISH).text("edit_dialogs.BendGridPanel.title"));
     }
 
     @Test
