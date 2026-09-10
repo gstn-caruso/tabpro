@@ -3,9 +3,9 @@ package com.gstncaruso.tabpro.ui.instruments;
 import java.awt.Color;
 
 public enum FretboardType {
-    ELECTRIC("Eléctrica", new Color(0x3A2F28), new Color(0x8D7665), InlayStyle.DOTS, 1.0,
+    ELECTRIC(new Color(0x3A2F28), new Color(0x8D7665), InlayStyle.DOTS, 1.0,
             FretboardPalette.electric()),
-    ACOUSTIC("Acústica", new Color(0x8A5A34), new Color(0xD4B79F), InlayStyle.DOTS, 1.1,
+    ACOUSTIC(new Color(0x8A5A34), new Color(0xD4B79F), InlayStyle.DOTS, 1.1,
             new FretboardPalette(
                     new Color(0xBEBBB5),
                     new Color(0xC2BAB4),
@@ -16,7 +16,7 @@ public enum FretboardType {
                     InstrumentColors.CONTEXT_INK,
                     new Color(0xB6BCC5),
                     InstrumentColors.NUT)),
-    CLASSICAL("Clásica", new Color(0xC9A66B), new Color(0x715322), InlayStyle.NONE, 1.25,
+    CLASSICAL(new Color(0xC9A66B), new Color(0x715322), InlayStyle.NONE, 1.25,
             new FretboardPalette(
                     new Color(0x5D5852),
                     new Color(0x62574F),
@@ -27,7 +27,7 @@ public enum FretboardType {
                     Color.WHITE,
                     new Color(0x515967),
                     new Color(0x564F43))),
-    BASIC("Básica", new Color(0x5B5F66), new Color(0xB1B3B7), InlayStyle.DIAMONDS, 0.9,
+    BASIC(new Color(0x5B5F66), new Color(0xB1B3B7), InlayStyle.DIAMONDS, 0.9,
             new FretboardPalette(
                     new Color(0xB7B2AD),
                     new Color(0xBAB2AB),
@@ -39,25 +39,19 @@ public enum FretboardType {
                     new Color(0xADB4BF),
                     InstrumentColors.NUT));
 
-    private final String label;
     private final Color woodColor;
     private final Color edgeColor;
     private final InlayStyle inlayStyle;
     private final double neckWidthFactor;
     private final FretboardPalette palette;
 
-    FretboardType(String label, Color woodColor, Color edgeColor, InlayStyle inlayStyle, double neckWidthFactor,
+    FretboardType(Color woodColor, Color edgeColor, InlayStyle inlayStyle, double neckWidthFactor,
             FretboardPalette palette) {
-        this.label = label;
         this.woodColor = woodColor;
         this.edgeColor = edgeColor;
         this.inlayStyle = inlayStyle;
         this.neckWidthFactor = neckWidthFactor;
         this.palette = palette;
-    }
-
-    public String label() {
-        return label;
     }
 
     public Color woodColor() {

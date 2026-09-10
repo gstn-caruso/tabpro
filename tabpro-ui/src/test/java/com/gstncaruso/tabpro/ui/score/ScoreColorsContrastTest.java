@@ -119,11 +119,11 @@ class ScoreColorsContrastTest {
 
     private static List<Pair> fretboardPairs(FretboardType type) {
         Color wood = type.woodColor();
-        String neck = "neck " + type.label().toLowerCase();
+        String neck = "neck " + type.name().toLowerCase();
         return List.of(
-                new Pair("digit over marked note / mark - " + type.label(), type.markInkColor(),
+                new Pair("digit over marked note / mark - " + type.name(), type.markInkColor(),
                         type.markColor(), Contrast.TEXT_MINIMUM_RATIO),
-                new Pair("context digit / context mark - " + type.label(), type.contextInkColor(),
+                new Pair("context digit / context mark - " + type.name(), type.contextInkColor(),
                         type.contextColor(), Contrast.TEXT_MINIMUM_RATIO),
                 new Pair("string / " + neck, type.stringColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("fret / " + neck, type.fretWireColor(), wood, Contrast.GRAPHICAL_MINIMUM_RATIO),
