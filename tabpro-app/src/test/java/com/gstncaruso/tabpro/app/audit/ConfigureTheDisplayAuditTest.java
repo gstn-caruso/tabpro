@@ -108,8 +108,12 @@ class ConfigureTheDisplayAuditTest {
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             BeatViews beatViews = findComponent(frame.getContentPane(), BeatViews.class);
+            if (!beatViews.isFretboardVisible()) {
+                pressKey(canvas, KeyStroke.getKeyStroke("ctrl 3"));
+            }
             JButton close = AuditSupport.findButtonByAccessibleName(frame.getContentPane(), "Cerrar diapasón");
             assertNotNull(close, "no encontre la ✕ real del diapason");
+            assertEquals(true, close.isShowing(), "el diapason tiene que estar abierto para poder cerrarlo con la ✕");
             assertEquals(true, AuditSupport.requestFocusAndAwait(close, 2000),
                     "no pude poner el foco en la ✕ real antes de clickearla");
             boolean antes = beatViews.isFretboardVisible();
@@ -134,8 +138,12 @@ class ConfigureTheDisplayAuditTest {
         try {
             ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
             BeatViews beatViews = findComponent(frame.getContentPane(), BeatViews.class);
+            if (!beatViews.isKeyboardVisible()) {
+                pressKey(canvas, KeyStroke.getKeyStroke("ctrl 4"));
+            }
             JButton close = AuditSupport.findButtonByAccessibleName(frame.getContentPane(), "Cerrar teclado");
             assertNotNull(close, "no encontre la ✕ real del teclado");
+            assertEquals(true, close.isShowing(), "el teclado tiene que estar abierto para poder cerrarlo con la ✕");
             assertEquals(true, AuditSupport.requestFocusAndAwait(close, 2000),
                     "no pude poner el foco en la ✕ real antes de clickearla");
             boolean antes = beatViews.isKeyboardVisible();
