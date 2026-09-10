@@ -40,4 +40,20 @@ class MnemonicAssignerTest {
 
         assertEquals(9, assigner.chooseIndex("Grupo de 12"));
     }
+
+    @Test
+    void agotadasLasLetrasYSinDigitosNoHayIndiceLibre() {
+        for (char letra : "salir".toCharArray()) {
+            assigner.reserve(letra);
+        }
+
+        assertEquals(-1, assigner.chooseIndex("Salir"));
+    }
+
+    @Test
+    void unaLetraTomadaEnMinusculaBloqueaLaMismaLetraAcentuadaYEnMayuscula() {
+        assigner.reserve('a');
+
+        assertEquals(1, assigner.chooseIndex("Álbum"));
+    }
 }
