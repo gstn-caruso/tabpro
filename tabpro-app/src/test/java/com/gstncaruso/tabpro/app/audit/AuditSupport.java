@@ -290,6 +290,18 @@ final class AuditSupport {
         return new Editor(Score.blank());
     }
 
+    /**
+     * Un fixture real de otro modulo (tabpro-format/src/test/resources/...), para los tests que
+     * necesitan un archivo de verdad en disco -no del classpath de este modulo- para dárselo a un
+     * JFileChooser real. La suite corre agregada desde tabpro-tests (ver pom.xml raiz, "reunir
+     * los tests de los modulos"): copia las clases compiladas, pero los fixtures de
+     * src/test/resources se quedan en su propio modulo, un nivel arriba del directorio de trabajo
+     * real con el que corre surefire.
+     */
+    static Path repoFile(String relativeFromRepoRoot) {
+        return Path.of(System.getProperty("user.dir"), "..", relativeFromRepoRoot).normalize();
+    }
+
     /** Una partitura con varios compases, para que navegar entre ellos tenga algo que mostrar. */
     static Editor editorWithMeasures(int extraMeasures) {
         Editor editor = blankEditor();
@@ -355,7 +367,12 @@ final class AuditSupport {
         return null;
     }
 
-    private static JMenuItem findMenuItem(JMenu menu, String label) {
+    /**
+     * El JMenuItem real dentro de un submenu puntual (por ejemplo "Importar" o "Exportar"), para
+     * cuando la misma etiqueta aparece en mas de un lado del menu Archivo (MIDI…, MusicXML… y
+     * Tablatura ASCII… existen tanto para importar como para exportar).
+     */
+    static JMenuItem findMenuItem(JMenu menu, String label) {
         for (int i = 0; i < menu.getItemCount(); i++) {
             JMenuItem item = menu.getItem(i);
             if (item == null) {
