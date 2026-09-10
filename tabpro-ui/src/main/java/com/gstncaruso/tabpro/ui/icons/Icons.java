@@ -128,16 +128,7 @@ public final class Icons {
     }
 
     public static Icon marker() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Line2D.Double(size * 0.24, size * 0.12, size * 0.24, size * 0.88));
-            Path2D flag = new Path2D.Double();
-            flag.moveTo(size * 0.24, size * 0.16);
-            flag.lineTo(size * 0.82, size * 0.28);
-            flag.lineTo(size * 0.24, size * 0.44);
-            flag.closePath();
-            graphics.fill(flag);
-        });
+        return svgIcon("flag-3");
     }
 
     // ---- figuras ----------------------------------------------------------
