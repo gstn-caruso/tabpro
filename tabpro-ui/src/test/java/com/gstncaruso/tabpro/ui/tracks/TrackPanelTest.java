@@ -1,14 +1,61 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.model.Duration;
+import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TimeSignature;
+import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.AwaitEdt;
+import com.gstncaruso.tabpro.ui.score.TrackVisibility;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class TrackPanelTest {
+
+    /**
+     * Auditoria de rendimiento, hallazgo 4: editorChanged() llamaba siempre a
+     * globalView.refresh(), que revalida y repinta toda la grilla de compases con cada flecha.
+     */
+    @Test
+    void movingTheCursorSkipsTheHeavyGlobalViewRefresh() throws Exception {
+        Editor editor = editorWithTwoMeasures();
+        SpyingMeasureGrid grid = new SpyingMeasureGrid(editor);
+        GlobalView globalView = new GlobalView(new MarkerZone(editor), grid);
+        new TrackPanel(editor, new TrackVisibility(), globalView);
+        grid.forgetCallsMadeWhileBuilding();
+
+        javax.swing.SwingUtilities.invokeAndWait(editor::moveToNextMeasure);
+
+        assertEquals(0, grid.revalidateCalls);
+        assertFalse(grid.fullRepaintCalled);
+    }
+
+    @Test
+    void editingANoteStillRefreshesTheGlobalView() throws Exception {
+        Editor editor = editorWithTwoMeasures();
+        SpyingMeasureGrid grid = new SpyingMeasureGrid(editor);
+        GlobalView globalView = new GlobalView(new MarkerZone(editor), grid);
+        new TrackPanel(editor, new TrackVisibility(), globalView);
+        grid.forgetCallsMadeWhileBuilding();
+
+        javax.swing.SwingUtilities.invokeAndWait(() -> editor.setFret(3));
+
+        assertEquals(1, grid.revalidateCalls);
+    }
+
+    private static Editor editorWithTwoMeasures() {
+        List<Measure> measures = new ArrayList<>();
+        measures.add(Measure.empty(new TimeSignature(1, 4), Duration.quarter()));
+        measures.add(Measure.empty(new TimeSignature(1, 4), Duration.quarter()));
+        Track guitar = Track.standardGuitar("Guitarra").withMeasures(measures);
+        return new Editor(new Score("Prueba", 120, List.of(guitar)));
+    }
 
     @Test
     void listsOneRowPerTrack() {

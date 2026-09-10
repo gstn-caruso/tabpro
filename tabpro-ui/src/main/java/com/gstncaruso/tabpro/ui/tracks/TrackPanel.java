@@ -1,6 +1,8 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.editing.EditorChange;
+import com.gstncaruso.tabpro.core.editing.EditorListener;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
@@ -36,9 +38,13 @@ public final class TrackPanel extends JPanel {
     }
 
     public TrackPanel(Editor editor, TrackVisibility visibleTracks) {
+        this(editor, visibleTracks, new GlobalView(editor));
+    }
+
+    TrackPanel(Editor editor, TrackVisibility visibleTracks, GlobalView globalView) {
         this.editor = editor;
         this.mixTable = new MixTable(editor, visibleTracks);
-        this.globalView = new GlobalView(editor);
+        this.globalView = globalView;
         setLayout(new BorderLayout());
         setBackground(ScoreColors.SURFACE);
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, ScoreColors.BORDER));
@@ -58,7 +64,17 @@ public final class TrackPanel extends JPanel {
         add(scrollingMixer, BorderLayout.WEST);
         add(scrollingGlobalView, BorderLayout.CENTER);
 
-        editor.addListener(EdtEditorListener.onEdt(this::editorChanged));
+        editor.addListener(EdtEditorListener.onEdt(new EditorListener() {
+            @Override
+            public void editorChanged() {
+                onEditorChanged(EditorChange.CONTENT);
+            }
+
+            @Override
+            public void editorChanged(EditorChange change) {
+                onEditorChanged(change);
+            }
+        }));
     }
 
     public void showPlayingMeasure(OptionalInt measure) {
@@ -101,9 +117,13 @@ public final class TrackPanel extends JPanel {
         return sameBase == 0 ? base : base + " " + (sameBase + 1);
     }
 
-    private void editorChanged() {
+    private void onEditorChanged(EditorChange change) {
         mixTable.refresh();
-        globalView.refresh();
+        if (change == EditorChange.CONTENT) {
+            globalView.refresh();
+        } else {
+            globalView.moveCursorHighlight();
+        }
     }
 
     /** Alto que pide el panel para mostrar todas sus pistas sin scrollear. */

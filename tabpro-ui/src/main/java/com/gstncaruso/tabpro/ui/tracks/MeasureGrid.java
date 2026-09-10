@@ -36,7 +36,7 @@ import javax.swing.UIManager;
  * claro si es el compas donde esta parada la edicion, y toda la columna en rojo mientras ese
  * compas suena.
  */
-public final class MeasureGrid extends JComponent implements AccessibleControl {
+public class MeasureGrid extends JComponent implements AccessibleControl {
 
     public static final int CELL_WIDTH = 15;
     public static final int NUMBER_EVERY = 5;
@@ -58,10 +58,12 @@ public final class MeasureGrid extends JComponent implements AccessibleControl {
     private OptionalInt playingMeasure = OptionalInt.empty();
     private Cell caret;
     private boolean showsFocusRing;
+    private Rectangle cursorCellArea;
 
     public MeasureGrid(Editor editor) {
         this.editor = editor;
         this.caret = new Cell(editor.cursor().track(), editor.cursor().measure());
+        this.cursorCellArea = cellBounds(editor.cursor().track(), editor.cursor().measure());
         setOpaque(true);
         setBackground(ScoreColors.SURFACE);
         setToolTipText("Grilla de compases");
@@ -157,6 +159,17 @@ public final class MeasureGrid extends JComponent implements AccessibleControl {
     public void showPlayingMeasure(OptionalInt measure) {
         this.playingMeasure = measure;
         repaint();
+    }
+
+    /**
+     * Auditoria de rendimiento, hallazgo 4: solo cambiar de donde esta parado el cursor no
+     * necesita revalidar ni repintar toda la grilla -O(compases x pistas)-, alcanza con la union
+     * de la celda vieja y la nueva.
+     */
+    public void moveCursorHighlight() {
+        Rectangle next = cellBounds(editor.cursor().track(), editor.cursor().measure());
+        repaint(cursorCellArea.union(next));
+        cursorCellArea = next;
     }
 
     public Rectangle cellBounds(int track, int measure) {

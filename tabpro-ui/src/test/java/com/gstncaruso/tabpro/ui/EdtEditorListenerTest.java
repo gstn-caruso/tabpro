@@ -1,13 +1,35 @@
 package com.gstncaruso.tabpro.ui;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.editing.EditorChange;
+import com.gstncaruso.tabpro.core.editing.EditorListener;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Test;
 
 class EdtEditorListenerTest {
+
+    @Test
+    void reenviaElTipoDeCambioAlDelegadoEnElEdt() throws Exception {
+        EditorChange[] received = new EditorChange[1];
+        EditorListener delegate = new EditorListener() {
+            @Override
+            public void editorChanged() {
+            }
+
+            @Override
+            public void editorChanged(EditorChange change) {
+                received[0] = change;
+            }
+        };
+
+        SwingUtilities.invokeAndWait(() -> EdtEditorListener.onEdt(delegate).editorChanged(EditorChange.CURSOR));
+
+        assertEquals(EditorChange.CURSOR, received[0]);
+    }
 
     @Test
     void entregaSincronicamenteCuandoYaEstaEnElEdt() throws Exception {

@@ -2,6 +2,8 @@ package com.gstncaruso.tabpro.ui.score;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.editing.EditorChange;
+import com.gstncaruso.tabpro.core.editing.EditorListener;
 import com.gstncaruso.tabpro.core.editing.Selection;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.EdtEditorListener;
@@ -34,7 +36,7 @@ import javax.swing.Scrollable;
  * {@link Zoom} y las {@link VisibleTracks} elegidas, y traduce los clics a movimientos del
  * cursor o, arrastrando, a una seleccion multiple.
  */
-public final class ScoreCanvas extends JComponent implements Scrollable, AccessibleControl, ZoomHolder {
+public class ScoreCanvas extends JComponent implements Scrollable, AccessibleControl, ZoomHolder {
 
     private static final int FALLBACK_WIDTH = 900;
 
@@ -52,6 +54,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
     private ViewMode viewMode = ViewMode.SCREEN_VERTICAL;
     private Zoom zoom = Zoom.whole();
     private PageSetup pageSetup = PageSetup.defaults();
+    private Rectangle cursorArea = new Rectangle();
 
     public ScoreCanvas(Editor editor) {
         this(editor, new TrackVisibility());
@@ -75,7 +78,18 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
         setBackground(ScoreColors.BACKGROUND);
         setToolTipText("Partitura");
         getAccessibleContext().setAccessibleName("Partitura");
-        editor.addListener(EdtEditorListener.onEdt(this::editorChanged));
+        this.cursorArea = currentCursorArea();
+        editor.addListener(EdtEditorListener.onEdt(new EditorListener() {
+            @Override
+            public void editorChanged() {
+                onEditorChanged(EditorChange.CONTENT);
+            }
+
+            @Override
+            public void editorChanged(EditorChange change) {
+                onEditorChanged(change);
+            }
+        }));
         new KeyboardEditing(editor, new FretDigits(System::currentTimeMillis)).install(this);
 
         MouseAdapter mouse = new MouseAdapter() {
@@ -389,18 +403,45 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
         });
     }
 
-    private void editorChanged() {
-        revalidate();
-        repaint();
+    /**
+     * Auditoria de rendimiento, hallazgo 4: solo cambiar de donde esta parado el cursor (o su
+     * seleccion) no necesita recalcular el tamano de la partitura ni repintarla entera -alcanza
+     * con la union de donde estaba y donde quedo. Un cambio de contenido si puede haber cambiado
+     * el tamano, asi que ahi se mantiene el camino completo de siempre.
+     */
+    private void onEditorChanged(EditorChange change) {
+        if (change == EditorChange.CONTENT) {
+            revalidate();
+            repaint();
+            cursorArea = currentCursorArea();
+        } else {
+            Rectangle next = currentCursorArea();
+            repaint(cursorArea.union(next));
+            cursorArea = next;
+        }
         Rectangle cursor = cursorBounds(editor.cursor());
         if (!cursor.isEmpty() && !getVisibleRect().isEmpty()) {
             scrollRectToVisible(cursor);
         }
     }
 
+    private Rectangle currentCursorArea() {
+        Rectangle area = cursorBounds(editor.cursor());
+        Optional<Selection> selection = editor.selection();
+        return selection.isPresent() ? area.union(selectionBounds(selection.get())) : area;
+    }
+
     private Rectangle cursorBounds(Cursor cursor) {
         return PageScorePainter.boundsOf(
                 editor.score(), viewport(), cursor.track(), cursor.measure(), cursor.beat());
+    }
+
+    private Rectangle selectionBounds(Selection selection) {
+        Rectangle from = PageScorePainter.boundsOf(
+                editor.score(), viewport(), selection.track(), selection.fromMeasure(), selection.fromBeat());
+        Rectangle to = PageScorePainter.boundsOf(
+                editor.score(), viewport(), selection.track(), selection.toMeasure(), selection.toBeat());
+        return from.union(to);
     }
 
     /** La pista activa la manda el cursor, asi que se lee recien al dibujar. */

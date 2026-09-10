@@ -578,7 +578,7 @@ public final class Editor {
         this.cursor = new Cursor(0, 0, 0, 1);
         this.selectionAnchor = null;
         history.forget();
-        notifyListeners();
+        notifyListeners(EditorChange.CONTENT);
     }
 
     /** Aplica el resultado de un asistente, que trabaja sobre la partitura entera. */
@@ -761,12 +761,12 @@ public final class Editor {
     public void startSelection(boolean wholeMeasures) {
         selectionAnchor = cursor;
         selectingWholeMeasures = wholeMeasures;
-        notifyListeners();
+        notifyListeners(EditorChange.CURSOR);
     }
 
     public void clearSelection() {
         selectionAnchor = null;
-        notifyListeners();
+        notifyListeners(EditorChange.CURSOR);
     }
 
     /**
@@ -991,7 +991,7 @@ public final class Editor {
         }
         score = next;
         cursor = nextCursor;
-        notifyListeners();
+        notifyListeners(EditorChange.CONTENT);
     }
 
     private void changeCurrentNote(UnaryOperator<Note> howToChange) {
@@ -1173,13 +1173,13 @@ public final class Editor {
     private void restore(EditorHistory.Snapshot snapshot) {
         score = snapshot.score();
         cursor = snapshot.cursor();
-        notifyListeners();
+        notifyListeners(EditorChange.CONTENT);
     }
 
     private void moveCursor(Cursor next) {
         cursor = next;
         clearSelectionUnlessExtending();
-        notifyListeners();
+        notifyListeners(EditorChange.CURSOR);
     }
 
     private void clearSelectionUnlessExtending() {
@@ -1188,9 +1188,9 @@ public final class Editor {
         }
     }
 
-    private void notifyListeners() {
+    private void notifyListeners(EditorChange change) {
         for (EditorListener listener : listeners) {
-            listener.editorChanged();
+            listener.editorChanged(change);
         }
     }
 }
