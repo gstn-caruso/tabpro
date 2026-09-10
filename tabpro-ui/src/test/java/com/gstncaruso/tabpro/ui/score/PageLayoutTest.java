@@ -37,7 +37,7 @@ class PageLayoutTest {
 
         PageLayout page = PageLayout.paginated(layout, A_PAGE_TALL);
 
-        assertTrue(page.pageCount() > 1, "una partitura larga tiene que ocupar mas de una hoja");
+        assertTrue(page.pageCount() > 1, "a long score has to take up more than one sheet");
     }
 
     @Test
@@ -55,19 +55,19 @@ class PageLayoutTest {
     void everyMeasureBelongsToExactlyOnePage() {
         ScoreLayout layout = ScoreLayout.of(scoreWithMeasures(300), NARROW_WIDTH);
         PageLayout page = PageLayout.paginated(layout, A_PAGE_TALL);
-        assertTrue(page.pageCount() > 1, "hacen falta varias hojas para que el presupuesto tenga sentido");
+        assertTrue(page.pageCount() > 1, "several sheets are needed for the budget to make sense");
 
         boolean[] visited = new boolean[layout.measureCount()];
         for (int p = 0; p < page.pageCount(); p++) {
             int firstMeasure = layout.firstMeasureOfSystem(page.firstSystemOf(p));
             int lastMeasure = layout.lastMeasureOfSystem(page.lastSystemOf(p));
             for (int measure = firstMeasure; measure <= lastMeasure; measure++) {
-                assertFalse(visited[measure], "el compas " + measure + " ya habia caido en otra hoja");
+                assertFalse(visited[measure], "measure " + measure + " had already landed on another sheet");
                 visited[measure] = true;
             }
         }
         for (int measure = 0; measure < visited.length; measure++) {
-            assertTrue(visited[measure], "el compas " + measure + " no cayo en ninguna hoja");
+            assertTrue(visited[measure], "measure " + measure + " did not land on any sheet");
         }
     }
 
@@ -99,7 +99,7 @@ class PageLayoutTest {
         PageLayout tallPage = PageLayout.paginated(layout, A_PAGE_TALL);
         PageLayout shortPage = PageLayout.paginated(layout, A_PAGE_TALL / 3);
 
-        assertTrue(shortPage.pageCount() > tallPage.pageCount(), "en hojas mas cortas entra menos musica");
+        assertTrue(shortPage.pageCount() > tallPage.pageCount(), "less music fits on shorter sheets");
     }
 
     @Test

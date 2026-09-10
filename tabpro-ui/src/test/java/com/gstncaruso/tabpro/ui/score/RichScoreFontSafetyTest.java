@@ -54,11 +54,11 @@ class RichScoreFontSafetyTest {
         RecordingCanvas canvas = paint(richScore());
 
         List<RecordingCanvas.DrawnText> drawnTexts = canvas.drawnTexts();
-        assertFalse(drawnTexts.isEmpty(), "la partitura rica tiene que haber escrito algo");
+        assertFalse(drawnTexts.isEmpty(), "the rich score has to have written something");
         for (RecordingCanvas.DrawnText drawnText : drawnTexts) {
             assertEquals(-1, drawnText.font().canDisplayUpTo(drawnText.text()),
-                    "\"" + drawnText.text() + "\" se escribio con " + drawnText.font().getFontName()
-                            + ", que no sabe mostrar alguno de sus caracteres");
+                    "\"" + drawnText.text() + "\" was written with " + drawnText.font().getFontName()
+                            + ", which does not know how to show some of its characters");
         }
     }
 
@@ -70,16 +70,16 @@ class RichScoreFontSafetyTest {
     }
 
     private static Score richScore() {
-        Score score = new Score("Cancion de prueba", 96, List.of(guitarTrack(), bassTrack(), percussionTrack()));
+        Score score = new Score("Test song", 96, List.of(guitarTrack(), bassTrack(), percussionTrack()));
         score = score.withInfo(score.info()
-                .withSubtitle("Subtitulo de prueba")
-                .withArtist("Alguien")
-                .withAlbum("Un disco")
-                .withLyricsAuthor("Fulano")
-                .withMusicAuthor("Mengano")
+                .withSubtitle("Test subtitle")
+                .withArtist("Someone")
+                .withAlbum("An album")
+                .withLyricsAuthor("John Doe")
+                .withMusicAuthor("Richard Roe")
                 .withCopyright("(c) 2026"));
         score = score.withLyrics(Lyrics.none().onTrack(0)
-                .withLine(0, LyricLine.empty().startingAt(1).saying("La vi- da si- gue i- gual")));
+                .withLine(0, LyricLine.empty().startingAt(1).saying("The song re- mains the same")));
         score = score.withOctaveMarkInTrackAt(0, FLAG_MEASURE, OctaveMark.OTTAVA_ALTA);
         return score;
     }

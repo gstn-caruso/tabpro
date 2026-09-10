@@ -59,12 +59,12 @@ class OctaveMarkPaintingTest {
         int plainStep = StaffPosition.of(Tuning.standard().pitchOf(NOTE), Clef.TREBLE).step();
 
         assertTrue(plain.hasInkNear(x, plain.layout.stepY(0, 0, plainStep), 2),
-                "sin marca la nota tiene que estar en su lugar de siempre");
+                "without a mark the note has to be in its usual place");
         assertFalse(marked.hasInkNear(x, marked.layout.stepY(0, 0, plainStep), 2),
-                octaveMark.label() + " tiene que sacar la nota de donde estaba");
+                octaveMark.label() + " has to move the note away from where it was");
         assertTrue(marked.hasInkNear(x, marked.layout.stepY(0, 0, plainStep + expectedStepDelta), 2),
-                octaveMark.label() + " tiene que escribir la nota " + Math.abs(expectedStepDelta)
-                        + " grados " + (expectedStepDelta < 0 ? "mas abajo" : "mas arriba"));
+                octaveMark.label() + " has to write the note " + Math.abs(expectedStepDelta)
+                        + " degrees " + (expectedStepDelta < 0 ? "lower" : "higher"));
     }
 
     @Test
@@ -81,7 +81,7 @@ class OctaveMarkPaintingTest {
         Painted marked = paint(OctaveMark.OTTAVA_ALTA);
 
         assertTrue(plain.tabAreaLooksLike(marked),
-                "la tablatura tiene que quedar identica: la marca solo cambia el pentagrama");
+                "the tablature has to stay identical: the mark only changes the staff");
     }
 
     @Test
@@ -96,7 +96,7 @@ class OctaveMarkPaintingTest {
     void ottavaAltaDrawsAboveTheStaffWithADottedLineReachingTheEndOfTheMeasure() {
         Painted marked = paint(OctaveMark.OTTAVA_ALTA);
 
-        assertTrue(marked.hasInkAboveTheStaffNear(marked.rightEdge()), "8va se dibuja arriba del pentagrama");
+        assertTrue(marked.hasInkAboveTheStaffNear(marked.rightEdge()), "8va is drawn above the staff");
         assertFalse(marked.hasInkBelowTheStaffNear(marked.rightEdge()));
     }
 
@@ -104,7 +104,7 @@ class OctaveMarkPaintingTest {
     void ottavaBassaDrawsBelowTheStaffWithADottedLineReachingTheEndOfTheMeasure() {
         Painted marked = paint(OctaveMark.OTTAVA_BASSA);
 
-        assertTrue(marked.hasInkBelowTheStaffNear(marked.rightEdge()), "8vb se dibuja abajo del pentagrama");
+        assertTrue(marked.hasInkBelowTheStaffNear(marked.rightEdge()), "8vb is drawn below the staff");
         assertFalse(marked.hasInkAboveTheStaffNear(marked.rightEdge()));
     }
 

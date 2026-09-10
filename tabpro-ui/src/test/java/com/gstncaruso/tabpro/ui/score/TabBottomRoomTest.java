@@ -13,7 +13,7 @@ class TabBottomRoomTest {
 
     @Test
     void aTrackLeavesRoomUnderItsLastString() {
-        Score score = new Score("Prueba", 120, List.of(Track.standardGuitar("Guitarra")));
+        Score score = new Score("Test", 120, List.of(Track.standardGuitar("Guitarra")));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH);
 
         int lastString = layout.stringY(0, 0, score.track(0).stringCount());
@@ -21,13 +21,13 @@ class TabBottomRoomTest {
 
         assertTrue(
                 trackBottom - lastString >= ScoreLayout.TAB_BOTTOM_PADDING,
-                "el número de la última cuerda queda cortado: sobran " + (trackBottom - lastString) + " píxeles");
+                "the last string's number is clipped: " + (trackBottom - lastString) + " pixels left over");
     }
 
     @Test
     void theLastTrackOfASystemAlsoLeavesRoom() {
         Score score = new Score(
-                "Prueba", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
+                "Test", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH);
 
         int lastString = layout.stringY(1, 0, score.track(1).stringCount());
@@ -35,6 +35,6 @@ class TabBottomRoomTest {
 
         assertTrue(
                 systemBottom - lastString >= ScoreLayout.TAB_BOTTOM_PADDING,
-                "el sistema termina encima de la última cuerda de la pista de abajo");
+                "the system ends above the last string of the track below");
     }
 }
