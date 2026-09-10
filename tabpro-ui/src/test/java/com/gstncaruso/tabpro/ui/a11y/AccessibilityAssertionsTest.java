@@ -11,20 +11,20 @@ import org.opentest4j.AssertionFailedError;
 class AccessibilityAssertionsTest {
 
     @Test
-    void dosEtiquetasDeFormularioConElMismoMnemonicoHacenFallarElAssert() {
+    void twoFormLabelsWithTheSameMnemonicMakeTheAssertionFail() {
         JPanel form = new JPanel();
-        JTextField uno = new JTextField();
-        JTextField otro = new JTextField();
-        JLabel primera = new JLabel("Nombre");
-        primera.setLabelFor(uno);
-        primera.setDisplayedMnemonic('N');
-        JLabel segunda = new JLabel("Número");
-        segunda.setLabelFor(otro);
-        segunda.setDisplayedMnemonic('N');
-        form.add(primera);
-        form.add(uno);
-        form.add(segunda);
-        form.add(otro);
+        JTextField firstField = new JTextField();
+        JTextField secondField = new JTextField();
+        JLabel firstLabel = new JLabel("Nombre");
+        firstLabel.setLabelFor(firstField);
+        firstLabel.setDisplayedMnemonic('N');
+        JLabel secondLabel = new JLabel("Número");
+        secondLabel.setLabelFor(secondField);
+        secondLabel.setDisplayedMnemonic('N');
+        form.add(firstLabel);
+        form.add(firstField);
+        form.add(secondLabel);
+        form.add(secondField);
 
         assertThrows(AssertionFailedError.class, () -> AccessibilityAssertions.assertNoViolations(form));
     }

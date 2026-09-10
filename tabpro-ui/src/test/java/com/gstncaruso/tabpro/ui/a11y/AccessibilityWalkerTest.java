@@ -23,167 +23,167 @@ class AccessibilityWalkerTest {
     private final AccessibilityWalker walker = new AccessibilityWalker();
 
     @Test
-    void unPanelVacioNoTieneViolaciones() {
+    void anEmptyPanelHasNoViolations() {
         assertTrue(walker.walk(new JPanel()).isEmpty());
     }
 
     @Test
-    void unBotonSinNombreNiTextoEsUnaViolacionDeNombre() {
+    void aButtonWithNoNameOrTextIsANameViolation() {
         JPanel panel = new JPanel();
-        JButton boton = new JButton();
-        panel.add(boton);
+        JButton button = new JButton();
+        panel.add(button);
 
-        List<Violation> violaciones = walker.walk(panel);
+        List<Violation> violations = walker.walk(panel);
 
-        assertEquals(1, violaciones.stream().filter(v -> v.reason().equals("sin nombre accesible")).count());
+        assertEquals(1, violations.stream().filter(v -> v.reason().equals("sin nombre accesible")).count());
     }
 
     @Test
-    void unBotonConTextoVisibleTraeSuPropioNombreAccesible() {
+    void aButtonWithVisibleTextBringsItsOwnAccessibleName() {
         JPanel panel = new JPanel();
-        JButton boton = new JButton("Guardar");
-        panel.add(boton);
+        JButton button = new JButton("Guardar");
+        panel.add(button);
 
         assertTrue(walker.walk(panel).isEmpty());
     }
 
     @Test
-    void unBotonSoloIconoConNombreYTooltipNoTieneViolaciones() {
+    void anIconOnlyButtonWithNameAndTooltipHasNoViolations() {
         JPanel panel = new JPanel();
-        JButton boton = new JButton();
-        boton.setText(null);
-        boton.getAccessibleContext().setAccessibleName("Deshacer");
-        boton.setToolTipText("Deshacer  [Ctrl+Z]");
-        panel.add(boton);
+        JButton button = new JButton();
+        button.setText(null);
+        button.getAccessibleContext().setAccessibleName("Deshacer");
+        button.setToolTipText("Deshacer  [Ctrl+Z]");
+        panel.add(button);
 
         assertTrue(walker.walk(panel).isEmpty());
     }
 
     @Test
-    void unBotonSoloIconoConNombrePeroSinTooltipEsUnaViolacionDeTooltip() {
+    void anIconOnlyButtonWithNameButNoTooltipIsATooltipViolation() {
         JPanel panel = new JPanel();
-        JButton boton = new JButton();
-        boton.setText(null);
-        boton.getAccessibleContext().setAccessibleName("Deshacer");
-        panel.add(boton);
+        JButton button = new JButton();
+        button.setText(null);
+        button.getAccessibleContext().setAccessibleName("Deshacer");
+        panel.add(button);
 
-        List<Violation> violaciones = walker.walk(panel);
+        List<Violation> violations = walker.walk(panel);
 
-        assertEquals(1, violaciones.size());
-        assertEquals("sin tooltip y sin texto visible", violaciones.get(0).reason());
+        assertEquals(1, violations.size());
+        assertEquals("sin tooltip y sin texto visible", violations.get(0).reason());
     }
 
     @Test
-    void unNombreAccesibleEnBlancoCuentaComoSinNombre() {
+    void aBlankAccessibleNameCountsAsNoName() {
         JPanel panel = new JPanel();
-        JButton boton = new JButton();
-        boton.getAccessibleContext().setAccessibleName("   ");
-        panel.add(boton);
+        JButton button = new JButton();
+        button.getAccessibleContext().setAccessibleName("   ");
+        panel.add(button);
 
-        List<Violation> violaciones = walker.walk(panel);
+        List<Violation> violations = walker.walk(panel);
 
-        assertTrue(violaciones.stream().anyMatch(v -> v.reason().equals("sin nombre accesible")));
+        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("sin nombre accesible")));
     }
 
     @Test
-    void laRutaDeLaViolacionIncluyeCadaContenedorIntermedio() {
-        JPanel raiz = new JPanel();
-        JPanel fila = new JPanel();
-        JButton boton = new JButton();
-        fila.add(boton);
-        raiz.add(fila);
+    void theViolationPathIncludesEveryIntermediateContainer() {
+        JPanel root = new JPanel();
+        JPanel row = new JPanel();
+        JButton button = new JButton();
+        row.add(button);
+        root.add(row);
 
-        List<Violation> violaciones = walker.walk(raiz);
+        List<Violation> violations = walker.walk(root);
 
-        assertEquals("JPanel > JPanel > JButton", violaciones.get(0).path());
+        assertEquals("JPanel > JPanel > JButton", violations.get(0).path());
     }
 
     @Test
-    void variosControlesSinNombreProducenVariasViolaciones() {
+    void severalUnnamedControlsProduceSeveralViolations() {
         JPanel panel = new JPanel();
         panel.add(new JButton());
         panel.add(new JButton());
         panel.add(new JButton("Con nombre"));
 
-        List<Violation> violaciones = walker.walk(panel);
+        List<Violation> violations = walker.walk(panel);
 
-        assertEquals(2, violaciones.stream().filter(v -> v.reason().equals("sin nombre accesible")).count());
+        assertEquals(2, violations.stream().filter(v -> v.reason().equals("sin nombre accesible")).count());
     }
 
     @Test
-    void unaEtiquetaVinculadaConSetLabelForCuentaComoTextoVisibleParaElCombo() {
+    void aLabelLinkedWithSetLabelForCountsAsVisibleTextForTheCombo() {
         JPanel panel = new JPanel();
-        JLabel etiqueta = new JLabel("Tono:");
+        JLabel label = new JLabel("Tono:");
         JComboBox<String> combo = new JComboBox<>(new String[] {"Do"});
-        etiqueta.setLabelFor(combo);
-        panel.add(etiqueta);
+        label.setLabelFor(combo);
+        panel.add(label);
         panel.add(combo);
 
         assertTrue(walker.walk(panel).isEmpty());
     }
 
     @Test
-    void unaEtiquetaVinculadaConSetLabelForCuentaComoTextoVisibleParaUnBotonSinTexto() {
+    void aLabelLinkedWithSetLabelForCountsAsVisibleTextForATextlessButton() {
         JPanel panel = new JPanel();
-        JLabel etiqueta = new JLabel("Color");
-        JButton boton = new JButton();
-        boton.setText(null);
-        etiqueta.setLabelFor(boton);
-        panel.add(etiqueta);
-        panel.add(boton);
+        JLabel label = new JLabel("Color");
+        JButton button = new JButton();
+        button.setText(null);
+        label.setLabelFor(button);
+        panel.add(label);
+        panel.add(button);
 
         assertTrue(walker.walk(panel).isEmpty());
     }
 
     @Test
-    void unComboSinEtiquetaVinculadaEsUnaViolacionDeNombreYDeTooltip() {
+    void aComboWithNoLinkedLabelIsANameAndTooltipViolation() {
         JPanel panel = new JPanel();
         panel.add(new JComboBox<String>(new String[] {"Do"}));
 
-        List<Violation> violaciones = walker.walk(panel);
+        List<Violation> violations = walker.walk(panel);
 
-        assertEquals(2, violaciones.size());
+        assertEquals(2, violations.size());
     }
 
     @Test
-    void unComponenteCustomMarcadoSinNombreProduceViolacionDeNombreYDeTooltip() {
-        class Perilla extends JPanel implements AccessibleControl {}
+    void aCustomComponentMarkedWithoutANameProducesANameAndTooltipViolation() {
+        class Knob extends JPanel implements AccessibleControl {}
         JPanel panel = new JPanel();
-        panel.add(new Perilla());
+        panel.add(new Knob());
 
-        List<Violation> violaciones = walker.walk(panel);
+        List<Violation> violations = walker.walk(panel);
 
-        assertEquals(2, violaciones.size());
-        assertTrue(violaciones.stream().anyMatch(v -> v.reason().equals("sin nombre accesible")));
-        assertTrue(violaciones.stream().anyMatch(v -> v.reason().equals("sin tooltip y sin texto visible")));
+        assertEquals(2, violations.size());
+        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("sin nombre accesible")));
+        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("sin tooltip y sin texto visible")));
     }
 
     @Test
-    void unComponenteCustomMarcadoConNombreYTooltipNoTieneViolaciones() {
-        class Perilla extends JPanel implements AccessibleControl {}
-        Perilla perilla = new Perilla();
-        perilla.getAccessibleContext().setAccessibleName("Volumen de Guitarra");
-        perilla.setToolTipText("Volumen de Guitarra");
+    void aCustomComponentMarkedWithNameAndTooltipHasNoViolations() {
+        class Knob extends JPanel implements AccessibleControl {}
+        Knob knob = new Knob();
+        knob.getAccessibleContext().setAccessibleName("Volumen de Guitarra");
+        knob.setToolTipText("Volumen de Guitarra");
         JPanel panel = new JPanel();
-        panel.add(perilla);
+        panel.add(knob);
 
         assertTrue(walker.walk(panel).isEmpty());
     }
 
     @Test
-    void unItemDeMenuSinTextoDentroDeUnJMenuEsUnaViolacion() {
+    void aMenuItemWithNoTextInsideAJMenuIsAViolation() {
         JMenuBar bar = new JMenuBar();
         JMenu menu = new JMenu("Archivo");
         menu.add(new JMenuItem());
         bar.add(menu);
 
-        List<Violation> violaciones = walker.walk(bar);
+        List<Violation> violations = walker.walk(bar);
 
-        assertTrue(violaciones.stream().anyMatch(v -> v.reason().equals("sin nombre accesible")));
+        assertTrue(violations.stream().anyMatch(v -> v.reason().equals("sin nombre accesible")));
     }
 
     @Test
-    void unItemDeMenuConTextoDentroDeUnJMenuNoTieneViolaciones() {
+    void aMenuItemWithTextInsideAJMenuHasNoViolations() {
         JMenuBar bar = new JMenuBar();
         JMenu menu = new JMenu("Archivo");
         menu.add(new JMenuItem("Nuevo"));
@@ -193,7 +193,7 @@ class AccessibilityWalkerTest {
     }
 
     @Test
-    void losBotonesDeFlechaDeUnScrollPaneNoSonControlesDeLaAplicacion() {
+    void theArrowButtonsOfAScrollPaneAreNotApplicationControls() {
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(new JTextArea()));
 
@@ -201,7 +201,7 @@ class AccessibilityWalkerTest {
     }
 
     @Test
-    void unJTabbedPaneConTitulosDeSolapaNoNecesitaTooltip() {
+    void aJTabbedPaneWithTabTitlesDoesNotNeedATooltip() {
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Bend", new JPanel());
         tabs.addTab("Armonicos", new JPanel());
@@ -210,70 +210,70 @@ class AccessibilityWalkerTest {
     }
 
     @Test
-    void unJPanelPlanoNoEsUnControlInteractivo() {
+    void aPlainJPanelIsNotAnInteractiveControl() {
         JPanel panel = new JPanel();
         panel.add(new JPanel());
 
         assertTrue(walker.walk(panel).isEmpty());
     }
 
-    private enum Figura { NEGRA, CORCHEA }
+    private enum NoteDuration { QUARTER, EIGHTH }
 
-    private record Escala(String nombre) {
+    private record Scale(String name) {
     }
 
     @Test
-    void unComboConRenderPorDefectoQueMuestraElNombreCrudoDeUnEnumEsUnaViolacion() {
+    void aComboWithTheDefaultRendererShowingTheRawNameOfAnEnumIsAViolation() {
         JPanel panel = new JPanel();
-        JLabel etiqueta = new JLabel("Figura");
-        JComboBox<Figura> combo = new JComboBox<>(new Figura[] {Figura.NEGRA});
-        etiqueta.setLabelFor(combo);
-        panel.add(etiqueta);
+        JLabel label = new JLabel("Figura");
+        JComboBox<NoteDuration> combo = new JComboBox<>(new NoteDuration[] {NoteDuration.QUARTER});
+        label.setLabelFor(combo);
+        panel.add(label);
         panel.add(combo);
 
-        List<Violation> violaciones = walker.walk(panel);
+        List<Violation> violations = walker.walk(panel);
 
-        assertEquals(1, violaciones.size());
-        assertEquals("toString() crudo: NEGRA", violaciones.get(0).reason());
+        assertEquals(1, violations.size());
+        assertEquals("toString() crudo: QUARTER", violations.get(0).reason());
     }
 
     @Test
-    void unComboConRenderPorDefectoQueMuestraElToStringCrudoDeUnRecordEsUnaViolacion() {
+    void aComboWithTheDefaultRendererShowingTheRawToStringOfARecordIsAViolation() {
         JPanel panel = new JPanel();
-        JLabel etiqueta = new JLabel("Escala");
-        JComboBox<Escala> combo = new JComboBox<>(new Escala[] {new Escala("Mayor")});
-        etiqueta.setLabelFor(combo);
-        panel.add(etiqueta);
+        JLabel label = new JLabel("Escala");
+        JComboBox<Scale> combo = new JComboBox<>(new Scale[] {new Scale("Mayor")});
+        label.setLabelFor(combo);
+        panel.add(label);
         panel.add(combo);
 
-        List<Violation> violaciones = walker.walk(panel);
+        List<Violation> violations = walker.walk(panel);
 
-        assertEquals(1, violaciones.size());
-        assertTrue(violaciones.get(0).reason().startsWith("toString() crudo: Escala["));
+        assertEquals(1, violations.size());
+        assertTrue(violations.get(0).reason().startsWith("toString() crudo: Scale["));
     }
 
-    private record FormatoDePapel(String etiqueta, int ancho, int alto) {
+    private record PaperFormat(String label, int width, int height) {
 
         @Override
         public String toString() {
-            return etiqueta;
+            return label;
         }
     }
 
     @Test
-    void unComboQueMuestraElToStringPersonalizadoDeUnRecordNoEsUnaViolacion() {
+    void aComboShowingTheCustomToStringOfARecordIsNotAViolation() {
         JPanel panel = new JPanel();
-        JLabel etiqueta = new JLabel("Formato");
-        JComboBox<FormatoDePapel> combo =
-                new JComboBox<>(new FormatoDePapel[] {new FormatoDePapel("A4", 210, 297)});
-        etiqueta.setLabelFor(combo);
-        panel.add(etiqueta);
+        JLabel label = new JLabel("Formato");
+        JComboBox<PaperFormat> combo =
+                new JComboBox<>(new PaperFormat[] {new PaperFormat("A4", 210, 297)});
+        label.setLabelFor(combo);
+        panel.add(label);
         panel.add(combo);
 
         assertTrue(walker.walk(panel).isEmpty());
     }
 
-    private enum Dinamica {
+    private enum Dynamic {
         FORTE;
 
         @Override
@@ -283,23 +283,23 @@ class AccessibilityWalkerTest {
     }
 
     @Test
-    void unComboQueMuestraElToStringPersonalizadoDeUnEnumNoEsUnaViolacion() {
+    void aComboShowingTheCustomToStringOfAnEnumIsNotAViolation() {
         JPanel panel = new JPanel();
-        JLabel etiqueta = new JLabel("Dinamica");
-        JComboBox<Dinamica> combo = new JComboBox<>(new Dinamica[] {Dinamica.FORTE});
-        etiqueta.setLabelFor(combo);
-        panel.add(etiqueta);
+        JLabel label = new JLabel("Dinamica");
+        JComboBox<Dynamic> combo = new JComboBox<>(new Dynamic[] {Dynamic.FORTE});
+        label.setLabelFor(combo);
+        panel.add(label);
         panel.add(combo);
 
         assertTrue(walker.walk(panel).isEmpty());
     }
 
     @Test
-    void unComboConRenderPropioQueMuestraElNombreCrudoDeUnEnumEsUnaViolacion() {
+    void aComboWithACustomRendererShowingTheRawNameOfAnEnumIsAViolation() {
         JPanel panel = new JPanel();
-        JLabel etiqueta = new JLabel("Figura");
-        JComboBox<Figura> combo = new JComboBox<>(new Figura[] {Figura.NEGRA});
-        etiqueta.setLabelFor(combo);
+        JLabel label = new JLabel("Figura");
+        JComboBox<NoteDuration> combo = new JComboBox<>(new NoteDuration[] {NoteDuration.QUARTER});
+        label.setLabelFor(combo);
         combo.setRenderer(new DefaultListCellRenderer() {
 
             @Override
@@ -310,27 +310,27 @@ class AccessibilityWalkerTest {
                 return this;
             }
         });
-        panel.add(etiqueta);
+        panel.add(label);
         panel.add(combo);
 
-        List<Violation> violaciones = walker.walk(panel);
+        List<Violation> violations = walker.walk(panel);
 
-        assertEquals(1, violaciones.size());
-        assertEquals("toString() crudo: NEGRA", violaciones.get(0).reason());
+        assertEquals(1, violations.size());
+        assertEquals("toString() crudo: QUARTER", violations.get(0).reason());
     }
 
     @Test
-    void unaListaConRenderPorDefectoQueMuestraElNombreCrudoDeUnEnumEsUnaViolacion() {
+    void aListWithTheDefaultRendererShowingTheRawNameOfAnEnumIsAViolation() {
         JPanel panel = new JPanel();
-        JLabel etiqueta = new JLabel("Figura");
-        JList<Figura> lista = new JList<>(new Figura[] {Figura.NEGRA});
-        etiqueta.setLabelFor(lista);
-        panel.add(etiqueta);
-        panel.add(lista);
+        JLabel label = new JLabel("Figura");
+        JList<NoteDuration> list = new JList<>(new NoteDuration[] {NoteDuration.QUARTER});
+        label.setLabelFor(list);
+        panel.add(label);
+        panel.add(list);
 
-        List<Violation> violaciones = walker.walk(panel);
+        List<Violation> violations = walker.walk(panel);
 
-        assertEquals(1, violaciones.size());
-        assertEquals("toString() crudo: NEGRA", violaciones.get(0).reason());
+        assertEquals(1, violations.size());
+        assertEquals("toString() crudo: QUARTER", violations.get(0).reason());
     }
 }
