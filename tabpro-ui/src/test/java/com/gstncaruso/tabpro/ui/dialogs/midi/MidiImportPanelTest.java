@@ -61,19 +61,19 @@ class MidiImportPanelTest {
     }
 
     @Test
-    void defaultsToSixteenthNotePrecision() {
+    void defaultsToThirtySecondNoteDurationQuantize() {
         MidiImportPanel panel = panel(List.of());
 
-        assertEquals(NoteValue.SIXTEENTH, panel.precision());
+        assertEquals(NoteValue.THIRTY_SECOND, panel.noteDurationQuantize());
     }
 
     @Test
-    void choosingAnotherPrecisionChangesIt() {
+    void choosingAnotherNoteDurationQuantizeChangesIt() {
         MidiImportPanel panel = panel(List.of());
 
-        panel.choosePrecision(NoteValue.THIRTY_SECOND);
+        panel.chooseNoteDurationQuantize(NoteValue.EIGHTH);
 
-        assertEquals(NoteValue.THIRTY_SECOND, panel.precision());
+        assertEquals(NoteValue.EIGHTH, panel.noteDurationQuantize());
     }
 
     @Test

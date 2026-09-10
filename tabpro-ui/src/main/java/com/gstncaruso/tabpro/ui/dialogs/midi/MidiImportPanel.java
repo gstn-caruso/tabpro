@@ -7,21 +7,24 @@ import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
@@ -35,8 +38,8 @@ import javax.swing.ListSelectionModel;
  */
 public final class MidiImportPanel extends JPanel {
 
-    private static final NoteValue[] PRECISION_CHOICES = {
-        NoteValue.QUARTER, NoteValue.EIGHTH, NoteValue.SIXTEENTH, NoteValue.THIRTY_SECOND, NoteValue.SIXTY_FOURTH
+    private static final NoteValue[] QUANTIZE_CHOICES = {
+        NoteValue.EIGHTH, NoteValue.SIXTEENTH, NoteValue.THIRTY_SECOND, NoteValue.SIXTY_FOURTH
     };
 
     private static final PlaybackListener SILENT_LISTENER = new PlaybackListener() {
@@ -52,7 +55,7 @@ public final class MidiImportPanel extends JPanel {
     private final JList<MidiTrackInfo> trackList = new JList<>();
     private final JCheckBox transpose = new JCheckBox("Transportar una octava para abajo");
     private final JCheckBox twoChannelsPerTrack = new JCheckBox("Usar 2 canales por pista", true);
-    private final JComboBox<String> precisionChoice = new JComboBox<>(precisionLabels());
+    private final QuantizeGroup noteDurationQuantizeGroup = new QuantizeGroup();
     private final JButton selectAll = iconButton(Icons.selectAllTracks(), "Marcar todas las pistas");
     private final JButton listen = iconButton(Icons.play(), "Escuchar la pista elegida");
     private final JButton stopListening = iconButton(Icons.stop(), "Detener la reproducción");
@@ -69,19 +72,21 @@ public final class MidiImportPanel extends JPanel {
         trackList.getAccessibleContext().setAccessibleName("Pistas del archivo MIDI");
         trackList.setToolTipText("Pistas del archivo MIDI");
         showTracks(tracks);
-        precisionChoice.setSelectedItem(figureName(NoteValue.SIXTEENTH));
         selectAll.addActionListener(event -> selectAllTracks());
         listen.addActionListener(event -> listen());
         stopListening.addActionListener(event -> stopListening());
 
-        JLabel precisionLabel = new JLabel("Precisión");
-        precisionLabel.setLabelFor(precisionChoice);
+        JPanel checkboxes = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, DialogStyle.GAP_S));
+        checkboxes.add(transpose);
+        checkboxes.add(twoChannelsPerTrack);
 
-        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, DialogStyle.GAP_S));
-        bottom.add(transpose);
-        bottom.add(twoChannelsPerTrack);
-        bottom.add(precisionLabel);
-        bottom.add(precisionChoice);
+        FormPanel quantization = new FormPanel()
+                .addSection("Cuantización de duración de nota")
+                .addFullWidthRow(noteDurationQuantizeGroup.asRow());
+
+        JPanel bottom = new JPanel(new BorderLayout());
+        bottom.add(checkboxes, BorderLayout.NORTH);
+        bottom.add(quantization, BorderLayout.SOUTH);
 
         JPanel trackListTools = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_XS, 0));
         trackListTools.add(selectAll);
@@ -150,27 +155,13 @@ public final class MidiImportPanel extends JPanel {
         return twoChannelsPerTrack.isSelected();
     }
 
-    /** La precision elegida para cuantizar la posicion y la duracion de las notas al importar. */
-    public NoteValue precision() {
-        String label = (String) precisionChoice.getSelectedItem();
-        for (NoteValue value : PRECISION_CHOICES) {
-            if (figureName(value).equals(label)) {
-                return value;
-            }
-        }
-        throw new IllegalStateException("precision desconocida: " + label);
+    /** La precision con la que se cuantiza la duracion de las notas al importar. */
+    public NoteValue noteDurationQuantize() {
+        return noteDurationQuantizeGroup.chosen();
     }
 
-    public void choosePrecision(NoteValue value) {
-        precisionChoice.setSelectedItem(figureName(value));
-    }
-
-    private static String[] precisionLabels() {
-        String[] labels = new String[PRECISION_CHOICES.length];
-        for (int index = 0; index < PRECISION_CHOICES.length; index++) {
-            labels[index] = figureName(PRECISION_CHOICES[index]);
-        }
-        return labels;
+    public void chooseNoteDurationQuantize(NoteValue value) {
+        noteDurationQuantizeGroup.choose(value);
     }
 
     private static String figureName(NoteValue value) {
@@ -198,5 +189,38 @@ public final class MidiImportPanel extends JPanel {
                 return this;
             }
         };
+    }
+
+    private static final class QuantizeGroup {
+
+        private final Map<NoteValue, JRadioButton> radios = new LinkedHashMap<>();
+
+        QuantizeGroup() {
+            ButtonGroup group = new ButtonGroup();
+            for (NoteValue value : QUANTIZE_CHOICES) {
+                JRadioButton radio = new JRadioButton(figureName(value));
+                group.add(radio);
+                radios.put(value, radio);
+            }
+            choose(NoteValue.THIRTY_SECOND);
+        }
+
+        JPanel asRow() {
+            JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, 0));
+            radios.values().forEach(row::add);
+            return row;
+        }
+
+        NoteValue chosen() {
+            return radios.entrySet().stream()
+                    .filter(entry -> entry.getValue().isSelected())
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElseThrow();
+        }
+
+        void choose(NoteValue value) {
+            radios.get(value).setSelected(true);
+        }
     }
 }
