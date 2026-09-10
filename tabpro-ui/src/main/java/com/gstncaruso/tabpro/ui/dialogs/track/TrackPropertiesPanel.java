@@ -108,7 +108,8 @@ public final class TrackPropertiesPanel extends FormPanel {
                 tablature.isSelected(),
                 tuningLegend.isSelected(),
                 rhythmOnTablature.isSelected(),
-                (DiagramPlacement) diagramPlacement.getSelectedItem());
+                (DiagramPlacement) diagramPlacement.getSelectedItem(),
+                false);
         return new TrackSettings(
                 color.toScoreColor(),
                 (Integer) capo.getValue(),
