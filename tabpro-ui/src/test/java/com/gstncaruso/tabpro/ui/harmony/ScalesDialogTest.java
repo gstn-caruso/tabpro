@@ -69,6 +69,18 @@ class ScalesDialogTest {
     }
 
     @Test
+    void conUnaEleccionPreviaLaRespetaEnVezDeForzarDoMayor() {
+        Editor editor = new Editor(Score.blank());
+        ChosenScale chosen = new ChosenScale();
+        chosen.choose(PitchClass.of("D"), ScaleLibrary.dorian());
+
+        ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), chosen);
+
+        assertEquals(PitchClass.of("D"), chosen.tonic().orElseThrow());
+        assertEquals(ScaleLibrary.dorian(), chosen.scale().orElseThrow());
+    }
+
+    @Test
     void alElegirTonicaYEscalaEnLasListasLaEleccionLlegaAChosenScale() {
         Editor editor = new Editor(Score.blank());
         ChosenScale chosen = new ChosenScale();
