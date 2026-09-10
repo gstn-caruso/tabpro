@@ -152,7 +152,9 @@ public final class ChordDialog {
         private JPanel listsZone() {
             JPanel zone = new JPanel();
             zone.setLayout(new BoxLayout(zone, BoxLayout.Y_AXIS));
-            zone.add(namedList("Nombres alternativos", new JList<>(alternatives), 90));
+            JList<Chord> alternativeNames = new JList<>(alternatives);
+            alternativeNames.setCellRenderer(new LabeledListCellRenderer());
+            zone.add(namedList("Nombres alternativos", alternativeNames, 90));
             zone.add(Box.createVerticalStrut(6));
             zone.add(namedList("Usados en la pista", diagramList(used), 90));
             zone.add(Box.createVerticalStrut(6));

@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.dialogs.style;
 
+import com.gstncaruso.tabpro.core.harmony.Chord;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
@@ -24,6 +25,7 @@ public final class Labels {
     public static String of(Object value) {
         return switch (value) {
             case NoteValue noteValue -> noteValueLabel(noteValue);
+            case Chord chord -> chord.name();
             case ChordType chordType -> chordTypeLabel(chordType);
             case ChordComplexity chordComplexity -> chordComplexityLabel(chordComplexity);
             case BarrePreference barrePreference -> barrePreferenceLabel(barrePreference);

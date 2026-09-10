@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import com.gstncaruso.tabpro.core.harmony.Chord;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
@@ -140,6 +141,13 @@ class LabelsTest {
 
         assertFalse(etiqueta.isBlank());
         assertNotEquals(value.name(), etiqueta);
+    }
+
+    @Test
+    void traduceElAcordeConSuNombreEnVezDelRecordCrudo() {
+        Chord chord = Chord.of(PitchClass.of("C"), ChordType.MINOR_SEVENTH);
+
+        assertEquals("Cm7", Labels.of(chord));
     }
 
     @Test

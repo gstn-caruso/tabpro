@@ -41,4 +41,28 @@ public final class Combos {
                 combo.getRenderer().getListCellRendererComponent(new JList<>(), item, 0, false, false);
         return ((JLabel) rendered).getText();
     }
+
+    /** Una lista por su nombre accesible, para las que arrancan vacias y no tienen item de sobra. */
+    public static JList<?> firstListNamed(Container root, String accessibleName) {
+        for (Component child : root.getComponents()) {
+            if (child instanceof JList<?> list
+                    && accessibleName.equals(list.getAccessibleContext().getAccessibleName())) {
+                return list;
+            }
+            if (child instanceof Container container) {
+                JList<?> found = firstListNamed(container, accessibleName);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static String renderedTextOfList(JList list, Object item) {
+        Component rendered =
+                list.getCellRenderer().getListCellRendererComponent(list, item, 0, false, false);
+        return ((JLabel) rendered).getText();
+    }
 }

@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.harmony;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.harmony.Chord;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -102,5 +103,20 @@ class ChordDialogTest {
                 .getListCellRendererComponent(new JList<>(), PitchClass.of("C"), 0, false, false);
 
         assertEquals("C (Do)", ((JLabel) rendered).getText());
+    }
+
+    @Test
+    void laListaDeNombresAlternativosMuestraElNombreDelAcordeEnVezDelRecordCrudo() {
+        Editor editor = new Editor(Score.blank());
+        ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
+        ChordLibrary library = new ChordLibrary(scratch);
+
+        ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
+
+        JList<?> alternativeNames = Combos.firstListNamed(panel, "Nombres alternativos");
+        Chord chord = Chord.of(PitchClass.of("C"), ChordType.MINOR_SEVENTH);
+        String texto = Combos.renderedTextOfList(alternativeNames, chord);
+
+        assertEquals("Cm7", texto);
     }
 }
