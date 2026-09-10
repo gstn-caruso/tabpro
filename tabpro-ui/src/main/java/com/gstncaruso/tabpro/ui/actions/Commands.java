@@ -277,63 +277,79 @@ public final class Commands {
     }
 
     private void defineEffectCommands() {
-        define("effect.hammer", "Ligado (hammer on / pull off)", () -> editor.toggleOrnament(Ornament.HAMMER_ON_PULL_OFF))
+        define("effect.hammer", Texts.get("menus.effect.hammer"),
+                () -> editor.toggleOrnament(Ornament.HAMMER_ON_PULL_OFF))
                 .withAccelerator("H").withIcon(Icons.hammerOn());
-        define("effect.legatoSlide", "Slide legato", () -> editor.setSlide(SlideType.LEGATO))
+        define("effect.legatoSlide", Texts.get("menus.effect.legatoSlide"), () -> editor.setSlide(SlideType.LEGATO))
                 .withAccelerator("S").withIcon(Icons.slide());
-        define("effect.shiftSlide", "Slide con ataque", () -> editor.setSlide(SlideType.SHIFT))
+        define("effect.shiftSlide", Texts.get("menus.effect.shiftSlide"), () -> editor.setSlide(SlideType.SHIFT))
                 .withAccelerator("alt S").withIcon(Icons.shiftSlide());
-        define("effect.slideInFromBelow", "Entrando desde abajo", () -> editor.setSlide(SlideType.IN_FROM_BELOW));
-        define("effect.slideInFromAbove", "Entrando desde arriba", () -> editor.setSlide(SlideType.IN_FROM_ABOVE));
-        define("effect.slideOutDownwards", "Saliendo hacia abajo", () -> editor.setSlide(SlideType.OUT_DOWNWARDS));
-        define("effect.slideOutUpwards", "Saliendo hacia arriba", () -> editor.setSlide(SlideType.OUT_UPWARDS));
-        define("effect.noSlide", "Sin slide", () -> editor.setSlide(null));
-        define("effect.bend", "Bend…", dialogs::bend).withAccelerator("B").withIcon(Icons.bend());
-        define("effect.tremoloBar", "Palanca…", dialogs::tremoloBar).withIcon(Icons.tremoloBar());
-        define("effect.vibrato", "Vibrato", () -> editor.toggleOrnament(Ornament.VIBRATO))
+        define("effect.slideInFromBelow", Texts.get("menus.effect.slideInFromBelow"),
+                () -> editor.setSlide(SlideType.IN_FROM_BELOW));
+        define("effect.slideInFromAbove", Texts.get("menus.effect.slideInFromAbove"),
+                () -> editor.setSlide(SlideType.IN_FROM_ABOVE));
+        define("effect.slideOutDownwards", Texts.get("menus.effect.slideOutDownwards"),
+                () -> editor.setSlide(SlideType.OUT_DOWNWARDS));
+        define("effect.slideOutUpwards", Texts.get("menus.effect.slideOutUpwards"),
+                () -> editor.setSlide(SlideType.OUT_UPWARDS));
+        define("effect.noSlide", Texts.get("menus.effect.noSlide"), () -> editor.setSlide(null));
+        define("effect.bend", Texts.get("menus.effect.bend"), dialogs::bend)
+                .withAccelerator("B").withIcon(Icons.bend());
+        define("effect.tremoloBar", Texts.get("menus.effect.tremoloBar"), dialogs::tremoloBar)
+                .withIcon(Icons.tremoloBar());
+        define("effect.vibrato", Texts.get("menus.effect.vibrato"), () -> editor.toggleOrnament(Ornament.VIBRATO))
                 .withAccelerator("V").withIcon(Icons.vibrato());
-        define("effect.wideVibrato", "Vibrato amplio", editor::toggleWideVibrato).withIcon(Icons.wideVibrato());
-        define("effect.trill", "Trino…", dialogs::trill).withIcon(Icons.trill());
-        define("effect.tremoloPicking", "Trémolo de púa…", dialogs::tremoloPicking)
+        define("effect.wideVibrato", Texts.get("menus.effect.wideVibrato"), editor::toggleWideVibrato)
+                .withIcon(Icons.wideVibrato());
+        define("effect.trill", Texts.get("menus.effect.trill"), dialogs::trill).withIcon(Icons.trill());
+        define("effect.tremoloPicking", Texts.get("menus.effect.tremoloPicking"), dialogs::tremoloPicking)
                 .withIcon(Icons.tremoloPicking());
-        define("effect.palmMute", "Palm mute", () -> editor.toggleOrnament(Ornament.PALM_MUTE))
+        define("effect.palmMute", Texts.get("menus.effect.palmMute"), () -> editor.toggleOrnament(Ornament.PALM_MUTE))
                 .withAccelerator("P").withIcon(Icons.letter("PM"));
-        define("effect.letRing", "Let ring", () -> editor.toggleOrnament(Ornament.LET_RING))
+        define("effect.letRing", Texts.get("menus.effect.letRing"), () -> editor.toggleOrnament(Ornament.LET_RING))
                 .withAccelerator("I").withIcon(Icons.letter("LR"));
-        define("effect.staccato", "Staccato", () -> editor.toggleOrnament(Ornament.STACCATO))
+        define("effect.staccato", Texts.get("menus.effect.staccato"), () -> editor.toggleOrnament(Ornament.STACCATO))
                 .withIcon(Icons.staccato());
-        define("effect.deadNote", "Nota muerta", () -> editor.toggleOrnament(Ornament.DEAD))
+        define("effect.deadNote", Texts.get("menus.effect.deadNote"), () -> editor.toggleOrnament(Ornament.DEAD))
                 .withAccelerator("X").withIcon(Icons.deadNote());
-        define("effect.ghostNote", "Nota fantasma", () -> editor.toggleOrnament(Ornament.GHOST))
+        define("effect.ghostNote", Texts.get("menus.effect.ghostNote"), () -> editor.toggleOrnament(Ornament.GHOST))
                 .withAccelerator("O").withIcon(Icons.ghostNote());
-        define("effect.accent", "Nota acentuada", () -> editor.toggleOrnament(Ornament.ACCENTED))
+        define("effect.accent", Texts.get("menus.effect.accent"), () -> editor.toggleOrnament(Ornament.ACCENTED))
                 .withIcon(Icons.accent());
-        define("effect.heavyAccent", "Nota muy acentuada", () -> editor.toggleOrnament(Ornament.HEAVY_ACCENTED))
-                .withIcon(Icons.heavyAccent());
-        define("effect.fadeIn", "Fade in", editor::toggleFadeIn).withAccelerator("F").withIcon(Icons.fadeIn());
-        define("effect.graceNote", "Nota de adorno…", dialogs::graceNote)
+        define("effect.heavyAccent", Texts.get("menus.effect.heavyAccent"),
+                () -> editor.toggleOrnament(Ornament.HEAVY_ACCENTED)).withIcon(Icons.heavyAccent());
+        define("effect.fadeIn", Texts.get("menus.effect.fadeIn"), editor::toggleFadeIn)
+                .withAccelerator("F").withIcon(Icons.fadeIn());
+        define("effect.graceNote", Texts.get("menus.effect.graceNote"), dialogs::graceNote)
                 .withAccelerator("G").withIcon(Icons.graceNote());
-        define("effect.harmonics", "Armónicos…", dialogs::harmonics).withIcon(Icons.harmonic());
-        define("effect.naturalHarmonic", "Armónico natural", () -> editor.setHarmonic(HarmonicType.NATURAL))
-                .withIcon(Icons.naturalHarmonic());
-        define("effect.artificialHarmonic", "Armónico artificial",
+        define("effect.harmonics", Texts.get("menus.effect.harmonics"), dialogs::harmonics)
+                .withIcon(Icons.harmonic());
+        define("effect.naturalHarmonic", Texts.get("menus.effect.naturalHarmonic"),
+                () -> editor.setHarmonic(HarmonicType.NATURAL)).withIcon(Icons.naturalHarmonic());
+        define("effect.artificialHarmonic", Texts.get("menus.effect.artificialHarmonic"),
                 () -> editor.setHarmonic(HarmonicType.ARTIFICIAL)).withIcon(Icons.artificialHarmonic());
-        define("effect.tapping", "Tapping", editor::toggleTapping).withIcon(Icons.letter("T"));
-        define("effect.slapping", "Slap", editor::toggleSlapping).withIcon(Icons.letter("S"));
-        define("effect.popping", "Pop", editor::togglePopping).withIcon(Icons.letter("P"));
-        define("effect.strokeUp", "Rasgueo hacia arriba", () -> editor.setStroke(Stroke.of(StrokeDirection.UP)))
+        define("effect.tapping", Texts.get("menus.effect.tapping"), editor::toggleTapping)
+                .withIcon(Icons.letter("T"));
+        define("effect.slapping", Texts.get("menus.effect.slapping"), editor::toggleSlapping)
+                .withIcon(Icons.letter("S"));
+        define("effect.popping", Texts.get("menus.effect.popping"), editor::togglePopping)
+                .withIcon(Icons.letter("P"));
+        define("effect.strokeUp", Texts.get("menus.effect.strokeUp"),
+                () -> editor.setStroke(Stroke.of(StrokeDirection.UP)))
                 .withAccelerator("ctrl U").withIcon(Icons.strokeUp());
-        define("effect.strokeDown", "Rasgueo hacia abajo", () -> editor.setStroke(Stroke.of(StrokeDirection.DOWN)))
+        define("effect.strokeDown", Texts.get("menus.effect.strokeDown"),
+                () -> editor.setStroke(Stroke.of(StrokeDirection.DOWN)))
                 .withAccelerator("ctrl D").withIcon(Icons.strokeDown());
-        define("effect.strokeOptions", "Rasgueo…", dialogs::stroke);
-        define("effect.pickstrokeUp", "Púa hacia arriba", () -> editor.setPickstroke(PickstrokeDirection.UP))
-                .withIcon(Icons.pickstrokeUp());
-        define("effect.pickstrokeDown", "Púa hacia abajo", () -> editor.setPickstroke(PickstrokeDirection.DOWN))
-                .withIcon(Icons.pickstrokeDown());
-        define("effect.wahOpen", "Wah abierto", () -> editor.setWah(Wah.OPEN));
-        define("effect.wahClosed", "Wah cerrado", () -> editor.setWah(Wah.CLOSED));
-        define("effect.wahOff", "Wah apagado", () -> editor.setWah(Wah.OFF));
-        define("effect.text", "Texto…", dialogs::text).withAccelerator("T").withIcon(Icons.text());
+        define("effect.strokeOptions", Texts.get("menus.effect.strokeOptions"), dialogs::stroke);
+        define("effect.pickstrokeUp", Texts.get("menus.effect.pickstrokeUp"),
+                () -> editor.setPickstroke(PickstrokeDirection.UP)).withIcon(Icons.pickstrokeUp());
+        define("effect.pickstrokeDown", Texts.get("menus.effect.pickstrokeDown"),
+                () -> editor.setPickstroke(PickstrokeDirection.DOWN)).withIcon(Icons.pickstrokeDown());
+        define("effect.wahOpen", Texts.get("menus.effect.wahOpen"), () -> editor.setWah(Wah.OPEN));
+        define("effect.wahClosed", Texts.get("menus.effect.wahClosed"), () -> editor.setWah(Wah.CLOSED));
+        define("effect.wahOff", Texts.get("menus.effect.wahOff"), () -> editor.setWah(Wah.OFF));
+        define("effect.text", Texts.get("menus.effect.text"), dialogs::text)
+                .withAccelerator("T").withIcon(Icons.text());
     }
 
     private void defineMarkerCommands() {
