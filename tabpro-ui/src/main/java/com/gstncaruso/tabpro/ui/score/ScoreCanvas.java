@@ -34,7 +34,7 @@ import javax.swing.Scrollable;
  * {@link Zoom} y las {@link VisibleTracks} elegidas, y traduce los clics a movimientos del
  * cursor o, arrastrando, a una seleccion multiple.
  */
-public final class ScoreCanvas extends JComponent implements Scrollable, AccessibleControl, ZoomHolder {
+public class ScoreCanvas extends JComponent implements Scrollable, AccessibleControl, ZoomHolder {
 
     private static final int FALLBACK_WIDTH = 900;
 
