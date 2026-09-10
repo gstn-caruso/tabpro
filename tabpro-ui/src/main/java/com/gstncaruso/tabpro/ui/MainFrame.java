@@ -198,7 +198,7 @@ public final class MainFrame extends JFrame {
         // El manual: moverse por la partitura durante la reproduccion vuelve a arrancar el
         // audio desde la posicion senalada, sin frenar.
         canvas.onClickReposition(hit -> transport.seekTo(hit.measure(), hit.beat()));
-        editor.addListener(this::updateTitle);
+        editor.addListener(EdtEditorListener.onEdt(this::updateTitle));
 
         // Guitar Pro 5: la barra de efectos va pegada abajo de la partitura, arriba de la mesa
         // de mezcla, no junto a las otras tres filas de arriba.
