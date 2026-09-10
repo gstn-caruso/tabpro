@@ -105,6 +105,7 @@ class ScoreColorsContrastTest {
         pairs.addAll(fretboardPairs(FretboardType.ELECTRIC));
         pairs.addAll(fretboardPairs(FretboardType.ACOUSTIC));
         pairs.addAll(fretboardPairs(FretboardType.CLASSICAL));
+        pairs.addAll(fretboardPairs(FretboardType.BASIC));
         return pairs;
     }
 
