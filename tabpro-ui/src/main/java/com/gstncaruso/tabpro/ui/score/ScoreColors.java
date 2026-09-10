@@ -48,7 +48,7 @@ public final class ScoreColors {
     /** El rectangulo gris que marca, en la otra notacion, la nota que corresponde al cursor. */
     public static final Color CORRESPONDING_NOTE = new Color(0x9D, 0xA1, 0xA8, 0xAF);
     /** La voz que no se esta editando, cuando se pide dibujarla atenuada. */
-    public static final Color VOICE_INACTIVE = new Color(0x83, 0x87, 0x8D);
+    public static final Color VOICE_INACTIVE = new Color(0x8C, 0x8F, 0x94);
 
     /** La hoja clara del Modo Pagina y del Modo Pergamino, sobre el fondo oscuro de la ventana. */
     public static final Color PAGE_PAPER = new Color(0xF6F6F2);
