@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class TabEditByteReaderTest {
 
     @Test
-    void leeBytesConYSinSigno() {
+    void readsSignedAndUnsignedBytes() {
         TabEditByteReader reader =
                 new TabEditByteReader(new TabEditFileWriter().writeUnsignedByte(200).writeSignedByte(-56).bytes());
 
@@ -21,14 +21,14 @@ class TabEditByteReaderTest {
     }
 
     @Test
-    void leeUnShortSinSignoLittleEndian() {
+    void readsAnUnsignedLittleEndianShort() {
         TabEditByteReader reader = new TabEditByteReader(new TabEditFileWriter().writeShort(0xFFEE).bytes());
 
         assertEquals(0xFFEE, reader.readUnsignedShort());
     }
 
     @Test
-    void leeUnIntConSignoLittleEndian() {
+    void readsASignedLittleEndianInt() {
         TabEditByteReader reader = new TabEditByteReader(new TabEditFileWriter().writeInt(-1).writeInt(305419896).bytes());
 
         assertEquals(-1, reader.readInt());
@@ -36,7 +36,7 @@ class TabEditByteReaderTest {
     }
 
     @Test
-    void saltaLaCantidadDeBytesPedida() {
+    void skipsTheRequestedNumberOfBytes() {
         TabEditByteReader reader = new TabEditByteReader(new TabEditFileWriter().writeInt(1).writeInt(2).bytes());
 
         reader.skip(4);
@@ -45,7 +45,7 @@ class TabEditByteReaderTest {
     }
 
     @Test
-    void leeUnBloqueDeTamanoFijoComoSubArreglo() {
+    void readsAFixedSizeBlockAsASubArray() {
         TabEditByteReader reader =
                 new TabEditByteReader(new TabEditFileWriter().writeUnsignedByte(1).writeUnsignedByte(2).writeUnsignedByte(3).bytes());
 
@@ -56,14 +56,14 @@ class TabEditByteReaderTest {
     }
 
     @Test
-    void leeUnStringConPrefijoDeLargoCorto() {
+    void readsAShortLengthPrefixedString() {
         TabEditByteReader reader = new TabEditByteReader(new TabEditFileWriter().writeShortString("Cancion").bytes());
 
         assertEquals("Cancion", reader.readShortString());
     }
 
     @Test
-    void unStringConPrefijoDeLargoCortoSeCortaEnElPrimerNulo() {
+    void aShortLengthPrefixedStringIsCutAtTheFirstNull() {
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(10);
         writer.writeUnsignedByte('h').writeUnsignedByte('o').writeUnsignedByte('l').writeUnsignedByte('a');
         writer.writeUnsignedByte(0);
@@ -75,7 +75,7 @@ class TabEditByteReaderTest {
     }
 
     @Test
-    void leeUnStringTerminadoEnNuloDentroDeUnMaximo() {
+    void readsANullTerminatedStringWithinAMaximum() {
         TabEditFileWriter writer = new TabEditFileWriter();
         writer.writeUnsignedByte('h').writeUnsignedByte('i').writeUnsignedByte(0).writeUnsignedByte(7);
         TabEditByteReader reader = new TabEditByteReader(writer.bytes());
@@ -85,7 +85,7 @@ class TabEditByteReaderTest {
     }
 
     @Test
-    void informaSiQuedanBytesPorLeer() {
+    void reportsWhetherBytesAreLeftToRead() {
         TabEditByteReader reader = new TabEditByteReader(new TabEditFileWriter().writeUnsignedByte(1).bytes());
 
         assertTrue(reader.hasMore());
@@ -94,7 +94,7 @@ class TabEditByteReaderTest {
     }
 
     @Test
-    void informaCuantosBytesQuedanPorLeer() {
+    void reportsHowManyBytesAreLeftToRead() {
         TabEditByteReader reader = new TabEditByteReader(new TabEditFileWriter().writeInt(1).writeInt(2).bytes());
 
         assertEquals(8, reader.remaining());
@@ -103,7 +103,7 @@ class TabEditByteReaderTest {
     }
 
     @Test
-    void unArchivoTruncadoFallaConMensajeClaro() {
+    void aTruncatedFileFailsWithAClearMessage() {
         TabEditByteReader reader = new TabEditByteReader(new byte[] {1, 2});
 
         ScoreFileException exception = assertThrows(ScoreFileException.class, reader::readInt);
