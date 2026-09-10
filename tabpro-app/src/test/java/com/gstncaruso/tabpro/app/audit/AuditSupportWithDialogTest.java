@@ -20,10 +20,10 @@ class AuditSupportWithDialogTest {
         IllegalStateException rethrown = assertThrows(IllegalStateException.class, () -> withDialog(
                 AuditSupportWithDialogTest::openRealModalDialog,
                 dialog -> {
-                    throw new IllegalStateException("el boton que busco no existe en este dialogo");
+                    throw new IllegalStateException("the button I am looking for does not exist in this dialog");
                 }));
 
-        assertEquals("el boton que busco no existe en este dialogo", rethrown.getMessage());
+        assertEquals("the button I am looking for does not exist in this dialog", rethrown.getMessage());
     }
 
     @Test
@@ -42,8 +42,8 @@ class AuditSupportWithDialogTest {
     }
 
     private static void openRealModalDialog() {
-        JDialog dialog = new JDialog((java.awt.Frame) null, "dialogo de prueba", true);
-        dialog.add(new JLabel("contenido"));
+        JDialog dialog = new JDialog((java.awt.Frame) null, "test dialog", true);
+        dialog.add(new JLabel("content"));
         dialog.pack();
         dialog.setVisible(true);
     }
