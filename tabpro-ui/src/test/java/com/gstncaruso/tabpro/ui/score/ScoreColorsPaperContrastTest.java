@@ -39,7 +39,10 @@ class ScoreColorsPaperContrastTest {
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
                 pair("borde de compas incompleto (INCOMPLETE_MEASURE) / hoja", ScoreColors.INCOMPLETE_MEASURE,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
-                pair("borde de seleccion (ACCENT) / hoja", ScoreColors.ACCENT, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                pair("borde de seleccion (SELECTION_BORDER) / hoja", ScoreColors.SELECTION_BORDER,
+                        Contrast.GRAPHICAL_MINIMUM_RATIO),
+                translucentOverPaper("tinta sobre el relleno de seleccion (PAGE_INK) / relleno de seleccion",
+                        ScoreColors.SELECTION, Contrast.TEXT_MINIMUM_RATIO),
                 translucent("nota correspondiente (CORRESPONDING_NOTE) / hoja", ScoreColors.CORRESPONDING_NOTE,
                         Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("encabezado de pagina (PAGE_INK) / hoja", ScoreColors.PAGE_INK, ScoreColors.PAGE_PAPER,
@@ -56,5 +59,11 @@ class ScoreColorsPaperContrastTest {
         java.awt.Color onSheet = ScoreColors.onPaper(color);
         return new Pair(description, PaletteCheck.compositeOver(onSheet, ScoreColors.PAGE_PAPER),
                 ScoreColors.PAGE_PAPER, minimumRatio);
+    }
+
+    /** La tinta que escribe sobre un relleno translucido, no el relleno contra la hoja. */
+    private static Pair translucentOverPaper(String description, java.awt.Color fill, double minimumRatio) {
+        java.awt.Color composedFill = PaletteCheck.compositeOver(ScoreColors.onPaper(fill), ScoreColors.PAGE_PAPER);
+        return new Pair(description, ScoreColors.onPaper(ScoreColors.INK), composedFill, minimumRatio);
     }
 }

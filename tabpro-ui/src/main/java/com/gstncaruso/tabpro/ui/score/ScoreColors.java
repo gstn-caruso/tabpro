@@ -62,6 +62,8 @@ public final class ScoreColors {
     public static final Color SELECTION = new Color(0xFF, 0xFF, 0x00, 0x50);
     /** El contorno solido de la seleccion, del mismo amarillo que Guitar Pro 5. */
     public static final Color SELECTION_BORDER = new Color(0xFF, 0xFF, 0x00);
+    /** El amarillo puro no llega a 3:1 contra la hoja clara (da 1,01); este oscurecido sí (3,30). */
+    private static final Color SELECTION_BORDER_DARKENED_TO_MEET_PAPER_CONTRAST = new Color(0x8C, 0x8C, 0x00);
     /** El rectangulo gris que marca, en la otra notacion, la nota que corresponde al cursor. */
     public static final Color CORRESPONDING_NOTE = new Color(0x9D, 0xA1, 0xA8, 0xAF);
     /** La voz que no se esta editando, cuando se pide dibujarla atenuada. */
@@ -130,6 +132,7 @@ public final class ScoreColors {
         onPaper.put(LABEL, mirrored(LABEL));
         onPaper.put(MUTED_INK, mirrored(MUTED_INK));
         onPaper.put(MEASURE_NUMBER, MEASURE_NUMBER_DARKENED_TO_MEET_PAPER_CONTRAST);
+        onPaper.put(SELECTION_BORDER, SELECTION_BORDER_DARKENED_TO_MEET_PAPER_CONTRAST);
         onPaper.put(STAFF_LINE, mirrored(STAFF_LINE));
         onPaper.put(BAR_LINE, mirrored(BAR_LINE));
         onPaper.put(VOICE_INACTIVE, mirrored(VOICE_INACTIVE));
