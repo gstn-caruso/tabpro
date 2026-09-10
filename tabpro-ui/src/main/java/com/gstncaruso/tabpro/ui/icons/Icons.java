@@ -320,12 +320,7 @@ public final class Icons {
     }
 
     public static Icon countDown() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Ellipse2D.Double(size * 0.16, size * 0.16, size * 0.68, size * 0.68));
-            graphics.draw(new Line2D.Double(size * 0.5, size * 0.5, size * 0.5, size * 0.28));
-            graphics.draw(new Line2D.Double(size * 0.5, size * 0.5, size * 0.68, size * 0.6));
-        });
+        return svgIcon("clock");
     }
 
     // ---- navegacion y vista -----------------------------------------------
