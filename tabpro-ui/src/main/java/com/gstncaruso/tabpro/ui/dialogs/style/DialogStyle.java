@@ -25,13 +25,18 @@ public final class DialogStyle {
     public static final int TEXT_FIELD_COLUMNS = 24;
     public static final int SHORT_FIELD_COLUMNS = 6;
 
+    public static final int SECTION_INNER_PADDING = 19;
+
     private DialogStyle() {
     }
 
     /** Una caja de grupo, con el titulo sentado sobre el borde como en Guitar Pro 5. */
     public static JPanel section(String title) {
         JPanel section = new JPanel();
-        section.setBorder(sectionBorder(title));
+        section.setBorder(BorderFactory.createCompoundBorder(
+                sectionBorder(title),
+                BorderFactory.createEmptyBorder(
+                        SECTION_INNER_PADDING, SECTION_INNER_PADDING, SECTION_INNER_PADDING, SECTION_INNER_PADDING)));
         return section;
     }
 

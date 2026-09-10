@@ -3,11 +3,13 @@ package com.gstncaruso.tabpro.ui.dialogs.style;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Component;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.CompoundBorder;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -76,5 +78,21 @@ class FormPanelTest {
             }
         }
         throw new AssertionError("no se encontro una seccion titulada " + title);
+    }
+
+    @Test
+    void elPaddingInteriorDeUnaSeccionEsElMedidoEnGuitarPro5EscaladoATabpro() {
+        FormPanel panel = new FormPanel();
+
+        panel.addSection("Notation");
+
+        Insets padding = innerPaddingOf(sectionTitled(panel, "Notation"));
+        int expected = DialogStyle.SECTION_INNER_PADDING;
+        assertEquals(new Insets(expected, expected, expected, expected), padding);
+    }
+
+    private Insets innerPaddingOf(JPanel section) {
+        CompoundBorder border = (CompoundBorder) section.getBorder();
+        return border.getInsideBorder().getBorderInsets(section);
     }
 }
