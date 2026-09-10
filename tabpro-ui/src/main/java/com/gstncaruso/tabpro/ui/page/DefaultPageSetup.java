@@ -43,7 +43,7 @@ public final class DefaultPageSetup {
                     store.getInt(SCORE_PERCENT, fallback.scorePercent()),
                     bannerFrom(store.node(HEADER_NODE), fallback.header()),
                     bannerFrom(store.node(FOOTER_NODE), fallback.footer()));
-        } catch (IllegalArgumentException noSeEntiende) {
+        } catch (IllegalArgumentException unreadable) {
             return fallback;
         }
     }

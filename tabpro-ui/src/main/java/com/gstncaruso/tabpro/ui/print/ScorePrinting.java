@@ -72,13 +72,13 @@ public final class ScorePrinting {
             }
             return;
         }
-        boolean escrita;
+        boolean written;
         try {
-            escrita = ImageIO.write(image, format, path.toFile());
+            written = ImageIO.write(image, format, path.toFile());
         } catch (IOException e) {
             throw new UncheckedIOException("no se pudo escribir " + path, e);
         }
-        if (!escrita) {
+        if (!written) {
             throw new ImageExportException(
                     "No se pudo exportar la imagen en formato " + format.toUpperCase(java.util.Locale.ROOT)
                             + ": ningún códec de imagen instalado sabe codificarla en ese formato.");
