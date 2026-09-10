@@ -65,6 +65,7 @@ public final class Editor {
     private Cursor cursor;
     private Cursor selectionAnchor;
     private boolean selectingWholeMeasures;
+    private boolean extendingSelection;
     private final EditorHistory history = new EditorHistory();
     private final Clipboard clipboard;
     private final List<EditorListener> listeners = new ArrayList<>();
@@ -683,6 +684,7 @@ public final class Editor {
             Beat rest = Beat.rest(currentBeat().duration());
             int newBeat = voice.beatCount();
             changeVoiceAndCursor(it -> it.withBeatAppended(rest), cursor.onBeat(newBeat));
+            clearSelectionUnlessExtending();
             return;
         }
         Track track = currentTrack();
@@ -692,6 +694,7 @@ public final class Editor {
         }
         int newMeasure = track.measureCount();
         change(score.withMeasureInsertedInEveryTrackAt(newMeasure), cursor.at(newMeasure, 0));
+        clearSelectionUnlessExtending();
     }
 
     public void moveToPreviousMeasure() {
@@ -766,16 +769,37 @@ public final class Editor {
         notifyListeners();
     }
 
+    /**
+     * El Shift del manual sobre una flecha, un clic o un arrastre: a diferencia de cualquier
+     * otro movimiento del cursor, este no colapsa la seleccion vieja sino que la extiende desde
+     * su ancla (arrancando una si todavia no habia ninguna).
+     */
+    public void whileExtendingSelection(Runnable movement) {
+        if (selectionAnchor == null) {
+            startSelection(false);
+        }
+        runWhileExtending(movement);
+    }
+
     public void selectAll() {
         selectionAnchor = cursor.at(0, 0);
         selectingWholeMeasures = true;
-        moveCursor(cursor.at(currentTrack().measureCount() - 1, 0));
+        runWhileExtending(() -> moveCursor(cursor.at(currentTrack().measureCount() - 1, 0)));
     }
 
     public void selectMeasures(int fromMeasure, int toMeasure) {
         selectionAnchor = cursor.at(fromMeasure, 0);
         selectingWholeMeasures = true;
-        moveCursor(cursor.at(toMeasure, 0));
+        runWhileExtending(() -> moveCursor(cursor.at(toMeasure, 0)));
+    }
+
+    private void runWhileExtending(Runnable movement) {
+        extendingSelection = true;
+        try {
+            movement.run();
+        } finally {
+            extendingSelection = false;
+        }
     }
 
     // ---- cortar, copiar y pegar -------------------------------------------
@@ -1154,7 +1178,14 @@ public final class Editor {
 
     private void moveCursor(Cursor next) {
         cursor = next;
+        clearSelectionUnlessExtending();
         notifyListeners();
+    }
+
+    private void clearSelectionUnlessExtending() {
+        if (!extendingSelection) {
+            selectionAnchor = null;
+        }
     }
 
     private void notifyListeners() {

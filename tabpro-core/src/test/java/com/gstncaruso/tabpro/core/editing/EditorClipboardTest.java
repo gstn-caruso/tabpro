@@ -81,7 +81,7 @@ class EditorClipboardTest {
     void aSelectionInsideABarCopiesBeatsAndNotBars() {
         editor.setFret(5);
         editor.startSelection(false);
-        editor.moveRight();
+        editor.whileExtendingSelection(editor::moveRight);
         editor.setFret(7);
 
         editor.copy(false);
