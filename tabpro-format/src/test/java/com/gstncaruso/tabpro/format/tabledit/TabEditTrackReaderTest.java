@@ -7,10 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El encabezado de cada pista: su afinacion (en el mismo orden que Guitar Pro,
- * la cuerda 1 es la mas aguda), su nombre, su instrumento y si es percusion.
- */
 class TabEditTrackReaderTest {
 
     private static final int MAX_TRACK_SIZE = 64;
@@ -20,7 +16,6 @@ class TabEditTrackReaderTest {
     @Test
     void leeLaAfinacionEnMidiYElNombreDeLaPista() {
         TabEditFileWriter writer = new TabEditFileWriter().writeShort(MAX_TRACK_SIZE).writeShort(1);
-        // Afinacion estandar de guitarra, de la cuerda mas aguda a la mas grave: E4 B3 G3 D3 A2 E2.
         writeTrack(writer, 6, 25, 0, new int[] {64, 59, 55, 50, 45, 40}, "Guitarra");
 
         List<TabEditTrackHeader> tracks = reader.read(new TabEditByteReader(writer.bytes()));
@@ -69,15 +64,15 @@ class TabEditTrackReaderTest {
         writer.padTo(start + 8);
         writer.writeUnsignedByte(midiInstrument);
         writer.padTo(start + 11);
-        writer.writeUnsignedByte(0); // transposicion: no soportada
+        writer.writeUnsignedByte(0);
         writer.writeUnsignedByte(capo);
         writer.padTo(start + 14);
-        writer.writeUnsignedByte(12); // middleCoffset crudo: no soportado
-        writer.writeUnsignedByte(0); // clef/grandStaff/squareBracket: no soportado
+        writer.writeUnsignedByte(12);
+        writer.writeUnsignedByte(0);
         writer.writeUnsignedByte(0x30);
-        writer.writeUnsignedByte(8); // pan
-        writer.writeUnsignedByte(12); // volumen
-        writer.writeUnsignedByte(0); // doubleStrings/letRing/pedalSteel/etc: no soportado
+        writer.writeUnsignedByte(8);
+        writer.writeUnsignedByte(12);
+        writer.writeUnsignedByte(0);
         for (int semitonesBelow96 : tuningMidi) {
             writer.writeUnsignedByte(96 - semitonesBelow96);
         }
