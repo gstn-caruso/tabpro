@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.icons;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
@@ -34,5 +35,13 @@ class SvgIconTest {
         canvas.dispose();
 
         assertEquals(themeColor.getRGB(), image.getRGB(9, 9));
+    }
+
+    @Test
+    void reportaClaroSiElRecursoNoExiste() {
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> new SvgIcon("/icons/no-existe.svg", 18));
+
+        assertTrue(error.getMessage().contains("/icons/no-existe.svg"), error.getMessage());
     }
 }
