@@ -19,6 +19,7 @@ import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
+import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
@@ -368,6 +369,20 @@ class LabelsTest {
     @EnumSource(BendType.class)
     void everyBendTypeHasSpanishAndEnglishText(BendType value) {
         String key = "domain.BendType." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheSlideType() {
+        assertEquals("Slide legato", Labels.of(SlideType.LEGATO));
+    }
+
+    @ParameterizedTest
+    @EnumSource(SlideType.class)
+    void everySlideTypeHasSpanishAndEnglishText(SlideType value) {
+        String key = "domain.SlideType." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
