@@ -46,6 +46,19 @@ class EditorTracksTest {
         assertEquals(6, third.effectChannel());
     }
 
+    /** El casillero "Forzar canales 11 a 16" de la pista nueva reparte su par en la mitad alta del puerto. */
+    @Test
+    void addingATrackThatForcesChannels11to16AssignsItThere() {
+        Editor editor = new Editor(Score.blank());
+
+        editor.addTrack(Track.standardBass("Bajo")
+                .mappingSettings(settings -> settings.withForceChannels11to16(true)));
+
+        Channel channel = editor.score().track(1).channel();
+        assertEquals(11, channel.number());
+        assertEquals(12, channel.effectChannel());
+    }
+
     /** La percusion sigue yendo siempre al canal 10, nunca al proximo canal libre. */
     @Test
     void addingAPercussionTrackKeepsItOnTheTenthChannel() {

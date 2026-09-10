@@ -1102,7 +1102,8 @@ public final class Editor {
     private Track alignedToTheScore(Track track) {
         Track aligned = track.isPercussion()
                 ? track
-                : track.withChannel(track.channel().withNextFreeChannelPairAfter(channelsInUse()));
+                : track.withChannel(track.channel().withNextFreeChannelPairAfter(
+                        channelsInUse(), track.settings().forceChannels11to16()));
         while (aligned.measureCount() < score.measureCount()) {
             aligned = aligned.withMeasureInsertedAt(aligned.measureCount(), Measure.empty(TimeSignature.fourFour(), Duration.quarter()));
         }
