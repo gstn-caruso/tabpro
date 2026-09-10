@@ -111,4 +111,14 @@ class PreferencesPanelTest {
 
         assertEquals(16, panel.toPreferences().interfaceFontSize());
     }
+
+    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
+    @Test
+    void offersToTurnHighContrastOn() {
+        Preferences preferences = Preferences.defaults().withHighContrastEnabled(true);
+
+        PreferencesPanel panel = new PreferencesPanel(preferences);
+
+        assertTrue(panel.toPreferences().highContrastEnabled());
+    }
 }
