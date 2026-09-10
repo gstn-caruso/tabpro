@@ -22,7 +22,7 @@ class MarkersDialogTest {
     }
 
     @Test
-    void arrancaConElFormularioCargadoConElMarcadorDelCompasPedido() {
+    void startsWithTheFormLoadedWithTheRequestedBarsMarker() {
         Editor editor = new Editor(Score.blank());
         editor.setMarker(Marker.named("Intro"));
 
@@ -32,7 +32,7 @@ class MarkersDialogTest {
     }
 
     @Test
-    void guardarCambiosActualizaElMarcadorDelCompasPedidoAunqueElCursorEsteEnOtro() {
+    void savingChangesUpdatesTheRequestedBarsMarkerEvenWhenTheCursorIsOnAnother() {
         Editor editor = new Editor(scoreWithMeasures(3));
         editor.moveTo(0, 0, 1);
         editor.setMarker(Marker.named("Intro"));
