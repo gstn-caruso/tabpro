@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.core.notation.Clef;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.theme.Contrast;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -155,7 +156,7 @@ final class BarStructurePainter {
         int y = staffTop - 12;
         switch (symbol) {
             case CODA, DOUBLE_CODA -> paintCodaGlyph(g, centerX, y - 4, symbol == DirectionSymbol.DOUBLE_CODA);
-            default -> paintCenteredLabel(g, symbol.label(), centerX, y);
+            default -> paintCenteredLabel(g, Labels.of(symbol), centerX, y);
         }
     }
 

@@ -15,6 +15,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
@@ -428,6 +429,20 @@ class LabelsTest {
     @EnumSource(Wah.class)
     void everyWahHasSpanishAndEnglishText(Wah value) {
         String key = "domain.Wah." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheDirectionSymbol() {
+        assertEquals("Doble coda", Labels.of(DirectionSymbol.DOUBLE_CODA));
+    }
+
+    @ParameterizedTest
+    @EnumSource(DirectionSymbol.class)
+    void everyDirectionSymbolHasSpanishAndEnglishText(DirectionSymbol value) {
+        String key = "domain.DirectionSymbol." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
