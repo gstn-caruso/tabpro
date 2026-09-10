@@ -449,7 +449,8 @@ class MidiScoreImporterTest {
         Sequence sequence = new Sequence(Sequence.PPQ, (int) Duration.TICKS_PER_QUARTER);
         sequence.createTrack();
         javax.sound.midi.Track track = sequence.createTrack();
-        track.add(new MidiEvent(new MetaMessage(0x03, "Guitar".getBytes(StandardCharsets.UTF_8), 8), 0));
+        byte[] trackName = "Guitar".getBytes(StandardCharsets.UTF_8);
+        track.add(new MidiEvent(new MetaMessage(0x03, trackName, trackName.length), 0));
         track.add(new MidiEvent(new ShortMessage(ShortMessage.PROGRAM_CHANGE, 0, 25, 0), 0));
         long lastTick = 0;
         for (long[] note : notes) {
