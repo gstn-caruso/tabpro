@@ -15,7 +15,7 @@ class GuitarProMeasureAttributesWriterTest {
     private static final int FLAG_KEY_SIGNATURE = 0x40;
 
     @Test
-    void elPrimerCompasEscribeSuMedidaAunqueSeaCuatroCuartos() {
+    void theFirstBarWritesItsTimeSignatureEvenIfItIsFourFour() {
         byte[] bytes = writeBars(TimeSignature.fourFour());
 
         assertEquals(FLAG_NUMERATOR | FLAG_DENOMINATOR | FLAG_KEY_SIGNATURE, bytes[0] & 0xFF);
@@ -24,7 +24,7 @@ class GuitarProMeasureAttributesWriterTest {
     }
 
     @Test
-    void elPrimerCompasEscribeSuArmaduraAunqueSeaDoMayor() {
+    void theFirstBarWritesItsKeySignatureEvenIfItIsCMajor() {
         byte[] bytes = writeBars(TimeSignature.fourFour());
 
         assertEquals(0, bytes[3]);
@@ -32,14 +32,14 @@ class GuitarProMeasureAttributesWriterTest {
     }
 
     @Test
-    void elSegundoCompasConLaMismaMedidaNoEscribeNada() {
+    void theSecondBarWithTheSameTimeSignatureWritesNothing() {
         byte[] bytes = writeBars(TimeSignature.fourFour(), TimeSignature.fourFour());
 
         assertEquals(0x00, bytes[5] & 0xFF);
     }
 
     @Test
-    void elSegundoCompasConOtraMedidaSiLaEscribe() {
+    void theSecondBarWithADifferentTimeSignatureDoesWriteIt() {
         byte[] bytes = writeBars(TimeSignature.fourFour(), new TimeSignature(3, 4));
 
         assertEquals(FLAG_NUMERATOR, bytes[5] & 0xFF);
