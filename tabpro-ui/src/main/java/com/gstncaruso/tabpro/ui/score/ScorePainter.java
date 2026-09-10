@@ -153,6 +153,9 @@ public final class ScorePainter {
             BarStructurePainter.paintPerTrack(g, layout, track, clef, trackIndex, measureIndex);
             if (trackIndex == layout.firstShownTrack()) {
                 BarStructurePainter.paintScoreWide(g, layout, track, trackIndex, measureIndex);
+                if (measureIndex == 0) {
+                    ParameterChangePainter.paintInitialTempo(g, layout, track, trackIndex, measureIndex, score.tempo());
+                }
             }
         }
         LyricsPainter.paintTrack(g, layout, score, trackIndex);

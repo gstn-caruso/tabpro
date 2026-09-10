@@ -30,6 +30,7 @@ import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -226,6 +227,19 @@ class ScorePainterTest {
         assertTrue(
                 painted.hasInkNear(beat.x, nearSystemTop, 0),
                 "la linea tiene que cruzar tambien la pista de arriba, no solo la que suena");
+    }
+
+    @Test
+    void writesTheScoresTempoAboveTheFirstMeasure() {
+        Painted painted = paint(Score.blank(), new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        Rectangle beat = painted.layout().beatBounds(0, 0, 0);
+        int staffTop = painted.layout().staffTop(0, 0);
+        Rectangle above = new Rectangle(
+                beat.x, staffTop - ScoreLayout.STAFF_HEADROOM, beat.width, ScoreLayout.STAFF_HEADROOM);
+
+        assertTrue(painted.hasColorIn(above, ScoreColors.TEMPO),
+                "el tempo global de la partitura tiene que verse arriba del primer compas");
     }
 
     @Test
@@ -701,6 +715,17 @@ class ScorePainterTest {
                 }
             }
             return columns;
+        }
+
+        boolean hasColorIn(Rectangle area, Color color) {
+            for (int x = area.x; x < area.x + area.width; x++) {
+                for (int y = area.y; y < area.y + area.height; y++) {
+                    if (isInside(x, y) && image.getRGB(x, y) == color.getRGB()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         boolean hasInkNear(int x, int y, int radius) {
