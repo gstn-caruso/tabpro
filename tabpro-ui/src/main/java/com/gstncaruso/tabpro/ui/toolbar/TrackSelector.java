@@ -26,12 +26,19 @@ public final class TrackSelector extends JPanel {
         for (int trackIndex = 0; trackIndex < editor.score().trackCount(); trackIndex++) {
             int selectedTrackIndex = trackIndex;
             JToggleButton button = new JToggleButton();
-            button.setSelected(trackIndex == editor.cursor().track());
             button.addActionListener(event -> editor.selectTrack(selectedTrackIndex));
             trackButtons.add(button);
         }
-        previousButton.setEnabled(editor.cursor().track() > 0);
-        nextButton.setEnabled(editor.cursor().track() < editor.score().trackCount() - 1);
+        refreshSelection();
+    }
+
+    private void refreshSelection() {
+        int active = editor.cursor().track();
+        for (int trackIndex = 0; trackIndex < trackButtons.size(); trackIndex++) {
+            trackButtons.get(trackIndex).setSelected(trackIndex == active);
+        }
+        previousButton.setEnabled(active > 0);
+        nextButton.setEnabled(active < editor.score().trackCount() - 1);
     }
 
     List<JToggleButton> trackButtons() {
