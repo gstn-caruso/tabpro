@@ -3,6 +3,8 @@ package com.gstncaruso.tabpro.ui.score;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
@@ -34,12 +36,55 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 class PageScorePainterTest {
 
     private static final int VIEWPORT_WIDTH = 900;
     private static final double ONE_PIXEL_OF_REDONDEO = 1.0;
+
+    /**
+     * {@code canvasSize}, {@code paint}, {@code pageCount}, {@code paginationOf} y
+     * {@code paintPage} llaman cada uno a {@code layoutFor} por su cuenta: en un solo ciclo de
+     * pintado (getPreferredSize + paintComponent) se calcula el mismo layout mas de una vez sin
+     * que nada haya cambiado. Dos llamadas seguidas con la misma partitura y el mismo viewport
+     * tienen que devolver el mismo objeto, no dos layouts iguales pero recalculados.
+     */
+    @Test
+    void layoutIsMemoizedForTheSameScoreAndViewport() {
+        Score score = scoreWithMeasures(10);
+        ScoreViewport viewport = ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
+
+        ScoreLayout first = PageScorePainter.layoutFor(score, viewport);
+        ScoreLayout second = PageScorePainter.layoutFor(score, viewport);
+
+        assertSame(first, second, "el mismo score y viewport tienen que reusar el layout ya calculado");
+    }
+
+    @Test
+    void layoutIsRecalculatedWhenTheScoreChanges() {
+        ScoreViewport viewport = ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
+
+        ScoreLayout first = PageScorePainter.layoutFor(Score.blank(), viewport);
+        ScoreLayout second = PageScorePainter.layoutFor(Score.blank(), viewport);
+
+        assertNotSame(first, second,
+                "dos scores distintos, aunque iguales en contenido, no pueden compartir el cache");
+    }
+
+    @Test
+    void layoutIsRecalculatedWhenTheViewportChanges() {
+        Score score = scoreWithMeasures(10);
+        ScoreViewport atWholeZoom = ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
+        ScoreViewport atHalfZoom = ScoreViewport.of(ViewMode.PAGE, new Zoom(50), VIEWPORT_WIDTH);
+
+        ScoreLayout first = PageScorePainter.layoutFor(score, atWholeZoom);
+        ScoreLayout second = PageScorePainter.layoutFor(score, atHalfZoom);
+
+        assertNotSame(first, second, "cambiar el zoom invalida el layout cacheado");
+    }
 
     @Test
     void pageModeIsAsWideAsTheChosenPaper() {
@@ -160,6 +205,82 @@ class PageScorePainterTest {
                         PageBanner.header(), PageBanner.footer()));
 
         assertDoesNotThrow(() -> paintOn(score, viewport));
+    }
+
+    /**
+     * Cambiar a Modo Pagina con una partitura larga hoy pinta las 300 hojas aunque la ventana
+     * solo pueda mostrar una o dos: el clip que Swing ya calcula para lo que esta a la vista se
+     * ignora. Con un clip que cubre solo la hoja del medio, las hojas de mas alla no tienen que
+     * tocarse en absoluto.
+     */
+    @Test
+    void pagesOutsideTheClipAreNotPainted() {
+        Score score = scoreWithMeasures(200);
+        ScoreViewport viewport = pageViewport(PageSetup.defaults());
+        int total = PageScorePainter.pageCount(score, viewport);
+        assertTrue(total >= 3, "hace falta al menos tres hojas para este test");
+
+        PageMetrics sheet = PageMetrics.of(PageSetup.defaults());
+        int stride = sheet.pageHeight() + PageMetrics.PAGE_GAP;
+        Rectangle clipOnTheMiddlePage = new Rectangle(0, stride, sheet.pageWidth(), sheet.pageHeight());
+        LienzoDePrueba lienzo = new LienzoDePrueba(clipOnTheMiddlePage);
+
+        PageScorePainter.paint(
+                lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
+
+        Set<String> footersPainted = footersPaintedIn(lienzo);
+
+        assertFalse(footersPainted.contains(footerOf(1, total)),
+                "la primera hoja, fuera del clip, no tiene que pintarse");
+        assertFalse(footersPainted.contains(footerOf(3, total)),
+                "la tercera hoja, fuera del clip, no tiene que pintarse");
+        assertTrue(footersPainted.contains(footerOf(2, total)),
+                "la hoja del medio, adentro del clip, si se tiene que pintar");
+    }
+
+    private static String footerOf(int pageNumber, int totalPages) {
+        return "Página " + pageNumber + " de " + totalPages;
+    }
+
+    /**
+     * {@link PageScorePainter#paintPage} arma una sola hoja y la dibuja con
+     * {@link PaperGraphics}, que recorta el lienzo al tamano exacto de esa hoja: gracias a eso el
+     * clip real que llega a {@code ScorePainter.paintTrack} ya viene acotado, y renderizar la hoja
+     * del medio no tiene que tocar los compases que solo viven en la primera ni en la tercera.
+     */
+    @Test
+    void renderingOnePageDoesNotPaintMeasuresOfTheOthers() {
+        Score score = scoreWithMeasures(200);
+        ScoreViewport viewport = pageViewport(PageSetup.defaults());
+        Pagination pagination = PageScorePainter.paginationOf(score, viewport);
+        assertTrue(pagination.pageCount() >= 3, "hace falta al menos tres hojas para este test");
+
+        int measureOnlyOnTheFirstPage = pagination.firstMeasureOfPage().get(0) + 1;
+        int measureOnlyOnTheThirdPage = pagination.firstMeasureOfPage().get(2) + 1;
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        PageScorePainter.paintPage(
+                lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport, 1);
+
+        Set<Integer> painted = measureNumbersPaintedIn(lienzo);
+        assertFalse(painted.contains(measureOnlyOnTheFirstPage),
+                "la hoja del medio no tiene que tocar un compas que solo esta en la primera");
+        assertFalse(painted.contains(measureOnlyOnTheThirdPage),
+                "la hoja del medio no tiene que tocar un compas que solo esta en la tercera");
+        assertFalse(painted.isEmpty(), "la hoja del medio tiene que pintar sus propios compases");
+    }
+
+    private static Set<Integer> measureNumbersPaintedIn(LienzoDePrueba lienzo) {
+        return lienzo.textosDibujados().stream()
+                .filter(texto -> ScoreFonts.MEASURE_NUMBER_FONT.equals(texto.fuente()))
+                .map(texto -> Integer.parseInt(texto.texto()))
+                .collect(Collectors.toSet());
+    }
+
+    private static Set<String> footersPaintedIn(LienzoDePrueba lienzo) {
+        return lienzo.textosDibujados().stream()
+                .map(LienzoDePrueba.TextoDibujado::texto)
+                .collect(Collectors.toSet());
     }
 
     @Test

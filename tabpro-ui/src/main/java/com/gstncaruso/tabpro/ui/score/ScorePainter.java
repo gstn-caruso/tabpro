@@ -107,8 +107,15 @@ public final class ScorePainter {
         boolean standardNotation = layout.showsStandardNotation(trackIndex);
         boolean tablature = layout.showsTablature(trackIndex);
         boolean selected = cursor.track() == trackIndex;
+        Rectangle clip = g.getClipBounds();
+        int firstVisibleSystem = clip == null ? 0 : layout.systemAt(clip.y);
+        int lastVisibleSystem = clip == null ? layout.systemCount() - 1 : layout.systemAt(clip.y + clip.height);
 
         for (int measureIndex = 0; measureIndex < track.measureCount(); measureIndex++) {
+            int system = layout.systemOf(measureIndex);
+            if (system < firstVisibleSystem || system > lastVisibleSystem) {
+                continue;
+            }
             boolean beingEdited = selected && cursor.measure() == measureIndex;
             paintIncompleteMeasureBackground(g, layout, track, trackIndex, measureIndex, beingEdited);
 

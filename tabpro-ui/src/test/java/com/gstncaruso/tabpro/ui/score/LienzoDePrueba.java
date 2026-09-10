@@ -57,6 +57,17 @@ public final class LienzoDePrueba extends Graphics2D {
         this(new ArrayList<>(), new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics());
     }
 
+    /** Un lienzo con el clip ya puesto, como lo ve el pintor cuando solo hay que dibujar lo visible. */
+    public LienzoDePrueba(Rectangle clip) {
+        this(new ArrayList<>(), clippedCanvas(clip));
+    }
+
+    private static Graphics2D clippedCanvas(Rectangle clip) {
+        Graphics2D canvas = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
+        canvas.setClip(clip);
+        return canvas;
+    }
+
     private LienzoDePrueba(List<OrdenDeDibujo> ordenes, Graphics2D delegado) {
         this.ordenes = ordenes;
         this.delegado = delegado;
@@ -384,6 +395,7 @@ public final class LienzoDePrueba extends Graphics2D {
 
     @Override
     public void clip(Shape shape) {
+        delegado.clip(shape);
     }
 
     @Override
@@ -433,10 +445,12 @@ public final class LienzoDePrueba extends Graphics2D {
 
     @Override
     public void clipRect(int x, int y, int width, int height) {
+        delegado.clipRect(x, y, width, height);
     }
 
     @Override
     public void setClip(int x, int y, int width, int height) {
+        delegado.setClip(x, y, width, height);
     }
 
     @Override
@@ -446,6 +460,7 @@ public final class LienzoDePrueba extends Graphics2D {
 
     @Override
     public void setClip(Shape shape) {
+        delegado.setClip(shape);
     }
 
     @Override
