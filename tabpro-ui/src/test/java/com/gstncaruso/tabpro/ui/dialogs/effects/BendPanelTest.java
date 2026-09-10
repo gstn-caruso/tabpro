@@ -50,4 +50,11 @@ class BendPanelTest {
 
         assertEquals(8, panel.selectedHeight());
     }
+
+    @Test
+    void elTipoDisponibleSeRestringeALosQueSeLePasan() {
+        BendPanel panel = new BendPanel(Bend.of(BendType.DIP, 4), BendType.tremoloBarTypes());
+
+        assertEquals(BendType.tremoloBarTypes(), panel.availableTypes());
+    }
 }
