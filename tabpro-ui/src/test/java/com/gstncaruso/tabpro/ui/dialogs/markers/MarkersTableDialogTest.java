@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.bars.Marker;
 import java.awt.Component;
 import java.awt.Container;
 import javax.swing.JButton;
@@ -28,6 +29,21 @@ class MarkersTableDialogTest {
         assertFalse(buttonLabeled(content, "Editar").isEnabled());
         assertFalse(buttonLabeled(content, "Borrar").isEnabled());
         assertFalse(buttonLabeled(content, "Ir a").isEnabled());
+    }
+
+    @Test
+    void selectingTheOnlyRowEnablesEditDeleteAndGoTo() {
+        Editor editor = new Editor(Score.blank());
+        editor.setMarker(Marker.named("Intro"));
+
+        JPanel content = MarkersTableDialog.buildContent(editor, () -> {
+        });
+        JTable table = tableOf(content);
+        table.setRowSelectionInterval(0, 0);
+
+        assertTrue(buttonLabeled(content, "Editar").isEnabled());
+        assertTrue(buttonLabeled(content, "Borrar").isEnabled());
+        assertTrue(buttonLabeled(content, "Ir a").isEnabled());
     }
 
     private JTable tableOf(Container root) {
