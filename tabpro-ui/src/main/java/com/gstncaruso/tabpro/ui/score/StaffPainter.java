@@ -464,6 +464,7 @@ final class StaffPainter {
             }
             case 1 -> paintFlagGlyph(g, stem, MusicFont.flag8thUp(), MusicFont.flag8thDown(), ink);
             case 2 -> paintFlagGlyph(g, stem, MusicFont.flag16thUp(), MusicFont.flag16thDown(), ink);
+            case 3 -> paintFlagGlyph(g, stem, MusicFont.flag32ndUp(), MusicFont.flag32ndDown(), ink);
             default -> paintGeometricFlags(g, stem, flags, ink);
         }
     }
