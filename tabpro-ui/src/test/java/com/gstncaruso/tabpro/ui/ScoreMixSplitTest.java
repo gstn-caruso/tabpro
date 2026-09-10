@@ -10,10 +10,6 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.junit.jupiter.api.Test;
 
-/**
- * La partitura y la mesa de mezcla comparten un JSplitPane. Ver > Intercambiar vistas los
- * cambia de lugar sin que la mesa deje de ser una franja chica.
- */
 class ScoreMixSplitTest {
 
     private final JComponent score = new JPanel();

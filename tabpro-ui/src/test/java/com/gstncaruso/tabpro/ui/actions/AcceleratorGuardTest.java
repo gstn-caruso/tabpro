@@ -17,23 +17,6 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
-/**
- * JScrollPane y JSplitPane traen atajos propios de fabrica (scroll, navegar el split) que Swing
- * revisa ANTES de llegar al atajo de un menu: recorre los antepasados del componente enfocado
- * (WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) antes que la ventana entera
- * (WHEN_IN_FOCUSED_WINDOW, que es donde vive el ACCELERATOR_KEY de un JMenuItem). La partitura
- * vive adentro de un JScrollPane que a su vez vive adentro de un JSplitPane (con la mesa de
- * mezcla), asi que mientras esta enfocada -que es la situacion normal al editar- esos atajos de
- * fabrica se comen algunas teclas del catalogo antes de que el menu se entere:
- *
- * <ul>
- *   <li>[[Ctrl] Home] -&gt; nav.firstBar lo tapa el "scrollHome" del JScrollPane.
- *   <li>[[Ctrl] End] -&gt; nav.lastBar lo tapa el "scrollEnd" del JScrollPane.
- *   <li>[F6] -&gt; track.properties lo tapa el "toggleFocus" del JSplitPane.
- *   <li>[F8] -&gt; file.pageSetup lo tapa el "startResize" del JSplitPane.
- *   <li>[Ctrl] Tab -&gt; marker.next lo tapa el "focusOutForward" del JSplitPane.
- * </ul>
- */
 class AcceleratorGuardTest {
 
     private final Commands commands = new Commands(
@@ -85,12 +68,6 @@ class AcceleratorGuardTest {
         assertNotEquals("focusOutForward", inputMap.get(ctrlTab));
     }
 
-    /**
-     * No alcanza con que el JScrollPane deje de decir "scrollHome": si la tecla bloqueada
-     * resuelve a una Action real (aunque no haga nada), Swing la da por atendida y el atajo real
-     * del menu nunca llega a mirarse. Lo que importa es que processKeyBinding, el metodo que usa
-     * Swing para decidir si una tecla ya quedo resuelta en ese antepasado, devuelva false.
-     */
     @Test
     void laTeclaBloqueadaYaNoQuedaAtendidaPorElAncestro() {
         ExposedJScrollPane scrollPane = new ExposedJScrollPane();
@@ -112,7 +89,6 @@ class AcceleratorGuardTest {
         }
     }
 
-    /** Una tecla que ningun comando usa (Page Up, por ejemplo) queda intacta. */
     @Test
     void noTocaLasTeclasQueNingunComandoUsa() {
         JScrollPane scrollPane = new JScrollPane();
@@ -124,7 +100,6 @@ class AcceleratorGuardTest {
         assertEquals("scrollUp", inputMap.get(pageUp));
     }
 
-    /** No toca el InputMap por defecto que Swing comparte entre instancias: solo esta, puntual. */
     @Test
     void noTocaUnJScrollPaneQueNoSeLePaso() {
         AcceleratorGuard.letCommandsWin(commands, new JScrollPane());
@@ -134,12 +109,6 @@ class AcceleratorGuardTest {
                 .get(commands.get("nav.firstBar").accelerator()));
     }
 
-    /**
-     * F10 sin modificador es, de fabrica en Swing (BasicMenuBarUI, heredado por cualquier L&amp;F
-     * -Metal o FlatLaf-), la tecla que activa la barra de menus para navegarla con las flechas:
-     * vive en el WHEN_IN_FOCUSED_WINDOW propio del JMenuBar, no en el WHEN_ANCESTOR_OF_FOCUSED
-     * _COMPONENT de un ancestro de la partitura, asi que necesita su propio barrido.
-     */
     @Test
     void neutralizaF10EnLaBarraDeMenuParaQueGaneElCambioDeParametros() {
         ExposedJMenuBar menuBar = new ExposedJMenuBar();

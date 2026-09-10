@@ -5,7 +5,6 @@ import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import java.util.Locale;
 
-/** Cuanto dura realmente un compas contra lo que pide su medida, en beats con tres decimales, como en Guitar Pro 5. */
 public final class MeasureBeatsRatioText {
 
     private MeasureBeatsRatioText() {

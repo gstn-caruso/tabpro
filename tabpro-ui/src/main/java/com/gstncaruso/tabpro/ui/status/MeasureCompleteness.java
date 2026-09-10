@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.ui.status;
 
 import com.gstncaruso.tabpro.core.model.Measure;
 
-/** Si un compas tiene exactamente las notas que pide su medida, o le faltan o le sobran. */
 public enum MeasureCompleteness {
     COMPLETE("completo"),
     TOO_SHORT("corto"),

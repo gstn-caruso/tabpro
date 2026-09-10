@@ -6,10 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 
-/**
- * La fuente musical Bravura (SMuFL), cargada una sola vez y compartida por la partitura y los
- * iconos musicales de las barras de herramientas.
- */
 public final class BravuraFont {
 
     private static final String RESOURCE = "/fonts/Bravura.otf";
@@ -18,7 +14,6 @@ public final class BravuraFont {
     private BravuraFont() {
     }
 
-    /** La fuente Bravura sin tamano asignado, para que cada usuario derive el tamano que necesite. */
     public static Font base() {
         return BASE;
     }

@@ -6,7 +6,6 @@ import java.awt.Container;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Assertion compartida por los tests de "raíz de la UI sin violaciones de accesibilidad". */
 public final class AccessibilityAssertions {
 
     private AccessibilityAssertions() {

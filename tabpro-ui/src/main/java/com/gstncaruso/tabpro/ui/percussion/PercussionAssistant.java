@@ -18,11 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-/**
- * El asistente de percusion del manual: en la zona (1) los sonidos GM por numero,
- * en la zona (2) el mismo sonido elegido por su posicion en el pentagrama. Solo
- * tiene sentido con una pista de percusion activa.
- */
 public final class PercussionAssistant extends JPanel {
 
     private final Editor editor;
@@ -65,7 +60,6 @@ public final class PercussionAssistant extends JPanel {
         add(warningLabel(), BorderLayout.SOUTH);
     }
 
-    /** Solo una pista de percusion tiene sentido para este asistente. */
     public static boolean appliesTo(Track track) {
         return track.isPercussion();
     }
@@ -74,7 +68,6 @@ public final class PercussionAssistant extends JPanel {
         return appliesTo(editor.currentTrack());
     }
 
-    /** Accesos para los tests: no hacen falta para usar el asistente. */
     PercussionSoundPalette soundPalette() {
         return palette;
     }

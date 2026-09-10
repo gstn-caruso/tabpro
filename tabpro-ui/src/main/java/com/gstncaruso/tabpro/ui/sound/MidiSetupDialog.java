@@ -22,11 +22,6 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-/**
- * La ventana de Options > MIDI Setup: el banco SoundFont (global, el reemplazo libre del RSE),
- * los cuatro puertos de salida con su patch de instrumentos y su Limit Pitch Variation, la
- * entrada de notas con su sensibilidad, y como se reparten las cuerdas al capturar.
- */
 public final class MidiSetupDialog {
 
     private static final int PORT_COUNT = Ports.PORT_COUNT;
@@ -36,14 +31,9 @@ public final class MidiSetupDialog {
     private MidiSetupDialog() {
     }
 
-    /** Un puerto de salida: su dispositivo, el patch que muestra sus nombres y si limita la variacion de altura. */
     public record PortSetup(String device, String patchPath, boolean limitPitchVariation) {
     }
 
-    /**
-     * Lo que la ventana devuelve: el banco de sonido (uno solo, global: no es propiedad de
-     * ningun puerto), los cuatro puertos, la entrada y como asignar las cuerdas.
-     */
     public record Setup(
             String soundFontFile,
             boolean soundFontActive,
@@ -73,7 +63,6 @@ public final class MidiSetupDialog {
                 (Integer) fields.sensitivity().getValue(), (StringAssignment) fields.assignment().getSelectedItem()));
     }
 
-    /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
     static Fields buildPanel(Ports.Devices devices, Setup current) {
         FormPanel panel = new FormPanel();
 
@@ -113,12 +102,6 @@ public final class MidiSetupDialog {
             JComboBox<StringAssignment> assignment) {
     }
 
-    /**
-     * El banco SoundFont: es global, no de un puerto -por eso su propia seccion, arriba de los
-     * cuatro-. Elegir un archivo nuevo (o quitarlo) se aplica recien al Aceptar, con la misma
-     * plantilla de label + "Cargar…"/"Quitar" que el patch de instrumentos. Prenderlo y apagarlo
-     * en caliente, sin pasar por esta ventana, es cosa del F2 (Ports.Playback.toggleSoundFont).
-     */
     private static final class SoundFontRow {
 
         private final JLabel fileLabel = new JLabel();
@@ -175,7 +158,6 @@ public final class MidiSetupDialog {
         }
     }
 
-    /** Los controles de un puerto: dispositivo con su prueba, patch de instrumentos y Limit Pitch Variation. */
     private static final class PortRow {
 
         private final int port;

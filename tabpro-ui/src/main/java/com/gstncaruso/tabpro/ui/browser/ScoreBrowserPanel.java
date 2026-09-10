@@ -21,10 +21,6 @@ import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * El contenido del explorador de partituras: buscar en una carpeta, escuchar y abrir. Se puede
- * instanciar sin ventana para probar que ningun control queda sin nombre accesible.
- */
 public final class ScoreBrowserPanel extends JPanel {
 
     private static final int DEFAULT_BARS_BEFORE_JUMPING = 8;
@@ -135,7 +131,6 @@ public final class ScoreBrowserPanel extends JPanel {
         selected().ifPresent(path -> summary.setText(path.toString()));
     }
 
-    /** El botón hace de interruptor: escucha encadenada si estaba parado, para si ya sonaba. */
     private void toggleListening() {
         if (listening) {
             stopListening();
@@ -158,7 +153,6 @@ public final class ScoreBrowserPanel extends JPanel {
         return Optional.ofNullable(results.getSelectedValue());
     }
 
-    /** Lo que la escucha encadenada le avisa al explorador para que la lista lo refleje. */
     private final class ChainListener implements BrowserPlayback.Listener {
 
         @Override
@@ -179,7 +173,6 @@ public final class ScoreBrowserPanel extends JPanel {
         }
     }
 
-    /** En la lista se lee el nombre del archivo; la ruta completa va abajo. */
     private static final class PathRenderer extends javax.swing.DefaultListCellRenderer {
 
         @Override

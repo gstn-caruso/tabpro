@@ -23,11 +23,6 @@ import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Todos los comandos del manual, cada uno con su nombre, su atajo y su icono.
- * Los menus y las barras de herramientas se arman con esta misma lista, asi que
- * un atajo se escribe una sola vez.
- */
 public final class Commands {
 
     private final Editor editor;
@@ -73,7 +68,6 @@ public final class Commands {
         defineHelpCommands();
     }
 
-    /** El comando registrado con ese nombre interno. */
     public Command get(String name) {
         Command command = commands.get(name);
         if (command == null) {
@@ -85,8 +79,6 @@ public final class Commands {
     public Map<String, Command> all() {
         return Map.copyOf(commands);
     }
-
-    // ---- archivo ----------------------------------------------------------
 
     private void defineFileCommands() {
         define("file.new", "Nuevo", document::newScore).withAccelerator("ctrl N").withIcon(Icons.newScore());
@@ -115,8 +107,6 @@ public final class Commands {
         define("file.quit", "Salir", document::quit);
     }
 
-    // ---- edicion ----------------------------------------------------------
-
     private void defineEditCommands() {
         define("edit.undo", "Deshacer", editor::undo).withAccelerator("ctrl Z").withIcon(Icons.undo());
         define("edit.redo", "Rehacer", editor::redo).withAccelerator("ctrl shift Z").withIcon(Icons.redo());
@@ -133,8 +123,6 @@ public final class Commands {
         define("edit.emptyBarEveryTrack", "Vaciar el compás en todas las pistas",
                 () -> editor.emptyCurrentMeasure(true));
     }
-
-    // ---- compas -----------------------------------------------------------
 
     private void defineBarCommands() {
         define("bar.insert", "Insertar un compás", editor::insertMeasure)
@@ -167,8 +155,6 @@ public final class Commands {
         define("bar.octaveNone", "Sin marca de octava", () -> editor.setOctaveMark(OctaveMark.NONE));
     }
 
-    // ---- pistas -----------------------------------------------------------
-
     private void defineTrackCommands() {
         define("track.add", "Agregar una pista…", dialogs::addTrack)
                 .withAccelerator("ctrl shift INSERT").withIcon(Icons.addTrack());
@@ -190,10 +176,7 @@ public final class Commands {
                 .withAccelerator("ctrl DOWN").withIcon(Icons.chevronRight());
     }
 
-    // ---- notas ------------------------------------------------------------
-
     private void defineNoteCommands() {
-        // El manual: "+" divide la duracion por dos y "-" la multiplica, asi que "+" acorta.
         define("note.shorter", "Acortar la figura", editor::shortenDuration).withAccelerator("PLUS");
         define("note.longer", "Alargar la figura", editor::lengthenDuration).withAccelerator("MINUS");
         define("note.dot", "Puntillo", editor::toggleDot).withAccelerator("PERIOD").withIcon(Icons.dottedNote());
@@ -246,10 +229,6 @@ public final class Commands {
         };
     }
 
-    /**
-     * El tresillo (3) ya tiene su propio comando con atajo; el resto de los grupos que ofrece
-     * Guitar Pro ({@link Tuplet#AVAILABLE}) se agregan al menu Nota sin atajo de teclado.
-     */
     private void defineTupletCommands() {
         for (int enters : Tuplet.AVAILABLE) {
             if (enters == 1 || enters == 3) {
@@ -269,11 +248,6 @@ public final class Commands {
         };
     }
 
-    /**
-     * El manual, linea 923: el agrupamiento por barra de union y la direccion de la plica son
-     * automaticos, "pero es posible cambiar[los] a mano... usando el menu Nota". Misma forma que
-     * "Bar > Break Line" (forzar/impedir/reiniciar): fuerzan, impiden o vuelven al automatismo.
-     */
     private void defineBeamAndStemCommands() {
         define("note.forceBeamBreak", "Forzar corte de barra", () -> editor.setBeamBreak(BeamBreak.FORCED))
                 .withIcon(Icons.forceBeamBreak());
@@ -288,8 +262,6 @@ public final class Commands {
         define("note.stemAutomatic", "Plica automática", () -> editor.setStemOverride(StemOverride.AUTOMATIC))
                 .withIcon(Icons.stemAutomatic());
     }
-
-    // ---- efectos ----------------------------------------------------------
 
     private void defineEffectCommands() {
         define("effect.hammer", "Ligado (hammer on / pull off)", () -> editor.toggleOrnament(Ornament.HAMMER_ON_PULL_OFF))
@@ -351,8 +323,6 @@ public final class Commands {
         define("effect.text", "Texto…", dialogs::text).withAccelerator("T").withIcon(Icons.text());
     }
 
-    // ---- marcadores -------------------------------------------------------
-
     private void defineMarkerCommands() {
         define("marker.insert", "Insertar un marcador…", dialogs::insertMarker)
                 .withAccelerator("shift INSERT").withIcon(Icons.marker());
@@ -366,12 +336,9 @@ public final class Commands {
         refreshEditMarkerCommand();
     }
 
-    /** Editar el marcador solo tiene sentido cuando el cursor esta sobre uno vigente. */
     private void refreshEditMarkerCommand() {
         get("marker.edit").setEnabled(editor.score().measureOfMarkerInEffectAt(editor.cursor().measure()).isPresent());
     }
-
-    // ---- herramientas -----------------------------------------------------
 
     private void defineToolCommands() {
         define("tool.letRingOptions", "Opciones de let ring…", dialogs::letRingOptions);
@@ -386,8 +353,6 @@ public final class Commands {
         define("tool.scales", "Escalas…", dialogs::scales).withIcon(Icons.scales());
         define("tool.tuner", "Afinador…", dialogs::tuner).withIcon(Icons.tuner());
     }
-
-    // ---- sonido -----------------------------------------------------------
 
     private void defineSoundCommands() {
         define("sound.play", "Reproducir / Detener", playback::togglePlay)
@@ -420,17 +385,10 @@ public final class Commands {
                 .withAccelerator("ctrl END").withIcon(Icons.lastBar());
     }
 
-    /**
-     * F2 y el item del menu Sonido comparten este mismo comando con el conmutable de la barra:
-     * los tres tienen que mostrar el mismo estado, asi que el propio comando se sincroniza
-     * despues de cada disparo, venga de donde venga.
-     */
     private void toggleSoundFontAndRefreshItsCheckbox() {
         playback.toggleSoundFont();
         get("sound.soundFont").setChecked(playback.soundFontActive());
     }
-
-    // ---- vista ------------------------------------------------------------
 
     private void defineViewCommands() {
         define("view.page", "Modo página", view::pageMode).withIcon(Icons.pageMode());

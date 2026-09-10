@@ -11,8 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/** Preferencias [F12] > Accesibilidad: como se leen y se aplican, al arrancar y al aceptar. */
-@ResourceLock(RealPreferencesTests.LOCK)
+@ResourceLock(RealPreferencesTests.SHARED_PREFERENCES_FILESYSTEM_NODE_LOCK)
 class AccessibilitySettingsTest {
 
     private final java.util.prefs.Preferences node =
@@ -43,7 +42,6 @@ class AccessibilitySettingsTest {
         assertTrue(themes.lastHighContrast);
     }
 
-    /** "Sin animaciones" prendido tiene que apagar las animaciones de FlatLaf, no prenderlas. */
     @Test
     void turnsAnimationsOffWhenTheyAreDisabled() {
         preferences.setAnimationsDisabled(true);

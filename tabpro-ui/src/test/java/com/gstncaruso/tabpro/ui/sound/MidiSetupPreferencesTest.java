@@ -13,11 +13,6 @@ import java.util.prefs.Preferences;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * Lo que Options > MIDI Setup recuerda entre sesiones: el dispositivo y el
- * patch de cada puerto, la entrada, la sensibilidad y la asignacion de
- * cuerdas -guardado con java.util.prefs, igual que ChordLibrary.
- */
 class MidiSetupPreferencesTest {
 
     private final Preferences scratch = Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());

@@ -6,11 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Lo que la ventana recuerda entre una sesion y la siguiente: la lista de
- * archivos recientes, el guardado automatico y las opciones de la ventana de
- * preferencias que describe el manual.
- */
 public final class Preferences {
 
     public static final int MAX_RECENT_FILES = 8;
@@ -59,7 +54,6 @@ public final class Preferences {
         stored.put(RECENT_FILES, String.join(SEPARATOR, recent.stream().map(Path::toString).toList()));
     }
 
-    /** Cada cuantas acciones se guarda solo; cero significa que no se guarda. */
     public int autosaveEvery() {
         return stored.getInt(AUTOSAVE_EVERY, 20);
     }
@@ -84,7 +78,6 @@ public final class Preferences {
         stored.putBoolean(METRONOME_ENABLED, enabled);
     }
 
-    /** Preferencias [F12] > Accesibilidad: la fuente base de la interfaz, la aplica Theme. */
     public int interfaceFontSize() {
         return stored.getInt(INTERFACE_FONT_SIZE, DEFAULT_INTERFACE_FONT_SIZE);
     }
@@ -93,7 +86,6 @@ public final class Preferences {
         stored.putInt(INTERFACE_FONT_SIZE, points);
     }
 
-    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
     public boolean highContrastEnabled() {
         return stored.getBoolean(HIGH_CONTRAST_ENABLED, false);
     }
@@ -102,7 +94,6 @@ public final class Preferences {
         stored.putBoolean(HIGH_CONTRAST_ENABLED, enabled);
     }
 
-    /** Preferencias [F12] > Accesibilidad: "Sin animaciones" apaga las de FlatLaf y las propias. */
     public boolean animationsDisabled() {
         return stored.getBoolean(ANIMATIONS_DISABLED, false);
     }
@@ -111,7 +102,6 @@ public final class Preferences {
         stored.putBoolean(ANIMATIONS_DISABLED, disabled);
     }
 
-    /** Preferencias [F12], "Figura por defecto al insertar": la usa {@code Editor.insertBeat}. */
     public NoteValue defaultNoteValue() {
         return NoteValue.valueOf(stored.get(DEFAULT_NOTE_VALUE, NoteValue.QUARTER.name()));
     }
@@ -120,7 +110,6 @@ public final class Preferences {
         stored.put(DEFAULT_NOTE_VALUE, defaultNoteValue.name());
     }
 
-    /** Preferencias [F12], "Desplazar la pantalla durante la reproduccion": la usa ScoreCanvas. */
     public boolean autoScrollDuringPlayback() {
         return stored.getBoolean(AUTO_SCROLL_DURING_PLAYBACK, true);
     }
@@ -129,7 +118,6 @@ public final class Preferences {
         stored.putBoolean(AUTO_SCROLL_DURING_PLAYBACK, autoScrollDuringPlayback);
     }
 
-    /** El manual: forzar la vista multipista al usar la pantalla horizontal. Apagado por defecto. */
     public boolean forceMultitrackInHorizontalMode() {
         return stored.getBoolean(FORCE_MULTITRACK_IN_HORIZONTAL_MODE, false);
     }
@@ -138,7 +126,6 @@ public final class Preferences {
         stored.putBoolean(FORCE_MULTITRACK_IN_HORIZONTAL_MODE, forced);
     }
 
-    /** Ver > Menus y barras > Efectos: visible por defecto, como las otras filas. */
     public boolean effectsToolBarVisible() {
         return stored.getBoolean(EFFECTS_TOOL_BAR_VISIBLE, true);
     }
@@ -147,7 +134,6 @@ public final class Preferences {
         stored.putBoolean(EFFECTS_TOOL_BAR_VISIBLE, visible);
     }
 
-    /** Ver > Diapasón [Ctrl+3]: cerrado por defecto, como en el manual, hasta que el usuario lo pide. */
     public boolean fretboardVisible() {
         return stored.getBoolean(FRETBOARD_VISIBLE, false);
     }
@@ -156,7 +142,6 @@ public final class Preferences {
         stored.putBoolean(FRETBOARD_VISIBLE, visible);
     }
 
-    /** Ver > Teclado [Ctrl+4]: cerrado por defecto, como en el manual, hasta que el usuario lo pide. */
     public boolean keyboardVisible() {
         return stored.getBoolean(KEYBOARD_VISIBLE, false);
     }

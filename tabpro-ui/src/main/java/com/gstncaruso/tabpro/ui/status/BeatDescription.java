@@ -5,9 +5,6 @@ import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 
-/**
- * Describe en una linea donde esta parado el cursor: compas, beat, cuerda y la figura que suena.
- */
 public final class BeatDescription {
 
     private BeatDescription() {

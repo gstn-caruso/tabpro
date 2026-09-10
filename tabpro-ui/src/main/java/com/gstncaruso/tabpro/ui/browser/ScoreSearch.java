@@ -9,13 +9,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-/**
- * Busca partituras en el disco, como el explorador que describe el manual en
- * "Browse Guitar Pro Files on Your Computer".
- */
 public final class ScoreSearch {
 
-    /** Las extensiones que el explorador reconoce como partitura. */
     public static final List<String> EXTENSIONS = List.of(".tabpro", ".gp3", ".gp4", ".gp5", ".gtp");
 
     private static final int DEEP_SEARCH = Integer.MAX_VALUE;

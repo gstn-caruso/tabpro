@@ -9,12 +9,6 @@ import java.util.function.IntConsumer;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-/**
- * El menu contextual de la tablatura: el manual (Using the Mouse) lo describe como
- * "Note > 0 to 30, click derecho sobre la tablatura". El rango no es siempre 0 a 30: se lo
- * pregunta a la pista, porque una de cuerdas ofrece trastes (0 a {@link Tuning#MAX_FRET}) y una
- * de percusion ofrece los sonidos MIDI que reconoce.
- */
 public final class FretContextMenu {
 
     private FretContextMenu() {

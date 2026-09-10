@@ -25,7 +25,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import org.junit.jupiter.api.Test;
 
-/** El menu Archivo ofrece los archivos recientes, tal como los recuerda Preferences. */
 class MenuBarTest {
 
     private final Editor editor = new Editor(Score.blank());
@@ -63,11 +62,6 @@ class MenuBarTest {
         assertEquals(List.of(path), opened);
     }
 
-    /**
-     * Que un comando tenga un acelerador declarado no prueba que la ventana lo escuche: si
-     * nadie lo cuelga de un menu, el atajo queda muerto sin que nada lo avise. Este test recorre
-     * la barra de menus entera y confirma que todo comando con atajo aparece en algun item.
-     */
     @Test
     void todoComandoConAceleradorCuelgaDeAlgunMenu() {
         JMenuBar bar = new MenuBar(commands).build();
@@ -142,8 +136,6 @@ class MenuBarTest {
                 "Slap", "Pop", "Rasgueo y púa",
                 "Último compás",
                 "Mesa de mezcla",
-                // Las ocho dinamicas (linea 1000 del manual) agotan las letras libres del menu
-                // Nota: "ppp" y "mf" alcanzan mnemonico, las otras seis se suman a la lista.
                 "pp", "p", "mp", "f", "ff", "fff"), sinMnemonico);
     }
 
@@ -180,11 +172,6 @@ class MenuBarTest {
         }
     }
 
-    /**
-     * Manual, "Configure the Sound" (linea 1945): el volumen y la actividad del metronomo se
-     * configuran en su propio dialogo. El comando ya asegura que existe y llama al puerto
-     * correcto (ver CommandsTest); esto verifica que el menu real lo ofrece.
-     */
     @Test
     void elMenuSonidoOfreceLaConfiguracionDelMetronomo() {
         JMenuBar bar = new MenuBar(commands).build();
@@ -194,7 +181,6 @@ class MenuBarTest {
         assertTrue(itemLabels(sonido).contains("Configuración del metrónomo…"));
     }
 
-    /** Guitar Pro 5 ofrece "editar" junto a "insertar" y "lista" en el menu Marcadores. */
     @Test
     void elMenuDeMarcadoresOfreceEditarElMarcadorVigente() {
         JMenuBar bar = new MenuBar(commands).build();
@@ -204,10 +190,6 @@ class MenuBarTest {
         assertTrue(itemLabels(marcadores).contains("Editar el marcador…"));
     }
 
-    /**
-     * Manual, "Dynamic" (linea 1000): las ocho dinamicas van junto a la entrada de dialogo
-     * existente, no en un submenu aparte.
-     */
     @Test
     void elMenuNotaOfreceLasOchoDinamicasJuntoALaEntradaExistente() {
         JMenuBar bar = new MenuBar(commands).build();
@@ -218,10 +200,6 @@ class MenuBarTest {
                 List.of("ppp", "pp", "p", "mp", "mf", "f", "ff", "fff")));
     }
 
-    /**
-     * Guitar Pro 5, manual pagina 14: el boton de digitacion de mano derecha va junto al de
-     * mano izquierda existente.
-     */
     @Test
     void elMenuNotaOfreceLaDigitacionDeManoDerechaJuntoALaExistente() {
         JMenuBar bar = new MenuBar(commands).build();

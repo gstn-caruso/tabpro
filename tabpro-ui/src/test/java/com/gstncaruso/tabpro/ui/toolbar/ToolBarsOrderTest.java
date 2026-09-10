@@ -17,11 +17,6 @@ import javax.swing.AbstractButton;
 import javax.swing.JToolBar;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5, manual pagina 14: cada fila de la barra de herramientas trae los mismos grupos,
- * en el mismo orden y con los mismos separadores. Un token "|" marca un separador; el resto son
- * los nombres de los comandos del catalogo, en el orden exacto en que tienen que aparecer.
- */
 class ToolBarsOrderTest {
 
     private static final String SEP = "|";

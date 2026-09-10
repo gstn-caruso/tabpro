@@ -21,10 +21,6 @@ import javax.swing.AbstractButton;
 import javax.swing.JToggleButton;
 import org.junit.jupiter.api.Test;
 
-/**
- * Ver > Menus y barras: cada una de las cuatro filas de herramientas se puede esconder por
- * separado, como pide el manual, sin afectar a las otras.
- */
 class ToolBarsTest {
 
     private final Editor editor = new Editor(Score.blank());
@@ -70,11 +66,6 @@ class ToolBarsTest {
         assertTrue(toolBars.isEffectsToolBarVisible());
     }
 
-    /**
-     * La barra de efectos vive aparte de las otras tres (ver > MainFrame la ubica abajo de la
-     * partitura), asi que su visibilidad se prueba con la misma mecanica pero sin mezclarla con
-     * {@link #elEstadoDeCadaFilaEsIndependiente()}.
-     */
     @Test
     void laFilaDeEfectosSeEscondeYSeVuelveAMostrarSinAfectarALasOtras() {
         toolBars.setEffectsToolBarVisible(false);
@@ -95,11 +86,6 @@ class ToolBarsTest {
         AccessibilityAssertions.assertNoViolations(toolBars.effectsComponent());
     }
 
-    /**
-     * Un boton de barra sin icono se ve como un rectangulo vacio: nadie lo nota en la lista de
-     * comandos porque el nombre esta, pero en la barra real queda ciego. Este test recorre las
-     * cuatro filas de verdad, no confia en que cada PR se acuerde de mirarlas a ojo.
-     */
     @Test
     void ningunBotonDeNingunaDeLasCuatroFilasQuedaSinIcono() {
         for (Container row : new Container[] {
@@ -111,12 +97,6 @@ class ToolBarsTest {
         }
     }
 
-    /**
-     * Manual, "Configure the Sound" (linea 1953): F2 prende o apaga el banco de sonido. Un
-     * conmutable que no arranca mostrando el estado real, o que se desincroniza en cuanto el
-     * cambio viene de otro lado (F2, el item del menu Sonido, que comparten este mismo comando),
-     * es la "interfaz que miente" que la auditoria de tabpro persigue.
-     */
     @Test
     void elBotonDelBancoDeSonidoArrancaYSeMantieneSincronizadoConElPuertoReal() {
         boolean[] activo = {true};
@@ -159,10 +139,6 @@ class ToolBarsTest {
         throw new AssertionError("no encontre un boton conmutable llamado " + name);
     }
 
-    /**
-     * El JComboBox del zoom trae su propia flecha de despliegue, un boton del look-and-feel sin
-     * icono e irrelevante para esta auditoria: no hay que bajar a mirar adentro suyo.
-     */
     private java.util.List<AbstractButton> buttonsOf(Container root) {
         java.util.List<AbstractButton> found = new java.util.ArrayList<>();
         for (Component child : root.getComponents()) {

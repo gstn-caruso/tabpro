@@ -8,10 +8,6 @@ import java.awt.Dimension;
 import java.util.OptionalInt;
 import javax.swing.JComboBox;
 
-/**
- * Guitar Pro 5, manual pagina 14, fila 1: el zoom es un combo editable con el porcentaje visible
- * («100% ▾»), con los valores predefinidos del manual y la posibilidad de tipear uno.
- */
 public final class ZoomSelector extends JComboBox<String> {
 
     private final ZoomHolder zoomHolder;

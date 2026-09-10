@@ -30,11 +30,6 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-/**
- * La zona (2) del asistente de percusion: un pentagrama en miniatura donde cada
- * linea es un sonido. Un clic lo escucha, un doble clic lo agrega al beat, igual
- * que en la zona (1).
- */
 public final class PercussionStaffPicker extends JComponent implements AccessibleControl {
 
     public static final int PREFERRED_HEIGHT = 96;
@@ -50,15 +45,10 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
     private PercussionLine caret = PercussionLine.values()[0];
     private boolean showsFocusRing;
 
-    /** Para geometria y tests: sin acciones al clickear. */
     public PercussionStaffPicker() {
         this(sound -> { }, line -> { });
     }
 
-    /**
-     * @param onPlay que hacer cuando un clic pide escuchar el sonido de una linea
-     * @param onAdd que hacer cuando un doble clic pide agregarlo al beat
-     */
     public PercussionStaffPicker(IntConsumer onPlay, Consumer<PercussionLine> onAdd) {
         setOpaque(true);
         setBackground(ScoreColors.SURFACE);
@@ -117,7 +107,6 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
         });
     }
 
-    /** Donde esta parado el caret de teclado: arranca en la primera linea del pentagrama. */
     public PercussionLine caret() {
         return caret;
     }
@@ -173,7 +162,6 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
         return hovered;
     }
 
-    /** El sonido que hoy le corresponde a esa linea, segun este o no activo el electrico. */
     public int soundOf(PercussionLine line) {
         return line.soundToUse(preferElectric);
     }
@@ -186,7 +174,6 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
         return TOP_MARGIN + (STAFF_LINES - 1) * STEP * 2;
     }
 
-    /** La linea del pentagrama que hay en ese punto, o nada si el punto cae afuera. */
     public Optional<PercussionLine> lineAt(int x, int y) {
         if (x < SIDE_MARGIN || x > getWidth() - SIDE_MARGIN) {
             return Optional.empty();

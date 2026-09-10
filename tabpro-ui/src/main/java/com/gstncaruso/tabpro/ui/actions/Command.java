@@ -5,7 +5,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
-/** Una accion de la aplicacion, con su nombre, su atajo y su icono. */
 public final class Command extends AbstractAction {
 
     private final Runnable body;
@@ -36,10 +35,8 @@ public final class Command extends AbstractAction {
     }
 
     /**
-     * Cambia el nombre de un comando ya armado, como el paso a paso del manual que dice "Nota
-     * siguiente" parado y "Compás siguiente" durante la reproducción. Al extender
-     * AbstractAction, esto dispara el PropertyChangeEvent que ya actualiza solo cualquier
-     * JMenuItem o JButton armado con este comando.
+     * Extending AbstractAction, this fires the PropertyChangeEvent that already updates any
+     * JMenuItem or JButton wired to this command on its own.
      */
     public Command renameTo(String label) {
         putValue(NAME, label);
@@ -47,8 +44,8 @@ public final class Command extends AbstractAction {
     }
 
     /**
-     * Para las acciones que se muestran con un casillero (JCheckBoxMenuItem): arranca tildado, y
-     * Swing se encarga de mantener el casillero y esta bandera sincronizados en los dos sentidos.
+     * For actions shown with a checkbox (JCheckBoxMenuItem): starts checked, and Swing keeps the
+     * checkbox and this flag synchronized both ways.
      */
     public Command checkedByDefault() {
         putValue(SELECTED_KEY, Boolean.TRUE);
@@ -56,9 +53,9 @@ public final class Command extends AbstractAction {
     }
 
     /**
-     * Para cuando el casillero tiene que seguir un cambio que no vino de tocar el propio
-     * control -F2, un item de menu- y que comparte este mismo comando: Swing ya mantiene
-     * sincronizado cualquier JToggleButton o JCheckBoxMenuItem armado con el, en los dos sentidos.
+     * For when the checkbox has to follow a change that did not come from toggling the control
+     * itself but shares this same command: Swing already keeps any JToggleButton or
+     * JCheckBoxMenuItem wired to it synchronized both ways.
      */
     public void setChecked(boolean checked) {
         putValue(SELECTED_KEY, checked);
@@ -80,7 +77,6 @@ public final class Command extends AbstractAction {
         return (KeyStroke) getValue(ACCELERATOR_KEY);
     }
 
-    /** El texto del atajo tal como se lee en el manual, para mostrarlo en una ayuda. */
     public String acceleratorText() {
         KeyStroke stroke = accelerator();
         if (stroke == null) {

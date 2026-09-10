@@ -16,10 +16,6 @@ import java.util.List;
 import javax.swing.JToolBar;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5, manual pagina 14, fila 1: el zoom es un combo editable con el porcentaje visible,
- * no tres botones sin texto.
- */
 class ZoomSelectorTest {
 
     private final Editor editor = new Editor(Score.blank());

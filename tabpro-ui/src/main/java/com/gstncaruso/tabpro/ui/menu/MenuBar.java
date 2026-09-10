@@ -16,7 +16,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-/** La barra de menu de tabpro, con los mismos menus que describe el manual. */
 public final class MenuBar {
 
     private final Commands commands;
@@ -24,7 +23,6 @@ public final class MenuBar {
     private final Consumer<Path> openRecentFile;
     private final Map<JMenu, MnemonicAssigner> itemMnemonics = new IdentityHashMap<>();
 
-    /** Sin archivos recientes que ofrecer, como en un uso puramente programatico o de test. */
     public MenuBar(Commands commands) {
         this(commands, List::of, path -> { });
     }
@@ -250,7 +248,6 @@ public final class MenuBar {
         return menu;
     }
 
-    /** Ver > Menus y barras: un casillero por fila, para elegir cuales se ven. */
     private JMenu toolBarsMenu() {
         JMenu menu = new JMenu("Menús y barras");
         addCheckbox(menu, "view.toolBars.document");
@@ -267,7 +264,6 @@ public final class MenuBar {
         return menu;
     }
 
-    /** El menu de temas solo aparece si la aplicacion ofrece alguno. */
     private java.util.Optional<JMenu> themesMenu() {
         java.util.List<String> names = commands.all().keySet().stream()
                 .filter(name -> name.startsWith("view.theme."))
@@ -281,7 +277,6 @@ public final class MenuBar {
         return java.util.Optional.of(menu);
     }
 
-    /** El submenu "Abrir reciente" solo aparece si hay algun archivo que ofrecer. */
     private Optional<JMenu> recentFilesMenu() {
         List<Path> paths = recentFiles.get();
         if (paths.isEmpty()) {

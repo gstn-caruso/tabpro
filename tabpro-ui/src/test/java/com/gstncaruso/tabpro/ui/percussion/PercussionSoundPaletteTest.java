@@ -73,19 +73,8 @@ class PercussionSoundPaletteTest {
                 "el ancho de columna deberia quedar fijo desde la construccion, no medido en cada layout");
     }
 
-    /**
-     * El alto de fila se fija a mano a proposito. Sin fijarlo, JList lo deduce del alto que pide
-     * el renderer, que depende de la fuente de la maquina: el test medi­a la celda con una fuente
-     * y el clic se resolvia con otra, asi que el punto caia en una fila distinta de la que el
-     * test creia. Fallaba en CI y pasaba aca. Este test habla del doble clic, no de tipografia.
-     */
     private static final int CELL_HEIGHT = 20;
 
-    /**
-     * La propiedad que hacia falta y no estaba: la celda que el test mide tiene que ser la misma
-     * que el JList usa para resolver donde cayo el clic. Si se separan, los otros dos tests
-     * hablan de una fila y prueban otra, que es como este archivo fallaba en CI.
-     */
     @Test
     void theCellTheTestMeasuresIsTheCellTheListResolvesTheClickInto() {
         PercussionSoundPalette palette = new PercussionSoundPalette(sound -> { }, sound -> { });

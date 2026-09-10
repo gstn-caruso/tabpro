@@ -93,7 +93,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-/** La ventana principal: la partitura, las herramientas y la mesa de mezcla. */
 public final class MainFrame extends JFrame {
 
     private final Editor editor;
@@ -180,9 +179,6 @@ public final class MainFrame extends JFrame {
         toolBars = new ToolBars(editor, commands, canvas);
         boolean effectsToolBarVisible = preferences.effectsToolBarVisible();
         toolBars.setEffectsToolBarVisible(effectsToolBarVisible);
-        // El casillero de "Efectos" en Ver > Menus y barras arranca marcado por defecto
-        // (Command.checkedByDefault); si la preferencia guardada la tenia escondida, el
-        // casillero real tiene que arrancar destildado, no al reves de lo que muestra la barra.
         commands.get("view.toolBars.effects").putValue(javax.swing.Action.SELECTED_KEY, effectsToolBarVisible);
         JLabel tempoLabel = new JLabel("Tempo ");
         tempoLabel.setForeground(Palette.text());
@@ -202,27 +198,16 @@ public final class MainFrame extends JFrame {
             updateTitle();
             updateStepCommandLabels();
         });
-        // El manual: moverse por la partitura durante la reproduccion vuelve a arrancar el
-        // audio desde la posicion senalada, sin frenar.
         canvas.onClickReposition(hit -> transport.seekTo(hit.measure(), hit.beat()));
         editor.addListener(EdtEditorListener.onEdt(this::updateTitle));
 
-        // Guitar Pro 5: la barra de efectos va pegada abajo de la partitura, arriba de la mesa
-        // de mezcla, no junto a las otras tres filas de arriba.
         JPanel scoreWithEffects = new JPanel(new BorderLayout());
         scoreWithEffects.setBackground(Palette.panel());
         scoreWithEffects.add(scrollPane, BorderLayout.CENTER);
         scoreWithEffects.add(toolBars.effectsComponent(), BorderLayout.SOUTH);
 
         scoreMixSplit = new ScoreMixSplit(scoreWithEffects, trackPanel);
-        // El JScrollPane de la partitura y el JSplitPane que la comparte con la mesa de mezcla
-        // traen atajos propios (scroll, F6/F8 para el split) que le ganan a un atajo de menu
-        // mientras la partitura tiene el foco. Sin este barrido, Ctrl+Home, Ctrl+Fin, F6, F8 y
-        // Ctrl+Tab quedan muertos justo cuando mas se los usa: editando.
         AcceleratorGuard.letCommandsWin(commands, scrollPane, scoreMixSplit.component());
-        // F10 sin modificador activa de fabrica la barra de menus (BasicMenuBarUI): sin este
-        // barrido, se come el atajo real de Cambio de parametros mientras la partitura esta
-        // enfocada.
         AcceleratorGuard.letCommandsWinOverTheMenuBar(commands, getJMenuBar());
 
         JPanel top = new JPanel(new BorderLayout());
@@ -246,15 +231,10 @@ public final class MainFrame extends JFrame {
         });
     }
 
-    /** El transporte del menu Sonido, para quien necesite observar su estado desde afuera. */
     public Transport transport() {
         return transport;
     }
 
-    /**
-     * Si quedo una copia de recuperacion de una sesion anterior, se ofrece
-     * abrirla, que es lo que hace Guitar Pro despues de una terminacion anormal.
-     */
     private void offerToRecover() {
         document.pendingRecovery().ifPresent(recovery -> {
             int answer = JOptionPane.showConfirmDialog(
@@ -270,22 +250,15 @@ public final class MainFrame extends JFrame {
         });
     }
 
-    /** La escala elegida se dibuja tambien sobre el diapason y el teclado. */
     private void showChosenScaleOnTheInstruments() {
         chosenScale.tonic().ifPresent(tonic ->
                 beatViews.showScale(tonic.semitone(), chosenScale.semitonesFromTheTonic()));
     }
 
-    /** La mesa de mezcla ocupa lo suyo; el resto es partitura. */
     private void showMixTable() {
         scoreMixSplit.showMixTable();
     }
 
-    /**
-     * Abre la partitura que el escritorio paso por linea de comandos. Puede ser
-     * un archivo propio, uno de Guitar Pro, uno de TablEdit o uno de PowerTab,
-     * que se importan como partitura nueva.
-     */
     public void openOnStartup(Path path) {
         try {
             switch (ScoreFileFormat.of(path)) {
@@ -310,7 +283,6 @@ public final class MainFrame extends JFrame {
         return spinner;
     }
 
-    /** Lo mas grande que entre comodo en la pantalla, sin pasarse. */
     private static Dimension windowSize() {
         Dimension screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getSize();
         return new Dimension(Math.min(1440, screen.width - 60), Math.min(950, screen.height - 60));
@@ -320,13 +292,11 @@ public final class MainFrame extends JFrame {
         canvas.requestFocusInWindow();
     }
 
-    /** El papel elegido manda sobre como se ve la partitura y sobre como sale impresa. */
     private void usePageSetup(PageSetup setup) {
         pageSetup = setup;
         canvas.setPageSetup(setup);
     }
 
-    /** Lo que la ventana de MIDI Setup necesita para arrancar: lo que ya esta cableado en devices, y las cuerdas. */
     private MidiSetupDialog.Setup currentMidiSetup() {
         java.util.List<MidiSetupDialog.PortSetup> ports = new java.util.ArrayList<>();
         for (int port = 1; port <= Ports.PORT_COUNT; port++) {
@@ -338,7 +308,6 @@ public final class MainFrame extends JFrame {
                 ports, devices.input(), devices.sensitivityMillis(), stringAssignment);
     }
 
-    /** Lo que quedo guardado la ultima vez que se cerro Options > MIDI Setup con Aceptar. */
     private MidiSetupDialog.Setup midiSetupFromPreferences() {
         java.util.List<MidiSetupDialog.PortSetup> ports = new java.util.ArrayList<>();
         for (int port = 1; port <= Ports.PORT_COUNT; port++) {
@@ -352,7 +321,6 @@ public final class MainFrame extends JFrame {
                 midiSetupPreferences.stringAssignment());
     }
 
-    /** Aplica lo que se eligio en la ventana a los dispositivos de verdad, y lo deja guardado para la proxima vez. */
     private void useMidiSetup(MidiSetupDialog.Setup setup) {
         devices.chooseSoundFontFile(
                 setup.soundFontFile().isBlank() ? java.util.Optional.empty() : java.util.Optional.of(setup.soundFontFile()));
@@ -378,11 +346,6 @@ public final class MainFrame extends JFrame {
         midiSetupPreferences.setStringAssignment(setup.strings());
     }
 
-    /**
-     * El manual: "durante la reproduccion, el tempo actual se muestra en la barra de titulo de
-     * Guitar Pro". Importa porque el tempo puede cambiar a mitad de partitura y porque el tempo
-     * relativo lo escala; Transport ya devuelve el que de verdad esta sonando.
-     */
     private void updateTitle() {
         String title = document.windowTitle();
         setTitle(transport.currentTempoBpm().isPresent()
@@ -390,12 +353,6 @@ public final class MainFrame extends JFrame {
                 : title);
     }
 
-    /**
-     * El manual: "los botones ◀ ▶ permiten reproducir la partitura nota por nota. Durante la
-     * reproducción, estos botones cambian a ◀◀ ▶▶ y permiten ir al compás anterior o al
-     * siguiente sin frenar." Sin un icono propio para ese cambio, el nombre del comando -que ya
-     * se ve en el menu Sonido- dice lo mismo.
-     */
     private void updateStepCommandLabels() {
         boolean playing = transport.isPlaying();
         commands.get("sound.stepBack").renameTo(playing ? "Compás anterior" : "Nota anterior");
@@ -424,14 +381,12 @@ public final class MainFrame extends JFrame {
         return new FileNameExtensionFilter("Partituras tabpro (*.tabpro)", "tabpro");
     }
 
-    /** El Abrir del manual: un solo cuadro que reconoce lo propio y lo de Guitar Pro. */
     private FileNameExtensionFilter openableScoreFilter() {
         return new FileNameExtensionFilter(
                 "Partituras (*.tabpro, *.gp3, *.gp4, *.gp5, *.gtp, *.tef, *.ptb)",
                 "tabpro", "gp3", "gp4", "gp5", "gtp", "tef", "ptb");
     }
 
-    /** El archivo abierto, tal como lo pide el menu Archivo del manual. */
     private final class Document implements Ports.Document {
 
         @Override
@@ -446,7 +401,6 @@ public final class MainFrame extends JFrame {
             }
         }
 
-        /** El manual: un solo Abrir, que reconoce sus formatos indistintamente. */
         @Override
         public void open() {
             if (!askToDiscardChanges()) {
@@ -460,7 +414,6 @@ public final class MainFrame extends JFrame {
             openChosen(chooser.getSelectedFile().toPath());
         }
 
-        /** Lo que pide el menu Archivo al elegir un archivo reciente: abrirlo, con la misma confirmacion que "Abrir". */
         private void openRecent(Path path) {
             if (askToDiscardChanges()) {
                 openChosen(path);
@@ -479,7 +432,6 @@ public final class MainFrame extends JFrame {
             browser.setVisible(true);
         }
 
-        /** Lo que el explorador necesita del transporte para escuchar con salto automático. */
         private final class BrowsedSound implements BrowserPlayback.Sound {
 
             @Override
@@ -602,7 +554,6 @@ public final class MainFrame extends JFrame {
             exportWith(exchange::exportGuitarPro, new FileNameExtensionFilter("Guitar Pro 4 (*.gp4)", "gp4"), ".gp4");
         }
 
-        /** El manual avisa que "algunos elementos no se van a exportar": acá se dice cuáles, para esta partitura. */
         private boolean confirmGuitarProLosses() {
             java.util.List<String> warnings = exchange.guitarProExportWarnings(editor.score());
             if (warnings.isEmpty()) {
@@ -680,7 +631,6 @@ public final class MainFrame extends JFrame {
             }
         }
 
-        /** Abre un archivo de otro programa y lo adopta como partitura sin nombre. */
         private void importWith(
                 java.util.function.Function<Path, com.gstncaruso.tabpro.core.model.Score> howToRead,
                 FileNameExtensionFilter filter) {
@@ -737,7 +687,6 @@ public final class MainFrame extends JFrame {
         }
     }
 
-    /** El transporte del menu Sonido. */
     private final class Playback implements Ports.Playback {
 
         @Override
@@ -836,7 +785,6 @@ public final class MainFrame extends JFrame {
         }
     }
 
-    /** Lo que el menu Ver decide sobre la pantalla. */
     private final class View implements Ports.View {
 
         @Override
@@ -1006,10 +954,6 @@ public final class MainFrame extends JFrame {
         }
     }
 
-    /**
-     * Lo que llega del instrumento MIDI: la nota se escribe en la cuerda que
-     * corresponda y el cursor avanza al beat siguiente, como dice el manual.
-     */
     private final class CapturedNotes implements Ports.CapturedNote {
 
         @Override
@@ -1040,7 +984,6 @@ public final class MainFrame extends JFrame {
         }
     }
 
-    /** Las ventanas del manual, cada una con lo que el editor necesita. */
     private final class Windows implements Ports.Dialogs {
 
         @Override
@@ -1077,8 +1020,6 @@ public final class MainFrame extends JFrame {
                 editor.setUndoEnabled(updated.undoEnabled());
                 canvas.setAutoScrollDuringPlayback(updated.autoScrollDuringPlayback());
                 preferences.setForceMultitrackInHorizontalMode(updated.forceMultitrackInHorizontalMode());
-                // Se aplica en el acto: si ya se esta en pantalla horizontal, tildar la casilla
-                // tiene que prender la vista multipista sin esperar al proximo cambio de modo.
                 HorizontalMultitrack.applyTo(
                         visibleTracks, canvas.viewMode(), updated.forceMultitrackInHorizontalMode());
                 preferences.setInterfaceFontSize(updated.interfaceFontSize());

@@ -16,12 +16,6 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * El manual, sobre el botón de escuchar del explorador: "it is possible to set the number of
- * bars to play before jumping to the next file". BrowserPlayback es quien decide, una vez que
- * Transport avisa que esos compases ya sonaron, si hay que seguir con el próximo archivo de la
- * lista -y con cuál-.
- */
 class BrowserPlaybackTest {
 
     private final Path primero = Path.of("/tmp/primero.tabpro");
@@ -61,7 +55,6 @@ class BrowserPlaybackTest {
         assertEquals(4, sound.lastBars);
     }
 
-    /** Ultimo archivo de la lista: no hay a donde saltar, asi que ahi se corta. */
     @Test
     void theLastFileInTheListJustStopsWhenItFinishes() {
         playback.play(List.of(primero, segundo), segundo, 4);
@@ -72,7 +65,6 @@ class BrowserPlaybackTest {
         assertTrue(listener.chainEnded);
     }
 
-    /** El usuario para a mano: el aviso de Transport ya no puede provocar el salto. */
     @Test
     void stoppingByHandCancelsTheJumpToTheNextFile() {
         playback.play(List.of(primero, segundo), primero, 4);
@@ -84,10 +76,6 @@ class BrowserPlaybackTest {
         assertTrue(sound.stopped);
     }
 
-    /**
-     * La partitura mas corta que el limite la acota Transport.previewBars, no BrowserPlayback:
-     * a este objeto solo le llega el aviso de que termino, y salta igual.
-     */
     @Test
     void aScoreShorterThanTheLimitStillJumpsWhenItFinishes() {
         playback.play(List.of(primero, segundo), primero, 400);
@@ -107,7 +95,6 @@ class BrowserPlaybackTest {
         assertTrue(listener.chainEnded);
     }
 
-    /** El explorador ya avisaba "No se pudo abrir" antes de este cambio; sigue avisando. */
     @Test
     void aFileThatFailsToLoadTellsTheListenerWhichPathFailed() {
         Path roto = Path.of("/tmp/roto.tabpro");

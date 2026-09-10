@@ -10,7 +10,6 @@ import java.awt.RenderingHints;
 import java.net.URL;
 import javax.swing.Icon;
 
-/** Un icono vectorial cargado desde un SVG del classpath, escalado al tamano pedido. */
 public final class SvgIcon implements Icon {
 
     private final SVGDocument document;

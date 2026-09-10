@@ -12,57 +12,51 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.Icon;
 
-/**
- * El juego de iconos de las barras de herramientas: las acciones genericas vienen de un SVG
- * de Tabler Icons y los simbolos propios de la notacion musical se dibujan con Java2D.
- */
 public final class Icons {
 
     public static final int SIZE = 18;
 
-    /** SMuFL U+ECA2 "metNoteWhole": la redonda chiquita del "figura = numero" de tempo. */
+    /** SMuFL U+ECA2 "metNoteWhole". */
     private static final String MET_NOTE_WHOLE = "";
-    /** SMuFL U+ECA3 "metNoteHalfUp": la blanca chiquita del "figura = numero" de tempo. */
+    /** SMuFL U+ECA3 "metNoteHalfUp". */
     private static final String MET_NOTE_HALF_UP = "";
-    /** SMuFL U+ECA5 "metNoteQuarterUp": la negra chiquita del "figura = numero" de tempo. */
+    /** SMuFL U+ECA5 "metNoteQuarterUp". */
     private static final String MET_NOTE_QUARTER_UP = "";
-    /** SMuFL U+ECA7 "metNote8thUp": la corchea chiquita del "figura = numero" de tempo. */
+    /** SMuFL U+ECA7 "metNote8thUp". */
     private static final String MET_NOTE_8TH_UP = "";
-    /** SMuFL U+ECA9 "metNote16thUp": la semicorchea chiquita del "figura = numero" de tempo. */
+    /** SMuFL U+ECA9 "metNote16thUp". */
     private static final String MET_NOTE_16TH_UP = "";
-    /** SMuFL U+ECAB "metNote32ndUp": la fusa chiquita del "figura = numero" de tempo. */
+    /** SMuFL U+ECAB "metNote32ndUp". */
     private static final String MET_NOTE_32ND_UP = "";
-    /** SMuFL U+ECAD "metNote64thUp": la semifusa chiquita del "figura = numero" de tempo. */
+    /** SMuFL U+ECAD "metNote64thUp". */
     private static final String MET_NOTE_64TH_UP = "";
-    /** SMuFL U+E1E7 "augmentationDot": el puntillo que alarga una figura. */
+    /** SMuFL U+E1E7 "augmentationDot". */
     private static final String AUGMENTATION_DOT = "";
-    /** SMuFL U+E4E5 "restQuarter": el silencio de negra. */
+    /** SMuFL U+E4E5 "restQuarter". */
     private static final String REST_QUARTER = "";
-    /** SMuFL U+E0A9 "noteheadXBlack": la cabeza en X de percusion, para las notas apagadas. */
+    /** SMuFL U+E0A9 "noteheadXBlack". */
     private static final String NOTEHEAD_X_BLACK = "";
-    /** SMuFL U+E0DD "noteheadDiamondWhite": la cabeza en rombo hueco, para armonicos. */
+    /** SMuFL U+E0DD "noteheadDiamondWhite". */
     private static final String NOTEHEAD_DIAMOND_WHITE = "";
-    /** SMuFL U+E4A0 "articAccentAbove": el acento dibujado arriba de la nota. */
+    /** SMuFL U+E4A0 "articAccentAbove". */
     private static final String ARTIC_ACCENT_ABOVE = "";
-    /** SMuFL U+E4A2 "articStaccatoAbove": el staccato dibujado arriba de la nota. */
+    /** SMuFL U+E4A2 "articStaccatoAbove". */
     private static final String ARTIC_STACCATO_ABOVE = "";
-    /** SMuFL U+E0A4 "noteheadBlack": la cabeza rellena de negra. */
+    /** SMuFL U+E0A4 "noteheadBlack". */
     private static final String NOTEHEAD_BLACK = "";
-    /** SMuFL U+E0CE "noteheadParenthesis": los parentesis que rodean una cabeza de nota. */
+    /** SMuFL U+E0CE "noteheadParenthesis". */
     private static final String NOTEHEAD_PARENTHESIS = "";
-    /** SMuFL U+E262 "accidentalSharp": el sostenido. */
+    /** SMuFL U+E262 "accidentalSharp". */
     private static final String ACCIDENTAL_SHARP = "";
-    /** SMuFL U+E084 "timeSig4": el digito 4 de una cifra de compas. */
+    /** SMuFL U+E084 "timeSig4". */
     private static final String TIME_SIG_4 = "";
-    /** SMuFL U+E040 "repeatLeft": la barra de inicio de repeticion, con sus dos puntos. */
+    /** SMuFL U+E040 "repeatLeft". */
     private static final String REPEAT_LEFT = "";
-    /** SMuFL U+E041 "repeatRight": la barra de fin de repeticion, con sus dos puntos. */
+    /** SMuFL U+E041 "repeatRight". */
     private static final String REPEAT_RIGHT = "";
 
     private Icons() {
     }
-
-    // ---- archivo ----------------------------------------------------------
 
     public static Icon newScore() {
         return svgIcon("file-plus");
@@ -88,8 +82,6 @@ public final class Icons {
         return svgIcon("file-settings");
     }
 
-    // ---- edicion ----------------------------------------------------------
-
     public static Icon undo() {
         return svgIcon("arrow-back-up");
     }
@@ -109,8 +101,6 @@ public final class Icons {
     public static Icon paste() {
         return svgIcon("clipboard");
     }
-
-    // ---- compases ---------------------------------------------------------
 
     public static Icon insertBar() {
         return icon((graphics, size) -> {
@@ -147,12 +137,10 @@ public final class Icons {
         });
     }
 
-    /** El pilcrow del manual: fuerza un salto de linea donde no lo pondria el automatismo. */
     public static Icon forceLineBreak() {
         return letter("¶");
     }
 
-    /** El candado: impide que ese compas se mueva de renglon. */
     public static Icon preventLineBreak() {
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
@@ -177,7 +165,6 @@ public final class Icons {
         return new GlyphIcon(SIZE, TIME_SIG_4, TIME_SIG_4);
     }
 
-    /** El feel de las corcheas (swing/shuffle), abreviado como no lo dice ningun glifo SMuFL. */
     public static Icon tripletFeel() {
         return letter("SW");
     }
@@ -210,8 +197,6 @@ public final class Icons {
         });
     }
 
-    // ---- figuras ----------------------------------------------------------
-
     public static Icon note(NoteValue value) {
         return new GlyphIcon(SIZE, metNoteGlyphOf(value));
     }
@@ -224,7 +209,6 @@ public final class Icons {
         return new GlyphIcon(SIZE, REST_QUARTER);
     }
 
-    /** El corchete de un n-tuplet con su numero: 3 para el tresillo, 5 para el quintillo, etc. */
     public static Icon tuplet(int enters) {
         String label = String.valueOf(enters);
         return icon((graphics, size) -> {
@@ -245,7 +229,6 @@ public final class Icons {
         });
     }
 
-    /** Ligar el beat entero: el mismo arco de {@link #tie()}, pero sobre tres cabezas. */
     public static Icon tieBeat() {
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
@@ -256,7 +239,6 @@ public final class Icons {
         });
     }
 
-    /** El porcentaje de duracion del sonido, tal como lo abrevia el manual. */
     public static Icon soundDuration() {
         return letter("%");
     }
@@ -277,26 +259,22 @@ public final class Icons {
         return octaveMark("15", "mb");
     }
 
-    /** Dos corcheas con la barra de union entera: el corte queda impedido. */
     public static Icon preventBeamBreak() {
         return icon((graphics, size) -> {
             beamedPair(graphics, size, true);
         });
     }
 
-    /** Dos corcheas con la barra de union cortada: el corte queda forzado. */
     public static Icon forceBeamBreak() {
         return icon((graphics, size) -> {
             beamedPair(graphics, size, false);
         });
     }
 
-    /** El corte de la barra de union vuelve a decidirlo el automatismo del manual. */
     public static Icon resetBeamBreak() {
         return letter("A");
     }
 
-    /** La plica hacia arriba, a la derecha de la cabeza como se escribe a mano. */
     public static Icon stemUp() {
         return icon((graphics, size) -> {
             graphics.fill(Glyphs.noteHead(size * 0.32, size * 0.72, size * 0.26, false));
@@ -305,7 +283,6 @@ public final class Icons {
         });
     }
 
-    /** La plica hacia abajo, a la izquierda de la cabeza. */
     public static Icon stemDown() {
         return icon((graphics, size) -> {
             graphics.fill(Glyphs.noteHead(size * 0.68, size * 0.32, size * 0.26, false));
@@ -314,19 +291,14 @@ public final class Icons {
         });
     }
 
-    /** La direccion de la plica vuelve a decidirla el automatismo del manual. */
     public static Icon stemAutomatic() {
         return letter("AU");
     }
-
-    // ---- efectos ----------------------------------------------------------
 
     public static Icon letter(String text) {
         return letter(text, Font.BOLD);
     }
 
-    /** El manual dibuja las ocho dinamicas (ppp...fff) en cursiva, a diferencia de las demas
-     * abreviaturas de la barra, que van en redonda. */
     public static Icon italicLetter(String text) {
         return letter(text, Font.BOLD | Font.ITALIC);
     }
@@ -339,7 +311,6 @@ public final class Icons {
         });
     }
 
-    /** Una marca de octava en dos renglones ("8" y "va"), como la abrevia el manual. */
     private static Icon octaveMark(String number, String suffix) {
         return icon((graphics, size) -> {
             graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, Math.round(size * 0.42f)));
@@ -361,7 +332,6 @@ public final class Icons {
         return GlyphIcon.overlaid(SIZE, NOTEHEAD_BLACK, NOTEHEAD_PARENTHESIS);
     }
 
-    /** Una nota de adorno: la misma cabeza que las demas, mas chica y corrida hacia arriba. */
     public static Icon graceNote() {
         return icon((graphics, size) -> {
             graphics.fill(Glyphs.noteHead(size * 0.4, size * 0.7, size * 0.28, false));
@@ -375,7 +345,6 @@ public final class Icons {
         return new GlyphIcon(SIZE, ARTIC_ACCENT_ABOVE);
     }
 
-    /** El caret del acento marcado: mas alto y con trazo mas grueso que el acento simple. */
     public static Icon heavyAccent() {
         return icon((graphics, size) -> {
             graphics.setStroke(new BasicStroke(size / 9f));
@@ -402,7 +371,6 @@ public final class Icons {
         });
     }
 
-    /** La palanca de tremolo: la misma onda del vibrato, con el mango que la mueve. */
     public static Icon tremoloBar() {
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
@@ -431,7 +399,6 @@ public final class Icons {
         });
     }
 
-    /** El slide con ataque nuevo: la misma diagonal, con una marca de ataque al empezar. */
     public static Icon shiftSlide() {
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
@@ -455,22 +422,18 @@ public final class Icons {
         return new GlyphIcon(SIZE, NOTEHEAD_DIAMOND_WHITE);
     }
 
-    /** El armonico natural, abreviado N.H. como en el manual (HarmonicType.NATURAL). */
     public static Icon naturalHarmonic() {
         return letter("NH");
     }
 
-    /** El armonico artificial, abreviado A.H. como en el manual (HarmonicType.ARTIFICIAL). */
     public static Icon artificialHarmonic() {
         return letter("AH");
     }
 
-    /** El trino, abreviado como en el manual. */
     public static Icon trill() {
         return letter("tr");
     }
 
-    /** El tremolo de pua: tres trazos diagonales cortos, como los golpes repetidos. */
     public static Icon tremoloPicking() {
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
@@ -481,17 +444,14 @@ public final class Icons {
         });
     }
 
-    /** El "fade in" del manual, abreviado con el mismo signo que usa la partitura. */
     public static Icon fadeIn() {
         return letter("<");
     }
 
-    /** La digitacion, con la misma mano que usa el manual para elegirla. */
     public static Icon fingering() {
         return svgIcon("hand-click");
     }
 
-    /** La digitacion de mano derecha: la misma mano de {@link #fingering()}, espejada. */
     public static Icon fingeringRightHand() {
         return svgIcon("hand-click-mirrored");
     }
@@ -510,7 +470,6 @@ public final class Icons {
         });
     }
 
-    /** La direccion de la pua hacia abajo: un caret chico, distinto del rasgueo entero. */
     public static Icon pickstrokeDown() {
         return icon((graphics, size) -> {
             graphics.setStroke(new BasicStroke(size / 9f));
@@ -546,8 +505,6 @@ public final class Icons {
         return svgIcon("typography");
     }
 
-    // ---- sonido -----------------------------------------------------------
-
     public static Icon play() {
         return svgIcon("player-play");
     }
@@ -571,8 +528,6 @@ public final class Icons {
     public static Icon countDown() {
         return svgIcon("clock");
     }
-
-    // ---- navegacion y vista -----------------------------------------------
 
     public static Icon firstBar() {
         return svgIcon("player-skip-back");
@@ -629,12 +584,10 @@ public final class Icons {
         });
     }
 
-    /** El pentagrama solo, sin la tablatura debajo. */
     public static Icon hideStandardNotation() {
         return icon((graphics, size) -> Glyphs.staff(graphics, size * 0.1, size * 0.3, size * 0.8, size * 0.12));
     }
 
-    /** Las lineas de la tablatura, una por cuerda. */
     public static Icon hideTablature() {
         return icon((graphics, size) -> {
             graphics.setStroke(thin());
@@ -661,7 +614,6 @@ public final class Icons {
         return svgIcon("piano");
     }
 
-    /** La cruz de cerrar de una mini-ventana como el diapason o el teclado. */
     public static Icon closePanel() {
         return svgIcon("x");
     }
@@ -703,7 +655,6 @@ public final class Icons {
         });
     }
 
-    /** Las propiedades de la pista: el pentagrama con el lapiz de quien las edita. */
     public static Icon trackProperties() {
         return icon((graphics, size) -> {
             Glyphs.staff(graphics, size * 0.08, size * 0.3, size * 0.56, size * 0.09);
@@ -740,7 +691,6 @@ public final class Icons {
         return svgIcon("chevron-right");
     }
 
-    /** El casillero verde del manual: "Verificar la duracion de los compases". */
     public static Icon checkBarDurations() {
         return icon((graphics, size) -> {
             graphics.setStroke(new BasicStroke(size / 8f));
@@ -748,8 +698,6 @@ public final class Icons {
             graphics.draw(new Line2D.Double(size * 0.42, size * 0.74, size * 0.82, size * 0.28));
         });
     }
-
-    // ---- trazos compartidos -----------------------------------------------
 
     private static String metNoteGlyphOf(NoteValue value) {
         return switch (value) {
@@ -763,7 +711,6 @@ public final class Icons {
         };
     }
 
-    /** Dos corcheas paradas, con la barra de union entera o cortada segun {@code joined}. */
     private static void beamedPair(Graphics2D graphics, int size, boolean joined) {
         graphics.fill(Glyphs.noteHead(size * 0.3, size * 0.72, size * 0.2, false));
         graphics.fill(Glyphs.noteHead(size * 0.7, size * 0.72, size * 0.2, false));

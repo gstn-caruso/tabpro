@@ -17,11 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Cada fabrica publica de Icons tiene que devolver un icono de SIZE x SIZE que, pintado con el
- * foreground del componente, deje pixeles de ese color: asi se detecta un SVG faltante o un
- * nombre mal tipeado, que si no pintaria vacio sin avisar.
- */
 class IconsTest {
 
     private static final Color THEME_COLOR = new Color(10, 20, 30);

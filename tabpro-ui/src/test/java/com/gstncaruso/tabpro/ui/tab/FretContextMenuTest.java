@@ -11,11 +11,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.junit.jupiter.api.Test;
 
-/**
- * El manual, en Using the Mouse: "Note > 0 to 30 (right-click menu on the tablature)". El rango
- * real no esta escrito en el menu: se lo pregunta a la pista, porque una de percusion no tiene
- * trastes sino sonidos MIDI.
- */
 class FretContextMenuTest {
 
     @Test

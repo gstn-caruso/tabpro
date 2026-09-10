@@ -7,10 +7,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JRadioButton;
 
-/**
- * Encuentra un combo dentro de un panel de prueba por el tipo de sus items, sin obligar
- * al panel a exponer un campo privado solo para poder testearlo.
- */
 public final class Combos {
 
     private Combos() {
@@ -34,7 +30,6 @@ public final class Combos {
         return null;
     }
 
-    /** El texto que el combo realmente pinta para ese item, sin abrir ninguna ventana. */
     @SuppressWarnings("unchecked")
     public static String renderedTextOf(Container root, Class<?> itemType, Object item) {
         JComboBox combo = firstWithItemType(root, itemType);
@@ -43,7 +38,6 @@ public final class Combos {
         return ((JLabel) rendered).getText();
     }
 
-    /** Una lista por su nombre accesible, para las que arrancan vacias y no tienen item de sobra. */
     public static JList<?> firstListNamed(Container root, String accessibleName) {
         for (Component child : root.getComponents()) {
             if (child instanceof JList<?> list
@@ -67,7 +61,6 @@ public final class Combos {
         return ((JLabel) rendered).getText();
     }
 
-    /** Un boton de radio por su texto, entre los que arma un grupo de opciones siempre visibles. */
     public static JRadioButton radioButtonWithText(Container root, String text) {
         for (Component child : root.getComponents()) {
             if (child instanceof JRadioButton radio && text.equals(radio.getText())) {

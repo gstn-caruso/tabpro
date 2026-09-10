@@ -22,12 +22,10 @@ public final class FretDigits {
         this.windowMillis = windowMillis;
     }
 
-    /** El traste de una pista de guitarra: dos digitos combinan si el resultado no pasa el ultimo traste. */
     public int fretFor(char digit) {
         return fretFor(digit, combined -> combined <= Tuning.MAX_FRET);
     }
 
-    /** El numero de una pista cualquiera: dos digitos combinan si el resultado le sirve a esa pista. */
     public int fretFor(char digit, IntPredicate combinable) {
         int typed = digit - '0';
         int combined = pendingFret == null ? -1 : pendingFret * 10 + typed;
