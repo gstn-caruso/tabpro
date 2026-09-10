@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.swing.JComboBox;
 
-/** Los carteles y los saltos que puede llevar el final de un compas. */
 public final class DirectionsPanel extends FormPanel {
 
     private final JComboBox<DirectionSymbol> symbol = new JComboBox<>(withNone(DirectionSymbol.values()));

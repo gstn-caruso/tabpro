@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
 
-/** La tonalidad del compas: cuantas alteraciones lleva y si es mayor o menor. */
 public final class KeySignaturePanel extends FormPanel {
 
     private final JComboBox<KeySignature> keySignature = new JComboBox<>(everyKeySignature());
