@@ -1,3 +1,9 @@
+## [0.39.0](https://github.com/gstn-caruso/tabpro/compare/v0.38.0...v0.39.0) (2026-09-10)
+
+### Features
+
+* **toolbar:** las ocho dinámicas y el banco de sonidos como botones, donde GP5 los pone ([#132](https://github.com/gstn-caruso/tabpro/issues/132)) ([6ac062f](https://github.com/gstn-caruso/tabpro/commit/6ac062f7c072ba251ebe8a13422467818976fb8d))
+
 ## [0.38.0](https://github.com/gstn-caruso/tabpro/compare/v0.37.1...v0.38.0) (2026-09-10)
 
 ### Features
