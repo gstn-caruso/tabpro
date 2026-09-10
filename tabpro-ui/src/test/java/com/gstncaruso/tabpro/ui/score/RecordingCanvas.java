@@ -27,26 +27,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public final class LienzoDePrueba extends Graphics2D {
+public final class RecordingCanvas extends Graphics2D {
 
-    private record OrdenDeDibujo(double x, double y, double width, double height, Color color, Font fuente, String texto) {
+    private record DrawOrder(double x, double y, double width, double height, Color color, Font font, String text) {
 
-        boolean tocaA(Rectangle region) {
+        boolean touches(Rectangle region) {
             return region.intersects(x, y, Math.max(width, 1), Math.max(height, 1));
         }
     }
 
-    public record TextoDibujado(Font fuente, String texto) {
+    public record DrawnText(Font font, String text) {
     }
 
-    private final List<OrdenDeDibujo> ordenes;
-    private final Graphics2D delegado;
+    private final List<DrawOrder> orders;
+    private final Graphics2D delegate;
 
-    public LienzoDePrueba() {
+    public RecordingCanvas() {
         this(new ArrayList<>(), new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics());
     }
 
-    public LienzoDePrueba(Rectangle clip) {
+    public RecordingCanvas(Rectangle clip) {
         this(new ArrayList<>(), clippedCanvas(clip));
     }
 
@@ -56,99 +56,99 @@ public final class LienzoDePrueba extends Graphics2D {
         return canvas;
     }
 
-    private LienzoDePrueba(List<OrdenDeDibujo> ordenes, Graphics2D delegado) {
-        this.ordenes = ordenes;
-        this.delegado = delegado;
+    private RecordingCanvas(List<DrawOrder> orders, Graphics2D delegate) {
+        this.orders = orders;
+        this.delegate = delegate;
     }
 
-    public boolean dibujaColor(Color color) {
-        return ordenes.stream().anyMatch(orden -> orden.color().equals(color));
+    public boolean drawsColor(Color color) {
+        return orders.stream().anyMatch(order -> order.color().equals(color));
     }
 
-    public boolean dibujaColorEnRegion(Color color, Rectangle region) {
-        return ordenes.stream().anyMatch(orden -> orden.color().equals(color) && orden.tocaA(region));
+    public boolean drawsColorInRegion(Color color, Rectangle region) {
+        return orders.stream().anyMatch(order -> order.color().equals(color) && order.touches(region));
     }
 
-    public boolean escribeTextoEnRegion(String texto, Rectangle region) {
-        return ordenes.stream().anyMatch(orden -> texto.equals(orden.texto()) && orden.tocaA(region));
+    public boolean writesTextInRegion(String text, Rectangle region) {
+        return orders.stream().anyMatch(order -> text.equals(order.text()) && order.touches(region));
     }
 
-    public List<TextoDibujado> textosDibujados() {
-        return ordenes.stream()
-                .filter(orden -> orden.texto() != null)
-                .map(orden -> new TextoDibujado(orden.fuente(), orden.texto()))
+    public List<DrawnText> drawnTexts() {
+        return orders.stream()
+                .filter(order -> order.text() != null)
+                .map(order -> new DrawnText(order.font(), order.text()))
                 .toList();
     }
 
-    public boolean coincideEnRegionCon(LienzoDePrueba otro, Rectangle region) {
-        return ordenesEnRegion(region).equals(otro.ordenesEnRegion(region));
+    public boolean matchesInRegion(RecordingCanvas other, Rectangle region) {
+        return ordersInRegion(region).equals(other.ordersInRegion(region));
     }
 
-    public boolean coincideCon(LienzoDePrueba otro) {
-        return ordenes.equals(otro.ordenes);
+    public boolean matches(RecordingCanvas other) {
+        return orders.equals(other.orders);
     }
 
-    private List<OrdenDeDibujo> ordenesEnRegion(Rectangle region) {
-        return ordenes.stream().filter(orden -> orden.tocaA(region)).toList();
+    private List<DrawOrder> ordersInRegion(Rectangle region) {
+        return orders.stream().filter(order -> order.touches(region)).toList();
     }
 
-    private void anotar(Rectangle2D limitesLocales, String texto) {
-        Rectangle2D absolutos = delegado.getTransform().createTransformedShape(limitesLocales).getBounds2D();
-        ordenes.add(new OrdenDeDibujo(absolutos.getX(), absolutos.getY(), absolutos.getWidth(), absolutos.getHeight(),
-                delegado.getColor(), delegado.getFont(), texto));
+    private void recordOrder(Rectangle2D localBounds, String text) {
+        Rectangle2D absoluteBounds = delegate.getTransform().createTransformedShape(localBounds).getBounds2D();
+        orders.add(new DrawOrder(absoluteBounds.getX(), absoluteBounds.getY(), absoluteBounds.getWidth(), absoluteBounds.getHeight(),
+                delegate.getColor(), delegate.getFont(), text));
     }
 
-    private void anotarTexto(String texto, double x, double y) {
-        FontMetrics metricas = delegado.getFontMetrics();
-        double ancho = Math.max(metricas.stringWidth(texto), 1);
-        double alto = Math.max(metricas.getAscent() + metricas.getDescent(), 1);
-        anotar(new Rectangle2D.Double(x, y - metricas.getAscent(), ancho, alto), texto);
+    private void recordText(String text, double x, double y) {
+        FontMetrics metrics = delegate.getFontMetrics();
+        double width = Math.max(metrics.stringWidth(text), 1);
+        double height = Math.max(metrics.getAscent() + metrics.getDescent(), 1);
+        recordOrder(new Rectangle2D.Double(x, y - metrics.getAscent(), width, height), text);
     }
 
     @Override
     public void draw(Shape shape) {
-        anotar(shape.getBounds2D(), null);
+        recordOrder(shape.getBounds2D(), null);
     }
 
     @Override
     public void fill(Shape shape) {
-        anotar(shape.getBounds2D(), null);
+        recordOrder(shape.getBounds2D(), null);
     }
 
     @Override
     public void fillRect(int x, int y, int width, int height) {
-        anotar(new Rectangle2D.Double(x, y, width, height), null);
+        recordOrder(new Rectangle2D.Double(x, y, width, height), null);
     }
 
     @Override
     public void drawRect(int x, int y, int width, int height) {
-        anotar(new Rectangle2D.Double(x, y, width, height), null);
+        recordOrder(new Rectangle2D.Double(x, y, width, height), null);
     }
 
     @Override
     public void fillOval(int x, int y, int width, int height) {
-        anotar(new Rectangle2D.Double(x, y, width, height), null);
+        recordOrder(new Rectangle2D.Double(x, y, width, height), null);
     }
 
     @Override
     public void drawOval(int x, int y, int width, int height) {
-        anotar(new Rectangle2D.Double(x, y, width, height), null);
+        recordOrder(new Rectangle2D.Double(x, y, width, height), null);
     }
 
     @Override
     public void drawLine(int x1, int y1, int x2, int y2) {
-        anotar(new Rectangle2D.Double(
+        recordOrder(new Rectangle2D.Double(
                 Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1)), null);
     }
 
     @Override
     public void drawString(String text, int x, int y) {
-        anotarTexto(text, x, y);
+        recordText(text, x, y);
     }
 
     @Override
     public void drawString(String text, float x, float y) {
-        anotarTexto(text, x, y);
+        recordText(text, x, y);
     }
 
     @Override
@@ -225,12 +225,12 @@ public final class LienzoDePrueba extends Graphics2D {
 
     @Override
     public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        anotar(new Rectangle2D.Double(x, y, width, height), null);
+        recordOrder(new Rectangle2D.Double(x, y, width, height), null);
     }
 
     @Override
     public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        anotar(new Rectangle2D.Double(x, y, width, height), null);
+        recordOrder(new Rectangle2D.Double(x, y, width, height), null);
     }
 
     @Override
@@ -260,27 +260,27 @@ public final class LienzoDePrueba extends Graphics2D {
 
     @Override
     public Graphics create() {
-        return new LienzoDePrueba(ordenes, (Graphics2D) delegado.create());
+        return new RecordingCanvas(orders, (Graphics2D) delegate.create());
     }
 
     @Override
     public GraphicsConfiguration getDeviceConfiguration() {
-        return delegado.getDeviceConfiguration();
+        return delegate.getDeviceConfiguration();
     }
 
     @Override
     public void setComposite(Composite composite) {
-        delegado.setComposite(composite);
+        delegate.setComposite(composite);
     }
 
     @Override
     public void setPaint(Paint paint) {
-        delegado.setPaint(paint);
+        delegate.setPaint(paint);
     }
 
     @Override
     public void setStroke(Stroke stroke) {
-        delegado.setStroke(stroke);
+        delegate.setStroke(stroke);
     }
 
     @Override
@@ -302,147 +302,147 @@ public final class LienzoDePrueba extends Graphics2D {
 
     @Override
     public RenderingHints getRenderingHints() {
-        return delegado.getRenderingHints();
+        return delegate.getRenderingHints();
     }
 
     @Override
     public void translate(int x, int y) {
-        delegado.translate(x, y);
+        delegate.translate(x, y);
     }
 
     @Override
     public void translate(double x, double y) {
-        delegado.translate(x, y);
+        delegate.translate(x, y);
     }
 
     @Override
     public void rotate(double theta) {
-        delegado.rotate(theta);
+        delegate.rotate(theta);
     }
 
     @Override
     public void rotate(double theta, double x, double y) {
-        delegado.rotate(theta, x, y);
+        delegate.rotate(theta, x, y);
     }
 
     @Override
     public void scale(double x, double y) {
-        delegado.scale(x, y);
+        delegate.scale(x, y);
     }
 
     @Override
     public void shear(double x, double y) {
-        delegado.shear(x, y);
+        delegate.shear(x, y);
     }
 
     @Override
     public void transform(AffineTransform transform) {
-        delegado.transform(transform);
+        delegate.transform(transform);
     }
 
     @Override
     public void setTransform(AffineTransform transform) {
-        delegado.setTransform(transform);
+        delegate.setTransform(transform);
     }
 
     @Override
     public AffineTransform getTransform() {
-        return delegado.getTransform();
+        return delegate.getTransform();
     }
 
     @Override
     public Paint getPaint() {
-        return delegado.getPaint();
+        return delegate.getPaint();
     }
 
     @Override
     public Composite getComposite() {
-        return delegado.getComposite();
+        return delegate.getComposite();
     }
 
     @Override
     public void setBackground(Color color) {
-        delegado.setBackground(color);
+        delegate.setBackground(color);
     }
 
     @Override
     public Color getBackground() {
-        return delegado.getBackground();
+        return delegate.getBackground();
     }
 
     @Override
     public Stroke getStroke() {
-        return delegado.getStroke();
+        return delegate.getStroke();
     }
 
     @Override
     public void clip(Shape shape) {
-        delegado.clip(shape);
+        delegate.clip(shape);
     }
 
     @Override
     public FontRenderContext getFontRenderContext() {
-        return delegado.getFontRenderContext();
+        return delegate.getFontRenderContext();
     }
 
     @Override
     public Color getColor() {
-        return delegado.getColor();
+        return delegate.getColor();
     }
 
     @Override
     public void setColor(Color color) {
-        delegado.setColor(color);
+        delegate.setColor(color);
     }
 
     @Override
     public void setPaintMode() {
-        delegado.setPaintMode();
+        delegate.setPaintMode();
     }
 
     @Override
     public void setXORMode(Color color) {
-        delegado.setXORMode(color);
+        delegate.setXORMode(color);
     }
 
     @Override
     public Font getFont() {
-        return delegado.getFont();
+        return delegate.getFont();
     }
 
     @Override
     public void setFont(Font font) {
-        delegado.setFont(font);
+        delegate.setFont(font);
     }
 
     @Override
     public FontMetrics getFontMetrics(Font font) {
-        return delegado.getFontMetrics(font);
+        return delegate.getFontMetrics(font);
     }
 
     @Override
     public Rectangle getClipBounds() {
-        return delegado.getClipBounds();
+        return delegate.getClipBounds();
     }
 
     @Override
     public void clipRect(int x, int y, int width, int height) {
-        delegado.clipRect(x, y, width, height);
+        delegate.clipRect(x, y, width, height);
     }
 
     @Override
     public void setClip(int x, int y, int width, int height) {
-        delegado.setClip(x, y, width, height);
+        delegate.setClip(x, y, width, height);
     }
 
     @Override
     public Shape getClip() {
-        return delegado.getClip();
+        return delegate.getClip();
     }
 
     @Override
     public void setClip(Shape shape) {
-        delegado.setClip(shape);
+        delegate.setClip(shape);
     }
 
     @Override

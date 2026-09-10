@@ -221,7 +221,7 @@ class PageScorePainterTest {
         PageMetrics sheet = PageMetrics.of(PageSetup.defaults());
         int stride = sheet.pageHeight() + PageMetrics.PAGE_GAP;
         Rectangle clipOnTheMiddlePage = new Rectangle(0, stride, sheet.pageWidth(), sheet.pageHeight());
-        LienzoDePrueba lienzo = new LienzoDePrueba(clipOnTheMiddlePage);
+        RecordingCanvas lienzo = new RecordingCanvas(clipOnTheMiddlePage);
 
         PageScorePainter.paint(
                 lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
@@ -249,7 +249,7 @@ class PageScorePainterTest {
 
         int measureOnlyOnTheFirstPage = pagination.firstMeasureOfPage().get(0) + 1;
         int measureOnlyOnTheThirdPage = pagination.firstMeasureOfPage().get(2) + 1;
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas lienzo = new RecordingCanvas();
 
         PageScorePainter.paintPage(
                 lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport, 1);
@@ -262,16 +262,16 @@ class PageScorePainterTest {
         assertFalse(painted.isEmpty(), "la hoja del medio tiene que pintar sus propios compases");
     }
 
-    private static Set<Integer> measureNumbersPaintedIn(LienzoDePrueba lienzo) {
-        return lienzo.textosDibujados().stream()
-                .filter(texto -> ScoreFonts.MEASURE_NUMBER_FONT.equals(texto.fuente()))
-                .map(texto -> Integer.parseInt(texto.texto()))
+    private static Set<Integer> measureNumbersPaintedIn(RecordingCanvas lienzo) {
+        return lienzo.drawnTexts().stream()
+                .filter(drawnText -> ScoreFonts.MEASURE_NUMBER_FONT.equals(drawnText.font()))
+                .map(drawnText -> Integer.parseInt(drawnText.text()))
                 .collect(Collectors.toSet());
     }
 
-    private static Set<String> footersPaintedIn(LienzoDePrueba lienzo) {
-        return lienzo.textosDibujados().stream()
-                .map(LienzoDePrueba.TextoDibujado::texto)
+    private static Set<String> footersPaintedIn(RecordingCanvas lienzo) {
+        return lienzo.drawnTexts().stream()
+                .map(RecordingCanvas.DrawnText::text)
                 .collect(Collectors.toSet());
     }
 
@@ -284,7 +284,7 @@ class PageScorePainterTest {
                 PageBanner.header().with(PageElement.TITLE, false, "[%title]"), PageBanner.footer());
 
         assertFalse(
-                renderConLienzo(score, showingTheTitle).coincideEnRegionCon(
+                renderConLienzo(score, showingTheTitle).matchesInRegion(
                         renderConLienzo(score, hidingTheTitle), headerRegionOf(showingTheTitle)),
                 "destildar el titulo tiene que sacarlo de la hoja");
     }
@@ -295,46 +295,46 @@ class PageScorePainterTest {
                 PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, 100,
                 onlyTheTitleSaying("Cancionero de la casa"), PageBanner.footer());
 
-        LienzoDePrueba one = renderConLienzo(Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
-        LienzoDePrueba another = renderConLienzo(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
+        RecordingCanvas one = renderConLienzo(Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
+        RecordingCanvas another = renderConLienzo(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
 
-        assertTrue(one.coincideEnRegionCon(another, headerRegionOf(fixedHeading)),
+        assertTrue(one.matchesInRegion(another, headerRegionOf(fixedHeading)),
                 "el encabezado es el texto configurado, no el titulo de la partitura");
     }
 
     @Test
     void theParameterChangeMarkIsRedOnPaperJustLikeOnScreen() {
-        LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
+        RecordingCanvas lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
 
-        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.PARAMETER_CHANGE, musicRegionOf(PageSetup.defaults())),
+        assertTrue(lienzo.drawsColorInRegion(ScoreColors.PARAMETER_CHANGE, musicRegionOf(PageSetup.defaults())),
                 "el cambio de parametro se anuncia en rojo");
     }
 
     @Test
     void thePlayingLineIsTheSameGreenOnPaperAsOnScreen() {
-        LienzoDePrueba lienzo = renderConLienzo(
+        RecordingCanvas lienzo = renderConLienzo(
                 scoreWithAParameterChange(), PageSetup.defaults(),
                 Playhead.silent().advancedTo(new com.gstncaruso.tabpro.core.playback.BeatPosition(0, 0, 0)));
 
-        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.PLAYING, musicRegionOf(PageSetup.defaults())),
+        assertTrue(lienzo.drawsColorInRegion(ScoreColors.PLAYING, musicRegionOf(PageSetup.defaults())),
                 "la linea de reproduccion tiene que verse verde en la hoja");
     }
 
     @Test
     void theEditingCursorIsTheSameRedOnPaperAsOnScreen() {
-        LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
+        RecordingCanvas lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
 
-        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.CURSOR, musicRegionOf(PageSetup.defaults())),
+        assertTrue(lienzo.drawsColorInRegion(ScoreColors.CURSOR, musicRegionOf(PageSetup.defaults())),
                 "el cursor de edicion tiene que verse rojo en la hoja");
     }
 
     @Test
     void theScoreIsWrittenInDarkInkOnPaper() {
-        LienzoDePrueba lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
+        RecordingCanvas lienzo = renderConLienzo(scoreWithAParameterChange(), PageSetup.defaults());
         Rectangle music = musicRegionOf(PageSetup.defaults());
 
-        assertTrue(lienzo.dibujaColorEnRegion(ScoreColors.PAGE_INK, music), "la partitura se escribe con la tinta de la hoja");
-        assertFalse(lienzo.dibujaColorEnRegion(ScoreColors.INK, music), "y no con la tinta clara de la pantalla");
+        assertTrue(lienzo.drawsColorInRegion(ScoreColors.PAGE_INK, music), "la partitura se escribe con la tinta de la hoja");
+        assertFalse(lienzo.drawsColorInRegion(ScoreColors.INK, music), "y no con la tinta clara de la pantalla");
     }
 
     @Test
@@ -404,13 +404,13 @@ class PageScorePainterTest {
         return banner;
     }
 
-    private static LienzoDePrueba renderConLienzo(Score score, PageSetup setup) {
+    private static RecordingCanvas renderConLienzo(Score score, PageSetup setup) {
         return renderConLienzo(score, setup, Playhead.silent());
     }
 
-    private static LienzoDePrueba renderConLienzo(Score score, PageSetup setup, Playhead playhead) {
+    private static RecordingCanvas renderConLienzo(Score score, PageSetup setup, Playhead playhead) {
         ScoreViewport viewport = pageViewport(setup);
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas lienzo = new RecordingCanvas();
         PageScorePainter.paint(lienzo, score, new Cursor(0, 0, 0, 1), playhead, Optional.empty(), viewport);
         return lienzo;
     }
@@ -479,7 +479,7 @@ class PageScorePainterTest {
 
     private static void paintOn(Score score, ScoreViewport viewport) {
         PageScorePainter.paint(
-                new LienzoDePrueba(), score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
+                new RecordingCanvas(), score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
     }
 
     private static Score scoreWithLyricsAndInfo() {

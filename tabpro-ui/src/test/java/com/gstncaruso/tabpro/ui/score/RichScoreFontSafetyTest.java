@@ -51,20 +51,20 @@ class RichScoreFontSafetyTest {
 
     @Test
     void everyTextInARichScoreIsShownByAFontThatCanDisplayIt() {
-        LienzoDePrueba lienzo = paint(richScore());
+        RecordingCanvas lienzo = paint(richScore());
 
-        List<LienzoDePrueba.TextoDibujado> textos = lienzo.textosDibujados();
-        assertFalse(textos.isEmpty(), "la partitura rica tiene que haber escrito algo");
-        for (LienzoDePrueba.TextoDibujado escrito : textos) {
-            assertEquals(-1, escrito.fuente().canDisplayUpTo(escrito.texto()),
-                    "\"" + escrito.texto() + "\" se escribio con " + escrito.fuente().getFontName()
+        List<RecordingCanvas.DrawnText> drawnTexts = lienzo.drawnTexts();
+        assertFalse(drawnTexts.isEmpty(), "la partitura rica tiene que haber escrito algo");
+        for (RecordingCanvas.DrawnText drawnText : drawnTexts) {
+            assertEquals(-1, drawnText.font().canDisplayUpTo(drawnText.text()),
+                    "\"" + drawnText.text() + "\" se escribio con " + drawnText.font().getFontName()
                             + ", que no sabe mostrar alguno de sus caracteres");
         }
     }
 
-    private static LienzoDePrueba paint(Score score) {
+    private static RecordingCanvas paint(Score score) {
         ScoreViewport viewport = ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), WIDTH).withPageSetup(PageSetup.defaults());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas lienzo = new RecordingCanvas();
         PageScorePainter.paint(lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport);
         return lienzo;
     }

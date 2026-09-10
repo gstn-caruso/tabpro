@@ -41,15 +41,15 @@ class TabSymbolLabelPaintingTest {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score score = new Score("", 120, List.of(track));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas lienzo = new RecordingCanvas();
 
         TabSymbolPainter.paintMeasure(lienzo, layout, track, 0, 0);
 
-        List<LienzoDePrueba.TextoDibujado> textos = lienzo.textosDibujados();
-        assertEquals(1, textos.size(), "el efecto tiene que escribir exactamente una sigla");
-        LienzoDePrueba.TextoDibujado escrito = textos.get(0);
-        assertEquals(-1, escrito.fuente().canDisplayUpTo(escrito.texto()),
-                "la sigla \"" + escrito.texto() + "\" tiene un caracter que "
-                        + escrito.fuente().getFontName() + " no sabe mostrar");
+        List<RecordingCanvas.DrawnText> drawnTexts = lienzo.drawnTexts();
+        assertEquals(1, drawnTexts.size(), "el efecto tiene que escribir exactamente una sigla");
+        RecordingCanvas.DrawnText drawnText = drawnTexts.get(0);
+        assertEquals(-1, drawnText.font().canDisplayUpTo(drawnText.text()),
+                "la sigla \"" + drawnText.text() + "\" tiene un caracter que "
+                        + drawnText.font().getFontName() + " no sabe mostrar");
     }
 }

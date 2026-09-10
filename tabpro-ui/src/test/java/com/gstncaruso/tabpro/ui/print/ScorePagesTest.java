@@ -13,7 +13,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
-import com.gstncaruso.tabpro.ui.score.LienzoDePrueba;
+import com.gstncaruso.tabpro.ui.score.RecordingCanvas;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -68,10 +68,10 @@ class ScorePagesTest {
         ScorePrinting.ScorePages paginas = new ScorePrinting.ScorePages(larga, A4, PrintSettings.everything(total));
         PageFormat papel = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
 
-        LienzoDePrueba hoja1 = lienzoDeLaHojaImpresa(paginas, papel, 0);
-        LienzoDePrueba hoja2 = lienzoDeLaHojaImpresa(paginas, papel, 1);
+        RecordingCanvas hoja1 = lienzoDeLaHojaImpresa(paginas, papel, 0);
+        RecordingCanvas hoja2 = lienzoDeLaHojaImpresa(paginas, papel, 1);
 
-        assertFalse(hoja1.coincideCon(hoja2), "la hoja 2 no puede salir igual a la 1");
+        assertFalse(hoja1.matches(hoja2), "la hoja 2 no puede salir igual a la 1");
     }
 
     @Test
@@ -84,18 +84,18 @@ class ScorePagesTest {
         ScorePrinting.ScorePages paginas = new ScorePrinting.ScorePages(score, A4, soloDeLaDosALaTres);
         PageFormat papel = pageFormatOf(ScoreSheets.pageSize(Zoom.whole(), A4));
 
-        LienzoDePrueba primeraQueSale = new LienzoDePrueba();
-        LienzoDePrueba segundaQueSale = new LienzoDePrueba();
+        RecordingCanvas primeraQueSale = new RecordingCanvas();
+        RecordingCanvas segundaQueSale = new RecordingCanvas();
         assertEquals(Printable.PAGE_EXISTS, paginas.print(primeraQueSale, papel, 0));
         assertEquals(Printable.PAGE_EXISTS, paginas.print(segundaQueSale, papel, 1));
         assertEquals(Printable.NO_SUCH_PAGE, imprimirEnLienzo(paginas, papel, 2),
                 "el rango pide dos hojas nada mas");
 
         assertTrue(
-                lienzoDeLaHojaReal(score, 1).coincideCon(primeraQueSale),
+                lienzoDeLaHojaReal(score, 1).matches(primeraQueSale),
                 "lo primero que imprime el rango 2-3 tiene que ser la hoja 2 real de la partitura, no la 1");
         assertTrue(
-                lienzoDeLaHojaReal(score, 2).coincideCon(segundaQueSale),
+                lienzoDeLaHojaReal(score, 2).matches(segundaQueSale),
                 "lo segundo que imprime el rango 2-3 tiene que ser la hoja 3 real de la partitura");
     }
 
@@ -175,17 +175,17 @@ class ScorePagesTest {
     }
 
     private static int imprimirEnLienzo(ScorePrinting.ScorePages paginas, PageFormat format, int pageIndex) {
-        return paginas.print(new LienzoDePrueba(), format, pageIndex);
+        return paginas.print(new RecordingCanvas(), format, pageIndex);
     }
 
-    private static LienzoDePrueba lienzoDeLaHojaImpresa(ScorePrinting.ScorePages paginas, PageFormat format, int pageIndex) {
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+    private static RecordingCanvas lienzoDeLaHojaImpresa(ScorePrinting.ScorePages paginas, PageFormat format, int pageIndex) {
+        RecordingCanvas lienzo = new RecordingCanvas();
         paginas.print(lienzo, format, pageIndex);
         return lienzo;
     }
 
-    private static LienzoDePrueba lienzoDeLaHojaReal(Score score, int page) {
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+    private static RecordingCanvas lienzoDeLaHojaReal(Score score, int page) {
+        RecordingCanvas lienzo = new RecordingCanvas();
         ScoreSheets.paintPageOn(lienzo, score, Zoom.whole(), A4, page);
         return lienzo;
     }

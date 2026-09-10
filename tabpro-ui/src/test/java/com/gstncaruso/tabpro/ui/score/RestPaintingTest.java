@@ -61,12 +61,12 @@ class RestPaintingTest {
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
         Score score = new Score("", 120, List.of(track));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas lienzo = new RecordingCanvas();
 
         StaffPainter.paintMeasure(lienzo, layout, track, Clef.TREBLE, 0, 0, Optional.empty());
 
         int y = layout.stepY(0, 0, step);
-        assertTrue(lienzo.escribeTextoEnRegion(glyph, new Rectangle(0, y - 2, WIDTH, 4)),
+        assertTrue(lienzo.writesTextInRegion(glyph, new Rectangle(0, y - 2, WIDTH, 4)),
                 "el silencio tiene que escribir el glifo de Bravura en su linea de referencia");
     }
 }

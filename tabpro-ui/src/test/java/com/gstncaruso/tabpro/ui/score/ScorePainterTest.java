@@ -251,12 +251,12 @@ class ScorePainterTest {
         Score score = new Score("", 120, List.of(
                 new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(withExplicitChange))));
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas lienzo = new RecordingCanvas();
 
         ScorePainter.paint(lienzo, layout, score, new Cursor(0, 0, 0, 1), Playhead.silent());
 
-        long tempoGlyphs = lienzo.textosDibujados().stream()
-                .filter(texto -> MusicFont.metNoteQuarterUp().equals(texto.texto()))
+        long tempoGlyphs = lienzo.drawnTexts().stream()
+                .filter(drawnText -> MusicFont.metNoteQuarterUp().equals(drawnText.text()))
                 .count();
         assertEquals(1, tempoGlyphs, "el compas 1 solo tiene que mostrar un tempo, el del cambio explicito");
     }
@@ -913,7 +913,7 @@ class ScorePainterTest {
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
         Rectangle clipOnTheFirstSystem = new Rectangle(
                 0, 0, WIDTH, ScoreLayout.TOP_MARGIN + layout.systemHeight());
-        LienzoDePrueba lienzo = new LienzoDePrueba(clipOnTheFirstSystem);
+        RecordingCanvas lienzo = new RecordingCanvas(clipOnTheFirstSystem);
 
         ScorePainter.paint(lienzo, layout, score, new Cursor(-1, 0, 0, 1), Playhead.silent());
 
@@ -932,7 +932,7 @@ class ScorePainterTest {
         Rectangle screenClip = new Rectangle(0, clipTop, WIDTH, screenHeight);
         int firstVisibleSystem = layout.systemAt(clipTop);
         int lastVisibleSystem = layout.systemAt(clipTop + screenHeight);
-        LienzoDePrueba lienzo = new LienzoDePrueba(screenClip);
+        RecordingCanvas lienzo = new RecordingCanvas(screenClip);
 
         ScorePainter.paint(lienzo, layout, score, new Cursor(-1, 0, 0, 1), Playhead.silent());
 
@@ -946,10 +946,10 @@ class ScorePainterTest {
         }
     }
 
-    private static Set<Integer> measureNumbersPaintedIn(LienzoDePrueba lienzo) {
-        return lienzo.textosDibujados().stream()
-                .filter(texto -> ScoreFonts.MEASURE_NUMBER_FONT.equals(texto.fuente()))
-                .map(texto -> Integer.parseInt(texto.texto()))
+    private static Set<Integer> measureNumbersPaintedIn(RecordingCanvas lienzo) {
+        return lienzo.drawnTexts().stream()
+                .filter(drawnText -> ScoreFonts.MEASURE_NUMBER_FONT.equals(drawnText.font()))
+                .map(drawnText -> Integer.parseInt(drawnText.text()))
                 .collect(Collectors.toSet());
     }
 

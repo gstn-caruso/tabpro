@@ -27,7 +27,7 @@ class CodaPaintingTest {
                 measure.withAttributes(measure.attributes().withSymbol(DirectionSymbol.CODA))));
 
         ScoreLayout layout = ScoreLayout.of(score, WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas lienzo = new RecordingCanvas();
 
         BarStructurePainter.paintScoreWide(lienzo, layout, score.track(0), 0, 0);
 
@@ -35,7 +35,7 @@ class CodaPaintingTest {
         int right = left + layout.measureWidth(0);
         int centerX = (left + right) / 2;
         int y = layout.staffTop(0, 0) - 16;
-        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.coda(), new Rectangle(centerX - 10, y - 10, 20, 20)),
+        assertTrue(lienzo.writesTextInRegion(MusicFont.coda(), new Rectangle(centerX - 10, y - 10, 20, 20)),
                 "la coda tiene que escribir el glifo de Bravura arriba del sistema");
     }
 }

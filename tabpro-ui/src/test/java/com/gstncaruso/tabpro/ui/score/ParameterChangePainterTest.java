@@ -69,12 +69,12 @@ class ParameterChangePainterTest {
         Measure measure = changingAt(0, change(SoundParameter.TEMPO, 90));
         Track track = guitarWith(measure);
         ScoreLayout layout = ScoreLayout.of(scoreWith(measure), WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas lienzo = new RecordingCanvas();
 
         ParameterChangePainter.paintMeasure(lienzo, layout, track, 0, 0);
 
         int bottom = layout.staffTop(0, 0) - 16;
-        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.metNoteQuarterUp(), new Rectangle(0, bottom - 14, WIDTH, 16)),
+        assertTrue(lienzo.writesTextInRegion(MusicFont.metNoteQuarterUp(), new Rectangle(0, bottom - 14, WIDTH, 16)),
                 "el tempo tiene que escribir la negra chiquita con el glifo de Bravura");
     }
 
@@ -83,12 +83,12 @@ class ParameterChangePainterTest {
         Measure measure = changingAt(0, change(SoundParameter.TEMPO, 90));
         Track track = guitarWith(measure);
         ScoreLayout layout = ScoreLayout.of(scoreWith(measure), WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas lienzo = new RecordingCanvas();
 
         ParameterChangePainter.paintMeasure(lienzo, layout, track, 0, 0);
 
-        assertTrue(lienzo.dibujaColor(ScoreColors.TEMPO), "el tempo se escribe en rojo, como en GP5");
-        assertFalse(lienzo.dibujaColor(ScoreColors.INK), "el tempo no deja tinta plana");
+        assertTrue(lienzo.drawsColor(ScoreColors.TEMPO), "el tempo se escribe en rojo, como en GP5");
+        assertFalse(lienzo.drawsColor(ScoreColors.INK), "el tempo no deja tinta plana");
     }
 
     @Test
@@ -96,12 +96,12 @@ class ParameterChangePainterTest {
         Measure measure = plainMeasure();
         Track track = guitarWith(measure);
         ScoreLayout layout = ScoreLayout.of(scoreWith(measure), WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas lienzo = new RecordingCanvas();
 
         ParameterChangePainter.paintInitialTempo(lienzo, layout, track, 0, 0, 120);
 
         int bottom = layout.staffTop(0, 0) - 16;
-        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.metNoteQuarterUp(), new Rectangle(0, bottom - 14, WIDTH, 16)),
+        assertTrue(lienzo.writesTextInRegion(MusicFont.metNoteQuarterUp(), new Rectangle(0, bottom - 14, WIDTH, 16)),
                 "el tempo inicial tiene que escribir la negra de Bravura arriba del primer compas");
     }
 
@@ -110,11 +110,11 @@ class ParameterChangePainterTest {
         Measure measure = changingAt(0, change(SoundParameter.TEMPO, 90));
         Track track = guitarWith(measure);
         ScoreLayout layout = ScoreLayout.of(scoreWith(measure), WIDTH, VisibleTracks.all());
-        LienzoDePrueba lienzo = new LienzoDePrueba();
+        RecordingCanvas lienzo = new RecordingCanvas();
 
         ParameterChangePainter.paintInitialTempo(lienzo, layout, track, 0, 0, 120);
 
-        assertFalse(lienzo.dibujaColor(ScoreColors.TEMPO),
+        assertFalse(lienzo.drawsColor(ScoreColors.TEMPO),
                 "el cambio de tempo del beat 0 ya lo escribe; el tempo inicial no se duplica");
     }
 
