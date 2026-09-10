@@ -1,0 +1,75 @@
+package com.gstncaruso.tabpro.ui.toolbar;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.actions.Commands;
+import com.gstncaruso.tabpro.ui.actions.Ports;
+import java.awt.Component;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JToolBar;
+import org.junit.jupiter.api.Test;
+
+/**
+ * Guitar Pro 5, manual pagina 14: cada fila de la barra de herramientas trae los mismos grupos,
+ * en el mismo orden y con los mismos separadores. Un token "|" marca un separador; el resto son
+ * los nombres de los comandos del catalogo, en el orden exacto en que tienen que aparecer.
+ */
+class ToolBarsOrderTest {
+
+    private static final String SEP = "|";
+
+    private final Editor editor = new Editor(Score.blank());
+    private final Commands commands = new Commands(
+            editor, record(Ports.Document.class), record(Ports.Dialogs.class),
+            record(Ports.Playback.class), record(Ports.View.class));
+    private final ToolBars toolBars = new ToolBars(commands);
+
+    @Test
+    void laFilaDeDocumentoYEdicionSigueElOrdenDeGuitarPro5() {
+        assertOrder(toolBars.documentToolBar,
+                "file.new", "file.open", "file.save", SEP,
+                "file.information", SEP,
+                "file.pageSetup", "file.print", SEP,
+                "edit.undo", "edit.redo", SEP,
+                "track.add", SEP,
+                "bar.insert", "bar.delete", SEP,
+                "edit.cut", "options.preferences", SEP,
+                "view.multitrack", SEP,
+                "view.page", "view.parchment", "view.verticalScreen", "view.horizontalScreen", SEP,
+                "view.zoomOut", "view.resetZoom", "view.zoomIn", SEP,
+                "view.fretboard", "view.keyboard", "view.mixTable", SEP,
+                "edit.copy", "edit.paste");
+    }
+
+    private void assertOrder(JToolBar bar, String... tokens) {
+        List<Object> expected = new ArrayList<>();
+        for (String token : tokens) {
+            expected.add(token.equals(SEP) ? SEP : commands.get(token));
+        }
+        assertEquals(expected, actualOrderOf(bar));
+    }
+
+    private List<Object> actualOrderOf(JToolBar bar) {
+        List<Object> actual = new ArrayList<>();
+        for (Component component : bar.getComponents()) {
+            if (component instanceof JToolBar.Separator) {
+                actual.add(SEP);
+            } else if (component instanceof JButton button) {
+                actual.add(button.getAction());
+            }
+        }
+        return actual;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T record(Class<T> port) {
+        InvocationHandler handler = (proxy, method, args) -> null;
+        return (T) Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[] {port}, handler);
+    }
+}

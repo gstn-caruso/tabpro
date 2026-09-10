@@ -24,7 +24,7 @@ public final class ToolBars {
     private final Commands commands;
     private final JPanel rows = new JPanel();
     private final JPanel structureRowExtras = transparentRow();
-    private final JComponent documentToolBar;
+    final JToolBar documentToolBar;
     private final JComponent structureToolBar;
     private final JComponent notationToolBar;
 
@@ -86,21 +86,36 @@ public final class ToolBars {
         structureRowExtras.add(component);
     }
 
-    private JComponent documentRow() {
+    /**
+     * Guitar Pro 5, manual pagina 14, fila 1: archivo, edicion, pistas, compases, vistas, zoom
+     * y paneles. Copiar y pegar no estan en esta fila del manual; se conservan al final, que es
+     * donde ya vivian antes de este orden.
+     */
+    private JToolBar documentRow() {
         JToolBar bar = emptyBar();
-        add(bar, "file.new", "file.open", "file.save", "file.print");
+        add(bar, "file.new", "file.open", "file.save");
+        bar.addSeparator();
+        add(bar, "file.information");
+        bar.addSeparator();
+        add(bar, "file.pageSetup", "file.print");
         bar.addSeparator();
         add(bar, "edit.undo", "edit.redo");
         bar.addSeparator();
-        add(bar, "edit.cut", "edit.copy", "edit.paste");
+        add(bar, "track.add");
         bar.addSeparator();
-        add(bar, "file.information", "file.pageSetup");
+        add(bar, "bar.insert", "bar.delete");
+        bar.addSeparator();
+        add(bar, "edit.cut", "options.preferences");
+        bar.addSeparator();
+        add(bar, "view.multitrack");
         bar.addSeparator();
         add(bar, "view.page", "view.parchment", "view.verticalScreen", "view.horizontalScreen");
         bar.addSeparator();
         add(bar, "view.zoomOut", "view.resetZoom", "view.zoomIn");
         bar.addSeparator();
-        add(bar, "view.multitrack", "view.fretboard", "view.keyboard", "view.mixTable");
+        add(bar, "view.fretboard", "view.keyboard", "view.mixTable");
+        bar.addSeparator();
+        add(bar, "edit.copy", "edit.paste");
         return bar;
     }
 
@@ -144,7 +159,7 @@ public final class ToolBars {
     }
 
     /** Las filas arrancan pegadas a la izquierda, como en una barra de verdad. */
-    private static JComponent leftAligned(JComponent row) {
+    private static <T extends JComponent> T leftAligned(T row) {
         row.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, row.getPreferredSize().height));
         return row;
