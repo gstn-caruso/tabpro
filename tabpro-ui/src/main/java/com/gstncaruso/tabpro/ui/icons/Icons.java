@@ -298,10 +298,7 @@ public final class Icons {
     }
 
     public static Icon text() {
-        return icon((graphics, size) -> {
-            graphics.setFont(big(size));
-            graphics.drawString("T", (float) (size * 0.32), (float) (size * 0.78));
-        });
+        return svgIcon("typography");
     }
 
     // ---- sonido -----------------------------------------------------------
