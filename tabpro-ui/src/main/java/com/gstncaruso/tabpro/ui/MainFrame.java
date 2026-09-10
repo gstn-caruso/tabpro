@@ -169,7 +169,9 @@ public final class MainFrame extends JFrame {
         // (Command.checkedByDefault); si la preferencia guardada la tenia escondida, el
         // casillero real tiene que arrancar destildado, no al reves de lo que muestra la barra.
         commands.get("view.toolBars.effects").putValue(javax.swing.Action.SELECTED_KEY, effectsToolBarVisible);
-        toolBars.addToSoundRow(new JLabel("Tempo "));
+        JLabel tempoLabel = new JLabel("Tempo ");
+        tempoLabel.setForeground(Palette.text());
+        toolBars.addToSoundRow(tempoLabel);
         toolBars.addToSoundRow(tempoSpinner);
         setJMenuBar(new MenuBar(commands, document::recentFiles, documentActions::openRecent).build());
 
@@ -193,6 +195,7 @@ public final class MainFrame extends JFrame {
         // Guitar Pro 5: la barra de efectos va pegada abajo de la partitura, arriba de la mesa
         // de mezcla, no junto a las otras tres filas de arriba.
         JPanel scoreWithEffects = new JPanel(new BorderLayout());
+        scoreWithEffects.setBackground(Palette.panel());
         scoreWithEffects.add(scrollPane, BorderLayout.CENTER);
         scoreWithEffects.add(toolBars.effectsComponent(), BorderLayout.SOUTH);
 
