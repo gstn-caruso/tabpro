@@ -1,297 +1,309 @@
-# Auditoría — el manual de Guitar Pro 5 contra tabpro 0.8.0
+# Audit — the Guitar Pro 5 manual against tabpro 0.8.0
 
-Cinco agentes leyeron el manual (`assets/manual-guitar-pro-5.pdf`) bloque por
-bloque y verificaron cada ítem contra el código, con `archivo:línea` como prueba.
-Este documento lista **sólo los huecos**. El plan de trabajo vive en [PLAN.md](PLAN.md).
+Five agents read the manual (`assets/manual-guitar-pro-5.pdf`) block by
+block and checked every item against the code, with `file:line` as proof.
+This document lists **only the gaps**. The work plan lives in [PLAN.md](PLAN.md).
 
-Estado del código auditado: `main` = `4702129`, versión 0.8.0.
-
----
-
-## Importar y exportar
-
-Cobertura declarada por el auditor: 8 de 17 ítems presentes.
-
-### Exportación al formato Guitar Pro — AUSENTE · grande
-`File > Export > Guitar Pro 4 Format`. No existe `exportGuitarPro` en ningún
-módulo; `ScoreExchange.java:83` sólo declara `importGuitarPro(Path)`, y el menú
-Exportar (`MenuBar.java:45`) sólo trae MIDI/ASCII/MusicXML/Imagen/PDF.
-
-El lector ya existente (`tabpro-format/.../guitarpro/`, 2287 líneas) es el espejo
-a seguir: hace falta `GuitarProByteWriter` (little-endian: int, short, boolean,
-color, armadura, strings de largo fijo y prefijadas) y los escritores por sección
-(header, canales, atributos de compás, pistas, beats, notas, acordes, bends),
-orquestados por un `GuitarProFile.write(Score, Path)` con el mismo orden que
-`read()`. Como el destino es sólo GP4, no hace falta la abstracción
-`GuitarProVersion`: alcanza el layout fijo de GP4 (`generation=4, minor=6`).
-
-### Importación de PowerTab — AUSENTE · grande
-`File > Import > PowerTab`. Cero apariciones de "PowerTab" en el repo. Formato
-binario `.ptb`, documentado por el proyecto open source `powertabeditor`. Paquete
-nuevo `tabpro-format/.../powertab/` con el mismo patrón de capas que `guitarpro/`.
-
-### Importación de TablEdit — AUSENTE · grande
-`File > Import > TablEdit`. Cero apariciones en el repo. Formato binario `.tef`
-propietario y **sin especificación pública conocida** — es el más incierto de los
-cuatro huecos: habría que reversearlo desde archivos de muestra.
-
-### Exportación a WAVE — AUSENTE · grande
-`File > Export > Wave`. `AudioSystem` sólo se usa en `MicrophonePitch.java` para
-la captura del afinador; no hay `AudioSystem.write(...)` en ningún lado.
-
-La infraestructura ya está: `MidiScoreExporter.toSequence(Score)` convierte la
-partitura a `Sequence`, y `MidiPlayer` sabe abrir el sintetizador. Falta el render
-fuera de tiempo real contra `AudioSynthesizer` (Gervill, el sinte del JDK) y
-volcar el `AudioInputStream` con `AudioSystem.write(..., WAVE, path)`. Clase nueva
-en `tabpro-midi` + diálogo en `tabpro-ui/dialogs`.
-
-### Exportación a BMP — PARCIAL · chico
-El manual pide BMP y aclara que sólo se habilita en modo Página. `exportImage()`
-funciona pero `ScorePrinting.formatOf` (`:73-76`) sólo devuelve `jpg` o `png`, y
-el filtro de `MainFrame.java:430` es `"Imagen (*.png, *.jpg)"`. Tampoco se
-consulta el `ViewMode` antes de exportar. `ImageIO` ya trae el plugin BMP.
-
-### Import MIDI — casilla "Use 2 channels per track" — AUSENTE · mediano
-El manual: dos canales MIDI por pista, útil para bends y slides.
-`MidiImportPanel.java:24` sólo tiene el checkbox `transpose`. El hueco real es de
-dominio: `Channel` (`tabpro-core/.../model/Channel.java:4-6`) es un record con un
-solo campo `number`. Dato revelador: el lector de Guitar Pro **ya parsea** el
-segundo canal (`GuitarProTrackReader.java:30`, `effectChannelIndex`) y lo tira,
-porque el modelo no tiene dónde guardarlo.
-
-### Import MIDI — escuchar las pistas antes de importar — AUSENTE · chico/mediano
-`MidiImportDialog.java:35-120` no tiene ningún botón de reproducción. El patrón a
-copiar está en `ScoreBrowser.java:326`, que recibe `transport::preview`.
-
-### Import MIDI — precisión de posición y duración — AUSENTE · mediano
-El manual deja definir con qué precisión se eligen posición y duración.
-`MidiScoreImporter.java:192` usa siempre `DurationTicks.nearestTo(...)`, sin
-parámetro. Modelo a seguir: el combo `rhythmChoice` de `AsciiImportPanel`.
-
-### Import ASCII — espaciado para el ritmo `<variable>` — PARCIAL · chico
-El modo `<variable>` existe (`RhythmStrategy.FromSpacing`) pero falta la segunda
-lista que fija cuántos intervalos hay entre dos negras.
-`AsciiTabImporter.java:204` calcula sólo con el ancho de celda.
+State of the audited code: `main` = `4702129`, version 0.8.0.
 
 ---
 
-## Símbolos, cambios de parámetro, letra, marcadores, copiar/pegar, asistentes y percusión
+## Import and export
 
-Cobertura declarada por el auditor: 41 de 47 ítems presentes. El bloque más
-fiel al manual: la sintaxis de sílabas de la letra, los seis tipos de slide, el
-editor de curva del bend y el asistente de percusión están completos, y el
-retrieval de los cambios de parámetro al arrancar a mitad de partitura
-(`SoundAutomation.java:35-50`) implementa el "Tip" del manual al pie de la letra.
+Coverage declared by the auditor: 8 of 17 items present.
 
-### "Show 'Dynamic' Notes" [F11] — AUSENTE · chico
-El manual pide pintar la nota con un degradé según su intensidad. `grep "F11"`
-sobre `tabpro-ui` no da nada; el menú Ver (`MenuBar.java:174-177`) no lo tiene.
-_(Reclamado por la otra sesión.)_
+### Export to the Guitar Pro format — MISSING · large
+`File > Export > Guitar Pro 4 Format`. There is no `exportGuitarPro` in any
+module; `ScoreExchange.java:83` only declares `importGuitarPro(Path)`, and the
+Export menu (`MenuBar.java:45`) only offers MIDI/ASCII/MusicXML/Image/PDF.
 
-### El símbolo de la palanca no se dibuja — PARCIAL · chico
-Modelo, editor, diálogo y **sonido** están (`TrackRenderer.java:240-241` arma la
-curva de pitch bend real), pero `grep "tremoloBar"` sobre todo el paquete
-`ui/score/` da **cero** resultados: `paintBend` sólo se invoca para el bend de
-nota. _(Reclamado por la otra sesión.)_
+The existing reader (`tabpro-format/.../guitarpro/`, 2287 lines) is the mirror
+to follow: it needs a `GuitarProByteWriter` (little-endian: int, short, boolean,
+color, key signature, fixed-length and length-prefixed strings) and the writers
+per section (header, channels, measure attributes, tracks, beats, notes, chords,
+bends), orchestrated by a `GuitarProFile.write(Score, Path)` with the same order
+as `read()`. Since the target is GP4 only, the `GuitarProVersion` abstraction
+is not needed: the fixed GP4 layout (`generation=4, minor=6`) is enough.
 
-### Fade In no se dibuja — PARCIAL · chico
-Modelo, editor y sonido están (`MidiSequences.java:162`, `writeFadeIn`); falta la
-etiqueta "F" en `TabSymbolPainter.labelsFor(Beat)`.
+### PowerTab import — MISSING · large
+`File > Import > PowerTab`. Zero occurrences of "PowerTab" in the repo. Binary
+`.ptb` format, documented by the open source project `powertabeditor`. New
+package `tabpro-format/.../powertab/` with the same layered pattern as
+`guitarpro/`.
 
-### La transición de la nota de adorno no se usa — PARCIAL · mediano
-`GraceTransition` (SLIDE/BEND/HAMMER/NONE) se edita, se serializa en `.tabpro` y
-se lee del formato GP… y **nunca se consume**: ni `TrackRenderer.scheduleGrace`
-(`:198-202`) arma la curva, ni `TabNotationPainter.paintGraceNote` (`:104-115`)
-dibuja una línea distinta. Es un dato que viaja entero por el sistema sin efecto.
+### TablEdit import — MISSING · large
+`File > Import > TablEdit`. Zero occurrences in the repo. Proprietary binary
+`.tef` format with **no known public specification** — it is the most uncertain
+of the four gaps: it would have to be reverse-engineered from sample files.
 
-### El vibrato de un punto del bend no suena — PARCIAL · chico
-Se edita con clic derecho en tres niveles y se dibuja en el editor
-(`BendGridPanel.java:82-83`), pero `PitchTrajectory.of(Bend, ...)` (`:39-44`) sólo
-mira `point.semitones()`, nunca `point.vibrato()`.
+### WAVE export — MISSING · large
+`File > Export > Wave`. `AudioSystem` is only used in `MicrophonePitch.java` for
+the tuner's capture; there is no `AudioSystem.write(...)` anywhere.
 
-### Wah-wah: sin símbolo y sin lectura desde archivos GP — PARCIAL · chico
-Modelo, editor y menú existen; falta el símbolo en la partitura y falta leer el
-byte de wah en `GuitarProBeatReader`, así que un `.gp5` real pierde el dato al
-importarse. Que no suene es correcto: el manual dice que sólo afecta con RSE.
-_(Reclamado por la otra sesión.)_
+The infrastructure is already there: `MidiScoreExporter.toSequence(Score)`
+converts the score to a `Sequence`, and `MidiPlayer` knows how to open the
+synthesizer. What is missing is offline rendering against `AudioSynthesizer`
+(Gervill, the JDK's synth) and dumping the `AudioInputStream` with
+`AudioSystem.write(..., WAVE, path)`. New class in `tabpro-midi` + dialog in
+`tabpro-ui/dialogs`.
 
-### Copiar y pegar entre dos sesiones — AUSENTE · chico o grande
-`Editor.java:61` usa un `Clipboard` propio en memoria, no
-`Toolkit.getSystemClipboard()`. Conectarlo al portapapeles del sistema es chico;
-soportar varias ventanas de verdad es un cambio de arquitectura.
+### BMP export — PARTIAL · small
+The manual asks for BMP and notes that it is only enabled in Page mode.
+`exportImage()` works but `ScorePrinting.formatOf` (`:73-76`) only returns `jpg`
+or `png`, and the filter in `MainFrame.java:430` is `"Image (*.png, *.jpg)"`.
+The `ViewMode` is not checked before exporting either. `ImageIO` already ships
+the BMP plugin.
 
----
+### MIDI import — "Use 2 channels per track" checkbox — MISSING · medium
+The manual: two MIDI channels per track, useful for bends and slides.
+`MidiImportPanel.java:24` only has the `transpose` checkbox. The real gap is in
+the domain: `Channel` (`tabpro-core/.../model/Channel.java:4-6`) is a record
+with a single `number` field. Telling detail: the Guitar Pro reader **already
+parses** the second channel (`GuitarProTrackReader.java:30`,
+`effectChannelIndex`) and discards it, because the model has nowhere to store
+it.
 
-## Trabajar con la partitura e imprimir
+### MIDI import — preview the tracks before importing — MISSING · small/medium
+`MidiImportDialog.java:35-120` has no playback button at all. The pattern to
+copy is in `ScoreBrowser.java:326`, which receives `transport::preview`.
 
-Cobertura declarada por el auditor: 27 de 50 ítems presentes. Es el bloque con
-más huecos. Lo mejor cubierto: el entrenador de velocidad, los cambios de
-parámetro, la configuración de página completa con Refresh/Guardar como
-predeterminado, los tres modos de detección de canal y la vista global.
+### MIDI import — position and duration precision — MISSING · medium
+The manual lets you choose the precision used to pick position and duration.
+`MidiScoreImporter.java:192` always uses `DurationTicks.nearestTo(...)`, with no
+parameter. Model to follow: the `rhythmChoice` combo in `AsciiImportPanel`.
 
-### Reposicionar el audio en marcha — PARCIAL · mediano
-El manual: hacer clic en la partitura durante la reproducción reanuda desde ahí
-sin frenar, y lo mismo con Ctrl+Tab/Shift+Tab entre marcadores. Hoy el cursor de
-edición se mueve (`ScoreCanvas.java:58-65`) pero el audio sigue donde estaba:
-`Player.java:6-19` sólo expone `play/stop/playNote`, sin seek.
-
-### El motor MIDI ignora el puerto y el canal de cada pista — PARCIAL · mediano
-El modelo (`Channel.port`, `Channel.number`) y la mesa de mezcla los muestran,
-pero `MidiSequences.java:64-68,111-115` (`channelFor`) asigna canales por orden
-secuencial salteando el 9, sin leer nunca lo que dice la pista. `TrackTimeline`
-ni siquiera tiene campo `port`.
-
-### Un solo dispositivo de salida en vez de cuatro puertos — PARCIAL · mediano
-El manual: cuatro puertos MIDI simultáneos, cada uno con su dispositivo.
-`MidiDeviceSetup.java:18-41` tiene un único campo `output`, y `MidiSetupDialog`
-un solo combo. _(La otra sesión reclamó MIDI Setup.)_
-
-### Archivo > Buscar en la web — AUSENTE · mediano/grande
-Ni el menú ni ningún servicio; cero coincidencias en los cinco módulos.
-
-### El metrónomo no suena solo — PARCIAL · chico
-`Player.play(timeline, clicks, listener)` (`:11-13`) siempre necesita un
-`Timeline`; el manual dice que el metrónomo se puede usar solo.
-
-### Paso a paso: los botones no cambian de función durante el play — PARCIAL · chico/mediano
-El manual: durante la reproducción pasan a ser compás anterior / siguiente.
-`Transport.java:132-150` aborta con `if (player.isPlaying()) return;`.
-
-### Sin barra de herramientas de pista — AUSENTE · chico
-`ToolBars.java` define `documentRow/structureRow/notationRow`; no hay selector de
-pista fuera de la mesa de mezcla.
-
-### Ver > Intercambiar vista (partitura ↔ mesa de mezcla) — AUSENTE · chico
-`MainFrame.java:710-718` sólo muestra u oculta la mesa en un `JSplitPane`.
-
-### Preferencias: forzar multipista en pantalla horizontal — AUSENTE · chico
-`Preferences.java:10-15` sólo guarda figura por defecto, cuenta regresiva,
-auto-scroll y el bajo en el nombre del acorde.
-
-### Los archivos recientes se guardan pero no se muestran — PARCIAL · chico
-`Preferences.java:15-56` implementa `MAX_RECENT_FILES=8`, `recentFiles()` y
-`remember(Path)`, y `ScoreDocument.java:66,73` los alimenta… pero `recentFiles()`
-no tiene un solo consumidor en la UI.
-
-### Abrir está partido en dos comandos — PARCIAL · chico
-`file.open` (Ctrl+O) filtra sólo `.tabpro` (`MainFrame.java:288-290`); para un
-`.gp5` hay que ir al comando aparte de importar. El manual tiene un solo Abrir.
-
-### "Limit Pitch Variation" — AUSENTE · chico
-La casilla que prohíbe variaciones de más de un tono no existe en ningún módulo.
-
-### MIDI Setup: sin botón de prueba de sonido y sin sensibilidad editable — chico
-No hay preview por dispositivo, y `MidiCapture.DEFAULT_SENSITIVITY_MILLIS = 60`
-(`:20,42`) está fijo en el código. _(La otra sesión reclamó MIDI Setup.)_
-
-### El tempo actual no aparece en el título durante el play — AUSENTE · chico
-`ScoreDocument.windowTitle()` (`:45-48`) no lo incluye y `MainFrame` sólo
-actualiza el título desde el `Editor`, no desde el `Transport`.
-
-### Imprimir: falta el botón "Configurar" del formato de papel — PARCIAL · chico
-Escala y ajustar a la página están; falta delegar en `PrinterJob.pageDialog()`
-(sólo se usa `printDialog()`, que es otra cosa).
-
-### Menores
-Un único toggle para toda la barra de herramientas en vez de uno por barra;
-Archivo > Explorar sin la opción de cuántos compases sonar antes de saltar al
-próximo archivo; tempo relativo sin botón para desactivarlo de un clic; clic en
-la mesa de mezcla que no lleva al primer beat del compás; y sin `PAGE_UP` /
-`PAGE_DOWN` para navegar (`KeyboardEditing.java:32-39`).
+### ASCII import — spacing for the `<variable>` rhythm — PARTIAL · small
+The `<variable>` mode exists (`RhythmStrategy.FromSpacing`) but the second list
+that fixes how many intervals sit between two quarter notes is missing.
+`AsciiTabImporter.java:204` computes only from the cell width.
 
 ---
 
-## Notación y escritura
+## Symbols, parameter changes, lyrics, markers, copy/paste, wizards and percussion
 
-Cobertura declarada por el auditor: 44 de 58 ítems presentes. Lo mejor cubierto:
-el auto-avance de compás al mover el cursor, la reubicación de notas al cambiar
-la afinación, las catorce direcciones musicales, la captura MIDI y la clave
-automática según la afinación.
+Coverage declared by the auditor: 41 of 47 items present. The block most
+faithful to the manual: lyric syllable syntax, the six slide types, the bend
+curve editor and the percussion wizard are all complete, and retrieving the
+parameter changes when starting playback mid-score
+(`SoundAutomation.java:35-50`) implements the manual's "Tip" to the letter.
 
-### Grupos irregulares más allá del tresillo — PARCIAL · chico
-`Tuplet.AVAILABLE` (`:14`) ya lista 1,3,5,6,7,9,10,11,12,13 y `Editor.setTuplet`
-(`:170`) es genérico, pero la UI sólo cablea `note.triplet`
-(`Commands.java:171`), que alterna 1↔3. El motor está; falta la puerta.
+### "Show 'Dynamic' Notes" [F11] — MISSING · small
+The manual asks for the note to be painted with a gradient according to its
+intensity. `grep "F11"` over `tabpro-ui` returns nothing; the View menu
+(`MenuBar.java:174-177`) does not have it. _(Claimed by the other session.)_
 
-### 12 cuerdas y banjo de 5ta son casilleros sin efecto — PARCIAL · mediano
-Se editan, se persisten y viajan por el formato GP, pero ninguna clase de
-diapasón, pintor ni cálculo de traste los lee. Compará con `capo`, que sí se usa
-de verdad en `Track.java:90`.
+### The tremolo bar symbol is not drawn — PARTIAL · small
+Model, editor, dialog and **sound** are all there
+(`TrackRenderer.java:240-241` builds the real pitch bend curve), but
+`grep "tremoloBar"` over the whole `ui/score/` package returns **zero**
+results: `paintBend` is only invoked for the note bend. _(Claimed by the
+other session.)_
 
-### Salto de línea con alcance equivocado — PARCIAL · mediano
-El manual: afecta sólo a la pista activa o a la vista multipista, así cada pista
-puede tener su propia distribución de compases. Hoy `Editor.setLineBreak`
-(`:391-393`) va por `withAttributesInEveryTrackAt(...)` y `Score.attributesOf`
-(`:55-58`) siempre lee de `track(0)`.
+### Fade In is not drawn — PARTIAL · small
+Model, editor and sound are all there (`MidiSequences.java:162`,
+`writeFadeIn`); the "F" label in `TabSymbolPainter.labelsFor(Beat)` is
+missing.
 
-### Ctrl+arrastre para compases enteros — PARCIAL · chico
-`Selection.wholeMeasures` y `Editor.clippingOf` (`:761`) ya distinguen el caso,
-pero `ScoreCanvas.java:69,248-256` siempre pasa `false` y no hay un solo
-`isControlDown()` en toda la UI.
+### The grace note transition is not used — PARTIAL · medium
+`GraceTransition` (SLIDE/BEND/HAMMER/NONE) is edited, serialized to `.tabpro`
+and read from the GP format… and **never consumed**: neither
+`TrackRenderer.scheduleGrace` (`:198-202`) builds the curve, nor does
+`TabNotationPainter.paintGraceNote` (`:104-115`) draw a different line. It is
+data that travels through the whole system without any effect.
 
-### Archivo > Nuevo no abre la ventana de Información — PARCIAL · chico
-Las dos piezas existen, no están encadenadas (`MainFrame.java:294-301`).
+### A bend point's vibrato does not sound — PARTIAL · small
+It is edited with a right click across three levels and drawn in the editor
+(`BendGridPanel.java:82-83`), but `PitchTrajectory.of(Bend, ...)` (`:39-44`)
+only looks at `point.semitones()`, never `point.vibrato()`.
 
-### Preferencias: autoguardado fijo y deshabilitar undo sin efecto — PARCIAL · chico
-`Preferences.java:59-71` define `autosaveEvery()` y `undoEnabled()`; el panel F12
-no expone ninguno de los dos, y `undoEnabled()` **no se consulta en ningún lado**.
+### Wah-wah: no symbol and not read from GP files — PARTIAL · small
+Model, editor and menu exist; the symbol is missing from the score and the wah
+byte is not read in `GuitarProBeatReader`, so a real `.gp5` loses the data on
+import. Not sounding is correct: the manual says it only affects RSE.
+_(Claimed by the other session.)_
 
-### Información de la partitura sin pestaña "Default Properties" — AUSENTE · mediano
-`ScoreInfoDialog.java:21-23` sólo arma "General" y "Letra".
-
-### Sin override manual de barrado ni de plicas — AUSENTE · mediano
-`StemDirection.pointsUp(...)` calcula siempre por el promedio de alturas; el menú
-Nota no tiene ninguna entrada.
-
-### Barras de herramientas fijas y sin submenú de visibilidad — AUSENTE · mediano
-`ToolBars.java:127-132` fuerza `setFloatable(false)`; Ver tiene un único toggle.
-
-### Sin menú contextual con clic derecho en la tablatura — AUSENTE · chico
-Cero `JPopupMenu` en toda la interfaz.
-
-### Fuera de alcance por decisión
-Los skins GP3-like y GP4-like (`Theme.java` documenta la decisión: tema claro y
-oscuro propios, sin la estética de Windows XP) y el selector MIDI/RSE del
-instrumento, que desaparece porque el RSE no existe.
+### Copy and paste between two sessions — MISSING · small or large
+`Editor.java:61` uses its own in-memory `Clipboard`, not
+`Toolkit.getSystemClipboard()`. Wiring it to the system clipboard is small;
+truly supporting several windows is an architecture change.
 
 ---
 
-## Herramientas del guitarrista y atajos
+## Working with the score and printing
 
-Cobertura declarada por el auditor: 69 de 78 ítems presentes. La ventana de
-acordes, la de escalas, el diapasón, el teclado, el afinador y el metrónomo están
-muy alineados con el manual.
+Coverage declared by the auditor: 27 of 50 items present. This is the block
+with the most gaps. Best covered: the speed trainer, parameter changes, the
+full page setup with Refresh/Save as default, the three channel detection
+modes and the global view.
 
-### Enter no agrega una nota en notación estándar — AUSENTE · grande
-El manual lo pone en la tabla Edition. En tabpro `Commands.java:308` liga `ENTER`
-a "nota siguiente". Implica un modo de entrada por pentagrama que no existe: la
-escritura hoy es 100% por dígitos de traste.
+### Repositioning the audio during playback — PARTIAL · medium
+The manual: clicking on the score during playback resumes from there without
+stopping, and the same with Ctrl+Tab/Shift+Tab between markers. Today the
+editing cursor moves (`ScoreCanvas.java:58-65`) but the audio stays where it
+was: `Player.java:6-19` only exposes `play/stop/playNote`, with no seek.
 
-### Sin botón "Escalas" en el diapasón y el teclado — AUSENTE · chico
-El manual lo pone arriba a la derecha de ambos. La única puerta es el menú
-Herramientas. Además el selector inline sólo ofrece 5 escalas de `ScaleType`, no
-las 47 de `ScaleLibrary`.
+### The MIDI engine ignores each track's port and channel — PARTIAL · medium
+The model (`Channel.port`, `Channel.number`) and the mixer display them, but
+`MidiSequences.java:64-68,111-115` (`channelFor`) assigns channels by
+sequential order skipping channel 9, never reading what the track actually
+says. `TrackTimeline` does not even have a `port` field.
 
-### El diapasón y el teclado no son barras flotantes — AUSENTE · mediano
-El manual dice que son toolbars adosables arriba o abajo, o flotantes.
-`MainFrame.java:170` los mete en un panel fijo.
+### A single output device instead of four ports — PARTIAL · medium
+The manual: four simultaneous MIDI ports, each with its own device.
+`MidiDeviceSetup.java:18-41` has a single `output` field, and `MidiSetupDialog`
+a single combo. _(The other session claimed MIDI Setup.)_
 
-### La ventana de escalas no muestra los semitonos entre notas — PARCIAL · chico
-Muestra nombre, grado e intervalo desde la tónica, pero no el patrón de
-distancias entre notas consecutivas.
+### File > Search the web — MISSING · medium/large
+Neither the menu nor any service; zero matches across the five modules.
 
-### La zona A del acorde no indica el modo "Custom" — PARCIAL · chico
-El nombre se borra y el modelo lo sabe (`ChordEditorModel:275-282`), pero
-`ChordDialog` nunca lee `isCustom()`.
+### The metronome does not sound on its own — PARTIAL · small
+`Player.play(timeline, clicks, listener)` (`:11-13`) always needs a
+`Timeline`; the manual says the metronome can be used on its own.
 
-### Combos que muestran nombres crudos de enum — PARCIAL · chico
-`COMPLEX`, `ANY`, `FORCE`, `FORBID` sin `label()` ni renderer.
+### Step by step: the buttons do not change function during playback — PARTIAL · small/medium
+The manual: during playback they turn into previous/next measure.
+`Transport.java:132-150` aborts with `if (player.isPlaying()) return;`.
 
-### `*` como tecla alternativa del puntillo — PARCIAL · chico
-`Commands.java:169` sólo ata `PERIOD`.
+### No track toolbar — MISSING · small
+`ToolBars.java` defines `documentRow/structureRow/notationRow`; there is no
+track selector outside the mixer.
 
-_Las tablas Effects, Navigation, Sound y Misc. quedaron fuera de este informe por
-un error del recorte del manual; se auditan aparte._
+### View > Swap view (score ↔ mixer) — MISSING · small
+`MainFrame.java:710-718` only shows or hides the mixer inside a `JSplitPane`.
+
+### Preferences: force multitrack on a horizontal screen — MISSING · small
+`Preferences.java:10-15` only stores the default figure, count-in,
+auto-scroll and the bass note in the chord name.
+
+### Recent files are saved but not shown — PARTIAL · small
+`Preferences.java:15-56` implements `MAX_RECENT_FILES=8`, `recentFiles()` and
+`remember(Path)`, and `ScoreDocument.java:66,73` feeds them… but
+`recentFiles()` has not a single consumer in the UI.
+
+### Open is split into two commands — PARTIAL · small
+`file.open` (Ctrl+O) only filters `.tabpro` (`MainFrame.java:288-290`); for a
+`.gp5` you have to go through the separate import command. The manual has a
+single Open.
+
+### "Limit Pitch Variation" — MISSING · small
+The checkbox that forbids variations of more than a whole tone does not exist
+in any module.
+
+### MIDI Setup: no test-sound button and no editable sensitivity — small
+There is no per-device preview, and `MidiCapture.DEFAULT_SENSITIVITY_MILLIS = 60`
+(`:20,42`) is fixed in the code. _(The other session claimed MIDI Setup.)_
+
+### The current tempo does not appear in the title during playback — MISSING · small
+`ScoreDocument.windowTitle()` (`:45-48`) does not include it and `MainFrame`
+only updates the title from the `Editor`, not from the `Transport`.
+
+### Print: missing the "Configure" button for the paper format — PARTIAL · small
+Scale and fit-to-page are there; delegating to `PrinterJob.pageDialog()` is
+missing (only `printDialog()` is used, which is something else).
+
+### Minor
+A single toggle for the whole toolbar instead of one per bar; File > Browse
+without an option for how many measures to sound before jumping to the next
+file; relative tempo with no one-click button to disable it; clicking on the
+mixer does not jump to the measure's first beat; and no `PAGE_UP` /
+`PAGE_DOWN` to navigate (`KeyboardEditing.java:32-39`).
 
 ---
 
+## Notation and writing
+
+Coverage declared by the auditor: 44 of 58 items present. Best covered: the
+automatic measure advance when moving the cursor, note relocation when
+changing the tuning, the fourteen musical directions, MIDI capture and the
+automatic clef based on the tuning.
+
+### Irregular groups beyond the triplet — PARTIAL · small
+`Tuplet.AVAILABLE` (`:14`) already lists 1,3,5,6,7,9,10,11,12,13 and
+`Editor.setTuplet` (`:170`) is generic, but the UI only wires `note.triplet`
+(`Commands.java:171`), which toggles 1↔3. The engine is there; the door is
+missing.
+
+### 12-string and 5-string banjo are checkboxes with no effect — PARTIAL · medium
+They are edited, persisted and travel through the GP format, but no fretboard
+class, painter or fret calculation reads them. Compare with `capo`, which is
+actually used in `Track.java:90`.
+
+### Line break with the wrong scope — PARTIAL · medium
+The manual: it affects only the active track or the multitrack view, so each
+track can have its own measure layout. Today `Editor.setLineBreak`
+(`:391-393`) goes through `withAttributesInEveryTrackAt(...)` and
+`Score.attributesOf` (`:55-58`) always reads from `track(0)`.
+
+### Ctrl+drag for whole measures — PARTIAL · small
+`Selection.wholeMeasures` and `Editor.clippingOf` (`:761`) already distinguish
+the case, but `ScoreCanvas.java:69,248-256` always passes `false` and there is
+not a single `isControlDown()` anywhere in the UI.
+
+### File > New does not open the Info window — PARTIAL · small
+Both pieces exist, they are just not chained together
+(`MainFrame.java:294-301`).
+
+### Preferences: fixed autosave and undo-disable with no effect — PARTIAL · small
+`Preferences.java:59-71` defines `autosaveEvery()` and `undoEnabled()`; the F12
+panel exposes neither, and `undoEnabled()` **is not checked anywhere**.
+
+### Score info with no "Default Properties" tab — MISSING · medium
+`ScoreInfoDialog.java:21-23` only builds "General" and "Lyrics".
+
+### No manual override for beaming or stem direction — MISSING · medium
+`StemDirection.pointsUp(...)` always computes from the average of the
+pitches; the Note menu has no entry for it.
+
+### Fixed toolbars with no visibility submenu — MISSING · medium
+`ToolBars.java:127-132` forces `setFloatable(false)`; View has a single
+toggle.
+
+### No right-click context menu on the tab — MISSING · small
+Zero `JPopupMenu` anywhere in the interface.
+
+### Out of scope by decision
+The GP3-like and GP4-like skins (`Theme.java` documents the decision: our own
+light and dark theme, without the Windows XP look) and the instrument's
+MIDI/RSE selector, which disappears because RSE does not exist.
+
+---
+
+## Guitarist tools and shortcuts
+
+Coverage declared by the auditor: 69 of 78 items present. The chord window,
+the scales window, the fretboard, the keyboard, the tuner and the metronome
+are all closely aligned with the manual.
+
+### Enter does not add a note in standard notation — MISSING · large
+The manual puts it in the Edition table. In tabpro `Commands.java:308` binds
+`ENTER` to "next note". This implies a staff-based input mode that does not
+exist: writing today is 100% by fret digits.
+
+### No "Scales" button on the fretboard and the keyboard — MISSING · small
+The manual puts it at the top right of both. The only door is the Tools menu.
+The inline selector also only offers 5 scales from `ScaleType`, not the 47
+from `ScaleLibrary`.
+
+### The fretboard and the keyboard are not floating bars — MISSING · medium
+The manual says they are toolbars dockable at the top or bottom, or floating.
+`MainFrame.java:170` puts them in a fixed panel.
+
+### The scales window does not show the semitones between notes — PARTIAL · small
+It shows the name, degree and interval from the tonic, but not the pattern of
+distances between consecutive notes.
+
+### Chord zone A does not indicate "Custom" mode — PARTIAL · small
+The name is cleared and the model knows about it
+(`ChordEditorModel:275-282`), but `ChordDialog` never reads `isCustom()`.
+
+### Combos showing raw enum names — PARTIAL · small
+`COMPLEX`, `ANY`, `FORCE`, `FORBID` with no `label()` and no renderer.
+
+### `*` as an alternative key for the dot — PARTIAL · small
+`Commands.java:169` only binds `PERIOD`.
+
+_The Effects, Navigation, Sound and Misc. tables were left out of this report
+because of a manual-clipping error; they are audited separately._
+
+---
+</content>
