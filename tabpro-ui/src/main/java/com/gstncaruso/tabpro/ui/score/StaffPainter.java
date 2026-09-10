@@ -311,8 +311,13 @@ final class StaffPainter {
             Color ink) {
         int step = position.isOnLine() ? position.step() + 1 : position.step();
         double y = layout.stepY(trackIndex, measureIndex, step);
+        paintAugmentationDot(g, centerX + NOTE_WIDTH * 0.85, y, ink);
+    }
+
+    private static void paintAugmentationDot(Graphics2D g, double x, double y, Color ink) {
         g.setColor(ink);
-        fill(g, dot(centerX + NOTE_WIDTH * 0.85, y, SPACE * 0.17));
+        g.setFont(MusicFont.sizedTo(SPACE));
+        g.drawString(MusicFont.augmentationDot(), (float) x, (float) y);
     }
 
     private static void paintAccidental(Graphics2D g, AccidentalGlyph glyph, double x, double y, Color ink) {
@@ -683,8 +688,7 @@ final class StaffPainter {
                     Beaming.beamCount(beat.duration().value()), ink);
         }
         if (beat.duration().dotted()) {
-            g.setColor(ink);
-            fill(g, dot(centerX + SPACE * 1.1, layout.stepY(trackIndex, measureIndex, 5), SPACE * 0.17));
+            paintAugmentationDot(g, centerX + SPACE * 1.1, layout.stepY(trackIndex, measureIndex, 5), ink);
         }
     }
 
