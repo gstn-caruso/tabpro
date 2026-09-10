@@ -28,7 +28,7 @@ public final class ScoreInfoDialog {
         tabs.addTab("Letra", lyricsPanel);
         tabs.addTab("Propiedades por defecto", defaultsPanel);
 
-        boolean accepted = DialogShell.ask(parent, "Informacion de la partitura", tabs);
+        boolean accepted = DialogShell.ask(parent, "Información de la partitura", tabs);
         if (accepted) {
             editor.setInfo(infoPanel.toScoreInfo());
             editor.setLyrics(lyricsPanel.toLyrics());
