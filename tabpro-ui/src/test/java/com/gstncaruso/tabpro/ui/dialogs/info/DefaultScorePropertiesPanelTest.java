@@ -19,7 +19,7 @@ class DefaultScorePropertiesPanelTest {
     @Test
     void startsWithTheGivenDefaults() {
         NewScoreDefaults defaults = new NewScoreDefaults(
-                90, new TimeSignature(3, 4), KeySignature.cMajor(), "Improvisando", "Yo");
+                90, new TimeSignature(3, 4), KeySignature.cMajor(), "Improvising", "Me");
 
         DefaultScorePropertiesPanel panel = new DefaultScorePropertiesPanel(defaults);
 
@@ -30,12 +30,12 @@ class DefaultScorePropertiesPanelTest {
     void reflectsWhateverYouLoadAfterwards() {
         DefaultScorePropertiesPanel panel = new DefaultScorePropertiesPanel(NewScoreDefaults.blank());
 
-        panel.apply(new NewScoreDefaults(150, new TimeSignature(6, 8), KeySignature.cMajor(), "Otra", "Otro"));
+        panel.apply(new NewScoreDefaults(150, new TimeSignature(6, 8), KeySignature.cMajor(), "Another", "Someone"));
 
         NewScoreDefaults result = panel.toDefaults();
         assertEquals(150, result.tempo());
         assertEquals(new TimeSignature(6, 8), result.timeSignature());
-        assertEquals("Otra", result.title());
-        assertEquals("Otro", result.artist());
+        assertEquals("Another", result.title());
+        assertEquals("Someone", result.artist());
     }
 }
