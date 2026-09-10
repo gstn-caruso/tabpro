@@ -14,7 +14,10 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -29,6 +32,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 /**
  * El mastil: las notas del beat marcadas donde se pisan, mas lo que sume el modo
@@ -58,6 +62,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
     private int caretFret = 0;
     private Consumer<Note> onCaretActivated = note -> {
     };
+    private boolean showsFocusRing;
 
     public FretboardView() {
         setOpaque(true);
@@ -69,6 +74,23 @@ public final class FretboardView extends JComponent implements AccessibleControl
         getAccessibleContext().setAccessibleName("Diapasón");
         trackTheMouse();
         installKeyboardShortcuts();
+        installFocusRing();
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
     }
 
     private void installKeyboardShortcuts() {
@@ -334,6 +356,26 @@ public final class FretboardView extends JComponent implements AccessibleControl
         paintFretNumbers(g);
         paintMarkedNotes(g);
         paintHover(g);
+        if (showsFocusRing) {
+            paintCaret(g);
+        }
+    }
+
+    private void paintCaret(Graphics2D g) {
+        if (caretString > stringCount()) {
+            return;
+        }
+        int radius = Math.max(9, (int) (stringGap() * 0.56));
+        int x = fretCenterX(caretFret);
+        int y = stringY(caretString);
+        g.setColor(focusRingColor());
+        g.setStroke(new BasicStroke(2f));
+        g.drawOval(x - radius, y - radius, radius * 2, radius * 2);
+    }
+
+    private Color focusRingColor() {
+        Color fromLookAndFeel = UIManager.getColor("Component.focusColor");
+        return fromLookAndFeel != null ? fromLookAndFeel : InstrumentColors.HOVER;
     }
 
     /** Lo unico que se dibuja mirando al mastil al reves para zurdos: nada de texto. */
