@@ -14,6 +14,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
+import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
@@ -248,6 +249,20 @@ class LabelsTest {
     @EnumSource(BeamBreak.class)
     void everyBeamBreakHasSpanishAndEnglishText(BeamBreak value) {
         String key = "domain.BeamBreak." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheStemOverride() {
+        assertEquals("Arriba", Labels.of(StemOverride.UP));
+    }
+
+    @ParameterizedTest
+    @EnumSource(StemOverride.class)
+    void everyStemOverrideHasSpanishAndEnglishText(StemOverride value) {
+        String key = "domain.StemOverride." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
