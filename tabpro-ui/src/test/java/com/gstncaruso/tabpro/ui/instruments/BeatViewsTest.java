@@ -194,6 +194,29 @@ class BeatViewsTest {
         assertEquals(List.of(new Note(1, 1)), editor.currentBeat().notes());
     }
 
+    @Test
+    void pressingEnterOnTheKeyboardWritesTheKeyUnderTheCaretLikeAClickWould() {
+        Editor editor = new Editor(Score.blank());
+        BeatViews views = new BeatViews(editor, new RecordingPlayer());
+        KeyboardView keyboard = views.keyboard();
+        keyboard.setSize(900, KeyboardView.PREFERRED_HEIGHT);
+        moveCaretTo(keyboard, 60);
+
+        pressShortcut(keyboard, KeyStroke.getKeyStroke("ENTER"));
+
+        assertEquals(
+                List.of(60),
+                editor.currentBeat().notes().stream()
+                        .map(note -> editor.currentTrack().tuning().pitchOf(note).midiNumber())
+                        .toList());
+    }
+
+    private static void moveCaretTo(KeyboardView keyboard, int midiNumber) {
+        for (int key = KeyboardView.LOWEST; key < midiNumber; key++) {
+            pressShortcut(keyboard, KeyStroke.getKeyStroke("RIGHT"));
+        }
+    }
+
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));

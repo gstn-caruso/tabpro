@@ -194,6 +194,11 @@ public final class BeatViews extends JPanel {
                 writeFretNote(editing, note);
             }
         });
+        keyboard.onCaretActivated(key -> {
+            if (showsTheCursorBeat(editor, playhead)) {
+                writeKeyNote(editing, key);
+            }
+        });
     }
 
     private void writeFretNote(InstrumentEditing editing, Note note) {
