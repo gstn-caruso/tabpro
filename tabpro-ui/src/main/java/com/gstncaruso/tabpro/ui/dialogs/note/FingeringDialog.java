@@ -18,11 +18,20 @@ public final class FingeringDialog {
     }
 
     public static void show(Component parent, Editor editor) {
+        open(parent, editor, Hand.LEFT);
+    }
+
+    /** Como {@link #show(Component, Editor)}, pero arranca con el foco en el campo de mano derecha. */
+    public static void showFocusedOnRightHand(Component parent, Editor editor) {
+        open(parent, editor, Hand.RIGHT);
+    }
+
+    private static void open(Component parent, Editor editor, Hand initialFocus) {
         Optional<Finger> left = editor.currentNote().flatMap(note -> note.effects().leftHand());
         Optional<Finger> right = editor.currentNote().flatMap(note -> note.effects().rightHand());
-        Fields fields = buildFields(left, right);
+        Fields fields = buildFields(left, right, initialFocus);
 
-        if (!DialogShell.ask(parent, "Digitación", fields.form())) {
+        if (!DialogShell.ask(parent, "Digitación", fields.form(), fields.initialFocus())) {
             return;
         }
         editor.setLeftHandFinger(chosen(fields.leftHand()));

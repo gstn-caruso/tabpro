@@ -1204,7 +1204,7 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void fingeringRightHand() {
-            FingeringDialog.show(MainFrame.this, editor);
+            FingeringDialog.showFocusedOnRightHand(MainFrame.this, editor);
             backToTheScore();
         }
 

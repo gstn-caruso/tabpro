@@ -19,10 +19,20 @@ public final class DialogShell {
     }
 
     public static boolean ask(Component parent, String title, JComponent content) {
-        return ask(parent, title, content, "Aceptar");
+        return ask(parent, title, content, "Aceptar", null);
     }
 
     public static boolean ask(Component parent, String title, JComponent content, String acceptLabel) {
+        return ask(parent, title, content, acceptLabel, null);
+    }
+
+    /** Como {@link #ask(Component, String, JComponent)}, pero arranca con el foco en {@code initialFocus}. */
+    public static boolean ask(Component parent, String title, JComponent content, JComponent initialFocus) {
+        return ask(parent, title, content, "Aceptar", initialFocus);
+    }
+
+    public static boolean ask(
+            Component parent, String title, JComponent content, String acceptLabel, JComponent initialFocus) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title, Dialog.ModalityType.APPLICATION_MODAL);
         ButtonBar buttons = ButtonBar.acceptCancel(acceptLabel);
         boolean[] accepted = {false};
@@ -38,6 +48,15 @@ public final class DialogShell {
                 event -> dialog.dispose(),
                 KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0),
                 JRootPane.WHEN_IN_FOCUSED_WINDOW);
+
+        if (initialFocus != null) {
+            dialog.addWindowFocusListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowGainedFocus(java.awt.event.WindowEvent event) {
+                    initialFocus.requestFocusInWindow();
+                }
+            });
+        }
 
         dialog.getContentPane().setLayout(new BorderLayout());
         dialog.getContentPane().add(content, BorderLayout.CENTER);
