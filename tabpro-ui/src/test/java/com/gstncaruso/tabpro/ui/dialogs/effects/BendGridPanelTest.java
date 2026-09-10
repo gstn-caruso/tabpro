@@ -30,4 +30,15 @@ class BendGridPanelTest {
         Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
+
+    @Test
+    void theLeftArrowKeyMovesTheCaretBackward() {
+        BendGridPanel panel = new BendGridPanel(BendCurveEditor.blank(BendType.BEND, 4));
+        pressShortcut(panel, KeyStroke.getKeyStroke("RIGHT"));
+        pressShortcut(panel, KeyStroke.getKeyStroke("RIGHT"));
+
+        pressShortcut(panel, KeyStroke.getKeyStroke("LEFT"));
+
+        assertEquals(1, panel.caretPosition());
+    }
 }
