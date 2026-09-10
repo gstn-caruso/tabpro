@@ -107,7 +107,7 @@ public final class ScoreDocument {
 
     /** El archivo temporal con el que se recupera la partitura si el programa se corta. */
     public Path recoveryFile() {
-        return Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recuperacion" + EXTENSION);
+        return Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recuperación" + EXTENSION);
     }
 
     public Optional<Path> pendingRecovery() {

@@ -48,9 +48,7 @@ class AccentedLiteralsTest {
      * sus literales no se chequean. Se van sacando uno a uno a medida que se corrigen, hasta que
      * quede vacio.
      */
-    private static final Set<String> PENDING_FILES = Set.of(
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/score/ViewMode.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/ScoreDocument.java");
+    private static final Set<String> PENDING_FILES = Set.of();
 
     private static final Pattern PLACEHOLDER = Pattern.compile("\\[%[a-zA-Z]+]");
     private static final Pattern IDENTIFIER_LITERAL =
