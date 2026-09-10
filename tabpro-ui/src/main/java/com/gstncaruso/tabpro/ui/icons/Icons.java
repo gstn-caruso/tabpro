@@ -60,11 +60,7 @@ public final class Icons {
     }
 
     public static Icon copy() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Rectangle2D.Double(size * 0.14, size * 0.14, size * 0.48, size * 0.56));
-            graphics.draw(new Rectangle2D.Double(size * 0.34, size * 0.3, size * 0.48, size * 0.56));
-        });
+        return svgIcon("copy");
     }
 
     public static Icon paste() {
