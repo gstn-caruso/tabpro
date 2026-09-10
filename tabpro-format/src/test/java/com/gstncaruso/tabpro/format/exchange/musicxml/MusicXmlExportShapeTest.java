@@ -41,10 +41,10 @@ class MusicXmlExportShapeTest {
         List<String> children = childNames(noteWithTie);
 
         assertTrue(children.indexOf("tie") > children.indexOf("duration"),
-                "<tie> tiene que venir despues de <duration>: " + children);
+                "<tie> must come after <duration>: " + children);
         assertTrue(children.indexOf("tie") < children.indexOf("type"),
-                "el content model de <note> en el DTD de MusicXML pone (tie, tie?) antes de type/dot/"
-                        + "time-modification, no despues: " + children);
+                "the content model of <note> in the MusicXML DTD places (tie, tie?) before type/dot/"
+                        + "time-modification, not after: " + children);
     }
 
     @Test
@@ -56,7 +56,7 @@ class MusicXmlExportShapeTest {
 
         assertEquals(List.of("divisions", "key", "time", "staves", "clef", "staff-details"),
                 childNames(attributes).stream().distinct().toList(),
-                "el DTD exige divisions?, key*, time*, staves?, ..., clef*, staff-details* en ese orden");
+                "the DTD requires divisions?, key*, time*, staves?, ..., clef*, staff-details* in that order");
     }
 
     @Test
@@ -66,7 +66,7 @@ class MusicXmlExportShapeTest {
         Document document = parse(exporter.toXml(score));
 
         assertEquals(1, document.getElementsByTagName("attributes").getLength(),
-                "el segundo compas no cambia ni la armadura ni el compas: no tiene que escribir <attributes>");
+                "the second measure changes neither the key signature nor the time signature: it must not write <attributes>");
     }
 
     @Test
@@ -80,7 +80,7 @@ class MusicXmlExportShapeTest {
         Element attributes = firstChild(secondBar, "attributes").orElseThrow();
 
         assertEquals(List.of("time"), childNames(attributes),
-                "solo cambio el compas: <attributes> no tiene que repetir <key> si la armadura sigue igual");
+                "only the time signature changed: <attributes> must not repeat <key> if the key signature stays the same");
     }
 
     @Test
@@ -103,19 +103,19 @@ class MusicXmlExportShapeTest {
         for (int i = 0; i < notes.size(); i++) {
             long declaredDuration = Long.parseLong(textOf(notes.get(i), "duration").orElseThrow());
             long expectedDuration = expectedDurationUnits(notes.get(i), divisions);
-            assertEquals(expectedDuration, declaredDuration, "figura " + i + ": " + figures.get(i));
+            assertEquals(expectedDuration, declaredDuration, "figure " + i + ": " + figures.get(i));
         }
     }
 
     private static Score scoreWith(Beat... beats) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        return new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Test", 120, List.of(track));
     }
 
     private static Score scoreWithMeasures(Measure... measures) {
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measures));
-        return new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measures));
+        return new Score("Test", 120, List.of(track));
     }
 
     private static Measure measureInC() {
@@ -139,7 +139,7 @@ class MusicXmlExportShapeTest {
             case "16th" -> 16;
             case "32nd" -> 32;
             case "64th" -> 64;
-            default -> throw new IllegalStateException("figura no contemplada en este test: "
+            default -> throw new IllegalStateException("figure not covered by this test: "
                     + textOf(note, "type").orElse("?"));
         };
         long numerator = 4L * divisions;
@@ -156,7 +156,7 @@ class MusicXmlExportShapeTest {
             denom *= actual;
         }
         assertEquals(0, numerator % denom,
-                "con divisions=" + divisions + " esta figura no se puede escribir sin resto");
+                "with divisions=" + divisions + " this figure cannot be written without a remainder");
         return numerator / denom;
     }
 
