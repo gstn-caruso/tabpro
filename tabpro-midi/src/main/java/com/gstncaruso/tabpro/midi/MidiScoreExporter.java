@@ -20,17 +20,6 @@ import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 
-/**
- * Guarda la partitura como archivo MIDI formato 1, sonando igual que adentro de tabpro: la
- * rinde a su linea de tiempo —el orden real de los compases, con repeticiones, finales
- * alternativos y saltos, y con todos los efectos: bends, palanca, slides, ligados, trinos,
- * tremolos, armonicos, rasgueos, notas de adorno, fade in y swing— y escribe esa misma
- * secuencia, la que se le manda al sintetizador cuando uno aprieta play.
- *
- * <p>Encima le agrega lo unico que un archivo necesita y la reproduccion no: el titulo, el
- * nombre de cada pista y los cambios de compas y de armadura, ubicados en el tick en el que
- * suenan. Las pistas que no suenan no se exportan, como avisa el manual.
- */
 public final class MidiScoreExporter {
 
     private static final int SEQUENCE_FORMAT = 1;
@@ -63,7 +52,6 @@ public final class MidiScoreExporter {
         }
     }
 
-    /** Lo que se va a escuchar: la partitura rendida, sin las pistas que estan calladas. */
     private static Timeline whatSounds(Score score, PlayOrder order, List<Integer> audible) {
         Timeline everything = Timeline.of(score, order);
         return new Timeline(
@@ -76,7 +64,6 @@ public final class MidiScoreExporter {
         return IntStream.range(0, score.trackCount()).filter(score::isAudible).boxed().toList();
     }
 
-    /** El titulo va en la pista de tempo, y el nombre de cada pista en la suya. */
     private static void nameThe(Sequence sequence, Score score, List<Integer> audible)
             throws InvalidMidiDataException {
         javax.sound.midi.Track[] tracks = sequence.getTracks();
@@ -86,10 +73,6 @@ public final class MidiScoreExporter {
         }
     }
 
-    /**
-     * Los cambios de compas y de armadura, en el tick en el que suenan: si una repeticion vuelve
-     * a pasar por un compas de 3/4, el archivo lo vuelve a anunciar.
-     */
     private static void writeBarChanges(Sequence sequence, Score score, PlayOrder order)
             throws InvalidMidiDataException {
         javax.sound.midi.Track conductor = sequence.getTracks()[0];
