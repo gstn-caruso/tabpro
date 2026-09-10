@@ -241,6 +241,15 @@ class LabelsTest {
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
     }
 
+    @ParameterizedTest
+    @EnumSource(KeyboardDisplayMode.class)
+    void everyKeyboardDisplayModeHasSpanishAndEnglishText(KeyboardDisplayMode value) {
+        String key = "domain.KeyboardDisplayMode." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
     @Test
     void translatesTheOrientationToItsSpanishName() {
         assertEquals("Vertical", Labels.of(Orientation.PORTRAIT));

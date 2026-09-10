@@ -7,7 +7,6 @@ import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
-import com.gstncaruso.tabpro.ui.instruments.KeyboardDisplayMode;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import java.util.List;
@@ -26,7 +25,6 @@ public final class Labels {
             case Scale scale -> scale.name();
             case Tuning tuning -> tuning.name() + " (" + stringLetters(tuning) + ")";
             case Dynamic dynamic -> dynamic.symbol();
-            case KeyboardDisplayMode keyboardDisplayMode -> keyboardDisplayMode.label();
             case PaperFormat paperFormat -> paperFormatLabelWithDimensions(paperFormat);
             case Enum<?> constant -> domainLabel(constant);
             default -> throw new IllegalArgumentException("No label for " + value);
