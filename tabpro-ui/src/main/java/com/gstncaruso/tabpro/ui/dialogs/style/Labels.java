@@ -44,7 +44,7 @@ public final class Labels {
             case KeyboardDisplayMode keyboardDisplayMode -> keyboardDisplayMode.label();
             case Orientation orientation -> orientation.label();
             case PaperFormat paperFormat -> paperFormatLabelWithDimensions(paperFormat);
-            default -> throw new IllegalArgumentException("Sin etiqueta para " + value);
+            default -> throw new IllegalArgumentException("No label for " + value);
         };
     }
 
