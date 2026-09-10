@@ -97,4 +97,9 @@ class MusicFontTest {
     void restHalfIsTheHalfRestGlyph() {
         assertEquals(0xE4E4, MusicFont.restHalf().codePointAt(0));
     }
+
+    @Test
+    void restQuarterIsTheQuarterRestGlyph() {
+        assertEquals(0xE4E5, MusicFont.restQuarter().codePointAt(0));
+    }
 }

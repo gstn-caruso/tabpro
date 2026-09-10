@@ -40,6 +40,8 @@ final class MusicFont {
     private static final int REST_WHOLE = 0xE4E3;
     /** SMuFL U+E4E4 "restHalf": el silencio de blanca, apoyado en la linea del medio. */
     private static final int REST_HALF = 0xE4E4;
+    /** SMuFL U+E4E5 "restQuarter": el silencio de negra, centrado en el pentagrama. */
+    private static final int REST_QUARTER = 0xE4E5;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -105,6 +107,11 @@ final class MusicFont {
     /** El silencio de blanca, apoyado en la linea del medio. */
     static String restHalf() {
         return glyph(REST_HALF);
+    }
+
+    /** El silencio de negra, centrado en el pentagrama. */
+    static String restQuarter() {
+        return glyph(REST_QUARTER);
     }
 
     /**
