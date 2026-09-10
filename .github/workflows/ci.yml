@@ -33,8 +33,11 @@ jobs:
       - name: Build and test
         run: mvn -B verify
 
+      - name: Instalar Xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
       - name: Tests de integracion
-        run: mvn -B test -Dgroups=integracion -Dtests.excluded.groups= -Dsurefire.failIfNoSpecifiedTests=false
+        run: xvfb-run -a mvn -B test -Dtests.headless=false -Dgroups=integracion -Dtests.excluded.groups= -Dsurefire.failIfNoSpecifiedTests=false
 
   release:
     needs: build
