@@ -24,7 +24,7 @@ class TrackSelectorTest {
             record(Ports.Playback.class), record(Ports.View.class));
 
     @Test
-    void unaSolaPistaMuestraUnBotonSeleccionado() {
+    void aSingleTrackShowsOneSelectedButton() {
         TrackSelector selector = new TrackSelector(editor, commands);
 
         assertEquals(1, selector.trackButtons().size());
@@ -32,7 +32,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void variasPistasSoloLaActivaQuedaSeleccionada() {
+    void withSeveralTracksOnlyTheActiveOneIsSelected() {
         editor.addTrack(Track.standardBass("Bajo"));
         editor.addTrack(Track.standardGuitar("Guitarra 2"));
         editor.selectTrack(1);
@@ -46,7 +46,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void conUnaSolaPistaLasDosFlechasArrancanDeshabilitadas() {
+    void withASingleTrackBothArrowsStartDisabled() {
         TrackSelector selector = new TrackSelector(editor, commands);
 
         assertFalse(selector.previousButton().isEnabled());
@@ -54,7 +54,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void enLaPrimeraPistaSoloLaFlechaSiguienteQuedaHabilitada() {
+    void onTheFirstTrackOnlyTheNextArrowIsEnabled() {
         editor.addTrack(Track.standardBass("Bajo"));
         editor.addTrack(Track.standardGuitar("Guitarra 2"));
         editor.selectTrack(0);
@@ -66,7 +66,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void enLaUltimaPistaSoloLaFlechaAnteriorQuedaHabilitada() {
+    void onTheLastTrackOnlyThePreviousArrowIsEnabled() {
         editor.addTrack(Track.standardBass("Bajo"));
         editor.addTrack(Track.standardGuitar("Guitarra 2"));
         editor.selectTrack(2);
@@ -78,7 +78,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void clickEnUnNumeroMueveElCursorAEsaPistaSinCambiarDeCompas() {
+    void clickingANumberMovesTheCursorToThatTrackWithoutChangingTheBar() {
         editor.addTrack(Track.standardBass("Bajo"));
         editor.insertMeasure();
         editor.selectTrack(0);
@@ -92,7 +92,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void clickEnLaFlechaSiguienteAvanzaALaProximaPista() {
+    void clickingTheNextArrowAdvancesToTheNextTrack() {
         editor.addTrack(Track.standardBass("Bajo"));
         editor.selectTrack(0);
         TrackSelector selector = new TrackSelector(editor, commands);
@@ -103,7 +103,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void clickEnLaFlechaAnteriorRetrocedeALaPistaAnterior() {
+    void clickingThePreviousArrowGoesBackToThePreviousTrack() {
         editor.addTrack(Track.standardBass("Bajo"));
 
         TrackSelector selector = new TrackSelector(editor, commands);
@@ -113,7 +113,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void unCambioDeCursorPorOtroCaminoActualizaElBotonSeleccionado() {
+    void aCursorChangeFromElsewhereUpdatesTheSelectedButton() {
         editor.addTrack(Track.standardBass("Bajo"));
         editor.addTrack(Track.standardGuitar("Guitarra 2"));
         editor.selectTrack(0);
@@ -127,7 +127,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void agregarUnaPistaRehaceLosBotones() {
+    void addingATrackRebuildsTheButtons() {
         TrackSelector selector = new TrackSelector(editor, commands);
 
         editor.addTrack(Track.standardBass("Bajo"));
@@ -138,7 +138,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void borrarLaPistaActivaRehaceLosBotones() {
+    void deletingTheActiveTrackRebuildsTheButtons() {
         editor.addTrack(Track.standardBass("Bajo"));
         TrackSelector selector = new TrackSelector(editor, commands);
 
@@ -150,7 +150,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void elBotonDeCadaPistaTieneSuNumeroYSuNombreComoNombreAccesible() {
+    void eachTracksButtonHasItsNumberAndNameAsItsAccessibleName() {
         editor.addTrack(Track.standardBass("Bajo"));
         TrackSelector selector = new TrackSelector(editor, commands);
 
@@ -160,7 +160,7 @@ class TrackSelectorTest {
     }
 
     @Test
-    void reordenarPistasActualizaElNombreAccesibleDeCadaBoton() {
+    void reorderingTracksUpdatesTheAccessibleNameOfEachButton() {
         editor.addTrack(Track.standardBass("Bajo"));
         TrackSelector selector = new TrackSelector(editor, commands);
 
@@ -172,14 +172,14 @@ class TrackSelectorTest {
     }
 
     @Test
-    void cadaBotonDePistaMuestraUnIconoConSuNumero() {
+    void eachTrackButtonShowsAnIconWithItsNumber() {
         TrackSelector selector = new TrackSelector(editor, commands);
 
         assertNotNull(selector.trackButtons().get(0).getIcon());
     }
 
     @Test
-    void lasFlechasMuestranSoloElIconoConNombreAccesibleYTooltip() {
+    void theArrowsShowOnlyTheIconWithAnAccessibleNameAndTooltip() {
         TrackSelector selector = new TrackSelector(editor, commands);
 
         assertNotNull(selector.previousButton().getIcon());

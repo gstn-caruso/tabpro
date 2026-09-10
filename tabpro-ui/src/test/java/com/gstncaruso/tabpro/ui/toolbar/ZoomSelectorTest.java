@@ -25,21 +25,21 @@ class ZoomSelectorTest {
     private final FakeZoomHolder zoomHolder = new FakeZoomHolder();
 
     @Test
-    void esEditableParaPoderTipearUnValor() {
+    void isEditableSoYouCanTypeAValue() {
         ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
 
         assertTrue(selector.isEditable());
     }
 
     @Test
-    void arrancaMostrandoElZoomReal() {
+    void startsShowingTheActualZoom() {
         ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
 
         assertEquals("100%", String.valueOf(selector.getEditor().getItem()));
     }
 
     @Test
-    void elDesplegableTraeLosValoresPredefinidosDelManual() {
+    void theDropdownBringsThePresetValuesFromTheManual() {
         ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
 
         List<String> items = new ArrayList<>();
@@ -51,7 +51,7 @@ class ZoomSelectorTest {
     }
 
     @Test
-    void elegirUnValorDelDesplegableAplicaEseZoom() {
+    void choosingAValueFromTheDropdownAppliesThatZoom() {
         ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
 
         selector.setSelectedItem("150%");
@@ -60,7 +60,7 @@ class ZoomSelectorTest {
     }
 
     @Test
-    void tipearAlgoInvalidoIgnoraYVuelveAlValorReal() {
+    void typingSomethingInvalidIsIgnoredAndRevertsToTheActualValue() {
         ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
 
         type(selector, "abc");
@@ -70,7 +70,7 @@ class ZoomSelectorTest {
     }
 
     @Test
-    void tipearUnValorFueraDeRangoIgnoraYVuelveAlValorReal() {
+    void typingAValueOutOfRangeIsIgnoredAndRevertsToTheActualValue() {
         ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
 
         type(selector, "500");
@@ -80,7 +80,7 @@ class ZoomSelectorTest {
     }
 
     @Test
-    void unCambioDeZoomPorOtroCaminoActualizaElCombo() {
+    void aZoomChangeFromElsewhereUpdatesTheCombo() {
         ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
 
         zoomHolder.setZoom(new Zoom(150));
@@ -89,7 +89,7 @@ class ZoomSelectorTest {
     }
 
     @Test
-    void tieneNombreAccesibleYTooltipConLosAtajosDeAcercarYAlejar() {
+    void hasAnAccessibleNameAndTooltipWithTheZoomInAndOutShortcuts() {
         ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
 
         assertEquals("Zoom", selector.getAccessibleContext().getAccessibleName());
@@ -99,7 +99,7 @@ class ZoomSelectorTest {
     }
 
     @Test
-    void pintadoEnUnaBarraAnchaConservaSuAnchoPreferido() {
+    void paintedOnAWideBarKeepsItsPreferredWidth() {
         ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
         JToolBar bar = new JToolBar();
         bar.add(selector);
@@ -111,9 +111,9 @@ class ZoomSelectorTest {
     }
 
     @Test
-    void conLaTipografiaDe20PuntosDeAccesibilidadElAnchoCreceYSigueSinEstirarse() {
-        ZoomSelector selectorConFuentePorDefecto = new ZoomSelector(zoomHolder, commands);
-        int anchoConFuentePorDefecto = selectorConFuentePorDefecto.getPreferredSize().width;
+    void withA20PointAccessibilityFontTheWidthGrowsAndStillDoesNotStretch() {
+        ZoomSelector selectorWithTheDefaultFont = new ZoomSelector(zoomHolder, commands);
+        int widthWithTheDefaultFont = selectorWithTheDefaultFont.getPreferredSize().width;
 
         ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
         selector.setFont(selector.getFont().deriveFont(20f));
@@ -122,7 +122,7 @@ class ZoomSelectorTest {
         bar.setSize(1440, bar.getPreferredSize().height);
         bar.doLayout();
 
-        assertTrue(selector.getPreferredSize().width > anchoConFuentePorDefecto);
+        assertTrue(selector.getPreferredSize().width > widthWithTheDefaultFont);
         assertEquals(selector.getPreferredSize().width, selector.getWidth());
     }
 
