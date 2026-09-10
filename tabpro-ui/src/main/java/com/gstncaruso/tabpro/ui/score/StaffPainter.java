@@ -712,24 +712,8 @@ final class StaffPainter {
                     g, layout, trackIndex, measureIndex, centerX, MusicFont.rest16th(), MIDDLE_LINE_STEP, ink);
             case 3 -> paintRestGlyph(
                     g, layout, trackIndex, measureIndex, centerX, MusicFont.rest32nd(), MIDDLE_LINE_STEP, ink);
-            default -> paintGeometricHookedRest(g, layout, trackIndex, measureIndex, centerX, hooks, ink);
-        }
-    }
-
-    /** Silencio de fusa/semifusa (3/4 ganchos): fuera de esta tanda de glifos de Bravura. */
-    private static void paintGeometricHookedRest(
-            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, double centerX, int hooks, Color ink) {
-        double top = layout.stepY(trackIndex, measureIndex, 6 - (hooks - 1));
-        double bottom = layout.stepY(trackIndex, measureIndex, 2);
-        g.setColor(ink);
-        g.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.draw(new Line2D.Double(
-                centerX + SPACE * 0.42, top, centerX - SPACE * 0.30, bottom));
-        for (int hook = 0; hook < hooks; hook++) {
-            double y = top + hook * SPACE;
-            fill(g, dot(centerX - SPACE * 0.10, y + SPACE * 0.10, SPACE * 0.20));
-            g.draw(new Line2D.Double(
-                    centerX - SPACE * 0.10, y + SPACE * 0.10, centerX + SPACE * 0.40, y - SPACE * 0.10));
+            default -> paintRestGlyph(
+                    g, layout, trackIndex, measureIndex, centerX, MusicFont.rest64th(), MIDDLE_LINE_STEP, ink);
         }
     }
 
