@@ -8,6 +8,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -218,6 +219,22 @@ class GlobalUiMutationScanTest {
                 """);
 
         assertTrue(GlobalUiMutationScan.unisolatedMutators(root).isEmpty());
+    }
+
+    @Test
+    void noTestClassInTheFiveModulesMutatesGlobalUiStateWithoutIsolation() {
+        List<Path> culprits = moduleTestSourceRoots()
+                .flatMap(root -> GlobalUiMutationScan.unisolatedMutators(root).stream())
+                .toList();
+
+        assertTrue(culprits.isEmpty(), () -> culprits + " tienen que anotarse @Isolated");
+    }
+
+    private static Stream<Path> moduleTestSourceRoots() {
+        Path repoRoot = Path.of(System.getProperty("user.dir"), "..").normalize();
+        return Stream.of("tabpro-core", "tabpro-midi", "tabpro-format", "tabpro-ui", "tabpro-app")
+                .map(module -> repoRoot.resolve(Path.of(module, "src", "test", "java")))
+                .filter(Files::isDirectory);
     }
 
     private static Path write(Path root, String fileName, String content) throws IOException {
