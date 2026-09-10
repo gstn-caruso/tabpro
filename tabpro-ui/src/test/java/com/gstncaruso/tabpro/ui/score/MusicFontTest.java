@@ -72,4 +72,9 @@ class MusicFontTest {
     void accidentalSharpIsTheSharpGlyph() {
         assertEquals(0xE262, MusicFont.accidentalSharp().codePointAt(0));
     }
+
+    @Test
+    void accidentalFlatIsTheFlatGlyph() {
+        assertEquals(0xE260, MusicFont.accidentalFlat().codePointAt(0));
+    }
 }
