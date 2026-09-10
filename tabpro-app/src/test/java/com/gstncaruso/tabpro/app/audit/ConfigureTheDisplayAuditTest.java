@@ -102,6 +102,71 @@ class ConfigureTheDisplayAuditTest {
     }
 
     @Test
+    void laVentanaArrancaConLosDosPanelesCerradosYCtrl3AbreElDiapasonReal() throws Exception {
+        com.gstncaruso.tabpro.ui.Preferences preferences = new com.gstncaruso.tabpro.ui.Preferences();
+        preferences.setFretboardVisible(false);
+        preferences.setKeyboardVisible(false);
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        try {
+            ScoreCanvas canvas = findComponent(frame.getContentPane(), ScoreCanvas.class);
+            BeatViews beatViews = findComponent(frame.getContentPane(), BeatViews.class);
+            assertEquals(false, beatViews.isFretboardVisible(),
+                    "la ventana real tiene que arrancar con el diapason cerrado, como en Guitar Pro 5");
+            assertEquals(false, beatViews.isKeyboardVisible(),
+                    "la ventana real tiene que arrancar con el teclado cerrado, como en Guitar Pro 5");
+
+            pressKey(canvas, KeyStroke.getKeyStroke("ctrl 3"));
+
+            assertEquals(true, beatViews.isFretboardVisible(),
+                    "Ctrl+3, despachado de verdad, tiene que abrir el diapason real desde cerrado");
+        } finally {
+            preferences.setFretboardVisible(false);
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    /**
+     * Cierra los dos paneles en una primera ventana (esten como esten al abrir) y comprueba que
+     * una segunda ventana, sin tocar nada, respeta ese cierre: la preferencia real es el puente
+     * entre una sesion y la siguiente, no la memoria del propio objeto BeatViews.
+     */
+    @Test
+    void elEstadoDeLosPanelesPersisteAlReabrirLaVentana() throws Exception {
+        com.gstncaruso.tabpro.ui.Preferences preferences = new com.gstncaruso.tabpro.ui.Preferences();
+        Editor firstEditor = blankEditor();
+        MainFrame firstFrame = newFrame(firstEditor);
+        try {
+            ScoreCanvas firstCanvas = findComponent(firstFrame.getContentPane(), ScoreCanvas.class);
+            BeatViews firstBeatViews = findComponent(firstFrame.getContentPane(), BeatViews.class);
+            if (firstBeatViews.isFretboardVisible()) {
+                pressKey(firstCanvas, KeyStroke.getKeyStroke("ctrl 3"));
+            }
+            if (firstBeatViews.isKeyboardVisible()) {
+                pressKey(firstCanvas, KeyStroke.getKeyStroke("ctrl 4"));
+            }
+            assertEquals(false, firstBeatViews.isFretboardVisible());
+            assertEquals(false, firstBeatViews.isKeyboardVisible());
+        } finally {
+            AuditSupport.dispose(firstFrame);
+        }
+
+        Editor secondEditor = blankEditor();
+        MainFrame secondFrame = newFrame(secondEditor);
+        try {
+            BeatViews secondBeatViews = findComponent(secondFrame.getContentPane(), BeatViews.class);
+            assertEquals(false, secondBeatViews.isFretboardVisible(),
+                    "una ventana nueva tiene que respetar que el diapason quedo cerrado la vez anterior");
+            assertEquals(false, secondBeatViews.isKeyboardVisible(),
+                    "una ventana nueva tiene que respetar que el teclado quedo cerrado la vez anterior");
+        } finally {
+            preferences.setFretboardVisible(false);
+            preferences.setKeyboardVisible(false);
+            AuditSupport.dispose(secondFrame);
+        }
+    }
+
+    @Test
     void laCruzDeLaBarraDelDiapasonHaceLoMismoQueVerDiapason() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);

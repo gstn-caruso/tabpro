@@ -171,6 +171,12 @@ public final class MainFrame extends JFrame {
                 editor, documentActions, new Windows(), new Playback(), new View(), themes.names());
         beatViews.setOnCloseFretboard(() -> commands.get("view.fretboard").actionPerformed(null));
         beatViews.setOnCloseKeyboard(() -> commands.get("view.keyboard").actionPerformed(null));
+        boolean fretboardVisible = preferences.fretboardVisible();
+        boolean keyboardVisible = preferences.keyboardVisible();
+        beatViews.setFretboardVisible(fretboardVisible);
+        beatViews.setKeyboardVisible(keyboardVisible);
+        commands.get("view.fretboard").setChecked(fretboardVisible);
+        commands.get("view.keyboard").setChecked(keyboardVisible);
         toolBars = new ToolBars(editor, commands, canvas);
         boolean effectsToolBarVisible = preferences.effectsToolBarVisible();
         toolBars.setEffectsToolBarVisible(effectsToolBarVisible);
@@ -909,13 +915,19 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void toggleFretboard() {
-            beatViews.setFretboardVisible(!beatViews.isFretboardVisible());
+            boolean visible = !beatViews.isFretboardVisible();
+            beatViews.setFretboardVisible(visible);
+            preferences.setFretboardVisible(visible);
+            commands.get("view.fretboard").setChecked(visible);
             backToTheScore();
         }
 
         @Override
         public void toggleKeyboard() {
-            beatViews.setKeyboardVisible(!beatViews.isKeyboardVisible());
+            boolean visible = !beatViews.isKeyboardVisible();
+            beatViews.setKeyboardVisible(visible);
+            preferences.setKeyboardVisible(visible);
+            commands.get("view.keyboard").setChecked(visible);
             backToTheScore();
         }
 
