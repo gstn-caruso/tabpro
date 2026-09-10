@@ -11,11 +11,20 @@ final class ScoreFonts {
     private static final List<String> FAMILY_PREFERENCE =
             List.of("Times New Roman", "Liberation Serif", "Tinos", "FreeSerif");
 
+    private static final List<String> SANS_FAMILY_PREFERENCE =
+            List.of("Arial", "Liberation Sans", "Arimo", "Helvetica");
+
     /**
      * La serif de la partitura, como la de Guitar Pro 5: la primera de la preferencia que este
      * instalada en esta maquina, o la serif logica de Java si ninguna lo esta.
      */
-    static final String FAMILY = resolveFamily();
+    static final String FAMILY = resolveFamily(FAMILY_PREFERENCE, Font.SERIF);
+
+    /**
+     * La palo seco de la marca "TAB": la primera de la preferencia que este instalada en esta
+     * maquina, o la sans logica de Java si ninguna lo esta.
+     */
+    static final String SANS_FAMILY = resolveFamily(SANS_FAMILY_PREFERENCE, Font.SANS_SERIF);
 
     /** El numero de traste que se escribe sobre cada cuerda de la tablatura. */
     static final Font FRET_FONT = new Font(FAMILY, Font.BOLD, 16);
@@ -58,7 +67,7 @@ final class ScoreFonts {
 
     /** La marca "TAB" que abre cada sistema, con la letra tan alta como deje la tablatura. */
     static Font tabMarkFont(int letterHeight) {
-        return new Font(FAMILY, Font.BOLD, letterHeight);
+        return new Font(SANS_FAMILY, Font.BOLD, letterHeight);
     }
 
     /** El "8" u "15" arriba o abajo del pentagrama, proporcional a su interlinea. */
@@ -71,14 +80,14 @@ final class ScoreFonts {
         return new Font(FAMILY, Font.BOLD, (int) Math.round(staffLineSpacing * 2.1));
     }
 
-    private static String resolveFamily() {
+    private static String resolveFamily(List<String> preference, String fallback) {
         Set<String> installed =
                 Set.of(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
-        for (String candidate : FAMILY_PREFERENCE) {
+        for (String candidate : preference) {
             if (installed.contains(candidate)) {
                 return candidate;
             }
         }
-        return Font.SERIF;
+        return fallback;
     }
 }
