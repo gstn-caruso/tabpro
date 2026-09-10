@@ -34,6 +34,16 @@ class ThemeAccessibilityTest {
     }
 
     @Test
+    void switchingThemesWhileHighContrastIsOnKeepsItsOwnPalette() {
+        theme.apply(Theme.LIGHT);
+        theme.useHighContrast(true);
+
+        theme.apply(Theme.DARK);
+
+        assertEquals(Color.BLACK, UIManager.getColor("tabpro.background"));
+    }
+
+    @Test
     void turningHighContrastOffRestoresTheChosenTheme() {
         theme.apply(Theme.LIGHT);
         theme.useHighContrast(true);
