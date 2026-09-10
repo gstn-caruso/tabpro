@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.harmony;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.harmony.Chord;
@@ -58,19 +59,21 @@ class ChordDialogTest {
     }
 
     @Test
-    void elComboDePosicionesMuestraLaComplejidadEnCastellano() {
+    void lasPosicionesSonBotonesDeRadioSiempreVisiblesQueEligenLaComplejidad() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 
         ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
 
-        @SuppressWarnings("unchecked")
-        JComboBox<ChordComplexity> complexities = Combos.firstWithItemType(panel, ChordComplexity.class);
-        Component rendered = complexities.getRenderer()
-                .getListCellRendererComponent(new JList<>(), ChordComplexity.COMPLEX, 0, false, false);
+        javax.swing.JRadioButton simple = Combos.radioButtonWithText(panel, "Simple");
+        assertNotNull(Combos.radioButtonWithText(panel, "Media"), "no encontre el radio 'Media'");
+        assertNotNull(Combos.radioButtonWithText(panel, "Todas"), "no encontre el radio 'Todas'");
+        assertNotNull(simple, "no encontre el radio 'Simple'");
 
-        assertEquals("Todas", ((JLabel) rendered).getText());
+        simple.doClick();
+
+        assertEquals(ChordComplexity.SIMPLE, model.selection().complexity());
     }
 
     @Test

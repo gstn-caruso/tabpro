@@ -5,6 +5,7 @@ import java.awt.Container;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JRadioButton;
 
 /**
  * Encuentra un combo dentro de un panel de prueba por el tipo de sus items, sin obligar
@@ -64,5 +65,21 @@ public final class Combos {
         Component rendered =
                 list.getCellRenderer().getListCellRendererComponent(list, item, 0, false, false);
         return ((JLabel) rendered).getText();
+    }
+
+    /** Un boton de radio por su texto, entre los que arma un grupo de opciones siempre visibles. */
+    public static JRadioButton radioButtonWithText(Container root, String text) {
+        for (Component child : root.getComponents()) {
+            if (child instanceof JRadioButton radio && text.equals(radio.getText())) {
+                return radio;
+            }
+            if (child instanceof Container container) {
+                JRadioButton found = radioButtonWithText(container, text);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -11,16 +11,20 @@ import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -28,6 +32,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -66,7 +71,7 @@ public final class ChordDialog {
         private final JComboBox<ChordType> types = new JComboBox<>(ChordType.values());
         private final JComboBox<Interval> inversions = new JComboBox<>();
         private final JComboBox<PitchClass> basses = new JComboBox<>();
-        private final JComboBox<ChordComplexity> complexities = new JComboBox<>(ChordComplexity.values());
+        private final Map<ChordComplexity, JRadioButton> complexityButtons = new EnumMap<>(ChordComplexity.class);
         private final JComboBox<BarrePreference> barres = new JComboBox<>(BarrePreference.values());
         private final JTextField name = new JTextField(12);
         private final JCheckBox useDiagram = new JCheckBox("Usar diagrama", true);
@@ -93,7 +98,6 @@ public final class ChordDialog {
             basses.setRenderer(new LabeledListCellRenderer());
             types.setRenderer(new LabeledListCellRenderer());
             inversions.setRenderer(inversionRenderer());
-            complexities.setRenderer(new LabeledListCellRenderer());
             barres.setRenderer(new LabeledListCellRenderer());
             name.getAccessibleContext().setAccessibleName("Nombre del acorde");
             name.setToolTipText("Nombre del acorde");
@@ -117,9 +121,23 @@ public final class ChordDialog {
             zone.add(labelled("Tipo", types));
             zone.add(labelled("Inversión", inversions));
             zone.add(labelled("Bajo", basses));
-            zone.add(labelled("Posiciones", complexities));
+            zone.add(labelled("Posiciones", complexityChoice()));
             zone.add(labelled("Cejilla", barres));
             return zone;
+        }
+
+        /** Simple / Media / Todas: siempre visibles, como el filtro de complejidad del manual. */
+        private JPanel complexityChoice() {
+            JPanel choice = new JPanel(new GridLayout(0, 1));
+            ButtonGroup group = new ButtonGroup();
+            for (ChordComplexity complexity : ChordComplexity.values()) {
+                JRadioButton radio = new JRadioButton(Labels.of(complexity));
+                radio.addActionListener(event -> whenSelecting(() -> model.selectComplexity(complexity)));
+                group.add(radio);
+                complexityButtons.put(complexity, radio);
+                choice.add(radio);
+            }
+            return choice;
         }
 
         /** Zona B: el diagrama que se va a escribir en la partitura. */
@@ -228,8 +246,6 @@ public final class ChordDialog {
             types.addActionListener(event -> whenSelecting(() -> model.selectType((ChordType) types.getSelectedItem())));
             inversions.addActionListener(event -> whenSelecting(this::selectChosenInversion));
             basses.addActionListener(event -> whenSelecting(() -> model.selectBass((PitchClass) basses.getSelectedItem())));
-            complexities.addActionListener(event ->
-                    whenSelecting(() -> model.selectComplexity((ChordComplexity) complexities.getSelectedItem())));
             barres.addActionListener(event ->
                     whenSelecting(() -> model.selectBarrePreference((BarrePreference) barres.getSelectedItem())));
             name.addActionListener(event -> model.setCustomName(name.getText()));
@@ -276,7 +292,7 @@ public final class ChordDialog {
             types.setSelectedItem(model.selection().type());
             refreshInversions();
             basses.setSelectedItem(model.selection().bass());
-            complexities.setSelectedItem(model.selection().complexity());
+            complexityButtons.get(model.selection().complexity()).setSelected(true);
             barres.setSelectedItem(model.barrePreference());
             name.setText(model.current().name());
             useDiagram.setSelected(model.useDiagram());
