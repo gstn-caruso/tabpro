@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.a11y;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractButton;
@@ -126,7 +127,28 @@ public final class AccessibilityWalker {
         if (item instanceof Enum<?> enumValue) {
             return text.equals(enumValue.toString()) || text.equals(enumValue.name());
         }
-        return text.equals(item.toString());
+        return text.equals(rawRecordText(item));
+    }
+
+    /** La forma que un record sin toString() propio produce: "SimpleName[campo=valor, ...]". */
+    private String rawRecordText(Object item) {
+        RecordComponent[] components = item.getClass().getRecordComponents();
+        StringBuilder raw = new StringBuilder(item.getClass().getSimpleName()).append('[');
+        for (int index = 0; index < components.length; index++) {
+            if (index > 0) {
+                raw.append(", ");
+            }
+            raw.append(components[index].getName()).append('=').append(rawComponentValue(components[index], item));
+        }
+        return raw.append(']').toString();
+    }
+
+    private Object rawComponentValue(RecordComponent component, Object item) {
+        try {
+            return component.getAccessor().invoke(item);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("No se pudo leer " + component.getName() + " de " + item, e);
+        }
     }
 
     private boolean isInteractive(Component component) {

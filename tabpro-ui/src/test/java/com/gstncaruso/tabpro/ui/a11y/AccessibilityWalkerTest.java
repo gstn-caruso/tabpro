@@ -257,6 +257,27 @@ class AccessibilityWalkerTest {
         assertTrue(violaciones.get(0).reason().startsWith("toString() crudo: Escala["));
     }
 
+    private record FormatoDePapel(String etiqueta, int ancho, int alto) {
+
+        @Override
+        public String toString() {
+            return etiqueta;
+        }
+    }
+
+    @Test
+    void unComboQueMuestraElToStringPersonalizadoDeUnRecordNoEsUnaViolacion() {
+        JPanel panel = new JPanel();
+        JLabel etiqueta = new JLabel("Formato");
+        JComboBox<FormatoDePapel> combo =
+                new JComboBox<>(new FormatoDePapel[] {new FormatoDePapel("A4", 210, 297)});
+        etiqueta.setLabelFor(combo);
+        panel.add(etiqueta);
+        panel.add(combo);
+
+        assertTrue(walker.walk(panel).isEmpty());
+    }
+
     @Test
     void unComboConRenderPropioNoEsUnaViolacionAunqueElTextoCoincidaConElToString() {
         JPanel panel = new JPanel();
