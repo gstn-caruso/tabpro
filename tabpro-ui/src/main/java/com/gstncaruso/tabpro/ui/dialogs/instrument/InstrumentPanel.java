@@ -30,6 +30,10 @@ public final class InstrumentPanel extends JPanel {
         DialogStyle.padded(this);
         list.setCellRenderer((jlist, program, index, isSelected, hasFocus) ->
                 new javax.swing.JLabel(program + " - " + patch.nameOf(program)));
+        search.getAccessibleContext().setAccessibleName("Buscar instrumento");
+        search.setToolTipText("Buscar instrumento");
+        list.getAccessibleContext().setAccessibleName("Instrumentos");
+        list.setToolTipText("Instrumentos");
 
         add(search, BorderLayout.NORTH);
         add(new JScrollPane(list), BorderLayout.CENTER);
