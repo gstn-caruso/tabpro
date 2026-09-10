@@ -405,16 +405,7 @@ public final class Icons {
     }
 
     public static Icon keyboard() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Rectangle2D.Double(size * 0.08, size * 0.3, size * 0.84, size * 0.42));
-            for (int key = 1; key < 5; key++) {
-                double x = size * (0.08 + key * 0.168);
-                graphics.draw(new Line2D.Double(x, size * 0.3, x, size * 0.72));
-            }
-            graphics.fill(new Rectangle2D.Double(size * 0.2, size * 0.3, size * 0.09, size * 0.24));
-            graphics.fill(new Rectangle2D.Double(size * 0.53, size * 0.3, size * 0.09, size * 0.24));
-        });
+        return svgIcon("piano");
     }
 
     public static Icon tuner() {
