@@ -9,7 +9,6 @@ import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.core.notation.Clef;
 import java.awt.BasicStroke;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
@@ -24,10 +23,6 @@ import java.util.stream.Collectors;
  * saltos y marcadores), que se dibujan una sola vez arriba del sistema.
  */
 final class BarStructurePainter {
-
-    private static final Font MARK_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 11);
-    private static final Font SMALL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 9);
-    private static final Font REPEAT_COUNT_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 10);
 
     private BarStructurePainter() {
     }
@@ -111,7 +106,7 @@ final class BarStructurePainter {
 
     private static void paintRepeatCount(Graphics2D g, int rightEdge, int top, int times) {
         g.setColor(ScoreColors.LABEL);
-        g.setFont(REPEAT_COUNT_FONT);
+        g.setFont(ScoreFonts.REPEAT_COUNT_FONT);
         String label = repeatLabel(times);
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(label, rightEdge - metrics.stringWidth(label) - 12, top - 4);
@@ -142,12 +137,12 @@ final class BarStructurePainter {
         g.draw(new Line2D.Double(left, y, right - 4, y));
 
         String label = passes.stream().map(String::valueOf).collect(Collectors.joining(", ")) + ".";
-        g.setFont(SMALL_FONT);
+        g.setFont(ScoreFonts.ALTERNATE_ENDING_FONT);
         g.drawString(label, left + 4, y - 2);
     }
 
     private static void paintMarker(Graphics2D g, int x, int staffTop, Marker marker) {
-        g.setFont(MARK_FONT);
+        g.setFont(ScoreFonts.SECTION_MARK_FONT);
         g.setColor(ScoreColors.of(marker.color()));
         g.drawString(marker.name(), x, staffTop - 26);
     }
@@ -184,7 +179,7 @@ final class BarStructurePainter {
 
     private static void paintCenteredLabel(Graphics2D g, String text, int centerX, int y) {
         g.setColor(ScoreColors.INK);
-        g.setFont(MARK_FONT);
+        g.setFont(ScoreFonts.SECTION_MARK_FONT);
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(text, centerX - metrics.stringWidth(text) / 2, y);
     }

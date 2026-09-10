@@ -10,7 +10,6 @@ import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import java.awt.BasicStroke;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -27,9 +26,6 @@ import java.util.Optional;
  */
 final class TabNotationPainter {
 
-    private static final Font FINGER_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 9);
-    private static final Font BEND_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 9);
-    private static final Font GRACE_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
     private static final int FINGER_RADIUS = 6;
 
     /** Cuanto cuelga bajo la tablatura la curva de la palanca. */
@@ -108,7 +104,7 @@ final class TabNotationPainter {
         g.setColor(ScoreColors.LABEL);
         g.setStroke(new BasicStroke(1f));
         g.draw(new Ellipse2D.Double(centerX - FINGER_RADIUS, y - FINGER_RADIUS, FINGER_RADIUS * 2, FINGER_RADIUS * 2));
-        g.setFont(FINGER_FONT);
+        g.setFont(ScoreFonts.FINGER_FONT);
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(label, centerX - metrics.stringWidth(label) / 2, y + (metrics.getAscent() - metrics.getDescent()) / 2);
     }
@@ -120,7 +116,7 @@ final class TabNotationPainter {
             int y = layout.stringY(trackIndex, measureIndex, note.string());
             int x = bounds.x - 3;
             g.setColor(ScoreColors.LABEL);
-            g.setFont(GRACE_FONT);
+            g.setFont(ScoreFonts.GRACE_FONT);
             String text = String.valueOf(grace.fret());
             FontMetrics metrics = g.getFontMetrics();
             g.drawString(text, x - metrics.stringWidth(text), y + metrics.getAscent() / 2 - 1);
@@ -171,7 +167,7 @@ final class TabNotationPainter {
         paintArrowhead(g, x + 10, top, UPWARDS);
 
         String label = bendLabel(bend.peakQuarterTones());
-        g.setFont(BEND_FONT);
+        g.setFont(ScoreFonts.BEND_FONT);
         g.drawString(label, x + 12, top + 3);
     }
 
@@ -199,7 +195,7 @@ final class TabNotationPainter {
         g.draw(curve);
         paintArrowhead(g, x + 10, to, dives ? DOWNWARDS : UPWARDS);
 
-        g.setFont(BEND_FONT);
+        g.setFont(ScoreFonts.BEND_FONT);
         g.drawString(signedBendLabel(quarterTones), x + 12, bottom);
     }
 

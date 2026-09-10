@@ -15,7 +15,6 @@ import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -26,8 +25,6 @@ import java.util.Optional;
  * debajo de la otra, sistema por sistema.
  */
 public final class ScorePainter {
-
-    private static final Font LABEL_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 11);
 
     private ScorePainter() {
     }
@@ -161,7 +158,7 @@ public final class ScorePainter {
 
     private static void paintTrackLabel(
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, boolean selected) {
-        g.setFont(LABEL_FONT);
+        g.setFont(ScoreFonts.TRACK_LABEL_FONT);
         g.setColor(selected ? ScoreColors.INK : ScoreColors.LABEL);
         int y = layout.trackTop(trackIndex, measureIndex) + ScoreLayout.TRACK_LABEL_HEIGHT - 4;
         int x = layout.measureX(measureIndex);

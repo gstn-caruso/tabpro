@@ -18,11 +18,6 @@ import java.util.List;
  */
 final class PageChromePainter {
 
-    private static final Font TITLE_FONT = new Font(Font.SERIF, Font.BOLD, 20);
-    private static final Font SUBTITLE_FONT = new Font(Font.SERIF, Font.PLAIN, 13);
-    private static final Font CREDIT_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
-    private static final Font FOOTER_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 9);
-
     /** Cuanto sube el pie sobre el borde del margen de abajo. */
     private static final int FOOTER_BASELINE_OVER_THE_MARGIN = 8;
 
@@ -85,7 +80,7 @@ final class PageChromePainter {
     }
 
     static void paintFooter(Graphics2D g, List<BannerText> footer, PageMetrics sheet, int y, int height) {
-        g.setFont(FOOTER_FONT);
+        g.setFont(ScoreFonts.PAGE_FOOTER_FONT);
         g.setColor(ScoreColors.PAGE_MUTED);
         int baseline = y + height - sheet.marginBottom() - FOOTER_BASELINE_OVER_THE_MARGIN;
         int leftY = baseline;
@@ -103,7 +98,7 @@ final class PageChromePainter {
 
     private static void paintRunningHeader(Graphics2D g, List<BannerText> header, int centerX, int top) {
         g.setColor(ScoreColors.PAGE_MUTED);
-        g.setFont(CREDIT_FONT);
+        g.setFont(ScoreFonts.PAGE_CREDIT_FONT);
         header.stream()
                 .filter(line -> line.element() == PageElement.TITLE)
                 .findFirst()
@@ -112,10 +107,10 @@ final class PageChromePainter {
 
     private static Font fontOf(PageElement element) {
         return switch (element) {
-            case TITLE -> TITLE_FONT;
-            case SUBTITLE -> SUBTITLE_FONT;
-            case COPYRIGHT, PAGE_NUMBER -> FOOTER_FONT;
-            default -> CREDIT_FONT;
+            case TITLE -> ScoreFonts.PAGE_TITLE_FONT;
+            case SUBTITLE -> ScoreFonts.PAGE_SUBTITLE_FONT;
+            case COPYRIGHT, PAGE_NUMBER -> ScoreFonts.PAGE_FOOTER_FONT;
+            default -> ScoreFonts.PAGE_CREDIT_FONT;
         };
     }
 

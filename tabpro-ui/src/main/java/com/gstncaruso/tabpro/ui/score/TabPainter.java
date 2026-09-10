@@ -9,15 +9,12 @@ import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.notation.Beaming;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 /** La tablatura de una pista: sus cuerdas, sus barras de compas y los trastes escritos encima. */
 final class TabPainter {
-
-    private static final Font FRET_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 11);
 
     private TabPainter() {
     }
@@ -57,7 +54,7 @@ final class TabPainter {
         int y = layout.stringY(trackIndex, measureIndex, note.string());
         String fret = fretText(note);
 
-        g.setFont(FRET_FONT);
+        g.setFont(ScoreFonts.FRET_FONT);
         FontMetrics metrics = g.getFontMetrics();
         int textWidth = metrics.stringWidth(fret);
 
@@ -91,7 +88,7 @@ final class TabPainter {
         int letterHeight = (bottom - top) / 3;
 
         g.setColor(ScoreColors.LABEL);
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, Math.max(9, letterHeight)));
+        g.setFont(ScoreFonts.tabMarkFont(Math.max(9, letterHeight)));
         FontMetrics metrics = g.getFontMetrics();
         String[] letters = {"T", "A", "B"};
         int x = layout.measureX(measureIndex) + 10;
@@ -105,7 +102,7 @@ final class TabPainter {
     static void paintTuningLegend(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
         int stringCount = track.tuning().stringCount();
         g.setColor(ScoreColors.LABEL);
-        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9));
+        g.setFont(ScoreFonts.TUNING_LEGEND_FONT);
         int x = layout.measureX(measureIndex) + 26;
         for (int string = 1; string <= stringCount; string++) {
             String name = com.gstncaruso.tabpro.core.notation.PitchName.of(track.tuning().pitchOfString(string)).text();
@@ -144,7 +141,7 @@ final class TabPainter {
         boolean complete = track.measure(measureIndex).isComplete();
         Color color = complete ? ScoreColors.MUTED_INK : ScoreColors.WARNING;
         g.setColor(color);
-        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+        g.setFont(ScoreFonts.MEASURE_NUMBER_FONT);
         g.drawString(
                 String.valueOf(measureIndex + 1),
                 layout.measureX(measureIndex) + 3,

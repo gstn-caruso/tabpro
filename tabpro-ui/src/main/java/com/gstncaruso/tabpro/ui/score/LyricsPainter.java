@@ -5,7 +5,6 @@ import com.gstncaruso.tabpro.core.model.Lyrics;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -14,7 +13,6 @@ import java.util.List;
 /** La letra de la pista que la lleva, repartida silaba por silaba debajo de su tablatura. */
 final class LyricsPainter {
 
-    private static final Font FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
     private static final int LINE_HEIGHT = 13;
     private static final int FIRST_LINE_GAP = 12;
 
@@ -65,7 +63,7 @@ final class LyricsPainter {
         int centerX = bounds.x + bounds.width / 2;
         int y = layout.tabBottom(trackIndex, measureIndex) + FIRST_LINE_GAP + lineIndex * LINE_HEIGHT;
 
-        g.setFont(FONT);
+        g.setFont(ScoreFonts.LYRICS_FONT);
         g.setColor(ScoreColors.INK);
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(syllable, centerX - metrics.stringWidth(syllable) / 2, y);
