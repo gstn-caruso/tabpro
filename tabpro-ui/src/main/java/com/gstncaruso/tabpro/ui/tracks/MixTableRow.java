@@ -38,7 +38,6 @@ public final class MixTableRow extends JPanel {
 
     private final JLabel number = new JLabel();
     private final JCheckBox visible = new JCheckBox();
-    private final JComponent icon = instrumentIcon();
     private final JLabel name = new JLabel();
     private final JSpinner port = new JSpinner(new SpinnerNumberModel(1, 1, Channel.PORT_COUNT, 1));
     private final JSpinner channel = new JSpinner(new SpinnerNumberModel(1, 1, Channel.CHANNELS_PER_PORT, 1));
@@ -75,7 +74,8 @@ public final class MixTableRow extends JPanel {
         visible.addActionListener(e -> model.setVisibleInMultitrackView(trackIndex, visible.isSelected()));
         addColumn(visible, MixTable.VISIBLE_WIDTH);
 
-        addColumn(icon, MixTable.ICON_WIDTH);
+        toggle(solo, () -> editor.toggleSolo(trackIndex));
+        toggle(mute, () -> editor.toggleMute(trackIndex));
 
         name.setFont(name.getFont().deriveFont(Font.BOLD));
         name.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -107,9 +107,6 @@ public final class MixTableRow extends JPanel {
             parameterCells.add(cell);
             addColumn(cell, MixTable.PARAMETER_WIDTH);
         }
-
-        toggle(mute, () -> editor.toggleMute(trackIndex));
-        toggle(solo, () -> editor.toggleSolo(trackIndex));
 
         addMouseListener(selectOnClick());
         number.addMouseListener(selectOnClick());
@@ -143,7 +140,6 @@ public final class MixTableRow extends JPanel {
         boolean sounds = soundsRightNow(track);
         name.setForeground(sounds ? ScoreColors.INK : ScoreColors.MUTED_INK);
         number.setForeground(sounds ? ScoreColors.LABEL : ScoreColors.MUTED_INK);
-        icon.repaint();
         refreshAccessibleNames(track.name());
         syncing = false;
     }
@@ -277,25 +273,6 @@ public final class MixTableRow extends JPanel {
         component.setMinimumSize(size);
         add(component);
         add(Box.createHorizontalStrut(MixTable.COLUMN_GAP));
-    }
-
-    /** El dibujito del instrumento de la pista, que se lee de un vistazo mejor que el combo. */
-    private JComponent instrumentIcon() {
-        return new JComponent() {
-            @Override
-            protected void paintComponent(java.awt.Graphics g) {
-                int program = editor.score().track(trackIndex).channel().program();
-                boolean sounds = editor.score().isAudible(trackIndex);
-                double size = Math.min(getWidth(), getHeight()) - 2;
-                InstrumentIcon.paint(
-                        (java.awt.Graphics2D) g,
-                        program,
-                        sounds ? ScoreColors.INK : ScoreColors.MUTED_INK,
-                        (getWidth() - size) / 2.0,
-                        (getHeight() - size) / 2.0,
-                        size);
-            }
-        };
     }
 
     private MouseAdapter selectOnClick() {

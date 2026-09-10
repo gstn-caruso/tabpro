@@ -27,7 +27,6 @@ public final class MixTable extends JPanel {
 
     public static final int NUMBER_WIDTH = 24;
     public static final int VISIBLE_WIDTH = 20;
-    public static final int ICON_WIDTH = 20;
     public static final int NAME_WIDTH = 92;
     public static final int PORT_WIDTH = 32;
     public static final int CHANNEL_WIDTH = 32;
@@ -39,11 +38,11 @@ public final class MixTable extends JPanel {
     public static final int REDUCE_BUTTON_WIDTH = 16;
 
     private static final List<Integer> COLUMN_WIDTHS = List.of(
-            NUMBER_WIDTH, VISIBLE_WIDTH, ICON_WIDTH, NAME_WIDTH, PORT_WIDTH, CHANNEL_WIDTH, CHANNEL_WIDTH,
+            NUMBER_WIDTH, VISIBLE_WIDTH, TOGGLE_WIDTH, TOGGLE_WIDTH, NAME_WIDTH, PORT_WIDTH, CHANNEL_WIDTH,
+            CHANNEL_WIDTH,
             INSTRUMENT_WIDTH,
             LEVEL_WIDTH, LEVEL_WIDTH,
-            PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH,
-            TOGGLE_WIDTH, TOGGLE_WIDTH);
+            PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH, PARAMETER_WIDTH);
 
     public static final int WIDTH =
             COLUMN_WIDTHS.stream().mapToInt(Integer::intValue).sum() + COLUMN_WIDTHS.size() * COLUMN_GAP + 16;
@@ -127,8 +126,11 @@ public final class MixTable extends JPanel {
         header.setMaximumSize(new Dimension(Integer.MAX_VALUE, TrackPanel.HEADER_HEIGHT));
 
         header.add(reduceRestoreButtons());
-        addTitle(header, "", NAME_WIDTH + ICON_WIDTH + VISIBLE_WIDTH - 2 * REDUCE_BUTTON_WIDTH - COLUMN_GAP);
-        addTitle(header, "Prt", PORT_WIDTH);
+        addTitle(header, "", VISIBLE_WIDTH - REDUCE_BUTTON_WIDTH * 2 + NUMBER_WIDTH);
+        addTitle(header, "S", TOGGLE_WIDTH);
+        addTitle(header, "M", TOGGLE_WIDTH);
+        addTitle(header, "Nombre", NAME_WIDTH);
+        addTitle(header, "Puerto", PORT_WIDTH);
         addTitle(header, "Ch", CHANNEL_WIDTH);
         addTitle(header, "Ch2", CHANNEL_WIDTH);
         addTitle(header, "Instrumento", INSTRUMENT_WIDTH);
@@ -138,8 +140,6 @@ public final class MixTable extends JPanel {
                 MixParameter.CHORUS, MixParameter.REVERB, MixParameter.PHASER, MixParameter.TREMOLO)) {
             addTitle(header, ABBREVIATED_LABELS.get(parameter), PARAMETER_WIDTH);
         }
-        addTitle(header, "M", TOGGLE_WIDTH);
-        addTitle(header, "S", TOGGLE_WIDTH);
         return header;
     }
 
