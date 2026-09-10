@@ -102,4 +102,12 @@ class MeasureGridTest {
         editor.moveTo(0, 0, 1);
         return editor;
     }
+
+    @Test
+    void tieneNombreYTooltipAccesibles() {
+        MeasureGrid grid = new MeasureGrid(new Editor(Score.blank()));
+
+        assertEquals("Grilla de compases", grid.getAccessibleContext().getAccessibleName());
+        assertTrue(grid.getToolTipText() != null && !grid.getToolTipText().isBlank());
+    }
 }
