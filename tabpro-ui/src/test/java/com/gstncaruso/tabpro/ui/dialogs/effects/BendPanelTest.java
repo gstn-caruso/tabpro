@@ -6,10 +6,20 @@ import com.gstncaruso.tabpro.core.model.effects.Bend;
 import com.gstncaruso.tabpro.core.model.effects.BendPoint;
 import com.gstncaruso.tabpro.core.model.effects.BendType;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class BendPanelTest {
+
+    @Test
+    void theTypeAndHeightFieldsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Type", english.text("edit_dialogs.shared.type"));
+        assertEquals("Height (Fret)", english.text("edit_dialogs.BendPanel.height", "Fret"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
