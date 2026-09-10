@@ -308,6 +308,55 @@ final class AuditSupport {
         }
     }
 
+    /** Un PrinterJob falso: registra lo que la ventana de Imprimir real le manda, sin abrir nada del sistema. */
+    static final class RecordingPrinting implements Printing {
+        private String jobName;
+        private java.awt.print.Printable printable;
+        private boolean printCalled;
+
+        @Override
+        public void setJobName(String name) {
+            this.jobName = name;
+        }
+
+        @Override
+        public void setPrintable(java.awt.print.Printable printable, java.awt.print.PageFormat format) {
+            this.printable = printable;
+        }
+
+        @Override
+        public boolean printDialog() {
+            return true;
+        }
+
+        @Override
+        public void print() {
+            printCalled = true;
+        }
+
+        @Override
+        public java.awt.print.PageFormat defaultPage() {
+            return new java.awt.print.PageFormat();
+        }
+
+        @Override
+        public java.awt.print.PageFormat pageDialog(java.awt.print.PageFormat page) {
+            return page;
+        }
+
+        String jobName() {
+            return jobName;
+        }
+
+        java.awt.print.Printable printable() {
+            return printable;
+        }
+
+        boolean printCalled() {
+            return printCalled;
+        }
+    }
+
     static Editor blankEditor() {
         return new Editor(Score.blank());
     }
