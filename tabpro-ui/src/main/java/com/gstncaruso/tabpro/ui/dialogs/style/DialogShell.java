@@ -6,6 +6,7 @@ import java.awt.Dialog;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -74,7 +75,16 @@ public final class DialogShell {
      * para poder probarlo sin depender de un display real.
      */
     static JComponent fitToAvailableHeight(JComponent content, int availableHeight) {
-        return content;
+        if (content.getPreferredSize().height <= availableHeight) {
+            return content;
+        }
+        JScrollPane scroll = new JScrollPane(content);
+        scroll.setBorder(null);
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
+        scroll.setPreferredSize(new java.awt.Dimension(
+                content.getPreferredSize().width + scroll.getVerticalScrollBar().getPreferredSize().width,
+                availableHeight));
+        return scroll;
     }
 
     /** Para ventanas sin Cancelar, como los reportes de un asistente: solo Cerrar. */
