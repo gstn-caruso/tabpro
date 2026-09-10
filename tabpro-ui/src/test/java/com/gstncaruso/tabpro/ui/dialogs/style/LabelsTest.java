@@ -126,6 +126,11 @@ class LabelsTest {
     }
 
     @Test
+    void translatesTheNoteWithOnlyTheLetterNameInEnglish() {
+        assertEquals("C", Texts.forLocale(Locale.ENGLISH).text("domain.PitchClass.format", "C", "Do"));
+    }
+
+    @Test
     void translatesTheScaleWithItsSpanishName() {
         assertEquals("Mayor (Jónico)", Labels.of(ScaleLibrary.major()));
     }

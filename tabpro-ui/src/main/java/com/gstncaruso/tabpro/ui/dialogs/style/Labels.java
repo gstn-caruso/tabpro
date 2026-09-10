@@ -27,7 +27,8 @@ public final class Labels {
         return switch (value) {
             case Chord chord -> chord.name();
             case ChordType chordType -> chordTypeLabel(chordType);
-            case PitchClass pitchClass -> pitchClass.name() + " (" + pitchClass.solfegeName() + ")";
+            case PitchClass pitchClass ->
+                    Texts.get("domain.PitchClass.format", pitchClass.name(), pitchClass.solfegeName());
             case Scale scale -> scale.name();
             case Tuning tuning -> tuning.name() + " (" + stringLetters(tuning) + ")";
             case Dynamic dynamic -> dynamic.symbol();
