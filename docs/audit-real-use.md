@@ -1,24 +1,24 @@
-# Auditoría de uso real — tabpro contra el manual de Guitar Pro 5.2
+# Real-use audit — tabpro against the Guitar Pro 5.2 manual
 
-Las auditorías anteriores (`auditoria-manual.md`) fueron estáticas: manual contra código,
-dieron el manual por cubierto. Esta auditoría ejercita el **camino real del usuario** sobre una
-`MainFrame` real, instanciada con `setVisible(true)` (hace falta que Swing registre los
-aceleradores de menú en su `KeyboardManager`, cosa que `pack()` solo no logra): el `JMenuItem`
-real y su `Action`, el `KeyEvent` real despachado sobre el `ScoreCanvas` real (nunca invocando el
-`Action` a mano), el botón real de una barra, y los controles reales de un diálogo modal real
-(detectado por `WINDOW_OPENED`, sin `Robot`). El harness vive en
-`tabpro-app/src/test/java/com/gstncaruso/tabpro/app/audit/`, tagueado `@Tag("integracion")`.
+The previous audits (`audit-manual.md`) were static: manual against code, and they took the
+manual as covered. This audit exercises the **real user path** on a real `MainFrame`,
+instantiated with `setVisible(true)` (Swing needs to register the menu accelerators in its
+`KeyboardManager`, which `pack()` alone does not achieve): the real `JMenuItem` and its `Action`,
+the real `KeyEvent` dispatched onto the real `ScoreCanvas` (never invoking the `Action` by hand),
+the real button on a toolbar, and the real controls of a real modal dialog (detected via
+`WINDOW_OPENED`, without `Robot`). The harness lives in
+`tabpro-app/src/test/java/com/gstncaruso/tabpro/app/audit/`, tagged `@Tag("integration")`.
 
-Código auditado: rama `refactor/impresion-con-costura-para-el-printer-job` sobre `main`, versión
-0.39.1. Harness: 15 clases, 98 tests, todos verdes juntos (`mvn -B -pl tabpro-tests -am
-test -Dtests.headless=false -Dtests.excluded.groups=ninguno -Dgroups=integracion`).
-`mvn -B verify` por defecto: **BUILD SUCCESS, 2665 tests, ~6 s** (idéntico antes y después).
+Audited code: branch `refactor/impresion-con-costura-para-el-printer-job` on top of `main`,
+version 0.39.1. Harness: 15 classes, 98 tests, all green together (`mvn -B -pl tabpro-tests -am
+test -Dtests.headless=false -Dtests.excluded.groups=ninguno -Dgroups=integration`).
+`mvn -B verify` with defaults: **BUILD SUCCESS, 2665 tests, ~6 s** (identical before and after).
 
 ---
 
-## Cobertura por capítulo
+## Coverage by chapter
 
-| Capítulo (línea del manual) | OK | MIENTE | AUSENTE | NO VERIFICABLE |
+| Chapter (manual line) | OK | LIES | MISSING | NOT VERIFIABLE |
 |---|---|---|---|---|
 | Write a Score (481) | 12 | 3 | 0 | 0 |
 | Add Symbols (961) | 3 | 0 | 0 | 0 |
@@ -37,181 +37,186 @@ test -Dtests.headless=false -Dtests.excluded.groups=ninguno -Dgroups=integracion
 | Import / Export a Score (2293 / 2506) | 17 | 0 | 0 | 0 |
 | **Total** | **68** | **7** | **1** | **0** |
 
-(La fila "Keyboard Shortcuts" no cuenta aparte el test de barrido exhaustivo
-`lasUnicasCincoTeclasQueElScrollPaneYElSplitPaneYaOcupabanSonLasDocumentadas`, que no verifica un
-ítem puntual del manual sino que **no hay una sexta colisión** del mismo tipo entre los ~150
-atajos del catálogo y el `JScrollPane`/`JSplitPane` reales de la ventana.)
+(The "Keyboard Shortcuts" row does not separately count the exhaustive sweep test
+`theOnlyFiveKeysThatScrollPaneAndSplitPaneAlreadyOccupiedAreTheDocumentedOnes`, which does not
+verify one specific item from the manual but rather that **there is no sixth collision** of the
+same kind between the ~150 shortcuts in the catalog and the window's real
+`JScrollPane`/`JSplitPane`.)
 
 ---
 
-## Hallazgos (sólo lo que no dio OK)
+## Findings (only what did not score OK)
 
-### 1. Ctrl+Home y Ctrl+Fin quedan mudos con la partitura enfocada — MIENTE · chico
-**Manual:** Keyboard Shortcuts, Navigation — "[Ctrl] Home" = primer compás, "[Ctrl] End" =
-último compás.
-**Camino:** atajo de teclado, partitura enfocada (situación normal al editar).
-**Esperado:** mover el cursor al primer/último compás.
-**Observado:** no pasa nada — el cursor no se mueve. El mismo comando **sí** funciona por el
-menú (Compás > Primer compás / Último compás).
-**Evidencia:** `WriteAScoreAuditTest.ctrlHomeQuedaMudoAunqueElMenuPrimerCompasFunciona`,
-`WriteAScoreAuditTest.ctrlFinQuedaMudoAunqueElMenuUltimoCompasFunciona`, y el barrido
-`KeyboardShortcutsAuditTest.lasUnicasCincoTeclasQueElScrollPaneYElSplitPaneYaOcupabanSonLasDocumentadas`.
-**Sospecha:** `tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/actions/AcceleratorGuard.java:44-46`
-(método `block`). El `JScrollPane` que envuelve la partitura trae de fábrica un `"scrollHome"` /
-`"scrollEnd"` en su `WHEN_ANCESTOR_OF_FOCUSED_COMPONENT`, y `AcceleratorGuard.letCommandsWin`
-reemplaza esa acción por una que **no hace nada** (`inputMap.put(accelerator, name)` +
-`NO_HACE_NADA`), en vez de sacarle la tecla al mapa. Swing encuentra esa acción vacía en el
-`JScrollPane`, la da por atendida y **nunca llega a mirar** el `WHEN_IN_FOCUSED_WINDOW` donde
-vive el acelerador real del menú. El test unitario existente
-(`AcceleratorGuardTest`) sólo comprueba que el `JScrollPane` aislado deja de decir
-`"scrollHome"`; nunca comprueba que el atajo real siga funcionando después.
+### 1. Ctrl+Home and Ctrl+End go silent with the score focused — LIES · small
+**Manual:** Keyboard Shortcuts, Navigation — "[Ctrl] Home" = first measure, "[Ctrl] End" =
+last measure.
+**Path:** keyboard shortcut, score focused (the normal situation while editing).
+**Expected:** move the cursor to the first/last measure.
+**Observed:** nothing happens — the cursor does not move. The same command **does** work through
+the menu (Compás > Primer compás / Último compás — Measure > First measure / Last measure).
+**Evidence:** `WriteAScoreAuditTest.ctrlHomeQuedaMudoAunqueElMenuPrimerCompasFunciona`,
+`WriteAScoreAuditTest.ctrlFinQuedaMudoAunqueElMenuUltimoCompasFunciona`, and the sweep
+`KeyboardShortcutsAuditTest.theOnlyFiveKeysThatScrollPaneAndSplitPaneAlreadyOccupiedAreTheDocumentedOnes`.
+**Suspected cause:** `tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/actions/AcceleratorGuard.java:44-46`
+(the `block` method). The `JScrollPane` that wraps the score ships out of the box with a
+`"scrollHome"` / `"scrollEnd"` action bound on its `WHEN_ANCESTOR_OF_FOCUSED_COMPONENT`, and
+`AcceleratorGuard.letCommandsWin` replaces that action with one that **does nothing**
+(`inputMap.put(accelerator, name)` + `NO_HACE_NADA`), instead of removing the key from the map.
+Swing finds that empty action on the `JScrollPane`, considers it handled and **never gets to
+look at** the `WHEN_IN_FOCUSED_WINDOW` where the menu's real accelerator lives. The existing unit
+test (`AcceleratorGuardTest`) only checks that the isolated `JScrollPane` stops responding to
+`"scrollHome"`; it never checks that the real shortcut keeps working afterward.
 
-### 2. F6 y F8 quedan mudos con la partitura enfocada — MIENTE · chico
-**Manual:** Keyboard Shortcuts — "F6" = Propiedades de la pista, "F8" = Configurar página.
-**Camino:** atajo de teclado, partitura enfocada.
-**Esperado:** abrir el diálogo real correspondiente.
-**Observado:** no se abre ningún diálogo. Por menú, los dos funcionan.
-**Evidencia:** `KeyboardShortcutsAuditTest.f6NoAbreLasPropiedadesDeLaPistaConLaPartituraEnfocada`,
+### 2. F6 and F8 go silent with the score focused — LIES · small
+**Manual:** Keyboard Shortcuts — "F6" = Track properties, "F8" = Page setup.
+**Path:** keyboard shortcut, score focused.
+**Expected:** open the corresponding real dialog.
+**Observed:** no dialog opens. Through the menu, both work.
+**Evidence:** `KeyboardShortcutsAuditTest.f6NoAbreLasPropiedadesDeLaPistaConLaPartituraEnfocada`,
 `KeyboardShortcutsAuditTest.f8NoAbreConfigurarPaginaConLaPartituraEnfocada`.
-**Sospecha:** mismo mecanismo que el hallazgo 1, pero con el `JSplitPane` que separa la
-partitura de la mesa de mezcla (`"toggleFocus"` / `"startResize"` de fábrica),
+**Suspected cause:** the same mechanism as finding 1, but with the `JSplitPane` that separates the
+score from the mixer (built-in `"toggleFocus"` / `"startResize"`),
 `AcceleratorGuard.java:44-46`.
-**Tamaño:** chico (mismo fix que el hallazgo 1 arregla los cinco de una).
+**Size:** small (the same fix that closes finding 1 closes all five at once).
 
-### 3. Ctrl+Tab queda mudo con la partitura enfocada — MIENTE · chico
-**Manual:** Keyboard Shortcuts — "[Ctrl] Tab" = marcador siguiente.
-**Camino:** atajo de teclado, partitura enfocada.
-**Esperado:** mover el cursor al próximo marcador.
-**Observado:** no se mueve. Por menú (Marcador > Marcador siguiente) sí funciona.
-**Evidencia:** `KeyboardShortcutsAuditTest.ctrlTabQuedaMudoAunqueElMenuMarcadorSiguienteFunciona`.
-**Sospecha:** mismo mecanismo, `"focusOutForward"` de fábrica del `JSplitPane`,
-`AcceleratorGuard.java:44-46`. **Tamaño:** chico (mismo fix que 1 y 2).
+### 3. Ctrl+Tab goes silent with the score focused — LIES · small
+**Manual:** Keyboard Shortcuts — "[Ctrl] Tab" = next marker.
+**Path:** keyboard shortcut, score focused.
+**Expected:** move the cursor to the next marker.
+**Observed:** it does not move. Through the menu (Marcador > Marcador siguiente — Marker > Next
+marker) it does work.
+**Evidence:** `KeyboardShortcutsAuditTest.ctrlTabQuedaMudoAunqueElMenuMarcadorSiguienteFunciona`.
+**Suspected cause:** the same mechanism, the `JSplitPane`'s built-in `"focusOutForward"`,
+`AcceleratorGuard.java:44-46`. **Size:** small (same fix as 1 and 2).
 
-### 4. F10 no abre "Cambio de parámetros" con la partitura enfocada — MIENTE · chico-mediano
-**Manual:** Insert Parameter Changes (línea 1340) — "F10" abre Nota > Mesa de mezcla.
-**Camino:** atajo de teclado, partitura enfocada.
-**Esperado:** abrir el diálogo real de cambio de parámetros.
-**Observado:** no se abre ningún diálogo, y el modelo no cambia. En cambio, el `JMenuBar` real
-se activa para navegación con flechas (su `SelectionModel` pasa de `-1` a `0`, confirmado, y en
-un diagnóstico aparte se vio abrirse el desplegable del primer menú, un
-`javax.swing.Popup$HeavyWeightWindow`). Por menú (Nota > Mesa de mezcla) funciona perfecto.
-**Evidencia:**
+### 4. F10 does not open "Cambio de parámetros" with the score focused — LIES · small-medium
+**Manual:** Insert Parameter Changes (line 1340) — "F10" opens Note > Mixing table
+(Nota > Mesa de mezcla).
+**Path:** keyboard shortcut, score focused.
+**Expected:** open the real parameter-change dialog.
+**Observed:** no dialog opens, and the model does not change. Instead, the real `JMenuBar` is
+activated for arrow-key navigation (its `SelectionModel` moves from `-1` to `0`, confirmed, and
+in a separate diagnostic the first menu's dropdown was seen opening, a
+`javax.swing.Popup$HeavyWeightWindow`). Through the menu (Nota > Mesa de mezcla) it works
+perfectly.
+**Evidence:**
 `InsertParameterChangesAuditTest.f10ConLaPartituraEnfocadaActivaElMenuEnVezDeAbrirElCambioDeParametros`
-(el camino del menú, con el diálogo real y sus casillas/spinners reales, está en
+(the menu path, with the real dialog and its real checkboxes/spinners, is in
 `elMenuCambioDeParametrosAbreElDialogoRealYElVolumenElegidoLlegaAlModelo`).
-**Sospecha:** no es un bug de wiring de tabpro sino un choque con una convención de
-Swing/FlatLaf (F10 activa el `JMenuBar`, como en Windows/Motif), en
-`Commands.java` (`note.mixTableChange` usa `withAccelerator("F10")`). El arreglo no es tan
-directo como los anteriores: o se cambia el acelerador (rompería la paridad con el manual de
-Guitar Pro 5) o se instala un `KeyEventDispatcher`/`KeyEventPostProcessor` propio con más
-prioridad que el de la L&F. **Tamaño:** chico-mediano.
+**Suspected cause:** this is not a tabpro wiring bug but a clash with a Swing/FlatLaf convention
+(F10 activates the `JMenuBar`, as on Windows/Motif), in `Commands.java`
+(`note.mixTableChange` uses `withAccelerator("F10")`). The fix is not as direct as the previous
+ones: either the accelerator changes (which would break parity with the Guitar Pro 5 manual) or a
+custom `KeyEventDispatcher`/`KeyEventPostProcessor` gets installed with higher priority than the
+L&F's. **Size:** small-medium.
 
-### 5. Tab no alterna tablatura/pentagrama con la partitura enfocada — MIENTE · chico
-**Manual:** línea 780 (citada en `Editor.toggleNotation()`) — Tab alterna la edición entre
-tablatura y pentagrama sin mover el cursor.
-**Camino:** tecla cruda (no tiene comando en el catálogo; la resuelve `KeyboardEditing`
-directamente sobre `ScoreCanvas`).
-**Esperado:** `cursor().notation()` cambia de `TABLATURE` a `STANDARD` (o viceversa).
-**Observado:** no cambia. El binding existe (`KeyboardEditing.install` deja
-`"pressed TAB"` en el `WHEN_FOCUSED` de `ScoreCanvas`, comprobado), pero nunca se ejecuta.
-**Evidencia:** `WriteAScoreAuditTest.tabCrudoNoCambiaDeNotacionPorQuedarseConElFocoAntes`.
-**Sospecha:** `ScoreCanvas` (constructor,
-`tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/score/ScoreCanvas.java`) nunca llama a
-`setFocusTraversalKeysEnabled(false)`: Tab es, de fábrica, una tecla de navegación de foco para
-cualquier `JComponent`, y esa maquinaria de AWT se queda con la tecla antes de que
-`KeyboardEditing` (`tabpro-ui/.../tab/KeyboardEditing.java:64-77`, método `install`) la vea.
-**Tamaño:** chico.
+### 5. Tab does not toggle tablature/staff with the score focused — LIES · small
+**Manual:** line 780 (quoted in `Editor.toggleNotation()`) — Tab toggles editing between
+tablature and staff without moving the cursor.
+**Path:** raw key (it has no command in the catalog; `KeyboardEditing` resolves it directly on
+`ScoreCanvas`).
+**Expected:** `cursor().notation()` switches from `TABLATURE` to `STANDARD` (or vice versa).
+**Observed:** it does not switch. The binding exists (`KeyboardEditing.install` leaves
+`"pressed TAB"` on `ScoreCanvas`'s `WHEN_FOCUSED`, confirmed), but it never runs.
+**Evidence:** `WriteAScoreAuditTest.tabCrudoNoCambiaDeNotacionPorQuedarseConElFocoAntes`.
+**Suspected cause:** `ScoreCanvas` (constructor,
+`tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/score/ScoreCanvas.java`) never calls
+`setFocusTraversalKeysEnabled(false)`: Tab is, out of the box, a focus-navigation key for any
+`JComponent`, and that AWT machinery keeps the key before `KeyboardEditing`
+(`tabpro-ui/.../tab/KeyboardEditing.java:64-77`, the `install` method) ever sees it.
+**Size:** small.
 
-### 6. El diálogo de volumen del metrónomo no tiene forma de abrirse — AUSENTE · chico
-**Manual:** Configure the Sound (línea 1945) — configuración del metrónomo (activo/volumen).
-**Camino:** ninguno. Verificado por inspección de código, no con un test dinámico (es una
-ausencia, no una mentira: no hay control que apretar).
-**Esperado:** algún menú, botón o atajo que abra `MetronomeDialog`.
-**Observado:** `Ports.Dialogs.metronomeSettings()` está declarado, **implementado** en
-`MainFrame.Windows.metronomeSettings()` (arma un `MetronomeSettings` real desde el `Transport` y
-llama a `MetronomeDialog.ask`), pero **ningún** `define(...)` de
-`tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/actions/Commands.java` ni ningún ítem de
-`MenuBar.java` lo invoca. Se confirmó con `grep -rn "metronomeSettings"` sobre todo el árbol:
-las únicas dos apariciones son la interfaz y la implementación.
-**Sospecha:** falta un `define("sound.metronomeSettings", …, dialogs::metronomeSettings)` en
-`Commands.java` (cerca de `sound.metronome`, línea ~364) y su entrada en `MenuBar.java`.
-**Tamaño:** chico.
+### 6. The metronome volume dialog has no way to open — MISSING · small
+**Manual:** Configure the Sound (line 1945) — metronome settings (on/off, volume).
+**Path:** none. Verified by code inspection, not with a dynamic test (it is a missing feature,
+not a lie: there is no control to press).
+**Expected:** some menu, button or shortcut that opens `MetronomeDialog`.
+**Observed:** `Ports.Dialogs.metronomeSettings()` is declared, **implemented** in
+`MainFrame.Windows.metronomeSettings()` (it builds a real `MetronomeSettings` from the
+`Transport` and calls `MetronomeDialog.ask`), but **no** `define(...)` in
+`tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/actions/Commands.java` and no item in
+`MenuBar.java` ever calls it. Confirmed with `grep -rn "metronomeSettings"` over the whole tree:
+the only two occurrences are the interface and the implementation.
+**Suspected cause:** a `define("sound.metronomeSettings", …, dialogs::metronomeSettings)` is
+missing in `Commands.java` (near `sound.metronome`, line ~364) and its entry in `MenuBar.java`.
+**Size:** small.
 
-**Print a Score e Import / Export a Score no agregan hallazgos nuevos.** Los dos capítulos que
-quedaban sin cubrir (`PrintAuditTest`, `ImportExportAuditTest`) dieron **OK** en los casos
-ejercitados: Archivo > Imprimir y Configurar página abren los diálogos reales de tabpro con sus
-controles reales y lo elegido queda aplicado; Abrir/Guardar/Guardar como/Abrir reciente y los seis
-formatos ajenos que el manual nombra (MIDI, ASCII, MusicXML, PowerTab, TablEdit, Guitar Pro) más
-WAVE/Imagen/PDF escriben o leen un archivo real que el lector o escritor correspondiente reconoce.
+**Print a Score and Import / Export a Score add no new findings.** The two chapters that were
+still uncovered (`PrintAuditTest`, `ImportExportAuditTest`) scored **OK** on the cases exercised:
+Archivo > Imprimir (File > Print) and Configurar página (Page setup) open tabpro's real dialogs
+with their real controls, and the chosen settings are applied; Open/Save/Save as/Open recent and
+the six foreign formats the manual names (MIDI, ASCII, MusicXML, PowerTab, TablEdit, Guitar Pro)
+plus WAVE/Image/PDF write or read a real file that the matching reader or writer recognizes.
 
-**El `PrinterJob` real, que hasta la versión 0.39.1 no tenía costura, ya se puede verificar de
-punta a punta.** `ScorePrinting` recibía el `PrinterJob` llamando a `PrinterJob.getPrinterJob()`
-directamente (`print` y `configurePrinterPage`), así que ningún test podía darle a `MainFrame` un
-`PrinterJob` falso, y apretar "Imprimir" o "Configurar…" de verdad habría abierto una ventana
-**nativa** del sistema operativo -no un `JDialog` de Swing- con riesgo real de dejar la suite
-colgada. Ahora `ScorePrinting` recibe por constructor un `Printing`
-(`tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/print/Printing.java`): la interfaz chica que
-necesita del `PrinterJob` (`setJobName`, `setPrintable`, `printDialog`, `print`, `defaultPage`,
-`pageDialog`), con `SystemPrinting` como implementación real en producción
-(`MainFrame`/`App` la arman) y `RecordingPrinting` como falsa en los tests, sin cambiar el
-comportamiento de la app. Con esa costura:
+**The real `PrinterJob`, which until version 0.39.1 had no seam, can now be verified end to
+end.** `ScorePrinting` received the `PrinterJob` by calling `PrinterJob.getPrinterJob()` directly
+(`print` and `configurePrinterPage`), so no test could hand `MainFrame` a fake `PrinterJob`, and
+really pressing "Imprimir" or "Configurar…" would have opened a **native** operating-system
+window — not a Swing `JDialog` — with a real risk of leaving the suite hanging. Now
+`ScorePrinting` receives a `Printing` through its constructor
+(`tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/print/Printing.java`): the small interface it
+needs from `PrinterJob` (`setJobName`, `setPrintable`, `printDialog`, `print`, `defaultPage`,
+`pageDialog`), with `SystemPrinting` as the real production implementation
+(`MainFrame`/`App` build it) and `RecordingPrinting` as the fake one in tests, without changing
+the app's behavior. With that seam in place:
 
-- `ScorePrintingTest` (`tabpro-ui/src/test/.../print/ScorePrintingTest.java`) prueba con la falsa
-  que el `Printable` que llega al `PrinterJob` es el que pinta la partitura real, que cancelar el
-  diálogo de imprimir nunca llega a `printing.print()`, y que el `PageFormat` elegido en
-  Configurar se conserva para la próxima impresión (antes se descartaba sin usar).
-- `PrintAuditTest` inyecta un `Printing` falso en el `MainFrame` de prueba (mismo patrón que
-  `ScoreFiles`/`Player`/`Devices`) y ahora aprieta "Imprimir" **de verdad** -ya no hace falta
-  cerrar con "Cancelar"-: prueba que el rango de páginas elegido en el diálogo real de tabpro
-  llega tal cual al `Printable` que recibe el `PrinterJob` (falso), y que ese `Printable` sigue
-  pintando la partitura real.
+- `ScorePrintingTest` (`tabpro-ui/src/test/.../print/ScorePrintingTest.java`) proves with the
+  fake that the `Printable` reaching the `PrinterJob` is the one that paints the real score, that
+  canceling the print dialog never reaches `printing.print()`, and that the `PageFormat` chosen
+  under Configurar (Configure) is kept for the next print job (previously it was discarded
+  unused).
+- `PrintAuditTest` injects a fake `Printing` into the test `MainFrame` (the same pattern as
+  `ScoreFiles`/`Player`/`Devices`) and now really presses "Imprimir" (Print) — there is no longer
+  a need to close with "Cancelar" (Cancel) —: it proves that the page range chosen in tabpro's
+  real dialog reaches the `Printable` that the (fake) `PrinterJob` receives exactly as chosen, and
+  that this `Printable` still paints the real score.
 
 ---
 
-## El harness
+## The harness
 
 `tabpro-app/src/test/java/com/gstncaruso/tabpro/app/audit/`:
 
-- `AuditSupport.java`: fábrica de `MainFrame` real (con `ScoreFiles`/`Player`/`Devices`/`Printing`
-  falsos inyectables -este último, `RecordingPrinting`, es el `PrinterJob` falso que usa
-  `PrintAuditTest`-, más un `newFrame(Editor, ScoreFiles, ScoreExchange)` para los tests que necesitan
-  un `ScoreFiles`/`ScoreExchange` real -Abrir/Guardar/Importar/Exportar-), recorrido del árbol de
-  componentes real (`findComponent`, `findComponents`, `findMenuItem` -con la variante que busca
-  dentro de un `JMenu` puntual, para cuando la misma etiqueta existe tanto en Importar como en
-  Exportar-, `findButton`, `findCheckBox`, `findRadioButton`, `tabContent`), un `repoFile` para los
-  fixtures reales de otro módulo (`tabpro-format/src/test/resources/...`, resueltos desde el
-  directorio de trabajo real de `tabpro-tests`), despacho de `KeyEvent` real (`pressKey`,
-  `typeChar`) y el manejo de diálogos modales reales sin `Robot` (`withDialog`,
-  `dispatchKeyAndDetectDialog`): un `AWTEventListener` global agarra el `WINDOW_OPENED` del
-  `JDialog` -que Swing entrega dentro del mismo bucle anidado que bloquea a `setVisible(true)`- y
-  ahí mismo se tocan sus controles reales. Cuando un comando abre más de un diálogo en cadena
-  (import de MIDI, import/export de ASCII, export de WAVE), el mismo `onOpen` de `withDialog` se
-  invoca una vez por cada ventana real que aparece, en el orden en que Swing las va abriendo.
-  `withDialog` garantiza además que un `onOpen` que tira, o que se olvida de cerrar el diálogo,
-  nunca deja la suite colgada esperando un `setVisible(true)` que no va a volver: captura
-  cualquier error real del callback, cierra el diálogo y lo relanza desde el hilo del test
-  (`AuditSupportWithDialogTest`, `@Tag("integracion")`, cubre los tres casos).
-- `TabEditMinimalFixture.java`: un archivo TEF3 mínimo armado a mano, con el mismo layout binario
-  que entiende el lector real (`TabEditByteReader`), para el import de TablEdit -que no tiene
-  ninguna muestra real en el repositorio (tampoco la tiene `tabpro-format`, que arma la suya
-  igual a mano, en un test de otro módulo, package-private y no reusable desde acá)-.
-- Un archivo de test por capítulo, todos `@Tag("integracion")` y
-  `@ResourceLock(AuditSupport.SWING_LOCK)`.
-- Dos cambios de infraestructura en el `pom.xml` raíz (con el mismo valor por defecto que antes,
-  así que `mvn -B verify` no cambia):
-  - `tests.headless` (default `true`) parametriza `-Djava.awt.headless` del `argLine` de
-    surefire: los aceleradores de menú se resuelven con `WHEN_IN_FOCUSED_WINDOW`, y Swing sólo
-    los registra en su `KeyboardManager` cuando la ventana está *showing* de verdad —
-    `pack()` sin `setVisible(true)` no alcanza.
-  - `java.util.prefs.userRoot` y `java.io.tmpdir` aislados en el mismo `argLine`: `MainFrame`
-    real lee/escribe las `Preferences` reales del usuario y busca su archivo de recuperación en
-    el `tmpdir` real; sin aislarlos, un archivo de recuperación real dispara un diálogo real en
-    cada test (se reprodujo una vez).
-  - `@ResourceLock` con una clave compartida en las 15 clases: Swing tiene un solo EDT por
-    máquina virtual y la suite corre las clases en paralelo — sin el lock, dos clases que abren
-    diálogos modales al mismo tiempo se pisan el `AWTEventListener` global (`Toolkit` no
-    distingue de qué test es cada ventana) y la suite queda colgada (se reprodujo una vez, sin
-    el lock).
+- `AuditSupport.java`: factory for a real `MainFrame` (with injectable fake
+  `ScoreFiles`/`Player`/`Devices`/`Printing` — the last one, `RecordingPrinting`, is the fake
+  `PrinterJob` that `PrintAuditTest` uses —, plus a `newFrame(Editor, ScoreFiles, ScoreExchange)`
+  for tests that need a real `ScoreFiles`/`ScoreExchange` — Open/Save/Import/Export), traversal of
+  the real component tree (`findComponent`, `findComponents`, `findMenuItem` — with the variant
+  that searches inside one specific `JMenu`, for when the same label exists in both Importar and
+  Exportar —, `findButton`, `findCheckBox`, `findRadioButton`, `tabContent`), a `repoFile` for the
+  real fixtures of another module (`tabpro-format/src/test/resources/...`, resolved from
+  `tabpro-tests`'s real working directory), real `KeyEvent` dispatch (`pressKey`, `typeChar`) and
+  handling of real modal dialogs without `Robot` (`withDialog`, `dispatchKeyAndDetectDialog`): a
+  global `AWTEventListener` grabs the `JDialog`'s `WINDOW_OPENED` — which Swing delivers inside
+  the same nested loop that blocks `setVisible(true)` — and its real controls are touched right
+  there. When a command opens more than one dialog in a chain (MIDI import, ASCII import/export,
+  WAVE export), the same `onOpen` from `withDialog` is invoked once per real window that appears,
+  in the order Swing opens them. `withDialog` also guarantees that an `onOpen` that throws, or
+  that forgets to close the dialog, never leaves the suite hanging waiting on a `setVisible(true)`
+  that will not return: it catches any real error from the callback, closes the dialog and
+  rethrows it from the test thread (`AuditSupportWithDialogTest`, `@Tag("integration")`, covers
+  all three cases).
+- `TabEditMinimalFixture.java`: a minimal TEF3 file built by hand, with the same binary layout the
+  real reader understands (`TabEditByteReader`), for the TablEdit import — which has no real
+  sample in the repository (neither does `tabpro-format`, which builds its own the same way, by
+  hand, in a test in another module, package-private and not reusable from here).
+- One test file per chapter, all `@Tag("integration")` and `@ResourceLock(AuditSupport.SWING_LOCK)`.
+- Two infrastructure changes in the root `pom.xml` (with the same default value as before, so
+  `mvn -B verify` does not change):
+  - `tests.headless` (default `true`) parametrizes surefire's `argLine`
+    `-Djava.awt.headless`: menu accelerators resolve via `WHEN_IN_FOCUSED_WINDOW`, and Swing only
+    registers them in its `KeyboardManager` when the window is truly *showing* —
+    `pack()` without `setVisible(true)` is not enough.
+  - `java.util.prefs.userRoot` and `java.io.tmpdir` isolated in the same `argLine`: the real
+    `MainFrame` reads/writes the user's real `Preferences` and looks for its recovery file in the
+    real `tmpdir`; without isolating them, a real recovery file triggers a real dialog on every
+    test (this was reproduced once).
+  - `@ResourceLock` with a key shared across the 15 classes: Swing has a single EDT per virtual
+    machine and the suite runs classes in parallel — without the lock, two classes that open
+    modal dialogs at the same time step on each other's global `AWTEventListener` (`Toolkit` does
+    not tell which test each window belongs to) and the suite hangs (this was reproduced once,
+    without the lock).
 
-Correr sólo el harness: `mvn -B -pl tabpro-tests -am test -Dtests.headless=false
--Dtests.excluded.groups=ninguno -Dgroups=integracion`.
+Running just the harness: `mvn -B -pl tabpro-tests -am test -Dtests.headless=false
+-Dtests.excluded.groups=ninguno -Dgroups=integration`.
+</content>
