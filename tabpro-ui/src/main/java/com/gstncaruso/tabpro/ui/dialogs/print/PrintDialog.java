@@ -6,7 +6,6 @@ import com.gstncaruso.tabpro.ui.print.ScorePrinting;
 import java.awt.Component;
 import java.util.Optional;
 
-/** La ventana de Imprimir: que hojas salen y de que tamano. */
 public final class PrintDialog {
 
     private PrintDialog() {
