@@ -30,7 +30,7 @@ class ToolBarsTest {
     private final ToolBars toolBars = new ToolBars(editor, commands, new FakeZoomHolder());
 
     @Test
-    void lasCuatroFilasArrancanVisibles() {
+    void theFourRowsStartVisible() {
         assertTrue(toolBars.isDocumentToolBarVisible());
         assertTrue(toolBars.isStructureToolBarVisible());
         assertTrue(toolBars.isNotationToolBarVisible());
@@ -38,7 +38,7 @@ class ToolBarsTest {
     }
 
     @Test
-    void escondeUnaFilaYLasOtrasTresQuedanVisibles() {
+    void hidingOneRowLeavesTheOtherThreeVisible() {
         toolBars.setStructureToolBarVisible(false);
 
         assertFalse(toolBars.isStructureToolBarVisible());
@@ -48,7 +48,7 @@ class ToolBarsTest {
     }
 
     @Test
-    void volverAMostrarlaLaTraeDeVuelta() {
+    void showingItAgainBringsItBack() {
         toolBars.setNotationToolBarVisible(false);
         toolBars.setNotationToolBarVisible(true);
 
@@ -56,7 +56,7 @@ class ToolBarsTest {
     }
 
     @Test
-    void elEstadoDeCadaFilaEsIndependiente() {
+    void theStateOfEachRowIsIndependent() {
         toolBars.setDocumentToolBarVisible(false);
         toolBars.setStructureToolBarVisible(false);
 
@@ -67,7 +67,7 @@ class ToolBarsTest {
     }
 
     @Test
-    void laFilaDeEfectosSeEscondeYSeVuelveAMostrarSinAfectarALasOtras() {
+    void theEffectsRowHidesAndShowsAgainWithoutAffectingTheOthers() {
         toolBars.setEffectsToolBarVisible(false);
 
         assertFalse(toolBars.isEffectsToolBarVisible());
@@ -81,13 +81,13 @@ class ToolBarsTest {
     }
 
     @Test
-    void ningunBotonQuedaSinNombreNiTooltipAccesible() {
+    void noButtonIsLeftWithoutAnAccessibleNameOrTooltip() {
         AccessibilityAssertions.assertNoViolations(toolBars.component());
         AccessibilityAssertions.assertNoViolations(toolBars.effectsComponent());
     }
 
     @Test
-    void ningunBotonDeNingunaDeLasCuatroFilasQuedaSinIcono() {
+    void noButtonInAnyOfTheFourRowsIsLeftWithoutAnIcon() {
         for (Container row : new Container[] {
             toolBars.component(), toolBars.effectsComponent(),
         }) {
@@ -98,26 +98,26 @@ class ToolBarsTest {
     }
 
     @Test
-    void elBotonDelBancoDeSonidoArrancaYSeMantieneSincronizadoConElPuertoReal() {
-        boolean[] activo = {true};
-        List<String> llamados = new java.util.ArrayList<>();
+    void theSoundFontButtonStartsAndStaysSyncedWithTheActualPort() {
+        boolean[] active = {true};
+        List<String> called = new java.util.ArrayList<>();
         InvocationHandler handler = (proxy, method, args) -> {
-            llamados.add(method.getName());
+            called.add(method.getName());
             if (method.getName().equals("toggleSoundFont")) {
-                activo[0] = !activo[0];
+                active[0] = !active[0];
                 return null;
             }
             if (method.getName().equals("soundFontActive")) {
-                return activo[0];
+                return active[0];
             }
             return null;
         };
         Ports.Playback playback = (Ports.Playback) Proxy.newProxyInstance(
                 Ports.Playback.class.getClassLoader(), new Class<?>[] {Ports.Playback.class}, handler);
-        ToolBars otraBarra = new ToolBars(editor, new Commands(
+        ToolBars anotherToolBar = new ToolBars(editor, new Commands(
                 editor, record(Ports.Document.class), record(Ports.Dialogs.class), playback, record(Ports.View.class)),
                 new FakeZoomHolder());
-        JToggleButton button = toggleButtonNamed(otraBarra.structureToolBar, "Banco de sonido");
+        JToggleButton button = toggleButtonNamed(anotherToolBar.structureToolBar, "Banco de sonido");
 
         assertTrue(button.isSelected(), "tiene que arrancar mostrando que el banco esta prendido");
 
@@ -127,7 +127,7 @@ class ToolBarsTest {
         button.getAction().actionPerformed(null);
         assertTrue(button.isSelected(), "un disparo ajeno al boton (F2, el menu) tiene que sincronizarlo igual");
 
-        assertEquals(2, llamados.stream().filter("toggleSoundFont"::equals).count());
+        assertEquals(2, called.stream().filter("toggleSoundFont"::equals).count());
     }
 
     private JToggleButton toggleButtonNamed(Container root, String name) {

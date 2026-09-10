@@ -17,13 +17,13 @@ class ScoreMixSplitTest {
     private final ScoreMixSplit split = new ScoreMixSplit(score, mixTable);
 
     @Test
-    void laPartituraArrancaArribaYLaMesaAbajo() {
+    void theScoreStartsOnTopAndTheMixTableAtTheBottom() {
         assertSame(score, split.top());
         assertSame(mixTable, split.bottom());
     }
 
     @Test
-    void intercambiarVistasPoneLaMesaArribaYLaPartituraAbajo() {
+    void togglingViewsPutsTheMixTableOnTopAndTheScoreAtTheBottom() {
         split.toggleView();
 
         assertSame(mixTable, split.top());
@@ -31,7 +31,7 @@ class ScoreMixSplitTest {
     }
 
     @Test
-    void intercambiarDosVecesDejaTodoComoEstaba() {
+    void togglingTwiceLeavesEverythingAsItWas() {
         split.toggleView();
         split.toggleView();
 
@@ -40,20 +40,21 @@ class ScoreMixSplitTest {
     }
 
     @Test
-    void laMesaSigueOcupandoSuFranjaChicaDespuesDeIntercambiar() {
+    void theMixTableKeepsItsSmallStripAfterToggling() {
         layOutAt(900, 700);
         split.showMixTable();
         layOut();
-        int mesaAntes = mixTable.getHeight();
-        assertTrue(mesaAntes > 0 && mesaAntes < 700 / 2, "la mesa deberia ser una franja chica, midio " + mesaAntes);
+        int heightBefore = mixTable.getHeight();
+        assertTrue(heightBefore > 0 && heightBefore < 700 / 2,
+                "la mesa deberia ser una franja chica, midio " + heightBefore);
 
         split.toggleView();
         layOut();
 
-        int mesaDespues = mixTable.getHeight();
-        assertTrue(Math.abs(mesaAntes - mesaDespues) <= 3,
-                "la franja de la mesa deberia mantenerse, media " + mesaAntes + " y paso a " + mesaDespues);
-        assertTrue(mesaDespues < 700 / 2, "la mesa no deberia ocupar la mitad de la ventana, midio " + mesaDespues);
+        int heightAfter = mixTable.getHeight();
+        assertTrue(Math.abs(heightBefore - heightAfter) <= 3,
+                "la franja de la mesa deberia mantenerse, media " + heightBefore + " y paso a " + heightAfter);
+        assertTrue(heightAfter < 700 / 2, "la mesa no deberia ocupar la mitad de la ventana, midio " + heightAfter);
     }
 
     private void layOutAt(int width, int height) {

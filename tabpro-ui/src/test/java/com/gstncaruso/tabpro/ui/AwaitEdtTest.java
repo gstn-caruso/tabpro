@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class AwaitEdtTest {
 
     @Test
-    void esperaHastaQueElEdtProceseLoQueYaEstabaEncolado() throws Exception {
+    void waitsUntilTheEdtProcessesWhatWasAlreadyQueued() throws Exception {
         boolean[] ran = {false};
         SwingUtilities.invokeLater(() -> ran[0] = true);
 

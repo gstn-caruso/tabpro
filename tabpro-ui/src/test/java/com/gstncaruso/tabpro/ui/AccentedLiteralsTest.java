@@ -138,7 +138,7 @@ class AccentedLiteralsTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("literals")
-    void noLeFaltanTildesAUnTextoDeLaInterfaz(Literal literal) {
+    void noInterfaceTextIsMissingAnAccent(Literal literal) {
         String withoutPlaceholders = PLACEHOLDER.matcher(literal.content()).replaceAll("");
         if (IDENTIFIER_LITERAL.matcher(literal.content()).matches()) {
             return;

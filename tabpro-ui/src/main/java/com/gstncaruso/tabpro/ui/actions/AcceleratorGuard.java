@@ -24,7 +24,7 @@ import javax.swing.KeyStroke;
  */
 public final class AcceleratorGuard {
 
-    private static final String SIN_ACCION_REGISTRADA = "none";
+    private static final String NO_ACTION_REGISTERED = "none";
 
     private AcceleratorGuard() {
     }
@@ -56,7 +56,7 @@ public final class AcceleratorGuard {
             if (inputMap.get(accelerator) == null) {
                 continue;
             }
-            inputMap.put(accelerator, SIN_ACCION_REGISTRADA);
+            inputMap.put(accelerator, NO_ACTION_REGISTERED);
         }
     }
 }

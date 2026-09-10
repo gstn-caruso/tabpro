@@ -17,12 +17,12 @@ class MnemonicWalkerTest {
     private final MnemonicWalker walker = new MnemonicWalker();
 
     @Test
-    void unaBarraSinMenusNoTieneHallazgos() {
+    void aBarWithNoMenusHasNoFindings() {
         assertTrue(walker.walkMenuBar(new JMenuBar()).isEmpty());
     }
 
     @Test
-    void unMenuSinMnemonicoEsUnHallazgo() {
+    void aMenuWithNoMnemonicIsAFinding() {
         JMenuBar bar = new JMenuBar();
         bar.add(new JMenu("Archivo"));
 
@@ -30,35 +30,35 @@ class MnemonicWalkerTest {
     }
 
     @Test
-    void dosMenusConMnemonicosDistintosNoTienenHallazgos() {
+    void twoMenusWithDifferentMnemonicsHaveNoFindings() {
         JMenuBar bar = new JMenuBar();
-        JMenu archivo = new JMenu("Archivo");
-        archivo.setMnemonic('A');
-        JMenu editar = new JMenu("Editar");
-        editar.setMnemonic('E');
-        bar.add(archivo);
-        bar.add(editar);
+        JMenu file = new JMenu("Archivo");
+        file.setMnemonic('A');
+        JMenu edit = new JMenu("Editar");
+        edit.setMnemonic('E');
+        bar.add(file);
+        bar.add(edit);
 
         assertTrue(walker.walkMenuBar(bar).isEmpty());
     }
 
     @Test
-    void dosMenusConElMismoMnemonicoChocanEntreSi() {
+    void twoMenusWithTheSameMnemonicClashWithEachOther() {
         JMenuBar bar = new JMenuBar();
-        JMenu archivo = new JMenu("Archivo");
-        archivo.setMnemonic('A');
-        JMenu ayuda = new JMenu("Ayuda");
-        ayuda.setMnemonic('A');
-        bar.add(archivo);
-        bar.add(ayuda);
+        JMenu file = new JMenu("Archivo");
+        file.setMnemonic('A');
+        JMenu help = new JMenu("Ayuda");
+        help.setMnemonic('A');
+        bar.add(file);
+        bar.add(help);
 
-        List<Violation> violaciones = walker.walkMenuBar(bar);
+        List<Violation> violations = walker.walkMenuBar(bar);
 
-        assertEquals(2, violaciones.stream().filter(v -> v.reason().equals("mnemónico repetido")).count());
+        assertEquals(2, violations.stream().filter(v -> v.reason().equals("mnemónico repetido")).count());
     }
 
     @Test
-    void unItemDeMenuSinMnemonicoEsUnHallazgo() {
+    void aMenuItemWithNoMnemonicIsAFinding() {
         JMenu menu = new JMenu("Archivo");
         menu.add(new JMenuItem("Nuevo"));
 
@@ -66,7 +66,7 @@ class MnemonicWalkerTest {
     }
 
     @Test
-    void unaEtiquetaDeFormularioSinMnemonicoEsUnHallazgo() {
+    void aFormLabelWithNoMnemonicIsAFinding() {
         JPanel form = new JPanel();
         JTextField field = new JTextField();
         JLabel label = new JLabel("Título");
@@ -78,7 +78,7 @@ class MnemonicWalkerTest {
     }
 
     @Test
-    void unaEtiquetaSinSetLabelForNoSeReporta() {
+    void aLabelWithoutSetLabelForIsNotReported() {
         JPanel form = new JPanel();
         form.add(new JLabel("Sólo un título de sección"));
 
@@ -86,7 +86,7 @@ class MnemonicWalkerTest {
     }
 
     @Test
-    void unaEtiquetaConMnemonicoEnUnFormularioAnidadoNoTieneHallazgos() {
+    void aLabelWithAMnemonicInANestedFormHasNoFindings() {
         JPanel outer = new JPanel();
         JPanel inner = new JPanel();
         JTextField field = new JTextField();
@@ -100,28 +100,28 @@ class MnemonicWalkerTest {
         assertTrue(walker.walkForm(outer).isEmpty());
     }
 
-    private static final class Formulario extends JPanel implements MnemonicScope {
+    private static final class Form extends JPanel implements MnemonicScope {
     }
 
     @Test
-    void dosFormulariosAnidadosPuedenCompartirLetraSinQueSeaUnChoque() {
-        Formulario exterior = new Formulario();
-        JTextField artista = new JTextField();
-        JLabel artistaLabel = new JLabel("Artista");
-        artistaLabel.setLabelFor(artista);
-        artistaLabel.setDisplayedMnemonic('A');
-        exterior.add(artistaLabel);
-        exterior.add(artista);
+    void twoNestedFormsCanShareALetterWithoutItBeingAClash() {
+        Form outerForm = new Form();
+        JTextField artistField = new JTextField();
+        JLabel artistLabel = new JLabel("Artista");
+        artistLabel.setLabelFor(artistField);
+        artistLabel.setDisplayedMnemonic('A');
+        outerForm.add(artistLabel);
+        outerForm.add(artistField);
 
-        Formulario interior = new Formulario();
-        JTextField armadura = new JTextField();
-        JLabel armaduraLabel = new JLabel("Armadura");
-        armaduraLabel.setLabelFor(armadura);
-        armaduraLabel.setDisplayedMnemonic('A');
-        interior.add(armaduraLabel);
-        interior.add(armadura);
-        exterior.add(interior);
+        Form innerForm = new Form();
+        JTextField keySignatureField = new JTextField();
+        JLabel keySignatureLabel = new JLabel("Armadura");
+        keySignatureLabel.setLabelFor(keySignatureField);
+        keySignatureLabel.setDisplayedMnemonic('A');
+        innerForm.add(keySignatureLabel);
+        innerForm.add(keySignatureField);
+        outerForm.add(innerForm);
 
-        assertTrue(walker.walkForm(exterior).isEmpty());
+        assertTrue(walker.walkForm(outerForm).isEmpty());
     }
 }

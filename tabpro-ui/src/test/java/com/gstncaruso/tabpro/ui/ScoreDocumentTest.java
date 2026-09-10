@@ -113,7 +113,7 @@ class ScoreDocumentTest {
     }
 
     @Test
-    void newScoreUsaLoQueHayGuardadoEnPropiedadesPorDefecto() {
+    void newScoreUsesWhatIsSavedInThePropertiesByDefault() {
         java.util.prefs.Preferences defaultsNode = java.util.prefs.Preferences.userRoot()
                 .node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
         scratchNodes.add(defaultsNode);

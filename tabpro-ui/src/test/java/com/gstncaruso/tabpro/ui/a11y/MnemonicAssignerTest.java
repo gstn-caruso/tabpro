@@ -12,56 +12,56 @@ class MnemonicAssignerTest {
     private final MnemonicAssigner assigner = new MnemonicAssigner();
 
     @Test
-    void unTextoSinLetrasNiDigitosNoTieneIndiceLibre() {
+    void aTextWithNoLettersOrDigitsHasNoFreeIndex() {
         assertEquals(-1, assigner.chooseIndex("…"));
     }
 
     @Test
-    void unTextoDeUnaSolaPalabraEligeSuPrimeraLetra() {
+    void aSingleWordTextPicksItsFirstLetter() {
         assertEquals(0, assigner.chooseIndex("Guardar"));
     }
 
     @Test
-    void dosTextosDeUnaPalabraConLaMismaInicialElSegundoCaeEnOtraLetraDelTexto() {
+    void twoSingleWordTextsWithTheSameInitialTheSecondFallsOnAnotherLetterOfTheText() {
         assertEquals(0, assigner.chooseIndex("Sonido"));
 
         assertEquals(1, assigner.chooseIndex("Salir"));
     }
 
     @Test
-    void unaLetraReservadaNoSeLeAsignaAOtroTexto() {
+    void aReservedLetterIsNotAssignedToAnotherText() {
         assigner.reserve('S');
 
         assertEquals(1, assigner.chooseIndex("Salir"));
     }
 
     @Test
-    void agotadasLasLetrasCaeEnUnDigitoDelTexto() {
-        for (char letra : "grupode".toCharArray()) {
-            assigner.reserve(letra);
+    void withLettersExhaustedItFallsOnADigitOfTheText() {
+        for (char letter : "grupode".toCharArray()) {
+            assigner.reserve(letter);
         }
 
         assertEquals(9, assigner.chooseIndex("Grupo de 12"));
     }
 
     @Test
-    void agotadasLasLetrasYSinDigitosNoHayIndiceLibre() {
-        for (char letra : "salir".toCharArray()) {
-            assigner.reserve(letra);
+    void withLettersExhaustedAndNoDigitsThereIsNoFreeIndex() {
+        for (char letter : "salir".toCharArray()) {
+            assigner.reserve(letter);
         }
 
         assertEquals(-1, assigner.chooseIndex("Salir"));
     }
 
     @Test
-    void unaLetraTomadaEnMinusculaBloqueaLaMismaLetraAcentuadaYEnMayuscula() {
+    void aLowercaseLetterTakenBlocksTheSameAccentedAndUppercaseLetter() {
         assigner.reserve('a');
 
         assertEquals(1, assigner.chooseIndex("Álbum"));
     }
 
     @Test
-    void aplicarleElMnemonicoAUnBotonLeFijaLaTeclaYElIndiceSubrayado() {
+    void applyingTheMnemonicToAButtonSetsItsKeyAndUnderlinedIndex() {
         JMenuItem item = new JMenuItem("Guardar");
 
         assigner.applyTo(item);
@@ -71,7 +71,7 @@ class MnemonicAssignerTest {
     }
 
     @Test
-    void aplicarleElMnemonicoAUnaEtiquetaLeFijaLaTeclaYElIndiceSubrayado() {
+    void applyingTheMnemonicToALabelSetsItsKeyAndUnderlinedIndex() {
         JLabel label = new JLabel("Título");
 
         assigner.applyTo(label);

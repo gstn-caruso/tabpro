@@ -24,7 +24,7 @@ class AcceleratorGuardTest {
             record(Ports.Playback.class), record(Ports.View.class));
 
     @Test
-    void unJScrollPaneNuevoSeComeCtrlHomeYCtrlEnd() {
+    void aNewJScrollPaneEatsCtrlHomeAndCtrlEnd() {
         InputMap inputMap = new JScrollPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         assertEquals("scrollHome", inputMap.get(commands.get("nav.firstBar").accelerator()));
@@ -32,7 +32,7 @@ class AcceleratorGuardTest {
     }
 
     @Test
-    void unJSplitPaneNuevoSeComeF6F8YCtrlTab() {
+    void aNewJSplitPaneEatsF6F8AndCtrlTab() {
         InputMap inputMap = new JSplitPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         assertEquals("toggleFocus", inputMap.get(commands.get("track.properties").accelerator()));
@@ -41,7 +41,7 @@ class AcceleratorGuardTest {
     }
 
     @Test
-    void leSacaAlJScrollPaneLasTeclasQueElCatalogoYaUsa() {
+    void stripsFromTheJScrollPaneTheKeysTheCatalogAlreadyUses() {
         JScrollPane scrollPane = new JScrollPane();
         InputMap inputMap = scrollPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         KeyStroke ctrlHome = commands.get("nav.firstBar").accelerator();
@@ -54,7 +54,7 @@ class AcceleratorGuardTest {
     }
 
     @Test
-    void leSacaAlJSplitPaneLasTeclasQueElCatalogoYaUsa() {
+    void stripsFromTheJSplitPaneTheKeysTheCatalogAlreadyUses() {
         JSplitPane split = new JSplitPane();
         InputMap inputMap = split.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         KeyStroke f6 = commands.get("track.properties").accelerator();
@@ -69,7 +69,7 @@ class AcceleratorGuardTest {
     }
 
     @Test
-    void laTeclaBloqueadaYaNoQuedaAtendidaPorElAncestro() {
+    void theBlockedKeyIsNoLongerHandledByTheAncestor() {
         ExposedJScrollPane scrollPane = new ExposedJScrollPane();
         KeyStroke ctrlHome = commands.get("nav.firstBar").accelerator();
 
@@ -90,7 +90,7 @@ class AcceleratorGuardTest {
     }
 
     @Test
-    void noTocaLasTeclasQueNingunComandoUsa() {
+    void doesNotTouchKeysThatNoCommandUses() {
         JScrollPane scrollPane = new JScrollPane();
         InputMap inputMap = scrollPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         KeyStroke pageUp = KeyStroke.getKeyStroke("PAGE_UP");
@@ -101,16 +101,16 @@ class AcceleratorGuardTest {
     }
 
     @Test
-    void noTocaUnJScrollPaneQueNoSeLePaso() {
+    void doesNotTouchAJScrollPaneThatWasNotPassedIn() {
         AcceleratorGuard.letCommandsWin(commands, new JScrollPane());
 
-        JScrollPane otro = new JScrollPane();
-        assertEquals("scrollHome", otro.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+        JScrollPane another = new JScrollPane();
+        assertEquals("scrollHome", another.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .get(commands.get("nav.firstBar").accelerator()));
     }
 
     @Test
-    void neutralizaF10EnLaBarraDeMenuParaQueGaneElCambioDeParametros() {
+    void neutralizesF10OnTheMenuBarSoMixTableChangeWins() {
         ExposedJMenuBar menuBar = new ExposedJMenuBar();
         KeyStroke f10 = commands.get("note.mixTableChange").accelerator();
 

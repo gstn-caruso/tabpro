@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 class StatusBarTest {
 
     @Test
-    void ningunControlDeLaBarraDeEstadoQuedaSinNombreNiTooltipAccesible() {
+    void everyStatusBarControlHasAnAccessibleNameAndTooltip() {
         StatusBar bar = new StatusBar(new Editor(Score.blank()));
 
         AccessibilityAssertions.assertNoViolations(bar);

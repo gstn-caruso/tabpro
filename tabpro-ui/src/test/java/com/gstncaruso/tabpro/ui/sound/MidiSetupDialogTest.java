@@ -13,12 +13,12 @@ class MidiSetupDialogTest {
     private static final int LAPTOP_SCREEN_HEIGHT = 800;
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(panelWithFourEmptyPorts());
     }
 
     @Test
-    void elAltoDelFormularioEntraEnUnaLaptopTipicaSinScrollear() {
+    void theFormsHeightFitsInATypicalLaptopWithoutScrolling() {
         JPanel panel = panelWithFourEmptyPorts();
 
         assertTrue(panel.getPreferredSize().height <= LAPTOP_SCREEN_HEIGHT,

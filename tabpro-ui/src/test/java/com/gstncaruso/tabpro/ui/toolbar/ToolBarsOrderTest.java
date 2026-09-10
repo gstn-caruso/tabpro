@@ -30,7 +30,7 @@ class ToolBarsOrderTest {
     private final ToolBars toolBars = new ToolBars(editor, commands, new FakeZoomHolder());
 
     @Test
-    void laFilaDeDocumentoYEdicionSigueElOrdenDeGuitarPro5() {
+    void theDocumentAndEditRowFollowsGuitarPro5Order() {
         assertOrder(toolBars.documentToolBar,
                 "file.new", "file.open", "file.save", SEP,
                 "file.information", SEP,
@@ -49,7 +49,7 @@ class ToolBarsOrderTest {
     }
 
     @Test
-    void laFilaDeEstructuraYSonidoSigueElOrdenDeGuitarPro5() {
+    void theStructureAndSoundRowFollowsGuitarPro5Order() {
         assertOrder(toolBars.structureToolBar,
                 "bar.keySignature", "bar.timeSignature", "bar.tripletFeel", SEP,
                 "bar.repeatOpen", "bar.repeatClose", SEP,
@@ -63,7 +63,7 @@ class ToolBarsOrderTest {
     }
 
     @Test
-    void laFilaDeFigurasSigueElOrdenDeGuitarPro5() {
+    void theNotationRowFollowsGuitarPro5Order() {
         assertOrder(toolBars.notationToolBar,
                 "note.value.WHOLE", "note.value.HALF", "note.value.QUARTER", "note.value.EIGHTH",
                 "note.value.SIXTEENTH", "note.value.THIRTY_SECOND", "note.value.SIXTY_FOURTH", SEP,
@@ -80,7 +80,7 @@ class ToolBarsOrderTest {
     }
 
     @Test
-    void laFilaDeEfectosSigueElOrdenDeGuitarPro5() {
+    void theEffectsRowFollowsGuitarPro5Order() {
         assertOrder(toolBars.effectsToolBar,
                 "effect.deadNote", "effect.graceNote", "effect.ghostNote", "effect.accent",
                 "effect.heavyAccent", "effect.letRing", "effect.naturalHarmonic", "effect.artificialHarmonic", SEP,

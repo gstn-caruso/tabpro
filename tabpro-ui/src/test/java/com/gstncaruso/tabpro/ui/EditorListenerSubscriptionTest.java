@@ -67,7 +67,7 @@ class EditorListenerSubscriptionTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("subscriptions")
-    void seSuscribeATravesDelAdaptadorDeEdt(Subscription subscription) {
+    void subscribesThroughTheEdtAdapter(Subscription subscription) {
         assertTrue(
                 subscription.argument().startsWith(ADAPTER_CALL),
                 () -> subscription + " tiene que suscribirse a traves de EdtEditorListener.onEdt(...)");
