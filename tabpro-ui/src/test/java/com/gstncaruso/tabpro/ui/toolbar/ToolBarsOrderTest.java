@@ -115,7 +115,7 @@ class ToolBarsOrderTest {
 
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
-        InvocationHandler handler = (proxy, method, args) -> null;
+        InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
         return (T) Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[] {port}, handler);
     }
 }

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.swing.KeyStroke;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class CommandsTest {
@@ -35,6 +36,16 @@ class CommandsTest {
     private final Commands commands = new Commands(
             editor, record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
+
+    /**
+     * Armar el comando de sound.soundFont ya le pregunta al puerto su estado real para arrancar
+     * sincronizado (ver Commands.defineSoundCommands): esa pregunta no es lo que cada test quiere
+     * comprobar, asi que el rastro de "a quien le preguntaron" arranca limpio para cada uno.
+     */
+    @BeforeEach
+    void olvidaLoQuePreguntoElConstructor() {
+        asked.clear();
+    }
 
     @Test
     void everyCommandHasANameAndSomethingToDo() {

@@ -55,6 +55,15 @@ public final class Command extends AbstractAction {
         return this;
     }
 
+    /**
+     * Para cuando el casillero tiene que seguir un cambio que no vino de tocar el propio
+     * control -F2, un item de menu- y que comparte este mismo comando: Swing ya mantiene
+     * sincronizado cualquier JToggleButton o JCheckBoxMenuItem armado con el, en los dos sentidos.
+     */
+    public void setChecked(boolean checked) {
+        putValue(SELECTED_KEY, checked);
+    }
+
     public String label() {
         return (String) getValue(NAME);
     }

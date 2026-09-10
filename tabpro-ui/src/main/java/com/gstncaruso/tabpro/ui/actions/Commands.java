@@ -390,8 +390,11 @@ public final class Commands {
         define("sound.countDown", "Cuenta regresiva", playback::toggleCountDown).withIcon(Icons.countDown());
         define("sound.stepBack", "Nota anterior", playback::stepBack);
         define("sound.midiInput", "Entrada MIDI activa", playback::toggleMidiInput);
-        define("sound.soundFont", "Banco de sonido", playback::toggleSoundFont)
+        define("sound.soundFont", "Banco de sonido", this::toggleSoundFontAndRefreshItsCheckbox)
                 .withAccelerator("F2").withIcon(Icons.letter("SF"));
+        if (playback.soundFontActive()) {
+            get("sound.soundFont").checkedByDefault();
+        }
         define("sound.stepForward", "Nota siguiente", playback::stepForward);
         define("nav.firstBar", "Primer compás", editor::moveToFirstMeasure)
                 .withAccelerator("ctrl HOME").withIcon(Icons.firstBar());
@@ -402,6 +405,16 @@ public final class Commands {
         define("nav.nextNote", "Nota siguiente", editor::enter).withAccelerator("ENTER");
         define("nav.lastBar", "Último compás", editor::moveToLastMeasure)
                 .withAccelerator("ctrl END").withIcon(Icons.lastBar());
+    }
+
+    /**
+     * F2 y el item del menu Sonido comparten este mismo comando con el conmutable de la barra:
+     * los tres tienen que mostrar el mismo estado, asi que el propio comando se sincroniza
+     * despues de cada disparo, venga de donde venga.
+     */
+    private void toggleSoundFontAndRefreshItsCheckbox() {
+        playback.toggleSoundFont();
+        get("sound.soundFont").setChecked(playback.soundFontActive());
     }
 
     // ---- vista ------------------------------------------------------------

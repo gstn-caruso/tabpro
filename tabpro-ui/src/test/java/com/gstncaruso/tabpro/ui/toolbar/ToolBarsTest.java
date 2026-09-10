@@ -110,34 +110,41 @@ class ToolBarsTest {
     }
 
     /**
-     * Manual, "Configure the Sound" (linea 1953): F2 prende o apaga el banco de sonido. Guitar
-     * Pro 5 pone ahi mismo, en la fila de estructura y sonido, los dos iconos de RSE; tabpro pone
-     * uno solo, y tiene que ser un conmutable de verdad -que cambie de estado al tocarlo y llegue
-     * al mismo puerto que F2-, no un boton que solo dispara sin mostrar nada.
+     * Manual, "Configure the Sound" (linea 1953): F2 prende o apaga el banco de sonido. Un
+     * conmutable que no arranca mostrando el estado real, o que se desincroniza en cuanto el
+     * cambio viene de otro lado (F2, el item del menu Sonido, que comparten este mismo comando),
+     * es la "interfaz que miente" que la auditoria de tabpro persigue.
      */
     @Test
-    void elBotonDelBancoDeSonidoEsUnConmutableQueLlegaAlPuertoReal() {
-        java.util.List<String> llamados = new java.util.ArrayList<>();
-        InvocationHandler contador = (proxy, method, args) -> {
+    void elBotonDelBancoDeSonidoArrancaYSeMantieneSincronizadoConElPuertoReal() {
+        boolean[] activo = {true};
+        List<String> llamados = new java.util.ArrayList<>();
+        InvocationHandler handler = (proxy, method, args) -> {
             llamados.add(method.getName());
+            if (method.getName().equals("toggleSoundFont")) {
+                activo[0] = !activo[0];
+                return null;
+            }
+            if (method.getName().equals("soundFontActive")) {
+                return activo[0];
+            }
             return null;
         };
         Ports.Playback playback = (Ports.Playback) Proxy.newProxyInstance(
-                Ports.Playback.class.getClassLoader(), new Class<?>[] {Ports.Playback.class}, contador);
+                Ports.Playback.class.getClassLoader(), new Class<?>[] {Ports.Playback.class}, handler);
         ToolBars otraBarra = new ToolBars(new Commands(
                 editor, record(Ports.Document.class), record(Ports.Dialogs.class), playback, record(Ports.View.class)));
         JToggleButton button = toggleButtonNamed(otraBarra.structureToolBar, "Banco de sonido");
 
-        assertFalse(button.isSelected());
+        assertTrue(button.isSelected(), "tiene que arrancar mostrando que el banco esta prendido");
 
         button.doClick();
-
-        assertTrue(button.isSelected());
-        assertEquals(List.of("toggleSoundFont"), llamados);
-
-        button.doClick();
-
         assertFalse(button.isSelected());
+
+        button.getAction().actionPerformed(null);
+        assertTrue(button.isSelected(), "un disparo ajeno al boton (F2, el menu) tiene que sincronizarlo igual");
+
+        assertEquals(2, llamados.stream().filter("toggleSoundFont"::equals).count());
     }
 
     private JToggleButton toggleButtonNamed(Container root, String name) {
@@ -164,7 +171,7 @@ class ToolBarsTest {
 
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
-        InvocationHandler handler = (proxy, method, args) -> null;
+        InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
         return (T) Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[] {port}, handler);
     }
 }

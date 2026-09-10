@@ -802,6 +802,11 @@ public final class MainFrame extends JFrame {
         }
 
         @Override
+        public boolean soundFontActive() {
+            return devices.soundFontActive();
+        }
+
+        @Override
         public void relativeTempo() {
             RelativeTempoDialog.ask(MainFrame.this, transport.relativeTempo())
                     .ifPresent(transport::setRelativeTempo);
