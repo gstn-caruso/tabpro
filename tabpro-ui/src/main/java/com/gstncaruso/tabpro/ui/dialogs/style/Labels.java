@@ -13,7 +13,6 @@ import com.gstncaruso.tabpro.ui.instruments.KeyboardDisplayMode;
 import com.gstncaruso.tabpro.ui.instruments.NoteNameMode;
 import com.gstncaruso.tabpro.ui.instruments.ScaleLabelMode;
 import com.gstncaruso.tabpro.ui.instruments.ScaleType;
-import com.gstncaruso.tabpro.ui.harmony.BarrePreference;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.page.Orientation;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
@@ -28,7 +27,6 @@ public final class Labels {
         return switch (value) {
             case Chord chord -> chord.name();
             case ChordType chordType -> chordTypeLabel(chordType);
-            case BarrePreference barrePreference -> barrePreferenceLabel(barrePreference);
             case PitchClass pitchClass -> pitchClass.name() + " (" + pitchClass.solfegeName() + ")";
             case Scale scale -> scale.name();
             case Tuning tuning -> tuning.name() + " (" + stringLetters(tuning) + ")";
@@ -62,14 +60,6 @@ public final class Labels {
             letters.append(PitchClass.fromSemitone(strings.get(string).midiNumber()).name());
         }
         return letters.toString();
-    }
-
-    private static String barrePreferenceLabel(BarrePreference value) {
-        return switch (value) {
-            case ANY -> "Cualquiera";
-            case FORCE -> "Forzar cejilla";
-            case FORBID -> "Prohibir cejilla";
-        };
     }
 
     private static String chordTypeLabel(ChordType value) {

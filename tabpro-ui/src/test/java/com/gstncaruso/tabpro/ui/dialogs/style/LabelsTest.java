@@ -110,6 +110,7 @@ class LabelsTest {
 
         assertFalse(label.isBlank());
         assertNotEquals(value.name(), label);
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text("domain.BarrePreference." + value.name()).isBlank());
     }
 
     @Test
