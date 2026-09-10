@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JToolBar;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -99,6 +100,34 @@ class ZoomSelectorTest {
         assertFalse(selector.getToolTipText().isBlank());
         assertTrue(selector.getToolTipText().contains(commands.get("view.zoomIn").acceleratorText()));
         assertTrue(selector.getToolTipText().contains(commands.get("view.zoomOut").acceleratorText()));
+    }
+
+    @Test
+    void pintadoEnUnaBarraAnchaConservaSuAnchoPreferido() {
+        ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
+        JToolBar bar = new JToolBar();
+        bar.add(selector);
+
+        bar.setSize(1440, bar.getPreferredSize().height);
+        bar.doLayout();
+
+        assertEquals(selector.getPreferredSize().width, selector.getWidth());
+    }
+
+    @Test
+    void conLaTipografiaDe20PuntosDeAccesibilidadElAnchoCreceYSigueSinEstirarse() {
+        ZoomSelector selectorConFuentePorDefecto = new ZoomSelector(zoomHolder, commands);
+        int anchoConFuentePorDefecto = selectorConFuentePorDefecto.getPreferredSize().width;
+
+        ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
+        selector.setFont(selector.getFont().deriveFont(20f));
+        JToolBar bar = new JToolBar();
+        bar.add(selector);
+        bar.setSize(1440, bar.getPreferredSize().height);
+        bar.doLayout();
+
+        assertTrue(selector.getPreferredSize().width > anchoConFuentePorDefecto);
+        assertEquals(selector.getPreferredSize().width, selector.getWidth());
     }
 
     private static void type(ZoomSelector selector, String text) {
