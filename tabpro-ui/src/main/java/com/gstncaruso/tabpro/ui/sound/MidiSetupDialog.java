@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.sound;
 
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import java.awt.Component;
@@ -62,9 +63,8 @@ public final class MidiSetupDialog {
     public static Optional<Setup> ask(Component parent, Ports.Devices devices, Setup current) {
         Fields fields = buildPanel(devices, current);
 
-        int answer = JOptionPane.showConfirmDialog(
-                parent, fields.panel(), "Configuración MIDI", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (answer != JOptionPane.OK_OPTION) {
+        boolean accepted = DialogShell.ask(parent, "Configuración MIDI", fields.panel());
+        if (!accepted) {
             return Optional.empty();
         }
         List<PortSetup> ports = fields.rows().stream().map(PortRow::toSetup).toList();
