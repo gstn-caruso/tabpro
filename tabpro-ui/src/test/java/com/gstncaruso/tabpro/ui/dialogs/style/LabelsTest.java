@@ -27,6 +27,7 @@ import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
+import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.instruments.FretboardDisplayMode;
 import com.gstncaruso.tabpro.ui.instruments.FretboardType;
@@ -398,6 +399,20 @@ class LabelsTest {
     @EnumSource(Ornament.class)
     void everyOrnamentHasSpanishAndEnglishText(Ornament value) {
         String key = "domain.Ornament." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheSoundParameter() {
+        assertEquals("Volumen", Labels.of(SoundParameter.VOLUME));
+    }
+
+    @ParameterizedTest
+    @EnumSource(SoundParameter.class)
+    void everySoundParameterHasSpanishAndEnglishText(SoundParameter value) {
+        String key = "domain.SoundParameter." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
