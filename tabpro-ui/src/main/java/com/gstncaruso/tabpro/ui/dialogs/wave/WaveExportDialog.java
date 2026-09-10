@@ -5,10 +5,6 @@ import java.awt.Component;
 import java.util.Optional;
 import javax.swing.JOptionPane;
 
-/**
- * La ventana de "File &gt; Export &gt; Wave" del manual: le pregunta al usuario la calidad del
- * archivo antes de elegir donde guardarlo.
- */
 public final class WaveExportDialog {
 
     private WaveExportDialog() {

@@ -9,10 +9,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-/**
- * La calidad del archivo que pide "File &gt; Export &gt; Wave" del manual: frecuencia de
- * muestreo, profundidad de bits y mono o estereo.
- */
 public final class WaveExportPanel extends JPanel {
 
     private static final Integer[] SAMPLE_RATES = {44_100, 48_000};
