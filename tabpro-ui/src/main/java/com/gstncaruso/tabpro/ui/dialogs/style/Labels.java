@@ -14,7 +14,6 @@ import com.gstncaruso.tabpro.ui.instruments.NoteNameMode;
 import com.gstncaruso.tabpro.ui.instruments.ScaleLabelMode;
 import com.gstncaruso.tabpro.ui.instruments.ScaleType;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
-import com.gstncaruso.tabpro.ui.page.Orientation;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import java.util.List;
 
@@ -38,7 +37,6 @@ public final class Labels {
             case ScaleLabelMode scaleLabelMode -> scaleLabelMode.label();
             case FretboardType fretboardType -> fretboardType.label();
             case KeyboardDisplayMode keyboardDisplayMode -> keyboardDisplayMode.label();
-            case Orientation orientation -> orientation.label();
             case PaperFormat paperFormat -> paperFormatLabelWithDimensions(paperFormat);
             case Enum<?> constant -> domainLabel(constant);
             default -> throw new IllegalArgumentException("No label for " + value);

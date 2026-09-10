@@ -1,7 +1,7 @@
 package com.gstncaruso.tabpro.ui.page;
 
 public enum Orientation {
-    PORTRAIT("Vertical") {
+    PORTRAIT {
         @Override
         public double widthOf(PaperFormat format) {
             return format.widthMillimetres();
@@ -12,7 +12,7 @@ public enum Orientation {
             return format.heightMillimetres();
         }
     },
-    LANDSCAPE("Horizontal") {
+    LANDSCAPE {
         @Override
         public double widthOf(PaperFormat format) {
             return format.heightMillimetres();
@@ -23,16 +23,6 @@ public enum Orientation {
             return format.widthMillimetres();
         }
     };
-
-    private final String label;
-
-    Orientation(String label) {
-        this.label = label;
-    }
-
-    public String label() {
-        return label;
-    }
 
     public abstract double widthOf(PaperFormat format);
 

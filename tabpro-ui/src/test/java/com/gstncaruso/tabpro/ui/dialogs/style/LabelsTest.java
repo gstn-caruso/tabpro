@@ -217,6 +217,7 @@ class LabelsTest {
 
         assertFalse(label.isBlank());
         assertNotEquals(value.name(), label);
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text("domain.Orientation." + value.name()).isBlank());
     }
 
     @Test
