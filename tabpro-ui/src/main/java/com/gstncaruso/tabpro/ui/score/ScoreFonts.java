@@ -18,7 +18,7 @@ final class ScoreFonts {
     static final String FAMILY = resolveFamily();
 
     /** El numero de traste que se escribe sobre cada cuerda de la tablatura. */
-    static final Font FRET_FONT = new Font(FAMILY, Font.BOLD, 11);
+    static final Font FRET_FONT = new Font(FAMILY, Font.BOLD, 16);
     static final Font TUNING_LEGEND_FONT = new Font(FAMILY, Font.PLAIN, 9);
     static final Font MEASURE_NUMBER_FONT = new Font(FAMILY, Font.PLAIN, 10);
 
@@ -32,7 +32,7 @@ final class ScoreFonts {
     static final Font GRACE_FONT = new Font(FAMILY, Font.PLAIN, 8);
 
     /** El nombre de un marcador ("Bridge", "Outro") y los carteles de direccion y salto. */
-    static final Font SECTION_MARK_FONT = new Font(FAMILY, Font.BOLD, 11);
+    static final Font SECTION_MARK_FONT = new Font(FAMILY, Font.BOLD, 15);
     /** El cartelito de pases de un final alternativo, por ejemplo "1, 2.". */
     static final Font ALTERNATE_ENDING_FONT = new Font(FAMILY, Font.PLAIN, 9);
     static final Font REPEAT_COUNT_FONT = new Font(FAMILY, Font.BOLD, 10);
