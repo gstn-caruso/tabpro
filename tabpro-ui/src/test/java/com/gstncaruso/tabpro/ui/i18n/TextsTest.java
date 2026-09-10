@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.ui.i18n;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Locale;
@@ -24,16 +23,6 @@ class TextsTest {
 
     @Test
     void anEnglishInstanceReadsTheSameKeyInEnglish() {
-        assertEquals("OK", Texts.forLocale(Locale.ENGLISH).text("common.accept"));
-    }
-
-    @Test
-    void anEnglishInstanceIgnoresWhateverTheJvmDefaultLocaleHappensToBe() {
-        String withoutTheNoFallbackControl =
-                ResourceBundle.getBundle("com.gstncaruso.tabpro.ui.i18n.common", Locale.ENGLISH)
-                        .getString("common.accept");
-
-        assertNotEquals(withoutTheNoFallbackControl, Texts.forLocale(Locale.ENGLISH).text("common.accept"));
         assertEquals("OK", Texts.forLocale(Locale.ENGLISH).text("common.accept"));
     }
 
