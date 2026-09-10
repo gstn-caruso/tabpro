@@ -1,3 +1,9 @@
+## [0.39.2](https://github.com/gstn-caruso/tabpro/compare/v0.39.1...v0.39.2) (2026-09-10)
+
+### Bug Fixes
+
+* **instruments:** la cejilla entra a la paleta de cada mástil y cumple el contraste en el clásico ([#135](https://github.com/gstn-caruso/tabpro/issues/135)) ([5c4aabc](https://github.com/gstn-caruso/tabpro/commit/5c4aabc51b6ec534fbb7a698221aea0fb64e2b3e))
+
 ## [0.39.1](https://github.com/gstn-caruso/tabpro/compare/v0.39.0...v0.39.1) (2026-09-10)
 
 ### Bug Fixes
