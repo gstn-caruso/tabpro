@@ -42,7 +42,7 @@ class GuitarProBeatWriterTest {
         assertEquals(STATUS_REST, bytes[1] & 0xFF);
         assertEquals(QUARTER, bytes[2]);
         assertEquals(NO_STRINGS, bytes[3] & 0xFF);
-        assertEquals(4, bytes.length, "un silencio son exactamente cuatro bytes");
+        assertEquals(4, bytes.length, "a rest is exactly four bytes");
     }
 
     @Test
@@ -53,7 +53,7 @@ class GuitarProBeatWriterTest {
         byte[] bytes = write(Beat.rest(Duration.quarter())
                 .withEffects(BeatEffects.none().withParameterChange(change)));
 
-        assertEquals(UNSET, bytes[MIX_TABLE_AT], "el instrumento no cambia");
+        assertEquals(UNSET, bytes[MIX_TABLE_AT], "the instrument does not change");
         assertEquals(13, bytes[MIX_TABLE_AT + 1]);
         assertEquals(8, bytes[MIX_TABLE_AT + 2]);
     }
