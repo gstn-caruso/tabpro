@@ -5,10 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.effects.TremoloPicking;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class TremoloPickingPanelTest {
+
+    @Test
+    void theSpeedFieldIsAvailableInEnglish() {
+        assertEquals("Speed", Texts.forLocale(Locale.ENGLISH).text("edit_dialogs.shared.speed"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
