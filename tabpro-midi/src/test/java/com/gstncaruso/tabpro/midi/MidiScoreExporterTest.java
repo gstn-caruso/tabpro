@@ -42,7 +42,7 @@ class MidiScoreExporterTest {
 
     @Test
     void writesTheTempoAtTheStart() throws Exception {
-        Score score = new Score("Prueba", 140, List.of(Track.standardGuitar("Guitarra")));
+        Score score = new Score("Test", 140, List.of(Track.standardGuitar("Guitar")));
 
         Sequence sequence = exporter.toSequence(score);
 
@@ -52,8 +52,8 @@ class MidiScoreExporterTest {
 
     @Test
     void writesOneMidiTrackPerAudibleScoreTrack() {
-        Track muted = Track.standardGuitar("Silenciada").withChannel(Channel.playing(25).toggledMute());
-        Score score = new Score("Prueba", 120, List.of(Track.standardGuitar("Guitarra"), muted));
+        Track muted = Track.standardGuitar("Muted").withChannel(Channel.playing(25).toggledMute());
+        Score score = new Score("Test", 120, List.of(Track.standardGuitar("Guitar"), muted));
 
         Sequence sequence = exporter.toSequence(score);
 
@@ -63,8 +63,8 @@ class MidiScoreExporterTest {
     @Test
     void preparesTheProgramVolumeAndPanOnBothChannelsOfTheTrack() {
         Channel channel = Channel.playing(30).withVolume(90).withPan(20);
-        Track track = Track.standardGuitar("Guitarra").withChannel(channel);
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withChannel(channel);
+        Score score = new Score("Test", 120, List.of(track));
 
         Sequence sequence = exporter.toSequence(score);
 
@@ -79,8 +79,8 @@ class MidiScoreExporterTest {
     @Test
     void theMixingConsoleEffectsReachTheSynthOnBothChannelsOfTheTrack() {
         Channel channel = Channel.playing(30).withChorus(10).withReverb(40).withPhaser(70).withTremolo(100);
-        Track track = Track.standardGuitar("Guitarra").withChannel(channel);
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withChannel(channel);
+        Score score = new Score("Test", 120, List.of(track));
 
         Sequence sequence = exporter.toSequence(score);
 
@@ -95,9 +95,9 @@ class MidiScoreExporterTest {
 
     @Test
     void twoTracksWithDifferentReverbSoundDifferentInTheGeneratedMidi() {
-        Track wetTrack = Track.standardGuitar("Con reverb").withChannel(Channel.playing(25).withReverb(100));
-        Track dryTrack = Track.standardBass("Sin reverb").withChannel(Channel.playing(33).withReverb(0));
-        Score score = new Score("Prueba", 120, List.of(wetTrack, dryTrack));
+        Track wetTrack = Track.standardGuitar("With reverb").withChannel(Channel.playing(25).withReverb(100));
+        Track dryTrack = Track.standardBass("Without reverb").withChannel(Channel.playing(33).withReverb(0));
+        Score score = new Score("Test", 120, List.of(wetTrack, dryTrack));
 
         Sequence sequence = exporter.toSequence(score);
 
@@ -112,17 +112,17 @@ class MidiScoreExporterTest {
 
         javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
 
-        assertEquals(1, noteOnOf(midiTrack, 40).getChannel(), "la nota con bend va al canal de efectos");
-        assertEquals(0, noteOnOf(midiTrack, 64).getChannel(), "la limpia se queda en el canal de la pista");
+        assertEquals(1, noteOnOf(midiTrack, 40).getChannel(), "the bent note goes to the effects channel");
+        assertEquals(0, noteOnOf(midiTrack, 64).getChannel(), "the clean note stays on the track's channel");
     }
 
     @Test
     void aTrackPlaysOnTheChannelTheMixingConsoleConfiguredInsteadOfAnAutomaticOne() {
         Channel onChannelFive = Channel.playing(25).withNumber(5).withEffectChannel(6);
-        Track track = Track.standardGuitar("Guitarra").withChannel(onChannelFive)
+        Track track = Track.standardGuitar("Guitar").withChannel(onChannelFive)
                 .withMeasure(0, new Measure(TimeSignature.fourFour(),
                         List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 0)))));
-        Score score = new Score("Prueba", 120, List.of(track));
+        Score score = new Score("Test", 120, List.of(track));
 
         javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
 
@@ -135,22 +135,22 @@ class MidiScoreExporterTest {
         Note bent = new Note(6, 0).withBend(Bend.of(BendType.BEND, 4));
         Measure measure = new Measure(TimeSignature.fourFour(),
                 List.of(Beat.of(Duration.of(NoteValue.WHOLE), bent, new Note(1, 0))));
-        Track track = Track.standardGuitar("Guitarra").withChannel(onChannelFive).withMeasure(0, measure);
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withChannel(onChannelFive).withMeasure(0, measure);
+        Score score = new Score("Test", 120, List.of(track));
 
         javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
 
-        assertEquals(5, noteOnOf(midiTrack, 40).getChannel(), "el bend viaja por el canal de efectos configurado (Ch2)");
-        assertEquals(4, noteOnOf(midiTrack, 64).getChannel(), "la limpia se queda en el canal configurado (Ch)");
+        assertEquals(5, noteOnOf(midiTrack, 40).getChannel(), "the bend travels through the configured effects channel (Ch2)");
+        assertEquals(4, noteOnOf(midiTrack, 64).getChannel(), "the clean note stays on the configured channel (Ch)");
     }
 
     @Test
     void aPercussionTrackAlwaysUsesChannelTenEvenIfItsChannelIsConfiguredOtherwise() {
         Channel misconfigured = Channel.percussion().withNumber(3).withEffectChannel(4);
-        Track drums = Track.percussion("Bateria").withChannel(misconfigured)
+        Track drums = Track.percussion("Drums").withChannel(misconfigured)
                 .withMeasure(0, new Measure(TimeSignature.fourFour(),
                         List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 38)))));
-        Score score = new Score("Prueba", 120, List.of(drums));
+        Score score = new Score("Test", 120, List.of(drums));
 
         javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
 
@@ -162,9 +162,9 @@ class MidiScoreExporterTest {
         Channel sharedChannel = Channel.playing(25).withNumber(5).withEffectChannel(6);
         Measure measure = new Measure(TimeSignature.fourFour(),
                 List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 0))));
-        Track first = Track.standardGuitar("Uno").withChannel(sharedChannel).withMeasure(0, measure);
-        Track second = Track.standardBass("Dos").withChannel(sharedChannel.withProgram(33)).withMeasure(0, measure);
-        Score score = new Score("Prueba", 120, List.of(first, second));
+        Track first = Track.standardGuitar("One").withChannel(sharedChannel).withMeasure(0, measure);
+        Track second = Track.standardBass("Two").withChannel(sharedChannel.withProgram(33)).withMeasure(0, measure);
+        Score score = new Score("Test", 120, List.of(first, second));
 
         Sequence sequence = exporter.toSequence(score);
 
@@ -175,8 +175,8 @@ class MidiScoreExporterTest {
     @Test
     void aFreshScoreWithThreeTracksSoundsAsThreeDistinctTracksWithoutTouchingTheMixer() {
         Editor editor = new Editor(Score.blank());
-        editor.addTrack(Track.standardBass("Bajo"));
-        editor.addTrack(Track.standardGuitar("Guitarra 2"));
+        editor.addTrack(Track.standardBass("Bass"));
+        editor.addTrack(Track.standardGuitar("Guitar 2"));
 
         Sequence sequence = exporter.toSequence(editor.score());
 
@@ -184,10 +184,10 @@ class MidiScoreExporterTest {
         ShortMessage second = firstProgramChangeOf(sequence.getTracks()[2]);
         ShortMessage third = firstProgramChangeOf(sequence.getTracks()[3]);
         assertEquals(3, Set.of(first.getChannel(), second.getChannel(), third.getChannel()).size(),
-                "las tres pistas tienen que sonar en canales distintos");
-        assertEquals(25, first.getData1(), "la primera guitarra");
-        assertEquals(33, second.getData1(), "el bajo");
-        assertEquals(25, third.getData1(), "la segunda guitarra");
+                "the three tracks have to sound on different channels");
+        assertEquals(25, first.getData1(), "the first guitar");
+        assertEquals(33, second.getData1(), "the bass");
+        assertEquals(25, third.getData1(), "the second guitar");
     }
 
     private ShortMessage firstProgramChangeOf(javax.sound.midi.Track track) {
@@ -196,14 +196,14 @@ class MidiScoreExporterTest {
 
     @Test
     void namesTheScoreAndEachTrack() {
-        Score score = new Score("Cancion", 120,
-                List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo")));
+        Score score = new Score("Song", 120,
+                List.of(Track.standardGuitar("Guitar"), Track.standardBass("Bass")));
 
         Sequence sequence = exporter.toSequence(score);
 
-        assertEquals("Cancion", textOf(onlyMetaOfType(sequence.getTracks()[0], 0x03)));
-        assertEquals("Guitarra", textOf(onlyMetaOfType(sequence.getTracks()[1], 0x03)));
-        assertEquals("Bajo", textOf(onlyMetaOfType(sequence.getTracks()[2], 0x03)));
+        assertEquals("Song", textOf(onlyMetaOfType(sequence.getTracks()[0], 0x03)));
+        assertEquals("Guitar", textOf(onlyMetaOfType(sequence.getTracks()[1], 0x03)));
+        assertEquals("Bass", textOf(onlyMetaOfType(sequence.getTracks()[2], 0x03)));
     }
 
     @Test
@@ -211,8 +211,8 @@ class MidiScoreExporterTest {
         Measure fourFour = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
         Measure threeFour = Measure.empty(new TimeSignature(3, 4), Duration.quarter())
                 .withAttributes(MeasureAttributes.plain().withRepeatCount(2));
-        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(fourFour, threeFour));
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withMeasures(List.of(fourFour, threeFour));
+        Score score = new Score("Test", 120, List.of(track));
 
         Sequence sequence = exporter.toSequence(score);
 
@@ -224,8 +224,8 @@ class MidiScoreExporterTest {
         Beat beat = Beat.of(Duration.of(NoteValue.QUARTER), new Note(6, 0));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat, Beat.rest(Duration.of(NoteValue.QUARTER)),
                 Beat.rest(Duration.of(NoteValue.HALF))));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        Score score = new Score("Test", 120, List.of(track));
 
         Sequence sequence = exporter.toSequence(score);
 
@@ -243,8 +243,8 @@ class MidiScoreExporterTest {
         Beat tied = Beat.of(Duration.of(NoteValue.QUARTER), Note.tiedOn(6));
         Measure measure = new Measure(TimeSignature.fourFour(),
                 List.of(attack, tied, Beat.rest(Duration.of(NoteValue.HALF))));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        Score score = new Score("Test", 120, List.of(track));
 
         Sequence sequence = exporter.toSequence(score);
 
@@ -256,10 +256,10 @@ class MidiScoreExporterTest {
 
     @Test
     void putsPercussionOnChannelTen() {
-        Track drums = Track.percussion("Bateria")
+        Track drums = Track.percussion("Drums")
                 .withMeasure(0, new Measure(TimeSignature.fourFour(),
                         List.of(Beat.of(Duration.of(NoteValue.QUARTER), new Note(1, 38)))));
-        Score score = new Score("Prueba", 120, List.of(drums));
+        Score score = new Score("Test", 120, List.of(drums));
 
         Sequence sequence = exporter.toSequence(score);
 
@@ -284,13 +284,13 @@ class MidiScoreExporterTest {
                 Beat.rest(Duration.of(NoteValue.QUARTER)),
                 Beat.rest(Duration.of(NoteValue.QUARTER)),
                 Beat.rest(Duration.of(NoteValue.QUARTER))));
-        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(first, second));
-        Score score = new Score("Prueba", 140, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withMeasures(List.of(first, second));
+        Score score = new Score("Test", 140, List.of(track));
 
         Sequence sequence = exporter.toSequence(score);
 
         List<MidiEvent> tempos = tempoEventsOf(sequence.getTracks()[0]);
-        assertEquals(2, tempos.size(), "la partitura acelera a mitad de camino: tiene que haber dos eventos de tempo");
+        assertEquals(2, tempos.size(), "the score speeds up halfway through: there have to be two tempo events");
         assertEquals(0L, tempos.get(0).getTick());
         assertEquals(140, microsecondsPerQuarterToBpm(((MetaMessage) tempos.get(0).getMessage()).getData()));
         assertEquals(TimeSignature.fourFour().ticksPerMeasure(), tempos.get(1).getTick());
@@ -301,8 +301,8 @@ class MidiScoreExporterTest {
     void writesATimeSignatureChangeAtItsMeasure() {
         Measure fourFour = Measure.empty(TimeSignature.fourFour(), Duration.quarter());
         Measure threeFour = Measure.empty(new TimeSignature(3, 4), Duration.quarter());
-        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(fourFour, threeFour));
-        Score score = new Score("Prueba", 120, List.of(track));
+        Track track = Track.standardGuitar("Guitar").withMeasures(List.of(fourFour, threeFour));
+        Score score = new Score("Test", 120, List.of(track));
 
         Sequence sequence = exporter.toSequence(score);
 
@@ -320,7 +320,7 @@ class MidiScoreExporterTest {
         Sequence sequence = exporter.toSequence(score);
 
         assertTrue(countShortMessagesOf(sequence.getTracks()[1], ShortMessage.PITCH_BEND) > 0,
-                "el .mid tiene que llevar el bend que se escucha");
+                "the .mid has to carry the bend that is heard");
     }
 
     @Test
@@ -332,7 +332,7 @@ class MidiScoreExporterTest {
         Sequence sequence = exporter.toSequence(repeated);
 
         assertEquals(2, countShortMessagesOf(sequence.getTracks()[1], ShortMessage.NOTE_ON),
-                "el compas se repite, asi que su nota suena dos veces");
+                "the measure repeats, so its note sounds twice");
     }
 
     @Test
@@ -352,7 +352,7 @@ class MidiScoreExporterTest {
         Score overridden = scoreOfOneMeasure(overriddenMeasure);
 
         assertEquals(bytesOf(exporter.toSequence(plain)), bytesOf(exporter.toSequence(overridden)),
-                "el mismo compas, con o sin overrides de notacion, tiene que sonar exactamente igual");
+                "the same measure, with or without notation overrides, has to sound exactly the same");
     }
 
     private static java.util.List<Byte> bytesOf(Sequence sequence) throws Exception {
@@ -366,20 +366,20 @@ class MidiScoreExporterTest {
     }
 
     private static Score scoreOfOneMeasure(Measure measure) {
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        return new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Test", 120, List.of(track));
     }
 
     private static Score scoreOfOneMeasure(Beat... beats) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
-        return new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure));
+        return new Score("Test", 120, List.of(track));
     }
 
     @Test
     void writesAndReadsBackAFile(@TempDir Path tempDir) throws Exception {
         Score score = Score.blank();
-        Path path = tempDir.resolve("prueba.mid");
+        Path path = tempDir.resolve("test.mid");
 
         exporter.export(score, path);
 
@@ -395,12 +395,12 @@ class MidiScoreExporterTest {
                 return event.getTick();
             }
         }
-        throw new AssertionError("mensaje no encontrado en la pista");
+        throw new AssertionError("message not found in the track");
     }
 
     private static ShortMessage onlyShortMessageOf(javax.sound.midi.Track track, int command) {
         List<ShortMessage> found = shortMessagesOf(track, command);
-        assertEquals(1, found.size(), "se esperaba un solo mensaje " + command);
+        assertEquals(1, found.size(), "expected a single message " + command);
         return found.get(0);
     }
 
@@ -422,14 +422,14 @@ class MidiScoreExporterTest {
         return shortMessagesOf(track, ShortMessage.NOTE_ON).stream()
                 .filter(message -> message.getData1() == pitch)
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("no se encontro la nota " + pitch));
+                .orElseThrow(() -> new AssertionError("note not found " + pitch));
     }
 
     private static int programChangeOn(javax.sound.midi.Track track, int channel) {
         return shortMessagesOf(track, ShortMessage.PROGRAM_CHANGE).stream()
                 .filter(message -> message.getChannel() == channel)
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("no se encontro el instrumento del canal " + channel))
+                .orElseThrow(() -> new AssertionError("no instrument found for channel " + channel))
                 .getData1();
     }
 
@@ -437,7 +437,7 @@ class MidiScoreExporterTest {
         return shortMessagesOf(track, ShortMessage.CONTROL_CHANGE).stream()
                 .filter(message -> message.getChannel() == channel && message.getData1() == controller)
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("no se encontro el controlador " + controller))
+                .orElseThrow(() -> new AssertionError("controller not found " + controller))
                 .getData2();
     }
 
@@ -445,7 +445,7 @@ class MidiScoreExporterTest {
         return shortMessagesOf(track, ShortMessage.CONTROL_CHANGE).stream()
                 .filter(message -> message.getData1() == controller)
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("no se encontro el controlador " + controller))
+                .orElseThrow(() -> new AssertionError("controller not found " + controller))
                 .getData2();
     }
 
@@ -455,7 +455,7 @@ class MidiScoreExporterTest {
 
     private static MetaMessage onlyMetaOfType(javax.sound.midi.Track track, int type) {
         List<MetaMessage> found = metaEventsOfType(track, type);
-        assertEquals(1, found.size(), "se esperaba un solo meta evento de tipo " + type);
+        assertEquals(1, found.size(), "expected a single meta event of type " + type);
         return found.get(0);
     }
 
