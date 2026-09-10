@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.util.List;
 import javax.sound.midi.Synthesizer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Red permanente sobre cada fixture del repo: abre por el camino real de importacion, renderiza,
@@ -100,6 +101,21 @@ class FixtureCorpusSmokeTest {
 
     private BufferedImage renderizarPergamino(Score score) {
         return ScoreSheets.render(score, ViewMode.PARCHMENT, Zoom.whole(), PageSetup.defaults());
+    }
+
+    @Test
+    void unGuitarProSimpleSeExportaAGp4YSeReabre(@TempDir Path tempDir) {
+        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
+        Score score = abrir(path);
+
+        Score reabierto = exportarYReabrirGp4(score, tempDir.resolve("reexportado.gp4"));
+
+        assertNotNull(reabierto, () -> path.getFileName() + ": el export a .gp4 se reabre");
+    }
+
+    private Score exportarYReabrirGp4(Score score, Path gp4Path) {
+        exchange.exportGuitarPro(score, gp4Path);
+        return exchange.importGuitarPro(gp4Path);
     }
 
     private Score abrir(Path path) {
