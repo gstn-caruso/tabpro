@@ -32,6 +32,8 @@ final class MusicFont {
     private static final int ACCIDENTAL_SHARP = 0xE262;
     /** SMuFL U+E260 "accidentalFlat": el bemol. */
     private static final int ACCIDENTAL_FLAT = 0xE260;
+    /** SMuFL U+E261 "accidentalNatural": el becuadro. */
+    private static final int ACCIDENTAL_NATURAL = 0xE261;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -77,6 +79,11 @@ final class MusicFont {
     /** El bemol. */
     static String accidentalFlat() {
         return glyph(ACCIDENTAL_FLAT);
+    }
+
+    /** El becuadro. */
+    static String accidentalNatural() {
+        return glyph(ACCIDENTAL_NATURAL);
     }
 
     /**
