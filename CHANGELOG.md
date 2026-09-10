@@ -1,3 +1,9 @@
+## [0.45.0](https://github.com/gstn-caruso/tabpro/compare/v0.44.0...v0.45.0) (2026-09-10)
+
+### Features
+
+* **instruments:** el diapasón y el teclado tienen la banda de título con cerrar de Guitar Pro 5 ([#143](https://github.com/gstn-caruso/tabpro/issues/143)) ([db9558e](https://github.com/gstn-caruso/tabpro/commit/db9558e0b5a214403482b62b5cf4acd547db93a5))
+
 ## [0.44.0](https://github.com/gstn-caruso/tabpro/compare/v0.43.0...v0.44.0) (2026-09-10)
 
 ### Features
