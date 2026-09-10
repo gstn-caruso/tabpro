@@ -93,10 +93,6 @@ class MidiScoreImporterTest {
         assertEquals(38, imported.track(0).measure(0).beat(0).notes().get(0).fret());
     }
 
-    /**
-     * El manual: "Use 2 channels per track" es el default de la importacion rapida, asi que
-     * dos pistas quedan en canales de efectos distintos de los suyos propios.
-     */
     @Test
     void quickImportDefaultsToTwoChannelsPerTrack(@TempDir Path tempDir) {
         Track track = Track.standardGuitar("Guitarra");
@@ -109,7 +105,6 @@ class MidiScoreImporterTest {
         assertEquals(2, imported.track(0).channel().effectChannel());
     }
 
-    /** La casilla destildada equivale a un solo canal por pista. */
     @Test
     void quickImportCanUseOnlyOneChannelPerTrack(@TempDir Path tempDir) {
         Track track = Track.standardGuitar("Guitarra");
@@ -122,11 +117,6 @@ class MidiScoreImporterTest {
         assertEquals(1, imported.track(0).channel().effectChannel());
     }
 
-    /**
-     * La percusion tambien tiene que tener el canal de efectos que le toca, no el de
-     * arranque de una pista comun: antes se quedaba pegado en el canal 2 aunque la
-     * percusion suene siempre en el 10.
-     */
     @Test
     void quickImportGivesPercussionItsOwnEffectChannelToo(@TempDir Path tempDir) {
         Track drums = Track.percussion("Bateria").withMeasure(0,
@@ -139,13 +129,6 @@ class MidiScoreImporterTest {
         assertEquals(Channel.PERCUSSION_CHANNEL, imported.track(0).channel().effectChannel());
     }
 
-    /**
-     * Channel.effectChannelNextTo(9) devuelve 10, el mismo de la percusion, si no lo evita: una
-     * pista melodica en el canal 9 no puede terminar con sus bends sonando como bateria. La
-     * regla ya salta la percusion en effectChannelNextTo (ver PR #83); este test lo confirma
-     * desde el lado del import, para que las dos puntas (import y reproduccion/exportacion)
-     * sigan compartiendo la misma funcion en vez de calcular el par cada una por su lado.
-     */
     @Test
     void aMelodicTrackOnChannelNineDoesNotGetThePercussionEffectChannel(@TempDir Path tempDir) {
         Track track = Track.standardGuitar("Guitarra").withChannel(Channel.playing(25).withNumber(9));
@@ -316,9 +299,6 @@ class MidiScoreImporterTest {
 
     @Test
     void aCoarserPrecisionQuantizesTheSameMidiFileToADifferentScore(@TempDir Path tempDir) {
-        // una corchea con puntillo (360 tics: 1.5 semicorcheas) es una figura exacta sin
-        // restringir la grilla; pidiendo que no sea mas fina que la corchea, esa figura no entra
-        // y la nota se redondea a la corchea simple -- la misma entrada MIDI da otra partitura.
         Beat beat = Beat.of(new Duration(NoteValue.SIXTEENTH, true), new Note(1, 0));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beat));
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));

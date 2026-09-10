@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.TreeMap;
 
 /**
- * Los compases de un archivo MIDI, reconstruidos a partir de sus cambios de medida y de
- * armadura. Cada pista del archivo reparte sus notas sobre esta misma grilla, tal como en un
- * archivo MIDI de verdad el compas lo marca la pista de tempo, no cada pista por separado.
+ * The measures of a MIDI file, reconstructed from its time and key signature changes. Every
+ * track in the file lays its notes over this same grid, just as in a real MIDI file the measure
+ * is marked by the tempo track, not by each track on its own.
  */
 final class MeasureGrid {
 
@@ -23,10 +23,6 @@ final class MeasureGrid {
         this.keys = keys;
     }
 
-    /**
-     * Arma la grilla hasta cubrir totalTicks, con al menos un compas. signatureChanges y
-     * keyChanges tienen que traer una entrada en el tic 0.
-     */
     static MeasureGrid build(TreeMap<Long, TimeSignature> signatureChanges, TreeMap<Long, KeySignature> keyChanges, long totalTicks) {
         List<Long> starts = new ArrayList<>();
         List<TimeSignature> signatures = new ArrayList<>();

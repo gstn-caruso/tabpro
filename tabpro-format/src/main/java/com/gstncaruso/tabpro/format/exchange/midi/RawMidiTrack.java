@@ -8,11 +8,6 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-/**
- * Todo lo que se pudo leer de una pista de un archivo MIDI, ya convertido a los tics propios
- * del modelo (960 por negra): su instrumento, su mezcla, y los golpes que suenan en cada tic,
- * en orden.
- */
 record RawMidiTrack(
         int index,
         String name,

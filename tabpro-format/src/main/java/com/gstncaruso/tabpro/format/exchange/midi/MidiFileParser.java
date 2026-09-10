@@ -21,7 +21,6 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
 
-/** Lee un {@link Sequence} de la biblioteca estandar y lo pasa a la forma que entiende el importador. */
 final class MidiFileParser {
 
     private static final int TEMPO_META = 0x51;
@@ -139,17 +138,11 @@ final class MidiFileParser {
         return new KeySignature(accidentals, mode);
     }
 
-    /** Lo que se junta durante la lectura y no pertenece a ninguna pista en particular. */
     private static final class Accumulator {
         private int tempoBpm = DEFAULT_TEMPO_BPM;
         private String title;
     }
 
-    /**
-     * Arma una {@link RawMidiTrack} evento a evento. Empareja cada nota que se prende con la
-     * primera que se apaga de la misma altura (FIFO), para saber cuanto sono de verdad y no solo
-     * cuando empezo la que sigue; una nota que nunca se apaga se cierra al final de la pista.
-     */
     private static final class RawTrackBuilder {
         private final int index;
         private String name;
@@ -212,9 +205,9 @@ final class MidiFileParser {
         }
 
         /**
-         * Si la pista trajo algun mensaje de canal (nota, programa o control change): eso es lo
-         * que distingue una pista de instrumento de la pista de tempo/armadura, que solo trae
-         * meta eventos aunque tambien tenga nombre.
+         * A MIDI track carrying any channel message (note, program or control change) is an
+         * instrument track; the tempo/key-signature track carries only meta events, even when
+         * it also has a name.
          */
         boolean hasContent() {
             return channelNumber != null;
