@@ -22,8 +22,8 @@ import javax.sound.midi.Sequencer;
 public final class MidiPlayer implements Player, AutoCloseable {
 
     static final int END_OF_TRACK_META_TYPE = 47;
+    private static final long NO_SEQUENCER_TICK = -1;
 
-    /** El puerto que usa una pista nueva; el unico que conduce el tempo, los beats y el fin de la reproduccion. */
     private static final int PRIMARY_PORT = 1;
 
     private final Sequencer sequencer;
@@ -40,20 +40,10 @@ public final class MidiPlayer implements Player, AutoCloseable {
         this(sequencer, port -> defaultSynthesizer());
     }
 
-    /**
-     * Con un receiver por puerto elegido de afuera, como el de un {@link SoundFontBank}: quien
-     * arma la aplicacion decide de donde sale el sonido de cada puerto en vez de que este
-     * reproductor lo adivine. El puerto 1 es el que usa la preview de una nota.
-     */
     public MidiPlayer(Sequencer sequencer, IntFunction<Receiver> receiversByPort) {
         this(sequencer, receiversByPort, PortOutput::connectedSequencer);
     }
 
-    /**
-     * Con el secuenciador de cada puerto secundario tambien elegido de afuera, para poder
-     * probar el salto (seekTo) o el tick de un puerto sin depender de si la maquina de pruebas
-     * tiene placa de sonido.
-     */
     MidiPlayer(Sequencer sequencer, IntFunction<Receiver> receiversByPort, Supplier<Sequencer> portSequencers) {
         this.sequencer = sequencer;
         this.receiversByPort = receiversByPort;
@@ -61,7 +51,6 @@ public final class MidiPlayer implements Player, AutoCloseable {
         sequencer.addMetaEventListener(this::notifyListenerOf);
     }
 
-    /** Deja el sonido listo; conviene llamarlo de antemano porque abrir el sintetizador tarda. */
     public void open() {
         openSequencer();
         preview();
@@ -99,28 +88,24 @@ public final class MidiPlayer implements Player, AutoCloseable {
         sequencer.start();
     }
 
-    /** El mismo tempo pero sin pistas, para que el puerto principal siempre tenga algo que dirigir. */
     private static Timeline withoutTracks(Timeline timeline) {
         return new Timeline(timeline.tempo(), timeline.ticksPerQuarter(), java.util.List.of());
     }
 
-    /** La secuencia que esta tocando el puerto principal, la que dirige el tempo y avisa los beats. */
     Sequence sequenceInPlay() {
         return sequencer.getSequence();
     }
 
-    /** Para tests: deja el listener enganchado sin arrancar la reproduccion real. */
     void listenTo(PlaybackListener listener) {
         this.listener = listener;
     }
 
-    /** Para tests: en que tick quedo el secuenciador de ese puerto, o -1 si no tiene ninguno. */
     long tickPositionOfPort(int port) {
         if (port == PRIMARY_PORT) {
             return sequencer.getTickPosition();
         }
         PortOutput output = secondaryPorts.get(port);
-        return output == null ? -1 : output.tickPosition();
+        return output == null ? NO_SEQUENCER_TICK : output.tickPosition();
     }
 
     @Override
@@ -133,11 +118,6 @@ public final class MidiPlayer implements Player, AutoCloseable {
         preview().playSequence(pitches, program);
     }
 
-    /**
-     * Salta la reproduccion en curso a ese tick sin frenarla. La reproduccion arma una secuencia
-     * por puerto MIDI, con un secuenciador por puerto, asi que el salto tiene que alcanzarlos a
-     * todos -no solo al principal- o el sonido de un puerto secundario se queda donde estaba.
-     */
     @Override
     public void seekTo(long tick) {
         long safeTick = Math.max(0, tick);
@@ -162,8 +142,8 @@ public final class MidiPlayer implements Player, AutoCloseable {
 
     @Override
     public void close() {
-        // Primero el secuenciador, para que su hilo termine de mandar los "notes off" antes de
-        // que se cierre el receiver por el que los manda.
+        // Sequencer.close() must run before the receiver closes: the sequencer's own thread is
+        // still sending "note off" messages through it and closing the receiver first would drop them.
         sequencer.close();
         if (preview != null) {
             preview.close();
@@ -172,11 +152,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
         secondaryPorts.values().forEach(PortOutput::close);
     }
 
-    /**
-     * Manda el sonido a otro dispositivo, como pide la ventana de configuracion
-     * MIDI. El secuenciador viene enchufado al sintetizador del sistema, asi que
-     * primero hay que desenchufarlo.
-     */
+    /** A freshly opened Sequencer comes wired to the default system synthesizer, so that has to be unplugged first. */
     public void useOutput(javax.sound.midi.MidiDevice.Info info) {
         try {
             javax.sound.midi.MidiDevice device = MidiSystem.getMidiDevice(info);
@@ -194,10 +170,6 @@ public final class MidiPlayer implements Player, AutoCloseable {
         }
     }
 
-    /**
-     * Lo mismo que useOutput, pero para uno de los otros tres puertos: cada uno
-     * necesita su propio secuenciador porque cada uno es un dispositivo aparte.
-     */
     public void useOutputForPort(int port, javax.sound.midi.MidiDevice.Info info) {
         if (port == PRIMARY_PORT) {
             useOutput(info);
@@ -212,7 +184,6 @@ public final class MidiPlayer implements Player, AutoCloseable {
         }
     }
 
-    /** Options > MIDI Setup: si un puerto tilda Limit Pitch Variation, ver PitchTrajectory.staysWithin. */
     public void useLimitPitchVariation(int port, boolean limit) {
         if (limit) {
             limitedPitchVariationPorts.add(port);
@@ -263,10 +234,8 @@ public final class MidiPlayer implements Player, AutoCloseable {
     }
 
     /**
-     * Conecta el secuenciador al mismo receiver que usa la preview de una nota, en vez de
-     * dejarlo con la conexion implicita de JDK a un sintetizador que no podemos alcanzar (y que
-     * por lo tanto no puede sonar con un banco SoundFont cargado). Si ya eligieron una salida a
-     * mano no hay que tocar nada: useOutput ya dejo el secuenciador enchufado ahi.
+     * Without this, the sequencer stays on the JDK's implicit connection to a synthesizer this
+     * code cannot reach, so it could never sound through a loaded SoundFont bank.
      */
     private void wireDefaultOutput() throws MidiUnavailableException {
         if (chosenOutput != null) {
@@ -278,7 +247,6 @@ public final class MidiPlayer implements Player, AutoCloseable {
         sequencer.getTransmitter().setReceiver(defaultReceiver());
     }
 
-    /** El receiver del puerto principal, uno solo, compartido entre la preview y la partitura entera. */
     private Receiver defaultReceiver() {
         if (defaultReceiver == null) {
             defaultReceiver = receiversByPort.apply(PRIMARY_PORT);
@@ -286,7 +254,6 @@ public final class MidiPlayer implements Player, AutoCloseable {
         return defaultReceiver;
     }
 
-    /** El sintetizador del sistema, o uno mudo si la maquina no tiene ninguno. */
     private static Receiver defaultSynthesizer() {
         try {
             return MidiSystem.getReceiver();
@@ -307,7 +274,6 @@ public final class MidiPlayer implements Player, AutoCloseable {
         };
     }
 
-    /** El secuenciador real llama esto al vivo; para tests, se le empuja un mensaje construido a mano. */
     void notifyListenerOf(MetaMessage message) {
         if (message.getType() == END_OF_TRACK_META_TYPE) {
             listener.playbackFinished();
@@ -316,20 +282,6 @@ public final class MidiPlayer implements Player, AutoCloseable {
         MidiSequences.beatPositionOf(message).ifPresent(listener::beatStarted);
     }
 
-    /**
-     * Un puerto que no es el principal: tiene su propio secuenciador porque
-     * cada puerto manda a un dispositivo distinto y no se puede mezclar sus
-     * canales en una sola secuencia. No dirige el tempo compartido ni avisa
-     * beats ni el fin de la reproduccion -de eso se encarga el puerto principal.
-     *
-     * <p>Si la maquina no puede darle un secuenciador -no hay mas lineas de
-     * audio libres, o directamente no hay placa- el puerto se queda callado en
-     * vez de romper la reproduccion entera. Es el caso de cualquiera que no
-     * tenga un segundo dispositivo MIDI conectado, que son casi todos. Lo mismo
-     * si el receiver por defecto (con su banco SoundFont) no se puede conseguir:
-     * ese puerto se queda sin conectar, pero eso no tira abajo la reproduccion
-     * ni a los demas puertos, que abren su propio sintetizador cada uno.
-     */
     private static final class PortOutput implements AutoCloseable {
 
         private final Sequencer sequencer;
@@ -379,12 +331,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
             sequencer.start();
         }
 
-        /**
-         * Si nadie eligio un dispositivo externo para este puerto, lo conecta al sintetizador
-         * interno (con el banco SoundFont puesto si se pudo) en vez de dejarlo con la conexion
-         * implicita de JDK a un sintetizador que no podemos alcanzar. Si ni eso se puede -no hay
-         * transmisor disponible-, el puerto sigue abierto pero mudo: no rompe la reproduccion.
-         */
+        /** Without this the sequencer stays on the JDK's implicit connection to a synthesizer this code cannot reach. */
         private void wireDefaultIfNeeded() {
             if (wiredToDefault) {
                 return;
@@ -416,7 +363,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
         }
 
         long tickPosition() {
-            return isSilent() ? -1 : sequencer.getTickPosition();
+            return isSilent() ? NO_SEQUENCER_TICK : sequencer.getTickPosition();
         }
 
         @Override
@@ -428,7 +375,6 @@ public final class MidiPlayer implements Player, AutoCloseable {
             closeDevice();
         }
 
-        /** Devuelve si el puerto quedo listo para sonar; false si la maquina no lo dejo abrir. */
         private boolean openIfNeeded() {
             if (sequencer.isOpen()) {
                 return true;
@@ -447,10 +393,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
             }
         }
 
-        /**
-         * Conectado al sintetizador del sistema por defecto. En una maquina sin placa de sonido
-         * no hay ninguno: el puerto se queda sin secuenciador y toca en silencio.
-         */
+        /** A machine with no audio card, like CI, has no default Sequencer; the port stays silent. */
         static Sequencer connectedSequencer() {
             try {
                 return MidiSystem.getSequencer();
