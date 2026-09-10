@@ -1,3 +1,9 @@
+## [0.59.3](https://github.com/gstn-caruso/tabpro/compare/v0.59.2...v0.59.3) (2026-09-10)
+
+### Performance Improvements
+
+* **score:** mover el cursor repinta sólo la zona del cursor, y el Editor avisa qué cambió ([#188](https://github.com/gstn-caruso/tabpro/issues/188)) ([dfd8f0f](https://github.com/gstn-caruso/tabpro/commit/dfd8f0f840f751d4d1c9f6a4f2adbf5b4932347b))
+
 ## [0.59.2](https://github.com/gstn-caruso/tabpro/compare/v0.59.1...v0.59.2) (2026-09-10)
 
 ### Performance Improvements
