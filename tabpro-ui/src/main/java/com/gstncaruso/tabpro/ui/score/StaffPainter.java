@@ -237,14 +237,16 @@ final class StaffPainter {
     }
 
     private static void paintArticulations(Graphics2D g, Note note, double centerX, double y, int step, Color ink) {
-        boolean above = step < MIDDLE_LINE_STEP;
-        double markY = above ? y - NOTE_HEIGHT - SPACE * 0.35 : y + NOTE_HEIGHT + SPACE * 0.35;
+        boolean stemPointsUp = step < MIDDLE_LINE_STEP;
+        double accentY = stemPointsUp ? y - NOTE_HEIGHT - SPACE * 0.35 : y + NOTE_HEIGHT + SPACE * 0.35;
         if (note.has(Ornament.STACCATO)) {
-            paintArticulationGlyph(
-                    g, centerX, markY, above ? MusicFont.articStaccatoAbove() : MusicFont.articStaccatoBelow(), ink);
+            boolean dotAboveTheHead = !stemPointsUp;
+            double dotY = dotAboveTheHead ? y - NOTE_HEIGHT - SPACE * 0.35 : y + NOTE_HEIGHT + SPACE * 0.35;
+            paintArticulationGlyph(g, centerX, dotY,
+                    dotAboveTheHead ? MusicFont.articStaccatoAbove() : MusicFont.articStaccatoBelow(), ink);
         }
         if (note.has(Ornament.ACCENTED) || note.has(Ornament.HEAVY_ACCENTED)) {
-            paintAccentMark(g, centerX, markY, above, ink, note.has(Ornament.HEAVY_ACCENTED));
+            paintAccentMark(g, centerX, accentY, stemPointsUp, ink, note.has(Ornament.HEAVY_ACCENTED));
         }
     }
 
