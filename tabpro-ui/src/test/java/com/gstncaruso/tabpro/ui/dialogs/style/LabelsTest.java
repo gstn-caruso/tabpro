@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
 import com.gstncaruso.tabpro.core.model.DiagramPlacement;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
@@ -308,6 +309,20 @@ class LabelsTest {
     @EnumSource(VoicePart.class)
     void everyVoicePartHasSpanishAndEnglishText(VoicePart value) {
         String key = "domain.VoicePart." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheMode() {
+        assertEquals("Mayor", Labels.of(Mode.MAJOR));
+    }
+
+    @ParameterizedTest
+    @EnumSource(Mode.class)
+    void everyModeHasSpanishAndEnglishText(Mode value) {
+        String key = "domain.Mode." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());

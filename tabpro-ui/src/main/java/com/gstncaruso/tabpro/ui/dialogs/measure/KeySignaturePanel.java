@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.measure;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
@@ -13,7 +14,7 @@ public final class KeySignaturePanel extends FormPanel {
 
     public KeySignaturePanel(KeySignature initial) {
         keySignature.setRenderer((list, value, index, isSelected, hasFocus) ->
-                new javax.swing.JLabel(value == null ? "" : value.name() + " (" + value.mode().label() + ")"));
+                new javax.swing.JLabel(value == null ? "" : value.name() + " (" + Labels.of(value.mode()) + ")"));
         addRow("Armadura", keySignature);
         apply(initial);
     }
