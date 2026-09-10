@@ -9,7 +9,6 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
-import java.awt.font.LineMetrics;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
@@ -72,11 +71,13 @@ public final class GlyphIcon implements Icon {
 
     private static Shape centeredContentOf(Font font, String[] rows, int size) {
         Area content = new Area();
-        LineMetrics metrics = font.getLineMetrics(" ", MEASURING_CONTEXT);
-        float lineHeight = metrics.getHeight();
-        for (int row = 0; row < rows.length; row++) {
-            GlyphVector glyphs = font.createGlyphVector(MEASURING_CONTEXT, rows[row]);
-            content.add(new Area(glyphs.getOutline(0, row * lineHeight)));
+        double cursorTop = 0;
+        for (String row : rows) {
+            GlyphVector glyphs = font.createGlyphVector(MEASURING_CONTEXT, row);
+            Rectangle2D rowBounds = glyphs.getVisualBounds();
+            double placement = cursorTop - rowBounds.getMinY();
+            content.add(new Area(glyphs.getOutline(0, (float) placement)));
+            cursorTop += rowBounds.getHeight();
         }
         Rectangle2D bounds = content.getBounds2D();
         double scale = size / Math.max(bounds.getWidth(), bounds.getHeight());

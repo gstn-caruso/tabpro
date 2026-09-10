@@ -41,6 +41,39 @@ class GlyphIconTest {
     }
 
     @Test
+    void unRenglonChicoJuntoAUnoGrandeSiguePintandoLosDos() {
+        GlyphIcon icon = new GlyphIcon(18, "", NOTEHEAD_BLACK);
+
+        BufferedImage image = paint(icon);
+
+        assertTrue(hasAPixelOfTheThemeColor(image), "no pinto nada");
+        assertTrue(hasAPixelOfTheThemeColorAbove(image, 9), "no pinto el renglon de arriba");
+        assertTrue(hasAPixelOfTheThemeColorBelow(image, 9), "no pinto el renglon de abajo");
+    }
+
+    private static boolean hasAPixelOfTheThemeColorAbove(BufferedImage image, int y) {
+        return hasAPixelOfTheThemeColorInRows(image, 0, y);
+    }
+
+    private static boolean hasAPixelOfTheThemeColorBelow(BufferedImage image, int y) {
+        return hasAPixelOfTheThemeColorInRows(image, y, image.getHeight());
+    }
+
+    private static boolean hasAPixelOfTheThemeColorInRows(BufferedImage image, int fromY, int toY) {
+        int themeRgb = THEME_COLOR.getRGB() & 0xFFFFFF;
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = fromY; y < toY; y++) {
+                int pixel = image.getRGB(x, y);
+                boolean visible = (pixel >>> 24) != 0;
+                if (visible && (pixel & 0xFFFFFF) == themeRgb) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Test
     void ningunPixelSeEscapaDelCuadradoNiConVariosRenglones() {
         GlyphIcon icon = new GlyphIcon(18, "", NOTEHEAD_BLACK);
         int padding = 6;
