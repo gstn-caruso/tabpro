@@ -18,12 +18,12 @@ class GraceNotePanelTest {
     }
 
     @Test
-    void elComboDeDuracionMuestraLaFiguraEnCastellano() {
+    void theDurationComboShowsTheNoteValueInSpanish() {
         GraceNotePanel panel = new GraceNotePanel(GraceNote.before(0));
 
-        String texto = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
+        String renderedText = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
 
-        assertEquals("Negra", texto);
+        assertEquals("Negra", renderedText);
     }
 
     @Test

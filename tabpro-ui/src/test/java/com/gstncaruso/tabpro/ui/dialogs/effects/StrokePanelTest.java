@@ -17,12 +17,12 @@ class StrokePanelTest {
     }
 
     @Test
-    void elComboDeVelocidadMuestraLaFiguraEnCastellano() {
+    void theSpeedComboShowsTheNoteValueInSpanish() {
         StrokePanel panel = new StrokePanel(Stroke.of(StrokeDirection.DOWN));
 
-        String texto = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
+        String renderedText = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
 
-        assertEquals("Negra", texto);
+        assertEquals("Negra", renderedText);
     }
 
     @Test

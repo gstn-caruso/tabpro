@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class DigitalTunerPanelTest {
 
     @Test
-    void tieneNombreYTooltipAccesibles() {
+    void hasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new DigitalTunerPanel(new Pitch(64)));
     }
 
@@ -105,7 +105,7 @@ class DigitalTunerPanelTest {
     }
 
     @Test
-    void laDescripcionAccesibleDiceCuantoSeAparta() {
+    void theAccessibleDescriptionStatesHowFarItDeviates() {
         DigitalTunerPanel panel = new DigitalTunerPanel(new Pitch(64));
 
         panel.setDeviationCents(-12);

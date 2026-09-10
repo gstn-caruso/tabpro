@@ -16,12 +16,12 @@ class TremoloPickingPanelTest {
     }
 
     @Test
-    void elComboDeVelocidadMuestraLaFiguraEnCastellano() {
+    void theSpeedComboShowsTheNoteValueInSpanish() {
         TremoloPickingPanel panel = new TremoloPickingPanel(TremoloPicking.at(NoteValue.SIXTEENTH));
 
-        String texto = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
+        String renderedText = Combos.renderedTextOf(panel, NoteValue.class, NoteValue.QUARTER);
 
-        assertEquals("Negra", texto);
+        assertEquals("Negra", renderedText);
     }
 
     @Test

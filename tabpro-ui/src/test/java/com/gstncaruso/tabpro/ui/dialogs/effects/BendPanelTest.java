@@ -51,14 +51,14 @@ class BendPanelTest {
     }
 
     @Test
-    void laAlturaMostradaEsLaMagnitudDeLaCurvaAunqueSoloBaje() {
+    void theDisplayedHeightIsTheCurveMagnitudeEvenWhenItOnlyDips() {
         BendPanel panel = new BendPanel(Bend.of(BendType.DIVE, 8));
 
         assertEquals(8, panel.selectedHeight());
     }
 
     @Test
-    void elTipoDisponibleSeRestringeALosQueSeLePasan() {
+    void theAvailableTypesAreRestrictedToTheOnesPassedIn() {
         BendPanel panel = new BendPanel(Bend.of(BendType.DIP, 4), BendType.tremoloBarTypes());
 
         assertEquals(BendType.tremoloBarTypes(), panel.availableTypes());
