@@ -61,6 +61,22 @@ class MidiImportPanelTest {
     }
 
     @Test
+    void defaultsToThirtySecondChordPositionQuantize() {
+        MidiImportPanel panel = panel(List.of());
+
+        assertEquals(NoteValue.THIRTY_SECOND, panel.chordPositionQuantize());
+    }
+
+    @Test
+    void choosingAnotherChordPositionQuantizeChangesIt() {
+        MidiImportPanel panel = panel(List.of());
+
+        panel.chooseChordPositionQuantize(NoteValue.SIXTY_FOURTH);
+
+        assertEquals(NoteValue.SIXTY_FOURTH, panel.chordPositionQuantize());
+    }
+
+    @Test
     void defaultsToThirtySecondNoteDurationQuantize() {
         MidiImportPanel panel = panel(List.of());
 

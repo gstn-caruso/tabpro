@@ -55,6 +55,7 @@ public final class MidiImportPanel extends JPanel {
     private final JList<MidiTrackInfo> trackList = new JList<>();
     private final JCheckBox transpose = new JCheckBox("Transportar una octava para abajo");
     private final JCheckBox twoChannelsPerTrack = new JCheckBox("Usar 2 canales por pista", true);
+    private final QuantizeGroup chordPositionQuantizeGroup = new QuantizeGroup();
     private final QuantizeGroup noteDurationQuantizeGroup = new QuantizeGroup();
     private final JButton selectAll = iconButton(Icons.selectAllTracks(), "Marcar todas las pistas");
     private final JButton listen = iconButton(Icons.play(), "Escuchar la pista elegida");
@@ -81,6 +82,8 @@ public final class MidiImportPanel extends JPanel {
         checkboxes.add(twoChannelsPerTrack);
 
         FormPanel quantization = new FormPanel()
+                .addSection("Cuantización de posición de acorde")
+                .addFullWidthRow(chordPositionQuantizeGroup.asRow())
                 .addSection("Cuantización de duración de nota")
                 .addFullWidthRow(noteDurationQuantizeGroup.asRow());
 
@@ -153,6 +156,14 @@ public final class MidiImportPanel extends JPanel {
     /** El manual: dos canales por pista deja agregarle bend o slide sin correr las demas notas. */
     public boolean useTwoChannelsPerTrack() {
         return twoChannelsPerTrack.isSelected();
+    }
+
+    public NoteValue chordPositionQuantize() {
+        return chordPositionQuantizeGroup.chosen();
+    }
+
+    public void chooseChordPositionQuantize(NoteValue value) {
+        chordPositionQuantizeGroup.choose(value);
     }
 
     /** La precision con la que se cuantiza la duracion de las notas al importar. */
