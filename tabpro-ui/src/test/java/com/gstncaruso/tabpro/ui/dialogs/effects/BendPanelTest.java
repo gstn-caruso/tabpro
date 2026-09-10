@@ -43,4 +43,11 @@ class BendPanelTest {
 
         assertEquals(1, panel.toBend().points().getFirst().vibrato());
     }
+
+    @Test
+    void laAlturaMostradaEsLaMagnitudDeLaCurvaAunqueSoloBaje() {
+        BendPanel panel = new BendPanel(Bend.of(BendType.DIVE, 8));
+
+        assertEquals(8, panel.selectedHeight());
+    }
 }

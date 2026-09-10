@@ -21,7 +21,8 @@ public final class BendPanel extends FormPanel {
 
     public BendPanel(Bend initial) {
         type.setSelectedItem(initial.type());
-        height.setValue(initial.peakQuarterTones() == 0 ? 4 : initial.peakQuarterTones());
+        int magnitude = Math.abs(initial.farthestQuarterTones());
+        height.setValue(magnitude == 0 ? 4 : magnitude);
         curve = BendCurveEditor.of(initial);
         grid = new BendGridPanel(curve);
 
@@ -49,7 +50,7 @@ public final class BendPanel extends FormPanel {
         return (BendType) type.getSelectedItem();
     }
 
-    private int selectedHeight() {
+    int selectedHeight() {
         return (Integer) height.getValue();
     }
 
