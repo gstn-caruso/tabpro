@@ -119,10 +119,6 @@ class ChannelTest {
         assertEquals(Channel.PERCUSSION_CHANNEL, Channel.effectChannelNextTo(Channel.PERCUSSION_CHANNEL));
     }
 
-    /**
-     * El canal que sigue al 9 es el 10, pero ese es el de percusion: una pista melodica en el
-     * canal 9 no puede terminar con sus efectos (un bend, por ejemplo) sonando como bateria.
-     */
     @Test
     void theChannelNextToTheOneBeforePercussionSkipsPercussion() {
         assertEquals(Channel.PERCUSSION_CHANNEL - 1, Channel.effectChannelNextTo(Channel.PERCUSSION_CHANNEL - 2));
@@ -149,7 +145,6 @@ class ChannelTest {
     void theFreeChannelPairNeverLandsItsEffectsOnPercussion() {
         Channel channel = Channel.playing(25).withNextFreeChannelPairAfter(Set.of(1, 2, 3, 4, 5, 6, 7, 8));
 
-        // el 9 esta libre, pero effectChannelNextTo(9) salta el 10 -reservado para la percusion- y da 11
         assertEquals(9, channel.number());
         assertEquals(11, channel.effectChannel());
     }
@@ -164,7 +159,6 @@ class ChannelTest {
         assertEquals(50, channel.reverb());
     }
 
-    /** Cuando no queda ningun par libre, la pista se degrada a un solo canal en vez de fallar. */
     @Test
     void whenNoPairIsFreeTheChannelSharesItselfWithItsEffects() {
         Set<Integer> everyNonPercussionChannel = java.util.stream.IntStream.rangeClosed(1, Channel.CHANNELS_PER_PORT)
@@ -177,7 +171,6 @@ class ChannelTest {
         assertEquals(channel.number(), channel.effectChannel());
     }
 
-    /** Con "Forzar canales 11 a 16" activo, el primer par libre arranca en el 11, no en el 1. */
     @Test
     void aForcedChannelPairStartsAtEleven() {
         Channel channel = Channel.playing(25).withNextFreeChannelPairAfter(Set.of(), true);

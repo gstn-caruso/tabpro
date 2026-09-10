@@ -8,16 +8,10 @@ import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import com.gstncaruso.tabpro.core.model.effects.Velocity;
 
-/**
- * Una nota de la tablatura: la cuerda que se pisa, el traste, y todo lo que se
- * le pide con los simbolos de la partitura.
- */
 public record Note(int string, int fret, boolean tied, NoteEffects effects) {
 
-    /** El digito mas grande que admite la tablatura; en percusion es un numero MIDI. */
     public static final int MAX_FRET = 99;
 
-    /** Que fraccion de su figura suena una nota que se deja sonar. */
     public static final double LET_RING_LENGTH = 2.0;
 
     public Note {
@@ -33,7 +27,6 @@ public record Note(int string, int fret, boolean tied, NoteEffects effects) {
         this(string, fret, false, NoteEffects.none());
     }
 
-    /** Una nota que no se ataca: suma su duracion a la anterior de la misma cuerda. */
     public static Note tiedOn(int string) {
         return new Note(string, 0, true, NoteEffects.none());
     }

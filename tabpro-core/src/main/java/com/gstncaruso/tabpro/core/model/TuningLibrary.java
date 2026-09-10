@@ -2,7 +2,6 @@ package com.gstncaruso.tabpro.core.model;
 
 import java.util.List;
 
-/** Las afinaciones que ofrece el programa, agrupadas por instrumento. */
 public final class TuningLibrary {
 
     private TuningLibrary() {
@@ -71,14 +70,12 @@ public final class TuningLibrary {
                 Tuning.of("Violoncello", 57, 50, 43, 36));
     }
 
-    /** Todas las afinaciones, en el orden en que las ofrece la biblioteca. */
     public static List<Tuning> all() {
         return java.util.stream.Stream.of(guitars(), basses(), otherStringInstruments())
                 .flatMap(List::stream)
                 .toList();
     }
 
-    /** El nombre con que la biblioteca conoce esas alturas, si es que la conoce. */
     public static Tuning identify(List<Pitch> strings) {
         return all().stream()
                 .filter(tuning -> tuning.strings().equals(strings))
@@ -86,7 +83,6 @@ public final class TuningLibrary {
                 .orElseGet(() -> new Tuning(strings));
     }
 
-    /** Las afinaciones de la biblioteca que tienen esa cantidad de cuerdas. */
     public static List<Tuning> withStringCount(int stringCount) {
         return all().stream().filter(tuning -> tuning.stringCount() == stringCount).toList();
     }

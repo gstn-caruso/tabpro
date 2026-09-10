@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** La letra de la cancion, repartida silaba por silaba sobre una pista. */
 public record Lyrics(int trackIndex, List<LyricLine> lines) {
 
     private static final Lyrics NONE = new Lyrics(0, Collections.nCopies(LyricLine.MAX_LINES, LyricLine.empty()));

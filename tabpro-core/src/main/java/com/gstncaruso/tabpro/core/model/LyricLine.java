@@ -3,12 +3,6 @@ package com.gstncaruso.tabpro.core.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Una linea de letra: el texto tal como lo escribio el usuario y el compas desde
- * el que se reparte. Las silabas se separan con un espacio o un guion; un mas
- * une dos palabras, lo que va entre corchetes no se dibuja, y varios saltos de
- * linea seguidos cuentan como un solo espacio.
- */
 public record LyricLine(int startingMeasure, String text) {
 
     public static final int MAX_LINES = 5;
@@ -28,10 +22,6 @@ public record LyricLine(int startingMeasure, String text) {
         return syllables().isEmpty();
     }
 
-    /**
-     * Las silabas en el orden en que caen sobre los beats. Una silaba vacia deja
-     * el beat sin texto.
-     */
     public List<String> syllables() {
         List<String> syllables = new ArrayList<>();
         StringBuilder current = new StringBuilder();
@@ -49,7 +39,6 @@ public record LyricLine(int startingMeasure, String text) {
         return withoutTrailingBlanks(syllables);
     }
 
-    /** El texto sin los comentarios entre corchetes y con los saltos hechos espacios. */
     private String readable() {
         return text.replaceAll("\\[[^\\]]*\\]", "").replaceAll("\\R+", " ");
     }

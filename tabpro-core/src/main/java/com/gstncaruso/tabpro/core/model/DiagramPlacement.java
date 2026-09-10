@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model;
 
-/** Donde se dibujan los diagramas de acordes de una pista. */
 public enum DiagramPlacement {
     ABOVE_THE_STAFF("Sobre el pentagrama"),
     UNDER_THE_TITLE("Debajo del título"),
@@ -17,7 +16,6 @@ public enum DiagramPlacement {
         return label;
     }
 
-    /** Los dos casilleros "Diagrams In the Score" y "Diagrams List On Top" del manual, combinados. */
     public static DiagramPlacement of(boolean onTheScore, boolean underTheTitle) {
         if (onTheScore && underTheTitle) {
             return BOTH;

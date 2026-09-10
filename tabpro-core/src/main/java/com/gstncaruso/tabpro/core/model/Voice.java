@@ -3,7 +3,6 @@ package com.gstncaruso.tabpro.core.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Una linea melodica dentro de un compas. Una voz sin beats es una voz que no se usa. */
 public record Voice(List<Beat> beats) {
 
     private static final Voice UNUSED = new Voice(List.of());

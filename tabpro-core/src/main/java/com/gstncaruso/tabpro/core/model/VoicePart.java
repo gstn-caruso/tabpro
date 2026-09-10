@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model;
 
-/** Las dos voces que admite un compas: la principal y la de bajos. */
 public enum VoicePart {
     LEAD("Voz 1"),
     BASS("Voz 2");

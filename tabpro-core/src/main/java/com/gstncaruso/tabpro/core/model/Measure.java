@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
-/** Un compas: su medida, sus atributos y sus dos voces. */
 public record Measure(TimeSignature timeSignature, MeasureAttributes attributes, List<Voice> voices) {
 
     public Measure {
@@ -38,7 +37,6 @@ public record Measure(TimeSignature timeSignature, MeasureAttributes attributes,
         return !voice(VoicePart.BASS).isUnused();
     }
 
-    /** Los beats de la voz principal, que es con la que se trabaja por defecto. */
     public List<Beat> beats() {
         return lead().beats();
     }
@@ -113,7 +111,6 @@ public record Measure(TimeSignature timeSignature, MeasureAttributes attributes,
         return withAttributes(change.apply(attributes));
     }
 
-    /** El mismo compas sin notas, respetando su medida y sus atributos. */
     public Measure emptied() {
         return new Measure(timeSignature, attributes,
                 List.of(Voice.restingFor(Duration.quarter()), Voice.unused()));

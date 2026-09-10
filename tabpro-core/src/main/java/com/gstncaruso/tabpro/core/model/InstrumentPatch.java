@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * El patch de instrumentos de "Configure the Sound &gt; MIDI Setup": una
- * lista de nombres que reemplaza como se muestra cada programa MIDI, sin
- * tocar el sonido. Texto plano, un nombre por linea, sin encabezado; el
- * numero de linea (arrancando en cero) es el numero de programa. Una linea
- * en blanco, o no tener patch, deja el nombre General MIDI de ese programa.
+ * The instrument patch format of "Configure the Sound &gt; MIDI Setup": a
+ * list of names that replaces how each MIDI program is displayed, without
+ * touching the sound. Plain text, one name per line, no header; the line
+ * number (starting at zero) is the program number. A blank line, or having
+ * no patch at all, keeps that program's General MIDI name.
  */
 public final class InstrumentPatch {
 
@@ -32,7 +32,6 @@ public final class InstrumentPatch {
         return new InstrumentPatch(List.copyOf(lines));
     }
 
-    /** El nombre que hay que mostrar para ese programa: el del patch, o si no el de General MIDI. */
     public String nameOf(int program) {
         if (program < 0 || program >= Instruments.COUNT) {
             throw new IllegalArgumentException("program debe estar entre 0 y " + (Instruments.COUNT - 1) + ": " + program);

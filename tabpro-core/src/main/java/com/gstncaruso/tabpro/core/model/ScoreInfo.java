@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model;
 
-/** Los datos de la partitura que llenan el encabezado y el pie de la hoja. */
 public record ScoreInfo(
         String title,
         String subtitle,
@@ -36,7 +35,6 @@ public record ScoreInfo(
         return EMPTY.withTitle(title);
     }
 
-    /** Como se nombra la partitura cuando hace falta una sola linea. */
     public String heading() {
         if (title.isBlank()) {
             return artist.isBlank() ? "Sin título" : artist;
@@ -44,7 +42,6 @@ public record ScoreInfo(
         return artist.isBlank() ? title : title + " - " + artist;
     }
 
-    /** Los dos autores tal como se escriben arriba a la derecha de la hoja. */
     public String credits() {
         if (musicAuthor.equals(lyricsAuthor)) {
             return musicAuthor.isBlank() ? "" : "Letra y música: " + musicAuthor;

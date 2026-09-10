@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-/** Un golpe de la partitura: una figura, las notas que suenan en el, y sus efectos. */
 public record Beat(Duration duration, List<Note> notes, BeatEffects effects) {
 
     public Beat {
@@ -35,7 +34,6 @@ public record Beat(Duration duration, List<Note> notes, BeatEffects effects) {
         return notes.stream().filter(note -> note.string() == string).findFirst();
     }
 
-    /** La cuerda mas grave que suena, que es la de numero mas alto. */
     public Optional<Note> lowestNote() {
         return notes.stream().max(Comparator.comparingInt(Note::string));
     }
