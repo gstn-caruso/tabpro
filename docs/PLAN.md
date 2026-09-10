@@ -524,6 +524,35 @@ Slices, in order (4.2 to 4.8 can run two at a time once 4.1 has merged):
 
 Phase 1 result: comment lines in Java went from 6775 to 1088, all in English and all documenting an external contract.
 
+What phases 2 and 3 found that the inventory missed:
+- The domain carries Spanish display labels in 21 core files, not just the four
+  listed above. They include `bars/{KeySignature,DirectionJump,LineBreak,TripletFeel}`,
+  `effects/{BeamBreak,StemOverride,GraceTransition,Ornament,SoundParameter,BendType,
+  PickstrokeDirection,SlideType,StrokeDirection}`, `DiagramPlacement`, `VoicePart`,
+  `ScoreInfo.heading()/credits()` and the `"Personalizada"` tuning.
+- User-visible text also lives outside ui:
+  - the sound bank `status()` of `SoundFontBank`/`SoundFontSynthesizer`, shown by MIDI Setup,
+  - the export warnings of `GuitarProExporter`,
+  - the `ScoreFileException` messages of every reader and writer in core, format and midi,
+    including `ScoreExchange.notSupported`.
+- Default names that become score data: `Score.blank()`'s `"Guitarra"`, the
+  importers' `"Pista N"` and the Guitar Pro chord reader's `"Acorde"`.
+
+Refined slices, one bundle area each (the area files exist from 4.1). Work runs in
+three waves; slices in the same wave run in parallel because they share no files.
+
+| Slice | Area | Content | Wave |
+|---|---|---|---|
+| 4.2 | `menus` | `Commands`, `MenuBar`, `ToolBars` | A |
+| 4.3 | `domain` | enum labels in core `bars`/`effects`, `VoicePart`, `DiagramPlacement`, wah; core keeps only the constants, `Labels` maps them | A |
+| 4.5 | `edit_dialogs` | note, beat, effects, bar, symbol, lyrics and marker dialogs | A |
+| 4.7 | `views` | status bar, score painters, page, print, instruments, harmony, tracks, browser, percussion, sound panels, sound bank status | A |
+| 4.4 | `library` | tunings, scales and percussion get ids (`.tabpro` files with a Spanish `tuningName` keep opening), `"Personalizada"`, `ScoreInfo` heading, `"Sin título"` | B, after 4.3 (both touch `Labels`) |
+| 4.6 | `score_dialogs` | track, score info, page setup, preferences, MIDI, ASCII, wizards, metronome, tuner dialogs | B |
+| 4.8 | `window` | `MainFrame`, the `JOptionPane` call sites, error dialogs; `ScoreFileException` carries a structured reason that the UI maps to a key; `GuitarProExporter` warnings | B |
+| 4.9 | `defaults` | default track and chord names and `PageElement` defaults, handed to importers and `Score.blank()` from the app | C |
+| 4.10 | — | the switch (`feat`): `Language` preference, resolution, `Locale.setDefault`, English mnemonic collisions, `AccentedLiteralsTest` on the `_es` files, guardian against Spanish UI literals in Java | C |
+
 ### How to resume without context
 
 Read this section and the table below, then take the first row that is not
@@ -549,7 +578,12 @@ their changes touch the same lines.
 | 1 · build and CI files in English | `ci/build-files-in-english` | #193 | merged |
 | 1 · cross-scope renames | — | — | not needed: no worker found one |
 | 2 · midi identifiers and test names | `test/midi-english-names` | #201 | merged |
-| 2 · core, format, app (+ `integracion` → `integration` tag), ui/dialogs, ui/score group, rest of ui | `test/<scope>-english-names` | — | in progress |
-| 3 · internal messages | — | — | pending |
-| 4 · i18n slices 4.1–4.9 (see design above) | — | — | pending |
+| 2 · core identifiers and test names | `test/core-english-names` | #205 | merged |
+| 2 · app identifiers, `integracion` → `integration` tag | `test/app-english-names` | #206 | merged |
+| 2 · ui/dialogs, rest of ui, ui/score group | `test/ui-*-english-names` | #204, #207, #208 | merged |
+| 2 · format identifiers and test names | `test/format-english-names` | #210 | merged |
+| 3 · midi, core, rest of ui, ui/dialogs, app, ui/score group | `refactor/*-internal-strings-in-english` | #209, #211, #212, #213, #214, #215 | merged |
+| 3 · format, with `StrokeDto.rasgueado` → `strummed` keeping its JSON key | `refactor/format-internal-strings-in-english` | #216 | merged |
+| 4.1 · `Texts`, area bundles, `DialogShell` buttons | `refactor/i18n-infrastructure` | — | in progress |
+| 4.2–4.10 · see the refined slices above | — | — | pending |
 | 5 · docs in English | — | — | pending |
