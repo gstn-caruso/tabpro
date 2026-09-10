@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.percussion;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import java.awt.Point;
@@ -41,6 +42,24 @@ class PercussionSoundPaletteTest {
         click(list, 0, 2);
 
         assertEquals(List.of(list.getModel().getElementAt(0)), added);
+    }
+
+    @Test
+    void laGrillaTieneCuatroColumnasEnElOrdenDeGP5() {
+        PercussionSoundPalette palette = new PercussionSoundPalette(sound -> { }, sound -> { });
+        JList<Integer> list = sized(palette);
+
+        List<Integer> xPerIndex = new ArrayList<>();
+        List<Integer> yPerIndex = new ArrayList<>();
+        for (int index = 0; index < list.getModel().getSize(); index++) {
+            Rectangle bounds = list.getCellBounds(index, index);
+            xPerIndex.add(bounds.x);
+            yPerIndex.add(bounds.y);
+        }
+
+        assertEquals(4, xPerIndex.stream().distinct().count(), "la grilla no tiene cuatro columnas");
+        assertEquals(xPerIndex.get(0), xPerIndex.get(1), "el primer y segundo sonido van en la misma columna");
+        assertTrue(yPerIndex.get(1) > yPerIndex.get(0), "el segundo sonido va debajo del primero, como en GP5");
     }
 
     /**

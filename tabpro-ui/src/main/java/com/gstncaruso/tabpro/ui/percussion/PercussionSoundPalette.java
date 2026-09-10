@@ -20,6 +20,8 @@ import javax.swing.ListSelectionModel;
  */
 public final class PercussionSoundPalette extends JPanel {
 
+    private static final int COLUMNS = 4;
+
     private final JList<Integer> list;
 
     public PercussionSoundPalette(IntConsumer onPlay, IntConsumer onAdd) {
@@ -33,6 +35,8 @@ public final class PercussionSoundPalette extends JPanel {
         list.setBackground(ScoreColors.SURFACE);
         list.setForeground(ScoreColors.INK);
         list.setCellRenderer(new SoundRenderer());
+        list.setLayoutOrientation(JList.VERTICAL_WRAP);
+        list.setVisibleRowCount(rowsFor(list.getModel().getSize()));
         list.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -57,6 +61,11 @@ public final class PercussionSoundPalette extends JPanel {
     /** La lista en si, para los tests: no hace falta para usar el panel. */
     JList<Integer> soundList() {
         return list;
+    }
+
+    /** Filas para que entren en cuatro columnas, como el asistente del manual. */
+    private static int rowsFor(int soundCount) {
+        return (soundCount + COLUMNS - 1) / COLUMNS;
     }
 
     private static final class SoundRenderer extends DefaultListCellRenderer {
