@@ -17,10 +17,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * SoundFontSynthesizer es quien provee el sintetizador ya listo (abierto, con el banco puesto si
- * hay uno) que reusan tanto la reproduccion en vivo como cualquier renderizador a archivo.
- */
 class SoundFontSynthesizerTest {
 
     @TempDir

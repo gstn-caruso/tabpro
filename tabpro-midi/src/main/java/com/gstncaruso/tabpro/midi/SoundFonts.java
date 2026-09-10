@@ -13,13 +13,10 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Soundbank;
 
-/**
- * Los bancos SoundFont (.sf2, .dls) instalados en la maquina, y como leerlos sin romper si el
- * archivo no sirve. Gervill, el sintetizador del JDK, sabe tocar los dos formatos.
- */
+/** Gervill, the JDK's built-in synthesizer, can read both the .sf2 and .dls formats. */
 public final class SoundFonts {
 
-    /** Donde Linux suele dejar los bancos GM instalados por un paquete del sistema. */
+    /** Where Linux distro packages typically install General MIDI soundfonts. */
     private static final List<Path> SYSTEM_DIRECTORIES = List.of(
             Path.of("/usr/share/sounds/sf2"),
             Path.of("/usr/share/soundfonts"));
@@ -29,12 +26,10 @@ public final class SoundFonts {
     private SoundFonts() {
     }
 
-    /** Los bancos instalados en la maquina, en las rutas estandar de Linux. */
     public static List<Path> installed() {
         return installed(SYSTEM_DIRECTORIES);
     }
 
-    /** Lo mismo, pero buscando en las rutas que se le den (para poder probarlo sin tocar el disco real). */
     static List<Path> installed(List<Path> directories) {
         List<Path> found = new ArrayList<>();
         for (Path directory : directories) {
@@ -43,7 +38,6 @@ public final class SoundFonts {
         return List.copyOf(found);
     }
 
-    /** El banco de ese archivo, o vacio si no existe o esta corrupto: nunca rompe. */
     public static Optional<Soundbank> read(Path file) {
         try {
             return Optional.of(MidiSystem.getSoundbank(file.toFile()));
@@ -67,7 +61,6 @@ public final class SoundFonts {
             here.sort(Comparator.comparing(p -> p.getFileName().toString()));
             found.addAll(here);
         } catch (IOException ignored) {
-            // Un directorio que no se puede leer simplemente no aporta bancos.
         }
     }
 
