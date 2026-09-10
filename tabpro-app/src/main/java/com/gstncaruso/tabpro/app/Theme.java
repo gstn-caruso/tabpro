@@ -19,15 +19,15 @@ public final class Theme implements ThemeSwitch {
     public static final String DARK = "Oscuro";
     public static final String LIGHT = "Claro";
 
-    private static final Color ACCENT = new Color(0xE8A33D);
+    private static final Color ACCENT = new Color(0xBE7B17);
     private static final Color WARNING = new Color(0xE05C5C);
 
     private static final Map<String, Palette> PALETTES = Map.of(
             DARK, new Palette(
-                    new Color(0x1E1F22), new Color(0x2B2D30), new Color(0x35373B), new Color(0x3C3F41),
-                    new Color(0xD7D9DD), new Color(0x8B8F96), new Color(0xF6F3EC), new Color(0x1A1A1A)),
+                    new Color(0x1E1F22), new Color(0x2B2D30), new Color(0x35373B), new Color(0x71777A),
+                    new Color(0xD7D9DD), new Color(0x9CA0A5), new Color(0xF6F3EC), new Color(0x1A1A1A)),
             LIGHT, new Palette(
-                    new Color(0xEFEFF1), new Color(0xF7F7F9), new Color(0xFFFFFF), new Color(0xD4D6DA),
+                    new Color(0xEFEFF1), new Color(0xF7F7F9), new Color(0xFFFFFF), new Color(0x848995),
                     new Color(0x24262A), new Color(0x6B7078), new Color(0xFFFFFF), new Color(0x101010)));
 
     private String current = DARK;
