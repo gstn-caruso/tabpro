@@ -526,6 +526,31 @@ class ScorePainterTest {
     }
 
     @Test
+    void doesNotDrawTheTuningLegendByDefault() {
+        Track guitar = Track.standardGuitar("Guitarra");
+        Track withLegendOff = guitar.mappingSettings(
+                settings -> settings.withDisplay(settings.display().withTuningLegend(false)));
+
+        Painted byDefault = paint(new Score("", 120, List.of(guitar)), new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted off = paint(new Score("", 120, List.of(withLegendOff)), new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        assertTrue(byDefault.looksLike(off), "una pista nueva no tiene que mostrar los nombres de cuerda");
+    }
+
+    @Test
+    void drawsTheTuningLegendWhenTheTrackAsksForIt() {
+        Track guitar = Track.standardGuitar("Guitarra");
+        Track withLegendOn = guitar.mappingSettings(
+                settings -> settings.withDisplay(settings.display().withTuningLegend(true)));
+
+        Painted withoutLegend = paint(new Score("", 120, List.of(guitar)), new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted withLegend = paint(new Score("", 120, List.of(withLegendOn)), new Cursor(0, 0, 0, 1), Playhead.silent());
+
+        assertFalse(withoutLegend.looksLike(withLegend),
+                "tildar la casilla de afinacion tiene que dibujar los nombres de cuerda");
+    }
+
+    @Test
     void theBarStructureIsDrawnEvenWhenTheFirstTrackIsNotShown() {
         Track guitar = Track.standardGuitar("Guitarra");
         Measure repeated = Measure.empty(TimeSignature.fourFour(), Duration.quarter())

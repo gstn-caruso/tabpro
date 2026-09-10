@@ -7,6 +7,7 @@ import static com.gstncaruso.tabpro.app.audit.AuditSupport.findMenuItem;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.newFrame;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.withDialog;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,6 +15,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import java.awt.event.KeyEvent;
+import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -88,6 +90,32 @@ class WorkWithAScoreAuditTest {
 
             assertEquals("Guitarra renombrada", editor.score().track(0).name(),
                     "el nombre tecleado en el campo real del dialogo tiene que quedar en el modelo");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
+    void afinacionEnPropiedadesDeLaPistaMuestraLosNombresDeCuerdaEnElModeloReal() throws Exception {
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        try {
+            assertFalse(editor.score().track(0).settings().display().tuningLegend(),
+                    "una pista nueva no muestra los nombres de cuerda por defecto");
+
+            JMenuItem item = findMenuItem(frame.getJMenuBar(), "Propiedades de la pista…");
+            assertNotNull(item, "no encontre 'Propiedades de la pista…' en el menu real");
+
+            withDialog(item::doClick, dialog -> {
+                JCheckBox afinacion = AuditSupport.findCheckBox(dialog, "Afinacion");
+                assertNotNull(afinacion, "no encontre la casilla real 'Afinacion'");
+                afinacion.doClick();
+
+                findButton(dialog, "Aceptar").doClick();
+            });
+
+            assertTrue(editor.score().track(0).settings().display().tuningLegend(),
+                    "tildar 'Afinacion' en el dialogo real tiene que prender la leyenda en el modelo real");
         } finally {
             AuditSupport.dispose(frame);
         }

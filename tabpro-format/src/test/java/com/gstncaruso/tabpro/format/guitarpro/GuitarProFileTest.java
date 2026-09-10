@@ -65,6 +65,14 @@ class GuitarProFileTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"gp3", "gp4", "gp5"})
+    void readsATrackThatDoesNotShowStringNamesByDefault(String extension) {
+        Track track = read(extension).track(0);
+
+        assertFalse(track.settings().display().tuningLegend());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"gp3", "gp4", "gp5"})
     void readsEveryNoteOnItsStringAndFret(String extension) {
         Track track = read(extension).track(0);
 
