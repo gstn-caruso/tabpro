@@ -32,7 +32,7 @@ class ClippingJsonTest {
 
     @Test
     void plainTextIsNotAClipping() {
-        assertTrue(json.decode("un texto cualquiera copiado de otro lado, no es json").isEmpty());
+        assertTrue(json.decode("some random text copied from elsewhere, not json").isEmpty());
     }
 
     @Test
