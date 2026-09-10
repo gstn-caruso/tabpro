@@ -26,6 +26,7 @@ import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
+import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.instruments.FretboardDisplayMode;
 import com.gstncaruso.tabpro.ui.instruments.FretboardType;
@@ -383,6 +384,20 @@ class LabelsTest {
     @EnumSource(SlideType.class)
     void everySlideTypeHasSpanishAndEnglishText(SlideType value) {
         String key = "domain.SlideType." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheOrnament() {
+        assertEquals("Nota fantasma", Labels.of(Ornament.GHOST));
+    }
+
+    @ParameterizedTest
+    @EnumSource(Ornament.class)
+    void everyOrnamentHasSpanishAndEnglishText(Ornament value) {
+        String key = "domain.Ornament." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
