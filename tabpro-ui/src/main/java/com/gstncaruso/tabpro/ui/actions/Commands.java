@@ -221,6 +221,8 @@ public final class Commands {
         define("note.soundDuration", "Duración del sonido…", dialogs::soundDuration)
                 .withIcon(Icons.soundDuration());
         define("note.fingering", "Digitación…", dialogs::fingering).withIcon(Icons.fingering());
+        define("note.fingeringRightHand", "Digitación (mano derecha)…", dialogs::fingeringRightHand)
+                .withIcon(Icons.fingeringRightHand());
         define("note.chord", "Acorde…", dialogs::chordDiagram).withAccelerator("A").withIcon(Icons.chordDiagram());
         define("note.mixTableChange", "Cambio de parámetros…", dialogs::mixTableChange)
                 .withAccelerator("F10").withIcon(Icons.mixTable());
