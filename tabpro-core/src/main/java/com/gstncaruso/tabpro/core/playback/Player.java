@@ -16,6 +16,15 @@ public interface Player {
     void playNote(Pitch pitch, int program);
 
     /**
+     * Hace sonar varias notas sueltas, una despues de la otra, para escuchar una escala o un
+     * arpegio. Quien pueda espaciarlas en el tiempo (como el puerto MIDI) sobreescribe esto;
+     * sin implementacion propia suenan todas de una, que alcanza para un Player de prueba.
+     */
+    default void playSequence(List<Pitch> pitches, int program) {
+        pitches.forEach(pitch -> playNote(pitch, program));
+    }
+
+    /**
      * Salta la reproduccion en curso a ese tick, sin frenarla: el manual deja moverse por la
      * partitura mientras suena y retomar desde la posicion senalada. Sin implementacion propia
      * no hace nada, para no obligar a cada Player de prueba a saber de esto.
