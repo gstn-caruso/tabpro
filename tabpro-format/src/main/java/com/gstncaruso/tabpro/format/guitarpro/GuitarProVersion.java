@@ -5,9 +5,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Las versiones del formato binario de Guitar Pro que sabemos leer, con las
- * diferencias de layout entre ellas resueltas por polimorfismo en vez de
- * cascadas de {@code if} desparramadas por los lectores.
+ * The versions of the Guitar Pro binary format this code can read, with the layout
+ * differences between them resolved by polymorphism instead of {@code if} cascades
+ * scattered across the readers.
  */
 enum GuitarProVersion {
 
@@ -27,7 +27,6 @@ enum GuitarProVersion {
         this.minor = minor;
     }
 
-    /** Reconoce la cabecera de version y elige la variante que corresponde. */
     static GuitarProVersion parse(String header) {
         Matcher matcher = HEADER_PATTERN.matcher(header.strip());
         if (!matcher.matches()) {
@@ -48,34 +47,34 @@ enum GuitarProVersion {
         return generation;
     }
 
-    /** Titulo de referencia, solo para mensajes de error legibles. */
+    /** Reference title, only for readable error messages. */
     String label() {
         return "v" + generation + "." + String.format("%02d", minor);
     }
 
-    /** GP4 en adelante trae letra de la cancion. */
+    /** GP4 and later carry the song's lyrics. */
     boolean hasLyrics() {
         return generation >= 4;
     }
 
-    /** GP3 y GP4 declaran un unico triplet feel global; GP5 lo mueve a cada compas. */
+    /** GP3 and GP4 declare a single global triplet feel; GP5 moves it to each measure. */
     boolean hasGlobalTripletFeel() {
         return generation < 5;
     }
 
-    /** El octavado de la clave aparece desde GP4. */
+    /** The key signature's octave appears since GP4. */
     boolean hasOctave() {
         return generation >= 4;
     }
 
-    /** Desde GP5 la cabecera trae el rotulo de tempo, ademas del valor numerico. */
+    /** Since GP5 the header carries the tempo label, in addition to the numeric value. */
     boolean hasTempoLabel() {
         return generation >= 5;
     }
 
     /**
-     * Solo 5.10 escribe si el tempo se muestra o no en la partitura: una vez en la cabecera
-     * y una vez por cada cambio de parametros que toque el tempo, detras de su transicion.
+     * Only 5.10 writes whether the tempo shows in the score or not: once in the header
+     * and once for each parameter change that touches the tempo, after its transition.
      */
     boolean hasHideTempo() {
         return this == GP5_10;
@@ -85,12 +84,12 @@ enum GuitarProVersion {
         return this == GP5_10;
     }
 
-    /** GP5.10 agrega nombre y categoria de efecto de RSE a cada cambio de parametros, tras el wah. */
+    /** GP5.10 adds the RSE effect name and category to every parameter change, after the wah. */
     boolean hasRseInstrumentEffect() {
         return this == GP5_10;
     }
 
-    /** GP5 agrega la lista de direcciones (Coda, Segno, etc.) en la cabecera. */
+    /** GP5 adds the list of directions (Coda, Segno, etc.) to the header. */
     boolean hasDirections() {
         return generation >= 5;
     }
@@ -99,12 +98,12 @@ enum GuitarProVersion {
         return generation >= 5;
     }
 
-    /** El encabezado de la partitura separa letra de musica recien en GP5. */
+    /** The score header only separates the lyrics author from the music author since GP5. */
     boolean hasMusicAuthorField() {
         return generation >= 5;
     }
 
-    /** GP5 escribe dos voces por compas y pista; antes hay una sola. */
+    /** GP5 writes two voices per measure and track; before that there is only one. */
     boolean hasSecondVoice() {
         return generation >= 5;
     }
@@ -117,22 +116,22 @@ enum GuitarProVersion {
         return this == GP5_10;
     }
 
-    /** Beats y notas traen un segundo byte de banderas desde GP4. */
+    /** Beats and notes carry a second flags byte since GP4. */
     boolean hasSecondFlagsByte() {
         return generation >= 4;
     }
 
-    /** GP3 escribe la cuenta de repeticion ya restada en uno. */
+    /** GP3 writes the repeat count already reduced by one. */
     int repeatCountOffset() {
         return generation < 5 ? 1 : 0;
     }
 
-    /** El orden de las velocidades del rasgueo se invierte a partir de GP5. */
+    /** The order of the stroke speeds reverses from GP5 on. */
     boolean strokeUpFirst() {
         return generation >= 5;
     }
 
-    /** Antes de GP4 el efecto de tapping/slapping/popping llevaba relleno de mas. */
+    /** Before GP4 the tapping/slapping/popping effect carried extra padding. */
     int slapEffectPaddingBytes() {
         return hasSecondFlagsByte() ? 0 : 4;
     }
@@ -141,12 +140,12 @@ enum GuitarProVersion {
         return generation >= 5;
     }
 
-    /** GP5 guarda la duracion de la nota como fraccion; antes era discreta. */
+    /** GP5 stores the note's duration as a fraction; before that it was discrete. */
     boolean hasNoteDurationPercent() {
         return generation >= 5;
     }
 
-    /** GP5 pasa el slide de un numero a una mascara de bits, para poder traer varios por nota. */
+    /** GP5 turns the slide from a number into a bitmask, so a note can carry several. */
     boolean hasSlideMask() {
         return generation >= 5;
     }
@@ -155,12 +154,12 @@ enum GuitarProVersion {
         return generation >= 5;
     }
 
-    /** GP5 invierte el orden del adorno: primero la transicion y despues la duracion. */
+    /** GP5 reverses the grace note's field order: transition first, then duration. */
     boolean hasGraceTransitionBeforeDuration() {
         return generation >= 5;
     }
 
-    /** Que el adorno sea mudo o caiga en el tiempo solo se escribe desde GP5. */
+    /** Whether the grace note is muted or falls on the beat is only written since GP5. */
     boolean hasGraceFlags() {
         return generation >= 5;
     }

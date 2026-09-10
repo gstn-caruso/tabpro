@@ -4,10 +4,9 @@ import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Track;
 
 /**
- * Escribe el encabezado de una pista de GP4: su afinacion, sus canales y sus banderas.
- * GP4 no tiene los campos que agrega GP5 (como se dibuja, el instrumento de RSE): esos
- * campos simplemente no existen en este formato, y por eso {@link Track#settings()}'s
- * {@code display} no se puede representar.
+ * Writes the header of a GP4 track: its tuning, its channels, and its flags. GP4 lacks
+ * the fields GP5 adds (how it is drawn, the RSE instrument): those fields simply do not
+ * exist in this format, so {@link Track#settings()}'s {@code display} cannot be represented.
  */
 final class GuitarProTrackWriter {
 
@@ -18,7 +17,7 @@ final class GuitarProTrackWriter {
     private static final int TUNING_SLOTS = 7;
     private static final int NAME_FIELD_SIZE = 40;
 
-    /** El puerto de salida MIDI: el modelo de tabpro no lo distingue del numero de canal. */
+    /** The MIDI output port: the tabpro model does not distinguish it from the channel number. */
     private static final int MIDI_OUTPUT_PORT = 1;
 
     void write(GuitarProByteWriter writer, Track track) {

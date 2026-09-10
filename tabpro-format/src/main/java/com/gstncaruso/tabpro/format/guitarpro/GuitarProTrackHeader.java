@@ -6,7 +6,6 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.TrackDisplay;
 import java.util.List;
 
-/** Los datos de una pista, tal como los guarda el archivo. */
 record GuitarProTrackHeader(
         String name,
         List<Integer> tuningMidiNumbers,
@@ -20,12 +19,6 @@ record GuitarProTrackHeader(
         boolean banjoFifthString,
         TrackDisplay display) {
 
-    /**
-     * El canal del dominio que le toca a esta pista: el sonido que la tabla del
-     * archivo guarda en su ranura, sonando en los dos canales que la pista
-     * eligio. Una pista que apunta a una ranura que no existe arranca con el
-     * canal por defecto de su instrumento.
-     */
     Channel channelIn(List<GuitarProChannel> channels) {
         int slot = channelIndex1Based - 1;
         if (slot < 0 || slot >= channels.size()) {

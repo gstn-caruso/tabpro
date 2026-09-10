@@ -6,7 +6,6 @@ import com.gstncaruso.tabpro.core.model.TrackDisplay;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Lee el encabezado de una pista: su afinacion, sus canales y como se dibuja. */
 final class GuitarProTrackReader {
 
     private static final int FLAG_PERCUSSION = 0x01;
@@ -25,7 +24,7 @@ final class GuitarProTrackReader {
         String name = reader.readFixedString(NAME_FIELD_SIZE);
         int stringCount = reader.readInt();
         List<Integer> tuning = readTuning(reader, stringCount);
-        reader.readInt(); // port de salida MIDI: no tiene lugar en nuestro modelo de canal.
+        reader.readInt(); // MIDI output port: it has no place in our channel model.
         int channelIndex = reader.readInt();
         int effectChannelIndex = reader.readInt();
         int fretCount = reader.readInt();
@@ -40,8 +39,8 @@ final class GuitarProTrackReader {
     }
 
     /**
-     * En v5 hay un byte suelto antes de las banderas: en 5.10 solo delante de la
-     * primera pista, y en 5.00 delante de todas.
+     * In v5 there is a loose byte before the flags: in 5.10 only ahead of the first
+     * track, and in 5.00 ahead of every track.
      */
     private static void skipByteBeforeTheFlags(
             GuitarProByteReader reader, GuitarProVersion version, int trackNumber) {
@@ -59,7 +58,7 @@ final class GuitarProTrackReader {
         return List.copyOf(allSlots.subList(0, usable));
     }
 
-    /** Los campos que solo trae GP5: como se dibuja la pista y su instrumento de RSE. */
+    /** The fields only GP5 carries: how the track is drawn and its RSE instrument. */
     private TrackDisplay readTrackExtras(GuitarProByteReader reader, GuitarProVersion version) {
         if (!version.hasTrackExtras()) {
             return TrackDisplay.standard();
@@ -67,16 +66,16 @@ final class GuitarProTrackReader {
         int staffFlags = reader.readUnsignedByte();
         reader.skip(4); // midiAutoFlags, rseAutoAccentuation, bank, humanPlaying
         reader.skip(12); // clefMode, unknownA, unknownB
-        reader.skip(10); // relleno sin uso conocido
+        reader.skip(10); // padding with no known use
         reader.skip(2); // unknownC, unknownD
-        // El instrumento de RSE: tres enteros y el numero de efecto, que en 5.00
-        // ocupa dos bytes mas uno de relleno y en 5.10 pasa a ser un entero.
+        // The RSE instrument: three integers and the effect number, which in 5.00
+        // occupies two bytes plus one of padding and in 5.10 becomes a single integer.
         reader.skip(12);
         reader.skip(version.hasTrackEffectExtras() ? 4 : 3);
         if (version.hasTrackEffectExtras()) {
-            reader.skip(4); // ecualizador de 3 bandas
-            reader.readLengthPrefixedString(); // nombre del efecto de RSE
-            reader.readLengthPrefixedString(); // categoria del efecto de RSE
+            reader.skip(4); // three-band equalizer
+            reader.readLengthPrefixedString(); // RSE effect name
+            reader.readLengthPrefixedString(); // RSE effect category
         }
         boolean tablature = (staffFlags & STAFF_SHOWS_TABLATURE) != 0;
         boolean standardNotation = (staffFlags & STAFF_SHOWS_STANDARD_NOTATION) != 0;
