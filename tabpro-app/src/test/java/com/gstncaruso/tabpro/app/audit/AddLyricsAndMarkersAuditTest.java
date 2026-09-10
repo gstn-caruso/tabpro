@@ -23,12 +23,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Add Lyrics" (linea 1377) y "Add Markers" (linea 1448) del texto extraido. La letra no
- * tiene comando propio en el catalogo -se escribe en la solapa "Letra" de Informacion de la
- * partitura, F5-; los marcadores se insertan desde su propio dialogo (Marcador > Insertar,
- * Shift+Insert). Los dos dialogos reales, con sus campos de texto reales.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class AddLyricsAndMarkersAuditTest {
@@ -89,10 +83,6 @@ class AddLyricsAndMarkersAuditTest {
         }
     }
 
-    /**
-     * Guitar Pro 5, manual pagina 14, fila 2: el boton de "editar" abre el mismo dialogo ya
-     * posicionado en el marcador vigente en el compas del cursor.
-     */
     @Test
     void editarElMarcadorDelCursorEnElDialogoRealDejaElNombreNuevoEnElModelo() throws Exception {
         Editor editor = blankEditor();
@@ -120,10 +110,6 @@ class AddLyricsAndMarkersAuditTest {
         }
     }
 
-    /**
-     * Guitar Pro 5, manual pagina 30 ("Add Markers"): el menu Marcador > Lista abre la tabla
-     * Posicion/Nombre con Agregar/Editar/Borrar/Ir a, no el editor de un solo marcador.
-     */
     @Test
     void borrarEnLaTablaRealDeMarcadoresQuitaElMarcadorDelModelo() throws Exception {
         Editor editor = blankEditor();

@@ -34,13 +34,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Add Symbols" (linea 961 del texto extraido): bend, trino y armonicos, cada uno con su
- * propia solapa en la misma ventana de efectos (NoteEffectsDialog). Los tres pasan por el mismo
- * camino: el atajo real (una tecla, sin pasar por un menu con Robot) abre el dialogo modal real
- * -detectado por su WINDOW_OPENED, sin Robot-, se tocan sus controles reales (casilla "Activo",
- * spinner, combo) y se lee lo que quedo en el modelo despues de aceptar.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class AddSymbolsAuditTest {

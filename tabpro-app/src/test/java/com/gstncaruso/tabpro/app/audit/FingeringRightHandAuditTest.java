@@ -23,10 +23,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Guitar Pro 5, manual pagina 14: el boton de digitacion de mano derecha abre el mismo dialogo
- * que el de mano izquierda, pero con el foco real en su propio campo.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class FingeringRightHandAuditTest {

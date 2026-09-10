@@ -24,14 +24,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
-/**
- * Manual, "Insert Parameter Changes" (linea 1340 del texto extraido): el cambio de parametros
- * (Nota > Mesa de mezcla, F10) tilda que parametro cambia (volumen, paneo, tempo, ...), le pone
- * un valor y una transicion. El dialogo se ejercita por el menu real -detectado por
- * WINDOW_OPENED-, se tilda la casilla real de Volumen, se cambia el spinner real y se lee lo que
- * quedo en el modelo despues de aceptar. El atajo F10 se ejercita aparte porque, como se ve mas
- * abajo, ni siquiera llega a abrir el dialogo.
- */
 @Tag("integracion")
 @ResourceLock(AuditSupport.SWING_LOCK)
 class InsertParameterChangesAuditTest {
@@ -69,10 +61,10 @@ class InsertParameterChangesAuditTest {
     }
 
     /**
-     * F10 sin modificador es, de fabrica en Swing (BasicMenuBarUI), la tecla que activa el
-     * propio JMenuBar para navegarlo con las flechas. AcceleratorGuard neutraliza esa tecla en
-     * la barra de menus real, asi que el atajo documentado en el manual gana: abre el dialogo
-     * real de Cambio de parametros, sin activar la barra de menus.
+     * Swing binds F10 without a modifier, out of the box (BasicMenuBarUI), to activate the
+     * JMenuBar itself for arrow-key navigation. AcceleratorGuard neutralizes that key on the real
+     * menu bar, so the app's own shortcut wins: it opens the real Change Parameters dialog
+     * instead of activating the menu bar.
      */
     @Test
     void f10ConLaPartituraEnfocadaAbreElCambioDeParametrosEnVezDeActivarElMenu() throws Exception {
