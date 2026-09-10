@@ -67,11 +67,6 @@ public final class AccessibilityWalker {
         violations.addAll(rawDomainTextViolations(component, path));
     }
 
-    /**
-     * Un combo o una lista que pinta un enum o un record deja ver su toString() crudo
-     * (p.ej. "QUARTER" en vez de "Negra") sin importar si tiene el renderer por defecto o uno
-     * propio: un renderer propio puede seguir mostrando el toString() crudo por accidente.
-     */
     private List<Violation> rawDomainTextViolations(Component component, String path) {
         if (component instanceof JComboBox<?> combo) {
             return rawDomainTextViolations(path, combo.getModel(), combo.getRenderer());
@@ -111,11 +106,10 @@ public final class AccessibilityWalker {
         if (item instanceof Enum<?> enumValue) {
             return text.equals(enumValue.name());
         }
-        return text.equals(rawRecordText(item));
+        return text.equals(syntheticRecordToString(item));
     }
 
-    /** La forma que un record sin toString() propio produce: "SimpleName[campo=valor, ...]". */
-    private String rawRecordText(Object item) {
+    private String syntheticRecordToString(Object item) {
         RecordComponent[] components = item.getClass().getRecordComponents();
         StringBuilder raw = new StringBuilder(item.getClass().getSimpleName()).append('[');
         for (int index = 0; index < components.length; index++) {
