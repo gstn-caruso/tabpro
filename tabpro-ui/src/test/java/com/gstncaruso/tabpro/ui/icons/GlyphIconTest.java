@@ -40,6 +40,37 @@ class GlyphIconTest {
         assertTrue(hasAPixelOfTheThemeColor(paint(icon)));
     }
 
+    @Test
+    void ningunPixelSeEscapaDelCuadradoNiConVariosRenglones() {
+        GlyphIcon icon = new GlyphIcon(18, "", NOTEHEAD_BLACK);
+        int padding = 6;
+        JPanel probe = new JPanel();
+        probe.setForeground(THEME_COLOR);
+        int canvasSize = icon.getIconWidth() + padding * 2;
+        BufferedImage image = new BufferedImage(canvasSize, canvasSize, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D canvas = image.createGraphics();
+        icon.paintIcon(probe, canvas, padding, padding);
+        canvas.dispose();
+
+        assertTrue(everyThemeColorPixelIsInside(image, padding, icon.getIconWidth(), icon.getIconHeight()));
+    }
+
+    private static boolean everyThemeColorPixelIsInside(BufferedImage image, int padding, int width, int height) {
+        int themeRgb = THEME_COLOR.getRGB() & 0xFFFFFF;
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                int pixel = image.getRGB(x, y);
+                boolean visible = (pixel >>> 24) != 0;
+                boolean themeColored = visible && (pixel & 0xFFFFFF) == themeRgb;
+                boolean outsideTheIcon = x < padding || y < padding || x >= padding + width || y >= padding + height;
+                if (themeColored && outsideTheIcon) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private static BufferedImage paint(GlyphIcon icon) {
         JPanel probe = new JPanel();
         probe.setForeground(THEME_COLOR);
