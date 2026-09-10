@@ -60,6 +60,19 @@ class GlobalUiMutationScanTest {
         assertTrue(GlobalUiMutationScan.unisolatedMutators(root).isEmpty());
     }
 
+    @Test
+    void aTestThatChangesTheInterfaceFontSizeWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "ChangesTheFontSize.java", """
+                class ChangesTheFontSize {
+                    void changes() {
+                        theme.useFontSize(16);
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
     private static Path write(Path root, String fileName, String content) throws IOException {
         Path file = root.resolve(fileName);
         Files.writeString(file, content);

@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 final class GlobalUiMutationScan {
 
     private static final Pattern INSTALLS_THE_THEME = Pattern.compile("Theme\\.install\\(");
+    private static final Pattern CHANGES_THE_FONT_SIZE = Pattern.compile("\\.useFontSize\\(");
     private static final Pattern ISOLATED = Pattern.compile("@Isolated\\b");
 
     private GlobalUiMutationScan() {
@@ -28,7 +29,8 @@ final class GlobalUiMutationScan {
     }
 
     private static boolean mutatesGlobalUiState(Path file) {
-        return INSTALLS_THE_THEME.matcher(read(file)).find();
+        String code = read(file);
+        return INSTALLS_THE_THEME.matcher(code).find() || CHANGES_THE_FONT_SIZE.matcher(code).find();
     }
 
     private static boolean isIsolated(Path file) {
