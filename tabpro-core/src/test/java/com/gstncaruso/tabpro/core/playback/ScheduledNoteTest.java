@@ -11,24 +11,24 @@ class ScheduledNoteTest {
 
     @Test
     void aNoteThatKeepsItsPitchIsPlayedClean() {
-        ScheduledNote limpia = new ScheduledNote(0, 960, new Pitch(64));
+        ScheduledNote clean = new ScheduledNote(0, 960, new Pitch(64));
 
-        assertFalse(limpia.carriesAnEffect());
+        assertFalse(clean.carriesAnEffect());
     }
 
     @Test
     void aNoteThatMovesItsPitchCarriesAnEffect() {
-        ScheduledNote conBend = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100),
+        ScheduledNote withBend = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100),
                 PitchTrajectory.ramp(0, 0, 960, 2), false);
 
-        assertTrue(conBend.carriesAnEffect());
+        assertTrue(withBend.carriesAnEffect());
     }
 
     @Test
     void aNoteThatFadesInCarriesAnEffect() {
-        ScheduledNote conFadeIn = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100),
+        ScheduledNote withFadeIn = new ScheduledNote(0, 960, new Pitch(64), new Velocity(100),
                 PitchTrajectory.flat(), true);
 
-        assertTrue(conFadeIn.carriesAnEffect());
+        assertTrue(withFadeIn.carriesAnEffect());
     }
 }

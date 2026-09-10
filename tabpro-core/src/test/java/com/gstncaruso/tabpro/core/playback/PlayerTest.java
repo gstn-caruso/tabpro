@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class PlayerTest {
 
     @Test
-    void laImplementacionPorDefectoHaceSonarCadaNotaDeLaSecuenciaEnOrden() {
+    void theDefaultImplementationSoundsEachNoteOfTheSequenceInOrder() {
         List<Pitch> sounded = new ArrayList<>();
         Player player = new SilentPlayer() {
             @Override

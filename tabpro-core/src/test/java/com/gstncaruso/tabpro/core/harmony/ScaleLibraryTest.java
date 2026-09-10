@@ -9,56 +9,56 @@ import org.junit.jupiter.api.Test;
 class ScaleLibraryTest {
 
     private static List<String> namesOf(Scale scale, String tonic) {
-        return scale.notesFrom(PitchClass.of(tonic)).stream().map(nota -> nota.pitchClass().name()).toList();
+        return scale.notesFrom(PitchClass.of(tonic)).stream().map(note -> note.pitchClass().name()).toList();
     }
 
     @Test
-    void mayorEsDoReMiFaSolLaSi() {
+    void majorIsCDEFGAB() {
         assertEquals(List.of("C", "D", "E", "F", "G", "A", "B"), namesOf(ScaleLibrary.major(), "C"));
     }
 
     @Test
-    void dorianoDeReEsElRestoDeLasTeclasBlancas() {
+    void dDorianIsTheRestOfTheWhiteKeys() {
         assertEquals(List.of("D", "E", "F", "G", "A", "B", "C"), namesOf(ScaleLibrary.dorian(), "D"));
     }
 
     @Test
-    void menorNaturalDeLaEsElRestoDeLasTeclasBlancas() {
+    void aNaturalMinorIsTheRestOfTheWhiteKeys() {
         assertEquals(List.of("A", "B", "C", "D", "E", "F", "G"), namesOf(ScaleLibrary.naturalMinor(), "A"));
     }
 
     @Test
-    void menorArmonicaLlevaLaSensibleNaturalMayor() {
+    void harmonicMinorCarriesTheNaturalMajorLeadingTone() {
         assertEquals(List.of("A", "B", "C", "D", "E", "F", "G#"), namesOf(ScaleLibrary.harmonicMinor(), "A"));
     }
 
     @Test
-    void menorMelodicaSoloAlteraLaTercera() {
+    void melodicMinorOnlyAltersTheThird() {
         assertEquals(List.of("A", "B", "C", "D", "E", "F#", "G#"), namesOf(ScaleLibrary.melodicMinor(), "A"));
     }
 
     @Test
-    void pentatonicaMayorSonCincoNotasSinCuartaNiSeptima() {
+    void majorPentatonicIsFiveNotesWithoutFourthOrSeventh() {
         assertEquals(List.of("C", "D", "E", "G", "A"), namesOf(ScaleLibrary.majorPentatonic(), "C"));
     }
 
     @Test
-    void pentatonicaMenorSonCincoNotasConTerceraYSeptimaMenor() {
+    void minorPentatonicIsFiveNotesWithMinorThirdAndSeventh() {
         assertEquals(List.of("A", "C", "D", "E", "G"), namesOf(ScaleLibrary.minorPentatonic(), "A"));
     }
 
     @Test
-    void bluesAgregaLaQuintaDisminuidaALaPentatonicaMenor() {
+    void bluesAddsTheDiminishedFifthToTheMinorPentatonic() {
         assertEquals(List.of("C", "Eb", "F", "Gb", "G", "Bb"), namesOf(ScaleLibrary.blues(), "C"));
     }
 
     @Test
-    void tonosEnterosSonSeisNotasEquidistantes() {
+    void wholeToneIsSixEquidistantNotes() {
         assertEquals(List.of("C", "D", "E", "F#", "G#", "A#"), namesOf(ScaleLibrary.wholeTone(), "C"));
     }
 
     @Test
-    void cromaticaTieneLasDoceNotas() {
+    void chromaticHasTheTwelveNotes() {
         assertEquals(12, ScaleLibrary.chromatic().degreeCount());
         assertEquals(
                 List.of("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"),
@@ -66,35 +66,35 @@ class ScaleLibraryTest {
     }
 
     @Test
-    void disminuidaTonoSemitonoTieneOchoNotas() {
+    void wholeHalfDiminishedHasEightNotes() {
         assertEquals(
                 List.of("C", "D", "Eb", "F", "Gb", "Ab", "A", "B"),
                 namesOf(ScaleLibrary.diminishedWholeHalf(), "C"));
     }
 
     @Test
-    void diminuidaDominanteEsSemitonoTono() {
+    void dominantDiminishedIsHalfWhole() {
         assertEquals(
                 List.of("C", "Db", "Eb", "E", "F#", "G", "A", "Bb"),
                 namesOf(ScaleLibrary.diminishedHalfWhole(), "C"));
     }
 
     @Test
-    void laEscalaEspanolaEsUnaFrigiaConTerceraMayor() {
+    void theSpanishScaleIsAPhrygianWithAMajorThird() {
         assertEquals(
                 List.of("E", "F", "G#", "A", "B", "C", "D"), namesOf(ScaleLibrary.phrygianDominant(), "E"));
     }
 
     @Test
-    void todasLasEscalasSeDeletreanSinRepetirLetrasDeMasNiSaltearlas() {
+    void everyScaleIsSpelledWithoutRepeatingOrSkippingLetters() {
         for (Scale scale : ScaleLibrary.all()) {
-            List<ScaleTone> notas = scale.notesFrom(PitchClass.of("C"));
-            assertEquals(scale.degreeCount(), notas.size(), scale.name());
+            List<ScaleTone> notes = scale.notesFrom(PitchClass.of("C"));
+            assertEquals(scale.degreeCount(), notes.size(), scale.name());
         }
     }
 
     @Test
-    void ofreceUnaBibliotecaAmplia() {
+    void offersAWideLibrary() {
         assertTrue(ScaleLibrary.all().size() >= 20);
     }
 }

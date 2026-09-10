@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class EditorChangeNotificationTest {
 
     @Test
-    void cambiarLaPartituraNotificaUnCambioDeContenido() {
+    void changingTheScoreNotifiesAContentChange() {
         Editor editor = new Editor(Score.blank());
         List<EditorChange> received = new ArrayList<>();
         editor.addListener(new EditorListener() {
@@ -30,7 +30,7 @@ class EditorChangeNotificationTest {
     }
 
     @Test
-    void moverElCursorNotificaUnCambioDeCursor() {
+    void movingTheCursorNotifiesACursorChange() {
         Editor editor = new Editor(Score.blank());
         List<EditorChange> received = new ArrayList<>();
         editor.addListener(new EditorListener() {
@@ -50,7 +50,7 @@ class EditorChangeNotificationTest {
     }
 
     @Test
-    void iniciarUnaSeleccionNotificaUnCambioDeCursor() {
+    void startingASelectionNotifiesACursorChange() {
         Editor editor = new Editor(Score.blank());
         List<EditorChange> received = new ArrayList<>();
         editor.addListener(new EditorListener() {

@@ -16,125 +16,125 @@ import org.junit.jupiter.api.Test;
 class ChordDiagramGeneratorTest {
 
     @Test
-    void encuentraLaDigitacionEstandarDeLaMenorEnAfinacionEstandar() {
-        Chord laMenor = Chord.of(PitchClass.of("La"), ChordType.MINOR);
-        List<ChordDiagram> diagramas = ChordDiagramGenerator.generate(laMenor, Tuning.standard());
+    void findsTheStandardFingeringForAMinorInStandardTuning() {
+        Chord aMinor = Chord.of(PitchClass.of("La"), ChordType.MINOR);
+        List<ChordDiagram> diagrams = ChordDiagramGenerator.generate(aMinor, Tuning.standard());
 
-        assertTrue(diagramas.stream().anyMatch(d -> d.frets().equals(List.of(0, 1, 2, 2, 0, -1))));
+        assertTrue(diagrams.stream().anyMatch(d -> d.frets().equals(List.of(0, 1, 2, 2, 0, -1))));
     }
 
     @Test
-    void ningunDiagramaEstiraMasDeLoPermitido() {
-        Chord sol7 = Chord.of(PitchClass.of("Sol"), ChordType.SEVENTH);
+    void noDiagramStretchesBeyondWhatIsAllowed() {
+        Chord g7 = Chord.of(PitchClass.of("Sol"), ChordType.SEVENTH);
         int maxSpan = 3;
-        List<ChordDiagram> diagramas = ChordDiagramGenerator.generate(sol7, Tuning.standard(), maxSpan);
+        List<ChordDiagram> diagrams = ChordDiagramGenerator.generate(g7, Tuning.standard(), maxSpan);
 
-        assertFalse(diagramas.isEmpty());
-        assertTrue(diagramas.stream().allMatch(d -> d.fretSpan() <= maxSpan));
+        assertFalse(diagrams.isEmpty());
+        assertTrue(diagrams.stream().allMatch(d -> d.fretSpan() <= maxSpan));
     }
 
     @Test
-    void ningunaCuerdaTocaUnaNotaAjenaAlAcorde() {
-        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
-        List<ChordDiagram> diagramas = ChordDiagramGenerator.generate(doMayor, Tuning.standard());
+    void noStringPlaysANoteForeignToTheChord() {
+        Chord cMajor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+        List<ChordDiagram> diagrams = ChordDiagramGenerator.generate(cMajor, Tuning.standard());
 
-        List<Integer> queSuenan = semitonosQueSuenan(diagramas);
+        List<Integer> soundingSemitones = soundingSemitonesOf(diagrams);
 
-        assertFalse(queSuenan.isEmpty(), "ningun diagrama toca una cuerda: no habria nada que verificar");
+        assertFalse(soundingSemitones.isEmpty(), "ningun diagrama toca una cuerda: no habria nada que verificar");
         assertEquals(
                 List.of(),
-                queSuenan.stream().filter(semitono -> !doMayor.formulaSemitones().contains(semitono)).toList(),
+                soundingSemitones.stream().filter(semitone -> !cMajor.formulaSemitones().contains(semitone)).toList(),
                 "hay cuerdas sonando notas ajenas al acorde");
     }
 
-    private static List<Integer> semitonosQueSuenan(List<ChordDiagram> diagramas) {
-        List<Integer> semitonos = new ArrayList<>();
-        for (ChordDiagram diagrama : diagramas) {
-            for (int cuerda = 1; cuerda <= diagrama.stringCount(); cuerda++) {
-                if (diagrama.isPlayed(cuerda)) {
-                    semitonos.add(
-                            (Tuning.standard().pitchOfString(cuerda).midiNumber() + diagrama.fretOfString(cuerda)) % 12);
+    private static List<Integer> soundingSemitonesOf(List<ChordDiagram> diagrams) {
+        List<Integer> semitones = new ArrayList<>();
+        for (ChordDiagram diagram : diagrams) {
+            for (int string = 1; string <= diagram.stringCount(); string++) {
+                if (diagram.isPlayed(string)) {
+                    semitones.add(
+                            (Tuning.standard().pitchOfString(string).midiNumber() + diagram.fretOfString(string)) % 12);
                 }
             }
         }
-        return semitonos;
+        return semitones;
     }
 
     @Test
-    void elBajoIndicadoSuenaSiempreEnLaCuerdaMasGrave() {
-        Chord doConMiEnElBajo = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Mi"));
-        List<ChordDiagram> diagramas = ChordDiagramGenerator.generate(doConMiEnElBajo, Tuning.standard());
+    void theIndicatedBassAlwaysSoundsOnTheLowestString() {
+        Chord cWithEInTheBass = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Mi"));
+        List<ChordDiagram> diagrams = ChordDiagramGenerator.generate(cWithEInTheBass, Tuning.standard());
 
-        assertFalse(diagramas.isEmpty());
-        for (ChordDiagram diagrama : diagramas) {
-            int cuerdaMasGrave = ultimaCuerdaQueSuena(diagrama);
-            int semitono = (Tuning.standard().pitchOfString(cuerdaMasGrave).midiNumber()
-                            + diagrama.fretOfString(cuerdaMasGrave))
+        assertFalse(diagrams.isEmpty());
+        for (ChordDiagram diagram : diagrams) {
+            int lowestString = lowestSoundingStringOf(diagram);
+            int semitone = (Tuning.standard().pitchOfString(lowestString).midiNumber()
+                            + diagram.fretOfString(lowestString))
                     % 12;
-            assertEquals(PitchClass.of("Mi").semitone(), semitono);
+            assertEquals(PitchClass.of("Mi").semitone(), semitone);
         }
     }
 
     @Test
-    void elFiltroSimpleNuncaDevuelveAcordesConCejilla() {
-        Chord fa = Chord.of(PitchClass.of("Fa"), ChordType.MAJOR);
-        List<ChordDiagram> simples =
-                ChordDiagramGenerator.generate(fa, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.SIMPLE);
+    void theSimpleFilterNeverReturnsBarreChords() {
+        Chord f = Chord.of(PitchClass.of("Fa"), ChordType.MAJOR);
+        List<ChordDiagram> simpleDiagrams =
+                ChordDiagramGenerator.generate(f, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.SIMPLE);
 
-        assertTrue(simples.stream().noneMatch(ChordDiagram::requiresBarre));
+        assertTrue(simpleDiagrams.stream().noneMatch(ChordDiagram::requiresBarre));
     }
 
     @Test
-    void estanOrdenadosPorDificultadCreciente() {
-        Chord miMenor = Chord.of(PitchClass.of("Mi"), ChordType.MINOR);
-        List<ChordDiagram> diagramas = ChordDiagramGenerator.generate(miMenor, Tuning.standard());
+    void areOrderedByIncreasingDifficulty() {
+        Chord eMinor = Chord.of(PitchClass.of("Mi"), ChordType.MINOR);
+        List<ChordDiagram> diagrams = ChordDiagramGenerator.generate(eMinor, Tuning.standard());
 
-        for (int i = 1; i < diagramas.size(); i++) {
-            assertTrue(diagramas.get(i - 1).difficultyScore() <= diagramas.get(i).difficultyScore());
+        for (int i = 1; i < diagrams.size(); i++) {
+            assertTrue(diagrams.get(i - 1).difficultyScore() <= diagrams.get(i).difficultyScore());
         }
     }
 
     @Test
-    void generaDiagramasParaCualquierAfinacion() {
-        Chord reMayor = Chord.of(PitchClass.of("Re"), ChordType.MAJOR);
+    void generatesDiagramsForAnyTuning() {
+        Chord dMajor = Chord.of(PitchClass.of("Re"), ChordType.MAJOR);
         Tuning dadgad = TuningLibrary.guitars().stream()
                 .filter(t -> t.name().equals("DADGAD"))
                 .findFirst()
                 .orElseThrow();
 
-        List<ChordDiagram> diagramas = ChordDiagramGenerator.generate(reMayor, dadgad);
+        List<ChordDiagram> diagrams = ChordDiagramGenerator.generate(dMajor, dadgad);
 
-        assertFalse(diagramas.isEmpty());
+        assertFalse(diagrams.isEmpty());
     }
 
     @Test
-    void omitirUnTonoRelajaLaBusquedaSinProhibirlo() {
-        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+    void omittingAToneRelaxesTheSearchWithoutForbiddingIt() {
+        Chord cMajor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
         List<ChordDiagram> normal = ChordDiagramGenerator.generate(
-                doMayor, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX, Set.of());
-        List<ChordDiagram> sinQuintaObligatoria = ChordDiagramGenerator.generate(
-                doMayor, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX,
+                cMajor, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX, Set.of());
+        List<ChordDiagram> withoutRequiredFifth = ChordDiagramGenerator.generate(
+                cMajor, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX,
                 Set.of(Interval.PERFECT_FIFTH));
 
-        assertTrue(sinQuintaObligatoria.containsAll(normal), "omitir relaja el requisito, no prohibe la nota");
-        assertTrue(sinQuintaObligatoria.size() > normal.size(), "aparecen posiciones nuevas sin la quinta");
+        assertTrue(withoutRequiredFifth.containsAll(normal), "omitir relaja el requisito, no prohibe la nota");
+        assertTrue(withoutRequiredFifth.size() > normal.size(), "aparecen posiciones nuevas sin la quinta");
     }
 
     @Test
-    void omitirUnIntervaloQueElAcordeNoTieneNoCambiaNada() {
-        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
-        List<ChordDiagram> normal = ChordDiagramGenerator.generate(doMayor, Tuning.standard());
-        List<ChordDiagram> conOmisionIrrelevante = ChordDiagramGenerator.generate(
-                doMayor, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX,
+    void omittingAnIntervalTheChordDoesNotHaveChangesNothing() {
+        Chord cMajor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+        List<ChordDiagram> normal = ChordDiagramGenerator.generate(cMajor, Tuning.standard());
+        List<ChordDiagram> withIrrelevantOmission = ChordDiagramGenerator.generate(
+                cMajor, Tuning.standard(), ChordDiagramGenerator.DEFAULT_MAX_SPAN, ChordComplexity.COMPLEX,
                 Set.of(Interval.MINOR_SEVENTH));
 
-        assertEquals(normal, conOmisionIrrelevante);
+        assertEquals(normal, withIrrelevantOmission);
     }
 
-    private static int ultimaCuerdaQueSuena(ChordDiagram diagrama) {
-        for (int cuerda = diagrama.stringCount(); cuerda >= 1; cuerda--) {
-            if (diagrama.isPlayed(cuerda)) {
-                return cuerda;
+    private static int lowestSoundingStringOf(ChordDiagram diagram) {
+        for (int string = diagram.stringCount(); string >= 1; string--) {
+            if (diagram.isPlayed(string)) {
+                return string;
             }
         }
         throw new IllegalStateException("un diagrama valido siempre tiene alguna cuerda sonando");

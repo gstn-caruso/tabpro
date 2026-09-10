@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class BendTest {
 
     @Test
-    void unBendQueSubeLlegaHastaSuPunto() {
+    void aRisingBendReachesItsPoint() {
         Bend bend = Bend.of(BendType.BEND, 4);
 
         assertEquals(4, bend.peakQuarterTones());
@@ -17,7 +17,7 @@ class BendTest {
     }
 
     @Test
-    void unaPalancaQueBajaSeAnotaConSuCaida() {
+    void aFallingWhammyBarIsNotatedWithItsDrop() {
         Bend dive = new Bend(BendType.BEND_RELEASE, List.of(
                 BendPoint.at(0, 0), BendPoint.at(30, -8), BendPoint.at(BendPoint.LAST_POSITION, 0)));
 
@@ -26,16 +26,16 @@ class BendTest {
     }
 
     @Test
-    void cuandoLaCurvaVaParaLosDosLadosGanaElPuntoMasLejano() {
-        Bend vaYViene = new Bend(BendType.BEND_RELEASE, List.of(
+    void whenTheCurveGoesBothWaysTheFarthestPointWins() {
+        Bend backAndForth = new Bend(BendType.BEND_RELEASE, List.of(
                 BendPoint.at(0, 0), BendPoint.at(20, 2), BendPoint.at(40, -6),
                 BendPoint.at(BendPoint.LAST_POSITION, 0)));
 
-        assertEquals(-6, vaYViene.farthestQuarterTones());
+        assertEquals(-6, backAndForth.farthestQuarterTones());
     }
 
     @Test
-    void unDipDeLaPalancaBajaYVuelve() {
+    void aWhammyBarDipGoesDownAndReturns() {
         Bend dip = Bend.of(BendType.DIP, 4);
 
         assertEquals(-4, dip.farthestQuarterTones());
@@ -43,7 +43,7 @@ class BendTest {
     }
 
     @Test
-    void unInvertedDipDeLaPalancaSubeYVuelve() {
+    void aWhammyBarInvertedDipGoesUpAndReturns() {
         Bend invertedDip = Bend.of(BendType.INVERTED_DIP, 4);
 
         assertEquals(4, invertedDip.farthestQuarterTones());
@@ -51,7 +51,7 @@ class BendTest {
     }
 
     @Test
-    void unDiveDeLaPalancaBajaYSeQueda() {
+    void aWhammyBarDiveGoesDownAndStays() {
         Bend dive = Bend.of(BendType.DIVE, 4);
 
         assertEquals(-4, dive.farthestQuarterTones());
@@ -59,7 +59,7 @@ class BendTest {
     }
 
     @Test
-    void unReturnDeLaPalancaSubeYSeQueda() {
+    void aWhammyBarReturnGoesUpAndStays() {
         Bend returnType = Bend.of(BendType.RETURN, 4);
 
         assertEquals(4, returnType.farthestQuarterTones());
@@ -67,7 +67,7 @@ class BendTest {
     }
 
     @Test
-    void unReleaseUpDeLaPalancaEmpiezaAbajoYSube() {
+    void aWhammyBarReleaseUpStartsLowAndRises() {
         Bend releaseUp = Bend.of(BendType.RELEASE_UP, 4);
 
         assertEquals(-4, releaseUp.points().getFirst().quarterTones());
@@ -75,7 +75,7 @@ class BendTest {
     }
 
     @Test
-    void unReleaseDownDeLaPalancaEmpiezaArribaYBaja() {
+    void aWhammyBarReleaseDownStartsHighAndFalls() {
         Bend releaseDown = Bend.of(BendType.RELEASE_DOWN, 4);
 
         assertEquals(4, releaseDown.points().getFirst().quarterTones());
@@ -83,7 +83,7 @@ class BendTest {
     }
 
     @Test
-    void losSeisTiposDeLaPalancaNoSonLosCincoDelBend() {
+    void theSixWhammyBarTypesAreNotTheFiveBendTypes() {
         assertEquals(5, BendType.bendTypes().size());
         assertEquals(6, BendType.tremoloBarTypes().size());
         assertTrue(java.util.Collections.disjoint(BendType.bendTypes(), BendType.tremoloBarTypes()));

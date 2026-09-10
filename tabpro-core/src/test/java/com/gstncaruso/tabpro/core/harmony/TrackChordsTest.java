@@ -21,79 +21,79 @@ class TrackChordsTest {
     private static final ChordDiagram C = ChordDiagram.named("C", List.of(0, 1, 0, 2, 3, -1));
 
     @Test
-    void unaPistaSinAcordesNoTieneNinguno() {
-        Track pista = Track.standardGuitar("Guitarra");
-        assertTrue(TrackChords.usedIn(pista).isEmpty());
+    void aTrackWithoutChordsHasNone() {
+        Track track = Track.standardGuitar("Guitarra");
+        assertTrue(TrackChords.usedIn(track).isEmpty());
     }
 
     @Test
-    void listaLosAcordesEnOrdenDeAparicion() {
-        Measure compas1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
-        Measure compas2 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(C)));
+    void listsChordsInAppearanceOrder() {
+        Measure bar1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
+        Measure bar2 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(C)));
 
-        Track pista = Track.standardGuitar("Guitarra").withMeasures(List.of(compas1, compas2));
+        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(bar1, bar2));
 
-        assertEquals(List.of(AM, C), TrackChords.usedIn(pista));
+        assertEquals(List.of(AM, C), TrackChords.usedIn(track));
     }
 
     @Test
-    void noRepiteElMismoAcordeDosVeces() {
-        Measure compas1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM), beatWithChord(AM)));
+    void doesNotRepeatTheSameChordTwice() {
+        Measure bar1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM), beatWithChord(AM)));
 
-        Track pista = Track.standardGuitar("Guitarra").withMeasures(List.of(compas1));
+        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(bar1));
 
-        assertEquals(List.of(AM), TrackChords.usedIn(pista));
+        assertEquals(List.of(AM), TrackChords.usedIn(track));
     }
 
     @Test
-    void underTheTitleIgnoraLasPistasQueNoLoPidieron() {
-        Measure compas1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
-        Track pista = Track.standardGuitar("Guitarra").withMeasures(List.of(compas1));
-        Score partitura = new Score("", 120, List.of(pista));
+    void underTheTitleIgnoresTracksThatDidNotAskForIt() {
+        Measure bar1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
+        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(bar1));
+        Score score = new Score("", 120, List.of(track));
 
-        assertTrue(TrackChords.underTheTitle(partitura).isEmpty());
+        assertTrue(TrackChords.underTheTitle(score).isEmpty());
     }
 
     @Test
-    void underTheTitleTraeLosAcordesDeLaPistaQueLoPidio() {
-        Measure compas1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
-        Measure compas2 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(C)));
-        Track pista = Track.standardGuitar("Guitarra")
-                .withMeasures(List.of(compas1, compas2))
+    void underTheTitleBringsChordsFromTheTrackThatAskedForIt() {
+        Measure bar1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
+        Measure bar2 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(C)));
+        Track track = Track.standardGuitar("Guitarra")
+                .withMeasures(List.of(bar1, bar2))
                 .mappingSettings(settings -> settings.withDisplay(
                         settings.display().withDiagrams(DiagramPlacement.UNDER_THE_TITLE)));
-        Score partitura = new Score("", 120, List.of(pista));
+        Score score = new Score("", 120, List.of(track));
 
-        assertEquals(List.of(AM, C), TrackChords.underTheTitle(partitura));
+        assertEquals(List.of(AM, C), TrackChords.underTheTitle(score));
     }
 
     @Test
-    void underTheTitleTambienValeParaElPlacementEnLosDosLados() {
-        Measure compas1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
-        Track pista = Track.standardGuitar("Guitarra")
-                .withMeasures(List.of(compas1))
+    void underTheTitleAlsoAppliesToThePlacementOnBothSides() {
+        Measure bar1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
+        Track track = Track.standardGuitar("Guitarra")
+                .withMeasures(List.of(bar1))
                 .mappingSettings(settings -> settings.withDisplay(
                         settings.display().withDiagrams(DiagramPlacement.BOTH)));
-        Score partitura = new Score("", 120, List.of(pista));
+        Score score = new Score("", 120, List.of(track));
 
-        assertEquals(List.of(AM), TrackChords.underTheTitle(partitura));
+        assertEquals(List.of(AM), TrackChords.underTheTitle(score));
     }
 
     @Test
-    void underTheTitleMezclaLasPistasEnOrdenYNoRepiteElMismoNombre() {
-        Measure compasConAm = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
-        Measure compasConC = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(C)));
-        Track primeraPista = Track.standardGuitar("Guitarra 1")
-                .withMeasures(List.of(compasConAm))
+    void underTheTitleMergesTracksInOrderAndDoesNotRepeatTheSameName() {
+        Measure barWithAm = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
+        Measure barWithC = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(C)));
+        Track firstTrack = Track.standardGuitar("Guitarra 1")
+                .withMeasures(List.of(barWithAm))
                 .mappingSettings(settings -> settings.withDisplay(
                         settings.display().withDiagrams(DiagramPlacement.UNDER_THE_TITLE)));
-        Track segundaPista = Track.standardGuitar("Guitarra 2")
-                .withMeasures(List.of(compasConAm, compasConC))
+        Track secondTrack = Track.standardGuitar("Guitarra 2")
+                .withMeasures(List.of(barWithAm, barWithC))
                 .mappingSettings(settings -> settings.withDisplay(
                         settings.display().withDiagrams(DiagramPlacement.UNDER_THE_TITLE)));
-        Score partitura = new Score("", 120, List.of(primeraPista, segundaPista));
+        Score score = new Score("", 120, List.of(firstTrack, secondTrack));
 
-        assertEquals(List.of(AM, C), TrackChords.underTheTitle(partitura));
+        assertEquals(List.of(AM, C), TrackChords.underTheTitle(score));
     }
 
     private static Beat beatWithChord(ChordDiagram chord) {

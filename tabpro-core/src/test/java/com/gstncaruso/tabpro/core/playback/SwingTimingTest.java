@@ -16,7 +16,7 @@ class SwingTimingTest {
     private static final Duration QUARTER = Duration.quarter();
 
     @Test
-    void sinTripletFeelLasDuracionesQuedanComoEstan() {
+    void withoutTripletFeelDurationsStayAsTheyAre() {
         List<Beat> beats = List.of(Beat.of(EIGHTH, new Note(1, 0)), Beat.of(EIGHTH, new Note(1, 1)));
 
         long[] durations = SwingTiming.durationsFor(beats, TripletFeel.NONE);
@@ -25,7 +25,7 @@ class SwingTimingTest {
     }
 
     @Test
-    void unParDeCorcheasSeReparteDosTerciosYUnTercio() {
+    void aPairOfEighthsSplitsIntoTwoThirdsAndOneThird() {
         List<Beat> beats = List.of(Beat.of(EIGHTH, new Note(1, 0)), Beat.of(EIGHTH, new Note(1, 1)));
 
         long[] durations = SwingTiming.durationsFor(beats, TripletFeel.EIGHTH);
@@ -35,7 +35,7 @@ class SwingTimingTest {
     }
 
     @Test
-    void unaFiguraQueNoEsElValorDelSwingQuedaIntacta() {
+    void aFigureThatIsNotTheSwingValueStaysIntact() {
         List<Beat> beats = List.of(Beat.of(QUARTER, new Note(1, 0)), Beat.of(EIGHTH, new Note(1, 1)));
 
         long[] durations = SwingTiming.durationsFor(beats, TripletFeel.EIGHTH);
@@ -44,7 +44,7 @@ class SwingTimingTest {
     }
 
     @Test
-    void unaCorcheaSueltaSinParejaQuedaIgual() {
+    void aLoneEighthWithoutAPartnerStaysTheSame() {
         List<Beat> beats = List.of(Beat.of(EIGHTH, new Note(1, 0)), Beat.of(QUARTER, new Note(1, 1)));
 
         long[] durations = SwingTiming.durationsFor(beats, TripletFeel.EIGHTH);
@@ -53,7 +53,7 @@ class SwingTimingTest {
     }
 
     @Test
-    void dosParesConsecutivosSeSwinguanCadaUnoPorSeparado() {
+    void twoConsecutivePairsSwingEachOnItsOwn() {
         List<Beat> beats = List.of(
                 Beat.of(EIGHTH, new Note(1, 0)), Beat.of(EIGHTH, new Note(1, 1)),
                 Beat.of(EIGHTH, new Note(1, 2)), Beat.of(EIGHTH, new Note(1, 3)));

@@ -8,39 +8,39 @@ import org.junit.jupiter.api.Test;
 class DynamicTest {
 
     @Test
-    void lasMasFuertesSuenanConMasVelocidad() {
+    void louderDynamicsSoundWithMoreVelocity() {
         assertTrue(Dynamic.FORTE.velocity() > Dynamic.PIANO.velocity());
     }
 
     @Test
-    void ningunaSeVaDelRangoMidi() {
+    void noneGoesOutsideTheMidiRange() {
         for (Dynamic dynamic : Dynamic.values()) {
             assertTrue(dynamic.velocity() >= 1 && dynamic.velocity() <= 127, dynamic.name());
         }
     }
 
     @Test
-    void unaNotaAcentuadaSuenaMasFuerteQueLaMisma() {
+    void anAccentedNoteSoundsLouderThanItsPlainSelf() {
         assertTrue(Dynamic.MEZZO_FORTE.accented().value() > Dynamic.MEZZO_FORTE.velocity());
     }
 
     @Test
-    void unaNotaFantasmaSuenaMasSuaveQueLaMisma() {
+    void aGhostNoteSoundsSofterThanItsPlainSelf() {
         assertTrue(Dynamic.MEZZO_FORTE.ghosted().value() < Dynamic.MEZZO_FORTE.velocity());
     }
 
     @Test
-    void laMasFuerteAcentuadaSigueEnRango() {
+    void theLoudestAccentedStaysInRange() {
         assertEquals(127, Dynamic.FORTE_FORTISSIMO.accented().accented().value());
     }
 
     @Test
-    void laMasSuaveFantasmaSigueEnRango() {
+    void theSoftestGhostedStaysInRange() {
         assertTrue(Dynamic.PIANO_PIANISSIMO.ghosted().ghosted().value() >= 1);
     }
 
     @Test
-    void elDefaultEsMezzoForte() {
+    void theDefaultIsMezzoForte() {
         assertEquals(Dynamic.MEZZO_FORTE, Dynamic.defaultDynamic());
     }
 }

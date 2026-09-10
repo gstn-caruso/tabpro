@@ -15,76 +15,76 @@ class ChordDiagramFingeringTest {
     private static final ChordDiagram BARRE_F = ChordDiagram.named("F", List.of(1, 1, 2, 3, 3, 1));
 
     @Test
-    void unAcordeAbiertoNoNecesitaCejilla() {
+    void anOpenChordDoesNotNeedABarre() {
         assertFalse(OPEN_C.requiresBarre());
         assertTrue(OPEN_C.barreFret().isEmpty());
     }
 
     @Test
-    void masDeCuatroCuerdasPisadasNecesitanCejilla() {
+    void moreThanFourFrettedStringsNeedABarre() {
         assertTrue(BARRE_F.requiresBarre());
         assertEquals(1, BARRE_F.barreFret().orElseThrow());
     }
 
     @Test
-    void elEstiramientoEsLaDistanciaEntreElTrasteMasBajoYElMasAlto() {
+    void theSpanIsTheDistanceBetweenTheLowestAndHighestFret() {
         assertEquals(2, OPEN_C.fretSpan());
         assertEquals(2, BARRE_F.fretSpan());
     }
 
     @Test
-    void digitaAutomaticamenteElDoMayorAbierto() {
-        ChordDiagram digitado = OPEN_C.autoFingered();
-        assertEquals(Finger.INDEX, digitado.fingerOfString(2).orElseThrow());
-        assertEquals(Finger.MIDDLE, digitado.fingerOfString(4).orElseThrow());
-        assertEquals(Finger.RING, digitado.fingerOfString(5).orElseThrow());
-        assertTrue(digitado.fingerOfString(1).isEmpty());
-        assertTrue(digitado.fingerOfString(3).isEmpty());
+    void autoFingersTheOpenCMajorChord() {
+        ChordDiagram fingered = OPEN_C.autoFingered();
+        assertEquals(Finger.INDEX, fingered.fingerOfString(2).orElseThrow());
+        assertEquals(Finger.MIDDLE, fingered.fingerOfString(4).orElseThrow());
+        assertEquals(Finger.RING, fingered.fingerOfString(5).orElseThrow());
+        assertTrue(fingered.fingerOfString(1).isEmpty());
+        assertTrue(fingered.fingerOfString(3).isEmpty());
     }
 
     @Test
-    void digitaAutomaticamenteLaCejillaDeFa() {
-        ChordDiagram digitado = BARRE_F.autoFingered();
-        assertEquals(Finger.INDEX, digitado.fingerOfString(1).orElseThrow());
-        assertEquals(Finger.INDEX, digitado.fingerOfString(2).orElseThrow());
-        assertEquals(Finger.INDEX, digitado.fingerOfString(6).orElseThrow());
-        assertEquals(Finger.MIDDLE, digitado.fingerOfString(3).orElseThrow());
-        assertEquals(Finger.RING, digitado.fingerOfString(4).orElseThrow());
-        assertEquals(Finger.LITTLE, digitado.fingerOfString(5).orElseThrow());
+    void autoFingersTheFBarreChord() {
+        ChordDiagram fingered = BARRE_F.autoFingered();
+        assertEquals(Finger.INDEX, fingered.fingerOfString(1).orElseThrow());
+        assertEquals(Finger.INDEX, fingered.fingerOfString(2).orElseThrow());
+        assertEquals(Finger.INDEX, fingered.fingerOfString(6).orElseThrow());
+        assertEquals(Finger.MIDDLE, fingered.fingerOfString(3).orElseThrow());
+        assertEquals(Finger.RING, fingered.fingerOfString(4).orElseThrow());
+        assertEquals(Finger.LITTLE, fingered.fingerOfString(5).orElseThrow());
     }
 
     @Test
-    void unAcordeAbiertoSencilloEsSimple() {
+    void aSimpleOpenChordIsSimple() {
         assertEquals(ChordComplexity.SIMPLE, OPEN_C.complexity());
     }
 
     @Test
-    void unaCejillaEnPrimeraPosicionEsMedia() {
+    void aFirstPositionBarreIsMedium() {
         assertEquals(ChordComplexity.MEDIUM, BARRE_F.complexity());
     }
 
     @Test
-    void unaCejillaLejosDelClavijeroYConMuchoEstiramientoEsComplejo() {
-        ChordDiagram lejos = ChordDiagram.named("X", List.of(10, 12, 11, 13, 13, 10));
-        assertEquals(ChordComplexity.COMPLEX, lejos.complexity());
+    void aBarreFarFromTheNutWithALotOfSpanIsComplex() {
+        ChordDiagram farChord = ChordDiagram.named("X", List.of(10, 12, 11, 13, 13, 10));
+        assertEquals(ChordComplexity.COMPLEX, farChord.complexity());
     }
 
     @Test
-    void laFormaDeUnAcordeAbiertoSonSusPropiosTrastes() {
+    void theShapeOfAnOpenChordIsItsOwnFrets() {
         assertEquals(List.of(0, 1, 0, 2, 3, -1), OPEN_C.shape());
     }
 
     @Test
-    void unaCejillaConservaLaFormaAlMoverseDeTraste() {
-        ChordDiagram solConCejilla = new ChordDiagram("G", 3, List.of(3, 3, 4, 5, 5, 3), List.of(), true);
+    void aBarreKeepsItsShapeWhenMovingFrets() {
+        ChordDiagram gBarreChord = new ChordDiagram("G", 3, List.of(3, 3, 4, 5, 5, 3), List.of(), true);
 
-        assertEquals(BARRE_F.shape(), solConCejilla.shape());
+        assertEquals(BARRE_F.shape(), gBarreChord.shape());
     }
 
     @Test
-    void lasCuerdasAlAireYMudasNoSeCorrenConElTrasteBase() {
-        ChordDiagram enQuintoTraste = new ChordDiagram("X", 5, List.of(0, 5, 7, 7, 5, -1), List.of(), true);
+    void openAndMutedStringsDoNotShiftWithTheBaseFret() {
+        ChordDiagram atFifthFret = new ChordDiagram("X", 5, List.of(0, 5, 7, 7, 5, -1), List.of(), true);
 
-        assertEquals(List.of(0, 1, 3, 3, 1, -1), enQuintoTraste.shape());
+        assertEquals(List.of(0, 1, 3, 3, 1, -1), atFifthFret.shape());
     }
 }

@@ -17,14 +17,14 @@ class TrackRendererTwelveStringTest {
     private static final Duration QUARTER = Duration.quarter();
 
     @Test
-    void unaGuitarraNormalNoDoblaNingunaCuerda() {
+    void aRegularGuitarDoublesNoString() {
         Score score = scoreWithLeadBeats(false, Beat.of(QUARTER, new Note(1, 0)));
 
         assertEquals(1, notesOf(score).size());
     }
 
     @Test
-    void lasCuerdasAgudasDeUnaDoceCuerdasSuenanAlUnisono() {
+    void theTrebleStringsOfATwelveStringSoundInUnison() {
         Score score = scoreWithLeadBeats(true, Beat.of(QUARTER, new Note(1, 3)));
 
         List<ScheduledNote> notes = notesOf(score);
@@ -34,7 +34,7 @@ class TrackRendererTwelveStringTest {
     }
 
     @Test
-    void lasCuerdasGravesDeUnaDoceCuerdasSuenanUnaOctavaArriba() {
+    void theBassStringsOfATwelveStringSoundAnOctaveAbove() {
         Score score = scoreWithLeadBeats(true, Beat.of(QUARTER, new Note(3, 2)));
 
         List<ScheduledNote> notes = notesOf(score);

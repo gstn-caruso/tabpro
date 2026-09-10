@@ -37,7 +37,7 @@ class ScoreFileFormatTest {
     }
 
     @Test
-    void unArchivoDePowerTabSeReconocePorSuExtension() {
+    void aPowerTabFileIsRecognizedByItsExtension() {
         assertEquals(ScoreFileFormat.POWER_TAB, ScoreFileFormat.of(Path.of("cancion.ptb")));
     }
 }

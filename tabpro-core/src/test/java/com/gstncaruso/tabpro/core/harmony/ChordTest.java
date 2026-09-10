@@ -11,92 +11,92 @@ import org.junit.jupiter.api.Test;
 class ChordTest {
 
     @Test
-    void doMayorEsDoMiSol() {
-        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+    void cMajorIsCEG() {
+        Chord cMajor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
         assertEquals(
-                List.of(PitchClass.of("Do"), PitchClass.of("Mi"), PitchClass.of("Sol")), doMayor.pitchClasses());
+                List.of(PitchClass.of("Do"), PitchClass.of("Mi"), PitchClass.of("Sol")), cMajor.pitchClasses());
     }
 
     @Test
-    void laMenorEsLaDoMi() {
-        Chord laMenor = Chord.of(PitchClass.of("La"), ChordType.MINOR);
+    void aMinorIsACE() {
+        Chord aMinor = Chord.of(PitchClass.of("La"), ChordType.MINOR);
         assertEquals(
-                List.of(PitchClass.of("La"), PitchClass.of("Do"), PitchClass.of("Mi")), laMenor.pitchClasses());
+                List.of(PitchClass.of("La"), PitchClass.of("Do"), PitchClass.of("Mi")), aMinor.pitchClasses());
     }
 
     @Test
-    void sinInversionElBajoEsLaFundamental() {
-        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
-        assertFalse(doMayor.isInverted());
-        assertEquals(PitchClass.of("Do"), doMayor.bass());
+    void withoutInversionTheBassIsTheRoot() {
+        Chord cMajor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+        assertFalse(cMajor.isInverted());
+        assertEquals(PitchClass.of("Do"), cMajor.bass());
     }
 
     @Test
-    void unaInversionCambiaElBajoSinCambiarLasNotas() {
-        Chord doConMiEnElBajo = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Mi"));
-        assertTrue(doConMiEnElBajo.isInverted());
-        assertEquals(PitchClass.of("Mi"), doConMiEnElBajo.bass());
+    void anInversionChangesTheBassWithoutChangingTheNotes() {
+        Chord cWithEInTheBass = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Mi"));
+        assertTrue(cWithEInTheBass.isInverted());
+        assertEquals(PitchClass.of("Mi"), cWithEInTheBass.bass());
         assertEquals(
                 List.of(PitchClass.of("Do"), PitchClass.of("Mi"), PitchClass.of("Sol")),
-                doConMiEnElBajo.pitchClasses());
+                cWithEInTheBass.pitchClasses());
     }
 
     @Test
-    void elNombreLlevaLaFundamentalYElSufijo() {
+    void theNameCarriesTheRootAndTheSuffix() {
         assertEquals("C", Chord.of(PitchClass.of("Do"), ChordType.MAJOR).name());
         assertEquals("Am", Chord.of(PitchClass.of("La"), ChordType.MINOR).name());
         assertEquals("G7", Chord.of(PitchClass.of("Sol"), ChordType.SEVENTH).name());
     }
 
     @Test
-    void unaInversionSeEscribeConBarra() {
-        Chord doConMiEnElBajo = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Mi"));
-        assertEquals("C/E", doConMiEnElBajo.name());
+    void anInversionIsWrittenWithASlash() {
+        Chord cWithEInTheBass = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Mi"));
+        assertEquals("C/E", cWithEInTheBass.name());
     }
 
     @Test
-    void lasSemitonosEsencialesIncluyenElBajoAunqueSeaAjenoAlAcorde() {
-        Chord doConReEnElBajo = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Re"));
-        assertTrue(doConReEnElBajo.essentialSemitones().contains(PitchClass.of("Re").semitone()));
+    void essentialSemitonesIncludeTheBassEvenWhenItIsForeignToTheChord() {
+        Chord cWithDInTheBass = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Re"));
+        assertTrue(cWithDInTheBass.essentialSemitones().contains(PitchClass.of("Re").semitone()));
     }
 
     @Test
-    void elFormulaCompletoIncluyeLosTonosOpcionales() {
-        Chord sol7 = Chord.of(PitchClass.of("Sol"), ChordType.SEVENTH);
-        assertTrue(sol7.formulaSemitones().contains(PitchClass.of("Re").semitone()));
+    void theFullFormulaIncludesTheOptionalTones() {
+        Chord g7 = Chord.of(PitchClass.of("Sol"), ChordType.SEVENTH);
+        assertTrue(g7.formulaSemitones().contains(PitchClass.of("Re").semitone()));
     }
 
     @Test
-    void laPreferenciaPuedeEscribirLaInversionSinElBajo() {
-        Chord doConMiEnElBajo = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Mi"));
-        assertEquals("C", doConMiEnElBajo.name(false));
-        assertEquals("C/E", doConMiEnElBajo.name(true));
+    void thePreferenceCanWriteTheInversionWithoutTheBass() {
+        Chord cWithEInTheBass = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Mi"));
+        assertEquals("C", cWithEInTheBass.name(false));
+        assertEquals("C/E", cWithEInTheBass.name(true));
     }
 
     @Test
-    void unAcordeSinInversionSeEscribeIgualConCualquierPreferencia() {
-        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
-        assertEquals("C", doMayor.name(false));
-        assertEquals("C", doMayor.name(true));
+    void aChordWithoutInversionIsWrittenTheSameWithAnyPreference() {
+        Chord cMajor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+        assertEquals("C", cMajor.name(false));
+        assertEquals("C", cMajor.name(true));
     }
 
     @Test
-    void omitirUnTonoLoSacaDeLosSemitonosImprescindibles() {
-        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
-        assertFalse(doMayor.essentialSemitones(Set.of(Interval.PERFECT_FIFTH)).contains(PitchClass.of("Sol").semitone()));
-        assertTrue(doMayor.essentialSemitones(Set.of()).contains(PitchClass.of("Sol").semitone()));
+    void omittingAToneDropsItFromTheEssentialSemitones() {
+        Chord cMajor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+        assertFalse(cMajor.essentialSemitones(Set.of(Interval.PERFECT_FIFTH)).contains(PitchClass.of("Sol").semitone()));
+        assertTrue(cMajor.essentialSemitones(Set.of()).contains(PitchClass.of("Sol").semitone()));
     }
 
     @Test
-    void elBajoSigueSiendoImprescindibleAunqueSeOmitanTonosDelAcorde() {
-        Chord doConReEnElBajo = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Re"));
-        assertTrue(doConReEnElBajo.essentialSemitones(Set.of(Interval.MAJOR_THIRD, Interval.PERFECT_FIFTH))
+    void theBassStaysEssentialEvenWhenChordTonesAreOmitted() {
+        Chord cWithDInTheBass = Chord.inverted(PitchClass.of("Do"), ChordType.MAJOR, PitchClass.of("Re"));
+        assertTrue(cWithDInTheBass.essentialSemitones(Set.of(Interval.MAJOR_THIRD, Interval.PERFECT_FIFTH))
                 .contains(PitchClass.of("Re").semitone()));
     }
 
     @Test
-    void omitirUnIntervaloQueElAcordeNoTieneNoCambiaNada() {
-        Chord doMayor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
-        assertEquals(doMayor.essentialSemitones(Set.of()), doMayor.essentialSemitones(Set.of(Interval.MINOR_SEVENTH)));
+    void omittingAnIntervalTheChordDoesNotHaveChangesNothing() {
+        Chord cMajor = Chord.of(PitchClass.of("Do"), ChordType.MAJOR);
+        assertEquals(cMajor.essentialSemitones(Set.of()), cMajor.essentialSemitones(Set.of(Interval.MINOR_SEVENTH)));
     }
 }
