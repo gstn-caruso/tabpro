@@ -60,17 +60,13 @@ class ScoreCanvasTest {
      * atajos, es Ctrl+F6 / Ctrl+Shift+F6.
      */
     @Test
-    void ctrlF6PideAlAdministradorDeFocoQueVayaAlSiguienteComponente() {
-        RecordingFocusManager recorder = new RecordingFocusManager();
-        java.awt.KeyboardFocusManager previous = java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        java.awt.KeyboardFocusManager.setCurrentKeyboardFocusManager(recorder);
-        try {
-            pressShortcut(canvas, javax.swing.KeyStroke.getKeyStroke("ctrl F6"));
+    void ctrlF6LePideALaCosturaDeFocoQueVayaAlSiguienteComponente() {
+        RecordingFocusTraversal recorder = new RecordingFocusTraversal();
+        ScoreCanvas canvasWithRecordedFocus = new ScoreCanvas(editor, new TrackVisibility(), recorder);
 
-            assertEquals(canvas, recorder.nextRequestedFrom);
-        } finally {
-            java.awt.KeyboardFocusManager.setCurrentKeyboardFocusManager(previous);
-        }
+        pressShortcut(canvasWithRecordedFocus, javax.swing.KeyStroke.getKeyStroke("ctrl F6"));
+
+        assertEquals(canvasWithRecordedFocus, recorder.nextRequestedFrom);
     }
 
     @Test
@@ -91,6 +87,21 @@ class ScoreCanvasTest {
         Object name = component.getInputMap(javax.swing.JComponent.WHEN_FOCUSED).get(keyStroke);
         component.getActionMap().get(name)
                 .actionPerformed(new java.awt.event.ActionEvent(component, java.awt.event.ActionEvent.ACTION_PERFORMED, ""));
+    }
+
+    private static final class RecordingFocusTraversal implements FocusTraversal {
+        private java.awt.Component nextRequestedFrom;
+        private java.awt.Component previousRequestedFrom;
+
+        @Override
+        public void next(java.awt.Component component) {
+            nextRequestedFrom = component;
+        }
+
+        @Override
+        public void previous(java.awt.Component component) {
+            previousRequestedFrom = component;
+        }
     }
 
     private static final class RecordingFocusManager extends java.awt.DefaultKeyboardFocusManager {
