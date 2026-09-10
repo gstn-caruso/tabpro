@@ -1309,12 +1309,14 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void palmMuteOptions() {
-            letRingOptions();
+            StringOptionsDialog.showFocusedOnPalmMute(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override
         public void dynamicOptions() {
-            letRingOptions();
+            StringOptionsDialog.showFocusedOnDynamic(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override

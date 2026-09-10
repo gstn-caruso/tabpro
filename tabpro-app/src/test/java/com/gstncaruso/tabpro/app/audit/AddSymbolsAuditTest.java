@@ -1,8 +1,12 @@
 package com.gstncaruso.tabpro.app.audit;
 
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.awaitDialog;
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.awaitFocusOwner;
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.dispose;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.editorWithANote;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findButton;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findComponent;
+import static com.gstncaruso.tabpro.app.audit.AuditSupport.findComponents;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findMenuItem;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.newFrame;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.withDialog;
@@ -18,12 +22,14 @@ import com.gstncaruso.tabpro.ui.MainFrame;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
 import java.awt.Container;
 import java.awt.event.KeyEvent;
+import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
@@ -180,6 +186,48 @@ class AddSymbolsAuditTest {
                     "el tipo de armonico elegido en el combo real tiene que ser el que quedo en el modelo");
         } finally {
             AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
+    void opcionesDeLetRingAbreElAsistenteRealConSuPropioTituloYFoco() throws Exception {
+        elAsistenteDeOpcionesAbreConSuPropioTituloYFoco("Opciones de let ring…", "Opciones de let ring", 0);
+    }
+
+    @Test
+    void opcionesDePalmMuteAbreElAsistenteRealConSuPropioTituloYFoco() throws Exception {
+        elAsistenteDeOpcionesAbreConSuPropioTituloYFoco("Opciones de palm mute…", "Opciones de palm mute", 1);
+    }
+
+    @Test
+    void opcionesDeDinamicaAbreElAsistenteRealConSuPropioTituloYFoco() throws Exception {
+        elAsistenteDeOpcionesAbreConSuPropioTituloYFoco("Opciones de dinámica…", "Opciones de dinámica", 2);
+    }
+
+    private void elAsistenteDeOpcionesAbreConSuPropioTituloYFoco(
+            String menuLabel, String expectedTitle, int expectedComboIndex) throws Exception {
+        Editor editor = editorWithANote();
+        MainFrame frame = newFrame(editor);
+        try {
+            JMenuItem item = findMenuItem(frame.getJMenuBar(), menuLabel);
+            assertNotNull(item, "no encontre '" + menuLabel + "' en el menu real");
+
+            JDialog dialog = awaitDialog(item::doClick, 5000);
+            try {
+                assertEquals(expectedTitle, dialog.getTitle(),
+                        "cada comando de opciones tiene que abrir con su propio titulo");
+
+                @SuppressWarnings("rawtypes")
+                List<JComboBox> combos = findComponents(dialog, JComboBox.class);
+                assertEquals(3, combos.size(), "el asistente real tiene que traer los tres combos: let ring, palm mute y dinamica");
+
+                assertTrue(awaitFocusOwner(combos.get(expectedComboIndex), 2000),
+                        "el combo de '" + expectedTitle + "' tiene que arrancar con el foco real");
+            } finally {
+                SwingUtilities.invokeAndWait(() -> findButton(dialog, "Cancelar").doClick());
+            }
+        } finally {
+            dispose(frame);
         }
     }
 
