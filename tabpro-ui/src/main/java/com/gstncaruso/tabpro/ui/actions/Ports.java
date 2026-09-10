@@ -177,8 +177,11 @@ public final class Ports {
         /** Muestra u oculta la fila de barras de estructura y sonido. */
         void toggleStructureToolBar();
 
-        /** Muestra u oculta la fila de barras de figuras y efectos. */
+        /** Muestra u oculta la fila de barras de figuras. */
         void toggleNotationToolBar();
+
+        /** Muestra u oculta la barra de efectos, abajo de la partitura. */
+        void toggleEffectsToolBar();
 
         /** Cambia el aspecto de la ventana, como el menu Skin del manual. */
         void useTheme(String name);

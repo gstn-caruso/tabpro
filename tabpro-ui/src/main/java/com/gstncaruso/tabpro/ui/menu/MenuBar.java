@@ -250,6 +250,7 @@ public final class MenuBar {
         addCheckbox(menu, "view.toolBars.document");
         addCheckbox(menu, "view.toolBars.structure");
         addCheckbox(menu, "view.toolBars.notation");
+        addCheckbox(menu, "view.toolBars.effects");
         return menu;
     }
 

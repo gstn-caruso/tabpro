@@ -163,6 +163,12 @@ public final class MainFrame extends JFrame {
         commands = new Commands(
                 editor, documentActions, new Windows(), new Playback(), new View(), themes.names());
         toolBars = new ToolBars(commands);
+        boolean effectsToolBarVisible = preferences.effectsToolBarVisible();
+        toolBars.setEffectsToolBarVisible(effectsToolBarVisible);
+        // El casillero de "Efectos" en Ver > Menus y barras arranca marcado por defecto
+        // (Command.checkedByDefault); si la preferencia guardada la tenia escondida, el
+        // casillero real tiene que arrancar destildado, no al reves de lo que muestra la barra.
+        commands.get("view.toolBars.effects").putValue(javax.swing.Action.SELECTED_KEY, effectsToolBarVisible);
         toolBars.addToSoundRow(new JLabel("Tempo "));
         toolBars.addToSoundRow(tempoSpinner);
         setJMenuBar(new MenuBar(commands, document::recentFiles, documentActions::openRecent).build());
@@ -952,6 +958,14 @@ public final class MainFrame extends JFrame {
         @Override
         public void toggleNotationToolBar() {
             toolBars.setNotationToolBarVisible(!toolBars.isNotationToolBarVisible());
+            backToTheScore();
+        }
+
+        @Override
+        public void toggleEffectsToolBar() {
+            boolean visible = !toolBars.isEffectsToolBarVisible();
+            toolBars.setEffectsToolBarVisible(visible);
+            preferences.setEffectsToolBarVisible(visible);
             backToTheScore();
         }
 

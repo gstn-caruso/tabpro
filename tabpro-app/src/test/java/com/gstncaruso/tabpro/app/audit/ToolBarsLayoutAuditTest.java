@@ -90,6 +90,37 @@ class ToolBarsLayoutAuditTest {
         }
     }
 
+    /**
+     * Ver > Menus y barras > Efectos: la misma mecanica que las otras tres, mas la persistencia
+     * que pide el manual ("ninguna preferencia sin lector"). Al final del test se restaura la
+     * preferencia real a "visible", para no dejar la corrida siguiente con la barra escondida.
+     */
+    @Test
+    void elMenuEfectosEscondeLaBarraRealYRecuerdaLaPreferencia() throws Exception {
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        com.gstncaruso.tabpro.ui.Preferences preferences = new com.gstncaruso.tabpro.ui.Preferences();
+        try {
+            JToolBar effectsBar = toolBarContaining(frame.getContentPane(), "Nota muerta");
+            assertTrue(effectsBar.isVisible(), "la barra de efectos arranca visible");
+
+            JMenuItem item = findMenuItem(frame.getJMenuBar(), "Efectos");
+            assertNotNull(item, "no encontre 'Efectos' en Ver > Menus y barras");
+
+            SwingUtilities.invokeAndWait(item::doClick);
+            assertEquals(false, effectsBar.isVisible(), "el menu real tiene que esconder la barra de efectos real");
+            assertEquals(false, preferences.effectsToolBarVisible(),
+                    "esconderla desde el menu tiene que quedar guardado en las preferencias");
+
+            SwingUtilities.invokeAndWait(item::doClick);
+            assertEquals(true, effectsBar.isVisible());
+            assertEquals(true, preferences.effectsToolBarVisible());
+        } finally {
+            preferences.setEffectsToolBarVisible(true);
+            AuditSupport.dispose(frame);
+        }
+    }
+
     private JToolBar toolBarContaining(Container root, String actionLabel) {
         JButton button = findButtonByActionName(root, actionLabel);
         assertNotNull(button, "no encontre ningun boton real de accion \"" + actionLabel + "\"");

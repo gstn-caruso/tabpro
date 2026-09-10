@@ -415,7 +415,9 @@ public final class Commands {
                 .checkedByDefault();
         define("view.toolBars.structure", "Estructura y sonido", view::toggleStructureToolBar)
                 .checkedByDefault();
-        define("view.toolBars.notation", "Figuras y efectos", view::toggleNotationToolBar)
+        define("view.toolBars.notation", "Figuras", view::toggleNotationToolBar)
+                .checkedByDefault();
+        define("view.toolBars.effects", "Efectos", view::toggleEffectsToolBar)
                 .checkedByDefault();
         for (String theme : themes) {
             define("view.theme." + theme, theme, () -> view.useTheme(theme));
