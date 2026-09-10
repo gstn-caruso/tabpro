@@ -382,7 +382,7 @@ public final class Icons {
     }
 
     public static Icon zoomReset() {
-        return icon((graphics, size) -> magnifier(graphics, size, 0));
+        return svgIcon("zoom-reset");
     }
 
     public static Icon multitrack() {
