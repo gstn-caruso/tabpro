@@ -78,4 +78,14 @@ class BendGridPanelTest {
         BendPoint point = editor.points().stream().filter(p -> p.position() == position).findFirst().orElseThrow();
         return java.util.List.of(point.position(), point.quarterTones(), point.vibrato());
     }
+
+    @Test
+    void theSpaceKeyAddsVibratoAtTheCaretJustLikeARightClick() {
+        BendCurveEditor editor = new BendCurveEditor(java.util.List.of(BendPoint.at(0, 0), BendPoint.at(60, 4)));
+        BendGridPanel panel = new BendGridPanel(editor);
+
+        pressShortcut(panel, KeyStroke.getKeyStroke("SPACE"));
+
+        assertEquals(1, pointAt(editor, 0).get(2));
+    }
 }
