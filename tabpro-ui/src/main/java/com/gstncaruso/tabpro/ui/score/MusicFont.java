@@ -50,6 +50,22 @@ final class MusicFont {
     private static final int REST_32ND = 0xE4E8;
     /** SMuFL U+E4E9 "rest64th": el silencio de semifusa, centrado en el pentagrama. */
     private static final int REST_64TH = 0xE4E9;
+    /** SMuFL U+E240 "flag8thUp": la bandera de corchea de una plica hacia arriba. */
+    private static final int FLAG_8TH_UP = 0xE240;
+    /** SMuFL U+E241 "flag8thDown": la bandera de corchea de una plica hacia abajo. */
+    private static final int FLAG_8TH_DOWN = 0xE241;
+    /** SMuFL U+E242 "flag16thUp": la bandera de semicorchea de una plica hacia arriba. */
+    private static final int FLAG_16TH_UP = 0xE242;
+    /** SMuFL U+E243 "flag16thDown": la bandera de semicorchea de una plica hacia abajo. */
+    private static final int FLAG_16TH_DOWN = 0xE243;
+    /** SMuFL U+E244 "flag32ndUp": la bandera de fusa de una plica hacia arriba. */
+    private static final int FLAG_32ND_UP = 0xE244;
+    /** SMuFL U+E245 "flag32ndDown": la bandera de fusa de una plica hacia abajo. */
+    private static final int FLAG_32ND_DOWN = 0xE245;
+    /** SMuFL U+E246 "flag64thUp": la bandera de semifusa de una plica hacia arriba. */
+    private static final int FLAG_64TH_UP = 0xE246;
+    /** SMuFL U+E247 "flag64thDown": la bandera de semifusa de una plica hacia abajo. */
+    private static final int FLAG_64TH_DOWN = 0xE247;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -140,6 +156,46 @@ final class MusicFont {
     /** El silencio de semifusa, centrado en el pentagrama. */
     static String rest64th() {
         return glyph(REST_64TH);
+    }
+
+    /** La bandera de corchea de una plica hacia arriba. */
+    static String flag8thUp() {
+        return glyph(FLAG_8TH_UP);
+    }
+
+    /** La bandera de corchea de una plica hacia abajo. */
+    static String flag8thDown() {
+        return glyph(FLAG_8TH_DOWN);
+    }
+
+    /** La bandera de semicorchea de una plica hacia arriba. */
+    static String flag16thUp() {
+        return glyph(FLAG_16TH_UP);
+    }
+
+    /** La bandera de semicorchea de una plica hacia abajo. */
+    static String flag16thDown() {
+        return glyph(FLAG_16TH_DOWN);
+    }
+
+    /** La bandera de fusa de una plica hacia arriba. */
+    static String flag32ndUp() {
+        return glyph(FLAG_32ND_UP);
+    }
+
+    /** La bandera de fusa de una plica hacia abajo. */
+    static String flag32ndDown() {
+        return glyph(FLAG_32ND_DOWN);
+    }
+
+    /** La bandera de semifusa de una plica hacia arriba. */
+    static String flag64thUp() {
+        return glyph(FLAG_64TH_UP);
+    }
+
+    /** La bandera de semifusa de una plica hacia abajo. */
+    static String flag64thDown() {
+        return glyph(FLAG_64TH_DOWN);
     }
 
     /**
