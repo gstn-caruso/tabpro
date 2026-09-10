@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,8 @@ public final class TrackSelector extends JPanel {
         int active = editor.cursor().track();
         for (int trackIndex = 0; trackIndex < trackButtons.size(); trackIndex++) {
             JToggleButton button = trackButtons.get(trackIndex);
-            String label = "Pista " + (trackIndex + 1) + ": " + editor.score().track(trackIndex).name();
+            String trackName = editor.score().track(trackIndex).name();
+            String label = Texts.get("menus.toolbar.trackLabel", trackIndex + 1, trackName);
             button.getAccessibleContext().setAccessibleName(label);
             button.setToolTipText(label);
             button.setSelected(trackIndex == active);

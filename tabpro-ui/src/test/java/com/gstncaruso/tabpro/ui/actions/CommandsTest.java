@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.actions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,17 +20,23 @@ import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.ui.AwaitEdt;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class CommandsTest {
 
@@ -299,6 +306,36 @@ class CommandsTest {
         assertNotNull(commands.get("track.next").icon());
     }
 
+    private static final Set<String> IDENTICAL_IN_BOTH_LANGUAGES = Set.of(
+            "effect.bend", "effect.staccato", "effect.tapping", "effect.vibrato",
+            "file.exportGuitarPro", "file.exportMidi", "file.exportMusicXml", "file.exportPdf", "file.exportWave",
+            "file.importGuitarPro", "file.importMidi", "file.importMusicXml", "file.importPowerTab",
+            "file.importTabEdit",
+            "note.dynamic.FORTE", "note.dynamic.FORTE_FORTISSIMO", "note.dynamic.FORTISSIMO",
+            "note.dynamic.MEZZO_FORTE", "note.dynamic.MEZZO_PIANO", "note.dynamic.PIANISSIMO", "note.dynamic.PIANO",
+            "note.dynamic.PIANO_PIANISSIMO",
+            "sound.tempo");
+
+    @ParameterizedTest
+    @MethodSource("everyCommandId")
+    void everyCommandHasAnEnglishLabelInTheMenusBundle(String id) {
+        String key = "menus." + id;
+        String spanish = Texts.forLocale(Locale.forLanguageTag("es")).text(key);
+        String english = Texts.forLocale(Locale.ENGLISH).text(key);
+
+        assertFalse(english.isBlank(), key);
+        if (!IDENTICAL_IN_BOTH_LANGUAGES.contains(id)) {
+            assertNotEquals(spanish, english, key);
+        }
+    }
+
+    static Stream<String> everyCommandId() {
+        Commands everyCommand = new Commands(
+                new Editor(Score.blank()), fakePort(Ports.Document.class), fakePort(Ports.Dialogs.class),
+                fakePort(Ports.Playback.class), fakePort(Ports.View.class));
+        return everyCommand.all().keySet().stream().sorted();
+    }
+
     private static ActionEvent event() {
         return new ActionEvent(new Object(), ActionEvent.ACTION_PERFORMED, "test");
     }
@@ -309,6 +346,13 @@ class CommandsTest {
             asked.add(method.getName());
             return method.getReturnType() == boolean.class ? Boolean.FALSE : null;
         };
+        return (T) Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[] {port}, handler);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T fakePort(Class<T> port) {
+        InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class
+                ? Boolean.FALSE : null;
         return (T) Proxy.newProxyInstance(port.getClassLoader(), new Class<?>[] {port}, handler);
     }
 }

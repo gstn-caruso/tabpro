@@ -1,6 +1,8 @@
 package com.gstncaruso.tabpro.ui.menu;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,13 +14,17 @@ import com.gstncaruso.tabpro.ui.a11y.Violation;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -228,6 +234,49 @@ class MenuBarTest {
             }
         }
         return labels;
+    }
+
+    @Test
+    void everyMenuTitleInTheBarResolvesInEnglish() {
+        Commands withATheme = new Commands(
+                editor, record(Ports.Document.class), record(Ports.Dialogs.class),
+                record(Ports.Playback.class), record(Ports.View.class), List.of("Oscuro"));
+        JMenuBar bar = new MenuBar(withATheme, () -> List.of(Path.of("/tmp/one.tabpro")), path -> { }).build();
+        Set<String> spanishTitles = new HashSet<>();
+        for (int i = 0; i < bar.getMenuCount(); i++) {
+            collectMenuTitles(bar.getMenu(i), spanishTitles);
+        }
+        Map<String, String> titleKeyBySpanishText = titleKeysBySpanishText();
+
+        assertFalse(spanishTitles.isEmpty(), "no menu title to check");
+        for (String title : spanishTitles) {
+            String key = titleKeyBySpanishText.get(title);
+            assertNotNull(key, "no menus.title.* key maps to \"" + title + "\"");
+            assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank(), key);
+        }
+    }
+
+    private void collectMenuTitles(JMenu menu, Set<String> titles) {
+        titles.add(menu.getText());
+        for (int i = 0; i < menu.getItemCount(); i++) {
+            JMenuItem item = menu.getItem(i);
+            if (item instanceof JMenu submenu) {
+                collectMenuTitles(submenu, titles);
+            }
+        }
+    }
+
+    private Map<String, String> titleKeysBySpanishText() {
+        ResourceBundle spanishTitles = ResourceBundle.getBundle(
+                "com.gstncaruso.tabpro.ui.i18n.menus", Locale.forLanguageTag("es"),
+                ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES));
+        Map<String, String> bySpanishText = new HashMap<>();
+        for (String key : spanishTitles.keySet()) {
+            if (key.startsWith("menus.title.")) {
+                bySpanishText.put(spanishTitles.getString(key), key);
+            }
+        }
+        return bySpanishText;
     }
 
     private JMenu recentFilesMenuOf(JMenuBar bar) {
