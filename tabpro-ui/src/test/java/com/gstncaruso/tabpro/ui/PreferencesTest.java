@@ -144,4 +144,17 @@ class PreferencesTest {
 
         assertTrue(preferences.animationsDisabled());
     }
+
+    /** Ver > Menus y barras > Efectos: visible por defecto, como las otras filas. */
+    @Test
+    void effectsToolBarStartsVisible() {
+        assertTrue(preferences.effectsToolBarVisible());
+    }
+
+    @Test
+    void remembersThatTheEffectsToolBarIsHidden() {
+        preferences.setEffectsToolBarVisible(false);
+
+        assertFalse(preferences.effectsToolBarVisible());
+    }
 }
