@@ -19,6 +19,21 @@ public final class Icons {
 
     public static final int SIZE = 18;
 
+    /** SMuFL U+ECA2 "metNoteWhole": la redonda chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_WHOLE = "";
+    /** SMuFL U+ECA3 "metNoteHalfUp": la blanca chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_HALF_UP = "";
+    /** SMuFL U+ECA5 "metNoteQuarterUp": la negra chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_QUARTER_UP = "";
+    /** SMuFL U+ECA7 "metNote8thUp": la corchea chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_8TH_UP = "";
+    /** SMuFL U+ECA9 "metNote16thUp": la semicorchea chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_16TH_UP = "";
+    /** SMuFL U+ECAB "metNote32ndUp": la fusa chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_32ND_UP = "";
+    /** SMuFL U+ECAD "metNote64thUp": la semifusa chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_64TH_UP = "";
+
     private Icons() {
     }
 
@@ -137,7 +152,7 @@ public final class Icons {
     // ---- figuras ----------------------------------------------------------
 
     public static Icon note(NoteValue value) {
-        return icon((graphics, size) -> Glyphs.note(graphics, size * 0.36, size * 0.8, size * 0.34, value, false));
+        return new GlyphIcon(SIZE, metNoteGlyphOf(value));
     }
 
     public static Icon dottedNote() {
@@ -437,6 +452,18 @@ public final class Icons {
     }
 
     // ---- trazos compartidos -----------------------------------------------
+
+    private static String metNoteGlyphOf(NoteValue value) {
+        return switch (value) {
+            case WHOLE -> MET_NOTE_WHOLE;
+            case HALF -> MET_NOTE_HALF_UP;
+            case QUARTER -> MET_NOTE_QUARTER_UP;
+            case EIGHTH -> MET_NOTE_8TH_UP;
+            case SIXTEENTH -> MET_NOTE_16TH_UP;
+            case THIRTY_SECOND -> MET_NOTE_32ND_UP;
+            case SIXTY_FOURTH -> MET_NOTE_64TH_UP;
+        };
+    }
 
     private static void page(Graphics2D graphics, int size) {
         graphics.setStroke(thin());
