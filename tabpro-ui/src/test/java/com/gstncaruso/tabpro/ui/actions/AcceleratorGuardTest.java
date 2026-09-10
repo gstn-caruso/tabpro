@@ -79,7 +79,7 @@ class AcceleratorGuardTest {
                 ctrlHome.getModifiers(), ctrlHome.getKeyCode(), KeyEvent.CHAR_UNDEFINED);
         assertFalse(
                 scrollPane.processKeyBinding(ctrlHome, event, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, true),
-                "la tecla bloqueada no puede quedar atendida por el ancestro: el atajo real tiene que poder seguir subiendo");
+                "the blocked key must not stay handled by the ancestor: the real shortcut has to keep bubbling up");
     }
 
     private static final class ExposedJScrollPane extends JScrollPane {
@@ -120,8 +120,8 @@ class AcceleratorGuardTest {
                 f10.getModifiers(), f10.getKeyCode(), KeyEvent.CHAR_UNDEFINED);
         assertFalse(
                 menuBar.processKeyBinding(f10, event, JComponent.WHEN_IN_FOCUSED_WINDOW, true),
-                "F10 no puede quedar atendido por la barra de menus: el atajo real de Cambio de "
-                        + "parametros tiene que poder seguir subiendo");
+                "F10 must not stay handled by the menu bar: the real shortcut for Cambio de "
+                        + "parametros has to keep bubbling up");
     }
 
     private static final class ExposedJMenuBar extends JMenuBar {

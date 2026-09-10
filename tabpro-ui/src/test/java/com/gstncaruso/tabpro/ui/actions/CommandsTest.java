@@ -63,11 +63,11 @@ class CommandsTest {
             }
             String previous = byShortcut.put(shortcut, name);
             if (previous != null) {
-                duplicates.add("el atajo " + shortcut + " lo usan " + previous + " y " + name);
+                duplicates.add("shortcut " + shortcut + " is used by " + previous + " and " + name);
             }
         });
 
-        assertFalse(byShortcut.isEmpty(), "ningun comando tiene atajo: no habria nada que verificar");
+        assertFalse(byShortcut.isEmpty(), "no command has a shortcut: there would be nothing to check");
         assertEquals(List.of(), duplicates);
     }
 
@@ -88,7 +88,7 @@ class CommandsTest {
         commands.all().values().stream()
                 .filter(command -> wanted.equals(command.accelerator()))
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("no hay ningun comando con el atajo " + accelerator))
+                .orElseThrow(() -> new AssertionError("no command has the shortcut " + accelerator))
                 .actionPerformed(event());
     }
 
@@ -173,7 +173,7 @@ class CommandsTest {
             if (enters == 1 || enters == 3) {
                 continue;
             }
-            assertNotNull(commands.get("note.tuplet." + enters), "falta el comando para el grupo de " + enters);
+            assertNotNull(commands.get("note.tuplet." + enters), "missing the command for the group of " + enters);
         }
     }
 
