@@ -71,10 +71,15 @@ class StatusBarTest {
     }
 
     @Test
-    void thePagePanelHasAnAccessibleNameAndASunkenBorder() {
+    void everyPanelHasAnAccessibleNameAndASunkenBorder() {
         StatusBar bar = new StatusBar(new Editor(Score.blank()));
 
         assertHasASunkenPanel(bar, "Página");
+        assertHasASunkenPanel(bar, "Posición");
+        assertHasASunkenPanel(bar, "Estado del compás");
+        assertHasASunkenPanel(bar, "Pista");
+        assertHasASunkenPanel(bar, "Duración del compás");
+        assertHasASunkenPanel(bar, "Título y autor");
     }
 
     private static void assertHasASunkenPanel(Container root, String accessibleName) {
