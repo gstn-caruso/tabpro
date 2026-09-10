@@ -11,18 +11,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * El traste que sigue sonando en cada cuerda de una pista, voz por voz.
+ * The fret that keeps sounding on each string of a track, voice by voice.
  *
- * <p>Guitar Pro escribe cualquier cosa en el traste de una nota ligada -- la que continua
- * a la anterior sin volver a pulsar la cuerda --: el que vale es el de la nota que
- * continua. Como esa nota puede estar en un compas anterior, hay que ir recordandolo
- * mientras se lee la pista entera.
+ * <p>Guitar Pro writes anything in the fret of a tied note -- the one that continues the
+ * previous one without plucking the string again --: the one that counts is that of the
+ * note it continues. Since that note can be in an earlier measure, it has to be
+ * remembered while the whole track is read.
  */
 final class GuitarProSoundingFrets {
 
     private final Map<VoicePart, Map<Integer, Integer>> fretByStringOf = new EnumMap<>(VoicePart.class);
 
-    /** Le devuelve a cada nota ligada el traste de la nota que continua. */
+    /** Gives each tied note the fret of the note it continues. */
     Voice resolving(VoicePart part, Voice voice) {
         Map<Integer, Integer> sounding = fretByStringOf.computeIfAbsent(part, ignored -> new HashMap<>());
         List<Beat> beats = new ArrayList<>(voice.beatCount());
@@ -41,8 +41,8 @@ final class GuitarProSoundingFrets {
     }
 
     /**
-     * Si nada suena todavia en esa cuerda, la ligadura no continua nada y no hay mejor
-     * traste que el que trae el archivo.
+     * If nothing is sounding yet on that string, the tie continues nothing and there is
+     * no better fret than the one the file carries.
      */
     private static Note resolved(Note note, Map<Integer, Integer> sounding) {
         if (!note.tied()) {

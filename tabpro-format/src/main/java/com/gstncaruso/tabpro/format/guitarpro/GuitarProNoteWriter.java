@@ -13,10 +13,9 @@ import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import com.gstncaruso.tabpro.core.model.effects.Trill;
 
 /**
- * Escribe una nota de la tablatura y sus efectos: el espejo de {@link GuitarProNoteReader},
- * pero solo para GP4 (sin la duracion propia de la nota ni el armonico estructurado que
- * agrega GP5). El "on beat" y "muerta" de la nota de adorno tampoco existen en GP4: se
- * pierden si la nota de gracia los usa.
+ * The mirror of {@link GuitarProNoteReader}, but only for GP4: no note's own duration
+ * and no structured harmonic, both of which GP5 adds. The grace note's "on beat" and
+ * "dead" flags do not exist in GP4 either: they are lost when the grace note uses them.
  */
 final class GuitarProNoteWriter {
 
@@ -152,14 +151,14 @@ final class GuitarProNoteWriter {
         }
     }
 
-    /** En GP4 la duracion va antes que la transicion; recien GP5 invierte los dos campos. */
+    /** In GP4 the duration comes before the transition; only GP5 reverses the two fields. */
     private void writeGraceNote(GuitarProByteWriter writer, GraceNote grace) {
         writer.writeUnsignedByte(grace.fret());
         writer.writeSignedByte(dynamicCode(grace.dynamic()));
         writer.writeUnsignedByte(graceDurationCode(grace.duration()));
         writer.writeUnsignedByte(graceTransitionCode(grace.transition()));
-        // GP4 no trae un byte de banderas propio para la nota de gracia: "en el tiempo" y
-        // "muerta" solo existen desde GP5, y se pierden aca.
+        // GP4 carries no flags byte of its own for the grace note: "on beat" and
+        // "dead" only exist since GP5, and are lost here.
     }
 
     private static int dynamicCode(Dynamic dynamic) {
@@ -179,12 +178,12 @@ final class GuitarProNoteWriter {
         };
     }
 
-    /** SIXTEENTH tiene codigo propio; cualquier otra figura (32ava por defecto) usa el 1. */
+    /** SIXTEENTH has its own code; any other note value (thirty-second by default) uses 1. */
     private static int graceDurationCode(NoteValue duration) {
         return duration == NoteValue.SIXTEENTH ? 3 : 1;
     }
 
-    /** Solo octava, dieciseisava y treintaidosava tienen codigo propio; el resto cae en 32ava. */
+    /** Only eighth, sixteenth, and thirty-second have their own code; the rest fall back to thirty-second. */
     private static int tremoloSpeedCode(NoteValue speed) {
         return switch (speed) {
             case EIGHTH -> 1;
