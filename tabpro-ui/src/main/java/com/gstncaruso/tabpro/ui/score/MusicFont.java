@@ -1,10 +1,7 @@
 package com.gstncaruso.tabpro.ui.score;
 
+import com.gstncaruso.tabpro.ui.font.BravuraFont;
 import java.awt.Font;
-import java.awt.FontFormatException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,8 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * cifra de compas, expuestos por nombre en vez del codepoint suelto de cada painter.
  */
 final class MusicFont {
-
-    private static final String RESOURCE = "/fonts/Bravura.otf";
 
     /** SMuFL U+E050 "gClef": la clave de sol, con su baseline sobre la linea de Sol. */
     private static final int G_CLEF = 0xE050;
@@ -87,7 +82,7 @@ final class MusicFont {
     /** SMuFL U+E610 "stringsDownBow": la pua hacia abajo. */
     private static final int STRINGS_DOWN_BOW = 0xE610;
 
-    private static final Font BASE = load();
+    private static final Font BASE = BravuraFont.base();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
 
     private MusicFont() {
@@ -279,18 +274,5 @@ final class MusicFont {
 
     private static String glyph(int codePoint) {
         return Character.toString(codePoint);
-    }
-
-    private static Font load() {
-        try (InputStream resource = MusicFont.class.getResourceAsStream(RESOURCE)) {
-            if (resource == null) {
-                throw new IllegalStateException("No se encontro " + RESOURCE + " en el classpath");
-            }
-            return Font.createFont(Font.TRUETYPE_FONT, resource);
-        } catch (FontFormatException e) {
-            throw new IllegalStateException("Bravura.otf no tiene un formato de fuente valido", e);
-        } catch (IOException e) {
-            throw new UncheckedIOException("No se pudo leer " + RESOURCE, e);
-        }
     }
 }

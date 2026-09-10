@@ -19,6 +19,45 @@ public final class Icons {
 
     public static final int SIZE = 18;
 
+    /** SMuFL U+ECA2 "metNoteWhole": la redonda chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_WHOLE = "";
+    /** SMuFL U+ECA3 "metNoteHalfUp": la blanca chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_HALF_UP = "";
+    /** SMuFL U+ECA5 "metNoteQuarterUp": la negra chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_QUARTER_UP = "";
+    /** SMuFL U+ECA7 "metNote8thUp": la corchea chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_8TH_UP = "";
+    /** SMuFL U+ECA9 "metNote16thUp": la semicorchea chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_16TH_UP = "";
+    /** SMuFL U+ECAB "metNote32ndUp": la fusa chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_32ND_UP = "";
+    /** SMuFL U+ECAD "metNote64thUp": la semifusa chiquita del "figura = numero" de tempo. */
+    private static final String MET_NOTE_64TH_UP = "";
+    /** SMuFL U+E1E7 "augmentationDot": el puntillo que alarga una figura. */
+    private static final String AUGMENTATION_DOT = "";
+    /** SMuFL U+E4E5 "restQuarter": el silencio de negra. */
+    private static final String REST_QUARTER = "";
+    /** SMuFL U+E0A9 "noteheadXBlack": la cabeza en X de percusion, para las notas apagadas. */
+    private static final String NOTEHEAD_X_BLACK = "";
+    /** SMuFL U+E0DD "noteheadDiamondWhite": la cabeza en rombo hueco, para armonicos. */
+    private static final String NOTEHEAD_DIAMOND_WHITE = "";
+    /** SMuFL U+E4A0 "articAccentAbove": el acento dibujado arriba de la nota. */
+    private static final String ARTIC_ACCENT_ABOVE = "";
+    /** SMuFL U+E4A2 "articStaccatoAbove": el staccato dibujado arriba de la nota. */
+    private static final String ARTIC_STACCATO_ABOVE = "";
+    /** SMuFL U+E0A4 "noteheadBlack": la cabeza rellena de negra. */
+    private static final String NOTEHEAD_BLACK = "";
+    /** SMuFL U+E0CE "noteheadParenthesis": los parentesis que rodean una cabeza de nota. */
+    private static final String NOTEHEAD_PARENTHESIS = "";
+    /** SMuFL U+E262 "accidentalSharp": el sostenido. */
+    private static final String ACCIDENTAL_SHARP = "";
+    /** SMuFL U+E084 "timeSig4": el digito 4 de una cifra de compas. */
+    private static final String TIME_SIG_4 = "";
+    /** SMuFL U+E040 "repeatLeft": la barra de inicio de repeticion, con sus dos puntos. */
+    private static final String REPEAT_LEFT = "";
+    /** SMuFL U+E041 "repeatRight": la barra de fin de repeticion, con sus dos puntos. */
+    private static final String REPEAT_RIGHT = "";
+
     private Icons() {
     }
 
@@ -90,11 +129,11 @@ public final class Icons {
     }
 
     public static Icon repeatOpen() {
-        return icon((graphics, size) -> repeat(graphics, size, true));
+        return new GlyphIcon(SIZE, REPEAT_LEFT);
     }
 
     public static Icon repeatClose() {
-        return icon((graphics, size) -> repeat(graphics, size, false));
+        return new GlyphIcon(SIZE, REPEAT_RIGHT);
     }
 
     public static Icon alternateEndings() {
@@ -116,18 +155,11 @@ public final class Icons {
     }
 
     public static Icon keySignature() {
-        return icon((graphics, size) -> {
-            graphics.setFont(big(size));
-            graphics.drawString("♯", (float) (size * 0.3), (float) (size * 0.78));
-        });
+        return new GlyphIcon(SIZE, ACCIDENTAL_SHARP + ACCIDENTAL_SHARP);
     }
 
     public static Icon timeSignature() {
-        return icon((graphics, size) -> {
-            graphics.setFont(small(size));
-            graphics.drawString("4", (float) (size * 0.36), (float) (size * 0.46));
-            graphics.drawString("4", (float) (size * 0.36), (float) (size * 0.86));
-        });
+        return new GlyphIcon(SIZE, TIME_SIG_4, TIME_SIG_4);
     }
 
     public static Icon marker() {
@@ -137,16 +169,15 @@ public final class Icons {
     // ---- figuras ----------------------------------------------------------
 
     public static Icon note(NoteValue value) {
-        return icon((graphics, size) -> Glyphs.note(graphics, size * 0.36, size * 0.8, size * 0.34, value, false));
+        return new GlyphIcon(SIZE, metNoteGlyphOf(value));
     }
 
     public static Icon dottedNote() {
-        return icon((graphics, size) ->
-                Glyphs.note(graphics, size * 0.32, size * 0.8, size * 0.34, NoteValue.QUARTER, true));
+        return new GlyphIcon(SIZE, MET_NOTE_QUARTER_UP + AUGMENTATION_DOT);
     }
 
     public static Icon rest() {
-        return icon((graphics, size) -> Glyphs.quarterRest(graphics, size * 0.5, size * 0.5, size / 13.0));
+        return new GlyphIcon(SIZE, REST_QUARTER);
     }
 
     /** El corchete de un n-tuplet con su numero: 3 para el tresillo, 5 para el quintillo, etc. */
@@ -181,38 +212,19 @@ public final class Icons {
     }
 
     public static Icon deadNote() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(new BasicStroke(size / 9f));
-            graphics.draw(new Line2D.Double(size * 0.28, size * 0.28, size * 0.72, size * 0.72));
-            graphics.draw(new Line2D.Double(size * 0.72, size * 0.28, size * 0.28, size * 0.72));
-        });
+        return new GlyphIcon(SIZE, NOTEHEAD_X_BLACK);
     }
 
     public static Icon ghostNote() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(Glyphs.arc(size * 0.22, size * 0.22, size * 0.8, size * 0.9));
-            graphics.draw(Glyphs.arc(size * 0.78, size * 0.78, size * 0.8, -size * 0.9));
-            graphics.fill(Glyphs.noteHead(size * 0.5, size * 0.5, size * 0.28, false));
-        });
+        return GlyphIcon.overlaid(SIZE, NOTEHEAD_BLACK, NOTEHEAD_PARENTHESIS);
     }
 
     public static Icon accent() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            Path2D accent = new Path2D.Double();
-            accent.moveTo(size * 0.22, size * 0.32);
-            accent.lineTo(size * 0.78, size * 0.5);
-            accent.lineTo(size * 0.22, size * 0.68);
-            graphics.draw(accent);
-        });
+        return new GlyphIcon(SIZE, ARTIC_ACCENT_ABOVE);
     }
 
     public static Icon staccato() {
-        return icon((graphics, size) -> {
-            graphics.fill(Glyphs.noteHead(size * 0.5, size * 0.66, size * 0.34, false));
-            graphics.fill(new Ellipse2D.Double(size * 0.44, size * 0.2, size * 0.13, size * 0.13));
-        });
+        return new GlyphIcon(SIZE, ARTIC_STACCATO_ABOVE, NOTEHEAD_BLACK);
     }
 
     public static Icon vibrato() {
@@ -259,16 +271,7 @@ public final class Icons {
     }
 
     public static Icon harmonic() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            Path2D diamond = new Path2D.Double();
-            diamond.moveTo(size * 0.5, size * 0.24);
-            diamond.lineTo(size * 0.76, size * 0.5);
-            diamond.lineTo(size * 0.5, size * 0.76);
-            diamond.lineTo(size * 0.24, size * 0.5);
-            diamond.closePath();
-            graphics.draw(diamond);
-        });
+        return new GlyphIcon(SIZE, NOTEHEAD_DIAMOND_WHITE);
     }
 
     public static Icon strokeDown() {
@@ -438,6 +441,18 @@ public final class Icons {
 
     // ---- trazos compartidos -----------------------------------------------
 
+    private static String metNoteGlyphOf(NoteValue value) {
+        return switch (value) {
+            case WHOLE -> MET_NOTE_WHOLE;
+            case HALF -> MET_NOTE_HALF_UP;
+            case QUARTER -> MET_NOTE_QUARTER_UP;
+            case EIGHTH -> MET_NOTE_8TH_UP;
+            case SIXTEENTH -> MET_NOTE_16TH_UP;
+            case THIRTY_SECOND -> MET_NOTE_32ND_UP;
+            case SIXTY_FOURTH -> MET_NOTE_64TH_UP;
+        };
+    }
+
     private static void page(Graphics2D graphics, int size) {
         graphics.setStroke(thin());
         graphics.draw(new Rectangle2D.Double(size * 0.2, size * 0.1, size * 0.6, size * 0.8));
@@ -449,26 +464,12 @@ public final class Icons {
         graphics.draw(new Line2D.Double(centerX, centerY - arm, centerX, centerY + arm));
     }
 
-    private static void repeat(Graphics2D graphics, int size, boolean opening) {
-        double x = opening ? size * 0.24 : size * 0.66;
-        double dots = opening ? size * 0.56 : size * 0.34;
-        Glyphs.staff(graphics, size * 0.1, size * 0.26, size * 0.8, size * 0.12);
-        graphics.fill(Glyphs.barLine(x, size * 0.26, size * 0.74, size * 0.09));
-        graphics.fill(Glyphs.barLine(x + (opening ? size * 0.12 : -size * 0.06), size * 0.26, size * 0.74, size * 0.05));
-        graphics.fill(new Ellipse2D.Double(dots, size * 0.4, size * 0.1, size * 0.1));
-        graphics.fill(new Ellipse2D.Double(dots, size * 0.56, size * 0.1, size * 0.1));
-    }
-
     private static BasicStroke thin() {
         return new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     }
 
     private static Font small(int size) {
         return new Font(Font.SANS_SERIF, Font.BOLD, Math.round(size * 0.62f));
-    }
-
-    private static Font big(int size) {
-        return new Font(Font.SERIF, Font.BOLD, Math.round(size * 0.86f));
     }
 
     private static Icon icon(ToolIcon.Drawing drawing) {
