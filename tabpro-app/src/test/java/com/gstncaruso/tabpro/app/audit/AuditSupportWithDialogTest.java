@@ -33,6 +33,14 @@ class AuditSupportWithDialogTest {
         assertTrue(error.getMessage().contains("WINDOW_OPENED"));
     }
 
+    @Test
+    void elCallbackQueOlvidaCerrarElDialogoFallaEnVezDeColgarse() {
+        AssertionError error = assertThrows(AssertionError.class, () -> withDialog(
+                AuditSupportWithDialogTest::openRealModalDialog, dialog -> { }));
+
+        assertTrue(error.getMessage().contains("dispose"));
+    }
+
     private static void openRealModalDialog() {
         JDialog dialog = new JDialog((java.awt.Frame) null, "dialogo de prueba", true);
         dialog.add(new JLabel("contenido"));
