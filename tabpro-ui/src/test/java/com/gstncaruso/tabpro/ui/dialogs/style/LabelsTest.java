@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.harmony.ChordType;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
+import com.gstncaruso.tabpro.core.model.DiagramPlacement;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
@@ -278,6 +279,20 @@ class LabelsTest {
     @EnumSource(PickstrokeDirection.class)
     void everyPickstrokeDirectionHasSpanishAndEnglishText(PickstrokeDirection value) {
         String key = "domain.PickstrokeDirection." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheDiagramPlacement() {
+        assertEquals("Debajo del título", Labels.of(DiagramPlacement.UNDER_THE_TITLE));
+    }
+
+    @ParameterizedTest
+    @EnumSource(DiagramPlacement.class)
+    void everyDiagramPlacementHasSpanishAndEnglishText(DiagramPlacement value) {
+        String key = "domain.DiagramPlacement." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
