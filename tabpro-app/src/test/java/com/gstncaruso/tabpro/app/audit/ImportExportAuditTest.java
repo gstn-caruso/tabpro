@@ -73,23 +73,23 @@ class ImportExportAuditTest {
     @Test
     void openingThroughTheMenuReadsAnOwnTabproFileTheSameAsItWasSaved(@TempDir Path tempDir) throws Exception {
         Score original = Score.blank();
-        Path path = tempDir.resolve("propia.tabpro");
+        Path path = tempDir.resolve("own.tabpro");
         new JsonScoreFiles().save(original, path);
 
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem item = findMenuItem(frame.getJMenuBar(), "Abrir…");
-            assertNotNull(item, "no encontre 'Abrir…' en el menu real");
+            assertNotNull(item, "could not find 'Abrir…' in the real menu");
 
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
-                assertNotNull(chooser, "no encontre el JFileChooser real");
+                assertNotNull(chooser, "could not find the real JFileChooser");
                 chooser.setSelectedFile(path.toFile());
                 chooser.approveSelection();
             });
 
-            assertEquals(original, editor.score(), "Abrir un .tabpro real tiene que dejar el modelo igual al archivo");
+            assertEquals(original, editor.score(), "opening a real .tabpro must leave the model equal to the file");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -98,7 +98,7 @@ class ImportExportAuditTest {
     @Test
     void openingThroughTheMenuRecognizesAGuitarProFileWithoutGoingThroughImport() throws Exception {
         Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-features.gp5");
-        assertTrue(Files.exists(path), "no encontre el fixture real de Guitar Pro en tabpro-format");
+        assertTrue(Files.exists(path), "could not find the real Guitar Pro fixture in tabpro-format");
 
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
@@ -111,7 +111,7 @@ class ImportExportAuditTest {
                 chooser.approveSelection();
             });
 
-            assertEquals(3, editor.score().trackCount(), "el mismo Abrir tiene que reconocer un .gp5 real");
+            assertEquals(3, editor.score().trackCount(), "the same Abrir must recognize a real .gp5");
             assertEquals("Lead Guitar", editor.score().track(0).name());
         } finally {
             AuditSupport.dispose(frame);
@@ -125,13 +125,13 @@ class ImportExportAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JMenuItem save = findMenuItem(frame.getJMenuBar(), "Guardar");
-            assertNotNull(save, "no encontre 'Guardar' en el menu real");
+            assertNotNull(save, "could not find 'Guardar' in the real menu");
             assertEquals(KeyStroke.getKeyStroke("ctrl S"), save.getAccelerator());
 
-            Path path = tempDir.resolve("primera-vez.tabpro");
+            Path path = tempDir.resolve("first-time.tabpro");
             withDialog(save::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
-                assertNotNull(chooser, "sin archivo todavia, Guardar tiene que abrir el chooser real de Guardar como");
+                assertNotNull(chooser, "with no file yet, Guardar must open the real Guardar como chooser");
                 chooser.setSelectedFile(path.toFile());
                 chooser.approveSelection();
             });
@@ -144,7 +144,7 @@ class ImportExportAuditTest {
 
             assertEquals(
                     editor.score(), new JsonScoreFiles().load(path),
-                    "con archivo ya elegido, Guardar tiene que sobreescribirlo sin volver a preguntar donde");
+                    "with a file already chosen, Guardar must overwrite it without asking where again");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -152,12 +152,12 @@ class ImportExportAuditTest {
 
     @Test
     void aRecentlySavedFileAppearsInOpenRecentAndChoosingItReallyOpensIt(@TempDir Path tempDir) throws Exception {
-        Path path = tempDir.resolve("reciente.tabpro");
+        Path path = tempDir.resolve("recent.tabpro");
         Editor firstEditor = editorWithANote();
         MainFrame firstFrame = newFrame(firstEditor);
         try {
             JMenuItem saveAs = findMenuItem(firstFrame.getJMenuBar(), "Guardar como…");
-            assertNotNull(saveAs, "no encontre 'Guardar como…' en el menu real");
+            assertNotNull(saveAs, "could not find 'Guardar como…' in the real menu");
 
             withDialog(saveAs::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
@@ -172,13 +172,13 @@ class ImportExportAuditTest {
         MainFrame secondFrame = newFrame(secondEditor);
         try {
             JMenuItem recent = findMenuItem(secondFrame.getJMenuBar(), path.getFileName().toString());
-            assertNotNull(recent, "el archivo recien guardado tiene que aparecer en Archivo > Abrir reciente");
+            assertNotNull(recent, "the just-saved file must appear in Archivo > Abrir reciente");
 
             SwingUtilities.invokeAndWait(recent::doClick);
 
             assertEquals(
                     new JsonScoreFiles().load(path), secondEditor.score(),
-                    "elegir el archivo en Abrir reciente tiene que abrirlo de verdad");
+                    "choosing the file in Abrir reciente must really open it");
         } finally {
             AuditSupport.dispose(secondFrame);
         }
@@ -187,16 +187,16 @@ class ImportExportAuditTest {
     @Test
     void importingMidiThroughTheMenuOffersTheRealTracksAndQuickImportBringsThemToTheModel(@TempDir Path tempDir)
             throws Exception {
-        Path midiPath = tempDir.resolve("ajeno.mid");
+        Path midiPath = tempDir.resolve("other.mid");
         new MidiScoreExporter().export(Score.blank(), midiPath);
 
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
             JMenu importMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Importar");
-            assertNotNull(importMenu, "no encontre el submenu 'Importar' real");
+            assertNotNull(importMenu, "could not find the real 'Importar' submenu");
             JMenuItem item = AuditSupport.findMenuItem(importMenu, "MIDI…");
-            assertNotNull(item, "no encontre 'MIDI…' dentro de Importar");
+            assertNotNull(item, "could not find 'MIDI…' inside Importar");
 
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
@@ -206,12 +206,12 @@ class ImportExportAuditTest {
                     return;
                 }
                 JList<?> trackList = findComponent(dialog, JList.class);
-                assertNotNull(trackList, "no encontre la lista real de pistas MIDI");
-                assertEquals(1, trackList.getModel().getSize(), "el .mid tiene una sola pista audible");
+                assertNotNull(trackList, "could not find the real MIDI track list");
+                assertEquals(1, trackList.getModel().getSize(), "the .mid has a single audible track");
                 trackList.setSelectedIndex(0);
 
                 JButton quickImport = findButton(dialog, "Import rápido (reemplaza la partitura)");
-                assertNotNull(quickImport, "no encontre el boton real de Import rapido");
+                assertNotNull(quickImport, "could not find the real quick import button");
                 quickImport.doClick();
 
                 findButton(dialog, "Cerrar").doClick();
@@ -219,7 +219,7 @@ class ImportExportAuditTest {
 
             assertEquals(1, editor.score().trackCount());
             assertEquals("Guitarra", editor.score().track(0).name(),
-                    "el Import rapido real tiene que traer el nombre de pista del MIDI ajeno");
+                    "the real quick import must bring the track name from the foreign MIDI");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -234,11 +234,11 @@ class ImportExportAuditTest {
         try {
             JMenu importMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Importar");
             JMenuItem item = AuditSupport.findMenuItem(importMenu, "Tablatura ASCII…");
-            assertNotNull(item, "no encontre 'Tablatura ASCII…' dentro de Importar");
+            assertNotNull(item, "could not find 'Tablatura ASCII…' inside Importar");
 
             withDialog(item::doClick, dialog -> {
                 JTextArea text = findComponent(dialog, JTextArea.class);
-                assertNotNull(text, "no encontre la zona de texto real del import de ASCII");
+                assertNotNull(text, "could not find the real text area for ASCII import");
                 text.setText(tab);
                 findButton(dialog, "Importar").doClick();
             });
@@ -253,14 +253,14 @@ class ImportExportAuditTest {
     @Test
     void importingMusicXmlThroughTheMenuReadsTheKeySignatureAndTheRealNotesFromTheFile() throws Exception {
         Path path = repoFile("tabpro-format/src/test/resources/musicxml/armadura-en-fa.musicxml");
-        assertTrue(Files.exists(path), "no encontre el fixture real de MusicXML en tabpro-format");
+        assertTrue(Files.exists(path), "could not find the real MusicXML fixture in tabpro-format");
 
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
             JMenu importMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Importar");
             JMenuItem item = AuditSupport.findMenuItem(importMenu, "MusicXML…");
-            assertNotNull(item, "no encontre 'MusicXML…' dentro de Importar");
+            assertNotNull(item, "could not find 'MusicXML…' inside Importar");
 
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
@@ -269,9 +269,9 @@ class ImportExportAuditTest {
             });
 
             assertEquals(-1, editor.score().attributesOf(0).keySignature().accidentals(),
-                    "fa mayor son 1 bemol (fifths=-1)");
+                    "F major is 1 flat (fifths=-1)");
             Track track = editor.score().track(0);
-            assertEquals(65, track.pitchOf(track.measure(0).beat(0).notes().get(0)).midiNumber(), "Fa4");
+            assertEquals(65, track.pitchOf(track.measure(0).beat(0).notes().get(0)).midiNumber(), "F4");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -280,14 +280,14 @@ class ImportExportAuditTest {
     @Test
     void importingPowerTabThroughTheMenuReadsARealFileFromThePowerTabEditorRepository() throws Exception {
         Path path = repoFile("tabpro-format/src/test/resources/powertab/guitars.ptb");
-        assertTrue(Files.exists(path), "no encontre el fixture real de PowerTab en tabpro-format");
+        assertTrue(Files.exists(path), "could not find the real PowerTab fixture in tabpro-format");
 
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
             JMenu importMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Importar");
             JMenuItem item = AuditSupport.findMenuItem(importMenu, "PowerTab…");
-            assertNotNull(item, "no encontre 'PowerTab…' dentro de Importar");
+            assertNotNull(item, "could not find 'PowerTab…' inside Importar");
 
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
@@ -296,7 +296,7 @@ class ImportExportAuditTest {
             });
 
             assertTrue(editor.score().trackCount() >= 1,
-                    "importar un .ptb real del repositorio de powertabeditor tiene que dejar al menos una pista");
+                    "importing a real .ptb from the powertabeditor repository must leave at least one track");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -306,8 +306,8 @@ class ImportExportAuditTest {
     void importingTablEditThroughTheMenuReadsAMinimalTef3WithTheSameLayoutAsTheRealReader(@TempDir Path tempDir)
             throws Exception {
         byte[] bytes = TabEditMinimalFixture.oneTrackOneMeasureScore(
-                "Cancion de prueba", 140, "Guitarra de prueba", List.of(3, 5, 7, 8));
-        Path path = tempDir.resolve("prueba.tef");
+                "Test Song", 140, "Test Guitar", List.of(3, 5, 7, 8));
+        Path path = tempDir.resolve("test.tef");
         Files.write(path, bytes);
 
         Editor editor = blankEditor();
@@ -315,7 +315,7 @@ class ImportExportAuditTest {
         try {
             JMenu importMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Importar");
             JMenuItem item = AuditSupport.findMenuItem(importMenu, "TablEdit…");
-            assertNotNull(item, "no encontre 'TablEdit…' dentro de Importar");
+            assertNotNull(item, "could not find 'TablEdit…' inside Importar");
 
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
@@ -324,7 +324,7 @@ class ImportExportAuditTest {
             });
 
             assertEquals(1, editor.score().trackCount());
-            assertEquals("Guitarra de prueba", editor.score().track(0).name());
+            assertEquals("Test Guitar", editor.score().track(0).name());
             assertEquals(140, editor.score().tempo());
         } finally {
             AuditSupport.dispose(frame);
@@ -340,7 +340,7 @@ class ImportExportAuditTest {
         try {
             JMenu importMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Importar");
             JMenuItem item = AuditSupport.findMenuItem(importMenu, "Guitar Pro…");
-            assertNotNull(item, "no encontre 'Guitar Pro…' dentro de Importar");
+            assertNotNull(item, "could not find 'Guitar Pro…' inside Importar");
 
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
@@ -361,9 +361,9 @@ class ImportExportAuditTest {
         try {
             JMenu exportMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Exportar");
             JMenuItem item = AuditSupport.findMenuItem(exportMenu, "MIDI…");
-            assertNotNull(item, "no encontre 'MIDI…' dentro de Exportar");
+            assertNotNull(item, "could not find 'MIDI…' inside Exportar");
 
-            Path path = tempDir.resolve("exportado.mid");
+            Path path = tempDir.resolve("exported.mid");
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
                 chooser.setSelectedFile(path.toFile());
@@ -372,7 +372,7 @@ class ImportExportAuditTest {
 
             assertTrue(Files.exists(path));
             Sequence sequence = MidiSystem.getSequence(path.toFile());
-            assertTrue(hasNoteOn(sequence), "el MIDI exportado tiene que traer al menos una nota real");
+            assertTrue(hasNoteOn(sequence), "the exported MIDI must bring at least one real note");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -385,9 +385,9 @@ class ImportExportAuditTest {
         try {
             JMenu exportMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Exportar");
             JMenuItem item = AuditSupport.findMenuItem(exportMenu, "WAVE…");
-            assertNotNull(item, "no encontre 'WAVE…' dentro de Exportar");
+            assertNotNull(item, "could not find 'WAVE…' inside Exportar");
 
-            Path path = tempDir.resolve("exportado.wav");
+            Path path = tempDir.resolve("exported.wav");
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
                 if (chooser != null) {
@@ -397,13 +397,13 @@ class ImportExportAuditTest {
                 }
                 String ok = UIManager.getString("OptionPane.okButtonText");
                 JButton okButton = findButton(dialog, ok);
-                assertNotNull(okButton, "no encontre el boton real de aceptar la calidad de WAVE");
+                assertNotNull(okButton, "could not find the real button to accept the WAVE quality");
                 okButton.doClick();
             });
 
             assertTrue(Files.exists(path));
             try (AudioInputStream in = AudioSystem.getAudioInputStream(path.toFile())) {
-                assertTrue(in.getFrameLength() > 0, "el WAVE exportado tiene que tener audio real, no vacio");
+                assertTrue(in.getFrameLength() > 0, "the exported WAVE must have real audio, not empty");
             }
         } finally {
             AuditSupport.dispose(frame);
@@ -418,9 +418,9 @@ class ImportExportAuditTest {
         try {
             JMenu exportMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Exportar");
             JMenuItem item = AuditSupport.findMenuItem(exportMenu, "Tablatura ASCII…");
-            assertNotNull(item, "no encontre 'Tablatura ASCII…' dentro de Exportar");
+            assertNotNull(item, "could not find 'Tablatura ASCII…' inside Exportar");
 
-            Path path = tempDir.resolve("exportada.tab");
+            Path path = tempDir.resolve("exported.tab");
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
                 if (chooser != null) {
@@ -434,7 +434,7 @@ class ImportExportAuditTest {
 
             assertTrue(Files.exists(path));
             Score reimported = exchange.importAscii(path);
-            assertTrue(containsFret(reimported, 3), "la tablatura ASCII exportada tiene que traer de vuelta el traste 3");
+            assertTrue(containsFret(reimported, 3), "the exported ASCII tablature must bring back fret 3");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -447,13 +447,13 @@ class ImportExportAuditTest {
         try {
             JMenu exportMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Exportar");
             JMenuItem item = AuditSupport.findMenuItem(exportMenu, "Tablatura ASCII…");
-            assertNotNull(item, "no encontre 'Tablatura ASCII…' dentro de Exportar");
+            assertNotNull(item, "could not find 'Tablatura ASCII…' inside Exportar");
 
             withDialog(item::doClick, dialog -> {
                 JTextArea preview = findComponent(dialog, JTextArea.class);
-                assertNotNull(preview, "no encontre la vista previa real del export de ASCII");
+                assertNotNull(preview, "could not find the real ASCII export preview");
                 assertTrue(preview.getText().contains("3"),
-                        "la vista previa tiene que mostrar el traste real de la nota: " + preview.getText());
+                        "the preview must show the real fret of the note: " + preview.getText());
                 findButton(dialog, "Cerrar").doClick();
             });
         } finally {
@@ -468,9 +468,9 @@ class ImportExportAuditTest {
         try {
             JMenu exportMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Exportar");
             JMenuItem item = AuditSupport.findMenuItem(exportMenu, "MusicXML…");
-            assertNotNull(item, "no encontre 'MusicXML…' dentro de Exportar");
+            assertNotNull(item, "could not find 'MusicXML…' inside Exportar");
 
-            Path path = tempDir.resolve("exportada.musicxml");
+            Path path = tempDir.resolve("exported.musicxml");
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
                 chooser.setSelectedFile(path.toFile());
@@ -480,7 +480,7 @@ class ImportExportAuditTest {
             assertTrue(Files.exists(path));
             Score reimported = exchange.importMusicXml(path);
             assertEquals(1, reimported.trackCount());
-            assertTrue(containsFret(reimported, 3), "el MusicXML exportado tiene que traer de vuelta el traste 3");
+            assertTrue(containsFret(reimported, 3), "the exported MusicXML must bring back fret 3");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -494,13 +494,13 @@ class ImportExportAuditTest {
         try {
             JMenu exportMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Exportar");
             JMenuItem item = AuditSupport.findMenuItem(exportMenu, "Guitar Pro 4…");
-            assertNotNull(item, "no encontre 'Guitar Pro 4…' dentro de Exportar");
+            assertNotNull(item, "could not find 'Guitar Pro 4…' inside Exportar");
 
-            Path path = tempDir.resolve("exportada.gp4");
+            Path path = tempDir.resolve("exported.gp4");
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
                 assertNotNull(chooser,
-                        "sin perdidas que avisar, Exportar Guitar Pro 4 tiene que ir directo al chooser real");
+                        "with no losses to warn about, Exportar Guitar Pro 4 must go straight to the real chooser");
                 chooser.setSelectedFile(path.toFile());
                 chooser.approveSelection();
             });
@@ -508,7 +508,7 @@ class ImportExportAuditTest {
             assertTrue(Files.exists(path));
             Score reread = new GuitarProFile().read(path);
             assertEquals(1, reread.trackCount());
-            assertTrue(containsFret(reread, 3), "el .gp4 exportado tiene que traer de vuelta el traste 3");
+            assertTrue(containsFret(reread, 3), "the exported .gp4 must bring back fret 3");
         } finally {
             AuditSupport.dispose(frame);
         }
@@ -521,9 +521,9 @@ class ImportExportAuditTest {
         try {
             JMenu exportMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Exportar");
             JMenuItem item = AuditSupport.findMenuItem(exportMenu, "Imagen…");
-            assertNotNull(item, "no encontre 'Imagen…' dentro de Exportar");
+            assertNotNull(item, "could not find 'Imagen…' inside Exportar");
 
-            Path path = tempDir.resolve("exportada.png");
+            Path path = tempDir.resolve("exported.png");
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
                 chooser.setSelectedFile(path.toFile());
@@ -532,7 +532,7 @@ class ImportExportAuditTest {
 
             assertTrue(Files.exists(path));
             BufferedImage image = ImageIO.read(path.toFile());
-            assertNotNull(image, "el PNG exportado tiene que ser una imagen real, no basura");
+            assertNotNull(image, "the exported PNG must be a real image, not garbage");
             assertTrue(image.getWidth() > 0 && image.getHeight() > 0);
         } finally {
             AuditSupport.dispose(frame);
@@ -546,9 +546,9 @@ class ImportExportAuditTest {
         try {
             JMenu exportMenu = (JMenu) findMenuItem(frame.getJMenuBar(), "Exportar");
             JMenuItem item = AuditSupport.findMenuItem(exportMenu, "PDF…");
-            assertNotNull(item, "no encontre 'PDF…' dentro de Exportar");
+            assertNotNull(item, "could not find 'PDF…' inside Exportar");
 
-            Path path = tempDir.resolve("exportada.pdf");
+            Path path = tempDir.resolve("exported.pdf");
             withDialog(item::doClick, dialog -> {
                 JFileChooser chooser = findComponent(dialog, JFileChooser.class);
                 chooser.setSelectedFile(path.toFile());
@@ -557,7 +557,7 @@ class ImportExportAuditTest {
 
             assertTrue(Files.exists(path));
             String content = new String(Files.readAllBytes(path), StandardCharsets.ISO_8859_1);
-            assertTrue(content.startsWith("%PDF-"), "el PDF exportado tiene que empezar con la cabecera real");
+            assertTrue(content.startsWith("%PDF-"), "the exported PDF must start with the real header");
             assertTrue(content.contains("/Type /Catalog"));
             assertTrue(content.trim().endsWith("%%EOF"));
         } finally {
