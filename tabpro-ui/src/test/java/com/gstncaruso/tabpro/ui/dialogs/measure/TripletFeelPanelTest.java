@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class TripletFeelPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new TripletFeelPanel(TripletFeel.EIGHTH));
     }
 

@@ -19,7 +19,7 @@ class TrackPropertiesPanelTest {
     private final RecordingPlayer player = new RecordingPlayer();
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(
                 new TrackPropertiesPanel(Track.standardGuitar("Guitarra 1"), player));
     }

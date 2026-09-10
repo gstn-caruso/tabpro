@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class TremoloPickingPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new TremoloPickingPanel(TremoloPicking.at(NoteValue.SIXTEENTH)));
     }
 

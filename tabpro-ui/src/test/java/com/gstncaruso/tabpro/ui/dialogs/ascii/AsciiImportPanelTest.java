@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class AsciiImportPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new AsciiImportPanel());
     }
 

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class FingeringDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         FingeringDialog.Fields fields = FingeringDialog.buildFields(Optional.empty(), Optional.empty());
 
         AccessibilityAssertions.assertNoViolations(fields.form());

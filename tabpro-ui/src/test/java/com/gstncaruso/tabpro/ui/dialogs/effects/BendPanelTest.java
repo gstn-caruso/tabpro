@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Test;
 class BendPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new BendPanel(Bend.of(BendType.BEND, 4)));
     }
 
     @Test
-    void ningunControlDeLaPalancaQuedaSinNombreNiTooltipAccesible() {
+    void everyTremoloBarControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(
                 new BendPanel(Bend.of(BendType.DIP, 4), BendType.tremoloBarTypes()));
     }

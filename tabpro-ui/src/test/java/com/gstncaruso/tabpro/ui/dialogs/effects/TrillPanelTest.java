@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class TrillPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new TrillPanel(Trill.to(0)));
     }
 

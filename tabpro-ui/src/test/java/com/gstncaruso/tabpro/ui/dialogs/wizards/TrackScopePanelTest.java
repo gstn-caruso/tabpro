@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 class TrackScopePanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new TrackScopePanel());
     }
 }

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class DynamicsDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         DynamicsDialog.Fields fields = DynamicsDialog.buildFields(Dynamic.defaultDynamic());
 
         AccessibilityAssertions.assertNoViolations(fields.form());

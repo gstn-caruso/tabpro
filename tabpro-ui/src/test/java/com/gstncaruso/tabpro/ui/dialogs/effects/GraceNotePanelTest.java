@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class GraceNotePanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new GraceNotePanel(GraceNote.before(0)));
     }
 

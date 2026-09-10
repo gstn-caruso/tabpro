@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class PageSetupPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new PageSetupPanel(PageSetup.defaults()));
     }
 

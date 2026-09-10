@@ -21,7 +21,7 @@ class TuningEditorPanelTest {
     private final RecordingPlayer player = new RecordingPlayer();
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new TuningEditorPanel(Tuning.standard(), 25, player));
     }
 

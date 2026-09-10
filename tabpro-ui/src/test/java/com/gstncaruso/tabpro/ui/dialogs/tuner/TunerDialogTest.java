@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class TunerDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         Editor editor = new Editor(Score.blank());
 
         AccessibilityAssertions.assertNoViolations(

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class PastePanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new PastePanel());
     }
 

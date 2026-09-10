@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class WaveExportPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new WaveExportPanel(new AudioQuality(44_100, 16, 2)));
     }
 

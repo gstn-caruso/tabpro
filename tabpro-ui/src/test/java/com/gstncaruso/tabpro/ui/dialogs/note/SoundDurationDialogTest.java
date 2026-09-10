@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class SoundDurationDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         SoundDurationDialog.Fields fields = SoundDurationDialog.buildFields(NoteEffects.FULL_SOUND);
 
         AccessibilityAssertions.assertNoViolations(fields.form());

@@ -16,7 +16,7 @@ class MidiTunerPanelTest {
     private final MidiTunerPanel panel = new MidiTunerPanel(Tuning.standard(), 25, player);
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(panel);
     }
 

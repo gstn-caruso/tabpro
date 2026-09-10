@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class StringOptionsPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new StringOptionsPanel(6, 8));
     }
 

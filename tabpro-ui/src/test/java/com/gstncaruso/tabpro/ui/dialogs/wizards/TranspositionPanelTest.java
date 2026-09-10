@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class TranspositionPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new TranspositionPanel());
     }
 

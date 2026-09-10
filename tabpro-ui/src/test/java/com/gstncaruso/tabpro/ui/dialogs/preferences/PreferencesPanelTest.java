@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 class PreferencesPanelTest {
 
     @Test
-    void ningunCampoQuedaSinNombreNiTooltipAccesible() {
+    void everyFieldHasAnAccessibleNameAndTooltip() {
         PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
 
         AccessibilityAssertions.assertNoViolations(panel);

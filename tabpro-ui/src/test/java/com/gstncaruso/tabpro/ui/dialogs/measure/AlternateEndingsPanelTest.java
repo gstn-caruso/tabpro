@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class AlternateEndingsPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new AlternateEndingsPanel(List.of()));
     }
 

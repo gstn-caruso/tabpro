@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class ParameterChangeDialogTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         Editor editor = new Editor(Score.blank());
 
         ParameterChangeDialog.Fields fields = ParameterChangeDialog.buildFields(ParameterChange.nothing(), editor);

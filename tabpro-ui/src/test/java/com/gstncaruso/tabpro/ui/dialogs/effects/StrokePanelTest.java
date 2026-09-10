@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class StrokePanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new StrokePanel(Stroke.of(StrokeDirection.DOWN)));
     }
 

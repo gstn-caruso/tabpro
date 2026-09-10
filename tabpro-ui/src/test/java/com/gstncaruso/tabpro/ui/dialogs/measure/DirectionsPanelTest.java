@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class DirectionsPanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new DirectionsPanel(Optional.empty(), Optional.empty()));
     }
 

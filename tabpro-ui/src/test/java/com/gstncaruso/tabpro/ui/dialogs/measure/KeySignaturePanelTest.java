@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class KeySignaturePanelTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new KeySignaturePanel(new KeySignature(0, Mode.MAJOR)));
     }
 
