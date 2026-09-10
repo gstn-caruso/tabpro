@@ -125,6 +125,9 @@ public final class Ports {
 
         /** El F2 del manual: "Active/Desactive RSE". Prende o apaga el banco SoundFont cargado. */
         void toggleSoundFont();
+
+        /** Si el banco de sonido esta prendido ahora mismo, para que un conmutable lo muestre. */
+        boolean soundFontActive();
     }
 
     /** Lo que el menu Ver decide sobre la pantalla. */

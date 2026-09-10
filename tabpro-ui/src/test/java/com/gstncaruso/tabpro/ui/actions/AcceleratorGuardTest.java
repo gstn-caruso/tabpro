@@ -165,6 +165,7 @@ class AcceleratorGuardTest {
     @SuppressWarnings("unchecked")
     private static <T> T record(Class<T> port) {
         return (T) Proxy.newProxyInstance(
-                port.getClassLoader(), new Class<?>[] {port}, (proxy, method, args) -> null);
+                port.getClassLoader(), new Class<?>[] {port},
+                (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null);
     }
 }

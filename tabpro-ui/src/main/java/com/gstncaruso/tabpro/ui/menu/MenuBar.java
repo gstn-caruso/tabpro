@@ -159,7 +159,11 @@ public final class MenuBar {
         menu.addSeparator();
         add(menu, "note.up", "note.down", "note.toUpperString", "note.toLowerString");
         menu.addSeparator();
-        add(menu, "note.dynamics", "note.soundDuration", "note.fingering", "note.chord", "note.mixTableChange");
+        add(menu, "note.dynamics",
+                "note.dynamic.PIANO_PIANISSIMO", "note.dynamic.PIANISSIMO", "note.dynamic.PIANO",
+                "note.dynamic.MEZZO_PIANO", "note.dynamic.MEZZO_FORTE", "note.dynamic.FORTE",
+                "note.dynamic.FORTISSIMO", "note.dynamic.FORTE_FORTISSIMO",
+                "note.soundDuration", "note.fingering", "note.chord", "note.mixTableChange");
         menu.addSeparator();
         JMenu beams = new JMenu("Barra de unión");
         add(beams, "note.forceBeamBreak", "note.preventBeamBreak", "note.resetBeamBreak");

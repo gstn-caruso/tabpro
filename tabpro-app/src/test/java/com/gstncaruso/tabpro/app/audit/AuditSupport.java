@@ -487,6 +487,29 @@ final class AuditSupport {
         return null;
     }
 
+    /** El JToggleButton real de una barra de herramientas cuya Action tiene ese nombre exacto. */
+    static javax.swing.JToggleButton findToggleButtonByActionName(Container root, String label) {
+        if (root instanceof javax.swing.JToggleButton button
+                && button.getAction() != null
+                && label.equals(button.getAction().getValue(Action.NAME))) {
+            return button;
+        }
+        for (Component child : root.getComponents()) {
+            if (child instanceof javax.swing.JToggleButton button
+                    && button.getAction() != null
+                    && label.equals(button.getAction().getValue(Action.NAME))) {
+                return button;
+            }
+            if (child instanceof Container container) {
+                javax.swing.JToggleButton found = findToggleButtonByActionName(container, label);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
     /** Una foto del modelo observable: si dos de estas son iguales, el modelo no se movio. */
     private record ModelSnapshot(Score score, Object cursor) {
     }
