@@ -54,6 +54,30 @@ class TrackSelectorTest {
         assertFalse(selector.nextButton().isEnabled());
     }
 
+    @Test
+    void enLaPrimeraPistaSoloLaFlechaSiguienteQuedaHabilitada() {
+        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardGuitar("Guitarra 2"));
+        editor.selectTrack(0);
+
+        TrackSelector selector = new TrackSelector(editor, commands);
+
+        assertFalse(selector.previousButton().isEnabled());
+        assertTrue(selector.nextButton().isEnabled());
+    }
+
+    @Test
+    void enLaUltimaPistaSoloLaFlechaAnteriorQuedaHabilitada() {
+        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardGuitar("Guitarra 2"));
+        editor.selectTrack(2);
+
+        TrackSelector selector = new TrackSelector(editor, commands);
+
+        assertTrue(selector.previousButton().isEnabled());
+        assertFalse(selector.nextButton().isEnabled());
+    }
+
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
         InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
