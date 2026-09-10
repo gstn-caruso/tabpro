@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class EditorListenerTest {
 
     @Test
-    void laVarianteConElTipoDeCambioLlamaALaViejaPorDefecto() {
+    void theVariantWithTheChangeTypeCallsTheOldDefaultOne() {
         int[] calls = new int[1];
         EditorListener listener = () -> calls[0]++;
 
