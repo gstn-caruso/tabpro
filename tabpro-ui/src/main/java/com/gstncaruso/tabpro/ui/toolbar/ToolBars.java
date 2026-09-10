@@ -192,6 +192,10 @@ public final class ToolBars {
         add(bar, "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak");
         bar.addSeparator();
         add(bar, "note.stemUp", "note.stemDown", "note.stemAutomatic");
+        bar.addSeparator();
+        add(bar, "note.dynamic.PIANO_PIANISSIMO", "note.dynamic.PIANISSIMO", "note.dynamic.PIANO",
+                "note.dynamic.MEZZO_PIANO", "note.dynamic.MEZZO_FORTE", "note.dynamic.FORTE",
+                "note.dynamic.FORTISSIMO", "note.dynamic.FORTE_FORTISSIMO");
         return bar;
     }
 

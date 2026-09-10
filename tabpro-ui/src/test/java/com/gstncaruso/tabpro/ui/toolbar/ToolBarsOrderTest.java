@@ -73,7 +73,10 @@ class ToolBarsOrderTest {
                 "bar.octave8va", "bar.octave8vb", "bar.octave15ma", "bar.octave15mb", SEP,
                 "view.hideStandardNotation", "view.hideTablature", SEP,
                 "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak", SEP,
-                "note.stemUp", "note.stemDown", "note.stemAutomatic");
+                "note.stemUp", "note.stemDown", "note.stemAutomatic", SEP,
+                "note.dynamic.PIANO_PIANISSIMO", "note.dynamic.PIANISSIMO", "note.dynamic.PIANO",
+                "note.dynamic.MEZZO_PIANO", "note.dynamic.MEZZO_FORTE", "note.dynamic.FORTE",
+                "note.dynamic.FORTISSIMO", "note.dynamic.FORTE_FORTISSIMO");
     }
 
     @Test
