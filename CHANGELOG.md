@@ -1,3 +1,9 @@
+## [0.41.0](https://github.com/gstn-caruso/tabpro/compare/v0.40.0...v0.41.0) (2026-09-10)
+
+### Features
+
+* **instruments:** el diapasón tiene veta y trastes metálicos, y el teclado marca la nota con un punto ([#138](https://github.com/gstn-caruso/tabpro/issues/138)) ([27f3a2f](https://github.com/gstn-caruso/tabpro/commit/27f3a2f411646dca68131fb331105d2e655ce3eb))
+
 ## [0.40.0](https://github.com/gstn-caruso/tabpro/compare/v0.39.2...v0.40.0) (2026-09-10)
 
 ### Features
