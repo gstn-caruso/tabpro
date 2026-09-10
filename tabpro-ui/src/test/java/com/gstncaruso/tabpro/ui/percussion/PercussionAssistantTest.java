@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 class PercussionAssistantTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void noControlIsLeftWithoutAnAccessibleNameOrTooltip() {
         Editor editor = new Editor(new Score("Prueba", 120, java.util.List.of(Track.percussion("Batería"))));
 
         AccessibilityAssertions.assertNoViolations(new PercussionAssistant(editor, new RecordingPlayer()));
@@ -72,7 +72,7 @@ class PercussionAssistantTest {
     }
 
     @Test
-    void elAsistenteReservaLugarParaLasCuatroColumnasSinRecortarlas() {
+    void theAssistantReservesSpaceForTheFourColumnsWithoutClippingThem() {
         Editor editor = new Editor(new Score("t", 120, java.util.List.of(Track.percussion("Bateria"))));
         PercussionAssistant assistant = new PercussionAssistant(editor, new RecordingPlayer());
         Dimension naturalGridSize = assistant.soundPalette().soundList().getPreferredSize();

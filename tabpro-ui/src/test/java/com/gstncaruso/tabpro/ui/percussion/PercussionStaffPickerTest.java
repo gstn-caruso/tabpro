@@ -21,7 +21,7 @@ class PercussionStaffPickerTest {
     private static final int WIDTH = 200;
 
     @Test
-    void tieneNombreYTooltipAccesibles() {
+    void hasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new PercussionStaffPicker());
     }
     private static final int HEIGHT = PercussionStaffPicker.PREFERRED_HEIGHT;

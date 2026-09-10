@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 class PercussionSoundPaletteTest {
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void noControlIsLeftWithoutAnAccessibleNameOrTooltip() {
         AccessibilityAssertions.assertNoViolations(new PercussionSoundPalette(sound -> { }, sound -> { }));
     }
 
@@ -45,7 +45,7 @@ class PercussionSoundPaletteTest {
     }
 
     @Test
-    void laGrillaTieneCuatroColumnasEnElOrdenDeGP5() {
+    void theGridHasFourColumnsInGP5Order() {
         PercussionSoundPalette palette = new PercussionSoundPalette(sound -> { }, sound -> { });
         JList<Integer> list = sized(palette);
 
@@ -63,7 +63,7 @@ class PercussionSoundPaletteTest {
     }
 
     @Test
-    void elTamanoDeCeldaQuedaFijoDesdeLaConstruccionYNoSeMideEnCadaLayout() {
+    void theCellSizeStaysFixedFromConstructionAndIsNotMeasuredOnEveryLayout() {
         PercussionSoundPalette palette = new PercussionSoundPalette(sound -> { }, sound -> { });
         JList<Integer> list = palette.soundList();
 
