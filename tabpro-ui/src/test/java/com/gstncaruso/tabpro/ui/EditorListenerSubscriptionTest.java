@@ -38,8 +38,7 @@ class EditorListenerSubscriptionTest {
             "MainFrame.java#() -> spinner.setValue(editor.score().tempo())",
             "TrackSelector.java#this::refresh",
             "Commands.java#this::refreshEditMarkerCommand",
-            "TrackPanel.java#this::editorChanged",
-            "StatusBar.java#this::refresh");
+            "TrackPanel.java#this::editorChanged");
 
     static Stream<Subscription> subscriptions() {
         return sourceRoots().filter(Files::isDirectory).flatMap(EditorListenerSubscriptionTest::subscriptionsUnder);
@@ -95,7 +94,13 @@ class EditorListenerSubscriptionTest {
 
     record Subscription(Path file, String argument) {
         String key() {
-            return file.getFileName() + "#" + argument;
+            return file.getFileName() + "#" + delegateArgument();
+        }
+
+        private String delegateArgument() {
+            return argument.startsWith(ADAPTER_CALL)
+                    ? argument.substring(ADAPTER_CALL.length(), argument.length() - 1).strip()
+                    : argument;
         }
 
         @Override

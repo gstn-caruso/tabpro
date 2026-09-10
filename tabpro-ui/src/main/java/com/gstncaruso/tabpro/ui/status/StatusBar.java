@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.status;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.score.Pagination;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
@@ -55,7 +56,7 @@ public final class StatusBar extends JPanel {
         add(sunkenPanel(credits, "Título y autor"), BorderLayout.CENTER);
 
         refresh();
-        editor.addListener(this::refresh);
+        editor.addListener(EdtEditorListener.onEdt(this::refresh));
     }
 
     String pageText() {
