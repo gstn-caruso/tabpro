@@ -10,14 +10,14 @@ import org.junit.jupiter.api.Test;
 class SpeedTrainerTest {
 
     @Test
-    void laPrimeraVueltaEsElTempoInicial() {
+    void theFirstLapIsTheStartingTempo() {
         SpeedTrainer trainer = new SpeedTrainer(80, 140, 10);
 
         assertEquals(80, trainer.tempoForLap(0));
     }
 
     @Test
-    void cadaVueltaSubeElIncremento() {
+    void eachLapRaisesByTheIncrement() {
         SpeedTrainer trainer = new SpeedTrainer(80, 140, 10);
 
         assertEquals(90, trainer.tempoForLap(1));
@@ -25,14 +25,14 @@ class SpeedTrainerTest {
     }
 
     @Test
-    void nuncaSuperaElTempoFinal() {
+    void neverExceedsTheFinalTempo() {
         SpeedTrainer trainer = new SpeedTrainer(80, 100, 10);
 
         assertEquals(100, trainer.tempoForLap(5));
     }
 
     @Test
-    void sabeCuandoLlegoAlTempoFinal() {
+    void knowsWhenItReachedTheFinalTempo() {
         SpeedTrainer trainer = new SpeedTrainer(80, 100, 10);
 
         assertFalse(trainer.reachedFinalTempo(0));
@@ -40,12 +40,12 @@ class SpeedTrainerTest {
     }
 
     @Test
-    void rechazaUnTempoFinalMenorAlInicial() {
+    void rejectsAFinalTempoLowerThanTheStarting() {
         assertThrows(IllegalArgumentException.class, () -> new SpeedTrainer(140, 80, 10));
     }
 
     @Test
-    void rechazaUnIncrementoNoPositivo() {
+    void rejectsANonPositiveIncrement() {
         assertThrows(IllegalArgumentException.class, () -> new SpeedTrainer(80, 140, 0));
     }
 }
