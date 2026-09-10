@@ -50,6 +50,11 @@ class RestPaintingTest {
         assertGlyphAt(NoteValue.SIXTEENTH, MusicFont.rest16th(), 4);
     }
 
+    @Test
+    void aThirtySecondRestIsTheThirtySecondRestGlyphCenteredOnTheStaff() {
+        assertGlyphAt(NoteValue.THIRTY_SECOND, MusicFont.rest32nd(), 4);
+    }
+
     private static void assertGlyphAt(NoteValue value, String glyph, int step) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(Beat.rest(new Duration(value, false))));
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));

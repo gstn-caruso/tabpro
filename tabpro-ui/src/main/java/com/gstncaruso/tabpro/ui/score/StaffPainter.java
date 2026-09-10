@@ -710,6 +710,8 @@ final class StaffPainter {
                     g, layout, trackIndex, measureIndex, centerX, MusicFont.rest8th(), MIDDLE_LINE_STEP, ink);
             case 2 -> paintRestGlyph(
                     g, layout, trackIndex, measureIndex, centerX, MusicFont.rest16th(), MIDDLE_LINE_STEP, ink);
+            case 3 -> paintRestGlyph(
+                    g, layout, trackIndex, measureIndex, centerX, MusicFont.rest32nd(), MIDDLE_LINE_STEP, ink);
             default -> paintGeometricHookedRest(g, layout, trackIndex, measureIndex, centerX, hooks, ink);
         }
     }
