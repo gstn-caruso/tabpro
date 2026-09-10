@@ -57,7 +57,6 @@ class MidiScoreExporterTest {
 
         Sequence sequence = exporter.toSequence(score);
 
-        // conductor + una sola pista audible
         assertEquals(2, sequence.getTracks().length);
     }
 
@@ -69,7 +68,6 @@ class MidiScoreExporterTest {
 
         Sequence sequence = exporter.toSequence(score);
 
-        // una pista ocupa dos canales: el limpio y el de efectos, donde suenan las notas con bend
         javax.sound.midi.Track midiTrack = sequence.getTracks()[1];
         for (int midiChannel : List.of(0, 1)) {
             assertEquals(30, programChangeOn(midiTrack, midiChannel));
@@ -78,10 +76,6 @@ class MidiScoreExporterTest {
         }
     }
 
-    /**
-     * Las perillas de chorus, reverb, phaser y tremolo de la mesa de mezcla se editaban y se
-     * guardaban, pero nunca llegaban al sintetizador: el .mid no llevaba sus controladores.
-     */
     @Test
     void theMixingConsoleEffectsReachTheSynthOnBothChannelsOfTheTrack() {
         Channel channel = Channel.playing(30).withChorus(10).withReverb(40).withPhaser(70).withTremolo(100);
@@ -99,7 +93,6 @@ class MidiScoreExporterTest {
         }
     }
 
-    /** Dos pistas con efectos distintos no pueden terminar sonando con el mismo valor. */
     @Test
     void twoTracksWithDifferentReverbSoundDifferentInTheGeneratedMidi() {
         Track wetTrack = Track.standardGuitar("Con reverb").withChannel(Channel.playing(25).withReverb(100));
@@ -123,11 +116,6 @@ class MidiScoreExporterTest {
         assertEquals(0, noteOnOf(midiTrack, 64).getChannel(), "la limpia se queda en el canal de la pista");
     }
 
-    /**
-     * Ch y Ch2 de la mesa de mezcla se editaban y se guardaban, pero MidiSequences calculaba sus
-     * propios canales a partir del orden de la pista e ignoraba lo configurado: poner una pista
-     * en el canal 5 no la ponia en el canal 5.
-     */
     @Test
     void aTrackPlaysOnTheChannelTheMixingConsoleConfiguredInsteadOfAnAutomaticOne() {
         Channel onChannelFive = Channel.playing(25).withNumber(5).withEffectChannel(6);
@@ -138,7 +126,6 @@ class MidiScoreExporterTest {
 
         javax.sound.midi.Track midiTrack = exporter.toSequence(score).getTracks()[1];
 
-        // el canal 5 de la mesa de mezcla es el indice 4: MIDI numera sus canales desde 0
         assertEquals(4, onlyShortMessageOf(midiTrack, ShortMessage.NOTE_ON).getChannel());
     }
 
@@ -157,10 +144,6 @@ class MidiScoreExporterTest {
         assertEquals(4, noteOnOf(midiTrack, 64).getChannel(), "la limpia se queda en el canal configurado (Ch)");
     }
 
-    /**
-     * La percusion vive siempre en el canal 10 de MIDI por convencion del estandar, sin importar
-     * que numero haya quedado cargado en su Channel.
-     */
     @Test
     void aPercussionTrackAlwaysUsesChannelTenEvenIfItsChannelIsConfiguredOtherwise() {
         Channel misconfigured = Channel.percussion().withNumber(3).withEffectChannel(4);
@@ -174,11 +157,6 @@ class MidiScoreExporterTest {
         assertEquals(9, onlyShortMessageOf(midiTrack, ShortMessage.NOTE_ON).getChannel());
     }
 
-    /**
-     * Guitar Pro deja compartir un canal entre pistas -una partitura puede tener mas pistas que
-     * canales libres- y el archivo tiene que respetarlo tal cual llega, no reacomodarlo por su
-     * cuenta: que se pisen es una decision del usuario, no un bug de la exportacion.
-     */
     @Test
     void twoTracksConfiguredOnTheSameChannelBothSoundOnIt() {
         Channel sharedChannel = Channel.playing(25).withNumber(5).withEffectChannel(6);
@@ -194,12 +172,6 @@ class MidiScoreExporterTest {
         assertEquals(4, onlyShortMessageOf(sequence.getTracks()[2], ShortMessage.NOTE_ON).getChannel());
     }
 
-    /**
-     * Antes, una pista nueva entraba siempre en el canal 1 -no importaba porque MidiSequences
-     * ignoraba ese valor-. Ahora que el canal configurado llega a sonar, una partitura armada
-     * agregando pistas desde cero, sin tocar la mesa de mezcla, tiene que sonar igual que
-     * siempre: tres pistas, cada una con su instrumento, no las tres pisandose en una sola.
-     */
     @Test
     void aFreshScoreWithThreeTracksSoundsAsThreeDistinctTracksWithoutTouchingTheMixer() {
         Editor editor = new Editor(Score.blank());
@@ -244,7 +216,6 @@ class MidiScoreExporterTest {
 
         Sequence sequence = exporter.toSequence(score);
 
-        // se tocan 4/4, 3/4, 4/4, 3/4: el archivo lo anuncia las cuatro veces
         assertEquals(4, metaEventsOfType(sequence.getTracks()[0], 0x58).size());
     }
 
@@ -298,7 +269,6 @@ class MidiScoreExporterTest {
         assertEquals(38, noteOn.getData1());
     }
 
-    /** El mapa de tempo existe y funciona en la reproduccion; la exportacion tiene que usarlo tambien. */
     @Test
     void writesEveryTempoChangeAtItsMeasure() {
         Beat changingTempo = Beat.of(Duration.of(NoteValue.QUARTER), new Note(6, 0))
@@ -365,11 +335,6 @@ class MidiScoreExporterTest {
                 "el compas se repite, asi que su nota suena dos veces");
     }
 
-    /**
-     * Barras de union y plicas son notacion pura (manual, linea 923): cambian como se ve la
-     * partitura, nunca como suena. Forzar un corte de barra o una direccion de plica no puede
-     * mover un solo evento MIDI -si lo hiciera, seria un bug, no una feature de notacion.
-     */
     @Test
     void forcingBeamBreaksAndStemOverridesNeverChangesTheGeneratedMidi() throws Exception {
         Duration eighth = new Duration(NoteValue.EIGHTH, false);
@@ -476,7 +441,6 @@ class MidiScoreExporterTest {
                 .getData2();
     }
 
-    /** El valor de un controlador sin importar en que canal haya quedado la pista. */
     private static int controlChangeOf(javax.sound.midi.Track track, int controller) {
         return shortMessagesOf(track, ShortMessage.CONTROL_CHANGE).stream()
                 .filter(message -> message.getData1() == controller)
