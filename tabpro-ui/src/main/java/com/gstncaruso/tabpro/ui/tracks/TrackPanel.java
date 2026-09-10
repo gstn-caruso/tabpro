@@ -23,7 +23,8 @@ import javax.swing.ScrollPaneConstants;
 public final class TrackPanel extends JPanel {
 
     public static final int ROW_HEIGHT = 34;
-    public static final int HEADER_HEIGHT = 22;
+    /** Como en Guitar Pro 5: la banda de cabecera es 1,3 veces mas alta que una fila de datos. */
+    public static final int HEADER_HEIGHT = Math.round(ROW_HEIGHT * 1.3f);
 
     private final Editor editor;
     private final MixTable mixTable;

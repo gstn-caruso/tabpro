@@ -34,7 +34,7 @@ import javax.swing.UIManager;
  */
 public final class MarkerZone extends JComponent implements AccessibleControl {
 
-    public static final int HEIGHT = 12;
+    public static final int HEIGHT = TrackPanel.HEADER_HEIGHT / 2;
 
     private final Editor editor;
     private int caret;
