@@ -10,15 +10,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 
-/**
- * La hoja clara del Modo Pagina y del Modo Pergamino: sombra suave, margenes, y el encabezado y el
- * pie que pidio Configurar pagina. Que dice cada linea ya viene resuelto de la
- * {@link com.gstncaruso.tabpro.ui.page.PageBanner}; aca solo se decide con que letra y de que lado
- * se dibuja cada elemento.
- */
 final class PageChromePainter {
 
-    /** Cuanto sube el pie sobre el borde del margen de abajo. */
     private static final int FOOTER_BASELINE_OVER_THE_MARGIN = 8;
 
     private PageChromePainter() {
@@ -31,15 +24,6 @@ final class PageChromePainter {
         g.fillRect(x, y, width, height);
     }
 
-    /**
-     * El encabezado entero va solo en la primera hoja; en las siguientes se repite apenas el
-     * titulo, chiquito, como hace Guitar Pro.
-     *
-     * <p>Manual, linea 2800: la ventana de Propiedades de la pista deja elegir que los diagramas
-     * de acorde vayan "at the top of the score" -{@code diagramsUnderTheTitle}, que ya viene
-     * armado por {@link com.gstncaruso.tabpro.core.harmony.TrackChords#underTheTitle}-. Van una
-     * sola vez, en la primera hoja, pegados al borde de abajo del encabezado.
-     */
     static void paintHeader(
             Graphics2D g, List<BannerText> header, PageMetrics sheet, int y, boolean firstPage,
             List<ChordDiagram> diagramsUnderTheTitle) {
@@ -66,8 +50,6 @@ final class PageChromePainter {
         paintDiagramsUnderTheTitle(g, diagramsUnderTheTitle, sheet, centerX, top, y);
     }
 
-    /** {@link ChordDiagramPainter} dibuja pensando en el fondo oscuro de la pantalla; envuelto en
-     * {@link PaperGraphics} su tinta clara sale oscura, como el resto de lo que cae en esta hoja. */
     private static void paintDiagramsUnderTheTitle(
             Graphics2D g, List<ChordDiagram> chords, PageMetrics sheet, int centerX, int top, int y) {
         if (chords.isEmpty()) {
@@ -114,7 +96,6 @@ final class PageChromePainter {
         };
     }
 
-    /** Los creditos y el numero de pagina van contra el margen derecho; el resto, centrado. */
     private static boolean isRightAligned(PageElement element) {
         return element == PageElement.WORDS || element == PageElement.MUSIC || element == PageElement.PAGE_NUMBER;
     }

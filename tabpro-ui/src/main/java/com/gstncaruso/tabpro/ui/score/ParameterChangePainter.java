@@ -9,15 +9,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-/**
- * Los cambios de parametro que el manual deja insertar en medio de la
- * partitura. El cambio de tempo se escribe como lo escribe la musica, una negra
- * y su numero; todo lo demas —paneo, volumen, instrumento, efectos— no tiene
- * simbolo propio y se anuncia con el rectangulito rojo que describe el manual.
- */
 final class ParameterChangePainter {
 
-    /** Cuanto se despegan del pentagrama, para no pisar las notas que asoman por arriba. */
     private static final int STAFF_CLEARANCE = 16;
     private static final int INITIAL_TEMPO_CLEARANCE_ABOVE_A_FORCED_STEM = 14;
 
@@ -68,7 +61,6 @@ final class ParameterChangePainter {
         }
     }
 
-    /** Si el cambio toca algo que la notacion musical no sabe escribir. */
     private static boolean changesSomethingWithoutASymbol(ParameterChange change) {
         for (SoundParameter parameter : SoundParameter.values()) {
             if (parameter != SoundParameter.TEMPO && change.changes(parameter)) {
@@ -94,7 +86,6 @@ final class ParameterChangePainter {
         g.drawString(label, left + QUARTER_NOTE_WIDTH, baselineY);
     }
 
-    /** La negra a la que se refiere el numero. */
     private static void paintQuarterNote(Graphics2D g, int x, int baselineY) {
         g.setColor(ScoreColors.TEMPO);
         g.setFont(MusicFont.sizedTo(2));

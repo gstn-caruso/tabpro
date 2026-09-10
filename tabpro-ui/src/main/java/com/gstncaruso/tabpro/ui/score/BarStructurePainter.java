@@ -19,17 +19,11 @@ import java.awt.geom.Path2D;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * La estructura del compas: armadura y compas en cada cambio, barras de repeticion, finales
- * alternativos, doble barra, y los carteles que valen para toda la partitura (direcciones,
- * saltos y marcadores), que se dibujan una sola vez arriba del sistema.
- */
 final class BarStructurePainter {
 
     private BarStructurePainter() {
     }
 
-    /** Lo que se dibuja sobre el pentagrama de cada pista: armadura, compas y repeticiones. */
     static void paintPerTrack(
             Graphics2D g, ScoreLayout layout, Track track, Clef clef, int trackIndex, int measureIndex) {
         Measure measure = track.measure(measureIndex);
@@ -67,10 +61,6 @@ final class BarStructurePainter {
         }
     }
 
-    /**
-     * Lo que vale para toda la partitura y se dibuja una unica vez, arriba del primer pentagrama
-     * del sistema: finales alternativos, direcciones, saltos y marcadores.
-     */
     static void paintScoreWide(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
         MeasureAttributes attributes = track.measure(measureIndex).attributes();
         int left = layout.measureX(measureIndex);
@@ -108,7 +98,6 @@ final class BarStructurePainter {
         g.drawString(label, rightEdge - metrics.stringWidth(label) - 12, top - 4);
     }
 
-    /** El cartelito de la barra de repeticion, arriba a la derecha del compas que cierra. */
     static String repeatLabel(int times) {
         return "x" + times;
     }
@@ -139,10 +128,6 @@ final class BarStructurePainter {
 
     static final int MARKER_TEXT_CLEARANCE_ABOVE_STAFF = 16;
 
-    /**
-     * El cuadradito del marcador mide 6x9 px a 96 dpi en el manual (p14: «Outro»); a la escala
-     * interna de tabpro, x1,333, eso da 8x12.
-     */
     static final int MARKER_SQUARE_WIDTH = 8;
 
     static final int MARKER_SQUARE_HEIGHT = 12;

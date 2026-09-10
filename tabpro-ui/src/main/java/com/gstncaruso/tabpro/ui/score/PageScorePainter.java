@@ -15,25 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * El punto de entrada unico de la partitura para la ventana principal: elige como envolver los
- * compases segun el {@link ViewMode}, aplica el {@link Zoom}, y en Pagina/Pergamino reparte los
- * sistemas en hojas claras del papel que pide la configuracion de pagina (via {@link PageLayout})
- * dibujando la tinta sobre un {@link PaperGraphics}, que es el que sabe de que color se lee cada
- * cosa sobre el papel. Pantalla vertical y horizontal dibujan directo sobre el fondo oscuro, sin
- * hoja.
- */
 public final class PageScorePainter {
 
-    /** Ancho de columna que usa el Modo Pantalla Horizontal para no envolver nunca en sistemas. */
     private static final int UNWRAPPED_WIDTH = 1_000_000;
 
-    /**
-     * El ultimo layout calculado, por hilo: un ciclo de pintado entero (getPreferredSize +
-     * paintComponent) pide el layout varias veces para el mismo {@link Score} y el mismo
-     * {@link ScoreViewport} sin que nada haya cambiado. Por hilo -no un solo cache global- para
-     * que exportar en un hilo de fondo nunca pise el layout que esta usando el EDT.
-     */
     private static final ThreadLocal<CachedLayout> LAST_LAYOUT = new ThreadLocal<>();
 
     private record CachedLayout(
@@ -87,12 +72,10 @@ public final class PageScorePainter {
         }
     }
 
-    /** En cuantas hojas se reparte la partitura con este papel. */
     public static int pageCount(Score score, ScoreViewport viewport) {
         return placementsFor(layoutFor(score, viewport), viewport).size();
     }
 
-    /** En que hoja cae cada compas, que es lo que la barra de estado muestra. */
     public static Pagination paginationOf(Score score, ScoreViewport viewport) {
         ScoreLayout layout = layoutFor(score, viewport);
         if (!viewport.mode().paginates()) {
@@ -108,10 +91,6 @@ public final class PageScorePainter {
         return Pagination.startingAtMeasures(firstMeasureOfPage);
     }
 
-    /**
-     * Una sola hoja dibujada en el origen, como la necesitan la impresora y el PDF: la misma hoja
-     * que se ve en pantalla, pero sola y sin el hueco que la separa de la siguiente.
-     */
     public static void paintPage(
             Graphics2D g, Score score, Cursor cursor, Playhead playhead, Optional<Selection> selection,
             ScoreViewport viewport, int page) {
@@ -123,7 +102,6 @@ public final class PageScorePainter {
                 new PageFields(score.info(), page + 1, pages.size()), diagramsUnderTheTitleFor(score, viewport));
     }
 
-    /** Traduce un clic de pantalla (ya sin el factor de zoom) a compas/beat/cuerda. */
     public static Optional<ScoreLayout.Hit> hitTest(
             Score score, ScoreViewport viewport, int screenX, int screenY) {
         ViewMode mode = viewport.mode();
@@ -147,7 +125,6 @@ public final class PageScorePainter {
         return Optional.empty();
     }
 
-    /** Donde cae, en coordenadas de pantalla ya con el zoom aplicado, un beat de la partitura. */
     public static Rectangle boundsOf(
             Score score, ScoreViewport viewport, int track, int measure, int beat) {
         ViewMode mode = viewport.mode();
@@ -179,11 +156,6 @@ public final class PageScorePainter {
         return cachedFor(score, viewport).layout();
     }
 
-    /**
-     * Los acordes que van bajo el titulo son los mismos para toda la partitura: exportar todas
-     * sus hojas no tiene que barrer los compases de cada pista una vez por hoja para volver a
-     * juntarlos, {@link TrackChords#underTheTitle} ya los junto para la primera.
-     */
     static List<ChordDiagram> diagramsUnderTheTitleFor(Score score, ScoreViewport viewport) {
         return cachedFor(score, viewport).diagramsUnderTheTitle();
     }
@@ -273,11 +245,6 @@ public final class PageScorePainter {
         return placements;
     }
 
-    /**
-     * Una hoja puesta en su lugar: donde arranca en pantalla, cuanto mide el papel, cuanto ocupa
-     * su contenido ya dibujado -o sea con el tamano de la partitura aplicado- y cuanto hay que
-     * subir la partitura para que el primer sistema de la hoja quede arriba de todo.
-     */
     private record PagePlacement(
             int screenTop, int pageHeight, int paintedHeight, int shiftUp,
             int firstSystem, int lastSystem, boolean isFirst) {
@@ -286,12 +253,10 @@ public final class PageScorePainter {
             return screenTop + pageHeight;
         }
 
-        /** Si esta hoja cae, aunque sea en parte, adentro de lo que el clip deja ver. */
         boolean intersectsVertically(Rectangle clip) {
             return clip.y < bottom() && clip.y + clip.height > screenTop;
         }
 
-        /** La misma hoja pero puesta en el origen, sin las que venian antes. */
         PagePlacement alone() {
             return new PagePlacement(0, pageHeight, paintedHeight, shiftUp, firstSystem, lastSystem, isFirst);
         }
