@@ -27,12 +27,12 @@ class ChordDialogTest {
             Preferences.userRoot().node("tabpro-test/" + getClass().getSimpleName() + "/" + java.util.UUID.randomUUID());
 
     @AfterEach
-    void limpiarElNodoDePrueba() throws BackingStoreException {
+    void clearsTheScratchNode() throws BackingStoreException {
         scratch.removeNode();
     }
 
     @Test
-    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
@@ -43,7 +43,7 @@ class ChordDialogTest {
     }
 
     @Test
-    void elComboDeTipoDeAcordeMuestraElSufijoMusicalEnVezDelEnumCrudo() {
+    void theChordTypeComboShowsTheMusicalSuffixInsteadOfTheRawEnum() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
@@ -59,7 +59,7 @@ class ChordDialogTest {
     }
 
     @Test
-    void lasPosicionesSonBotonesDeRadioSiempreVisiblesQueEligenLaComplejidad() {
+    void thePositionsAreAlwaysVisibleRadioButtonsThatChooseTheComplexity() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
@@ -77,25 +77,25 @@ class ChordDialogTest {
     }
 
     @Test
-    void laCejillaSeEligeConBotonesDeRadioSiempreVisibles() {
+    void theBarreIsChosenWithAlwaysVisibleRadioButtons() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 
         ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
 
-        javax.swing.JRadioButton forzar = Combos.radioButtonWithText(panel, "Forzar cejilla");
+        javax.swing.JRadioButton force = Combos.radioButtonWithText(panel, "Forzar cejilla");
         assertNotNull(Combos.radioButtonWithText(panel, "Cualquiera"), "no encontre el radio 'Cualquiera'");
         assertNotNull(Combos.radioButtonWithText(panel, "Prohibir cejilla"), "no encontre el radio 'Prohibir cejilla'");
-        assertNotNull(forzar, "no encontre el radio 'Forzar cejilla'");
+        assertNotNull(force, "no encontre el radio 'Forzar cejilla'");
 
-        forzar.doClick();
+        force.doClick();
 
         assertEquals(BarrePreference.FORCE, model.barrePreference());
     }
 
     @Test
-    void elComboDeFundamentalMuestraElNombreDeLaNotaEnCastellano() {
+    void theRootComboShowsTheNoteNameInSpanish() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
@@ -111,7 +111,7 @@ class ChordDialogTest {
     }
 
     @Test
-    void elComboDeInversionMuestraFundamentalParaLaRaizYElGradoConLaNotaParaLasDemas() {
+    void theInversionComboShowsFundamentalForTheRootAndTheDegreeWithTheNoteForTheOthers() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
@@ -122,17 +122,17 @@ class ChordDialogTest {
         JComboBox<com.gstncaruso.tabpro.core.harmony.Interval> inversions =
                 Combos.firstWithItemType(panel, com.gstncaruso.tabpro.core.harmony.Interval.class);
 
-        String fundamental = ((JLabel) inversions.getRenderer().getListCellRendererComponent(
+        String rootLabel = ((JLabel) inversions.getRenderer().getListCellRendererComponent(
                 new JList<>(), com.gstncaruso.tabpro.core.harmony.Interval.ROOT, 0, false, false)).getText();
-        String tercera = ((JLabel) inversions.getRenderer().getListCellRendererComponent(
+        String thirdLabel = ((JLabel) inversions.getRenderer().getListCellRendererComponent(
                 new JList<>(), com.gstncaruso.tabpro.core.harmony.Interval.MAJOR_THIRD, 0, false, false)).getText();
 
-        assertEquals("Fundamental", fundamental);
-        assertEquals("E (3)", tercera);
+        assertEquals("Fundamental", rootLabel);
+        assertEquals("E (3)", thirdLabel);
     }
 
     @Test
-    void laListaDeNombresAlternativosMuestraElNombreDelAcordeEnVezDelRecordCrudo() {
+    void theAlternativeNamesListShowsTheChordNameInsteadOfTheRawRecord() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
@@ -141,8 +141,8 @@ class ChordDialogTest {
 
         JList<?> alternativeNames = Combos.firstListNamed(panel, "Nombres alternativos");
         Chord chord = Chord.of(PitchClass.of("C"), ChordType.MINOR_SEVENTH);
-        String texto = Combos.renderedTextOfList(alternativeNames, chord);
+        String renderedText = Combos.renderedTextOfList(alternativeNames, chord);
 
-        assertEquals("Cm7", texto);
+        assertEquals("Cm7", renderedText);
     }
 }
