@@ -381,7 +381,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
 
     private Color focusRingColor() {
         Color fromLookAndFeel = UIManager.getColor("Component.focusColor");
-        return fromLookAndFeel != null ? fromLookAndFeel : InstrumentColors.HOVER;
+        return fromLookAndFeel != null ? fromLookAndFeel : fretboardType.hoverColor();
     }
 
     /** Lo unico que se dibuja mirando al mastil al reves para zurdos: nada de texto. */
@@ -410,7 +410,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
     private void paintInlays(Graphics2D g) {
         int middle = (stringY(1) + stringY(stringCount())) / 2;
         int radius = 4;
-        g.setColor(InstrumentColors.INLAY);
+        g.setColor(fretboardType.inlayColor());
         for (int fret = 1; fret <= fretCount(); fret++) {
             int x = logicalFretCenterX(fret);
             if (SINGLE_INLAYS.contains(fret)) {
@@ -428,7 +428,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
         int top = stringY(1) - padding;
         int bottom = stringY(stringCount()) + padding;
 
-        g.setColor(InstrumentColors.FRET_WIRE);
+        g.setColor(fretboardType.fretWireColor());
         g.setStroke(new BasicStroke(1));
         for (int fret = 1; fret <= fretCount(); fret++) {
             int x = (int) Math.round(logicalNutX() + fret * fretWidth());
@@ -441,7 +441,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
     }
 
     private void paintStrings(Graphics2D g) {
-        g.setColor(InstrumentColors.STRING);
+        g.setColor(fretboardType.stringColor());
         for (int string = 1; string <= stringCount(); string++) {
             float thickness = 0.8f + (string - 1) * 0.22f;
             g.setStroke(new BasicStroke(thickness));
@@ -482,12 +482,12 @@ public final class FretboardView extends JComponent implements AccessibleControl
             }
             int x = fretCenterX(position.fret());
             int y = stringY(position.string());
-            g.setColor(primary ? InstrumentColors.PRESSED : InstrumentColors.CONTEXT);
+            g.setColor(primary ? fretboardType.markColor() : fretboardType.contextColor());
             g.fillOval(x - radius, y - radius, radius * 2, radius * 2);
 
             if (noteNameMode.shows(kind)) {
                 String name = labelFor(position, kind);
-                g.setColor(primary ? InstrumentColors.PRESSED_INK : InstrumentColors.CONTEXT_INK);
+                g.setColor(primary ? fretboardType.markInkColor() : fretboardType.contextInkColor());
                 g.drawString(
                         name,
                         x - metrics.stringWidth(name) / 2,
@@ -504,7 +504,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
             int radius = Math.max(8, (int) (stringGap() * 0.5));
             int x = fretCenterX(note.fret());
             int y = stringY(note.string());
-            g.setColor(InstrumentColors.HOVER);
+            g.setColor(fretboardType.hoverColor());
             g.setStroke(new BasicStroke(1.4f));
             g.drawOval(x - radius, y - radius, radius * 2, radius * 2);
         });
