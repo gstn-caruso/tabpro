@@ -6,10 +6,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Un par de colores de la paleta: lo que se pinta, sobre que fondo, y el contraste minimo que
- * WCAG le exige (texto normal o un componente/trazo con significado).
- */
 public final class PaletteCheck {
 
     private PaletteCheck() {

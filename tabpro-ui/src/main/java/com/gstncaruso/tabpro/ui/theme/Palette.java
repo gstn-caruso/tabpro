@@ -3,10 +3,6 @@ package com.gstncaruso.tabpro.ui.theme;
 import java.awt.Color;
 import javax.swing.UIManager;
 
-/**
- * Los colores de la ventana. Salen del look and feel para que la interfaz
- * acompane al tema, con un valor de respaldo por si la clave no esta.
- */
 public final class Palette {
 
     private Palette() {
@@ -40,12 +36,10 @@ public final class Palette {
         return color("tabpro.accent", new Color(0xE8A33D));
     }
 
-    /** El rojo con que se marca lo que no cierra: un compas incompleto, el playhead. */
     public static Color warning() {
         return color("tabpro.warning", new Color(0xE05C5C));
     }
 
-    /** La hoja de la partitura en modo pagina. */
     public static Color paper() {
         return color("tabpro.paper", new Color(0xF6F3EC));
     }

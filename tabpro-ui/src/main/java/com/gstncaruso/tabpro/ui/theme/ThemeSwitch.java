@@ -2,13 +2,8 @@ package com.gstncaruso.tabpro.ui.theme;
 
 import java.util.List;
 
-/**
- * Cambiar el aspecto de la ventana en caliente. El manual lo llama "skins"; aca
- * son temas, y quien sabe instalarlos es la aplicacion, no la interfaz.
- */
 public interface ThemeSwitch {
 
-    /** Un tema que no cambia nada, para cuando la aplicacion no ofrece ninguno. */
     ThemeSwitch NONE = new ThemeSwitch() {
 
         @Override
@@ -44,12 +39,9 @@ public interface ThemeSwitch {
 
     void apply(String name);
 
-    /** Preferencias [F12] > Accesibilidad: la fuente base de toda la interfaz. */
     void useFontSize(int points);
 
-    /** Preferencias [F12] > Accesibilidad: manda sobre el tema oscuro/claro mientras esta prendido. */
     void useHighContrast(boolean enabled);
 
-    /** Preferencias [F12] > Accesibilidad: "Sin animaciones" apaga las de FlatLaf. */
     void useAnimations(boolean enabled);
 }
