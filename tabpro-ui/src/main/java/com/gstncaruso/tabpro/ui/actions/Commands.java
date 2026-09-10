@@ -77,7 +77,7 @@ public final class Commands {
     public Command get(String name) {
         Command command = commands.get(name);
         if (command == null) {
-            throw new IllegalArgumentException("no hay ningun comando llamado " + name);
+            throw new IllegalArgumentException("no hay ningún comando llamado " + name);
         }
         return command;
     }

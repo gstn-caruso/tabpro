@@ -14,7 +14,7 @@ public final class MetronomeDialog {
     public static Optional<MetronomeSettings> ask(Component parent, Editor editor, MetronomeSettings current) {
         MetronomePanel panel = new MetronomePanel(editor.score().tempo(), current);
 
-        boolean accepted = DialogShell.ask(parent, "Metronomo", panel);
+        boolean accepted = DialogShell.ask(parent, "Metrónomo", panel);
         if (!accepted) {
             return Optional.empty();
         }

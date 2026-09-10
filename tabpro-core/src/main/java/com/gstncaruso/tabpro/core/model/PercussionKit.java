@@ -25,7 +25,7 @@ public final class PercussionKit {
 
     /** Una afinacion ficticia: las lineas de percusion no tienen altura propia. */
     public static Tuning tuning() {
-        return Tuning.of("Percusion", 0, 0, 0, 0, 0, 0);
+        return Tuning.of("Percusión", 0, 0, 0, 0, 0, 0);
     }
 
     public static Optional<String> nameOf(int sound) {
@@ -42,12 +42,12 @@ public final class PercussionKit {
 
     private static Map<Integer, String> names() {
         Map<Integer, String> names = new LinkedHashMap<>();
-        names.put(35, "Bombo acustico");
+        names.put(35, "Bombo acústico");
         names.put(36, "Bombo");
         names.put(37, "Aro de caja");
-        names.put(38, "Caja acustica");
+        names.put(38, "Caja acústica");
         names.put(39, "Palmas");
-        names.put(40, "Caja electrica");
+        names.put(40, "Caja eléctrica");
         names.put(41, "Tom de piso grave");
         names.put(42, "Hi-hat cerrado");
         names.put(43, "Tom de piso agudo");

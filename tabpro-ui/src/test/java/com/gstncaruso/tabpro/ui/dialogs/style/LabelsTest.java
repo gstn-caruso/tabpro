@@ -108,7 +108,7 @@ class LabelsTest {
 
     @Test
     void traduceLaEscalaConSuNombreEnCastellano() {
-        assertEquals("Mayor (Jonico)", Labels.of(ScaleLibrary.major()));
+        assertEquals("Mayor (Jónico)", Labels.of(ScaleLibrary.major()));
     }
 
     @Test
@@ -123,7 +123,7 @@ class LabelsTest {
 
     @Test
     void traduceLaAfinacionConSuNombreYElResumenDeCuerdas() {
-        assertEquals("Guitarra estandar (EADGBE)", Labels.of(TuningLibrary.standardGuitar()));
+        assertEquals("Guitarra estándar (EADGBE)", Labels.of(TuningLibrary.standardGuitar()));
     }
 
     @Test
@@ -176,7 +176,7 @@ class LabelsTest {
         assertEquals("Solo el beat", Labels.of(FretboardDisplayMode.ONLY_BEAT));
         assertEquals("Sin nombres", Labels.of(NoteNameMode.NONE));
         assertEquals("Nombre", Labels.of(ScaleLabelMode.NAME));
-        assertEquals("Electrica", Labels.of(FretboardType.ELECTRIC));
+        assertEquals("Eléctrica", Labels.of(FretboardType.ELECTRIC));
         assertEquals("Solo el beat", Labels.of(KeyboardDisplayMode.ONLY_BEAT));
     }
 

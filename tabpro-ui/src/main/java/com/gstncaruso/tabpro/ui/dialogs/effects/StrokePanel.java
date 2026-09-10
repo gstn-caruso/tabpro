@@ -20,7 +20,7 @@ public final class StrokePanel extends FormPanel {
                 new javax.swing.JLabel(value == null ? "" : value.label()));
         speed.setRenderer(new LabeledListCellRenderer());
 
-        addRow("Direccion", direction);
+        addRow("Dirección", direction);
         addRow("Velocidad", speed);
         addFullWidthRow(rasgueado);
 

@@ -65,8 +65,8 @@ public final class MarkersDialog {
         list.setToolTipText("Marcadores");
         refresh(model, editor);
 
-        JButton insert = DialogStyle.flatButton("Insertar aqui");
-        JButton goTo = DialogStyle.flatButton("Ir al compas");
+        JButton insert = DialogStyle.flatButton("Insertar aquí");
+        JButton goTo = DialogStyle.flatButton("Ir al compás");
         JButton save = DialogStyle.flatButton("Guardar cambios");
 
         insert.addActionListener(event -> withValidName(form, name -> {

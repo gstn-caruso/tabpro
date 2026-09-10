@@ -12,7 +12,7 @@ import javax.swing.SpinnerNumberModel;
 public final class RepeatPanel extends FormPanel {
 
     private final boolean initialRepeatOpen;
-    private final JCheckBox repeatOpen = new JCheckBox("Abre repeticion");
+    private final JCheckBox repeatOpen = new JCheckBox("Abre repetición");
     private final JSpinner repeatCount = new JSpinner(new SpinnerNumberModel(0, 0, 99, 1));
 
     public RepeatPanel(boolean repeatOpen, int repeatCount) {
@@ -20,7 +20,7 @@ public final class RepeatPanel extends FormPanel {
         this.repeatOpen.setSelected(repeatOpen);
         this.repeatCount.setValue(repeatCount);
         addFullWidthRow(this.repeatOpen);
-        addRow("Cierra despues de tantas vueltas (0 = no cierra)", this.repeatCount);
+        addRow("Cierra después de tantas vueltas (0 = no cierra)", this.repeatCount);
     }
 
     public boolean repeatOpenSelected() {

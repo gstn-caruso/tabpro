@@ -10,7 +10,7 @@ public record Measure(TimeSignature timeSignature, MeasureAttributes attributes,
 
     public Measure {
         if (voices.size() != VoicePart.values().length) {
-            throw new IllegalArgumentException("un compas tiene exactamente dos voces");
+            throw new IllegalArgumentException("un compás tiene exactamente dos voces");
         }
         if (voices.getFirst().isUnused()) {
             throw new IllegalArgumentException("la voz principal necesita al menos un beat");

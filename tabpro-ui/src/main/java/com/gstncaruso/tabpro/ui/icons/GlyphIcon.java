@@ -31,7 +31,7 @@ public final class GlyphIcon implements Icon {
 
     public GlyphIcon(int size, String... rows) {
         if (rows.length == 0) {
-            throw new IllegalArgumentException("GlyphIcon necesita al menos un renglon de glifos");
+            throw new IllegalArgumentException("GlyphIcon necesita al menos un renglón de glifos");
         }
         this.size = size;
         Font measuringFont = BravuraFont.base().deriveFont(MEASURING_FONT_SIZE);
@@ -47,7 +47,7 @@ public final class GlyphIcon implements Icon {
     /** Los glifos pedidos, superpuestos sobre el mismo origen en vez de apilados o en secuencia. */
     public static Icon overlaid(int size, String... glyphs) {
         if (glyphs.length == 0) {
-            throw new IllegalArgumentException("GlyphIcon necesita al menos un renglon de glifos");
+            throw new IllegalArgumentException("GlyphIcon necesita al menos un renglón de glifos");
         }
         Font measuringFont = BravuraFont.base().deriveFont(MEASURING_FONT_SIZE);
         requireEveryGlyphDisplayable(measuringFont, glyphs);

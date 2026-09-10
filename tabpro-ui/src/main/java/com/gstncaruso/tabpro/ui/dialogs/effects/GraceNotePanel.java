@@ -31,9 +31,9 @@ public final class GraceNotePanel extends FormPanel {
 
         addRow("Traste", fret);
         addFullWidthRow(onBeat);
-        addRow("Duracion", duration);
-        addRow("Dinamica", dynamic);
-        addRow("Transicion", transition);
+        addRow("Duración", duration);
+        addRow("Dinámica", dynamic);
+        addRow("Transición", transition);
 
         apply(initial);
     }

@@ -18,7 +18,7 @@ public final class PrintPanel extends FormPanel {
 
     private final int sheetCount;
     private final JRadioButton everything = new JRadioButton("Toda la partitura", true);
-    private final JRadioButton aRange = new JRadioButton("Paginas");
+    private final JRadioButton aRange = new JRadioButton("Páginas");
     private final JSpinner fromSheet;
     private final JSpinner toSheet;
     private final JSpinner scalePercent = new JSpinner(new SpinnerNumberModel(
@@ -39,9 +39,9 @@ public final class PrintPanel extends FormPanel {
         addSection("Imprimir");
         addFullWidthRow(everything);
         addFullWidthRow(aRange);
-        addRow("Desde la pagina", fromSheet);
-        addRow("Hasta la pagina", toSheet);
-        addSection("Posicion");
+        addRow("Desde la página", fromSheet);
+        addRow("Hasta la página", toSheet);
+        addSection("Posición");
         addRow("Escala (%)", scalePercent);
         addFullWidthRow(fitToPage);
         addFullWidthRow(centeredDocument);

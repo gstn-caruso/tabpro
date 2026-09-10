@@ -48,7 +48,7 @@ class BeatViewsTest {
                 Combos.renderedTextOf(views, FretboardDisplayMode.class, FretboardDisplayMode.ONLY_BEAT));
         assertEquals("Sin nombres", Combos.renderedTextOf(views, NoteNameMode.class, NoteNameMode.NONE));
         assertEquals("Nombre", Combos.renderedTextOf(views, ScaleLabelMode.class, ScaleLabelMode.NAME));
-        assertEquals("Electrica", Combos.renderedTextOf(views, FretboardType.class, FretboardType.ELECTRIC));
+        assertEquals("Eléctrica", Combos.renderedTextOf(views, FretboardType.class, FretboardType.ELECTRIC));
         assertEquals("Solo el beat",
                 Combos.renderedTextOf(views, KeyboardDisplayMode.class, KeyboardDisplayMode.ONLY_BEAT));
     }

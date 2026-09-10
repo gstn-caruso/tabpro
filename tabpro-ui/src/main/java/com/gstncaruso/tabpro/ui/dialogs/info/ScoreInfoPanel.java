@@ -25,12 +25,12 @@ public final class ScoreInfoPanel extends FormPanel {
     private final JTextArea notice = new JTextArea(3, DialogStyle.TEXT_FIELD_COLUMNS);
 
     public ScoreInfoPanel(ScoreInfo initial) {
-        addRow("Titulo", title);
-        addRow("Subtitulo", subtitle);
+        addRow("Título", title);
+        addRow("Subtítulo", subtitle);
         addRow("Artista", artist);
-        addRow("Album", album);
+        addRow("Álbum", album);
         addRow("Autor de la letra", lyricsAuthor);
-        addRow("Autor de la musica", musicAuthor);
+        addRow("Autor de la música", musicAuthor);
         addRow("Copyright", copyright);
         addRow("Transcriptor", transcriber);
         addSection("Instrucciones");

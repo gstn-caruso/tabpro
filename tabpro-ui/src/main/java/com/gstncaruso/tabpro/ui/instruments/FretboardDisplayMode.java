@@ -20,7 +20,7 @@ public enum FretboardDisplayMode {
             return FretMarks.of(positionsOf(location.beat()), Set.of());
         }
     },
-    BEAT_AND_MEASURE("Beat y compas") {
+    BEAT_AND_MEASURE("Beat y compás") {
         @Override
         public FretMarks marks(BeatLocation location, int fretCount, Optional<Scale> scale) {
             Set<FretPosition> ofMeasure = new HashSet<>();

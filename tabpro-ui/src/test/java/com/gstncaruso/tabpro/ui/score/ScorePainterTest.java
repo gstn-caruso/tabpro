@@ -472,6 +472,62 @@ class ScorePainterTest {
                 "un marcador que ya contrasta con el fondo no necesita un borde extra");
     }
 
+    /**
+     * El manual (p14: «Outro») mide el cuadradito de color en 6x9 px a 96 dpi; a la escala
+     * interna de tabpro, x1,333, eso da 8x12.
+     */
+    @Test
+    void theSectionMarkerSquareMatchesTheSizeMeasuredInTheManual() {
+        Color markerColor = new Color(0x00, 0xAA, 0x00);
+        Painted painted = paintWithMarkerColor(markerColor);
+
+        Rectangle square = solidMarkerSquareBounds(painted, markerColor);
+
+        assertEquals(8, square.width, "el cuadrado tiene que medir 8 px de ancho, como en el manual");
+        assertEquals(12, square.height, "el cuadrado tiene que medir 12 px de alto, como en el manual");
+    }
+
+    /**
+     * El nombre del marcador comparte color con el cuadrado, asi que no alcanza con acotar el
+     * area de busqueda: hay que parar en la primera columna en blanco despues del cuadrado, antes
+     * de llegar al texto.
+     */
+    private static Rectangle solidMarkerSquareBounds(Painted painted, Color markerColor) {
+        int x0 = painted.layout().measureX(0);
+        int staffTop = painted.layout().staffTop(0, 0);
+        int yTop = staffTop - 40;
+        int rgb = markerColor.getRGB();
+
+        int rightEdge = x0 - 1;
+        boolean sawColor = false;
+        for (int x = x0; x < x0 + 60; x++) {
+            boolean columnHasColor = false;
+            for (int y = yTop; y < staffTop; y++) {
+                if (painted.image().getRGB(x, y) == rgb) {
+                    columnHasColor = true;
+                    break;
+                }
+            }
+            if (columnHasColor) {
+                sawColor = true;
+                rightEdge = x;
+            } else if (sawColor) {
+                break;
+            }
+        }
+
+        int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
+        for (int x = x0; x <= rightEdge; x++) {
+            for (int y = yTop; y < staffTop; y++) {
+                if (painted.image().getRGB(x, y) == rgb) {
+                    minY = Math.min(minY, y);
+                    maxY = Math.max(maxY, y);
+                }
+            }
+        }
+        return new Rectangle(x0, minY, rightEdge - x0 + 1, maxY - minY + 1);
+    }
+
     private static Painted paintWithMarkerColor(Color color) {
         Measure marked = measureOf(Beat.of(Duration.quarter(), new Note(1, 0)))
                 .mappingAttributes(attrs -> attrs.withMarker(new com.gstncaruso.tabpro.core.model.bars.Marker(
@@ -483,10 +539,9 @@ class ScorePainterTest {
     private static Rectangle markerSquareBounds(Painted painted) {
         int x = painted.layout().measureX(0);
         int staffTop = painted.layout().staffTop(0, 0);
-        FontMetrics metrics = painted.image().createGraphics().getFontMetrics(ScoreFonts.SECTION_MARK_FONT);
-        int squareSize = metrics.getAscent();
         int textBaseline = staffTop - BarStructurePainter.MARKER_TEXT_CLEARANCE_ABOVE_STAFF;
-        return new Rectangle(x, textBaseline - squareSize, squareSize, squareSize);
+        return new Rectangle(x, textBaseline - BarStructurePainter.MARKER_SQUARE_HEIGHT,
+                BarStructurePainter.MARKER_SQUARE_WIDTH, BarStructurePainter.MARKER_SQUARE_HEIGHT);
     }
 
     private static Rectangle trackNameBounds(Painted painted, String trackName) {

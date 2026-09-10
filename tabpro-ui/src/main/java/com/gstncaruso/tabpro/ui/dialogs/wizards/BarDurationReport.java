@@ -10,6 +10,6 @@ public final class BarDurationReport {
 
     public static String describe(BarDurationCheck.Finding finding) {
         String problem = finding.tooShort() ? "le faltan pulsos" : "le sobran pulsos";
-        return "Pista " + (finding.trackIndex() + 1) + ", compas " + (finding.measureIndex() + 1) + ": " + problem;
+        return "Pista " + (finding.trackIndex() + 1) + ", compás " + (finding.measureIndex() + 1) + ": " + problem;
     }
 }

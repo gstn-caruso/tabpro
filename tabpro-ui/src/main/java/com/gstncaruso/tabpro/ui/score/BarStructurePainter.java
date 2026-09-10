@@ -139,23 +139,30 @@ final class BarStructurePainter {
 
     static final int MARKER_TEXT_CLEARANCE_ABOVE_STAFF = 16;
 
+    /**
+     * El cuadradito del marcador mide 6x9 px a 96 dpi en el manual (p14: «Outro»); a la escala
+     * interna de tabpro, x1,333, eso da 8x12.
+     */
+    static final int MARKER_SQUARE_WIDTH = 8;
+
+    static final int MARKER_SQUARE_HEIGHT = 12;
+
     private static void paintMarker(Graphics2D g, int x, int staffTop, Marker marker) {
         g.setFont(ScoreFonts.SECTION_MARK_FONT);
         FontMetrics metrics = g.getFontMetrics();
         Color markerColor = ScoreColors.of(marker.color());
         int textBaseline = staffTop - MARKER_TEXT_CLEARANCE_ABOVE_STAFF;
 
-        int squareSize = metrics.getAscent();
-        int squareTop = textBaseline - squareSize;
+        int squareTop = textBaseline - MARKER_SQUARE_HEIGHT;
         g.setColor(markerColor);
-        g.fillRect(x, squareTop, squareSize, squareSize);
+        g.fillRect(x, squareTop, MARKER_SQUARE_WIDTH, MARKER_SQUARE_HEIGHT);
         if (Contrast.ratio(markerColor, ScoreColors.BACKGROUND) < Contrast.GRAPHICAL_MINIMUM_RATIO) {
             g.setColor(ScoreColors.INK);
-            g.drawRect(x, squareTop, squareSize - 1, squareSize - 1);
+            g.drawRect(x, squareTop, MARKER_SQUARE_WIDTH - 1, MARKER_SQUARE_HEIGHT - 1);
         }
         int squareToTextGap = metrics.getHeight() / 4;
         g.setColor(markerColor);
-        g.drawString(marker.name(), x + squareSize + squareToTextGap, textBaseline);
+        g.drawString(marker.name(), x + MARKER_SQUARE_WIDTH + squareToTextGap, textBaseline);
     }
 
     private static void paintDirectionSymbol(Graphics2D g, int left, int right, int staffTop, DirectionSymbol symbol) {

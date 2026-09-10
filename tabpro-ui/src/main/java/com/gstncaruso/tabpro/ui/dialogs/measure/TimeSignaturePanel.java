@@ -15,7 +15,7 @@ public final class TimeSignaturePanel extends FormPanel {
     private final JComboBox<Integer> beatUnit = new JComboBox<>(BEAT_UNITS);
 
     public TimeSignaturePanel(TimeSignature initial) {
-        addRow("Pulsos por compas", beats);
+        addRow("Pulsos por compás", beats);
         addRow("Figura que vale un pulso", beatUnit);
         apply(initial);
     }

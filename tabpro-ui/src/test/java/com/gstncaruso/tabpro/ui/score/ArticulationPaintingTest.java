@@ -33,27 +33,32 @@ class ArticulationPaintingTest {
      * la nota y su marca de articulacion. */
     private static final double MARK_OFFSET = ScoreLayout.STAFF_LINE_SPACING * (0.92 + 0.35);
 
+    /**
+     * Debajo de la linea del medio la plica va hacia arriba (convencion estandar); el staccato
+     * cae del lado de la cabeza opuesto a la plica, es decir abajo.
+     */
     @Test
-    void aStaccatoNoteBelowTheMiddleLineGetsTheStaccatoAboveGlyph() {
-        assertGlyphNearNote(BELOW_MIDDLE_LINE, Ornament.STACCATO, MusicFont.articStaccatoAbove());
+    void aStaccatoNoteBelowTheMiddleLineGetsTheStaccatoBelowGlyph() {
+        assertGlyphNearNote(BELOW_MIDDLE_LINE, Ornament.STACCATO, MusicFont.articStaccatoBelow(), false);
     }
 
+    /** Arriba de la linea del medio la plica va hacia abajo; el staccato cae arriba, opuesto a ella. */
     @Test
-    void aStaccatoNoteAboveTheMiddleLineGetsTheStaccatoBelowGlyph() {
-        assertGlyphNearNote(ABOVE_MIDDLE_LINE, Ornament.STACCATO, MusicFont.articStaccatoBelow());
+    void aStaccatoNoteAboveTheMiddleLineGetsTheStaccatoAboveGlyph() {
+        assertGlyphNearNote(ABOVE_MIDDLE_LINE, Ornament.STACCATO, MusicFont.articStaccatoAbove(), true);
     }
 
     @Test
     void anAccentedNoteBelowTheMiddleLineGetsTheAccentAboveGlyph() {
-        assertGlyphNearNote(BELOW_MIDDLE_LINE, Ornament.ACCENTED, MusicFont.articAccentAbove());
+        assertGlyphNearNote(BELOW_MIDDLE_LINE, Ornament.ACCENTED, MusicFont.articAccentAbove(), true);
     }
 
     @Test
     void anAccentedNoteAboveTheMiddleLineGetsTheAccentBelowGlyph() {
-        assertGlyphNearNote(ABOVE_MIDDLE_LINE, Ornament.ACCENTED, MusicFont.articAccentBelow());
+        assertGlyphNearNote(ABOVE_MIDDLE_LINE, Ornament.ACCENTED, MusicFont.articAccentBelow(), false);
     }
 
-    private static void assertGlyphNearNote(Note note, Ornament ornament, String glyph) {
+    private static void assertGlyphNearNote(Note note, Ornament ornament, String glyph, boolean above) {
         Note marked = note.toggling(ornament);
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(Beat.of(Duration.quarter(), marked)));
         Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure));
@@ -65,7 +70,6 @@ class ArticulationPaintingTest {
 
         int step = StaffPainter.positionOf(track, Clef.TREBLE, marked, 0).step();
         int noteY = layout.stepY(0, 0, step);
-        boolean above = step < 4;
         int markY = (int) Math.round(above ? noteY - MARK_OFFSET : noteY + MARK_OFFSET);
         assertTrue(lienzo.escribeTextoEnRegion(glyph, new Rectangle(0, markY - 4, WIDTH, 8)),
                 "la marca tiene que escribir el glifo de Bravura del lado que corresponde de la nota");

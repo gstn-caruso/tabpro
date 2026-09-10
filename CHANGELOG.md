@@ -1,3 +1,33 @@
+## [0.58.6](https://github.com/gstn-caruso/tabpro/compare/v0.58.5...v0.58.6) (2026-09-10)
+
+### Bug Fixes
+
+* **percussion:** la grilla de sonidos fija el tamaño de celda desde su propia fuente ([#181](https://github.com/gstn-caruso/tabpro/issues/181)) ([7e5fd26](https://github.com/gstn-caruso/tabpro/commit/7e5fd26e6f62908c4d84ef57830f0492f43dd962))
+
+## [0.58.5](https://github.com/gstn-caruso/tabpro/compare/v0.58.4...v0.58.5) (2026-09-10)
+
+### Bug Fixes
+
+* **ui:** tildes y eñes en todos los textos de la interfaz, con un test que los blinda ([#180](https://github.com/gstn-caruso/tabpro/issues/180)) ([2eca574](https://github.com/gstn-caruso/tabpro/commit/2eca574a66b303cefbabc002580a204f61a32ade))
+
+## [0.58.4](https://github.com/gstn-caruso/tabpro/compare/v0.58.3...v0.58.4) (2026-09-10)
+
+### Bug Fixes
+
+* **view:** diapasón y teclado arrancan cerrados y recuerdan su estado, y Escalas abre con Do mayor ([#179](https://github.com/gstn-caruso/tabpro/issues/179)) ([fc8b5de](https://github.com/gstn-caruso/tabpro/commit/fc8b5de72035c63271a62e7753375dd73a8f5b5e))
+
+## [0.58.3](https://github.com/gstn-caruso/tabpro/compare/v0.58.2...v0.58.3) (2026-09-10)
+
+### Bug Fixes
+
+* **score:** los textos de efecto no pisan el traste, el marcador mide lo del manual y el staccato va opuesto a la plica ([#178](https://github.com/gstn-caruso/tabpro/issues/178)) ([9d98728](https://github.com/gstn-caruso/tabpro/commit/9d987289c25d0d0a179b220aa1d2f1fffd370758))
+
+## [0.58.2](https://github.com/gstn-caruso/tabpro/compare/v0.58.1...v0.58.2) (2026-09-10)
+
+### Bug Fixes
+
+* **mixtable:** la mesa muestra los dos dígitos de puerto y canal y el instrumento entero ([#177](https://github.com/gstn-caruso/tabpro/issues/177)) ([4446f94](https://github.com/gstn-caruso/tabpro/commit/4446f9488cb4fc3cb415a660f844eff55b7bd00b))
+
 ## [0.58.1](https://github.com/gstn-caruso/tabpro/compare/v0.58.0...v0.58.1) (2026-09-10)
 
 ### Bug Fixes

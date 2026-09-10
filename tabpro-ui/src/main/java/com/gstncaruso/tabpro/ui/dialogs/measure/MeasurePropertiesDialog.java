@@ -17,7 +17,7 @@ public final class MeasurePropertiesDialog {
     public static final String TIME_SIGNATURE = "Medida";
     public static final String KEY_SIGNATURE = "Armadura";
     public static final String TRIPLET_FEEL = "Triplet feel";
-    public static final String REPEAT = "Repeticion";
+    public static final String REPEAT = "Repetición";
     public static final String ALTERNATE_ENDINGS = "Finales alternativos";
     public static final String DIRECTIONS = "Direcciones";
 
@@ -41,12 +41,12 @@ public final class MeasurePropertiesDialog {
         tabs.addTab("Medida", timeSignaturePanel);
         tabs.addTab("Armadura", keySignaturePanel);
         tabs.addTab("Triplet feel", tripletFeelPanel);
-        tabs.addTab("Repeticion", repeatPanel);
+        tabs.addTab("Repetición", repeatPanel);
         tabs.addTab("Finales alternativos", alternateEndingsPanel);
         tabs.addTab("Direcciones", directionsPanel);
 
         selectTab(tabs, openOn);
-        boolean accepted = DialogShell.ask(parent, "Propiedades del compas", tabs);
+        boolean accepted = DialogShell.ask(parent, "Propiedades del compás", tabs);
         if (!accepted) {
             return;
         }

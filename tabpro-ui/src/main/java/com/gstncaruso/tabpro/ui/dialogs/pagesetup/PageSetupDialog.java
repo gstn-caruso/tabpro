@@ -30,7 +30,7 @@ public final class PageSetupDialog {
         PageSetupPanel panel = new PageSetupPanel(current);
 
         boolean accepted = DialogShell.ask(
-                parent, "Configurar pagina", panel, extraButtons(panel, refresh, defaults), "Aceptar", null);
+                parent, "Configurar página", panel, extraButtons(panel, refresh, defaults), "Aceptar", null);
         return accepted ? Optional.of(panel.toPageSetup()) : Optional.empty();
     }
 
@@ -43,8 +43,8 @@ public final class PageSetupDialog {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, DialogStyle.GAP_S));
         buttons.setOpaque(false);
         buttons.add(button("Actualizar partitura", () -> refresh.accept(panel.toPageSetup())));
-        buttons.add(button("Guardar como configuracion por defecto", () -> defaults.save(panel.toPageSetup())));
-        buttons.add(button("Aplicar configuracion por defecto", () -> {
+        buttons.add(button("Guardar como configuración por defecto", () -> defaults.save(panel.toPageSetup())));
+        buttons.add(button("Aplicar configuración por defecto", () -> {
             panel.apply(defaults.get());
             refresh.accept(panel.toPageSetup());
         }));

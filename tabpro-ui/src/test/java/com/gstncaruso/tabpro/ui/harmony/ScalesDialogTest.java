@@ -47,7 +47,37 @@ class ScalesDialogTest {
 
         JList<?> scales = Combos.firstListNamed(panel, "Escala");
 
-        assertEquals("Mayor (Jonico)", Combos.renderedTextOfList(scales, ScaleLibrary.major()));
+        assertEquals("Mayor (Jónico)", Combos.renderedTextOfList(scales, ScaleLibrary.major()));
+    }
+
+    /**
+     * El manual no dice con que escala abre la herramienta ("Tools for the Guitarist"); Guitar
+     * Pro 5 la muestra con el diagrama de grados ya pintado, asi que sin una eleccion previa el
+     * valor inicial es Do mayor.
+     */
+    @Test
+    void sinEleccionPreviaAbreConDoMayorYElDiagramaYaPintado() {
+        Editor editor = new Editor(Score.blank());
+        ChosenScale chosen = new ChosenScale();
+
+        ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), chosen);
+
+        assertEquals(PitchClass.of("C"), chosen.tonic().orElseThrow());
+        assertEquals(ScaleLibrary.major(), chosen.scale().orElseThrow());
+        ScaleDegreesView degrees = firstDegreesView(panel);
+        assertEquals(7, degrees.degreeCount());
+    }
+
+    @Test
+    void conUnaEleccionPreviaLaRespetaEnVezDeForzarDoMayor() {
+        Editor editor = new Editor(Score.blank());
+        ChosenScale chosen = new ChosenScale();
+        chosen.choose(PitchClass.of("D"), ScaleLibrary.dorian());
+
+        ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), chosen);
+
+        assertEquals(PitchClass.of("D"), chosen.tonic().orElseThrow());
+        assertEquals(ScaleLibrary.dorian(), chosen.scale().orElseThrow());
     }
 
     @Test
