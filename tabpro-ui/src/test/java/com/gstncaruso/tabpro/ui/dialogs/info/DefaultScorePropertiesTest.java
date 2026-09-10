@@ -29,7 +29,7 @@ class DefaultScorePropertiesTest {
     @Test
     void savingLeavesItAsTheDefault() {
         NewScoreDefaults custom = new NewScoreDefaults(
-                90, new TimeSignature(3, 4), new KeySignature(-2, Mode.MINOR), "Improvisando", "Yo");
+                90, new TimeSignature(3, 4), new KeySignature(-2, Mode.MINOR), "Improvising", "Me");
 
         stored.save(custom);
 
@@ -40,7 +40,7 @@ class DefaultScorePropertiesTest {
     void savingAgainReplacesWhatWasThere() {
         stored.save(new NewScoreDefaults(60, TimeSignature.fourFour(), KeySignature.cMajor(), "", ""));
         NewScoreDefaults latest = new NewScoreDefaults(
-                180, new TimeSignature(6, 8), new KeySignature(4, Mode.MAJOR), "Rapida", "Banda");
+                180, new TimeSignature(6, 8), new KeySignature(4, Mode.MAJOR), "Fast", "Band");
 
         stored.save(latest);
 
