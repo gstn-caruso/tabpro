@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.app.smoke;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.app.CombinedExchange;
@@ -20,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -81,10 +83,14 @@ class FixtureCorpusSmokeTest {
         assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
     }
 
+    private static final Duration TIEMPO_MAXIMO_POR_ARCHIVO = Duration.ofSeconds(30);
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("fixturesDelCorpus")
     void unGuitarProCompletaTodoElPipelineDeLaRedPermanente(Path path, @TempDir Path tempDir) {
-        ejecutarPipeline(path, tempDir);
+        assertTimeoutPreemptively(TIEMPO_MAXIMO_POR_ARCHIVO, () -> ejecutarPipeline(path, tempDir),
+                () -> path.getFileName() + ": no completo el pipeline en "
+                        + TIEMPO_MAXIMO_POR_ARCHIVO.toSeconds() + "s");
     }
 
     static Stream<Path> fixturesDelCorpus() throws IOException {
