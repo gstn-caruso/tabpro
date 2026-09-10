@@ -32,6 +32,18 @@ class ZoomSelectorTest {
         assertEquals("100%", String.valueOf(selector.getEditor().getItem()));
     }
 
+    @Test
+    void elDesplegableTraeLosValoresPredefinidosDelManual() {
+        ZoomSelector selector = new ZoomSelector(zoomHolder, commands);
+
+        List<String> items = new ArrayList<>();
+        for (int index = 0; index < selector.getItemCount(); index++) {
+            items.add(selector.getItemAt(index));
+        }
+
+        assertEquals(Zoom.presets().stream().map(percent -> percent + "%").toList(), items);
+    }
+
     private static final class FakeZoomHolder implements com.gstncaruso.tabpro.ui.score.ZoomHolder {
         private Zoom zoom = Zoom.whole();
         private final List<Runnable> listeners = new ArrayList<>();

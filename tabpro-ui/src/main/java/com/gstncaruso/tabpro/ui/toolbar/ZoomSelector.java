@@ -14,12 +14,17 @@ public final class ZoomSelector extends JComboBox<String> {
     private final ZoomHolder zoomHolder;
 
     public ZoomSelector(ZoomHolder zoomHolder, Commands commands) {
+        super(presetLabels());
         this.zoomHolder = zoomHolder;
         refresh();
     }
 
     private void refresh() {
         getEditor().setItem(labelOf(zoomHolder.zoom()));
+    }
+
+    private static String[] presetLabels() {
+        return Zoom.presets().stream().map(percent -> percent + "%").toArray(String[]::new);
     }
 
     private static String labelOf(Zoom zoom) {
