@@ -106,6 +106,26 @@ final class AuditSupport {
         return built[0];
     }
 
+    /**
+     * Como newFrame, pero con un ScoreFiles y un ScoreExchange reales: los que necesita
+     * cualquier test que ejercite Abrir/Guardar/Importar/Exportar por el JFileChooser real,
+     * en vez de los dobles NoScoreFiles/ScoreExchange.NONE que tiran UnsupportedOperationException.
+     */
+    static MainFrame newFrame(
+            Editor editor, ScoreFiles files, com.gstncaruso.tabpro.core.files.ScoreExchange exchange) throws Exception {
+        MainFrame[] built = new MainFrame[1];
+        SwingUtilities.invokeAndWait(() -> {
+            MainFrame frame = new MainFrame(
+                    editor, files, new SilentPlayer(),
+                    com.gstncaruso.tabpro.ui.theme.ThemeSwitch.NONE, com.gstncaruso.tabpro.ui.actions.Ports.Devices.NONE,
+                    exchange, com.gstncaruso.tabpro.ui.actions.Ports.Microphone.NONE);
+            frame.pack();
+            frame.setVisible(true);
+            built[0] = frame;
+        });
+        return built[0];
+    }
+
     /** Como newFrame, pero con un ThemeSwitch que el test puede inspeccionar despues. */
     static MainFrame newFrame(Editor editor, com.gstncaruso.tabpro.ui.theme.ThemeSwitch themes) throws Exception {
         MainFrame[] built = new MainFrame[1];
