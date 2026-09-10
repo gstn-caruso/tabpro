@@ -32,7 +32,7 @@ class SoundExchangeTest {
     @Test
     void exportsAWaveFileThatMatchesTheScoresDurationAndQuality(@TempDir Path tempDir) throws Exception {
         Score score = scoreOfTwoMeasuresOfQuarterNotes();
-        Path path = tempDir.resolve("prueba.wav");
+        Path path = tempDir.resolve("test.wav");
         AudioQuality quality = new AudioQuality(44_100, 16, 2);
 
         exchange.exportWave(score, path, quality);
@@ -44,15 +44,15 @@ class SoundExchangeTest {
             assertEquals(16, in.getFormat().getSampleSizeInBits());
             assertEquals(2, in.getFormat().getChannels());
             double actualSeconds = in.getFrameLength() / in.getFormat().getSampleRate();
-            assertEquals(expectedSeconds, actualSeconds, 0.05, "el wave tiene que durar lo que dura la partitura");
+            assertEquals(expectedSeconds, actualSeconds, 0.05, "the wave has to last as long as the score");
         }
     }
 
     private static Score scoreOfTwoMeasuresOfQuarterNotes() {
         Beat quarter = Beat.of(Duration.of(NoteValue.QUARTER), new Note(6, 0));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(quarter, quarter, quarter, quarter));
-        Track track = new Track("Guitarra", Tuning.standard(), Channel.playing(25), List.of(measure, measure));
-        return new Score("Prueba", 120, List.of(track));
+        Track track = new Track("Guitar", Tuning.standard(), Channel.playing(25), List.of(measure, measure));
+        return new Score("Test", 120, List.of(track));
     }
 
     private static Synthesizer systemSynthesizer() {
