@@ -15,6 +15,15 @@ final class MarkerTableModel extends AbstractTableModel {
         rows = MarkerList.collect(score);
     }
 
+    void refresh(Score score) {
+        rows = MarkerList.collect(score);
+        fireTableDataChanged();
+    }
+
+    MarkerList.Positioned rowAt(int row) {
+        return rows.get(row);
+    }
+
     @Override
     public int getRowCount() {
         return rows.size();

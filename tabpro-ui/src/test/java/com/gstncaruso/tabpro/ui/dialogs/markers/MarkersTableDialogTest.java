@@ -46,6 +46,19 @@ class MarkersTableDialogTest {
         assertTrue(buttonLabeled(content, "Ir a").isEnabled());
     }
 
+    @Test
+    void deletingTheSelectedRowRemovesTheMarkerFromTheModel() {
+        Editor editor = new Editor(Score.blank());
+        editor.setMarker(Marker.named("Intro"));
+
+        JPanel content = MarkersTableDialog.buildContent(editor, () -> {
+        });
+        tableOf(content).setRowSelectionInterval(0, 0);
+        buttonLabeled(content, "Borrar").doClick();
+
+        assertTrue(editor.score().attributesOf(0).marker().isEmpty());
+    }
+
     private JTable tableOf(Container root) {
         for (Component component : root.getComponents()) {
             if (component instanceof JTable table) {
