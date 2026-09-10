@@ -28,6 +28,8 @@ final class MusicFont {
     private static final int NOTEHEAD_HALF = 0xE0A3;
     /** SMuFL U+E0A2 "noteheadWhole": la cabeza hueca de una redonda. */
     private static final int NOTEHEAD_WHOLE = 0xE0A2;
+    /** SMuFL U+E262 "accidentalSharp": el sostenido. */
+    private static final int ACCIDENTAL_SHARP = 0xE262;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -63,6 +65,11 @@ final class MusicFont {
     /** La cabeza hueca de una redonda. */
     static String noteheadWhole() {
         return glyph(NOTEHEAD_WHOLE);
+    }
+
+    /** El sostenido. */
+    static String accidentalSharp() {
+        return glyph(ACCIDENTAL_SHARP);
     }
 
     /**

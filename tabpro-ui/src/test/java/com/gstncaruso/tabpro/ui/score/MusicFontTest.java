@@ -67,4 +67,9 @@ class MusicFontTest {
     void noteheadWholeIsTheHollowWholeNoteheadGlyph() {
         assertEquals(0xE0A2, MusicFont.noteheadWhole().codePointAt(0));
     }
+
+    @Test
+    void accidentalSharpIsTheSharpGlyph() {
+        assertEquals(0xE262, MusicFont.accidentalSharp().codePointAt(0));
+    }
 }
