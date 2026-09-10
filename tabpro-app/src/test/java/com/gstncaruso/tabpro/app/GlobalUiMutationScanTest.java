@@ -1,8 +1,13 @@
 package com.gstncaruso.tabpro.app;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -20,5 +25,30 @@ class GlobalUiMutationScanTest {
     @Test
     void anEmptySourceTreeHasNoUnisolatedMutators(@TempDir Path root) {
         assertTrue(GlobalUiMutationScan.unisolatedMutators(root).isEmpty());
+    }
+
+    @Test
+    void aTestThatInstallsTheThemeWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "InstallsTheTheme.java", """
+                class InstallsTheTheme {
+                    void installs() {
+                        Theme.install();
+                    }
+                }
+                """);
+        write(root, "DoesNothingWithTheTheme.java", """
+                class DoesNothingWithTheTheme {
+                    void innocent() {
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
+    private static Path write(Path root, String fileName, String content) throws IOException {
+        Path file = root.resolve(fileName);
+        Files.writeString(file, content);
+        return file;
     }
 }
