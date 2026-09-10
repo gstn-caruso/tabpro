@@ -43,6 +43,10 @@ public final class Icons {
     private static final String NOTEHEAD_DIAMOND_WHITE = "";
     /** SMuFL U+E4A0 "articAccentAbove": el acento dibujado arriba de la nota. */
     private static final String ARTIC_ACCENT_ABOVE = "";
+    /** SMuFL U+E4A2 "articStaccatoAbove": el staccato dibujado arriba de la nota. */
+    private static final String ARTIC_STACCATO_ABOVE = "";
+    /** SMuFL U+E0A4 "noteheadBlack": la cabeza rellena de negra. */
+    private static final String NOTEHEAD_BLACK = "";
 
     private Icons() {
     }
@@ -222,10 +226,7 @@ public final class Icons {
     }
 
     public static Icon staccato() {
-        return icon((graphics, size) -> {
-            graphics.fill(Glyphs.noteHead(size * 0.5, size * 0.66, size * 0.34, false));
-            graphics.fill(new Ellipse2D.Double(size * 0.44, size * 0.2, size * 0.13, size * 0.13));
-        });
+        return new GlyphIcon(SIZE, ARTIC_STACCATO_ABOVE, NOTEHEAD_BLACK);
     }
 
     public static Icon vibrato() {
