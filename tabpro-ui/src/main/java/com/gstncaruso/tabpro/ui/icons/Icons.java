@@ -64,11 +64,7 @@ public final class Icons {
     }
 
     public static Icon paste() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new RoundRectangle2D.Double(size * 0.18, size * 0.2, size * 0.64, size * 0.68, 3, 3));
-            graphics.fill(new Rectangle2D.Double(size * 0.36, size * 0.1, size * 0.28, size * 0.16));
-        });
+        return svgIcon("clipboard");
     }
 
     // ---- compases ---------------------------------------------------------
