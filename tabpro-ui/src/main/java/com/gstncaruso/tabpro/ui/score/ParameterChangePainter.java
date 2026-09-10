@@ -75,6 +75,7 @@ final class ParameterChangePainter {
         FontMetrics metrics = g.getFontMetrics();
         int left = centerX - (QUARTER_NOTE_WIDTH + metrics.stringWidth(label)) / 2;
         paintQuarterNote(g, left, baselineY);
+        g.setFont(ScoreFonts.TEMPO_FONT);
         g.setColor(ScoreColors.INK);
         g.drawString(label, left + QUARTER_NOTE_WIDTH, baselineY);
     }
