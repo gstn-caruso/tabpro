@@ -68,7 +68,7 @@ class KeyboardEditingTest {
 
         bindings.get(KeyStroke.getKeyStroke("TAB")).run();
         assertEquals(Notation.STANDARD, editor.cursor().notation());
-        assertEquals(0, editor.cursor().beat(), "TAB no tiene que mover el cursor");
+        assertEquals(0, editor.cursor().beat(), "TAB must not move the cursor");
 
         bindings.get(KeyStroke.getKeyStroke("TAB")).run();
         assertEquals(Notation.TABLATURE, editor.cursor().notation());
