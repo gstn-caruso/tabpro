@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.actions;
 import java.util.Objects;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
 
 /**
@@ -31,16 +32,30 @@ public final class AcceleratorGuard {
 
     /** Le saca a cada antepasado dado cualquier tecla que ya use un comando del catalogo. */
     public static void letCommandsWin(Commands commands, JComponent... ancestorsOfTheFocusedComponent) {
+        blockEachAccelerator(commands, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, ancestorsOfTheFocusedComponent);
+    }
+
+    /**
+     * F10 sin modificador activa de fabrica la barra de menus (BasicMenuBarUI la instala en el
+     * WHEN_IN_FOCUSED_WINDOW propio del JMenuBar, para cualquier L&amp;F derivado de
+     * BasicLookAndFeel): le saca esa tecla a la barra para que el atajo real de Cambio de
+     * parametros pueda seguir subiendo.
+     */
+    public static void letCommandsWinOverTheMenuBar(Commands commands, JMenuBar menuBar) {
+        blockEachAccelerator(commands, JComponent.WHEN_IN_FOCUSED_WINDOW, menuBar);
+    }
+
+    private static void blockEachAccelerator(Commands commands, int condition, JComponent... components) {
         commands.all().values().stream()
                 .map(Command::accelerator)
                 .filter(Objects::nonNull)
                 .distinct()
-                .forEach(accelerator -> block(accelerator, ancestorsOfTheFocusedComponent));
+                .forEach(accelerator -> block(accelerator, condition, components));
     }
 
-    private static void block(KeyStroke accelerator, JComponent[] ancestors) {
-        for (JComponent ancestor : ancestors) {
-            InputMap inputMap = ancestor.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    private static void block(KeyStroke accelerator, int condition, JComponent[] components) {
+        for (JComponent component : components) {
+            InputMap inputMap = component.getInputMap(condition);
             if (inputMap.get(accelerator) == null) {
                 continue;
             }

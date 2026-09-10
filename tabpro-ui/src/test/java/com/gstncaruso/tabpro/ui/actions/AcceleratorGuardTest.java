@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.lang.reflect.Proxy;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
@@ -131,6 +132,34 @@ class AcceleratorGuardTest {
         JScrollPane otro = new JScrollPane();
         assertEquals("scrollHome", otro.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .get(commands.get("nav.firstBar").accelerator()));
+    }
+
+    /**
+     * F10 sin modificador es, de fabrica en Swing (BasicMenuBarUI, heredado por cualquier L&amp;F
+     * -Metal o FlatLaf-), la tecla que activa la barra de menus para navegarla con las flechas:
+     * vive en el WHEN_IN_FOCUSED_WINDOW propio del JMenuBar, no en el WHEN_ANCESTOR_OF_FOCUSED
+     * _COMPONENT de un ancestro de la partitura, asi que necesita su propio barrido.
+     */
+    @Test
+    void neutralizaF10EnLaBarraDeMenuParaQueGaneElCambioDeParametros() {
+        ExposedJMenuBar menuBar = new ExposedJMenuBar();
+        KeyStroke f10 = commands.get("note.mixTableChange").accelerator();
+
+        AcceleratorGuard.letCommandsWinOverTheMenuBar(commands, menuBar);
+
+        KeyEvent event = new KeyEvent(menuBar, KeyEvent.KEY_PRESSED, System.currentTimeMillis(),
+                f10.getModifiers(), f10.getKeyCode(), KeyEvent.CHAR_UNDEFINED);
+        assertFalse(
+                menuBar.processKeyBinding(f10, event, JComponent.WHEN_IN_FOCUSED_WINDOW, true),
+                "F10 no puede quedar atendido por la barra de menus: el atajo real de Cambio de "
+                        + "parametros tiene que poder seguir subiendo");
+    }
+
+    private static final class ExposedJMenuBar extends JMenuBar {
+        @Override
+        public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+            return super.processKeyBinding(ks, e, condition, pressed);
+        }
     }
 
     @SuppressWarnings("unchecked")
