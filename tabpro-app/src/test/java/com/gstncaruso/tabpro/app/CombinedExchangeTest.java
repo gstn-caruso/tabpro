@@ -24,8 +24,8 @@ class CombinedExchangeTest {
 
     @Test
     void sendsTheSoundFormatsToTheSoundSide() {
-        exchange.exportMidi(Score.blank(), Path.of("prueba.mid"));
-        exchange.exportWave(Score.blank(), Path.of("prueba.wav"), AudioQuality.standard());
+        exchange.exportMidi(Score.blank(), Path.of("test.mid"));
+        exchange.exportWave(Score.blank(), Path.of("test.wav"), AudioQuality.standard());
 
         assertEquals(List.of("exportMidi", "exportWave"), soundCalls);
         assertEquals(List.of(), notationCalls);
@@ -33,9 +33,9 @@ class CombinedExchangeTest {
 
     @Test
     void sendsTheNotationFormatsToTheNotationSide() {
-        exchange.importMidi(Path.of("ajeno.mid"));
-        exchange.importGuitarPro(Path.of("ajeno.gp5"));
-        exchange.exportMusicXml(Score.blank(), Path.of("prueba.xml"));
+        exchange.importMidi(Path.of("other.mid"));
+        exchange.importGuitarPro(Path.of("other.gp5"));
+        exchange.exportMusicXml(Score.blank(), Path.of("test.xml"));
 
         assertEquals(List.of("importMidi", "importGuitarPro", "exportMusicXml"), notationCalls);
         assertEquals(List.of(), soundCalls);

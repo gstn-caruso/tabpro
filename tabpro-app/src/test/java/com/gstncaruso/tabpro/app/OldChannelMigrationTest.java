@@ -27,12 +27,12 @@ class OldChannelMigrationTest {
         ShortMessage second = firstProgramChangeOf(sequence, 2);
         ShortMessage third = firstProgramChangeOf(sequence, 3);
 
-        assertEquals(0, first.getChannel(), "canal 1 del modelo, indice 0 en MIDI");
-        assertEquals(2, second.getChannel(), "canal 3 del modelo, indice 2 en MIDI");
-        assertEquals(4, third.getChannel(), "canal 5 del modelo, indice 4 en MIDI");
-        assertEquals(25, first.getData1(), "la primera guitarra");
-        assertEquals(33, second.getData1(), "el bajo");
-        assertEquals(30, third.getData1(), "la segunda guitarra");
+        assertEquals(0, first.getChannel(), "channel 1 in the model, index 0 in MIDI");
+        assertEquals(2, second.getChannel(), "channel 3 in the model, index 2 in MIDI");
+        assertEquals(4, third.getChannel(), "channel 5 in the model, index 4 in MIDI");
+        assertEquals(25, first.getData1(), "the first guitar");
+        assertEquals(33, second.getData1(), "the bass");
+        assertEquals(30, third.getData1(), "the second guitar");
     }
 
     private ShortMessage firstProgramChangeOf(Sequence sequence, int trackIndex) {
