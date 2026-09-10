@@ -4,7 +4,7 @@ import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
 import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
 import java.util.Map;
 
-/** A que compas apunta cada simbolo de destino y cada salto del bloque de direcciones de GP5. */
+/** Which measure each target symbol and each jump of the GP5 directions block points to. */
 record GuitarProDirections(Map<Integer, DirectionSymbol> symbols, Map<Integer, DirectionJump> jumps) {
 
     private static final GuitarProDirections NONE = new GuitarProDirections(Map.of(), Map.of());

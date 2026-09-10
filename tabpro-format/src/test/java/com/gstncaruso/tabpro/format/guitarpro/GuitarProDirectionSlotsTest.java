@@ -7,16 +7,6 @@ import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El bloque de direcciones de un .gp5 son diecinueve casilleros seguidos, cada
- * uno apuntando a un compas. Cual es cual lo decide la posicion, asi que leerlos
- * en el orden equivocado no rompe nada de forma visible: el archivo abre igual,
- * con un Coda donde iba un Segno.
- *
- * <p>Estos tests fijan el orden que manda el formato de Guitar Pro 5, para que
- * cambiarlo cueste una falla ruidosa en vez de partituras silenciosamente mal
- * leidas.
- */
 class GuitarProDirectionSlotsTest {
 
     @Test

@@ -17,13 +17,6 @@ import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * La prueba mas dura: leer un archivo (aunque sea sintetico, generado a mano con el mismo
- * layout binario que un Guitar Pro real, y no con la API de tabpro) con
- * {@link GuitarProFile}, exportarlo con {@link GuitarProExporter} y volver a leerlo. Lo que
- * GP4 no puede representar (la segunda voz de gp5) se documenta explicitamente, no se
- * ignora.
- */
 class GuitarProExporterFixtureRoundTripTest {
 
     private final GuitarProFile files = new GuitarProFile();
@@ -92,10 +85,6 @@ class GuitarProExporterFixtureRoundTripTest {
         assertEquals(List.of(-1, 3, 2, 0, 3, 0), chord.frets());
     }
 
-    /**
-     * El fixture gp5 trae segunda voz, que solo existe desde gp5: al exportar a GP4 se
-     * pierde a proposito, y lo que se pierde queda listado en {@code warningsFor}.
-     */
     @Test
     void elFixtureDeFeaturesEnGp5PierdeLaSegundaVozAlExportarAGp4() {
         Score original = readFixture("tabpro-features", "gp5");
@@ -106,7 +95,6 @@ class GuitarProExporterFixtureRoundTripTest {
         Score reread = roundTrip(original);
 
         assertFalse(reread.track(0).measure(0).usesTwoVoices());
-        // La voz principal, en cambio, sobrevive entera.
         assertEquals(fretsOf(original.track(0), 5), fretsOf(reread.track(0), 5));
         assertEquals(3, reread.trackCount());
         assertTrue(reread.track(2).isPercussion());
