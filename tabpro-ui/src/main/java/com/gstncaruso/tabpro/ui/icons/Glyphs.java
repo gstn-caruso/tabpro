@@ -8,13 +8,11 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
-/** Los trazos de los que estan hechos los simbolos musicales de los botones. */
 public final class Glyphs {
 
     private Glyphs() {
     }
 
-    /** Una cabeza de nota, inclinada como la escriben a mano. */
     public static Shape noteHead(double centerX, double centerY, double width, boolean hollow) {
         double height = width * 0.72;
         Shape head = new Ellipse2D.Double(-width / 2, -height / 2, width, hollow ? height : height * 1.02);
@@ -23,7 +21,6 @@ public final class Glyphs {
         return placed.createTransformedShape(head);
     }
 
-    /** Un pentagrama chiquito, para los iconos que hablan de la partitura. */
     public static void staff(Graphics2D graphics, double left, double top, double width, double spacing) {
         graphics.setStroke(new BasicStroke(1f));
         for (int line = 0; line < 5; line++) {
@@ -36,7 +33,6 @@ public final class Glyphs {
         return new Rectangle2D.Double(x, top, width, bottom - top);
     }
 
-    /** El arco de una ligadura o de un slide, segun se lo use. */
     public static Shape arc(double fromX, double toX, double y, double height) {
         Path2D arc = new Path2D.Double();
         arc.moveTo(fromX, y);
@@ -44,7 +40,6 @@ public final class Glyphs {
         return arc;
     }
 
-    /** La ondita del vibrato. */
     public static Shape wave(double fromX, double toX, double y, double amplitude) {
         Path2D wave = new Path2D.Double();
         wave.moveTo(fromX, y);
@@ -56,7 +51,6 @@ public final class Glyphs {
         return wave;
     }
 
-    /** Una flecha, para rasgueos, puas y navegacion. */
     public static Shape arrow(double x, double fromY, double toY, double width) {
         Path2D arrow = new Path2D.Double();
         arrow.moveTo(x, fromY);

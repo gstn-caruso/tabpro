@@ -14,13 +14,6 @@ import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import javax.swing.Icon;
 
-/**
- * Un icono musical dibujado con uno o mas glifos SMuFL de la fuente Bravura, escalado para
- * entrar centrado en el tamano pedido sin salirse de el. Cada renglon se apila debajo del
- * anterior; dentro de un mismo renglon los glifos se ubican uno al lado del otro. Los glifos
- * pedidos con {@link #overlaid} se superponen en cambio sobre el mismo origen, como una
- * cabeza de nota entre parentesis.
- */
 public final class GlyphIcon implements Icon {
 
     private static final float MEASURING_FONT_SIZE = 1000f;
@@ -44,7 +37,6 @@ public final class GlyphIcon implements Icon {
         this.content = scaledAndCentered(content, size);
     }
 
-    /** Los glifos pedidos, superpuestos sobre el mismo origen en vez de apilados o en secuencia. */
     public static Icon overlaid(int size, String... glyphs) {
         if (glyphs.length == 0) {
             throw new IllegalArgumentException("GlyphIcon necesita al menos un renglón de glifos");

@@ -6,10 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import javax.swing.Icon;
 
-/** Un icono que se dibuja con Java2D en vez de venir de un archivo. */
 public final class ToolIcon implements Icon {
 
-    /** Como se dibuja el icono, ya centrado y con el color de la interfaz puesto. */
     @FunctionalInterface
     public interface Drawing {
         void draw(Graphics2D graphics, int size);
