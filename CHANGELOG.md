@@ -1,3 +1,9 @@
+## [0.39.1](https://github.com/gstn-caruso/tabpro/compare/v0.39.0...v0.39.1) (2026-09-10)
+
+### Bug Fixes
+
+* **toolbar:** las barras y la franja de efectos fijan sus colores desde la paleta, con o sin tema instalado ([#133](https://github.com/gstn-caruso/tabpro/issues/133)) ([030b41d](https://github.com/gstn-caruso/tabpro/commit/030b41d850ab77544447fbd5564f768e9d90409d))
+
 ## [0.39.0](https://github.com/gstn-caruso/tabpro/compare/v0.38.0...v0.39.0) (2026-09-10)
 
 ### Features
