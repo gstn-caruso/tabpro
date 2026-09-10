@@ -17,7 +17,9 @@ import javax.swing.Icon;
 /**
  * Un icono musical dibujado con uno o mas glifos SMuFL de la fuente Bravura, escalado para
  * entrar centrado en el tamano pedido sin salirse de el. Cada renglon se apila debajo del
- * anterior; dentro de un mismo renglon los glifos se ubican uno al lado del otro.
+ * anterior; dentro de un mismo renglon los glifos se ubican uno al lado del otro. Los glifos
+ * pedidos con {@link #overlaid} se superponen en cambio sobre el mismo origen, como una
+ * cabeza de nota entre parentesis.
  */
 public final class GlyphIcon implements Icon {
 
@@ -34,7 +36,22 @@ public final class GlyphIcon implements Icon {
         this.size = size;
         Font measuringFont = BravuraFont.base().deriveFont(MEASURING_FONT_SIZE);
         requireEveryGlyphDisplayable(measuringFont, rows);
-        this.content = centeredContentOf(measuringFont, rows, size);
+        this.content = scaledAndCentered(stackedAreaOf(measuringFont, rows), size);
+    }
+
+    private GlyphIcon(int size, Area content) {
+        this.size = size;
+        this.content = scaledAndCentered(content, size);
+    }
+
+    /** Los glifos pedidos, superpuestos sobre el mismo origen en vez de apilados o en secuencia. */
+    public static Icon overlaid(int size, String... glyphs) {
+        if (glyphs.length == 0) {
+            throw new IllegalArgumentException("GlyphIcon necesita al menos un renglon de glifos");
+        }
+        Font measuringFont = BravuraFont.base().deriveFont(MEASURING_FONT_SIZE);
+        requireEveryGlyphDisplayable(measuringFont, glyphs);
+        return new GlyphIcon(size, overlaidAreaOf(measuringFont, glyphs));
     }
 
     @Override
@@ -69,7 +86,7 @@ public final class GlyphIcon implements Icon {
         }
     }
 
-    private static Shape centeredContentOf(Font font, String[] rows, int size) {
+    private static Area stackedAreaOf(Font font, String[] rows) {
         Area content = new Area();
         double cursorTop = 0;
         for (String row : rows) {
@@ -79,6 +96,19 @@ public final class GlyphIcon implements Icon {
             content.add(new Area(glyphs.getOutline(0, (float) placement)));
             cursorTop += rowBounds.getHeight();
         }
+        return content;
+    }
+
+    private static Area overlaidAreaOf(Font font, String[] glyphs) {
+        Area content = new Area();
+        for (String glyph : glyphs) {
+            GlyphVector glyphVector = font.createGlyphVector(MEASURING_CONTEXT, glyph);
+            content.add(new Area(glyphVector.getOutline(0, 0)));
+        }
+        return content;
+    }
+
+    private static Shape scaledAndCentered(Area content, int size) {
         Rectangle2D bounds = content.getBounds2D();
         double scale = size / Math.max(bounds.getWidth(), bounds.getHeight());
         AffineTransform centering = new AffineTransform();

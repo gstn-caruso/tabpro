@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 import org.junit.jupiter.api.Test;
 
@@ -74,6 +75,34 @@ class GlyphIconTest {
     }
 
     @Test
+    void superponerElMismoGlifoDosVecesSePintaIgualQueUnaSolaVez() {
+        Icon unaVez = new GlyphIcon(18, NOTEHEAD_BLACK);
+        Icon superpuesto = GlyphIcon.overlaid(18, NOTEHEAD_BLACK, NOTEHEAD_BLACK);
+
+        assertEquals(pixelsOf(paint(unaVez)), pixelsOf(paint(superpuesto)));
+    }
+
+    private static String pixelsOf(BufferedImage image) {
+        StringBuilder pixels = new StringBuilder();
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                pixels.append(Integer.toHexString(image.getRGB(x, y)));
+            }
+        }
+        return pixels.toString();
+    }
+
+    private static BufferedImage paint(Icon icon) {
+        JPanel probe = new JPanel();
+        probe.setForeground(THEME_COLOR);
+        BufferedImage image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D canvas = image.createGraphics();
+        icon.paintIcon(probe, canvas, 0, 0);
+        canvas.dispose();
+        return image;
+    }
+
+    @Test
     void ningunPixelSeEscapaDelCuadradoNiConVariosRenglones() {
         GlyphIcon icon = new GlyphIcon(18, "", NOTEHEAD_BLACK);
         int padding = 6;
@@ -102,16 +131,6 @@ class GlyphIconTest {
             }
         }
         return true;
-    }
-
-    private static BufferedImage paint(GlyphIcon icon) {
-        JPanel probe = new JPanel();
-        probe.setForeground(THEME_COLOR);
-        BufferedImage image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D canvas = image.createGraphics();
-        icon.paintIcon(probe, canvas, 0, 0);
-        canvas.dispose();
-        return image;
     }
 
     private static boolean hasAPixelOfTheThemeColor(BufferedImage image) {
