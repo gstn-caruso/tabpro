@@ -418,12 +418,7 @@ public final class Icons {
     }
 
     public static Icon tuner() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new java.awt.geom.Arc2D.Double(
-                    size * 0.12, size * 0.24, size * 0.76, size * 0.76, 20, 140, java.awt.geom.Arc2D.OPEN));
-            graphics.draw(new Line2D.Double(size * 0.5, size * 0.78, size * 0.62, size * 0.32));
-        });
+        return svgIcon("gauge");
     }
 
     public static Icon scales() {
