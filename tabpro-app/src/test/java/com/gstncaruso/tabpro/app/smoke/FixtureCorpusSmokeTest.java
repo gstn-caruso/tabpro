@@ -10,7 +10,12 @@ import com.gstncaruso.tabpro.format.JsonScoreFiles;
 import com.gstncaruso.tabpro.format.exchange.NotationExchange;
 import com.gstncaruso.tabpro.midi.SoundExchange;
 import com.gstncaruso.tabpro.midi.WaveRenderer;
+import com.gstncaruso.tabpro.ui.page.PageSetup;
+import com.gstncaruso.tabpro.ui.print.ScoreSheets;
+import com.gstncaruso.tabpro.ui.score.Zoom;
+import java.awt.image.BufferedImage;
 import java.nio.file.Path;
+import java.util.List;
 import javax.sound.midi.Synthesizer;
 import org.junit.jupiter.api.Test;
 
@@ -64,6 +69,20 @@ class FixtureCorpusSmokeTest {
 
         assertNotNull(score, () -> path.getFileName() + ": abre por el camino real de importacion");
         assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
+    }
+
+    @Test
+    void unGuitarProSimpleRenderizaTodasSusPaginasEnModoPagina() {
+        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
+        Score score = abrir(path);
+
+        List<BufferedImage> paginas = renderizarPaginas(score);
+
+        assertFalse(paginas.isEmpty(), () -> path.getFileName() + ": renderiza al menos una pagina en modo Pagina");
+    }
+
+    private List<BufferedImage> renderizarPaginas(Score score) {
+        return ScoreSheets.renderPages(score, Zoom.whole(), PageSetup.defaults());
     }
 
     private Score abrir(Path path) {
