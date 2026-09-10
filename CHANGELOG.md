@@ -1,3 +1,9 @@
+## [0.58.5](https://github.com/gstn-caruso/tabpro/compare/v0.58.4...v0.58.5) (2026-09-10)
+
+### Bug Fixes
+
+* **ui:** tildes y eñes en todos los textos de la interfaz, con un test que los blinda ([#180](https://github.com/gstn-caruso/tabpro/issues/180)) ([2eca574](https://github.com/gstn-caruso/tabpro/commit/2eca574a66b303cefbabc002580a204f61a32ade))
+
 ## [0.58.4](https://github.com/gstn-caruso/tabpro/compare/v0.58.3...v0.58.4) (2026-09-10)
 
 ### Bug Fixes
