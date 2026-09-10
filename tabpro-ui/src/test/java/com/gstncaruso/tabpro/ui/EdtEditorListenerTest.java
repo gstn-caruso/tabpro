@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class EdtEditorListenerTest {
 
     @Test
-    void reenviaElTipoDeCambioAlDelegadoEnElEdt() throws Exception {
+    void forwardsTheChangeTypeToTheDelegateOnTheEdt() throws Exception {
         EditorChange[] received = new EditorChange[1];
         EditorListener delegate = new EditorListener() {
             @Override
@@ -32,7 +32,7 @@ class EdtEditorListenerTest {
     }
 
     @Test
-    void entregaSincronicamenteCuandoYaEstaEnElEdt() throws Exception {
+    void deliversSynchronouslyWhenAlreadyOnTheEdt() throws Exception {
         boolean[] delivered = {false};
 
         SwingUtilities.invokeAndWait(() -> EdtEditorListener.onEdt(() -> delivered[0] = true).editorChanged());
@@ -41,7 +41,7 @@ class EdtEditorListenerTest {
     }
 
     @Test
-    void entregaEnElEdtCuandoLlegaDeOtroHilo() throws Exception {
+    void deliversOnTheEdtWhenItArrivesFromAnotherThread() throws Exception {
         CountDownLatch delivered = new CountDownLatch(1);
         boolean[] wasOnEdt = {false};
         EdtEditorListener listener = EdtEditorListener.onEdt(() -> {
