@@ -10,6 +10,10 @@ public final class MnemonicAssigner {
 
     private final Set<Character> taken = new LinkedHashSet<>();
 
+    public void reserve(char letter) {
+        taken.add(normalize(letter));
+    }
+
     public int chooseIndex(String text) {
         for (int index : candidateIndexes(text)) {
             char normalized = normalize(text.charAt(index));

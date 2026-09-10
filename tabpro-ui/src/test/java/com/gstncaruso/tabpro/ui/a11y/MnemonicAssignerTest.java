@@ -24,4 +24,11 @@ class MnemonicAssignerTest {
 
         assertEquals(1, assigner.chooseIndex("Salir"));
     }
+
+    @Test
+    void unaLetraReservadaNoSeLeAsignaAOtroTexto() {
+        assigner.reserve('S');
+
+        assertEquals(1, assigner.chooseIndex("Salir"));
+    }
 }
