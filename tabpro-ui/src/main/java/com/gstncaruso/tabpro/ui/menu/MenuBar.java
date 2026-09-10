@@ -59,7 +59,6 @@ public final class MenuBar {
         bar.add(menu);
     }
 
-    /** Un mnemonico de menu que abriera el mismo Alt+letra que un atajo existente los haria pelear. */
     private void reserveAltLetterAccelerators(MnemonicAssigner assigner) {
         for (Command command : commands.all().values()) {
             KeyStroke accelerator = command.accelerator();
@@ -314,7 +313,6 @@ public final class MenuBar {
         menu.add(item);
     }
 
-    /** Un submenu es un item mas dentro del menu que lo contiene, asi que compite por sus letras. */
     private void addSubmenu(JMenu parent, JMenu submenu) {
         itemMnemonicsOf(parent).applyTo(submenu);
         parent.add(submenu);

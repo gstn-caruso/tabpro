@@ -108,11 +108,6 @@ class MenuBarTest {
         assertTrue(violaciones.stream().noneMatch(v -> v.reason().equals("mnemónico repetido")));
     }
 
-    /**
-     * Los menus mas poblados del manual (Nota, Efectos, Sonido, Ver) agotan las 27 letras del
-     * alfabeto español antes de nombrar cada uno de sus items: esos textos quedan sin mnemonico
-     * en vez de competir por una letra ya tomada. Este test congela esa lista conocida.
-     */
     @Test
     void soloLosItemsDeLosMenusMasPobladosQuedanSinLetraLibre() {
         List<Violation> violaciones = mnemonicViolationsOfEveryItem(new MenuBar(commands).build());

@@ -18,11 +18,6 @@ public final class AccessibilityAssertions {
         assertTrue(violations.isEmpty(), violations.toString());
     }
 
-    /**
-     * Solo los choques de mnemonico: un campo sin mnemonico todavia no esta cableado al
-     * asignador (FormPanel lo hace; otros formularios manuales, por ahora, no) y no es lo que
-     * este assert compartido esta verificando.
-     */
     private static List<Violation> mnemonicClashesOf(Container root) {
         return new MnemonicWalker().walkForm(root).stream()
                 .filter(violation -> violation.reason().equals("mnemónico repetido"))

@@ -31,11 +31,6 @@ public final class MnemonicWalker {
         return violationsOf(entries);
     }
 
-    /**
-     * Un formulario anidado ({@link MnemonicScope}) es su propio ambito: dos formularios
-     * distintos pueden compartir letra sin que sea un choque, porque cada uno la asigno sin
-     * saber del otro.
-     */
     public List<Violation> walkForm(Container form) {
         List<Entry> ownEntries = new ArrayList<>();
         List<Violation> violations = new ArrayList<>();
