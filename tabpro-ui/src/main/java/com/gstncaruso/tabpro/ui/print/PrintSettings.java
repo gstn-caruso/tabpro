@@ -1,10 +1,5 @@
 package com.gstncaruso.tabpro.ui.print;
 
-/**
- * Lo que se elige en la ventana de Imprimir: que hojas salen -todas o un rango- y de que tamano
- * salen. La escala se da en porcentaje, o se deja que "ajustar a la hoja" la calcule sola para que
- * la hoja dibujada entre justa en el papel de la impresora.
- */
 public record PrintSettings(int fromSheet, int toSheet, int scalePercent, boolean fitToPage, boolean centeredDocument) {
 
     public static final int MIN_SCALE_PERCENT = 10;
@@ -14,12 +9,10 @@ public record PrintSettings(int fromSheet, int toSheet, int scalePercent, boolea
         return of(1, sheetCount, sheetCount, 100, false);
     }
 
-    /** El rango pedido, traido adentro de las hojas que la partitura realmente tiene. */
     public static PrintSettings of(int fromSheet, int toSheet, int sheetCount, int scalePercent, boolean fitToPage) {
         return of(fromSheet, toSheet, sheetCount, scalePercent, fitToPage, false);
     }
 
-    /** El rango pedido, traido adentro de las hojas que la partitura realmente tiene. */
     public static PrintSettings of(
             int fromSheet, int toSheet, int sheetCount, int scalePercent, boolean fitToPage,
             boolean centeredDocument) {
@@ -37,12 +30,10 @@ public record PrintSettings(int fromSheet, int toSheet, int scalePercent, boolea
         return toSheet - fromSheet + 1;
     }
 
-    /** Que hoja de la partitura le toca a la enesima hoja que sale de la impresora. */
     public int sheetAt(int index) {
         return fromSheet + index;
     }
 
-    /** Cuanto hay que escalar una hoja dibujada para que salga como se pidio en el papel. */
     public double scaleFor(double sheetWidth, double sheetHeight, double paperWidth, double paperHeight) {
         if (!fitToPage) {
             return scalePercent / 100.0;

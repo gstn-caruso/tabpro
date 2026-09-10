@@ -27,12 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El {@link Printable} que la impresora de verdad invoca -{@link ScorePrinting.ScorePages}-, sin
- * impresora: se lo llama a mano con un {@link Graphics2D} sacado de un {@link BufferedImage} y un
- * {@link PageFormat} armado en el test. No alcanza con que {@code print(...)} no tire excepcion;
- * se mira cuantas paginas dice que hay y que dibuja en cada una.
- */
 class ScorePagesTest {
 
     private static final PageSetup A4 = PageSetup.defaults();
@@ -105,13 +99,6 @@ class ScorePagesTest {
                 "lo segundo que imprime el rango 2-3 tiene que ser la hoja 3 real de la partitura");
     }
 
-    /**
-     * Papel de la impresora mas chico que la hoja: al 100% el pie de pagina -lo ultimo que se
-     * dibuja, bien abajo- no entra y se pierde para siempre, porque {@code sheetsToPrint()} no
-     * agrega una hoja mas por lo que quedo afuera. Al 50% la hoja entera, pie incluido, entra en
-     * el mismo papel. Se usa una partitura en blanco para que lo unico que pueda aparecer ahi
-     * abajo sea el pie -"Pagina 1 de 1"-, nunca musica.
-     */
     @Test
     void laEscalaElegidaSeAplicaYDejaEntrarMasHojaEnElMismoPapel() {
         Score score = Score.blank();
@@ -136,12 +123,6 @@ class ScorePagesTest {
                 "al 50% la hoja entera -pie de pagina incluido- entra en el mismo papel chico");
     }
 
-    /**
-     * El mismo papel chico del test de arriba, pero ahora se mueve el {@link PageFormat} de la
-     * impresora en vez de la escala: uno deja lugar para el pie de pagina y el otro no. El papel
-     * configurado en la partitura ({@link PageSetup}) es el mismo A4 en los dos casos -lo unico
-     * que cambia es lo que "da la impresora".
-     */
     @Test
     void elPageFormatQueDaLaImpresoraSeRespetaYNoElPapelConfiguradoEnLaPartitura() {
         Score score = scoreWithMeasures(4);
@@ -167,11 +148,6 @@ class ScorePagesTest {
                 "el papel grande que da la impresora deja entrar el pie de pagina");
     }
 
-    /**
-     * Papel de la impresora mas ancho que la hoja: sin "Documento centrado" el dibujo arranca
-     * pegado al margen izquierdo, como siempre; con el casillero tildado, se tiene que correr la
-     * mitad del sobrante horizontal para quedar centrado en el papel.
-     */
     @Test
     void elDocumentoCentradoCorreElDibujoLaMitadDelSobranteHorizontal() {
         Score score = scoreWithMeasures(4);
@@ -237,7 +213,6 @@ class ScorePagesTest {
         return pageFormatOf(size.width, size.height);
     }
 
-    /** Un PageFormat armado a mano, como el que devolveria el dialogo de la impresora. */
     private static PageFormat pageFormatOf(int width, int height) {
         Paper paper = new Paper();
         paper.setSize(width, height);
@@ -247,7 +222,6 @@ class ScorePagesTest {
         return format;
     }
 
-    /** La ultima fila de la imagen que tiene tinta: en una hoja siempre es el pie de pagina. */
     private static int lastInkRowOf(BufferedImage image) {
         for (int y = image.getHeight() - 1; y >= 0; y--) {
             for (int x = 0; x < image.getWidth(); x++) {
@@ -259,7 +233,6 @@ class ScorePagesTest {
         throw new IllegalStateException("la imagen no tiene tinta en ningun lado");
     }
 
-    /** La primera columna de la imagen que tiene tinta: donde arranca el dibujo horizontalmente. */
     private static int firstInkColumnOf(BufferedImage image) {
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
@@ -284,7 +257,6 @@ class ScorePagesTest {
         return false;
     }
 
-    /** Un pixel "es tinta" si es notoriamente mas oscuro que el papel (blanco o el F6F6F2 de la hoja). */
     private static boolean esTinta(int rgb) {
         int r = (rgb >> 16) & 0xFF;
         int g = (rgb >> 8) & 0xFF;

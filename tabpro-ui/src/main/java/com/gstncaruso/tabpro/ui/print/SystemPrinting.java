@@ -5,12 +5,6 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 
-/**
- * El {@link Printing} de producción: cada operación arranca su propio {@link PrinterJob} del
- * sistema, igual que hacía {@link ScorePrinting} antes de tener esta costura. Imprimir y
- * configurar la página son operaciones independientes -cada una con su propio job real-, así que
- * cada una guarda el suyo por separado.
- */
 public final class SystemPrinting implements Printing {
 
     private PrinterJob printJob;

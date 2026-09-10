@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-/** Un espía de acceso a píxeles: cuenta cuántas veces la piden de a una o por fila. */
 final class PixelAccessCountingImage extends BufferedImage {
 
     private int singlePixelCalls;

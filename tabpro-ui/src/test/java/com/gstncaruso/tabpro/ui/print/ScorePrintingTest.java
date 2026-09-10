@@ -93,9 +93,6 @@ class ScorePrintingTest {
         assertEquals(esperada.getWidth(), leida.getWidth());
         assertEquals(esperada.getHeight(), leida.getHeight());
         assertEquals(pixelsOf(esperada), pixelsOf(leida), "el bmp tiene que verse igual que el render en memoria");
-        // Guarda especifica contra la trampa del canal alfa: si el bmp saliera todo blanco o
-        // todo negro de un solo color (por escribir un TYPE_INT_ARGB tal cual, que ImageIO ni
-        // siquiera logra escribir), esto lo detecta sin acoplarse a los colores exactos del tema.
         assertTrue(distinctColorsOf(leida).size() > 1, "la imagen no puede salir de un solo color");
     }
 
@@ -198,11 +195,6 @@ class ScorePrintingTest {
         assertFalse(Files.exists(path), "si ImageIO no pudo escribir nada, no puede quedar un archivo");
     }
 
-    /**
-     * TYPE_INT_ARGB con un pixel realmente translucido: ImageIO.write devuelve false para BMP y
-     * JPG porque ninguno de los dos soporta canal alfa, y no escribe nada. No hace falta pasar por
-     * el render de la partitura para reproducir el modo de falla silencioso.
-     */
     private static BufferedImage imagenConTransparenciaReal() {
         BufferedImage imagen = new BufferedImage(4, 4, BufferedImage.TYPE_INT_ARGB);
         imagen.setRGB(0, 0, 0x80FF0000);
