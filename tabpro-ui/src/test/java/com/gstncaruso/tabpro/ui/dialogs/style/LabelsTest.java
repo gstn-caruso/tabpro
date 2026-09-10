@@ -30,145 +30,145 @@ import org.junit.jupiter.params.provider.EnumSource;
 class LabelsTest {
 
     @Test
-    void traduceLaFiguraDeNota() {
+    void translatesTheNoteValue() {
         assertEquals("Negra", Labels.of(NoteValue.QUARTER));
     }
 
     @ParameterizedTest
     @EnumSource(NoteValue.class)
-    void todaFiguraDeNotaTieneUnaEtiquetaPropia(NoteValue value) {
-        String etiqueta = Labels.of(value);
+    void everyNoteValueHasItsOwnLabel(NoteValue value) {
+        String label = Labels.of(value);
 
-        assertFalse(etiqueta.isBlank());
-        assertNotEquals(value.name(), etiqueta);
+        assertFalse(label.isBlank());
+        assertNotEquals(value.name(), label);
     }
 
     @Test
-    void traduceElTipoDeAcordeMayorAlSufijoQueUsaElManual() {
+    void translatesTheMajorChordTypeToTheSuffixTheManualUses() {
         assertEquals("M", Labels.of(ChordType.MAJOR));
     }
 
     @Test
-    void traduceElTipoDeAcordeASuSufijoMusical() {
+    void translatesTheChordTypeToItsMusicalSuffix() {
         assertEquals("m7", Labels.of(ChordType.MINOR_SEVENTH));
     }
 
     @ParameterizedTest
     @EnumSource(ChordType.class)
-    void todoTipoDeAcordeTieneUnaEtiquetaPropia(ChordType value) {
-        String etiqueta = Labels.of(value);
+    void everyChordTypeHasItsOwnLabel(ChordType value) {
+        String label = Labels.of(value);
 
-        assertFalse(etiqueta.isBlank());
-        assertNotEquals(value.name(), etiqueta);
+        assertFalse(label.isBlank());
+        assertNotEquals(value.name(), label);
     }
 
     @Test
-    void traduceLaComplejidadDeLasPosiciones() {
+    void translatesThePositionsComplexity() {
         assertEquals("Todas", Labels.of(ChordComplexity.COMPLEX));
     }
 
     @ParameterizedTest
     @EnumSource(ChordComplexity.class)
-    void todaComplejidadDePosicionesTieneUnaEtiquetaPropia(ChordComplexity value) {
-        String etiqueta = Labels.of(value);
+    void everyPositionsComplexityHasItsOwnLabel(ChordComplexity value) {
+        String label = Labels.of(value);
 
-        assertFalse(etiqueta.isBlank());
-        assertNotEquals(value.name(), etiqueta);
+        assertFalse(label.isBlank());
+        assertNotEquals(value.name(), label);
     }
 
     @Test
-    void traduceLaPreferenciaDeCejilla() {
+    void translatesTheBarrePreference() {
         assertEquals("Cualquiera", Labels.of(BarrePreference.ANY));
     }
 
     @ParameterizedTest
     @EnumSource(BarrePreference.class)
-    void todaPreferenciaDeCejillaTieneUnaEtiquetaPropia(BarrePreference value) {
-        String etiqueta = Labels.of(value);
+    void everyBarrePreferenceHasItsOwnLabel(BarrePreference value) {
+        String label = Labels.of(value);
 
-        assertFalse(etiqueta.isBlank());
-        assertNotEquals(value.name(), etiqueta);
+        assertFalse(label.isBlank());
+        assertNotEquals(value.name(), label);
     }
 
     @Test
-    void traduceLaNotaConSuNombreEnCastellanoEntreParentesis() {
+    void translatesTheNoteWithItsSpanishNameInParentheses() {
         assertEquals("C (Do)", Labels.of(PitchClass.of("C")));
     }
 
     @Test
-    void laEtiquetaDeUnaNotaNuncaCoincideConSuToString() {
+    void theLabelOfANoteNeverMatchesItsToString() {
         PitchClass fSharp = PitchClass.of("F#");
 
         assertNotEquals(fSharp.toString(), Labels.of(fSharp));
     }
 
     @Test
-    void traduceLaEscalaConSuNombreEnCastellano() {
+    void translatesTheScaleWithItsSpanishName() {
         assertEquals("Mayor (Jónico)", Labels.of(ScaleLibrary.major()));
     }
 
     @Test
-    void todaEscalaDeLaBibliotecaTieneUnaEtiquetaQueNoEsSuToString() {
+    void everyScaleInTheLibraryHasALabelThatIsNotItsToString() {
         for (Scale scale : ScaleLibrary.all()) {
-            String etiqueta = Labels.of(scale);
+            String label = Labels.of(scale);
 
-            assertFalse(etiqueta.isBlank());
-            assertNotEquals(scale.toString(), etiqueta);
+            assertFalse(label.isBlank());
+            assertNotEquals(scale.toString(), label);
         }
     }
 
     @Test
-    void traduceLaAfinacionConSuNombreYElResumenDeCuerdas() {
+    void translatesTheTuningWithItsNameAndStringSummary() {
         assertEquals("Guitarra estándar (EADGBE)", Labels.of(TuningLibrary.standardGuitar()));
     }
 
     @Test
-    void todaAfinacionDeLaBibliotecaTieneUnaEtiquetaQueNoEsSuToString() {
+    void everyTuningInTheLibraryHasALabelThatIsNotItsToString() {
         for (Tuning tuning : TuningLibrary.guitars()) {
-            String etiqueta = Labels.of(tuning);
+            String label = Labels.of(tuning);
 
-            assertFalse(etiqueta.isBlank());
-            assertNotEquals(tuning.toString(), etiqueta);
+            assertFalse(label.isBlank());
+            assertNotEquals(tuning.toString(), label);
         }
     }
 
     @Test
-    void traduceLaDinamicaASuSimboloMusical() {
+    void translatesTheDynamicToItsMusicalSymbol() {
         assertEquals("mf", Labels.of(Dynamic.MEZZO_FORTE));
     }
 
     @ParameterizedTest
     @EnumSource(Dynamic.class)
-    void todaDinamicaTieneUnaEtiquetaPropia(Dynamic value) {
-        String etiqueta = Labels.of(value);
+    void everyDynamicHasItsOwnLabel(Dynamic value) {
+        String label = Labels.of(value);
 
-        assertFalse(etiqueta.isBlank());
-        assertNotEquals(value.name(), etiqueta);
+        assertFalse(label.isBlank());
+        assertNotEquals(value.name(), label);
     }
 
     @Test
-    void traduceElAcordeConSuNombreEnVezDelRecordCrudo() {
+    void translatesTheChordWithItsNameInsteadOfTheRawRecord() {
         Chord chord = Chord.of(PitchClass.of("C"), ChordType.MINOR_SEVENTH);
 
         assertEquals("Cm7", Labels.of(chord));
     }
 
     @Test
-    void traduceElTipoDeEscalaDelDiapason() {
+    void translatesTheFretboardScaleType() {
         assertEquals("Mayor", Labels.of(ScaleType.MAJOR));
     }
 
     @ParameterizedTest
     @EnumSource(ScaleType.class)
-    void todoTipoDeEscalaDelDiapasonTieneUnaEtiquetaPropia(ScaleType value) {
-        String etiqueta = Labels.of(value);
+    void everyFretboardScaleTypeHasItsOwnLabel(ScaleType value) {
+        String label = Labels.of(value);
 
-        assertFalse(etiqueta.isBlank());
-        assertNotEquals(value.name(), etiqueta);
+        assertFalse(label.isBlank());
+        assertNotEquals(value.name(), label);
     }
 
     @Test
-    void traduceLosModosDelDiapasonYElTeclado() {
+    void translatesTheFretboardAndKeyboardModes() {
         assertEquals("Solo el beat", Labels.of(FretboardDisplayMode.ONLY_BEAT));
         assertEquals("Sin nombres", Labels.of(NoteNameMode.NONE));
         assertEquals("Nombre", Labels.of(ScaleLabelMode.NAME));
@@ -177,32 +177,32 @@ class LabelsTest {
     }
 
     @Test
-    void traduceLaOrientacionASuNombreEnCastellano() {
+    void translatesTheOrientationToItsSpanishName() {
         assertEquals("Vertical", Labels.of(Orientation.PORTRAIT));
         assertEquals("Horizontal", Labels.of(Orientation.LANDSCAPE));
     }
 
     @ParameterizedTest
     @EnumSource(Orientation.class)
-    void todaOrientacionTieneUnaEtiquetaQueNoEsSuName(Orientation value) {
-        String etiqueta = Labels.of(value);
+    void everyOrientationHasALabelThatIsNotItsName(Orientation value) {
+        String label = Labels.of(value);
 
-        assertFalse(etiqueta.isBlank());
-        assertNotEquals(value.name(), etiqueta);
+        assertFalse(label.isBlank());
+        assertNotEquals(value.name(), label);
     }
 
     @Test
-    void traduceElFormatoDePapelConSusDimensionesEnMilimetros() {
+    void translatesThePaperFormatWithItsDimensionsInMillimeters() {
         assertEquals("A4 (210 x 297 mm)", Labels.of(PaperFormat.A4));
         assertEquals("Carta (216 x 279 mm)", Labels.of(PaperFormat.LETTER));
     }
 
     @ParameterizedTest
     @EnumSource(PaperFormat.class)
-    void todoFormatoDePapelTieneUnaEtiquetaQueNoEsSuName(PaperFormat value) {
-        String etiqueta = Labels.of(value);
+    void everyPaperFormatHasALabelThatIsNotItsName(PaperFormat value) {
+        String label = Labels.of(value);
 
-        assertFalse(etiqueta.isBlank());
-        assertNotEquals(value.name(), etiqueta);
+        assertFalse(label.isBlank());
+        assertNotEquals(value.name(), label);
     }
 }
