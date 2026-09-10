@@ -60,6 +60,18 @@ class ToolBarsOrderTest {
                 "nav.previousBar", "nav.nextBar", "tool.scales", "tool.tuner", SEP);
     }
 
+    @Test
+    void laFilaDeFigurasSigueElOrdenDeGuitarPro5() {
+        assertOrder(toolBars.notationToolBar,
+                "note.value.WHOLE", "note.value.HALF", "note.value.QUARTER", "note.value.EIGHTH",
+                "note.value.SIXTEENTH", "note.value.THIRTY_SECOND", "note.value.SIXTY_FOURTH", SEP,
+                "note.dot", "note.triplet", "note.tieBeat", SEP,
+                "note.rest", SEP,
+                "note.tie", "note.soundDuration", SEP,
+                "bar.octave8va", "bar.octave8vb", "bar.octave15ma", "bar.octave15mb", SEP,
+                "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak");
+    }
+
     private void assertOrder(JToolBar bar, String... tokens) {
         List<Object> expected = new ArrayList<>();
         for (String token : tokens) {

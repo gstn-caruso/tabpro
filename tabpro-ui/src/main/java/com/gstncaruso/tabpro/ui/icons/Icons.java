@@ -201,6 +201,57 @@ public final class Icons {
         });
     }
 
+    /** Ligar el beat entero: el mismo arco de {@link #tie()}, pero sobre tres cabezas. */
+    public static Icon tieBeat() {
+        return icon((graphics, size) -> {
+            graphics.setStroke(thin());
+            graphics.draw(Glyphs.arc(size * 0.14, size * 0.86, size * 0.62, size * 0.32));
+            graphics.fill(Glyphs.noteHead(size * 0.14, size * 0.7, size * 0.2, false));
+            graphics.fill(Glyphs.noteHead(size * 0.5, size * 0.62, size * 0.2, false));
+            graphics.fill(Glyphs.noteHead(size * 0.86, size * 0.7, size * 0.2, false));
+        });
+    }
+
+    /** El porcentaje de duracion del sonido, tal como lo abrevia el manual. */
+    public static Icon soundDuration() {
+        return letter("%");
+    }
+
+    public static Icon octave8va() {
+        return octaveMark("8", "va");
+    }
+
+    public static Icon octave8vb() {
+        return octaveMark("8", "vb");
+    }
+
+    public static Icon octave15ma() {
+        return octaveMark("15", "ma");
+    }
+
+    public static Icon octave15mb() {
+        return octaveMark("15", "mb");
+    }
+
+    /** Dos corcheas con la barra de union entera: el corte queda impedido. */
+    public static Icon preventBeamBreak() {
+        return icon((graphics, size) -> {
+            beamedPair(graphics, size, true);
+        });
+    }
+
+    /** Dos corcheas con la barra de union cortada: el corte queda forzado. */
+    public static Icon forceBeamBreak() {
+        return icon((graphics, size) -> {
+            beamedPair(graphics, size, false);
+        });
+    }
+
+    /** El corte de la barra de union vuelve a decidirlo el automatismo del manual. */
+    public static Icon resetBeamBreak() {
+        return letter("A");
+    }
+
     // ---- efectos ----------------------------------------------------------
 
     public static Icon letter(String text) {
@@ -209,6 +260,20 @@ public final class Icons {
             double width = graphics.getFontMetrics().stringWidth(text);
             graphics.drawString(text, (float) ((size - width) / 2), (float) (size * 0.7));
         });
+    }
+
+    /** Una marca de octava en dos renglones ("8" y "va"), como la abrevia el manual. */
+    private static Icon octaveMark(String number, String suffix) {
+        return icon((graphics, size) -> {
+            graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, Math.round(size * 0.42f)));
+            drawCentered(graphics, number, size, size * 0.44);
+            drawCentered(graphics, suffix, size, size * 0.86);
+        });
+    }
+
+    private static void drawCentered(Graphics2D graphics, String text, int size, double baseline) {
+        double width = graphics.getFontMetrics().stringWidth(text);
+        graphics.drawString(text, (float) ((size - width) / 2), (float) baseline);
     }
 
     public static Icon deadNote() {
@@ -451,6 +516,21 @@ public final class Icons {
             case THIRTY_SECOND -> MET_NOTE_32ND_UP;
             case SIXTY_FOURTH -> MET_NOTE_64TH_UP;
         };
+    }
+
+    /** Dos corcheas paradas, con la barra de union entera o cortada segun {@code joined}. */
+    private static void beamedPair(Graphics2D graphics, int size, boolean joined) {
+        graphics.fill(Glyphs.noteHead(size * 0.3, size * 0.72, size * 0.2, false));
+        graphics.fill(Glyphs.noteHead(size * 0.7, size * 0.72, size * 0.2, false));
+        graphics.setStroke(thin());
+        graphics.draw(new Line2D.Double(size * 0.38, size * 0.6, size * 0.38, size * 0.22));
+        graphics.draw(new Line2D.Double(size * 0.78, size * 0.6, size * 0.78, size * 0.22));
+        if (joined) {
+            graphics.fill(new Rectangle2D.Double(size * 0.38, size * 0.2, size * 0.4, size * 0.08));
+        } else {
+            graphics.draw(new Line2D.Double(size * 0.38, size * 0.22, size * 0.52, size * 0.3));
+            graphics.draw(new Line2D.Double(size * 0.78, size * 0.22, size * 0.92, size * 0.3));
+        }
     }
 
     private static void page(Graphics2D graphics, int size) {

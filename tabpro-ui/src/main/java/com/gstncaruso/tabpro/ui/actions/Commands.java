@@ -153,13 +153,13 @@ public final class Commands {
         define("bar.resetLineBreak", "Reiniciar la organización",
                 () -> editor.setLineBreak(LineBreak.AUTOMATIC, view.isMultitrack()));
         define("bar.octave8va", "8va (suena una octava más arriba de lo escrito)",
-                () -> editor.setOctaveMark(OctaveMark.OTTAVA_ALTA));
+                () -> editor.setOctaveMark(OctaveMark.OTTAVA_ALTA)).withIcon(Icons.octave8va());
         define("bar.octave8vb", "8vb (suena una octava más abajo de lo escrito)",
-                () -> editor.setOctaveMark(OctaveMark.OTTAVA_BASSA));
+                () -> editor.setOctaveMark(OctaveMark.OTTAVA_BASSA)).withIcon(Icons.octave8vb());
         define("bar.octave15ma", "15ma (suena dos octavas más arriba de lo escrito)",
-                () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_ALTA));
+                () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_ALTA)).withIcon(Icons.octave15ma());
         define("bar.octave15mb", "15mb (suena dos octavas más abajo de lo escrito)",
-                () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_BASSA));
+                () -> editor.setOctaveMark(OctaveMark.QUINDICESIMA_BASSA)).withIcon(Icons.octave15mb());
         define("bar.octaveNone", "Sin marca de octava", () -> editor.setOctaveMark(OctaveMark.NONE));
     }
 
@@ -191,7 +191,8 @@ public final class Commands {
         define("note.triplet", "Tresillo", editor::toggleTriplet).withAccelerator("SLASH").withIcon(Icons.tuplet(3));
         defineTupletCommands();
         define("note.tie", "Ligar la nota", editor::toggleTie).withAccelerator("L").withIcon(Icons.tie());
-        define("note.tieBeat", "Ligar el beat", editor::tieWholeBeat).withAccelerator("ctrl L");
+        define("note.tieBeat", "Ligar el beat", editor::tieWholeBeat)
+                .withAccelerator("ctrl L").withIcon(Icons.tieBeat());
         define("note.insertBeat", "Insertar un beat", editor::insertBeat).withAccelerator("INSERT");
         define("note.deleteNote", "Borrar la nota", editor::clearNote).withAccelerator("DELETE");
         define("note.deleteBeat", "Borrar el beat", editor::deleteBeat).withAccelerator("ctrl DELETE");
@@ -204,7 +205,8 @@ public final class Commands {
         define("note.repeatToEndOfBar", "Copiar el beat hasta el final del compás",
                 editor::repeatBeatToTheEndOfTheMeasure).withAccelerator("C");
         define("note.dynamics", "Dinámica…", dialogs::dynamics);
-        define("note.soundDuration", "Duración del sonido…", dialogs::soundDuration);
+        define("note.soundDuration", "Duración del sonido…", dialogs::soundDuration)
+                .withIcon(Icons.soundDuration());
         define("note.fingering", "Digitación…", dialogs::fingering);
         define("note.chord", "Acorde…", dialogs::chordDiagram).withAccelerator("A").withIcon(Icons.chordDiagram());
         define("note.mixTableChange", "Cambio de parámetros…", dialogs::mixTableChange)
@@ -257,9 +259,12 @@ public final class Commands {
      * "Bar > Break Line" (forzar/impedir/reiniciar): fuerzan, impiden o vuelven al automatismo.
      */
     private void defineBeamAndStemCommands() {
-        define("note.forceBeamBreak", "Forzar corte de barra", () -> editor.setBeamBreak(BeamBreak.FORCED));
-        define("note.preventBeamBreak", "Impedir corte de barra", () -> editor.setBeamBreak(BeamBreak.PREVENTED));
-        define("note.resetBeamBreak", "Barra automática", () -> editor.setBeamBreak(BeamBreak.AUTOMATIC));
+        define("note.forceBeamBreak", "Forzar corte de barra", () -> editor.setBeamBreak(BeamBreak.FORCED))
+                .withIcon(Icons.forceBeamBreak());
+        define("note.preventBeamBreak", "Impedir corte de barra", () -> editor.setBeamBreak(BeamBreak.PREVENTED))
+                .withIcon(Icons.preventBeamBreak());
+        define("note.resetBeamBreak", "Barra automática", () -> editor.setBeamBreak(BeamBreak.AUTOMATIC))
+                .withIcon(Icons.resetBeamBreak());
         define("note.stemUp", "Plica hacia arriba", () -> editor.setStemOverride(StemOverride.UP));
         define("note.stemDown", "Plica hacia abajo", () -> editor.setStemOverride(StemOverride.DOWN));
         define("note.stemAutomatic", "Plica automática", () -> editor.setStemOverride(StemOverride.AUTOMATIC));

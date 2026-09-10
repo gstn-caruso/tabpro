@@ -24,7 +24,7 @@ public final class ToolBars {
     private final JPanel rows = new JPanel();
     final JToolBar documentToolBar;
     final JToolBar structureToolBar;
-    private final JComponent notationToolBar;
+    final JToolBar notationToolBar;
 
     public ToolBars(Commands commands) {
         this.commands = commands;
@@ -145,23 +145,24 @@ public final class ToolBars {
         return bar;
     }
 
-    private JComponent notationRow() {
+    /**
+     * Guitar Pro 5, manual pagina 14, fila 3: figuras y su notacion (los efectos de la nota
+     * tienen su propia barra, ver {@link #effectsRow()}).
+     */
+    private JToolBar notationRow() {
         JToolBar bar = emptyBar();
         add(bar, "note.value.WHOLE", "note.value.HALF", "note.value.QUARTER", "note.value.EIGHTH",
                 "note.value.SIXTEENTH", "note.value.THIRTY_SECOND", "note.value.SIXTY_FOURTH");
         bar.addSeparator();
-        add(bar, "note.dot", "note.triplet", "note.rest", "note.tie");
+        add(bar, "note.dot", "note.triplet", "note.tieBeat");
         bar.addSeparator();
-        add(bar, "effect.deadNote", "effect.ghostNote", "effect.accent", "effect.staccato",
-                "effect.palmMute", "effect.letRing");
+        add(bar, "note.rest");
         bar.addSeparator();
-        add(bar, "effect.hammer", "effect.legatoSlide", "effect.bend", "effect.vibrato",
-                "effect.wideVibrato", "effect.harmonics");
+        add(bar, "note.tie", "note.soundDuration");
         bar.addSeparator();
-        add(bar, "effect.tapping", "effect.slapping", "effect.popping",
-                "effect.strokeDown", "effect.strokeUp");
+        add(bar, "bar.octave8va", "bar.octave8vb", "bar.octave15ma", "bar.octave15mb");
         bar.addSeparator();
-        add(bar, "note.chord", "effect.text", "note.mixTableChange");
+        add(bar, "note.preventBeamBreak", "note.forceBeamBreak", "note.resetBeamBreak");
         return bar;
     }
 
