@@ -89,10 +89,6 @@ class AccentedLiteralsTest {
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/StringOptionsPanel.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/font/BravuraFont.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/icons/GlyphIcon.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/instruments/FretboardDisplayMode.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/instruments/FretboardType.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/instruments/KeyboardDisplayMode.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/instruments/ScaleType.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/page/PageElement.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/score/ViewMode.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/ScoreDocument.java");

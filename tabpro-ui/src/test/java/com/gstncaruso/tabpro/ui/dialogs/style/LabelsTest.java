@@ -176,7 +176,7 @@ class LabelsTest {
         assertEquals("Solo el beat", Labels.of(FretboardDisplayMode.ONLY_BEAT));
         assertEquals("Sin nombres", Labels.of(NoteNameMode.NONE));
         assertEquals("Nombre", Labels.of(ScaleLabelMode.NAME));
-        assertEquals("Electrica", Labels.of(FretboardType.ELECTRIC));
+        assertEquals("Eléctrica", Labels.of(FretboardType.ELECTRIC));
         assertEquals("Solo el beat", Labels.of(KeyboardDisplayMode.ONLY_BEAT));
     }
 
