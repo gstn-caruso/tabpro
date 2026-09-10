@@ -13,6 +13,9 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.nio.file.Path;
@@ -563,6 +566,55 @@ final class AuditSupport {
             return opened.await(timeoutMillis, TimeUnit.MILLISECONDS);
         } finally {
             Toolkit.getDefaultToolkit().removeAWTEventListener(listener);
+        }
+    }
+
+    /**
+     * Le pide el foco de verdad al componente y espera el FocusEvent real (nada de sleep): con
+     * DISPLAY real el pedido de foco es asincronico, asi que el test no puede asumir que ya lo
+     * tiene apenas vuelve requestFocusInWindow.
+     */
+    static boolean requestFocusAndAwait(Component target, long timeoutMillis) throws Exception {
+        if (target.isFocusOwner()) {
+            return true;
+        }
+        CountDownLatch gained = new CountDownLatch(1);
+        FocusListener listener = new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                gained.countDown();
+            }
+        };
+        target.addFocusListener(listener);
+        try {
+            SwingUtilities.invokeLater(target::requestFocusInWindow);
+            return gained.await(timeoutMillis, TimeUnit.MILLISECONDS);
+        } finally {
+            target.removeFocusListener(listener);
+        }
+    }
+
+    /**
+     * Despacha una tecla sin bloquear el hilo del test y dice si eso le hizo perder el foco al
+     * componente dentro del tiempo dado: para los atajos que deberian ceder el foco a otro lado.
+     */
+    static boolean pressKeyAndAwaitFocusLost(Component target, KeyStroke keyStroke, long timeoutMillis)
+            throws Exception {
+        CountDownLatch lost = new CountDownLatch(1);
+        FocusListener listener = new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                lost.countDown();
+            }
+        };
+        target.addFocusListener(listener);
+        try {
+            SwingUtilities.invokeLater(() -> target.dispatchEvent(new KeyEvent(
+                    target, KeyEvent.KEY_PRESSED, System.currentTimeMillis(),
+                    keyStroke.getModifiers(), keyStroke.getKeyCode(), KeyEvent.CHAR_UNDEFINED)));
+            return lost.await(timeoutMillis, TimeUnit.MILLISECONDS);
+        } finally {
+            target.removeFocusListener(listener);
         }
     }
 
