@@ -61,7 +61,7 @@ class NotePreviewTest {
     }
 
     @Test
-    void unaSecuenciaVaciaNoHaceSonarNada() {
+    void anEmptySequenceSoundsNothing() {
         RecordingReceiver receiver = new RecordingReceiver();
         NotePreview preview = new NotePreview(receiver, (millis, action) -> action.run());
 
@@ -73,7 +73,7 @@ class NotePreviewTest {
     }
 
     @Test
-    void reproduceCadaNotaDeLaSecuenciaEnOrdenConSeparacionCreciente() {
+    void playsEachNoteOfTheSequenceInOrderWithGrowingSeparation() {
         RecordingReceiver receiver = new RecordingReceiver();
         List<Long> scheduledGaps = new ArrayList<>();
         NotePreview preview = new NotePreview(receiver, (millis, action) -> {
