@@ -553,21 +553,6 @@ public final class Icons {
         graphics.fill(new Ellipse2D.Double(dots, size * 0.56, size * 0.1, size * 0.1));
     }
 
-    private static void curvedArrow(Graphics2D graphics, int size, boolean backwards) {
-        graphics.setStroke(thin());
-        java.awt.geom.Arc2D arc = new java.awt.geom.Arc2D.Double(
-                size * 0.18, size * 0.26, size * 0.64, size * 0.5,
-                backwards ? 20 : 160, backwards ? 140 : -140, java.awt.geom.Arc2D.OPEN);
-        graphics.draw(arc);
-        double tipX = backwards ? size * 0.22 : size * 0.78;
-        Path2D head = new Path2D.Double();
-        head.moveTo(tipX, size * 0.34);
-        head.lineTo(tipX + (backwards ? size * 0.18 : -size * 0.18), size * 0.4);
-        head.lineTo(tipX + (backwards ? size * 0.04 : -size * 0.04), size * 0.56);
-        head.closePath();
-        graphics.fill(head);
-    }
-
     private static void skip(Graphics2D graphics, int size, boolean backwards, boolean toTheEnd) {
         double direction = backwards ? -1 : 1;
         double center = size * 0.5;
