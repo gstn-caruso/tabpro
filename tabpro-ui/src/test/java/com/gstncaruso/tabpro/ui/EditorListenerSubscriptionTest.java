@@ -35,8 +35,7 @@ class EditorListenerSubscriptionTest {
             "ScoreDocument.java#this::scoreChanged",
             "BeatViews.java#this::refresh",
             "MainFrame.java#this::updateTitle",
-            "MainFrame.java#() -> spinner.setValue(editor.score().tempo())",
-            "TrackPanel.java#this::editorChanged");
+            "MainFrame.java#() -> spinner.setValue(editor.score().tempo())");
 
     static Stream<Subscription> subscriptions() {
         return sourceRoots().filter(Files::isDirectory).flatMap(EditorListenerSubscriptionTest::subscriptionsUnder);

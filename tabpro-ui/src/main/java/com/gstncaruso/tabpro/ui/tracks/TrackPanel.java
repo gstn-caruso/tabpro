@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.tracks;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import java.awt.BorderLayout;
@@ -57,7 +58,7 @@ public final class TrackPanel extends JPanel {
         add(scrollingMixer, BorderLayout.WEST);
         add(scrollingGlobalView, BorderLayout.CENTER);
 
-        editor.addListener(this::editorChanged);
+        editor.addListener(EdtEditorListener.onEdt(this::editorChanged));
     }
 
     public void showPlayingMeasure(OptionalInt measure) {
