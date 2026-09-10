@@ -52,4 +52,22 @@ class EditorSelectionTest {
         assertEquals(0, selection.fromBeat());
         assertEquals(3, selection.toBeat());
     }
+
+    /**
+     * En el limite del pentagrama, moveRight() no solo mueve el cursor: tambien inserta un
+     * compas nuevo al final de la pista (el mismo camino que usa {@link Editor#change}, no
+     * {@link Editor#cursor()} a secas). Tiene que limpiar la seleccion igual que cualquier otro
+     * movimiento sin extender.
+     */
+    @Test
+    void movingRightPastTheLastMeasureStillClearsTheSelection() {
+        editor.moveRight();
+        editor.moveRight();
+        editor.moveRight();
+        editor.startSelection(false);
+
+        editor.moveRight();
+
+        assertTrue(editor.selection().isEmpty());
+    }
 }
