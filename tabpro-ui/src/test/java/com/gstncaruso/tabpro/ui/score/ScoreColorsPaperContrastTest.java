@@ -48,7 +48,10 @@ class ScoreColorsPaperContrastTest {
                 new Pair("encabezado de pagina (PAGE_INK) / hoja", ScoreColors.PAGE_INK, ScoreColors.PAGE_PAPER,
                         Contrast.TEXT_MINIMUM_RATIO),
                 new Pair("pie de pagina atenuado (PAGE_MUTED) / hoja", ScoreColors.PAGE_MUTED, ScoreColors.PAGE_PAPER,
-                        Contrast.TEXT_MINIMUM_RATIO)));
+                        Contrast.TEXT_MINIMUM_RATIO),
+                pair("color por defecto del marcador (Marker.DEFAULT_COLOR) / hoja",
+                        ScoreColors.of(com.gstncaruso.tabpro.core.model.bars.Marker.DEFAULT_COLOR),
+                        Contrast.GRAPHICAL_MINIMUM_RATIO)));
     }
 
     private static Pair pair(String description, java.awt.Color color, double minimumRatio) {

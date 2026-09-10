@@ -78,6 +78,9 @@ class ScoreColorsContrastTest {
                         Contrast.TEXT_MINIMUM_RATIO),
                 new Pair("nota correspondiente (CORRESPONDING_NOTE) / fondo",
                         PaletteCheck.compositeOver(ScoreColors.CORRESPONDING_NOTE, ScoreColors.BACKGROUND),
+                        ScoreColors.BACKGROUND, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("color por defecto del marcador (Marker.DEFAULT_COLOR) / fondo",
+                        ScoreColors.of(com.gstncaruso.tabpro.core.model.bars.Marker.DEFAULT_COLOR),
                         ScoreColors.BACKGROUND, Contrast.GRAPHICAL_MINIMUM_RATIO)));
 
         for (int track = 0; track < TrackColors.COUNT; track++) {
