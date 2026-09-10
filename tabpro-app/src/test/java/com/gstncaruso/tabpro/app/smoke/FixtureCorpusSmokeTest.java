@@ -17,11 +17,16 @@ import com.gstncaruso.tabpro.ui.print.ScoreSheets;
 import com.gstncaruso.tabpro.ui.score.ViewMode;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.sound.midi.Synthesizer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Red permanente sobre cada fixture del repo: abre por el camino real de importacion, renderiza,
@@ -75,9 +80,30 @@ class FixtureCorpusSmokeTest {
         assertFalse(score.tracks().isEmpty(), () -> path.getFileName() + ": tiene al menos una pista");
     }
 
-    @Test
-    void unGuitarProSimpleCompletaTodoElPipelineDeLaRedPermanente(@TempDir Path tempDir) {
-        ejecutarPipeline(repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5"), tempDir);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("fixturesDeGuitarPro")
+    void unGuitarProCompletaTodoElPipelineDeLaRedPermanente(Path path, @TempDir Path tempDir) {
+        ejecutarPipeline(path, tempDir);
+    }
+
+    static Stream<Path> fixturesDeGuitarPro() throws IOException {
+        return fixturesCon(repoFile("tabpro-format/src/test/resources/guitarpro"), ".gp3", ".gp4", ".gp5");
+    }
+
+    private static Stream<Path> fixturesCon(Path directorio, String... extensiones) throws IOException {
+        return Files.list(directorio)
+                .filter(path -> {
+                    String nombre = path.getFileName().toString();
+                    for (String extension : extensiones) {
+                        if (nombre.endsWith(extension)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .sorted()
+                .toList()
+                .stream();
     }
 
     private void ejecutarPipeline(Path path, Path tempDir) {
