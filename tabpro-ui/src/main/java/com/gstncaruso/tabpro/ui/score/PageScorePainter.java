@@ -36,7 +36,9 @@ public final class PageScorePainter {
      */
     private static final ThreadLocal<CachedLayout> LAST_LAYOUT = new ThreadLocal<>();
 
-    private record CachedLayout(Score score, ScoreViewport viewport, ScoreLayout layout) {
+    private record CachedLayout(
+            Score score, ScoreViewport viewport, ScoreLayout layout,
+            List<ChordDiagram> diagramsUnderTheTitle) {
 
         boolean matches(Score score, ScoreViewport viewport) {
             return this.score == score && this.viewport.equals(viewport);
@@ -73,7 +75,7 @@ public final class PageScorePainter {
         }
 
         List<PagePlacement> pages = placementsFor(layout, viewport);
-        List<ChordDiagram> diagramsUnderTheTitle = TrackChords.underTheTitle(score);
+        List<ChordDiagram> diagramsUnderTheTitle = diagramsUnderTheTitleFor(score, viewport);
         Rectangle clip = g.getClipBounds();
         for (int page = 0; page < pages.size(); page++) {
             PagePlacement placement = pages.get(page);
@@ -118,7 +120,7 @@ public final class PageScorePainter {
         g.scale(viewport.factor(), viewport.factor());
         paintSheet(
                 g, score, layout, cursor, playhead, selection, viewport, pages.get(page).alone(),
-                new PageFields(score.info(), page + 1, pages.size()), TrackChords.underTheTitle(score));
+                new PageFields(score.info(), page + 1, pages.size()), diagramsUnderTheTitleFor(score, viewport));
     }
 
     /** Traduce un clic de pantalla (ya sin el factor de zoom) a compas/beat/cuerda. */
@@ -174,9 +176,22 @@ public final class PageScorePainter {
     }
 
     static ScoreLayout layoutFor(Score score, ScoreViewport viewport) {
+        return cachedFor(score, viewport).layout();
+    }
+
+    /**
+     * Los acordes que van bajo el titulo son los mismos para toda la partitura: exportar todas
+     * sus hojas no tiene que barrer los compases de cada pista una vez por hoja para volver a
+     * juntarlos, {@link TrackChords#underTheTitle} ya los junto para la primera.
+     */
+    static List<ChordDiagram> diagramsUnderTheTitleFor(Score score, ScoreViewport viewport) {
+        return cachedFor(score, viewport).diagramsUnderTheTitle();
+    }
+
+    private static CachedLayout cachedFor(Score score, ScoreViewport viewport) {
         CachedLayout cached = LAST_LAYOUT.get();
         if (cached != null && cached.matches(score, viewport)) {
-            return cached.layout();
+            return cached;
         }
         ViewMode mode = viewport.mode();
         int width = mode.showsPaper()
@@ -184,8 +199,9 @@ public final class PageScorePainter {
                 : (mode.scrollsHorizontally() ? UNWRAPPED_WIDTH : Math.max(200, viewport.width()));
         ScoreLayout layout = ScoreLayout.of(
                 score, width, viewport.visibleTracks(), viewport.visibleNotations(), viewport.showsDynamicNotes());
-        LAST_LAYOUT.set(new CachedLayout(score, viewport, layout));
-        return layout;
+        CachedLayout fresh = new CachedLayout(score, viewport, layout, TrackChords.underTheTitle(score));
+        LAST_LAYOUT.set(fresh);
+        return fresh;
     }
 
     private static void paintSheet(
