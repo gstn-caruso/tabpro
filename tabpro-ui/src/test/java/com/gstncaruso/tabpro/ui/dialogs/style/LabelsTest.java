@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
+import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
@@ -233,6 +234,20 @@ class LabelsTest {
     @EnumSource(LineBreak.class)
     void everyLineBreakHasSpanishAndEnglishText(LineBreak value) {
         String key = "domain.LineBreak." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheBeamBreak() {
+        assertEquals("Forzar corte", Labels.of(BeamBreak.FORCED));
+    }
+
+    @ParameterizedTest
+    @EnumSource(BeamBreak.class)
+    void everyBeamBreakHasSpanishAndEnglishText(BeamBreak value) {
+        String key = "domain.BeamBreak." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
