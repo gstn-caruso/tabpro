@@ -20,8 +20,16 @@ public enum FretboardType {
                     new Color(0x9DBCF8),
                     InstrumentColors.CONTEXT_INK,
                     new Color(0xB6BCC5))),
-    CLASSICAL("Clasica", new Color(0xC9A66B), new Color(0xDDBF8E), InlayStyle.NONE, 1.25,
-            FretboardPalette.sharedWithElectric()),
+    CLASSICAL("Clasica", new Color(0xC9A66B), new Color(0x715322), InlayStyle.NONE, 1.25,
+            new FretboardPalette(
+                    new Color(0x5D5852),
+                    new Color(0x62574F),
+                    new Color(0x5F574F),
+                    new Color(0xAF191E),
+                    Color.WHITE,
+                    new Color(0x0F4ECB),
+                    Color.WHITE,
+                    new Color(0x515967))),
     BASIC("Basica", new Color(0x5B5F66), new Color(0x74787F), InlayStyle.DIAMONDS, 0.9,
             FretboardPalette.sharedWithElectric());
 
