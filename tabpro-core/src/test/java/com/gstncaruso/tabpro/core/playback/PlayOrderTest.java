@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class PlayOrderTest {
 
     @Test
-    void unaPartituraSinAtributosEspecialesSeTocaDeCorrido() {
+    void aScoreWithoutSpecialAttributesPlaysStraightThrough() {
         Score score = scoreWithMeasures(3);
 
         PlayOrder order = PlayOrder.of(score);
@@ -22,7 +22,7 @@ class PlayOrderTest {
     }
 
     @Test
-    void unaRepeticionSimpleSeTocaLasVecesQueIndicaElCierre() {
+    void aSimpleRepeatPlaysAsManyTimesAsTheEndingIndicates() {
         Score score = scoreWithMeasures(2);
         score = withAttributes(score, 0, MeasureAttributes.plain().withRepeatOpen(true));
         score = withAttributes(score, 1, MeasureAttributes.plain().withRepeatCount(2));
@@ -33,7 +33,7 @@ class PlayOrderTest {
     }
 
     @Test
-    void unaRepeticionDeUnSoloCompasSeTocaLasVecesQueIndicaElCierre() {
+    void aRepeatOfASingleBarPlaysAsManyTimesAsTheEndingIndicates() {
         Score score = scoreWithMeasures(1);
         score = withAttributes(score, 0,
                 MeasureAttributes.plain().withRepeatOpen(true).withRepeatCount(3));
@@ -44,7 +44,7 @@ class PlayOrderTest {
     }
 
     @Test
-    void sinRepeticionAbiertaVuelveAlPrincipioDeLaPartitura() {
+    void withoutAnOpenRepeatItGoesBackToTheStartOfTheScore() {
         Score score = scoreWithMeasures(3);
         score = withAttributes(score, 2, MeasureAttributes.plain().withRepeatCount(2));
 
@@ -54,7 +54,7 @@ class PlayOrderTest {
     }
 
     @Test
-    void unFinalAlternativoSoloSeTocaEnLaVueltaQueIndica() {
+    void anAlternateEndingOnlyPlaysOnTheIndicatedPass() {
         Score score = scoreWithMeasures(5);
         score = withAttributes(score, 0, MeasureAttributes.plain().withRepeatOpen(true));
         score = withAttributes(score, 2, MeasureAttributes.plain()
@@ -68,7 +68,7 @@ class PlayOrderTest {
     }
 
     @Test
-    void unDaCapoAlFineVuelveAlPrincipioYTerminaEnElFine() {
+    void aDaCapoAlFineGoesBackToTheStartAndEndsAtTheFine() {
         Score score = scoreWithMeasures(3);
         score = withAttributes(score, 1, MeasureAttributes.plain().withSymbol(DirectionSymbol.FINE));
         score = withAttributes(score, 2, MeasureAttributes.plain().withJump(DirectionJump.DA_CAPO_AL_FINE));
@@ -79,7 +79,7 @@ class PlayOrderTest {
     }
 
     @Test
-    void unDaSegnoSaltaAlSegno() {
+    void aDalSegnoJumpsToTheSegno() {
         Score score = scoreWithMeasures(4);
         score = withAttributes(score, 1, MeasureAttributes.plain().withSymbol(DirectionSymbol.SEGNO));
         score = withAttributes(score, 3, MeasureAttributes.plain().withJump(DirectionJump.DA_SEGNO));
@@ -90,7 +90,7 @@ class PlayOrderTest {
     }
 
     @Test
-    void unSaltoQueYaSeUsoNoVuelveADispararse() {
+    void aJumpThatWasAlreadyUsedDoesNotFireAgain() {
         Score score = scoreWithMeasures(3);
         score = withAttributes(score, 2, MeasureAttributes.plain().withJump(DirectionJump.DA_CAPO));
 
@@ -100,7 +100,7 @@ class PlayOrderTest {
     }
 
     @Test
-    void unSaltoAUnSimboloQueNoExisteNoRompeLaSecuencia() {
+    void aJumpToASymbolThatDoesNotExistDoesNotBreakTheSequence() {
         Score score = scoreWithMeasures(2);
         score = withAttributes(score, 1, MeasureAttributes.plain().withJump(DirectionJump.DA_SEGNO));
 
@@ -110,7 +110,7 @@ class PlayOrderTest {
     }
 
     @Test
-    void unaPartituraMalArmadaNoSeCuelgaEnUnBucleInfinito() {
+    void aBadlyBuiltScoreDoesNotHangInAnInfiniteLoop() {
         Score score = scoreWithMeasures(2);
         score = withAttributes(score, 0, MeasureAttributes.plain().withRepeatOpen(true));
         score = withAttributes(score, 1,

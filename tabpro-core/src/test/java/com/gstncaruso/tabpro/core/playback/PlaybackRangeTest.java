@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class PlaybackRangeTest {
 
     @Test
-    void unRangoEsUnaSecuenciaSimpleDeCompases() {
+    void aRangeIsASimpleSequenceOfBars() {
         Score score = scoreWithMeasures(5);
         PlaybackRange range = new PlaybackRange(1, 3);
 
@@ -20,7 +20,7 @@ class PlaybackRangeTest {
     }
 
     @Test
-    void desdeUnaPosicionLlegaHastaElFinal() {
+    void fromAPositionItReachesTheEnd() {
         Score score = scoreWithMeasures(4);
 
         PlayOrder order = PlaybackRange.from(2, score).asPlayOrder(score);
@@ -29,7 +29,7 @@ class PlaybackRangeTest {
     }
 
     @Test
-    void laPartituraEnteraEsElRangoCompleto() {
+    void theWholeScoreIsTheFullRange() {
         Score score = scoreWithMeasures(3);
 
         PlayOrder order = PlaybackRange.whole(score).asPlayOrder(score);
@@ -38,17 +38,17 @@ class PlaybackRangeTest {
     }
 
     @Test
-    void rechazaUnRangoInvertido() {
+    void rejectsAnInvertedRange() {
         assertThrows(IllegalArgumentException.class, () -> new PlaybackRange(3, 1));
     }
 
     @Test
-    void rechazaUnCompasInicialNegativo() {
+    void rejectsANegativeStartingBar() {
         assertThrows(IllegalArgumentException.class, () -> new PlaybackRange(-1, 2));
     }
 
     @Test
-    void seAcotaAlUltimoCompasDeLaPartitura() {
+    void clampsToTheLastBarOfTheScore() {
         Score score = scoreWithMeasures(3);
         PlaybackRange range = new PlaybackRange(1, 100);
 
