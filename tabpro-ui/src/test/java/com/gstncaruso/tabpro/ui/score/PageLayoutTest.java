@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.score;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Beat;
@@ -47,6 +48,30 @@ class PageLayoutTest {
         for (int system = 0; system < layout.systemCount(); system++) {
             int owningPage = page.pageOf(system);
             assertTrue(page.firstSystemOf(owningPage) <= system && system <= page.lastSystemOf(owningPage));
+        }
+    }
+
+    /**
+     * El presupuesto de exportar: con la partitura repartida en P hojas, cada compas tiene que
+     * quedar del lado de exactamente una, ni pintado dos veces ni salteado.
+     */
+    @Test
+    void everyMeasureBelongsToExactlyOnePage() {
+        ScoreLayout layout = ScoreLayout.of(scoreWithMeasures(300), NARROW_WIDTH);
+        PageLayout page = PageLayout.paginated(layout, A_PAGE_TALL);
+        assertTrue(page.pageCount() > 1, "hacen falta varias hojas para que el presupuesto tenga sentido");
+
+        boolean[] visited = new boolean[layout.measureCount()];
+        for (int p = 0; p < page.pageCount(); p++) {
+            int firstMeasure = layout.firstMeasureOfSystem(page.firstSystemOf(p));
+            int lastMeasure = layout.lastMeasureOfSystem(page.lastSystemOf(p));
+            for (int measure = firstMeasure; measure <= lastMeasure; measure++) {
+                assertFalse(visited[measure], "el compas " + measure + " ya habia caido en otra hoja");
+                visited[measure] = true;
+            }
+        }
+        for (int measure = 0; measure < visited.length; measure++) {
+            assertTrue(visited[measure], "el compas " + measure + " no cayo en ninguna hoja");
         }
     }
 

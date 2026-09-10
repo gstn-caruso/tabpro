@@ -62,6 +62,58 @@ class ScoreLayoutTest {
                 "abajo de todo se recorta al ultimo sistema");
     }
 
+    /**
+     * Quien exporta o imprime una hoja necesita el camino inverso al de {@link #systemAtFindsWhichSystemCoversThatScreenHeight}:
+     * dado el rango de sistemas de esa hoja, en que compas arrancar a pintar sin recorrer los de
+     * las hojas anteriores.
+     */
+    @Test
+    void firstMeasureOfSystemFindsWhereEachSystemStarts() {
+        Score score = scoreWithMeasures(12);
+        ScoreLayout layout = ScoreLayout.of(score, 800);
+
+        assertEquals(0, layout.firstMeasureOfSystem(0));
+        assertEquals(3, layout.firstMeasureOfSystem(1));
+        assertEquals(6, layout.firstMeasureOfSystem(2));
+        assertEquals(9, layout.firstMeasureOfSystem(3));
+    }
+
+    @Test
+    void lastMeasureOfSystemFindsWhereEachSystemEnds() {
+        Score score = scoreWithMeasures(12);
+        ScoreLayout layout = ScoreLayout.of(score, 800);
+
+        assertEquals(2, layout.lastMeasureOfSystem(0));
+        assertEquals(5, layout.lastMeasureOfSystem(1));
+        assertEquals(8, layout.lastMeasureOfSystem(2));
+        assertEquals(11, layout.lastMeasureOfSystem(3), "el ultimo sistema termina en el ultimo compas");
+    }
+
+    @Test
+    void aSingleSystemScoreSpansAllItsMeasures() {
+        ScoreLayout layout = ScoreLayout.of(Score.blank(), WIDE);
+
+        assertEquals(0, layout.firstMeasureOfSystem(0));
+        assertEquals(layout.measureCount() - 1, layout.lastMeasureOfSystem(0));
+    }
+
+    /**
+     * El rango de un sistema tiene que coincidir con {@link ScoreLayout#systemOf} para cualquier
+     * compas que caiga adentro, incluso con un quiebre de linea forzado que deja sistemas de
+     * distinto tamano.
+     */
+    @Test
+    void everyMeasureFallsWithinTheRangeOfItsOwnSystem() {
+        Score score = withLineBreakAt(scoreWithMeasures(20), 7, LineBreak.FORCED);
+        ScoreLayout layout = ScoreLayout.of(score, 800);
+
+        for (int measure = 0; measure < layout.measureCount(); measure++) {
+            int system = layout.systemOf(measure);
+            assertTrue(measure >= layout.firstMeasureOfSystem(system));
+            assertTrue(measure <= layout.lastMeasureOfSystem(system));
+        }
+    }
+
     @Test
     void everySystemStartsAtTheLeftMargin() {
         Score score = scoreWithMeasures(12);

@@ -86,6 +86,22 @@ class PageScorePainterTest {
         assertNotSame(first, second, "cambiar el zoom invalida el layout cacheado");
     }
 
+    /**
+     * {@code TrackChords.underTheTitle(score)} recorre todos los compases de todas las pistas:
+     * exportar 300 hojas de la misma partitura no tiene que repetir ese barrido 300 veces.
+     * Se cachea junto con el layout, con la misma clave (score + viewport).
+     */
+    @Test
+    void chordDiagramsUnderTheTitleAreMemoizedForTheSameScoreAndViewport() {
+        Score score = scoreWithMeasures(10);
+        ScoreViewport viewport = ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
+
+        var first = PageScorePainter.diagramsUnderTheTitleFor(score, viewport);
+        var second = PageScorePainter.diagramsUnderTheTitleFor(score, viewport);
+
+        assertSame(first, second, "el mismo score y viewport tienen que reusar la lista ya calculada");
+    }
+
     @Test
     void pageModeIsAsWideAsTheChosenPaper() {
         Dimension size = PageScorePainter.canvasSize(Score.blank(), pageViewport(paperOf(PaperFormat.LETTER, Orientation.PORTRAIT)));

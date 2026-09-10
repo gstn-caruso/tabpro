@@ -110,12 +110,10 @@ public final class ScorePainter {
         Rectangle clip = g.getClipBounds();
         int firstVisibleSystem = clip == null ? 0 : layout.systemAt(clip.y);
         int lastVisibleSystem = clip == null ? layout.systemCount() - 1 : layout.systemAt(clip.y + clip.height);
+        int firstMeasureIndex = layout.firstMeasureOfSystem(firstVisibleSystem);
+        int lastMeasureIndex = Math.min(layout.lastMeasureOfSystem(lastVisibleSystem), track.measureCount() - 1);
 
-        for (int measureIndex = 0; measureIndex < track.measureCount(); measureIndex++) {
-            int system = layout.systemOf(measureIndex);
-            if (system < firstVisibleSystem || system > lastVisibleSystem) {
-                continue;
-            }
+        for (int measureIndex = firstMeasureIndex; measureIndex <= lastMeasureIndex; measureIndex++) {
             boolean beingEdited = selected && cursor.measure() == measureIndex;
             paintIncompleteMeasureBackground(g, layout, track, trackIndex, measureIndex, beingEdited);
 
