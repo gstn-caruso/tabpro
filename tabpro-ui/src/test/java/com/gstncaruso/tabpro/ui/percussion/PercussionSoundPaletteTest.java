@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 class PercussionSoundPaletteTest {
 
     @Test
-    void noControlIsLeftWithoutAnAccessibleNameOrTooltip() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new PercussionSoundPalette(sound -> { }, sound -> { }));
     }
 

@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 class PercussionAssistantTest {
 
     @Test
-    void noControlIsLeftWithoutAnAccessibleNameOrTooltip() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         Editor editor = new Editor(new Score("Prueba", 120, java.util.List.of(Track.percussion("Batería"))));
 
         AccessibilityAssertions.assertNoViolations(new PercussionAssistant(editor, new RecordingPlayer()));

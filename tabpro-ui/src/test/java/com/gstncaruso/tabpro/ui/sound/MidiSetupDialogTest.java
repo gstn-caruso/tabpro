@@ -13,7 +13,7 @@ class MidiSetupDialogTest {
     private static final int LAPTOP_SCREEN_HEIGHT = 800;
 
     @Test
-    void noControlIsLeftWithoutAnAccessibleNameOrTooltip() {
+    void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(panelWithFourEmptyPorts());
     }
 
