@@ -3,7 +3,6 @@ package com.gstncaruso.tabpro.ui.toolbar;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.theme.Palette;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -23,9 +22,8 @@ public final class ToolBars {
 
     private final Commands commands;
     private final JPanel rows = new JPanel();
-    private final JPanel structureRowExtras = transparentRow();
     final JToolBar documentToolBar;
-    private final JComponent structureToolBar;
+    final JToolBar structureToolBar;
     private final JComponent notationToolBar;
 
     public ToolBars(Commands commands) {
@@ -80,10 +78,13 @@ public final class ToolBars {
         return notationToolBar.isVisible();
     }
 
-    /** Los extras que la ventana agrega a la fila del sonido, como el tempo. */
+    /**
+     * Los extras que la ventana agrega a la fila del sonido, como el tempo: Guitar Pro 5 no los
+     * trae en esta fila, asi que {@link #structureRow()} ya dejo un separador antes de ellos.
+     */
     public void addToSoundRow(JComponent component) {
-        structureRowExtras.add(Box.createHorizontalStrut(8));
-        structureRowExtras.add(component);
+        structureToolBar.add(Box.createHorizontalStrut(4));
+        structureToolBar.add(component);
     }
 
     /**
@@ -119,23 +120,29 @@ public final class ToolBars {
         return bar;
     }
 
-    private JComponent structureRow() {
+    /**
+     * Guitar Pro 5, manual pagina 14, fila 2: atributos del compas, barras, marcadores,
+     * transporte. La pista anterior/siguiente y las herramientas de escalas y afinador no estan
+     * en esta fila del manual; se conservan al final, que es donde ya vivian antes de este orden.
+     */
+    private JToolBar structureRow() {
         JToolBar bar = emptyBar();
-        add(bar, "track.add", "bar.insert", "bar.delete");
+        add(bar, "bar.keySignature", "bar.timeSignature");
         bar.addSeparator();
-        add(bar, "bar.keySignature", "bar.timeSignature", "bar.doubleBar",
-                "bar.repeatOpen", "bar.repeatClose", "bar.alternateEndings", "marker.insert");
+        add(bar, "bar.repeatOpen", "bar.repeatClose");
         bar.addSeparator();
-        add(bar, "nav.firstBar", "nav.previousBar", "sound.play", "nav.nextBar", "nav.lastBar");
+        add(bar, "bar.doubleBar");
         bar.addSeparator();
-        add(bar, "sound.loop", "sound.metronome", "sound.countDown");
+        add(bar, "bar.alternateEndings", "bar.forceLineBreak", "bar.preventLineBreak");
         bar.addSeparator();
-        add(bar, "tool.scales", "tool.tuner");
-        JPanel row = new JPanel(new BorderLayout());
-        row.setOpaque(false);
-        row.add(bar, BorderLayout.CENTER);
-        row.add(structureRowExtras, BorderLayout.EAST);
-        return row;
+        add(bar, "marker.insert", "marker.previous", "marker.next", "marker.list");
+        bar.addSeparator();
+        add(bar, "sound.play", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
+                "sound.loop");
+        bar.addSeparator();
+        add(bar, "nav.previousBar", "nav.nextBar", "tool.scales", "tool.tuner");
+        bar.addSeparator();
+        return bar;
     }
 
     private JComponent notationRow() {
@@ -162,13 +169,6 @@ public final class ToolBars {
     private static <T extends JComponent> T leftAligned(T row) {
         row.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, row.getPreferredSize().height));
-        return row;
-    }
-
-    private static JPanel transparentRow() {
-        JPanel row = new JPanel();
-        row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
-        row.setOpaque(false);
         return row;
     }
 

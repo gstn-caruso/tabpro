@@ -47,6 +47,19 @@ class ToolBarsOrderTest {
                 "edit.copy", "edit.paste");
     }
 
+    @Test
+    void laFilaDeEstructuraYSonidoSigueElOrdenDeGuitarPro5() {
+        assertOrder(toolBars.structureToolBar,
+                "bar.keySignature", "bar.timeSignature", SEP,
+                "bar.repeatOpen", "bar.repeatClose", SEP,
+                "bar.doubleBar", SEP,
+                "bar.alternateEndings", "bar.forceLineBreak", "bar.preventLineBreak", SEP,
+                "marker.insert", "marker.previous", "marker.next", "marker.list", SEP,
+                "sound.play", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
+                "sound.loop", SEP,
+                "nav.previousBar", "nav.nextBar", "tool.scales", "tool.tuner", SEP);
+    }
+
     private void assertOrder(JToolBar bar, String... tokens) {
         List<Object> expected = new ArrayList<>();
         for (String token : tokens) {
