@@ -26,6 +26,7 @@
     <module>tabpro-format</module>
     <module>tabpro-ui</module>
     <module>tabpro-app</module>
+    <module>tabpro-tests</module>
   </modules>
 
   <properties>
@@ -80,6 +81,7 @@
             -->
             <argLine>-Djava.awt.headless=true --add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED</argLine>
             <excludedGroups>${tests.excluded.groups}</excludedGroups>
+            <skipTests>true</skipTests>
             <properties>
               <configurationParameters>
                 junit.jupiter.execution.parallel.enabled=true

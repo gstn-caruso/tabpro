@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.gstncaruso.tabpro</groupId>
+    <artifactId>tabpro-parent</artifactId>
+    <version>0.29.0</version>
+  </parent>
+
+  <artifactId>tabpro-tests</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Tabpro Tests</name>
+  <description>Reune los tests de los cinco modulos y los corre en una sola maquina virtual.</description>
+  <url>https://github.com/gstn-caruso/tabpro</url>
+
+  <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
+    <maven.install.skip>true</maven.install.skip>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.gstncaruso.tabpro</groupId>
+      <artifactId>tabpro-app</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.4.0</version>
+        <executions>
+          <execution>
+            <id>descartar-los-tests-reunidos-en-la-corrida-anterior</id>
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                  <directory>${project.build.testOutputDirectory}</directory>
+                </fileset>
+              </filesets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>reunir-los-tests-de-los-modulos</id>
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+              <resources>
+                <resource><directory>${project.basedir}/../tabpro-core/target/test-classes</directory></resource>
+                <resource><directory>${project.basedir}/../tabpro-midi/target/test-classes</directory></resource>
+                <resource><directory>${project.basedir}/../tabpro-format/target/test-classes</directory></resource>
+                <resource><directory>${project.basedir}/../tabpro-ui/target/test-classes</directory></resource>
+                <resource><directory>${project.basedir}/../tabpro-app/target/test-classes</directory></resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>false</skipTests>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
