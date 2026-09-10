@@ -39,7 +39,7 @@ class TrackRendererEffectsTest {
     private static final long GRACE_TICKS = new Duration(NoteValue.THIRTY_SECOND, false).ticks();
 
     @Test
-    void unBendCurvaLaAlturaSegunSuFormaEnTodaLaNota() {
+    void aBendCurvesThePitchAccordingToItsShapeOverTheWholeNote() {
         Bend bend = Bend.of(BendType.BEND, 4);
         Note bent = new Note(1, 0).withBend(bend);
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, bent));
@@ -51,7 +51,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unHammerOnNoAtacaYSaltaDeAlturaEnElLimite() {
+    void aHammerOnDoesNotAttackAndJumpsPitchAtTheBoundary() {
         Note first = new Note(1, 0);
         Note hammered = new Note(1, 2).toggling(Ornament.HAMMER_ON_PULL_OFF);
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, first), Beat.of(QUARTER, hammered));
@@ -66,7 +66,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unSlideLegatoNoAtacaLaSegundaNotaYDeslizaHaciaElla() {
+    void aLegatoSlideDoesNotAttackTheSecondNoteAndSlidesIntoIt() {
         Note first = new Note(1, 0).withSlide(SlideType.LEGATO);
         Note second = new Note(1, 2);
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, first), Beat.of(QUARTER, second));
@@ -79,7 +79,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unSlideShiftSiAtacaLaNotaDeDestino() {
+    void aShiftSlideDoesAttackTheDestinationNote() {
         Note first = new Note(1, 0).withSlide(SlideType.SHIFT);
         Note second = new Note(1, 2);
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, first), Beat.of(QUARTER, second));
@@ -90,7 +90,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unSlideEntrandoDesdeAbajoArrancaMasGraveYSubeAlPrincipio() {
+    void aSlideInFromBelowStartsLowerAndRisesAtTheStart() {
         Note note = new Note(1, 5).withSlide(SlideType.IN_FROM_BELOW);
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, note));
 
@@ -101,7 +101,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unSlideSaliendoHaciaArribaTerminaSubiendo() {
+    void aSlideOutUpwardsEndsRising() {
         Note note = new Note(1, 5).withSlide(SlideType.OUT_UPWARDS);
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, note));
 
@@ -112,7 +112,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unTrinoAlternaLasDosAlturas() {
+    void aTrillAlternatesTheTwoPitches() {
         Trill trill = new Trill(2, NoteValue.SIXTEENTH);
         Note note = new Note(1, 0).withEffects(NoteEffects.none().withTrill(trill));
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, note));
@@ -126,7 +126,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unTremoloPickingRepiteLaMismaAltura() {
+    void aTremoloPickingRepeatsTheSamePitch() {
         TremoloPicking tremolo = TremoloPicking.at(NoteValue.SIXTEENTH);
         Note note = new Note(1, 0).withEffects(NoteEffects.none().withTremoloPicking(tremolo));
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, note));
@@ -138,7 +138,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unRasgueoHaciaAbajoArrancaPorLaCuerdaMasGrave() {
+    void aDownwardStrumStartsFromTheLowestString() {
         Beat chord = Beat.of(QUARTER, new Note(1, 0), new Note(6, 0))
                 .withEffects(BeatEffects.none().withStroke(Stroke.of(StrokeDirection.DOWN)));
         Score score = scoreWithLeadBeats(chord);
@@ -152,7 +152,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unaNotaDeAdornoSobreElBeatOcupaElComienzo() {
+    void aGraceNoteOnTheBeatOccupiesTheStart() {
         Note note = new Note(1, 5).withEffects(NoteEffects.none()
                 .withGrace(new GraceNote(3, NoteValue.THIRTY_SECOND,
                         Dynamic.defaultDynamic(),
@@ -169,7 +169,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unaNotaDeAdornoFueraDelBeatSuenaAntes() {
+    void aGraceNoteOffTheBeatSoundsBefore() {
         Note note = new Note(1, 5).withEffects(NoteEffects.none()
                 .withGrace(new GraceNote(3, NoteValue.THIRTY_SECOND,
                         Dynamic.defaultDynamic(),
@@ -186,7 +186,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unaNotaDeAdornoSinTransicionSonDosAtaquesSueltos() {
+    void aGraceNoteWithoutTransitionIsTwoSeparateAttacks() {
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, gracedNote(GraceTransition.NONE)));
 
         List<ScheduledNote> notes = notesOf(score);
@@ -198,21 +198,21 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unaNotaDeAdornoConSlideNoVuelveAAtacarYSeDeslizaHastaLaNota() {
+    void aGraceNoteWithSlideDoesNotReattackAndSlidesIntoTheNote() {
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, gracedNote(GraceTransition.SLIDE)));
 
         List<ScheduledNote> notes = notesOf(score);
 
         assertEquals(1, notes.size(), "el adorno y la nota tienen que ser un solo ataque");
-        ScheduledNote sonando = notes.get(0);
-        assertEquals(GRACE_TICKS + QUARTER.ticks() - GRACE_TICKS, sonando.durationTicks());
-        assertEquals(0.0, sonando.bend().semitonesAt(0), "arranca en la altura del adorno");
-        assertEquals(1.0, sonando.bend().semitonesAt(GRACE_TICKS / 2), "y se desliza hasta la nota");
-        assertEquals(2.0, sonando.bend().semitonesAt(GRACE_TICKS));
+        ScheduledNote sounding = notes.get(0);
+        assertEquals(GRACE_TICKS + QUARTER.ticks() - GRACE_TICKS, sounding.durationTicks());
+        assertEquals(0.0, sounding.bend().semitonesAt(0), "arranca en la altura del adorno");
+        assertEquals(1.0, sounding.bend().semitonesAt(GRACE_TICKS / 2), "y se desliza hasta la nota");
+        assertEquals(2.0, sounding.bend().semitonesAt(GRACE_TICKS));
     }
 
     @Test
-    void unaNotaDeAdornoConBendTambienSeEstiraHastaLaNota() {
+    void aGraceNoteWithBendAlsoStretchesIntoTheNote() {
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, gracedNote(GraceTransition.BEND)));
 
         List<ScheduledNote> notes = notesOf(score);
@@ -222,19 +222,19 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unaNotaDeAdornoConLigadoSaltaDeAlturaEnLugarDeDeslizarse() {
+    void aGraceNoteWithHammerJumpsPitchInsteadOfSliding() {
         Score score = scoreWithLeadBeats(Beat.of(QUARTER, gracedNote(GraceTransition.HAMMER)));
 
         List<ScheduledNote> notes = notesOf(score);
 
         assertEquals(1, notes.size());
-        ScheduledNote sonando = notes.get(0);
-        assertEquals(0.0, sonando.bend().semitonesAt(GRACE_TICKS / 2), "el ligado no se desliza: se queda en el adorno");
-        assertEquals(2.0, sonando.bend().semitonesAt(GRACE_TICKS));
+        ScheduledNote sounding = notes.get(0);
+        assertEquals(0.0, sounding.bend().semitonesAt(GRACE_TICKS / 2), "el ligado no se desliza: se queda en el adorno");
+        assertEquals(2.0, sounding.bend().semitonesAt(GRACE_TICKS));
     }
 
     @Test
-    void unaNotaDeAdornoFueraDelBeatConTransicionTambienEsUnSoloAtaque() {
+    void aGraceNoteOffTheBeatWithTransitionIsAlsoASingleAttack() {
         Note note = new Note(1, 5).withEffects(NoteEffects.none()
                 .withGrace(new GraceNote(3, NoteValue.THIRTY_SECOND,
                         Dynamic.defaultDynamic(), GraceTransition.SLIDE, false, false)));
@@ -254,7 +254,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unFadeInQuedaMarcadoEnLaNota() {
+    void aFadeInIsMarkedOnTheNote() {
         Beat beat = Beat.of(QUARTER, new Note(1, 0))
                 .withEffects(BeatEffects.none().withFadeIn(true));
         Score score = scoreWithLeadBeats(beat);
@@ -265,7 +265,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void unaPalancaCurvaTodasLasNotasDelBeat() {
+    void aWhammyBarCurvesAllNotesOfTheBeat() {
         Bend tremoloBar = Bend.of(BendType.BEND_RELEASE, 4);
         Beat beat = Beat.of(QUARTER, new Note(1, 0))
                 .withEffects(BeatEffects.none().withTremoloBar(tremoloBar));
@@ -277,7 +277,7 @@ class TrackRendererEffectsTest {
     }
 
     @Test
-    void elTripletFeelDelCompasSwinguaLasCorcheas() {
+    void theBarsTripletFeelSwingsTheEighthNotes() {
         Duration eighth = new Duration(NoteValue.EIGHTH, false);
         Measure measure = new Measure(TimeSignature.fourFour(),
                 MeasureAttributes.plain().withTripletFeel(TripletFeel.EIGHTH),
