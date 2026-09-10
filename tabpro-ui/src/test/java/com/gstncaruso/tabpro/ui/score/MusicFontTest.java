@@ -52,4 +52,19 @@ class MusicFontTest {
     void theSizedFontIsCachedPerSize() {
         assertSame(MusicFont.sizedTo(8), MusicFont.sizedTo(8));
     }
+
+    @Test
+    void noteheadBlackIsTheFilledNoteheadGlyph() {
+        assertEquals(0xE0A4, MusicFont.noteheadBlack().codePointAt(0));
+    }
+
+    @Test
+    void noteheadHalfIsTheHollowHalfNoteheadGlyph() {
+        assertEquals(0xE0A3, MusicFont.noteheadHalf().codePointAt(0));
+    }
+
+    @Test
+    void noteheadWholeIsTheHollowWholeNoteheadGlyph() {
+        assertEquals(0xE0A2, MusicFont.noteheadWhole().codePointAt(0));
+    }
 }

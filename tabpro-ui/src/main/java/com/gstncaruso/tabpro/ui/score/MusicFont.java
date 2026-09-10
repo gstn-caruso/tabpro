@@ -22,6 +22,12 @@ final class MusicFont {
     private static final int F_CLEF = 0xE062;
     /** SMuFL U+E080.."E089" "timeSig0".."timeSig9": los digitos de una cifra de compas. */
     private static final int TIME_SIG_DIGIT_ZERO = 0xE080;
+    /** SMuFL U+E0A4 "noteheadBlack": la cabeza rellena de negra, corchea y figuras mas cortas. */
+    private static final int NOTEHEAD_BLACK = 0xE0A4;
+    /** SMuFL U+E0A3 "noteheadHalf": la cabeza hueca de una blanca. */
+    private static final int NOTEHEAD_HALF = 0xE0A3;
+    /** SMuFL U+E0A2 "noteheadWhole": la cabeza hueca de una redonda. */
+    private static final int NOTEHEAD_WHOLE = 0xE0A2;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -42,6 +48,21 @@ final class MusicFont {
     /** Un digito (0-9) de una cifra de compas, para armarla glifo por glifo. */
     static String timeSignatureDigit(int digit) {
         return glyph(TIME_SIG_DIGIT_ZERO + digit);
+    }
+
+    /** La cabeza rellena de negra, corchea y figuras mas cortas. */
+    static String noteheadBlack() {
+        return glyph(NOTEHEAD_BLACK);
+    }
+
+    /** La cabeza hueca de una blanca. */
+    static String noteheadHalf() {
+        return glyph(NOTEHEAD_HALF);
+    }
+
+    /** La cabeza hueca de una redonda. */
+    static String noteheadWhole() {
+        return glyph(NOTEHEAD_WHOLE);
     }
 
     /**
