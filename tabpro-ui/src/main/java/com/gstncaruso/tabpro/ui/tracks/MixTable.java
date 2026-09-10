@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import java.awt.BorderLayout;
@@ -17,6 +18,8 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 /**
  * La mesa de mezcla: una fila por pista con numero, nombre, visibilidad en la vista multipista,
@@ -28,8 +31,8 @@ public final class MixTable extends JPanel {
     public static final int NUMBER_WIDTH = 24;
     public static final int VISIBLE_WIDTH = 20;
     public static final int NAME_WIDTH = 92;
-    public static final int PORT_WIDTH = 32;
-    public static final int CHANNEL_WIDTH = 32;
+    public static final int PORT_WIDTH = spinnerWidth(Channel.CHANNELS_PER_PORT);
+    public static final int CHANNEL_WIDTH = spinnerWidth(Channel.CHANNELS_PER_PORT);
     public static final int INSTRUMENT_WIDTH = 132;
     public static final int LEVEL_WIDTH = 96;
     public static final int PARAMETER_WIDTH = 42;
@@ -188,5 +191,10 @@ public final class MixTable extends JPanel {
         title.setMaximumSize(size);
         title.setMinimumSize(size);
         return title;
+    }
+
+    private static int spinnerWidth(int maxValue) {
+        JSpinner probe = new JSpinner(new SpinnerNumberModel(maxValue, 1, maxValue, 1));
+        return probe.getPreferredSize().width;
     }
 }

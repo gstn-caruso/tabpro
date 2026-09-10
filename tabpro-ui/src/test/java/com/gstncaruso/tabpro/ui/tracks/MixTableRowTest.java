@@ -10,10 +10,14 @@ import com.gstncaruso.tabpro.core.model.DrumKits;
 import com.gstncaruso.tabpro.core.model.Instruments;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import org.junit.jupiter.api.Test;
 
 class MixTableRowTest {
@@ -178,10 +182,38 @@ class MixTableRowTest {
         assertEquals("Instrumento de Bajo", row.instrumentField().getAccessibleContext().getAccessibleName());
     }
 
+    @Test
+    void elCampoDeCadaSpinnerMuestraDosDigitosCompletos() {
+        Editor editor = twoTrackEditor();
+        MixTableRow row = new MixTableRow(editor, new MixTableModel(), 0);
+        row.setSize(row.getPreferredSize());
+        layOut(row);
+
+        JSpinner probe = new JSpinner(
+                new SpinnerNumberModel(Channel.CHANNELS_PER_PORT, 1, Channel.CHANNELS_PER_PORT, 1));
+        int needed = probe.getPreferredSize().width;
+
+        for (JSpinner spinner : List.of(row.portField(), row.channelField(), row.effectChannelField())) {
+            assertTrue(spinner.getWidth() >= needed,
+                    "el spinner mide " + spinner.getWidth() + "px, necesita al menos " + needed
+                            + "px para mostrar dos digitos");
+        }
+    }
+
     private static Editor twoTrackEditor() {
         Editor editor = new Editor(Score.blank());
         editor.addTrack(Track.standardBass("Bajo"));
         return editor;
+    }
+
+    /** Sin ventana no hay nadie que valide el arbol, asi que se lo recorre a mano. */
+    private static void layOut(Component component) {
+        if (component instanceof Container container) {
+            container.doLayout();
+            for (Component child : container.getComponents()) {
+                layOut(child);
+            }
+        }
     }
 
     private static MouseEvent pressOn(java.awt.Component target) {
