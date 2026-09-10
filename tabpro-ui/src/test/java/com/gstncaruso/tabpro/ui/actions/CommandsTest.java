@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
+import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.OctaveMark;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
@@ -266,6 +267,20 @@ class CommandsTest {
         commands.get("sound.metronomeSettings").actionPerformed(event());
 
         assertEquals(List.of("metronomeSettings"), asked);
+    }
+
+    @Test
+    void editMarkerStartsDisabledWithoutAMarkerOnTheScore() {
+        assertFalse(commands.get("marker.edit").isEnabled());
+    }
+
+    @Test
+    void theEditMarkerCommandAsksForItsDialog() {
+        editor.setMarker(Marker.named("Intro"));
+
+        commands.get("marker.edit").actionPerformed(event());
+
+        assertEquals(List.of("editMarker"), asked);
     }
 
     @Test

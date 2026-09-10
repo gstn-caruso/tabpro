@@ -74,6 +74,8 @@ public final class Ports {
 
         void insertMarker();
 
+        void editMarker();
+
         void markerList();
 
         void transpose();

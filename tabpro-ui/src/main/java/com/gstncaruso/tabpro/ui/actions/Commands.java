@@ -353,11 +353,18 @@ public final class Commands {
     private void defineMarkerCommands() {
         define("marker.insert", "Insertar un marcador…", dialogs::insertMarker)
                 .withAccelerator("shift INSERT").withIcon(Icons.marker());
+        define("marker.edit", "Editar el marcador…", dialogs::editMarker).withIcon(Icons.markerEdit());
         define("marker.list", "Lista de marcadores…", dialogs::markerList).withIcon(Icons.markerList());
         define("marker.previous", "Marcador anterior", editor::moveToPreviousMarker)
                 .withAccelerator("shift TAB").withIcon(Icons.markerPrevious());
         define("marker.next", "Marcador siguiente", editor::moveToNextMarker)
                 .withAccelerator("ctrl TAB").withIcon(Icons.markerNext());
+        refreshEditMarkerCommand();
+    }
+
+    /** Editar el marcador solo tiene sentido cuando el cursor esta sobre uno vigente. */
+    private void refreshEditMarkerCommand() {
+        get("marker.edit").setEnabled(editor.score().measureOfMarkerInEffectAt(editor.cursor().measure()).isPresent());
     }
 
     // ---- herramientas -----------------------------------------------------
