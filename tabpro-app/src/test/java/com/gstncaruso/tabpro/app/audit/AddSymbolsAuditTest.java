@@ -123,7 +123,7 @@ class AddSymbolsAuditTest {
             assertNotNull(item, "no encontre 'Armónicos…' en el menu real");
 
             withDialog(item::doClick, dialog -> {
-                Container harmonicsTab = tabContent(dialog, "Armonicos");
+                Container harmonicsTab = tabContent(dialog, "Armónicos");
                 assertNotNull(harmonicsTab);
 
                 JCheckBox activo = findComponent(harmonicsTab, JCheckBox.class);
