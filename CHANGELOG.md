@@ -1,3 +1,10 @@
+## [0.54.0](https://github.com/gstn-caruso/tabpro/compare/v0.53.0...v0.54.0) (2026-09-10)
+
+### Features
+
+* **markers:** la lista de marcadores es la tabla de gestión de Guitar Pro 5 ([#163](https://github.com/gstn-caruso/tabpro/issues/163)) ([a1c2b91](https://github.com/gstn-caruso/tabpro/commit/a1c2b917729ff5987535ef8ba88f2665d21824d1))
+* **track:** las propiedades de pista tienen las dos columnas de Guitar Pro 5, «Forzar canales 11 a 16» y los estilos de diagramas ([#164](https://github.com/gstn-caruso/tabpro/issues/164)) ([69c632b](https://github.com/gstn-caruso/tabpro/commit/69c632b9cd616611bb54e6517f6782c869f40af8))
+
 ## [0.53.0](https://github.com/gstn-caruso/tabpro/compare/v0.52.1...v0.53.0) (2026-09-10)
 
 ### Features
