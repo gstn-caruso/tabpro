@@ -2,11 +2,14 @@
 Type=Application
 Name=tabpro
 GenericName=Tablature editor
+GenericName[es]=Editor de tablaturas
 Comment=Guitar tablature and score editor
+Comment[es]=Editor de tablaturas y partituras para guitarra
 Exec=tabpro %f
 Icon=tabpro
 Terminal=false
 Categories=AudioVideo;Audio;Music;
 Keywords=tablature;guitar;tab;score;
+Keywords[es]=tablatura;guitarra;tab;partitura;
 MimeType=application/x-tabpro;application/x-guitar-pro;
 StartupWMClass=com-gstncaruso-tabpro-app-App

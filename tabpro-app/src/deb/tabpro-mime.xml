@@ -2,11 +2,13 @@
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
   <mime-type type="application/x-tabpro">
     <comment>tabpro score</comment>
+    <comment xml:lang="es">Partitura de tabpro</comment>
     <glob pattern="*.tabpro"/>
     <icon name="tabpro"/>
   </mime-type>
   <mime-type type="application/x-guitar-pro">
     <comment>Guitar Pro score</comment>
+    <comment xml:lang="es">Partitura de Guitar Pro</comment>
     <glob pattern="*.gp3"/>
     <glob pattern="*.gp4"/>
     <glob pattern="*.gp5"/>
