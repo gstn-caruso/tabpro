@@ -40,4 +40,16 @@ class EditorSelectionTest {
         assertEquals(0, selection.fromBeat());
         assertEquals(0, selection.toBeat());
     }
+
+    @Test
+    void extendingSelectionSeveralTimesCoversEveryBeatInBetween() {
+        editor.whileExtendingSelection(editor::moveRight);
+        editor.whileExtendingSelection(editor::moveRight);
+        editor.whileExtendingSelection(editor::moveRight);
+
+        Selection selection = editor.selection().orElseThrow();
+
+        assertEquals(0, selection.fromBeat());
+        assertEquals(3, selection.toBeat());
+    }
 }
