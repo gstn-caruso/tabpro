@@ -106,6 +106,27 @@ class ChordDialogTest {
     }
 
     @Test
+    void elComboDeInversionMuestraFundamentalParaLaRaizYElGradoConLaNotaParaLasDemas() {
+        Editor editor = new Editor(Score.blank());
+        ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
+        ChordLibrary library = new ChordLibrary(scratch);
+
+        ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
+
+        @SuppressWarnings("unchecked")
+        JComboBox<com.gstncaruso.tabpro.core.harmony.Interval> inversions =
+                Combos.firstWithItemType(panel, com.gstncaruso.tabpro.core.harmony.Interval.class);
+
+        String fundamental = ((JLabel) inversions.getRenderer().getListCellRendererComponent(
+                new JList<>(), com.gstncaruso.tabpro.core.harmony.Interval.ROOT, 0, false, false)).getText();
+        String tercera = ((JLabel) inversions.getRenderer().getListCellRendererComponent(
+                new JList<>(), com.gstncaruso.tabpro.core.harmony.Interval.MAJOR_THIRD, 0, false, false)).getText();
+
+        assertEquals("Fundamental", fundamental);
+        assertEquals("E (3)", tercera);
+    }
+
+    @Test
     void laListaDeNombresAlternativosMuestraElNombreDelAcordeEnVezDelRecordCrudo() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
