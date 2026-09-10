@@ -102,6 +102,24 @@ class MenuBarTest {
     }
 
     @Test
+    void ningunMenuDeNivelSuperiorUsaLaMismaLetraQueUnAceleradorAltExistente() {
+        JMenuBar bar = new MenuBar(commands).build();
+        Set<Integer> mnemonicosDeMenus = new HashSet<>();
+        for (int i = 0; i < bar.getMenuCount(); i++) {
+            mnemonicosDeMenus.add(bar.getMenu(i).getMnemonic());
+        }
+
+        List<javax.swing.KeyStroke> aceleradoresAltLetra = commands.all().values().stream()
+                .map(Command::accelerator)
+                .filter(java.util.Objects::nonNull)
+                .filter(accelerator -> (accelerator.getModifiers() & java.awt.event.InputEvent.ALT_DOWN_MASK) != 0)
+                .toList();
+
+        assertTrue(!aceleradoresAltLetra.isEmpty(), "no hay ningun acelerador Alt+letra para verificar");
+        assertTrue(aceleradoresAltLetra.stream().noneMatch(a -> mnemonicosDeMenus.contains(a.getKeyCode())));
+    }
+
+    @Test
     void ningunItemDeNingunMenuChocaConOtroDeSuMismoMenu() {
         List<Violation> violaciones = mnemonicViolationsOfEveryItem(new MenuBar(commands).build());
 

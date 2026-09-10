@@ -72,7 +72,9 @@ public final class MenuBar {
         if (accelerator == null) {
             return false;
         }
-        boolean onlyAlt = accelerator.getModifiers() == InputEvent.ALT_DOWN_MASK;
+        int modifiers = accelerator.getModifiers();
+        int allowedBits = InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK;
+        boolean onlyAlt = (modifiers & InputEvent.ALT_DOWN_MASK) != 0 && (modifiers & ~allowedBits) == 0;
         return onlyAlt && Character.isLetter((char) accelerator.getKeyCode());
     }
 
