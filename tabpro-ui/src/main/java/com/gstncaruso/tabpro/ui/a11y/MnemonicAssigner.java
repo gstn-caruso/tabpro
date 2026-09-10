@@ -1,10 +1,12 @@
 package com.gstncaruso.tabpro.ui.a11y;
 
+import java.awt.event.KeyEvent;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import javax.swing.AbstractButton;
 
 public final class MnemonicAssigner {
 
@@ -22,6 +24,19 @@ public final class MnemonicAssigner {
             }
         }
         return -1;
+    }
+
+    public void applyTo(AbstractButton button) {
+        int index = chooseIndex(button.getText());
+        if (index < 0) {
+            return;
+        }
+        button.setMnemonic(keyCodeAt(button.getText(), index));
+        button.setDisplayedMnemonicIndex(index);
+    }
+
+    private int keyCodeAt(String text, int index) {
+        return KeyEvent.getExtendedKeyCodeForChar(normalize(text.charAt(index)));
     }
 
     private List<Integer> candidateIndexes(String text) {

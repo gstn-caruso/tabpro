@@ -2,6 +2,8 @@ package com.gstncaruso.tabpro.ui.a11y;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.awt.event.KeyEvent;
+import javax.swing.JMenuItem;
 import org.junit.jupiter.api.Test;
 
 class MnemonicAssignerTest {
@@ -55,5 +57,15 @@ class MnemonicAssignerTest {
         assigner.reserve('a');
 
         assertEquals(1, assigner.chooseIndex("Álbum"));
+    }
+
+    @Test
+    void aplicarleElMnemonicoAUnBotonLeFijaLaTeclaYElIndiceSubrayado() {
+        JMenuItem item = new JMenuItem("Guardar");
+
+        assigner.applyTo(item);
+
+        assertEquals(KeyEvent.VK_G, item.getMnemonic());
+        assertEquals(0, item.getDisplayedMnemonicIndex());
     }
 }
