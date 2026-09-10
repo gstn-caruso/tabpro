@@ -77,19 +77,21 @@ class ChordDialogTest {
     }
 
     @Test
-    void elComboDeCejillaMuestraLaPreferenciaEnCastellano() {
+    void laCejillaSeEligeConBotonesDeRadioSiempreVisibles() {
         Editor editor = new Editor(Score.blank());
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 
         ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
 
-        @SuppressWarnings("unchecked")
-        JComboBox<BarrePreference> barres = Combos.firstWithItemType(panel, BarrePreference.class);
-        Component rendered = barres.getRenderer()
-                .getListCellRendererComponent(new JList<>(), BarrePreference.ANY, 0, false, false);
+        javax.swing.JRadioButton forzar = Combos.radioButtonWithText(panel, "Forzar cejilla");
+        assertNotNull(Combos.radioButtonWithText(panel, "Cualquiera"), "no encontre el radio 'Cualquiera'");
+        assertNotNull(Combos.radioButtonWithText(panel, "Prohibir cejilla"), "no encontre el radio 'Prohibir cejilla'");
+        assertNotNull(forzar, "no encontre el radio 'Forzar cejilla'");
 
-        assertEquals("Cualquiera", ((JLabel) rendered).getText());
+        forzar.doClick();
+
+        assertEquals(BarrePreference.FORCE, model.barrePreference());
     }
 
     @Test

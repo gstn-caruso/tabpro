@@ -72,7 +72,7 @@ public final class ChordDialog {
         private final JComboBox<Interval> inversions = new JComboBox<>();
         private final JComboBox<PitchClass> basses = new JComboBox<>();
         private final Map<ChordComplexity, JRadioButton> complexityButtons = new EnumMap<>(ChordComplexity.class);
-        private final JComboBox<BarrePreference> barres = new JComboBox<>(BarrePreference.values());
+        private final Map<BarrePreference, JRadioButton> barreButtons = new EnumMap<>(BarrePreference.class);
         private final JTextField name = new JTextField(12);
         private final JCheckBox useDiagram = new JCheckBox("Usar diagrama", true);
         private final JCheckBox showFingering = new JCheckBox("Digitación", true);
@@ -98,7 +98,6 @@ public final class ChordDialog {
             basses.setRenderer(new LabeledListCellRenderer());
             types.setRenderer(new LabeledListCellRenderer());
             inversions.setRenderer(inversionRenderer());
-            barres.setRenderer(new LabeledListCellRenderer());
             name.getAccessibleContext().setAccessibleName("Nombre del acorde");
             name.setToolTipText("Nombre del acorde");
             baseFret.getAccessibleContext().setAccessibleName("Traste base");
@@ -122,7 +121,7 @@ public final class ChordDialog {
             zone.add(labelled("Inversión", inversions));
             zone.add(labelled("Bajo", basses));
             zone.add(labelled("Posiciones", complexityChoice()));
-            zone.add(labelled("Cejilla", barres));
+            zone.add(labelled("Cejilla", barreChoice()));
             return zone;
         }
 
@@ -135,6 +134,20 @@ public final class ChordDialog {
                 radio.addActionListener(event -> whenSelecting(() -> model.selectComplexity(complexity)));
                 group.add(radio);
                 complexityButtons.put(complexity, radio);
+                choice.add(radio);
+            }
+            return choice;
+        }
+
+        /** Cualquiera / Forzar / Prohibir cejilla: siempre visibles, como el filtro del diagrama. */
+        private JPanel barreChoice() {
+            JPanel choice = new JPanel(new GridLayout(0, 1));
+            ButtonGroup group = new ButtonGroup();
+            for (BarrePreference preference : BarrePreference.values()) {
+                JRadioButton radio = new JRadioButton(Labels.of(preference));
+                radio.addActionListener(event -> whenSelecting(() -> model.selectBarrePreference(preference)));
+                group.add(radio);
+                barreButtons.put(preference, radio);
                 choice.add(radio);
             }
             return choice;
@@ -246,8 +259,6 @@ public final class ChordDialog {
             types.addActionListener(event -> whenSelecting(() -> model.selectType((ChordType) types.getSelectedItem())));
             inversions.addActionListener(event -> whenSelecting(this::selectChosenInversion));
             basses.addActionListener(event -> whenSelecting(() -> model.selectBass((PitchClass) basses.getSelectedItem())));
-            barres.addActionListener(event ->
-                    whenSelecting(() -> model.selectBarrePreference((BarrePreference) barres.getSelectedItem())));
             name.addActionListener(event -> model.setCustomName(name.getText()));
             useDiagram.addActionListener(event -> model.setUseDiagram(useDiagram.isSelected()));
             showFingering.addActionListener(event -> model.setShowFingering(showFingering.isSelected()));
@@ -293,7 +304,7 @@ public final class ChordDialog {
             refreshInversions();
             basses.setSelectedItem(model.selection().bass());
             complexityButtons.get(model.selection().complexity()).setSelected(true);
-            barres.setSelectedItem(model.barrePreference());
+            barreButtons.get(model.barrePreference()).setSelected(true);
             name.setText(model.current().name());
             useDiagram.setSelected(model.useDiagram());
             showFingering.setSelected(model.showFingering());
