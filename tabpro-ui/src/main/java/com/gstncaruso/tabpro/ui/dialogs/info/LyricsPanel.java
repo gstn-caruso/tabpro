@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
 /**
@@ -32,12 +33,14 @@ public final class LyricsPanel extends FormPanel {
                 "<html>Silabas: separadas con espacio o guion. Un + une dos palabras."
                         + " Lo que va entre corchetes [asi] no se dibuja.</html>"));
 
+        JTabbedPane lineTabs = new JTabbedPane();
         for (int index = 0; index < LyricLine.MAX_LINES; index++) {
             LyricLineRow row = new LyricLineRow(initial.line(index), index + 1);
             row.textArea().addFocusListener(rememberingFocus(row.textArea()));
             lines.add(row);
-            addRow("Linea " + (index + 1), row);
+            lineTabs.addTab("Línea " + (index + 1), row);
         }
+        addFullWidthRow(lineTabs);
 
         addFullWidthRow(cutCopyPasteBar());
     }
