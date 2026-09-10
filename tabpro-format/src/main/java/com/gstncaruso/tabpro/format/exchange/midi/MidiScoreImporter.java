@@ -51,7 +51,7 @@ public final class MidiScoreImporter {
     /** Una pista de tabpro por cada pista del MIDI que tenga notas. */
     public Score importQuick(Path path) {
         ParsedMidiFile file = parse(path);
-        return importQuick(path, file, file.tracks(), false, Optional.empty(), true);
+        return importQuick(path, file, file.tracks(), false, Optional.empty(), Optional.empty(), true);
     }
 
     /** El import rapido, pero solo con las pistas MIDI elegidas y con transposicion opcional. */
@@ -72,21 +72,33 @@ public final class MidiScoreImporter {
     public Score importQuick(
             Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave, Optional<NoteValue> precision,
             boolean useTwoChannelsPerTrack) {
+        return importQuick(
+                path, selectedMidiTrackIndices, transposeDownOneOctave, Optional.empty(), precision, useTwoChannelsPerTrack);
+    }
+
+    /** Lo mismo, pero cuantizando tambien la posicion de cada acorde a la grilla elegida. */
+    public Score importQuick(
+            Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
+            boolean useTwoChannelsPerTrack) {
         ParsedMidiFile file = parse(path);
         List<RawMidiTrack> raws = file.tracks().stream()
                 .filter(raw -> selectedMidiTrackIndices.contains(raw.index()))
                 .toList();
-        return importQuick(path, file, raws, transposeDownOneOctave, precision, useTwoChannelsPerTrack);
+        return importQuick(path, file, raws, transposeDownOneOctave, chordPositionQuantize, noteDurationQuantize, useTwoChannelsPerTrack);
     }
 
     private static Score importQuick(
-            Path path, ParsedMidiFile file, List<RawMidiTrack> raws, boolean transposeDownOneOctave, Optional<NoteValue> precision,
+            Path path, ParsedMidiFile file, List<RawMidiTrack> raws, boolean transposeDownOneOctave,
+            Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
             boolean useTwoChannelsPerTrack) {
         if (raws.isEmpty()) {
             throw new ScoreFileException("el archivo " + path + " no tiene pistas con notas para importar");
         }
         List<Track> tracks = raws.stream()
-                .map(raw -> quickTrack(raw, file.grid(), transposeDownOneOctave, precision, useTwoChannelsPerTrack))
+                .map(raw -> quickTrack(
+                        raw, file.grid(), transposeDownOneOctave, chordPositionQuantize, noteDurationQuantize,
+                        useTwoChannelsPerTrack))
                 .toList();
         String title = file.title().orElseGet(() -> titleFromFileName(path));
         return new Score(title, file.tempoBpm(), tracks);
@@ -191,15 +203,17 @@ public final class MidiScoreImporter {
     }
 
     private static Track quickTrack(
-            RawMidiTrack raw, MeasureGrid grid, boolean transposeDownOneOctave, Optional<NoteValue> precision,
-            boolean useTwoChannelsPerTrack) {
-        Tuning tuning = raw.percussion() ? PercussionKit.tuning() : TrackTuningGuess.forQuickImport(raw.name(), raw.program());
-        List<Measure> measures =
-                measuresOf(raw, grid, tuning, TrackSettings.DEFAULT_FRET_COUNT, transposeDownOneOctave, precision);
-        TrackSettings settings = raw.percussion()
-                ? TrackSettings.percussion(Track.colorFor(raw.index()))
-                : TrackSettings.standard(Track.colorFor(raw.index()));
-        return new Track(raw.name(), tuning, channelOf(raw, useTwoChannelsPerTrack), settings, measures);
+            RawMidiTrack raw, MeasureGrid grid, boolean transposeDownOneOctave, Optional<NoteValue> chordPositionQuantize,
+            Optional<NoteValue> noteDurationQuantize, boolean useTwoChannelsPerTrack) {
+        RawMidiTrack quantized = raw.withPositionsQuantizedTo(chordPositionQuantize);
+        Tuning tuning = quantized.percussion()
+                ? PercussionKit.tuning() : TrackTuningGuess.forQuickImport(quantized.name(), quantized.program());
+        List<Measure> measures = measuresOf(
+                quantized, grid, tuning, TrackSettings.DEFAULT_FRET_COUNT, transposeDownOneOctave, noteDurationQuantize);
+        TrackSettings settings = quantized.percussion()
+                ? TrackSettings.percussion(Track.colorFor(quantized.index()))
+                : TrackSettings.standard(Track.colorFor(quantized.index()));
+        return new Track(quantized.name(), tuning, channelOf(quantized, useTwoChannelsPerTrack), settings, measures);
     }
 
     private static Channel channelOf(RawMidiTrack raw, boolean useTwoChannelsPerTrack) {
