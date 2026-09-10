@@ -73,6 +73,19 @@ class GlobalUiMutationScanTest {
         assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
     }
 
+    @Test
+    void aTestThatTogglesHighContrastWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "TogglesHighContrast.java", """
+                class TogglesHighContrast {
+                    void toggles() {
+                        theme.useHighContrast(true);
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
     private static Path write(Path root, String fileName, String content) throws IOException {
         Path file = root.resolve(fileName);
         Files.writeString(file, content);
