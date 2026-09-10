@@ -24,6 +24,7 @@ public final class ZoomSelector extends JComboBox<String> {
         addActionListener(event -> applyEnteredZoom());
         zoomHolder.onZoomChange(this::refresh);
         refresh();
+        setMaximumSize(getPreferredSize());
     }
 
     private static String tooltipFrom(Commands commands) {
