@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -15,22 +16,47 @@ import javax.swing.JToggleButton;
 public final class TrackSelector extends JPanel {
 
     private final Editor editor;
+    private final JPanel numbers = new JPanel();
     private final List<JToggleButton> trackButtons = new ArrayList<>();
     private final JButton previousButton;
     private final JButton nextButton;
 
     public TrackSelector(Editor editor, Commands commands) {
         this.editor = editor;
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setOpaque(false);
+        numbers.setLayout(new BoxLayout(numbers, BoxLayout.X_AXIS));
+        numbers.setOpaque(false);
         previousButton = new JButton(commands.get("track.previous"));
         nextButton = new JButton(commands.get("track.next"));
+        add(previousButton);
+        add(numbers);
+        add(nextButton);
+        rebuildTrackButtons();
+        editor.addListener(this::refresh);
+    }
+
+    private void refresh() {
+        if (trackButtons.size() != editor.score().trackCount()) {
+            rebuildTrackButtons();
+        } else {
+            refreshSelection();
+        }
+    }
+
+    private void rebuildTrackButtons() {
+        numbers.removeAll();
+        trackButtons.clear();
         for (int trackIndex = 0; trackIndex < editor.score().trackCount(); trackIndex++) {
             int selectedTrackIndex = trackIndex;
             JToggleButton button = new JToggleButton();
             button.addActionListener(event -> editor.selectTrack(selectedTrackIndex));
             trackButtons.add(button);
+            numbers.add(button);
         }
         refreshSelection();
-        editor.addListener(this::refreshSelection);
+        numbers.revalidate();
+        numbers.repaint();
     }
 
     private void refreshSelection() {

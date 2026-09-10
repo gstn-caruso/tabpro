@@ -126,6 +126,16 @@ class TrackSelectorTest {
         assertTrue(selector.trackButtons().get(2).isSelected());
     }
 
+    @Test
+    void agregarUnaPistaRehaceLosBotones() {
+        TrackSelector selector = new TrackSelector(editor, commands);
+
+        editor.addTrack(Track.standardBass("Bajo"));
+
+        assertEquals(2, selector.trackButtons().size());
+        assertTrue(selector.trackButtons().get(1).isSelected());
+    }
+
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
         InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
