@@ -11,7 +11,6 @@ import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import java.awt.GridLayout;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -37,7 +36,8 @@ public final class TrackPropertiesPanel extends JPanel {
     private final JCheckBox tablature = new JCheckBox("Tablatura");
     private final JCheckBox tuningLegend = new JCheckBox("Afinacion");
     private final JCheckBox rhythmOnTablature = new JCheckBox("Ritmo sobre la tablatura");
-    private final JComboBox<DiagramPlacement> diagramPlacement = new JComboBox<>(DiagramPlacement.values());
+    private final JCheckBox diagramsOnTheScore = new JCheckBox("Diagramas en la partitura");
+    private final JCheckBox diagramsUnderTheTitle = new JCheckBox("Lista de diagramas arriba de la partitura");
     private final JCheckBox forceChannels11to16 = new JCheckBox("Forzar canales 11 a 16");
 
     private final boolean initialPercussion;
@@ -58,16 +58,9 @@ public final class TrackPropertiesPanel extends JPanel {
         tablature.setSelected(display.tablature());
         tuningLegend.setSelected(display.tuningLegend());
         rhythmOnTablature.setSelected(display.rhythmOnTablature());
-        diagramPlacement.setSelectedItem(display.diagrams());
+        diagramsOnTheScore.setSelected(display.diagrams().showsOnTheScore());
+        diagramsUnderTheTitle.setSelected(display.diagrams().showsUnderTheTitle());
         forceChannels11to16.setSelected(track.settings().forceChannels11to16());
-        diagramPlacement.setRenderer(new javax.swing.DefaultListCellRenderer() {
-            @Override
-            public java.awt.Component getListCellRendererComponent(
-                    javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean hasFocus) {
-                Object label = value instanceof DiagramPlacement placement ? placement.label() : value;
-                return super.getListCellRendererComponent(list, label, index, isSelected, hasFocus);
-            }
-        });
         keepAtLeastOneStaffVisible();
 
         setLayout(new GridLayout(1, 2, DialogStyle.GAP_M, 0));
@@ -97,7 +90,8 @@ public final class TrackPropertiesPanel extends JPanel {
         column.addSection("Estilo");
         column.addFullWidthRow(tuningLegend);
         column.addFullWidthRow(rhythmOnTablature);
-        column.addRow("Diagramas de acordes", diagramPlacement);
+        column.addFullWidthRow(diagramsOnTheScore);
+        column.addFullWidthRow(diagramsUnderTheTitle);
         column.addSection("Canales");
         column.addFullWidthRow(forceChannels11to16);
         return column;
@@ -131,7 +125,7 @@ public final class TrackPropertiesPanel extends JPanel {
                 tablature.isSelected(),
                 tuningLegend.isSelected(),
                 rhythmOnTablature.isSelected(),
-                (DiagramPlacement) diagramPlacement.getSelectedItem(),
+                DiagramPlacement.of(diagramsOnTheScore.isSelected(), diagramsUnderTheTitle.isSelected()),
                 false);
         return new TrackSettings(
                 color.toScoreColor(),
