@@ -194,6 +194,16 @@ class MenuBarTest {
         assertTrue(itemLabels(sonido).contains("Configuración del metrónomo…"));
     }
 
+    /** Guitar Pro 5 ofrece "editar" junto a "insertar" y "lista" en el menu Marcadores. */
+    @Test
+    void elMenuDeMarcadoresOfreceEditarElMarcadorVigente() {
+        JMenuBar bar = new MenuBar(commands).build();
+
+        JMenu marcadores = menuNamed(bar, "Marcadores");
+
+        assertTrue(itemLabels(marcadores).contains("Editar el marcador…"));
+    }
+
     /**
      * Manual, "Dynamic" (linea 1000): las ocho dinamicas van junto a la entrada de dialogo
      * existente, no en un submenu aparte.

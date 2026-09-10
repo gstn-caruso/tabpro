@@ -202,7 +202,7 @@ public final class MenuBar {
 
     private JMenu markersMenu() {
         JMenu menu = new JMenu("Marcadores");
-        add(menu, "marker.insert", "marker.list");
+        add(menu, "marker.insert", "marker.edit", "marker.list");
         menu.addSeparator();
         add(menu, "marker.previous", "marker.next");
         return menu;
