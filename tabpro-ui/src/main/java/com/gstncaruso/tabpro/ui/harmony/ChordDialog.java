@@ -337,7 +337,7 @@ public final class ChordDialog {
                 return "Fundamental";
             }
             PitchClass note = degree.from(model.selection().root());
-            return note.name() + " (" + degree.label() + ")";
+            return note.name() + " (" + Labels.of(degree) + ")";
         }
 
         private void refreshOmitChecks() {

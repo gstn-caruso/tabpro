@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.gstncaruso.tabpro.core.harmony.Chord;
 import com.gstncaruso.tabpro.core.harmony.ChordType;
+import com.gstncaruso.tabpro.core.harmony.Interval;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
@@ -458,6 +459,20 @@ class LabelsTest {
     @EnumSource(DirectionJump.class)
     void everyDirectionJumpHasSpanishAndEnglishText(DirectionJump value) {
         String key = "domain.DirectionJump." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheInterval() {
+        assertEquals("9", Labels.of(Interval.MAJOR_NINTH));
+    }
+
+    @ParameterizedTest
+    @EnumSource(Interval.class)
+    void everyIntervalHasSpanishAndEnglishText(Interval value) {
+        String key = "domain.Interval." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());

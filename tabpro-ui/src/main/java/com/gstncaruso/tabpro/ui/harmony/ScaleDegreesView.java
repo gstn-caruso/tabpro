@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.harmony;
 
 import com.gstncaruso.tabpro.core.harmony.ScaleTone;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -63,7 +64,7 @@ public final class ScaleDegreesView extends JComponent {
     }
 
     public String intervalLabel(int index) {
-        return tones.get(index).interval().label();
+        return Labels.of(tones.get(index).interval());
     }
 
     public int degreeX(int index) {
