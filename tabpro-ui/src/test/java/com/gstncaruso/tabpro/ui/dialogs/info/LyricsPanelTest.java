@@ -43,11 +43,11 @@ class LyricsPanelTest {
     void toLyricsCarriesEachLinesTextAndStartingMeasure() {
         LyricsPanel panel = new LyricsPanel(trackNames, Lyrics.none());
 
-        panel.setLine(0, new LyricLine(3, "una can-cion"));
+        panel.setLine(0, new LyricLine(3, "a sto-ry"));
         panel.setLine(4, new LyricLine(10, "fi-nal"));
 
         Lyrics result = panel.toLyrics();
-        assertEquals(new LyricLine(3, "una can-cion"), result.line(0));
+        assertEquals(new LyricLine(3, "a sto-ry"), result.line(0));
         assertEquals(new LyricLine(10, "fi-nal"), result.line(4));
     }
 
@@ -61,7 +61,7 @@ class LyricsPanelTest {
     @Test
     void lineBreaksSurviveGoingThroughTheDialog() {
         LyricsPanel panel = new LyricsPanel(trackNames, Lyrics.none());
-        LyricLine multilinea = new LyricLine(1, "primera linea\nsegunda linea");
+        LyricLine multilinea = new LyricLine(1, "first line\nsecond line");
 
         panel.setLine(0, multilinea);
 
@@ -74,7 +74,7 @@ class LyricsPanelTest {
 
         JTabbedPane lineTabs = findTabbedPane(panel);
 
-        assertNotNull(lineTabs, "no encontre las pestañas de linea");
+        assertNotNull(lineTabs, "could not find the line tabs");
         assertEquals(LyricLine.MAX_LINES, lineTabs.getTabCount());
         for (int index = 0; index < LyricLine.MAX_LINES; index++) {
             assertEquals("Línea " + (index + 1), lineTabs.getTitleAt(index));
