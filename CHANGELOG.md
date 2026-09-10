@@ -1,3 +1,9 @@
+## [0.31.0](https://github.com/gstn-caruso/tabpro/compare/v0.30.0...v0.31.0) (2026-09-10)
+
+### Features
+
+* **score:** los símbolos de la partitura salen de la fuente musical Bravura ([#111](https://github.com/gstn-caruso/tabpro/issues/111)) ([c089e95](https://github.com/gstn-caruso/tabpro/commit/c089e958ebc0383f8c7db66b034aa2688b1f34a2))
+
 ## [0.30.0](https://github.com/gstn-caruso/tabpro/compare/v0.29.0...v0.30.0) (2026-09-10)
 
 ### Features
