@@ -22,6 +22,7 @@ import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
+import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.instruments.FretboardDisplayMode;
 import com.gstncaruso.tabpro.ui.instruments.FretboardType;
@@ -323,6 +324,20 @@ class LabelsTest {
     @EnumSource(Mode.class)
     void everyModeHasSpanishAndEnglishText(Mode value) {
         String key = "domain.Mode." + value.name();
+
+        assertFalse(Labels.of(value).isBlank());
+        assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
+    }
+
+    @Test
+    void translatesTheGraceTransition() {
+        assertEquals("Ligado", Labels.of(GraceTransition.HAMMER));
+    }
+
+    @ParameterizedTest
+    @EnumSource(GraceTransition.class)
+    void everyGraceTransitionHasSpanishAndEnglishText(GraceTransition value) {
+        String key = "domain.GraceTransition." + value.name();
 
         assertFalse(Labels.of(value).isBlank());
         assertFalse(Texts.forLocale(Locale.ENGLISH).text(key).isBlank());
