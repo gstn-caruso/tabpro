@@ -129,7 +129,8 @@ public final class TrackPropertiesPanel extends JPanel {
                 tuningLegend.isSelected(),
                 rhythmOnTablature.isSelected(),
                 DiagramPlacement.of(diagramsOnTheScore.isSelected(), diagramsUnderTheTitle.isSelected()),
-                diagramsBelowStandardNotation.isSelected());
+                diagramsBelowStandardNotation.isSelected(),
+                false);
         return new TrackSettings(
                 color.toScoreColor(),
                 (Integer) capo.getValue(),

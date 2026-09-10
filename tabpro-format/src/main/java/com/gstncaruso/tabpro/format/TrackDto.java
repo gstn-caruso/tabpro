@@ -117,7 +117,8 @@ public record TrackDto(
                 orElse(showTuning, false),
                 orElse(showRhythm, false),
                 Enums.read(DiagramPlacement.class, diagrams, DiagramPlacement.ABOVE_THE_STAFF),
-                orElse(diagramsBelowStandardNotation, false));
+                orElse(diagramsBelowStandardNotation, false),
+                false);
         return new TrackSettings(
                 color == null ? Track.colorFor(index) : ScoreColor.rgb(color),
                 orElse(capo, 0),
