@@ -120,4 +120,30 @@ class WorkWithAScoreAuditTest {
             AuditSupport.dispose(frame);
         }
     }
+
+    @Test
+    void forzarCanales11a16EnPropiedadesDeLaPistaSeGuardaEnElModeloReal() throws Exception {
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        try {
+            assertFalse(editor.score().track(0).settings().forceChannels11to16(),
+                    "una pista nueva no fuerza los canales 11 a 16 por defecto");
+
+            JMenuItem item = findMenuItem(frame.getJMenuBar(), "Propiedades de la pista…");
+            assertNotNull(item, "no encontre 'Propiedades de la pista…' en el menu real");
+
+            withDialog(item::doClick, dialog -> {
+                JCheckBox forzarCanales = AuditSupport.findCheckBox(dialog, "Forzar canales 11 a 16");
+                assertNotNull(forzarCanales, "no encontre la casilla real 'Forzar canales 11 a 16'");
+                forzarCanales.doClick();
+
+                findButton(dialog, "Aceptar").doClick();
+            });
+
+            assertTrue(editor.score().track(0).settings().forceChannels11to16(),
+                    "tildar 'Forzar canales 11 a 16' en el dialogo real tiene que prenderlo en el modelo real");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
 }
