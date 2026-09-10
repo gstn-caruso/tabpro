@@ -16,6 +16,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class ToolBarsIconContrastAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JButton newButton = findButtonByActionName(frame.getContentPane(), "Nuevo");
-            assertReadsAgainstItsRealBackground(newButton, frame.getContentPane());
+            assertReadsAgainstItsRealBackground(newButton, "Nuevo", frame.getContentPane());
         } finally {
             dispose(frame);
         }
@@ -49,29 +50,29 @@ class ToolBarsIconContrastAuditTest {
         MainFrame frame = newFrame(editor);
         try {
             JButton deadNoteButton = findButtonByActionName(frame.getContentPane(), "Nota muerta");
-            assertReadsAgainstItsRealBackground(deadNoteButton, frame.getContentPane());
+            assertReadsAgainstItsRealBackground(deadNoteButton, "Nota muerta", frame.getContentPane());
         } finally {
             dispose(frame);
         }
     }
 
-    private void assertReadsAgainstItsRealBackground(JButton button, Container contentPane) {
+    private void assertReadsAgainstItsRealBackground(JComponent component, String description, Container contentPane) {
         BufferedImage rendering = renderingOf(contentPane);
-        Rectangle bounds = boundsWithin(button, contentPane);
-        BufferedImage buttonArea = rendering.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
+        Rectangle bounds = boundsWithin(component, contentPane);
+        BufferedImage componentArea = rendering.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
 
-        Color background = new Color(buttonArea.getRGB(0, 0));
-        Color icon = mostDifferentFrom(background, buttonArea);
-        double ratio = Contrast.ratio(icon, background);
+        Color background = new Color(componentArea.getRGB(0, 0));
+        Color foreground = mostDifferentFrom(background, componentArea);
+        double ratio = Contrast.ratio(foreground, background);
 
         assertTrue(ratio >= Contrast.GRAPHICAL_MINIMUM_RATIO,
-                "el icono de \"" + button.getToolTipText() + "\" da " + String.format("%.2f", ratio)
+                "\"" + description + "\" da " + String.format("%.2f", ratio)
                         + ":1 contra su fondo real, necesita >= " + Contrast.GRAPHICAL_MINIMUM_RATIO + ":1");
     }
 
-    private Rectangle boundsWithin(JButton button, Container ancestor) {
-        Point origin = SwingUtilities.convertPoint(button, new Point(0, 0), ancestor);
-        return new Rectangle(origin.x, origin.y, button.getWidth(), button.getHeight());
+    private Rectangle boundsWithin(JComponent component, Container ancestor) {
+        Point origin = SwingUtilities.convertPoint(component, new Point(0, 0), ancestor);
+        return new Rectangle(origin.x, origin.y, component.getWidth(), component.getHeight());
     }
 
     private BufferedImage renderingOf(Container root) {
