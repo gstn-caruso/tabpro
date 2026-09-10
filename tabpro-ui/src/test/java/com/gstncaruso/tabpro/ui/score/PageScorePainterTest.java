@@ -199,6 +199,41 @@ class PageScorePainterTest {
         return "Página " + pageNumber + " de " + totalPages;
     }
 
+    /**
+     * {@link PageScorePainter#paintPage} arma una sola hoja y la dibuja con
+     * {@link PaperGraphics}, que recorta el lienzo al tamano exacto de esa hoja: gracias a eso el
+     * clip real que llega a {@code ScorePainter.paintTrack} ya viene acotado, y renderizar la hoja
+     * del medio no tiene que tocar los compases que solo viven en la primera ni en la tercera.
+     */
+    @Test
+    void renderingOnePageDoesNotPaintMeasuresOfTheOthers() {
+        Score score = scoreWithMeasures(200);
+        ScoreViewport viewport = pageViewport(PageSetup.defaults());
+        Pagination pagination = PageScorePainter.paginationOf(score, viewport);
+        assertTrue(pagination.pageCount() >= 3, "hace falta al menos tres hojas para este test");
+
+        int measureOnlyOnTheFirstPage = pagination.firstMeasureOfPage().get(0) + 1;
+        int measureOnlyOnTheThirdPage = pagination.firstMeasureOfPage().get(2) + 1;
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        PageScorePainter.paintPage(
+                lienzo, score, new Cursor(0, 0, 0, 1), Playhead.silent(), Optional.empty(), viewport, 1);
+
+        Set<Integer> painted = measureNumbersPaintedIn(lienzo);
+        assertFalse(painted.contains(measureOnlyOnTheFirstPage),
+                "la hoja del medio no tiene que tocar un compas que solo esta en la primera");
+        assertFalse(painted.contains(measureOnlyOnTheThirdPage),
+                "la hoja del medio no tiene que tocar un compas que solo esta en la tercera");
+        assertFalse(painted.isEmpty(), "la hoja del medio tiene que pintar sus propios compases");
+    }
+
+    private static Set<Integer> measureNumbersPaintedIn(LienzoDePrueba lienzo) {
+        return lienzo.textosDibujados().stream()
+                .filter(texto -> ScoreFonts.MEASURE_NUMBER_FONT.equals(texto.fuente()))
+                .map(texto -> Integer.parseInt(texto.texto()))
+                .collect(Collectors.toSet());
+    }
+
     private static Set<String> footersPaintedIn(LienzoDePrueba lienzo) {
         return lienzo.textosDibujados().stream()
                 .map(LienzoDePrueba.TextoDibujado::texto)
