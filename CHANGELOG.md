@@ -1,3 +1,9 @@
+## [0.58.2](https://github.com/gstn-caruso/tabpro/compare/v0.58.1...v0.58.2) (2026-09-10)
+
+### Bug Fixes
+
+* **mixtable:** la mesa muestra los dos dígitos de puerto y canal y el instrumento entero ([#177](https://github.com/gstn-caruso/tabpro/issues/177)) ([4446f94](https://github.com/gstn-caruso/tabpro/commit/4446f9488cb4fc3cb415a660f844eff55b7bd00b))
+
 ## [0.58.1](https://github.com/gstn-caruso/tabpro/compare/v0.58.0...v0.58.1) (2026-09-10)
 
 ### Bug Fixes
