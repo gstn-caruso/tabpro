@@ -14,10 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Writes the score as MusicXML: standard notation plus the tab, which MusicXML represents
- * with the string and the fret inside {@code <technical>}.
- */
+/** MusicXML represents the tab with the string and the fret inside {@code <technical>}. */
 public final class MusicXmlScoreExporter {
 
     private static final int DIVISIONS_PER_QUARTER_NOTE = Duration.TICKS_PER_QUARTER / 4;
