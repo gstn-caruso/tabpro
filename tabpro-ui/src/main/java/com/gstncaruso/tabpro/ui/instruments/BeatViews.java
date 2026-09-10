@@ -16,7 +16,6 @@ import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
@@ -25,7 +24,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
@@ -337,23 +335,8 @@ public final class BeatViews extends JPanel {
         JPanel box = new JPanel(new BorderLayout());
         box.setBackground(ScoreColors.SURFACE);
 
-        JLabel label = new JLabel(title);
-        label.setFont(label.getFont().deriveFont(Font.BOLD, 10f));
-        label.setForeground(ScoreColors.TITLE_BAR_INK);
-        label.setBorder(BorderFactory.createEmptyBorder(3, 12, 2, 0));
-
-        JButton close = new JButton(Icons.closePanel());
-        close.getAccessibleContext().setAccessibleName(closeAccessibleName);
-        close.setToolTipText(closeAccessibleName);
-        close.setForeground(ScoreColors.TITLE_BAR_INK);
-        close.addActionListener(e -> onClose.run());
-
-        JPanel header = new JPanel(new BorderLayout());
-        header.setOpaque(true);
-        header.setBackground(ScoreColors.TITLE_BAR);
-        header.add(label, BorderLayout.WEST);
-        header.add(toolbar, BorderLayout.CENTER);
-        header.add(close, BorderLayout.EAST);
+        PanelTitleBar header = new PanelTitleBar(title, toolbar, closeAccessibleName);
+        header.onClose(onClose);
         header.setPreferredSize(new Dimension(0, TITLE_HEIGHT));
 
         box.add(header, BorderLayout.NORTH);
