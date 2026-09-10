@@ -1,9 +1,6 @@
 package com.gstncaruso.tabpro.ui.actions;
 
-import java.awt.event.ActionEvent;
 import java.util.Objects;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
@@ -17,18 +14,17 @@ import javax.swing.KeyStroke;
  * catalogo usa esa misma tecla, mientras la partitura tiene el foco -que es la situacion normal
  * al editar- ese atajo queda muerto sin que nada lo avise.
  *
- * <p>Este barrido tapa, en cada antepasado dado, cualquier tecla que el catalogo ya use, para
- * que gane siempre el atajo del manual. No toca nada compartido entre instancias: cada
- * componente Swing tiene su propio InputMap y ActionMap, asi que un JScrollPane que no se le
- * pasa a {@link #letCommandsWin} sigue con el comportamiento de fabrica.
+ * <p>Este barrido, en cada antepasado dado, deja sin resolver cualquier tecla que el catalogo ya
+ * use ({@code inputMap.put(tecla, "none")}, la convencion de Swing para "no hay accion registrada
+ * con este nombre"): {@code processKeyBinding} encuentra un binding pero ninguna Action para el,
+ * asi que devuelve false y la tecla sigue subiendo hasta el atajo del menu. No toca nada
+ * compartido entre instancias: cada componente Swing tiene su propio InputMap y ActionMap, asi
+ * que un JScrollPane que no se le pasa a {@link #letCommandsWin} sigue con el comportamiento de
+ * fabrica.
  */
 public final class AcceleratorGuard {
 
-    private static final Action NO_HACE_NADA = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent event) {
-        }
-    };
+    private static final String SIN_ACCION_REGISTRADA = "none";
 
     private AcceleratorGuard() {
     }
@@ -48,9 +44,7 @@ public final class AcceleratorGuard {
             if (inputMap.get(accelerator) == null) {
                 continue;
             }
-            String name = "tabpro.reservado." + accelerator;
-            inputMap.put(accelerator, name);
-            ancestor.getActionMap().put(name, NO_HACE_NADA);
+            inputMap.put(accelerator, SIN_ACCION_REGISTRADA);
         }
     }
 }
