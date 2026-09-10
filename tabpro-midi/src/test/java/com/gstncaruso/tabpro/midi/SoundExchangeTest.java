@@ -25,11 +25,6 @@ import javax.sound.sampled.AudioSystem;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * SoundExchange junta MidiScoreExporter (Score -&gt; Sequence) con WaveRenderer (Sequence -&gt;
- * WAVE): esto prueba que la union funciona de punta a punta, con el sintetizador real del JDK
- * (Gervill), que no necesita hardware de audio y corre headless.
- */
 class SoundExchangeTest {
 
     private final SoundExchange exchange = new SoundExchange(new WaveRenderer(SoundExchangeTest::systemSynthesizer));
