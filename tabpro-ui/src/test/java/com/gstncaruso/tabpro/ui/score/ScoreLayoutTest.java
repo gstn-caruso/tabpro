@@ -90,6 +90,31 @@ class ScoreLayoutTest {
     }
 
     @Test
+    void aSingleSystemScoreSpansAllItsMeasures() {
+        ScoreLayout layout = ScoreLayout.of(Score.blank(), WIDE);
+
+        assertEquals(0, layout.firstMeasureOfSystem(0));
+        assertEquals(layout.measureCount() - 1, layout.lastMeasureOfSystem(0));
+    }
+
+    /**
+     * El rango de un sistema tiene que coincidir con {@link ScoreLayout#systemOf} para cualquier
+     * compas que caiga adentro, incluso con un quiebre de linea forzado que deja sistemas de
+     * distinto tamano.
+     */
+    @Test
+    void everyMeasureFallsWithinTheRangeOfItsOwnSystem() {
+        Score score = withLineBreakAt(scoreWithMeasures(20), 7, LineBreak.FORCED);
+        ScoreLayout layout = ScoreLayout.of(score, 800);
+
+        for (int measure = 0; measure < layout.measureCount(); measure++) {
+            int system = layout.systemOf(measure);
+            assertTrue(measure >= layout.firstMeasureOfSystem(system));
+            assertTrue(measure <= layout.lastMeasureOfSystem(system));
+        }
+    }
+
+    @Test
     void everySystemStartsAtTheLeftMargin() {
         Score score = scoreWithMeasures(12);
 
