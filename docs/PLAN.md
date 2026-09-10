@@ -223,8 +223,9 @@ que el manual describe y todavía no funciona *al usarlo*, el aspecto visual
   las capturas del manual (`pdfimages`, ver la nota de tipografía); se mantiene
   FlatLaf Darcula. No se copia el tema claro de Windows.
 - **Íconos:** las acciones genéricas (archivo, edición, zoom, transporte, vista)
-  salen de **Tabler Icons** (MIT, SVG) dibujadas con `FlatSVGIcon` de
-  `flatlaf-extras` 3.7.2 (trae `jsvg` 2.1.0; verificado en Maven Central). Los
+  salen de **Tabler Icons** (MIT, SVG) dibujadas con `jsvg` 2.1.0 directo
+  (la librería que FlatLaf usa por debajo; `flatlaf-extras` se descartó porque
+  arrastra FlatLaf a `tabpro-ui`, y FlatLaf vive sólo en `tabpro-app`). Los
   símbolos musicales salen de **Bravura**, que ya está en el repo. Los efectos
   sin glifo SMuFL (P.M., let ring, tapping…) van como texto abreviado, como en
   GP5. Se commitean sólo los SVG que se usan, con su licencia al lado.
@@ -263,5 +264,31 @@ PR que lo usa.
 
 | Ítem | Branch | PR | Estado |
 |---|---|---|---|
-| Plan de la etapa | `docs/plan-etapa-visual` | — | abierto |
-| A · auditoría de uso real | `docs/auditoria-uso-real` | — | en curso |
+| Plan de la etapa | `docs/plan-etapa-visual` | #112 | mergeado |
+| A · auditoría de uso real (47 OK / 7 MIENTE / 1 AUSENTE, harness de 54 tests) | `docs/auditoria-uso-real` | #114 | mergeado |
+| A · el CI corre el harness bajo Xvfb | `ci/harness-con-display` | #117 | mergeado |
+| A · fix: la configuración del metrónomo se abre desde Sonido (hallazgo 6) | `fix/configuracion-del-metronomo-alcanzable` | #119 | mergeado |
+| A · fix: los siete atajos que Swing interceptaba (hallazgos 1–5) | `fix/atajos-que-swing-interceptaba` | — | en curso |
+| B1 · íconos genéricos desde Tabler (`SvgIcon` + `jsvg`) | `feat/iconos-tabler` | #113 | mergeado |
+| B3 · símbolos musicales desde Bravura (`GlyphIcon`) | `feat/iconos-bravura` | #118 | mergeado |
+| B4 · barras agrupadas y ordenadas como GP5, efectos abajo de la partitura | — | — | pendiente |
+| C1 · nombre accesible y tooltip en todo control (`AccessibilityWalker`) | `feat/nombres-accesibles` | #115 | mergeado |
+| C2 · mnemónicos en menús y formularios | `feat/mnemonicos` | — | en curso |
+| C3 · teclado y foco visible en perillas, diapasón, teclado y grilla | `feat/teclado-en-los-componentes-custom` | — | en curso |
+| C4 · contraste WCAG AA en las dos paletas, con tests | `fix/contraste-wcag` | #116 | mergeado |
+| C5 · Preferencias > Accesibilidad (letra, alto contraste, sin animaciones) | `feat/preferencias-de-accesibilidad` | — | en curso |
+
+Lo que la etapa dejó anotado para después: la perilla y la fila seleccionada de
+la mesa de mezcla no pasan el contraste; los mástiles acústico, clásico y
+básico necesitan paleta propia; `doubleBar` y `tuplet` siguen en Java2D porque
+sus glifos SMuFL son sub-píxel a 18 px; seis diálogos arman su panel dentro del
+método que lo muestra y el recorredor de accesibilidad no los alcanza; y la
+auditoría no cubrió Print ni Import/Export (piden `PrinterJob` y `JFileChooser`
+reales).
+
+**Lo que enseñó esta tanda:** el `AcceleratorGuard` de la etapa anterior era él
+mismo una interfaz que mentía: ponía una acción vacía en vez de sacarle la tecla
+al `JScrollPane`, y su test verificaba que el scroll ya no la atendiera, no que
+el atajo funcionara después. La auditoría de uso real lo encontró porque despacha
+la tecla de verdad. Y `jsvg` resuelve `currentColor` desde `Graphics2D.getColor()`
+al renderizar, no desde el componente: sin setear el color antes pinta blanco.
