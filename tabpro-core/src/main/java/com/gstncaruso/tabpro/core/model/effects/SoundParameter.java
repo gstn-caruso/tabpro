@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model.effects;
 
-/** Lo que puede cambiar a mitad de la partitura la ventana de mesa de mezcla. */
 public enum SoundParameter {
     PROGRAM("Instrumento", 0, 127),
     VOLUME("Volumen", 0, 127),
@@ -33,7 +32,6 @@ public enum SoundParameter {
         return maximum;
     }
 
-    /** El tempo vale para toda la partitura; los demas, para la pista que los lleva. */
     public boolean isGlobal() {
         return this == TEMPO;
     }

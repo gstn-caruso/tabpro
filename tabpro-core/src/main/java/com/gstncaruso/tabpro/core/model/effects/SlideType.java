@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model.effects;
 
-/** Las seis maneras de deslizar el dedo que distingue la tablatura. */
 public enum SlideType {
     LEGATO("Slide legato", true),
     SHIFT("Slide con ataque", true),
@@ -21,12 +20,10 @@ public enum SlideType {
         return label;
     }
 
-    /** Si el destino del slide es la nota siguiente, y no un traste indefinido. */
     public boolean towardsTheNextNote() {
         return towardsTheNextNote;
     }
 
-    /** Si la nota de destino se ataca de nuevo, en lugar de sonar por el deslizamiento. */
     public boolean picksTheDestination() {
         return this == SHIFT;
     }

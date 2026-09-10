@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.model.effects;
 
-/** Cuan fuerte suena una nota concreta, ya ajustada por sus efectos. */
 public record Velocity(int value) {
 
     public static final int MIN = 1;

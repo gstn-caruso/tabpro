@@ -4,7 +4,6 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
-/** Todo lo que se le puede pedir a una nota mas alla de su traste. */
 public record NoteEffects(
         Set<Ornament> ornaments,
         Dynamic dynamic,
@@ -18,7 +17,6 @@ public record NoteEffects(
         Optional<Finger> rightHand,
         int soundDurationPercent) {
 
-    /** Una nota que suena toda su figura, sin acortarse ni alargarse a mano. */
     public static final int FULL_SOUND = 100;
 
     private static final NoteEffects NONE = new NoteEffects(
@@ -60,7 +58,6 @@ public record NoteEffects(
         return withOrnaments(updated);
     }
 
-    /** Los adornos que no pueden convivir con este, porque piden lo contrario. */
     private static Set<Ornament> contradictionsOf(Ornament ornament) {
         return switch (ornament) {
             case GHOST -> EnumSet.of(Ornament.ACCENTED, Ornament.HEAVY_ACCENTED);
@@ -72,7 +69,6 @@ public record NoteEffects(
         };
     }
 
-    /** Cuan fuerte suena esta nota, contando los acentos y las notas fantasma. */
     public Velocity velocity() {
         Velocity intensity = dynamic.intensity();
         if (has(Ornament.HEAVY_ACCENTED)) {
@@ -92,7 +88,6 @@ public record NoteEffects(
                 ornaments, dynamic, bend, slide, harmonic, trill, tremoloPicking, grace, leftHand, rightHand, percent);
     }
 
-    /** Que fraccion de su figura suena la nota. */
     public double soundLength() {
         return ornamentLength() * soundDurationPercent / (double) FULL_SOUND;
     }

@@ -4,10 +4,6 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.OptionalInt;
 
-/**
- * Un cambio de parametros en medio de la partitura, como el que agrega la
- * ventana de mesa de mezcla del manual. Lo que no se toca no se lista.
- */
 public record ParameterChange(Map<SoundParameter, Integer> values, int transitionBeats, boolean everyTrack) {
 
     public ParameterChange {
