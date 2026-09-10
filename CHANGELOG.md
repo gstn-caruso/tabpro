@@ -1,3 +1,9 @@
+## [0.58.6](https://github.com/gstn-caruso/tabpro/compare/v0.58.5...v0.58.6) (2026-09-10)
+
+### Bug Fixes
+
+* **percussion:** la grilla de sonidos fija el tamaño de celda desde su propia fuente ([#181](https://github.com/gstn-caruso/tabpro/issues/181)) ([7e5fd26](https://github.com/gstn-caruso/tabpro/commit/7e5fd26e6f62908c4d84ef57830f0492f43dd962))
+
 ## [0.58.5](https://github.com/gstn-caruso/tabpro/compare/v0.58.4...v0.58.5) (2026-09-10)
 
 ### Bug Fixes
