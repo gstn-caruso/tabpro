@@ -146,6 +146,7 @@ public final class MainFrame extends JFrame {
         useMidiSetup(midiSetupFromPreferences());
         setSize(windowSize());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        AccessibilitySettings.applyFrom(preferences, themes);
 
         canvas = new ScoreCanvas(editor, visibleTracks);
         canvas.setAutoScrollDuringPlayback(preferences.autoScrollDuringPlayback());
