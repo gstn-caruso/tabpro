@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.a11y.MnemonicWalker;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
@@ -90,6 +91,13 @@ class MenuBarTest {
         JMenuBar bar = new MenuBar(commands).build();
 
         AccessibilityAssertions.assertNoViolations(bar);
+    }
+
+    @Test
+    void todosLosMenusDeLaBarraTienenMnemonicoYSinChoques() {
+        JMenuBar bar = new MenuBar(commands).build();
+
+        assertEquals(List.of(), new MnemonicWalker().walkMenuBar(bar));
     }
 
     private void recolectar(JMenu menu, Set<Command> encontrados) {

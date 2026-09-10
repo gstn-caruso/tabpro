@@ -1,7 +1,9 @@
 package com.gstncaruso.tabpro.ui.menu;
 
+import com.gstncaruso.tabpro.ui.a11y.MnemonicAssigner;
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
+import java.awt.event.InputEvent;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +12,7 @@ import java.util.function.Supplier;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 /** La barra de menu de tabpro, con los mismos menus que describe el manual. */
 public final class MenuBar {
@@ -31,19 +34,44 @@ public final class MenuBar {
 
     public JMenuBar build() {
         JMenuBar bar = new JMenuBar();
-        bar.add(fileMenu());
-        bar.add(editMenu());
-        bar.add(barMenu());
-        bar.add(trackMenu());
-        bar.add(noteMenu());
-        bar.add(effectsMenu());
-        bar.add(markersMenu());
-        bar.add(toolsMenu());
-        bar.add(soundMenu());
-        bar.add(viewMenu());
-        bar.add(optionsMenu());
-        bar.add(helpMenu());
+        MnemonicAssigner topLevelMnemonics = new MnemonicAssigner();
+        reserveAltLetterAccelerators(topLevelMnemonics);
+        addMenu(bar, topLevelMnemonics, fileMenu());
+        addMenu(bar, topLevelMnemonics, editMenu());
+        addMenu(bar, topLevelMnemonics, barMenu());
+        addMenu(bar, topLevelMnemonics, trackMenu());
+        addMenu(bar, topLevelMnemonics, noteMenu());
+        addMenu(bar, topLevelMnemonics, effectsMenu());
+        addMenu(bar, topLevelMnemonics, markersMenu());
+        addMenu(bar, topLevelMnemonics, toolsMenu());
+        addMenu(bar, topLevelMnemonics, soundMenu());
+        addMenu(bar, topLevelMnemonics, viewMenu());
+        addMenu(bar, topLevelMnemonics, optionsMenu());
+        addMenu(bar, topLevelMnemonics, helpMenu());
         return bar;
+    }
+
+    private void addMenu(JMenuBar bar, MnemonicAssigner assigner, JMenu menu) {
+        assigner.applyTo(menu);
+        bar.add(menu);
+    }
+
+    /** Un mnemonico de menu que abriera el mismo Alt+letra que un atajo existente los haria pelear. */
+    private void reserveAltLetterAccelerators(MnemonicAssigner assigner) {
+        for (Command command : commands.all().values()) {
+            KeyStroke accelerator = command.accelerator();
+            if (isAltLetterAccelerator(accelerator)) {
+                assigner.reserve((char) accelerator.getKeyCode());
+            }
+        }
+    }
+
+    private boolean isAltLetterAccelerator(KeyStroke accelerator) {
+        if (accelerator == null) {
+            return false;
+        }
+        boolean onlyAlt = accelerator.getModifiers() == InputEvent.ALT_DOWN_MASK;
+        return onlyAlt && Character.isLetter((char) accelerator.getKeyCode());
     }
 
     private JMenu fileMenu() {
