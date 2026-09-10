@@ -188,8 +188,8 @@ class UnisolatedGlobalUiStateMutationsAreFlaggedTest {
     void aMutationMentionedOnlyInACommentIsNotFlagged(@TempDir Path root) throws IOException {
         write(root, "MentionsTheThemeInAComment.java", """
                 class MentionsTheThemeInAComment {
-                    // "Sin animaciones" apaga las de FlatLaf: FlatLaf.updateUI() se llama aca.
-                    /* Theme.install() se documenta en el manual, no se invoca aca. */
+                    // "No animations" turns off FlatLaf's: FlatLaf.updateUI() is called here.
+                    /* Theme.install() is documented in the manual, it is not invoked here. */
                     @Test
                     void innocent() {
                     }
@@ -218,7 +218,7 @@ class UnisolatedGlobalUiStateMutationsAreFlaggedTest {
                 .flatMap(root -> GlobalUiMutationScan.unisolatedMutators(root).stream())
                 .toList();
 
-        assertTrue(culprits.isEmpty(), () -> culprits + " tienen que anotarse @Isolated");
+        assertTrue(culprits.isEmpty(), () -> culprits + " must be annotated @Isolated");
     }
 
     private static Stream<Path> moduleTestSourceRoots() {
