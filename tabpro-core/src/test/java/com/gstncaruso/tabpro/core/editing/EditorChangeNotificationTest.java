@@ -28,4 +28,24 @@ class EditorChangeNotificationTest {
 
         assertEquals(List.of(EditorChange.CONTENT), received);
     }
+
+    @Test
+    void moverElCursorNotificaUnCambioDeCursor() {
+        Editor editor = new Editor(Score.blank());
+        List<EditorChange> received = new ArrayList<>();
+        editor.addListener(new EditorListener() {
+            @Override
+            public void editorChanged() {
+            }
+
+            @Override
+            public void editorChanged(EditorChange change) {
+                received.add(change);
+            }
+        });
+
+        editor.moveDown();
+
+        assertEquals(List.of(EditorChange.CURSOR), received);
+    }
 }

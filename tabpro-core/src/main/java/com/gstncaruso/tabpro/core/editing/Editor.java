@@ -1179,7 +1179,7 @@ public final class Editor {
     private void moveCursor(Cursor next) {
         cursor = next;
         clearSelectionUnlessExtending();
-        notifyListeners(EditorChange.CONTENT);
+        notifyListeners(EditorChange.CURSOR);
     }
 
     private void clearSelectionUnlessExtending() {
