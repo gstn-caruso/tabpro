@@ -55,6 +55,7 @@ public final class MidiImportPanel extends JPanel {
     private final JComboBox<String> precisionChoice = new JComboBox<>(precisionLabels());
     private final JButton selectAll = iconButton(Icons.selectAllTracks(), "Marcar todas las pistas");
     private final JButton listen = iconButton(Icons.play(), "Escuchar la pista elegida");
+    private final JButton stopListening = iconButton(Icons.stop(), "Detener la reproducción");
     private final Player player;
     private final Function<List<Integer>, Timeline> trackTimeline;
 
@@ -71,6 +72,7 @@ public final class MidiImportPanel extends JPanel {
         precisionChoice.setSelectedItem(figureName(NoteValue.SIXTEENTH));
         selectAll.addActionListener(event -> selectAllTracks());
         listen.addActionListener(event -> listen());
+        stopListening.addActionListener(event -> stopListening());
 
         JLabel precisionLabel = new JLabel("Precisión");
         precisionLabel.setLabelFor(precisionChoice);
@@ -84,6 +86,7 @@ public final class MidiImportPanel extends JPanel {
         JPanel trackListTools = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_XS, 0));
         trackListTools.add(selectAll);
         trackListTools.add(listen);
+        trackListTools.add(stopListening);
 
         add(trackListTools, BorderLayout.NORTH);
         add(new JScrollPane(trackList), BorderLayout.CENTER);
@@ -108,6 +111,10 @@ public final class MidiImportPanel extends JPanel {
             return;
         }
         player.play(trackTimeline.apply(selected), SILENT_LISTENER);
+    }
+
+    public void stopListening() {
+        player.stop();
     }
 
     private static JButton iconButton(Icon icon, String accessibleNameAndTooltip) {

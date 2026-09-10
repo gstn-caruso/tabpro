@@ -122,6 +122,15 @@ class MidiImportPanelTest {
     }
 
     @Test
+    void stoppingCallsThePlayerStop() {
+        MidiImportPanel panel = panel(List.of(track(0, "Guitarra")));
+
+        panel.stopListening();
+
+        assertTrue(player.wasStopped());
+    }
+
+    @Test
     void reloadingTheTrackListReplacesItsContent() {
         MidiImportPanel panel = panel(List.of(track(0, "Guitarra")));
 
