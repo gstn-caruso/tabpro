@@ -34,7 +34,7 @@ public final class TrackPropertiesPanel extends JPanel {
 
     private final JCheckBox standardNotation = new JCheckBox("Pentagrama");
     private final JCheckBox tablature = new JCheckBox("Tablatura");
-    private final JCheckBox tuningLegend = new JCheckBox("Afinacion");
+    private final JCheckBox tuningLegend = new JCheckBox("Afinación");
     private final JCheckBox rhythmOnTablature = new JCheckBox("Ritmo sobre la tablatura");
     private final JCheckBox diagramsOnTheScore = new JCheckBox("Diagramas en la partitura");
     private final JCheckBox diagramsUnderTheTitle = new JCheckBox("Lista de diagramas arriba de la partitura");
@@ -74,9 +74,9 @@ public final class TrackPropertiesPanel extends JPanel {
         FormPanel column = new FormPanel();
         column.addRow("Nombre", name);
         column.addRow("Color", color);
-        column.addSection("Afinacion");
+        column.addSection("Afinación");
         column.addFullWidthRow(tuningEditor);
-        column.addSection("Diapason");
+        column.addSection("Diapasón");
         column.addRow("Trastes", fretCount);
         column.addRow("Cejilla", capo);
         column.addFullWidthRow(twelveString);
@@ -86,7 +86,7 @@ public final class TrackPropertiesPanel extends JPanel {
 
     private FormPanel rightColumn() {
         FormPanel column = new FormPanel();
-        column.addSection("Notacion");
+        column.addSection("Notación");
         column.addFullWidthRow(standardNotation);
         column.addFullWidthRow(tablature);
         column.addSection("Estilo");
