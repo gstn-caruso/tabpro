@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.toolbar;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,7 +14,9 @@ import java.awt.Component;
 import java.awt.Container;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import javax.swing.JButton;
+import java.util.List;
+import javax.swing.AbstractButton;
+import javax.swing.JToggleButton;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -100,16 +103,56 @@ class ToolBarsTest {
         for (Container row : new Container[] {
             toolBars.component(), toolBars.effectsComponent(),
         }) {
-            for (JButton button : buttonsOf(row)) {
+            for (AbstractButton button : buttonsOf(row)) {
                 assertNotNull(button.getIcon(), button.getAccessibleContext().getAccessibleName() + " sin icono");
             }
         }
     }
 
-    private java.util.List<JButton> buttonsOf(Container root) {
-        java.util.List<JButton> found = new java.util.ArrayList<>();
+    /**
+     * Manual, "Configure the Sound" (linea 1953): F2 prende o apaga el banco de sonido. Guitar
+     * Pro 5 pone ahi mismo, en la fila de estructura y sonido, los dos iconos de RSE; tabpro pone
+     * uno solo, y tiene que ser un conmutable de verdad -que cambie de estado al tocarlo y llegue
+     * al mismo puerto que F2-, no un boton que solo dispara sin mostrar nada.
+     */
+    @Test
+    void elBotonDelBancoDeSonidoEsUnConmutableQueLlegaAlPuertoReal() {
+        java.util.List<String> llamados = new java.util.ArrayList<>();
+        InvocationHandler contador = (proxy, method, args) -> {
+            llamados.add(method.getName());
+            return null;
+        };
+        Ports.Playback playback = (Ports.Playback) Proxy.newProxyInstance(
+                Ports.Playback.class.getClassLoader(), new Class<?>[] {Ports.Playback.class}, contador);
+        ToolBars otraBarra = new ToolBars(new Commands(
+                editor, record(Ports.Document.class), record(Ports.Dialogs.class), playback, record(Ports.View.class)));
+        JToggleButton button = toggleButtonNamed(otraBarra.structureToolBar, "Banco de sonido");
+
+        assertFalse(button.isSelected());
+
+        button.doClick();
+
+        assertTrue(button.isSelected());
+        assertEquals(List.of("toggleSoundFont"), llamados);
+
+        button.doClick();
+
+        assertFalse(button.isSelected());
+    }
+
+    private JToggleButton toggleButtonNamed(Container root, String name) {
+        for (AbstractButton button : buttonsOf(root)) {
+            if (button instanceof JToggleButton toggle && name.equals(button.getAccessibleContext().getAccessibleName())) {
+                return toggle;
+            }
+        }
+        throw new AssertionError("no encontre un boton conmutable llamado " + name);
+    }
+
+    private java.util.List<AbstractButton> buttonsOf(Container root) {
+        java.util.List<AbstractButton> found = new java.util.ArrayList<>();
         for (Component child : root.getComponents()) {
-            if (child instanceof JButton button) {
+            if (child instanceof AbstractButton button) {
                 found.add(button);
             }
             if (child instanceof Container container) {

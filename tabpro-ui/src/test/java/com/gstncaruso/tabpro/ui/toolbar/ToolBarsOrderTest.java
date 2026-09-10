@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JButton;
+import javax.swing.AbstractButton;
 import javax.swing.JToolBar;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +57,7 @@ class ToolBarsOrderTest {
                 "bar.alternateEndings", "bar.forceLineBreak", "bar.preventLineBreak", SEP,
                 "marker.insert", "marker.previous", "marker.next", "marker.list", SEP,
                 "sound.play", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
-                "sound.loop", SEP,
+                "sound.loop", "sound.soundFont", SEP,
                 "tool.transpose", SEP,
                 "nav.previousBar", "nav.nextBar", "tool.scales", "tool.tuner", SEP);
     }
@@ -106,7 +106,7 @@ class ToolBarsOrderTest {
         for (Component component : bar.getComponents()) {
             if (component instanceof JToolBar.Separator) {
                 actual.add(SEP);
-            } else if (component instanceof JButton button) {
+            } else if (component instanceof AbstractButton button) {
                 actual.add(button.getAction());
             }
         }
