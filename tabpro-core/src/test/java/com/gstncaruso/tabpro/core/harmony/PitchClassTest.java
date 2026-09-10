@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class PitchClassTest {
 
     @Test
-    void reconoceLasSieteNaturales() {
+    void recognizesTheSevenNaturals() {
         assertEquals(0, PitchClass.of("Do").semitone());
         assertEquals(2, PitchClass.of("Re").semitone());
         assertEquals(4, PitchClass.of("Mi").semitone());
@@ -19,13 +19,13 @@ class PitchClassTest {
     }
 
     @Test
-    void distingueSolDeSiPorElPrefijo() {
+    void distinguishesSolFromSiByThePrefix() {
         assertEquals("G", PitchClass.of("Sol").name());
         assertEquals("B", PitchClass.of("Si").name());
     }
 
     @Test
-    void seEscribeConLetraYSeCantaConSolfeo() {
+    void isWrittenWithALetterAndSungWithSolfege() {
         assertEquals("A", PitchClass.of("La").name());
         assertEquals("La", PitchClass.of("La").solfegeName());
         assertEquals("Bb", PitchClass.of("Sib").name());
@@ -33,21 +33,21 @@ class PitchClassTest {
     }
 
     @Test
-    void tambienEntiendeLosNombresConLetra() {
+    void alsoUnderstandsLetterNames() {
         assertEquals(PitchClass.of("La"), PitchClass.of("A"));
         assertEquals(PitchClass.of("Do#"), PitchClass.of("C#"));
         assertEquals(PitchClass.of("Sib"), PitchClass.of("Bb"));
     }
 
     @Test
-    void unNombreConLetraNoSeConfundeConUnoDeSolfeo() {
+    void aLetterNameIsNotConfusedWithASolfegeOne() {
         assertEquals(PitchClass.of("Re"), PitchClass.of("D"));
         assertEquals(PitchClass.of("Mi"), PitchClass.of("E"));
         assertEquals(PitchClass.of("Fa"), PitchClass.of("F"));
     }
 
     @Test
-    void reconoceSostenidosYBemoles() {
+    void recognizesSharpsAndFlats() {
         assertEquals(1, PitchClass.of("Do#").semitone());
         assertEquals("C#", PitchClass.of("Do#").name());
         assertEquals(1, PitchClass.of("Reb").semitone());
@@ -55,46 +55,46 @@ class PitchClassTest {
     }
 
     @Test
-    void doSostenidoYReBemolSuenanIgualPeroNoSonElMismoNombre() {
+    void cSharpAndDFlatSoundTheSameButAreNotTheSameName() {
         assertEquals(PitchClass.of("Do#").semitone(), PitchClass.of("Reb").semitone());
         assertEquals(PitchClass.of("Do#"), PitchClass.of("Do#"));
         assertEquals(false, PitchClass.of("Do#").equals(PitchClass.of("Reb")));
     }
 
     @Test
-    void rechazaUnNombreDesconocido() {
+    void rejectsAnUnknownName() {
         assertThrows(IllegalArgumentException.class, () -> PitchClass.of("Xa"));
     }
 
     @Test
-    void rechazaUnaAlteracionMezclada() {
+    void rejectsAMixedAccidental() {
         assertThrows(IllegalArgumentException.class, () -> PitchClass.of("Do#b"));
     }
 
     @Test
-    void unaTerceraMayorDesdeDoEsMi() {
+    void aMajorThirdFromCIsE() {
         assertEquals(PitchClass.of("Mi"), PitchClass.of("Do").steppedBy(2, 4));
     }
 
     @Test
-    void unaTerceraMayorDesdeReEsFaSostenido() {
+    void aMajorThirdFromDIsFSharp() {
         assertEquals(PitchClass.of("Fa#"), PitchClass.of("Re").steppedBy(2, 4));
     }
 
     @Test
-    void unaQuintaJustaDesdeFaEsDo() {
+    void aPerfectFifthFromFIsC() {
         assertEquals(PitchClass.of("Do"), PitchClass.of("Fa").steppedBy(4, 7));
     }
 
     @Test
-    void seDeletreaSiempreConSostenidosPorDefecto() {
+    void isAlwaysSpelledWithSharpsByDefault() {
         assertEquals("C#", PitchClass.fromSemitone(1).name());
         assertEquals("D#", PitchClass.fromSemitone(3).name());
         assertEquals("C", PitchClass.fromSemitone(0).name());
     }
 
     @Test
-    void elSemitonoSeNormalizaModuloDoce() {
+    void theSemitoneIsNormalizedModuloTwelve() {
         assertEquals(PitchClass.of("Do").semitone(), PitchClass.of("Si").steppedBy(1, 1).semitone());
     }
 }

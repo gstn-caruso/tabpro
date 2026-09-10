@@ -11,20 +11,20 @@ import org.junit.jupiter.api.Test;
 class ChordTypeTest {
 
     @Test
-    void elMayorEsFundamentalTerceraMayorYQuintaJusta() {
+    void majorIsRootMajorThirdAndPerfectFifth() {
         assertEquals(
                 Set.of(Interval.ROOT, Interval.MAJOR_THIRD, Interval.PERFECT_FIFTH),
                 intervalsOf(ChordType.MAJOR));
     }
 
     @Test
-    void elMenorTieneTerceraMenor() {
+    void minorHasAMinorThird() {
         assertTrue(intervalsOf(ChordType.MINOR).contains(Interval.MINOR_THIRD));
         assertFalse(intervalsOf(ChordType.MINOR).contains(Interval.MAJOR_THIRD));
     }
 
     @Test
-    void elSufijoEsElQueUsaGuitarPro() {
+    void theSuffixIsTheOneGuitarProUses() {
         assertEquals("", ChordType.MAJOR.suffix());
         assertEquals("m", ChordType.MINOR.suffix());
         assertEquals("7", ChordType.SEVENTH.suffix());
@@ -36,28 +36,28 @@ class ChordTypeTest {
     }
 
     @Test
-    void elAcordeDePotenciaSoloTieneFundamentalYQuinta() {
+    void thePowerChordOnlyHasRootAndFifth() {
         assertEquals(Set.of(Interval.ROOT, Interval.PERFECT_FIFTH), intervalsOf(ChordType.FIVE));
     }
 
     @Test
-    void elDisminuidoSieteUsaLaSeptimaDisminuida() {
+    void theDiminishedSeventhUsesTheDiminishedSeventh() {
         assertTrue(intervalsOf(ChordType.DIMINISHED_SEVENTH).contains(Interval.DIMINISHED_SEVENTH));
     }
 
     @Test
-    void laQuintaEsOpcionalEnLosAcordesDeSeptimaOMas() {
+    void theFifthIsOptionalInSeventhChordsOrBeyond() {
         assertFalse(essentialOf(ChordType.SEVENTH).contains(Interval.PERFECT_FIFTH));
         assertTrue(essentialOf(ChordType.SEVENTH).contains(Interval.MINOR_SEVENTH));
     }
 
     @Test
-    void laQuintaAlteradaNuncaEsOpcionalPorqueDefineElAcorde() {
+    void theAlteredFifthIsNeverOptionalBecauseItDefinesTheChord() {
         assertTrue(essentialOf(ChordType.SEVEN_FLAT_FIVE).contains(Interval.DIMINISHED_FIFTH));
     }
 
     @Test
-    void hayVeintiseisTiposDeAcordeComoOfreceGuitarPro() {
+    void thereAreTwentySixChordTypesAsGuitarProOffers() {
         assertEquals(26, ChordType.values().length);
     }
 
