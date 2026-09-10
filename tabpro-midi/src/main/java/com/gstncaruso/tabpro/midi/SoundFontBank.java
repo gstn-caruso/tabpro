@@ -13,19 +13,6 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
 
-/**
- * El banco SoundFont es global -una eleccion, un F2, el reemplazo libre del RSE-, pero cada
- * puerto que use el sintetizador interno de tabpro necesita su propia instancia de
- * {@link Synthesizer}: no se puede compartir un receiver entre puertos que corren canales MIDI
- * independientes sin que se pisen. Esta clase reparte el mismo archivo elegido a cada puerto que
- * lo pida, abriendo su sintetizador de a uno la primera vez que se usa.
- *
- * <p>Si a algun puerto le falla -no hay memoria, el sintetizador no abre, el archivo esta
- * corrupto- ese puerto se queda sonando con el sintetizador interno del JDK (o mudo si ni eso se
- * pudo abrir), sin afectar a los demas puertos ni tirar abajo la reproduccion. Un puerto ruteado
- * a un dispositivo MIDI externo no pasa por aca: tiene sus propios sonidos y no son nuestros (ver
- * {@link MidiPlayer#useOutputForPort}).
- */
 public final class SoundFontBank implements AutoCloseable {
 
     private final Supplier<Synthesizer> synthesizers;
@@ -34,32 +21,19 @@ public final class SoundFontBank implements AutoCloseable {
     private boolean anyPortTried;
     private final Map<Integer, SoundFontSynthesizer> synthesizersByPort = new ConcurrentHashMap<>();
 
-    /** El archivo ya resuelto (la eleccion del usuario, o el que haya encontrado el sistema). */
     public SoundFontBank(Optional<Path> file) {
         this(file, SoundFontSynthesizer::systemSynthesizer);
     }
 
-    /**
-     * Con el sintetizador del sistema elegido de afuera (null si no hay ninguno disponible), para
-     * poder probar que pasa en una maquina sin placa de sonido sin depender de si esta maquina de
-     * pruebas tiene una de verdad -la misma costura que MidiPlayer.PortOutput ya usa con su
-     * Supplier&lt;Sequencer&gt;.
-     */
     SoundFontBank(Optional<Path> file, Supplier<Synthesizer> synthesizers) {
         this.file = file;
         this.synthesizers = synthesizers;
     }
 
-    /**
-     * El receiver listo para ese puerto: el sintetizador interno con el banco puesto si se pudo,
-     * o uno mudo si ni el sintetizador se pudo abrir. Nunca lanza: un puerto que falla no se
-     * lleva puesta la reproduccion de los demas.
-     */
     public Receiver receiverForPort(int port) {
         return synthesizerForPort(port).map(SoundFontSynthesizer::receiver).orElseGet(SoundFontBank::silentReceiver);
     }
 
-    /** F2: prende o apaga el banco en todos los puertos que lo tengan cargado, a la vez. */
     public void toggle() {
         if (file.isEmpty()) {
             return;
@@ -68,7 +42,6 @@ public final class SoundFontBank implements AutoCloseable {
         synthesizersByPort.values().forEach(SoundFontSynthesizer::toggle);
     }
 
-    /** El usuario elige otro archivo. Si ya estaba puesto ese mismo archivo, no hace nada. */
     public void choose(Optional<Path> newFile) {
         if (newFile.equals(file)) {
             return;
@@ -78,12 +51,6 @@ public final class SoundFontBank implements AutoCloseable {
         synthesizersByPort.values().forEach(synth -> synth.choose(newFile));
     }
 
-    /**
-     * Si el banco esta (o va a quedar, apenas se abra el primer puerto) sonando en vez del
-     * sintetizador interno del JDK. La regla no depende de por que fallo -archivo invalido,
-     * sintetizador que no abre-: esta activo si y solo si sus instrumentos quedaron cargados de
-     * verdad en algun puerto, o si todavia no se probo ninguno (recien elegido, antes de tocar).
-     */
     public boolean active() {
         if (!active || file.isEmpty()) {
             return false;
@@ -94,12 +61,10 @@ public final class SoundFontBank implements AutoCloseable {
         return synthesizersByPort.values().stream().anyMatch(synth -> synth.file().isPresent());
     }
 
-    /** El archivo elegido, para mostrarlo en Options > MIDI Setup. */
     public Optional<Path> file() {
         return file;
     }
 
-    /** Como esta el banco de sonido ahora, para mostrarselo al usuario. */
     public String status() {
         if (file.isEmpty()) {
             return "Sin ningún banco de sonido: suena el sintetizador interno del JDK";
@@ -118,13 +83,11 @@ public final class SoundFontBank implements AutoCloseable {
     }
 
     /**
-     * Un sintetizador nuevo, para un uso de una sola vez: el render a WAVE es offline, asi que
-     * nunca hace falta abrir una linea de audio real (Synthesizer.open()) para conseguirlo -algo
-     * que en una maquina sin placa de sonido revienta con MidiUnavailableException aunque nadie
-     * vaya a reproducir nada de verdad. En cambio, el banco se carga reciennaden el momento en que
-     * quien use este sintetizador (WaveRenderer) lo abra para renderizar fuera de tiempo real
-     * (AudioSynthesizer.openStream), que Gervill puede hacer sin ninguna placa de sonido. Quien lo
-     * pide es responsable de cerrarlo.
+     * WAVE rendering is offline, so this never needs to open a real audio line
+     * (Synthesizer.open()), which throws MidiUnavailableException on a machine with no audio card
+     * even though nothing will play live. The bank loads only once the caller opens this
+     * synthesizer for offline rendering (AudioSynthesizer.openStream), which Gervill can do
+     * without any audio card at all.
      */
     public Synthesizer freshSynthesizer() throws MidiUnavailableException {
         Synthesizer synth = synthesizers.get();
@@ -169,10 +132,9 @@ public final class SoundFontBank implements AutoCloseable {
     }
 
     /**
-     * Envuelve el sintetizador en un proxy que carga el banco justo despues de que se abra para
-     * renderizar offline (openStream), y nunca antes: cargar instrumentos antes de esa apertura no
-     * funciona (Gervill los descarta), y abrir el sintetizador nosotros mismos de antemano
-     * rompería la apertura que hace despues quien renderiza.
+     * Wraps the synthesizer in a proxy that loads the bank right after openStream, and never
+     * before: Gervill discards instruments loaded before that call, and opening the synthesizer
+     * ourselves ahead of time would break the open that the renderer does afterward.
      */
     private static Synthesizer loadingOnFirstOpen(AudioSynthesizer real, Soundbank bank) {
         InvocationHandler handler = (proxy, method, args) -> {

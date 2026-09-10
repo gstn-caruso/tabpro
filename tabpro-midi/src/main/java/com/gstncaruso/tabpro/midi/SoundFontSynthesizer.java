@@ -9,13 +9,6 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
 
-/**
- * El sintetizador que va a sonar: abierto, y con el banco SoundFont puesto si hay uno
- * disponible. Es el reemplazo libre del RSE (Realistic Sound Engine) que describe el manual: F2
- * lo prende y lo apaga sin reiniciar nada, para comparar los dos sonidos. Lo arma una sola vez la
- * reproduccion en vivo, y lo puede reusar cualquier otro renderizador (como la exportacion a
- * WAVE) para sonar siempre igual.
- */
 public final class SoundFontSynthesizer implements AutoCloseable {
 
     private final Synthesizer synthesizer;
@@ -31,20 +24,10 @@ public final class SoundFontSynthesizer implements AutoCloseable {
         this.currentlyLoaded = defaultBank;
     }
 
-    /**
-     * Abre el sintetizador del sistema y trata de dejarle puesto el banco de ese archivo. Si no
-     * eligieron ninguno, o el archivo no existe o esta corrupto, sigue sonando con el banco
-     * interno del JDK: nunca lanza por un SoundFont invalido.
-     */
     public static SoundFontSynthesizer open(Optional<Path> file) throws MidiUnavailableException {
         return open(file, SoundFontSynthesizer::systemSynthesizer);
     }
 
-    /**
-     * Con el sintetizador del sistema elegido de afuera (null si no hay ninguno disponible), para
-     * poder probar que pasa en una maquina sin placa de sonido sin depender de si esta maquina de
-     * pruebas tiene una de verdad -la misma costura que ya usa MidiPlayer.PortOutput.
-     */
     static SoundFontSynthesizer open(Optional<Path> file, Supplier<Synthesizer> synthesizers)
             throws MidiUnavailableException {
         Synthesizer synthesizer = synthesizers.get();
@@ -57,7 +40,6 @@ public final class SoundFontSynthesizer implements AutoCloseable {
         return result;
     }
 
-    /** El sintetizador del sistema, o null si la maquina no tiene ninguno disponible. */
     static Synthesizer systemSynthesizer() {
         try {
             return MidiSystem.getSynthesizer();
@@ -66,12 +48,10 @@ public final class SoundFontSynthesizer implements AutoCloseable {
         }
     }
 
-    /** El sintetizador listo, para que lo use cualquier reproductor o renderizador. */
     public Synthesizer synthesizer() {
         return synthesizer;
     }
 
-    /** Un receiver de ese sintetizador, o uno mudo si ya no se puede pedir ninguno. */
     public Receiver receiver() {
         try {
             return synthesizer.getReceiver();
@@ -80,17 +60,14 @@ public final class SoundFontSynthesizer implements AutoCloseable {
         }
     }
 
-    /** El archivo que quedo cargado, este sonando o no (F2 lo prende y lo apaga sin descargarlo). */
     public Optional<Path> file() {
         return loadedBank != null ? file : Optional.empty();
     }
 
-    /** Si el banco elegido esta sonando en vez del sintetizador interno del JDK. */
     public boolean active() {
         return active;
     }
 
-    /** El F2 del manual: prende o apaga el banco cargado, sin reiniciar nada. Sin banco, no hace nada. */
     public void toggle() {
         if (loadedBank == null) {
             return;
@@ -99,7 +76,6 @@ public final class SoundFontSynthesizer implements AutoCloseable {
         switchTo(active ? loadedBank : defaultBank);
     }
 
-    /** El usuario elige otro archivo (o ninguno, para volver al sintetizador interno). */
     public void choose(Optional<Path> newFile) {
         file = newFile;
         loadedBank = newFile.flatMap(SoundFonts::read).orElse(null);
@@ -107,7 +83,6 @@ public final class SoundFontSynthesizer implements AutoCloseable {
         switchTo(active ? loadedBank : defaultBank);
     }
 
-    /** Como esta el banco de sonido ahora, para mostrarselo al usuario. */
     public String status() {
         if (active) {
             return "Sonando con " + fileName();

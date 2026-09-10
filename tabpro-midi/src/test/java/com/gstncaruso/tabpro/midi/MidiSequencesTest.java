@@ -40,7 +40,6 @@ import org.junit.jupiter.api.Test;
 
 class MidiSequencesTest {
 
-    /** El controlador de pedal, por donde viaja el wah-wah. */
     private static final int WAH_CONTROLLER = 4;
 
     @Test
@@ -159,7 +158,6 @@ class MidiSequencesTest {
 
     @Test
     void eachTrackIsSetUpOnTheChannelsTheMixingConsoleConfigured() {
-        // program, volumen, pan, chorus, reverb, phaser, tremolo, percusion, puerto, canal, canal de efectos, ...
         TrackTimeline first = new TrackTimeline(
                 25, 100, 64, 0, 0, 0, 0, false, 1, 3, 4, List.of(), List.of(), List.of(), List.of());
         TrackTimeline second = new TrackTimeline(
@@ -262,9 +260,6 @@ class MidiSequencesTest {
 
     @Test
     void twoTracksConfiguredOnTheSameChannelBothPrepareThatChannel() {
-        // Guitar Pro deja compartir un canal entre pistas -por ejemplo cuando la partitura tiene
-        // mas pistas que canales libres- asi que dos pistas configuradas igual se pisan tal cual
-        // el usuario lo pidio, en vez de que la exportacion las reacomode por su cuenta.
         TrackTimeline first = new TrackTimeline(
                 25, 100, 64, 0, 0, 0, 0, false, 1, 5, 6, List.of(), List.of(), List.of(), List.of());
         TrackTimeline second = new TrackTimeline(
@@ -474,7 +469,7 @@ class MidiSequencesTest {
 
         Sequence sequence = MidiSequences.fromTimeline(timeline);
 
-        assertEquals(9, channelOf(sequence.getTracks()[2])); // canal MIDI 10, indice 9
+        assertEquals(9, channelOf(sequence.getTracks()[2]));
     }
 
     @Test
@@ -514,7 +509,6 @@ class MidiSequencesTest {
         int centerValue = pitchBendValue(bends.get(0));
         boolean subioEnAlgunPunto = bends.stream().anyMatch(message -> pitchBendValue(message) > centerValue);
         assertTrue(subioEnAlgunPunto, "el pitch bend tiene que subir en algun punto de la curva");
-        // vuelve al centro justo antes de soltar la nota, para no dejar el canal corrido
         assertEquals(centerValue, pitchBendValue(bends.get(bends.size() - 1)));
     }
 
@@ -599,11 +593,6 @@ class MidiSequencesTest {
         assertFalse(pitchBendEvents(track).isEmpty());
     }
 
-    /**
-     * La vibrada que se le pide a un punto de la curva del bend tiene que llegar
-     * hasta la secuencia: sin ella el pitch bend se queda clavado en la altura del
-     * bend, con ella la pasa por arriba.
-     */
     @Test
     void laVibradaDeUnPuntoDelBendMueveElPitchBendDeLaSecuencia() {
         List<Integer> quieto = pitchBendValuesOfANoteBentWithVibrato(0);
@@ -632,11 +621,6 @@ class MidiSequencesTest {
         return pitchBendEvents(track).stream().map(this::pitchBendValue).toList();
     }
 
-    /**
-     * El pedal de wah-wah del manual no tenia por donde salir: se editaba y no
-     * llegaba a sonar. Viaja como el controlador de pedal (el 4), que es el que
-     * los sintetizadores barren para abrir y cerrar el filtro.
-     */
     @Test
     void elPedalDeWahWahViajaComoControladorEnLaSecuencia() {
         List<MidiEvent> abierto = wahEventsOf(beatWith(Wah.OPEN));
@@ -676,7 +660,6 @@ class MidiSequencesTest {
         return Beat.of(Duration.quarter(), new Note(1, 0));
     }
 
-    /** Los mensajes del controlador de pedal que deja una pista con esos beats. */
     private List<MidiEvent> wahEventsOf(Beat... beats) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
         Score score = Score.blank().withTrack(0,
@@ -793,7 +776,6 @@ class MidiSequencesTest {
                 .toList();
     }
 
-    /** Los canales que la pista prepara antes de tocar, en el orden en que los prepara. */
     private List<Integer> channelsSetUpIn(Track track) {
         return messagesOfCommand(track, ShortMessage.PROGRAM_CHANGE).stream()
                 .map(ShortMessage::getChannel)
@@ -801,7 +783,6 @@ class MidiSequencesTest {
                 .toList();
     }
 
-    /** Los canales por los que entra cada nota, en el orden en que entran. */
     private List<Integer> notesOnByChannel(Track track) {
         return messagesOfCommand(track, ShortMessage.NOTE_ON).stream()
                 .map(ShortMessage::getChannel)

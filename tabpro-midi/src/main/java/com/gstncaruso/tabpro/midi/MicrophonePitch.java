@@ -9,10 +9,6 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
-/**
- * Escucha la entrada de audio de la máquina y avisa qué nota suena, que es lo
- * que necesita el afinador digital del manual.
- */
 public final class MicrophonePitch implements AutoCloseable {
 
     private static final float SAMPLE_RATE = 44100;
@@ -27,7 +23,6 @@ public final class MicrophonePitch implements AutoCloseable {
         return AudioSystem.isLineSupported(new DataLine.Info(TargetDataLine.class, format()));
     }
 
-    /** Empieza a escuchar; avisa en su propio hilo cada vez que reconoce una nota. */
     public void start(Consumer<DetectedPitch> heard) {
         close();
         try {
@@ -67,7 +62,7 @@ public final class MicrophonePitch implements AutoCloseable {
         }
     }
 
-    /** Los bytes vienen de a dos, con signo y el menos pesado primero. */
+    /** AudioFormat here is signed, little-endian: 16-bit samples arrive as two bytes, low byte first. */
     private static double[] samplesOf(byte[] buffer, int read) {
         double[] samples = new double[read / 2];
         for (int index = 0; index < samples.length; index++) {

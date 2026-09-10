@@ -25,13 +25,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * SoundFontBank es el banco global: cada puerto de MidiPlayer que use el sintetizador interno le
- * pide su receiver aca. La mayoria de las maquinas -el CI incluido- NO tienen ningun SoundFont
- * instalado, asi que ese es el camino que mas importa probar de verdad: apuntando el banco
- * directamente a "ningun archivo" en vez de confiar en que la maquina de prueba no tenga nada
- * instalado. Estos tests corren siempre, nunca se saltean con Assumptions.
- */
 class SoundFontBankTest {
 
     @TempDir
@@ -45,8 +38,6 @@ class SoundFontBankTest {
             bank.close();
         }
     }
-
-    // ---- sin ningun banco: el camino de la mayoria de los usuarios, siempre, sin Assumptions ----
 
     @Test
     void withoutAnyFileEveryPortStillSoundsWithTheInternalSynth() {
@@ -109,7 +100,6 @@ class SoundFontBankTest {
         synth.close();
     }
 
-    /** El caso de la consigna: un banco elegido a mano que no carga no puede tirar abajo nada. */
     @Test
     void anInvalidFileDegradesToTheInternalSynthOnEveryPortWithoutBreakingAnything() throws IOException {
         Path bogus = tempDir.resolve("invalido.sf2");
@@ -126,11 +116,6 @@ class SoundFontBankTest {
         });
         assertTrue(bank.status().contains("invalido.sf2"));
     }
-
-    // ---- sin ningun sintetizador disponible: distinto de "sin banco". Aca ni el sintetizador
-    // interno del JDK se puede abrir -una maquina sin placa de audio real ni virtual, como el CI.
-    // Se inyecta de donde sale el sintetizador (la misma costura que MidiPlayer.PortOutput ya usa
-    // con su Supplier<Sequencer>) para que estos tests corran siempre, en cualquier maquina.
 
     @Test
     void withoutAnySynthesizerAvailableEveryPortDegradesToSilenceWithoutBreakingAnything() {
@@ -165,13 +150,6 @@ class SoundFontBankTest {
         assertNotNull(thrown.getMessage());
     }
 
-    /**
-     * El render a WAVE es offline: nunca tiene que pedir una linea de audio real
-     * (Synthesizer.open()), porque eso es exactamente lo que revienta en una maquina sin placa de
-     * sonido aunque nadie vaya a escuchar nada en vivo. Se instrumenta el sintetizador para que
-     * abrir la linea real explote, y se confirma que freshSynthesizer jamas la toca. Corre
-     * siempre: no depende de si esta maquina tiene sonido de verdad.
-     */
     @Test
     void freshSynthesizerNeverOpensARealTimeLineSinceWaveExportIsOffline() throws Exception {
         Synthesizer instrumented = synthesizerThatExplodesIfOpenedForRealTime();
@@ -182,7 +160,6 @@ class SoundFontBankTest {
         assertNotNull(synth);
     }
 
-    /** Lo mismo, pero con un banco de verdad puesto: tampoco ahi puede abrir una linea real. */
     @Tag("integracion")
     @Test
     void freshSynthesizerNeverOpensARealTimeLineWhenLoadingARealBank() throws Exception {
@@ -212,8 +189,6 @@ class SoundFontBankTest {
                     return method.invoke(real, args);
                 });
     }
-
-    // ---- con un banco real instalado: se saltea sola si la maquina no tiene ninguno ----
 
     @Tag("integracion")
     @Test

@@ -66,10 +66,6 @@ class SoundFontsTest {
         assertTrue(banco.isEmpty());
     }
 
-    /**
-     * Sin un banco real instalado en la maquina este test no tiene nada que verificar; se
-     * salta solo en vez de fallar, como pide correr headless en CI.
-     */
     @Test
     void readingARealSoundFontInstalledInTheSystemWorks() {
         List<Path> real = SoundFonts.installed();

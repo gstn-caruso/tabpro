@@ -7,18 +7,15 @@ import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 
-/** Los dispositivos MIDI que ofrece la maquina, separados por lo que saben hacer. */
 public final class MidiDevices {
 
     private MidiDevices() {
     }
 
-    /** Los que reciben notas: sintetizadores y salidas MIDI. */
     public static List<MidiDevice.Info> outputs() {
         return devicesThat(device -> device.getMaxReceivers() != 0);
     }
 
-    /** Los que envian notas: teclados, guitarras MIDI. */
     public static List<MidiDevice.Info> inputs() {
         return devicesThat(device -> device.getMaxTransmitters() != 0);
     }
@@ -40,7 +37,6 @@ public final class MidiDevices {
                     found.add(info);
                 }
             } catch (MidiUnavailableException ignored) {
-                // Un dispositivo que no se puede abrir simplemente no se ofrece.
             }
         }
         return List.copyOf(found);

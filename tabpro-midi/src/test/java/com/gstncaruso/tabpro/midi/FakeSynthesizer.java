@@ -12,11 +12,6 @@ import javax.sound.midi.Synthesizer;
 import javax.sound.midi.Transmitter;
 import javax.sound.midi.VoiceStatus;
 
-/**
- * Doble de Synthesizer que nunca toca audio real: abrirlo solo marca un flag, y el banco cargado
- * queda en memoria en vez de sonar por Gervill. Sirve para probar SoundFontSynthesizer sin la
- * placa de sonido de la maquina.
- */
 final class FakeSynthesizer implements Synthesizer {
 
     private final Soundbank bancoPorDefecto = new FakeSoundbank();

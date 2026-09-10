@@ -45,15 +45,12 @@ public final class MidiSequences {
     private static final int DATA_ENTRY_LSB_CONTROLLER = 38;
     private static final int PERCUSSION_CHANNEL = 9;
 
-    /** Cuantos semitonos representa el rango completo de pitch bend, para poder pedir bends de varios tonos. */
     private static final int PITCH_BEND_SENSITIVITY_SEMITONES = 24;
     private static final int PITCH_BEND_CENTER = 8192;
     private static final int PITCH_BEND_MAX = 16383;
 
-    /** Cada cuantos ticks se manda un nuevo valor de pitch bend, para que la curva se escuche suave. */
     private static final long PITCH_BEND_STEP_TICKS = 60;
 
-    /** El pedal de wah abierto del todo; cerrado y apagado lo dejan en su reposo. */
     private static final int WAH_WIDE_OPEN = 127;
     private static final int WAH_AT_REST = 0;
 
@@ -61,7 +58,6 @@ public final class MidiSequences {
     private static final int FADE_IN_START_EXPRESSION = 20;
     private static final int FULL_EXPRESSION = 127;
 
-    /** Cuanto es "mas de un tono", el limite de Limit Pitch Variation del manual. */
     static final double LIMITED_PITCH_VARIATION_SEMITONES = 2.0;
 
     private MidiSequences() {
@@ -71,20 +67,10 @@ public final class MidiSequences {
         return fromTimeline(timeline, Set.of());
     }
 
-    /**
-     * La misma secuencia, pero silenciando la curva de altura de las notas de
-     * los puertos que tildaron Limit Pitch Variation cuando esa curva se
-     * mueve mas de un tono, tal como pide el manual.
-     */
     public static Sequence fromTimeline(Timeline timeline, Set<Integer> limitedPitchVariationPorts) {
         return buildSequence(timeline, indexedTracksOf(timeline, limitedPitchVariationPorts));
     }
 
-    /**
-     * Una secuencia por cada puerto de salida que use la partitura, cada una
-     * con sus propios canales locales (del 0 al 15), para poder reproducir
-     * los cuatro puertos del manual en dispositivos distintos a la vez.
-     */
     public static Map<Integer, Sequence> sequencesByPort(Timeline timeline, Set<Integer> limitedPitchVariationPorts) {
         Map<Integer, List<IndexedTrack>> tracksByPort = new TreeMap<>();
         for (IndexedTrack indexed : indexedTracksOf(timeline, limitedPitchVariationPorts)) {
@@ -105,7 +91,6 @@ public final class MidiSequences {
         return indexed;
     }
 
-    /** Una pista con su indice original, para que el marcador de beat siga nombrando la pista real. */
     private record IndexedTrack(int originalIndex, TrackTimeline track, boolean limitPitchVariation) {
     }
 
@@ -131,10 +116,8 @@ public final class MidiSequences {
         }
     }
 
-    /** Cuanto dura cada click del metronomo. */
     private static final long METRONOME_CLICK_TICKS = 60;
 
-    /** Agrega el metronomo como una pista mas de percusion, si es que tiene algun click para tocar. */
     public static void addMetronomeTrack(Sequence sequence, List<MetronomeClick> clicks) {
         if (clicks.isEmpty()) {
             return;
@@ -165,19 +148,14 @@ public final class MidiSequences {
                 Integer.parseInt(parts[2])));
     }
 
-    /**
-     * Los dos canales de una pista: el limpio y el de efectos, tal como los dejo
-     * la mesa de mezcla (Ch y Ch2), asi correrle la altura a una nota no arrastra
-     * a las demas. La percusion, sin importar lo que diga esa configuracion,
-     * toca todo en el canal 10 del estandar MIDI.
-     */
+    /** General MIDI fixes percussion on channel 10 (index 9), regardless of the track's configured channel. */
     private record TrackChannels(int clean, int effects) {
 
         static TrackChannels percussion() {
             return new TrackChannels(PERCUSSION_CHANNEL, PERCUSSION_CHANNEL);
         }
 
-        /** El canal y el canal de efectos que configuro la pista, pasados de 1-based (el modelo) a 0-based (MIDI). */
+        /** MIDI channels are 0-based on the wire; the track model numbers them 1-based. */
         static TrackChannels configuredIn(TrackTimeline trackTimeline) {
             return new TrackChannels(trackTimeline.channel() - 1, trackTimeline.effectChannel() - 1);
         }
@@ -186,7 +164,6 @@ public final class MidiSequences {
             return note.carriesAnEffect() ? effects : clean;
         }
 
-        /** Los canales que hay que preparar: uno solo cuando la pista usa el mismo para todo. */
         List<Integer> toPrepare() {
             return clean == effects ? List.of(clean) : List.of(clean, effects);
         }
@@ -224,11 +201,7 @@ public final class MidiSequences {
         }
     }
 
-    /**
-     * Donde queda el pedal de wah. El wah viaja por el controlador de pedal, que
-     * el sintetizador barre de cerrado a abierto; MIDI no tiene un bypass aparte,
-     * asi que apagar el pedal es devolverlo a su reposo, igual que cerrarlo.
-     */
+    /** MIDI has no separate bypass controller, so turning the wah off means the same rest value as closing it. */
     private static int pedalPositionOf(Wah wah) {
         return switch (wah) {
             case OPEN -> WAH_WIDE_OPEN;
@@ -236,7 +209,6 @@ public final class MidiSequences {
         };
     }
 
-    /** Lo que deja un cambio de parametro: el instrumento viaja como program change y el resto como controlador. */
     private static MidiEvent parameterEvent(int channel, ScheduledParameter parameter)
             throws InvalidMidiDataException {
         if (parameter.parameter() == SoundParameter.PROGRAM) {
@@ -273,7 +245,10 @@ public final class MidiSequences {
         track.add(noteOffEvent(channel, note));
     }
 
-    /** El rango de pitch bend del canal, para poder pedir bends de varios semitonos y no solo dos. */
+    /**
+     * RPN 0,0 selects Pitch Bend Sensitivity; the data entry value sets the range in semitones.
+     * MIDI defaults to a range of only two semitones without this.
+     */
     private static void writePitchBendRange(Track track, int channel) throws InvalidMidiDataException {
         track.add(controlChangeEvent(channel, RPN_MSB_CONTROLLER, 0, 0));
         track.add(controlChangeEvent(channel, RPN_LSB_CONTROLLER, 0, 0));
@@ -287,7 +262,8 @@ public final class MidiSequences {
         for (long offset = 0; offset < note.durationTicks(); offset += PITCH_BEND_STEP_TICKS) {
             track.add(pitchBendEvent(channel, note.startTick() + offset, bend.semitonesAt(offset)));
         }
-        // vuelve al centro justo antes de soltar la nota, para no dejar el canal corrido para la que sigue.
+        // Pitch bend is channel-wide, not per note: reset it to center right before note-off,
+        // or the next note on this channel would inherit the bend.
         track.add(pitchBendEvent(channel, note.startTick() + note.durationTicks(), 0.0));
     }
 

@@ -24,10 +24,6 @@ import javax.sound.sampled.AudioSystem;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * El render fuera de tiempo real de "File > Export > Wave". No depende de ningun dispositivo
- * de audio real: Gervill sintetiza puramente en software, asi que corre headless.
- */
 class WaveRendererTest {
 
     private static final int TICKS_PER_QUARTER = 480;
@@ -102,7 +98,6 @@ class WaveRendererTest {
         }
     }
 
-    /** Dos negras seguidas (do, mi) con guitarra: a 120 bpm duran un segundo exacto. */
     private static Sequence twoQuarterNoteSequenceAt(int bpm) throws InvalidMidiDataException {
         Sequence sequence = new Sequence(Sequence.PPQ, TICKS_PER_QUARTER);
         Track conductor = sequence.createTrack();

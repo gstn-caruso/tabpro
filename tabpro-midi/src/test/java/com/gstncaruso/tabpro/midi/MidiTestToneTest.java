@@ -12,10 +12,6 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import org.junit.jupiter.api.Test;
 
-/**
- * El boton de altavoz de "Configure the Sound > MIDI Setup": manda una nota
- * de prueba al dispositivo elegido para ese puerto.
- */
 class MidiTestToneTest {
 
     @Test
@@ -67,12 +63,10 @@ class MidiTestToneTest {
         assertTrue(ranAfterward.get());
     }
 
-    /** El retardo cuya espera todavia no termino: la accion diferida no corrio ni va a correr. */
     private static Retardo cuandoTodaviaNoPaso() {
         return (millis, accion) -> { };
     }
 
-    /** El retardo que no hace esperar a nadie: la accion diferida corre ya mismo. */
     private static Retardo alInstante() {
         return (millis, accion) -> accion.run();
     }

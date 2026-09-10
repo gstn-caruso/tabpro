@@ -6,10 +6,8 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
-/** Hace sonar una nota suelta y la suelta sola, para escuchar la que se acaba de escribir. */
 final class NotePreview implements AutoCloseable {
 
-    /** El ultimo canal, para no pisar el de ninguna pista mientras se escucha. */
     static final int CHANNEL = 15;
 
     private static final int VELOCITY = 100;
@@ -34,7 +32,6 @@ final class NotePreview implements AutoCloseable {
         retardo.luegoDe(RING_MILLIS, () -> send(ShortMessage.NOTE_OFF, pitch.midiNumber(), 0));
     }
 
-    /** Hace sonar varias notas, una despues de la otra, para escuchar una escala o un arpegio. */
     void playSequence(List<Pitch> pitches, int program) {
         for (int index = 0; index < pitches.size(); index++) {
             Pitch pitch = pitches.get(index);
