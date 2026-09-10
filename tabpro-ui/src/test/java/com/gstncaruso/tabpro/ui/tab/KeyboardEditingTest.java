@@ -95,6 +95,17 @@ class KeyboardEditingTest {
     }
 
     @Test
+    void bindsPlainRightToClearAnyActiveSelection() {
+        Editor editor = new Editor(Score.blank());
+        editor.startSelection(false);
+        Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
+
+        bindings.get(KeyStroke.getKeyStroke("RIGHT")).run();
+
+        assertTrue(editor.selection().isEmpty());
+    }
+
+    @Test
     void bindsHomeAndEndToMeasureEdges() {
         Editor editor = new Editor(Score.blank());
         editor.moveRight();
