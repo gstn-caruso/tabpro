@@ -82,6 +82,10 @@ final class MusicFont {
     private static final int NOTEHEAD_DIAMOND_BLACK = 0xE0DB;
     /** SMuFL U+ECA5 "metNoteQuarterUp": la negra chiquita del "figura = numero" de tempo. */
     private static final int MET_NOTE_QUARTER_UP = 0xECA5;
+    /** SMuFL U+E612 "stringsUpBow": la pua hacia arriba. */
+    private static final int STRINGS_UP_BOW = 0xE612;
+    /** SMuFL U+E610 "stringsDownBow": la pua hacia abajo. */
+    private static final int STRINGS_DOWN_BOW = 0xE610;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -252,6 +256,16 @@ final class MusicFont {
     /** La negra chiquita del "figura = numero" de tempo. */
     static String metNoteQuarterUp() {
         return glyph(MET_NOTE_QUARTER_UP);
+    }
+
+    /** La pua hacia arriba. */
+    static String stringsUpBow() {
+        return glyph(STRINGS_UP_BOW);
+    }
+
+    /** La pua hacia abajo. */
+    static String stringsDownBow() {
+        return glyph(STRINGS_DOWN_BOW);
     }
 
     /**
