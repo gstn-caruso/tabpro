@@ -39,6 +39,8 @@ public final class Icons {
     private static final String REST_QUARTER = "";
     /** SMuFL U+E0A9 "noteheadXBlack": la cabeza en X de percusion, para las notas apagadas. */
     private static final String NOTEHEAD_X_BLACK = "";
+    /** SMuFL U+E0DD "noteheadDiamondWhite": la cabeza en rombo hueco, para armonicos. */
+    private static final String NOTEHEAD_DIAMOND_WHITE = "";
 
     private Icons() {
     }
@@ -275,16 +277,7 @@ public final class Icons {
     }
 
     public static Icon harmonic() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            Path2D diamond = new Path2D.Double();
-            diamond.moveTo(size * 0.5, size * 0.24);
-            diamond.lineTo(size * 0.76, size * 0.5);
-            diamond.lineTo(size * 0.5, size * 0.76);
-            diamond.lineTo(size * 0.24, size * 0.5);
-            diamond.closePath();
-            graphics.draw(diamond);
-        });
+        return new GlyphIcon(SIZE, NOTEHEAD_DIAMOND_WHITE);
     }
 
     public static Icon strokeDown() {
