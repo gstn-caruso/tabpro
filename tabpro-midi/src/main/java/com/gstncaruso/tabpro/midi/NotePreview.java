@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.midi;
 
 import com.gstncaruso.tabpro.core.model.Pitch;
+import java.util.List;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
@@ -13,6 +14,7 @@ final class NotePreview implements AutoCloseable {
 
     private static final int VELOCITY = 100;
     private static final long RING_MILLIS = 700;
+    static final long NOTE_GAP_MILLIS = 350;
 
     private final Receiver receiver;
     private final Retardo retardo;
@@ -30,6 +32,14 @@ final class NotePreview implements AutoCloseable {
         send(ShortMessage.PROGRAM_CHANGE, program, 0);
         send(ShortMessage.NOTE_ON, pitch.midiNumber(), VELOCITY);
         retardo.luegoDe(RING_MILLIS, () -> send(ShortMessage.NOTE_OFF, pitch.midiNumber(), 0));
+    }
+
+    /** Hace sonar varias notas, una despues de la otra, para escuchar una escala o un arpegio. */
+    void playSequence(List<Pitch> pitches, int program) {
+        for (int index = 0; index < pitches.size(); index++) {
+            Pitch pitch = pitches.get(index);
+            retardo.luegoDe(index * NOTE_GAP_MILLIS, () -> play(pitch, program));
+        }
     }
 
     @Override

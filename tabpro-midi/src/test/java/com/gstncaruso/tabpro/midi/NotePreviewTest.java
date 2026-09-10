@@ -59,6 +59,18 @@ class NotePreviewTest {
         preview.close();
     }
 
+    @Test
+    void unaSecuenciaVaciaNoHaceSonarNada() {
+        RecordingReceiver receiver = new RecordingReceiver();
+        NotePreview preview = new NotePreview(receiver, (millis, accion) -> accion.run());
+
+        preview.playSequence(List.of(), 25);
+
+        assertTrue(receiver.received.isEmpty());
+
+        preview.close();
+    }
+
     private static final class RecordingReceiver implements Receiver {
 
         private final List<ShortMessage> received = new CopyOnWriteArrayList<>();
