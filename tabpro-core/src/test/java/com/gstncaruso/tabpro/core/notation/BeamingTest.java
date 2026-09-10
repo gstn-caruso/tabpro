@@ -91,11 +91,6 @@ class BeamingTest {
         assertTrue(Beaming.groupsOf(measure).isEmpty());
     }
 
-    /**
-     * El manual, linea 923: "es posible cambiar a mano las barras... usando el menu Nota".
-     * Forzar el corte antes de un beat corta el grupo aunque el agrupamiento automatico -por
-     * compartir el mismo beat principal- lo hubiera mantenido junto.
-     */
     @Test
     void forcingABeamBreakSplitsAGroupThatWouldOtherwiseShareOneBeam() {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(
@@ -107,7 +102,6 @@ class BeamingTest {
                 Beaming.groupsOf(measure));
     }
 
-    /** La contraparte: impedir el corte une dos grupos que el agrupamiento automatico separaba. */
     @Test
     void preventingABeamBreakJoinsTwoGroupsAcrossABeatBoundary() {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(
@@ -118,11 +112,6 @@ class BeamingTest {
                 Beaming.groupsOf(measure));
     }
 
-    /**
-     * Forzar el corte en el primer beat con barra de un grupo no tiene nada que cortar todavia
-     * -mismo caso limite que forzar un salto de linea en el primer compas de la partitura- asi
-     * que el agrupamiento queda igual que el automatico.
-     */
     @Test
     void forcingABeamBreakOnTheFirstBeamableBeatOfTheMeasureChangesNothing() {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(
@@ -133,10 +122,6 @@ class BeamingTest {
                 Beaming.groupsOf(measure));
     }
 
-    /**
-     * Un silencio no se puede unir a una barra sin importar lo que pida el usuario: impedir el
-     * corte solo tiene sentido sobre un beat que de por si es beameable.
-     */
     @Test
     void preventingABeamBreakOnARestStillCutsTheGroup() {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(

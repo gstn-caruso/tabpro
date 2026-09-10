@@ -65,8 +65,6 @@ class PitchNameTest {
         assertEquals(g4, PitchName.natural(g4.diatonicIndex()));
     }
 
-    /** Un sostenido comparte grado con su natural (ver placesEachNoteOnItsDiatonicRung): pedir
-     * ese grado siempre devuelve la natural, nunca el sostenido. */
     @Test
     void naturalNeverMarksASharpEvenAtASharpsDiatonicIndex() {
         int indexSharedWithCSharp = PitchName.of(new Pitch(61)).diatonicIndex();
