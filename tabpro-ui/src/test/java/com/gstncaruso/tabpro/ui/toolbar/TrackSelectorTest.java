@@ -46,6 +46,14 @@ class TrackSelectorTest {
         assertFalse(selector.trackButtons().get(2).isSelected());
     }
 
+    @Test
+    void conUnaSolaPistaLasDosFlechasArrancanDeshabilitadas() {
+        TrackSelector selector = new TrackSelector(editor, commands);
+
+        assertFalse(selector.previousButton().isEnabled());
+        assertFalse(selector.nextButton().isEnabled());
+    }
+
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
         InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
