@@ -193,6 +193,7 @@ public final class MainFrame extends JFrame {
         // Guitar Pro 5: la barra de efectos va pegada abajo de la partitura, arriba de la mesa
         // de mezcla, no junto a las otras tres filas de arriba.
         JPanel scoreWithEffects = new JPanel(new BorderLayout());
+        scoreWithEffects.setBackground(Palette.panel());
         scoreWithEffects.add(scrollPane, BorderLayout.CENTER);
         scoreWithEffects.add(toolBars.effectsComponent(), BorderLayout.SOUTH);
 

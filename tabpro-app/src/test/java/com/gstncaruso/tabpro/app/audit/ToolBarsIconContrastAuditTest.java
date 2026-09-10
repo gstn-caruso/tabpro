@@ -43,6 +43,18 @@ class ToolBarsIconContrastAuditTest {
         }
     }
 
+    @Test
+    void elIconoDeLaFilaDeEfectosLeeContraSuFondoReal() throws Exception {
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        try {
+            JButton deadNoteButton = findButtonByActionName(frame.getContentPane(), "Nota muerta");
+            assertReadsAgainstItsRealBackground(deadNoteButton, frame.getContentPane());
+        } finally {
+            dispose(frame);
+        }
+    }
+
     private void assertReadsAgainstItsRealBackground(JButton button, Container contentPane) {
         BufferedImage rendering = renderingOf(contentPane);
         Rectangle bounds = boundsWithin(button, contentPane);
