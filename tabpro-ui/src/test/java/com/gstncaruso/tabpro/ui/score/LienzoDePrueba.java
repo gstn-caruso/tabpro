@@ -39,11 +39,15 @@ import java.util.Map;
  */
 public final class LienzoDePrueba extends Graphics2D {
 
-    private record OrdenDeDibujo(double x, double y, double width, double height, Color color, String texto) {
+    private record OrdenDeDibujo(double x, double y, double width, double height, Color color, Font fuente, String texto) {
 
         boolean tocaA(Rectangle region) {
             return region.intersects(x, y, Math.max(width, 1), Math.max(height, 1));
         }
+    }
+
+    /** Un texto tal como se pidio dibujar, junto con la fuente que estaba puesta en ese momento. */
+    public record TextoDibujado(Font fuente, String texto) {
     }
 
     private final List<OrdenDeDibujo> ordenes;
@@ -68,6 +72,19 @@ public final class LienzoDePrueba extends Graphics2D {
         return ordenes.stream().anyMatch(orden -> orden.color().equals(color) && orden.tocaA(region));
     }
 
+    /** Si ese texto exacto se escribio tocando la region dada. */
+    public boolean escribeTextoEnRegion(String texto, Rectangle region) {
+        return ordenes.stream().anyMatch(orden -> texto.equals(orden.texto()) && orden.tocaA(region));
+    }
+
+    /** Todo lo que se escribio, cada texto con la fuente que tenia puesta al pedirse. */
+    public List<TextoDibujado> textosDibujados() {
+        return ordenes.stream()
+                .filter(orden -> orden.texto() != null)
+                .map(orden -> new TextoDibujado(orden.fuente(), orden.texto()))
+                .toList();
+    }
+
     /** Si dentro de esa region se dibujo exactamente lo mismo -mismo orden, forma, color y texto- que en otro lienzo. */
     public boolean coincideEnRegionCon(LienzoDePrueba otro, Rectangle region) {
         return ordenesEnRegion(region).equals(otro.ordenesEnRegion(region));
@@ -85,7 +102,7 @@ public final class LienzoDePrueba extends Graphics2D {
     private void anotar(Rectangle2D limitesLocales, String texto) {
         Rectangle2D absolutos = delegado.getTransform().createTransformedShape(limitesLocales).getBounds2D();
         ordenes.add(new OrdenDeDibujo(absolutos.getX(), absolutos.getY(), absolutos.getWidth(), absolutos.getHeight(),
-                delegado.getColor(), texto));
+                delegado.getColor(), delegado.getFont(), texto));
     }
 
     private void anotarTexto(String texto, double x, double y) {

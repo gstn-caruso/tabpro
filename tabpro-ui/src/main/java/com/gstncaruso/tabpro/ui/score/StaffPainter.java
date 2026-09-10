@@ -27,12 +27,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +41,6 @@ final class StaffPainter {
     private static final double HALF_SPACE = SPACE / 2;
     private static final double NOTE_WIDTH = SPACE * 1.28;
     private static final double NOTE_HEIGHT = SPACE * 0.92;
-    private static final double NOTE_TILT = Math.toRadians(-20);
     private static final double STEM_LENGTH = SPACE * 3.4;
     private static final double BEAM_THICKNESS = SPACE * 0.52;
     private static final double BEAM_GAP = SPACE * 0.84;
@@ -57,7 +52,6 @@ final class StaffPainter {
 
     private static final BasicStroke THIN = new BasicStroke(1f);
     private static final BasicStroke STEM = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    private static final BasicStroke CLEF = new BasicStroke(1.7f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private static final BasicStroke DOTTED = new BasicStroke(
             1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] {1.5f, 2.5f}, 0f);
     private static final Font OCTAVE_MARK_FONT = ScoreFonts.octaveMarkFont(SPACE);
@@ -88,32 +82,35 @@ final class StaffPainter {
     static void paintClef(Graphics2D g, ScoreLayout layout, Clef clef, int trackIndex, int measureIndex) {
         double x = layout.measureX(measureIndex) + 4.0;
         g.setColor(ScoreColors.INK);
-        g.setStroke(CLEF);
-        if (clef == Clef.TREBLE) {
-            g.draw(trebleClef(x, layout.staffLineY(trackIndex, measureIndex, 1)));
-            return;
-        }
-        double fLineY = layout.staffLineY(trackIndex, measureIndex, 3);
-        g.draw(bassClef(x, fLineY));
-        double dotX = x + 1.85 * SPACE;
-        fill(g, dot(dotX, fLineY - HALF_SPACE, SPACE * 0.17));
-        fill(g, dot(dotX, fLineY + HALF_SPACE, SPACE * 0.17));
+        g.setFont(MusicFont.sizedTo(SPACE));
+        String glyph = clef == Clef.TREBLE ? MusicFont.trebleClef() : MusicFont.bassClef();
+        int line = clef == Clef.TREBLE ? 1 : 3;
+        g.drawString(glyph, (float) x, layout.staffLineY(trackIndex, measureIndex, line));
     }
 
     static void paintTimeSignature(
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, double x) {
         Measure measure = track.measure(measureIndex);
         g.setColor(ScoreColors.INK);
-        g.setFont(ScoreFonts.timeSignatureFont(SPACE));
+        g.setFont(MusicFont.sizedTo(SPACE));
         FontMetrics metrics = g.getFontMetrics();
 
-        String top = String.valueOf(measure.timeSignature().beats());
-        String bottom = String.valueOf(measure.timeSignature().beatUnit());
+        String top = timeSignatureGlyphsOf(measure.timeSignature().beats());
+        String bottom = timeSignatureGlyphsOf(measure.timeSignature().beatUnit());
         int centerX = (int) Math.round(x + Math.max(metrics.stringWidth(top), metrics.stringWidth(bottom)) / 2.0);
-        int upperY = layout.staffLineY(trackIndex, measureIndex, 3) + metrics.getAscent() / 2 - 1;
-        int lowerY = layout.staffLineY(trackIndex, measureIndex, 1) + metrics.getAscent() / 2 - 1;
+        int upperY = layout.staffLineY(trackIndex, measureIndex, 3);
+        int lowerY = layout.staffLineY(trackIndex, measureIndex, 1);
         g.drawString(top, centerX - metrics.stringWidth(top) / 2, upperY);
         g.drawString(bottom, centerX - metrics.stringWidth(bottom) / 2, lowerY);
+    }
+
+    /** Una cifra de compas armada glifo por glifo, uno por cada digito del numero. */
+    private static String timeSignatureGlyphsOf(int number) {
+        StringBuilder glyphs = new StringBuilder();
+        for (char digit : String.valueOf(number).toCharArray()) {
+            glyphs.append(MusicFont.timeSignatureDigit(digit - '0'));
+        }
+        return glyphs.toString();
     }
 
     /** Los sostenidos o los bemoles de la armadura, en el orden convencional de la clave. */
@@ -213,8 +210,7 @@ final class StaffPainter {
             boolean dimmed,
             int octaveShift) {
         double centerX = noteCenterX(layout, trackIndex, measureIndex, beatIndex);
-        boolean hollow = beat.duration().value() == NoteValue.WHOLE
-                || beat.duration().value() == NoteValue.HALF;
+        String notehead = noteheadGlyphFor(beat.duration().value());
         // "Ver > Notas con dinamica [F11]": solo la cabeza de la nota cambia de tinta, y solo
         // cuando no esta atenuada -la voz que no se edita se sigue viendo pareja, sin importar
         // cuan fuerte suena cada una de sus notas.
@@ -229,7 +225,7 @@ final class StaffPainter {
                 paintAccidental(g, glyph, centerX - NOTE_WIDTH * 0.75 - SPACE * 0.55, y, ink);
             }
             Color headInk = colorsByDynamic ? ScoreColors.forDynamic(note.effects().dynamic()) : ink;
-            paintNotehead(g, centerX, y, hollow, headInk);
+            paintNotehead(g, centerX, y, notehead, headInk);
             if (beat.duration().dotted()) {
                 paintDot(g, layout, trackIndex, measureIndex, position, centerX, ink);
             }
@@ -241,46 +237,42 @@ final class StaffPainter {
         boolean above = step < MIDDLE_LINE_STEP;
         double markY = above ? y - NOTE_HEIGHT - SPACE * 0.35 : y + NOTE_HEIGHT + SPACE * 0.35;
         if (note.has(Ornament.STACCATO)) {
-            g.setColor(ink);
-            fill(g, dot(centerX, markY, SPACE * 0.16));
+            paintArticulationGlyph(
+                    g, centerX, markY, above ? MusicFont.articStaccatoAbove() : MusicFont.articStaccatoBelow(), ink);
         }
         if (note.has(Ornament.ACCENTED) || note.has(Ornament.HEAVY_ACCENTED)) {
-            paintAccentMark(g, centerX, markY, ink, note.has(Ornament.HEAVY_ACCENTED));
+            paintAccentMark(g, centerX, markY, above, ink, note.has(Ornament.HEAVY_ACCENTED));
         }
     }
 
-    private static void paintAccentMark(Graphics2D g, double centerX, double y, Color ink, boolean heavy) {
+    private static void paintArticulationGlyph(Graphics2D g, double centerX, double y, String glyph, Color ink) {
         g.setColor(ink);
-        g.setStroke(new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.draw(chevron(centerX, y));
+        g.setFont(MusicFont.sizedTo(SPACE));
+        double width = g.getFontMetrics().stringWidth(glyph);
+        g.drawString(glyph, (float) (centerX - width / 2), (float) y);
+    }
+
+    private static void paintAccentMark(Graphics2D g, double centerX, double y, boolean above, Color ink, boolean heavy) {
+        String glyph = above ? MusicFont.articAccentAbove() : MusicFont.articAccentBelow();
+        paintArticulationGlyph(g, centerX, y, glyph, ink);
         if (heavy) {
-            g.draw(chevron(centerX, y - SPACE * 0.5));
+            paintArticulationGlyph(g, centerX, y - SPACE * 0.5, glyph, ink);
         }
     }
 
-    private static Path2D chevron(double centerX, double y) {
-        Path2D chevron = new Path2D.Double();
-        chevron.moveTo(centerX - SPACE * 0.5, y - SPACE * 0.25);
-        chevron.lineTo(centerX + SPACE * 0.5, y);
-        chevron.lineTo(centerX - SPACE * 0.5, y + SPACE * 0.25);
-        return chevron;
+    private static String noteheadGlyphFor(NoteValue value) {
+        return switch (value) {
+            case WHOLE -> MusicFont.noteheadWhole();
+            case HALF -> MusicFont.noteheadHalf();
+            default -> MusicFont.noteheadBlack();
+        };
     }
 
-    private static void paintNotehead(Graphics2D g, double centerX, double y, boolean hollow, Color ink) {
-        Shape head = tiltedNotehead(centerX, y);
+    private static void paintNotehead(Graphics2D g, double centerX, double y, String glyph, Color ink) {
         g.setColor(ink);
-        if (hollow) {
-            g.setStroke(new BasicStroke(1.6f));
-            g.draw(head);
-            return;
-        }
-        g.fill(head);
-    }
-
-    private static Shape tiltedNotehead(double centerX, double y) {
-        Ellipse2D head = new Ellipse2D.Double(
-                centerX - NOTE_WIDTH / 2, y - NOTE_HEIGHT / 2, NOTE_WIDTH, NOTE_HEIGHT);
-        return AffineTransform.getRotateInstance(NOTE_TILT, centerX, y).createTransformedShape(head);
+        g.setFont(MusicFont.sizedTo(SPACE));
+        double width = g.getFontMetrics().stringWidth(glyph);
+        g.drawString(glyph, (float) (centerX - width / 2), (float) y);
     }
 
     private static void paintLedgerLines(
@@ -314,8 +306,13 @@ final class StaffPainter {
             Color ink) {
         int step = position.isOnLine() ? position.step() + 1 : position.step();
         double y = layout.stepY(trackIndex, measureIndex, step);
+        paintAugmentationDot(g, centerX + NOTE_WIDTH * 0.85, y, ink);
+    }
+
+    private static void paintAugmentationDot(Graphics2D g, double x, double y, Color ink) {
         g.setColor(ink);
-        fill(g, dot(centerX + NOTE_WIDTH * 0.85, y, SPACE * 0.17));
+        g.setFont(MusicFont.sizedTo(SPACE));
+        g.drawString(MusicFont.augmentationDot(), (float) x, (float) y);
     }
 
     private static void paintAccidental(Graphics2D g, AccidentalGlyph glyph, double x, double y, Color ink) {
@@ -329,41 +326,21 @@ final class StaffPainter {
     }
 
     private static void paintSharp(Graphics2D g, double x, double y, Color ink) {
+        paintAccidentalGlyph(g, MusicFont.accidentalSharp(), x, y, ink);
+    }
+
+    private static void paintAccidentalGlyph(Graphics2D g, String glyph, double x, double y, Color ink) {
         g.setColor(ink);
-        g.setStroke(new BasicStroke(1.2f));
-        Path2D sharp = new Path2D.Double();
-        sharp.moveTo(x + SPACE * 0.18, y - SPACE * 0.85);
-        sharp.lineTo(x + SPACE * 0.18, y + SPACE * 0.75);
-        sharp.moveTo(x + SPACE * 0.52, y - SPACE * 0.95);
-        sharp.lineTo(x + SPACE * 0.52, y + SPACE * 0.65);
-        g.draw(sharp);
-        g.setStroke(new BasicStroke(1.9f));
-        Path2D bars = new Path2D.Double();
-        bars.moveTo(x, y - SPACE * 0.16);
-        bars.lineTo(x + SPACE * 0.72, y - SPACE * 0.38);
-        bars.moveTo(x, y + SPACE * 0.44);
-        bars.lineTo(x + SPACE * 0.72, y + SPACE * 0.22);
-        g.draw(bars);
+        g.setFont(MusicFont.sizedTo(SPACE));
+        g.drawString(glyph, (float) x, (float) y);
     }
 
     private static void paintFlat(Graphics2D g, double x, double y, Color ink) {
-        g.setColor(ink);
-        g.setStroke(new BasicStroke(1.3f));
-        g.draw(new Line2D.Double(x, y - SPACE * 1.1, x, y + SPACE * 0.6));
-        Path2D bowl = new Path2D.Double();
-        bowl.moveTo(x, y + SPACE * 0.55);
-        bowl.curveTo(x + SPACE * 0.6, y + SPACE * 0.4, x + SPACE * 0.6, y - SPACE * 0.3, x, y - SPACE * 0.1);
-        g.draw(bowl);
+        paintAccidentalGlyph(g, MusicFont.accidentalFlat(), x, y, ink);
     }
 
     private static void paintNatural(Graphics2D g, double x, double y, Color ink) {
-        g.setColor(ink);
-        g.setStroke(new BasicStroke(1.1f));
-        double half = SPACE * 0.26;
-        g.draw(new Line2D.Double(x - half, y - SPACE * 0.85, x - half, y + SPACE * 0.5));
-        g.draw(new Line2D.Double(x + half, y - SPACE * 0.5, x + half, y + SPACE * 0.85));
-        g.draw(new Line2D.Double(x - half, y + SPACE * 0.3, x + half, y + SPACE * 0.5));
-        g.draw(new Line2D.Double(x - half, y - SPACE * 0.5, x + half, y - SPACE * 0.3));
+        paintAccidentalGlyph(g, MusicFont.accidentalNatural(), x, y, ink);
     }
 
     /** Los arcos de ligadura de prolongacion, entre golpes consecutivos de la misma cuerda. */
@@ -477,22 +454,20 @@ final class StaffPainter {
     }
 
     private static void paintFlags(Graphics2D g, Stem stem, int flags, Color ink) {
-        if (flags == 0) {
-            return;
+        switch (flags) {
+            case 0 -> {
+            }
+            case 1 -> paintFlagGlyph(g, stem, MusicFont.flag8thUp(), MusicFont.flag8thDown(), ink);
+            case 2 -> paintFlagGlyph(g, stem, MusicFont.flag16thUp(), MusicFont.flag16thDown(), ink);
+            case 3 -> paintFlagGlyph(g, stem, MusicFont.flag32ndUp(), MusicFont.flag32ndDown(), ink);
+            default -> paintFlagGlyph(g, stem, MusicFont.flag64thUp(), MusicFont.flag64thDown(), ink);
         }
-        double direction = stem.up() ? 1 : -1;
+    }
+
+    private static void paintFlagGlyph(Graphics2D g, Stem stem, String up, String down, Color ink) {
         g.setColor(ink);
-        g.setStroke(new BasicStroke(1.6f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        for (int flag = 0; flag < flags; flag++) {
-            double y = stem.endY() + direction * flag * BEAM_GAP;
-            Path2D hook = new Path2D.Double();
-            hook.moveTo(stem.x(), y);
-            hook.curveTo(
-                    stem.x() + SPACE * 0.95, y - direction * SPACE * 0.15,
-                    stem.x() + SPACE * 1.05, y - direction * SPACE * 0.75,
-                    stem.x() + SPACE * 0.75, y - direction * SPACE * 1.5);
-            g.draw(hook);
-        }
+        g.setFont(MusicFont.sizedTo(SPACE));
+        g.drawString(stem.up() ? up : down, (float) stem.x(), (float) stem.endY());
     }
 
     private static void paintBeamGroup(
@@ -699,130 +674,40 @@ final class StaffPainter {
         double centerX = noteCenterX(layout, trackIndex, measureIndex, beatIndex);
         g.setColor(ink);
         switch (beat.duration().value()) {
-            case WHOLE -> fillRestBar(g, layout, trackIndex, measureIndex, centerX, 6, true, ink);
-            case HALF -> fillRestBar(g, layout, trackIndex, measureIndex, centerX, 4, false, ink);
-            case QUARTER -> paintQuarterRest(g, layout, trackIndex, measureIndex, centerX, ink);
+            case WHOLE -> paintRestGlyph(g, layout, trackIndex, measureIndex, centerX, MusicFont.restWhole(), 6, ink);
+            case HALF -> paintRestGlyph(g, layout, trackIndex, measureIndex, centerX, MusicFont.restHalf(), 4, ink);
+            case QUARTER -> paintRestGlyph(
+                    g, layout, trackIndex, measureIndex, centerX, MusicFont.restQuarter(), MIDDLE_LINE_STEP, ink);
             default -> paintHookedRest(g, layout, trackIndex, measureIndex, centerX,
                     Beaming.beamCount(beat.duration().value()), ink);
         }
         if (beat.duration().dotted()) {
-            g.setColor(ink);
-            fill(g, dot(centerX + SPACE * 1.1, layout.stepY(trackIndex, measureIndex, 5), SPACE * 0.17));
+            paintAugmentationDot(g, centerX + SPACE * 1.1, layout.stepY(trackIndex, measureIndex, 5), ink);
         }
     }
 
-    private static void fillRestBar(
-            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, double centerX, int step,
-            boolean hanging, Color ink) {
+    private static void paintRestGlyph(
+            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, double centerX, String glyph,
+            int step, Color ink) {
         double y = layout.stepY(trackIndex, measureIndex, step);
-        double height = SPACE * 0.5;
         g.setColor(ink);
-        g.fill(new java.awt.geom.Rectangle2D.Double(
-                centerX - SPACE * 0.6, hanging ? y : y - height, SPACE * 1.2, height));
-    }
-
-    private static void paintQuarterRest(
-            Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, double centerX, Color ink) {
-        double top = layout.stepY(trackIndex, measureIndex, 7);
-        Path2D rest = new Path2D.Double();
-        rest.moveTo(centerX - SPACE * 0.30, top);
-        rest.lineTo(centerX + SPACE * 0.32, top + SPACE * 0.85);
-        rest.lineTo(centerX - SPACE * 0.26, top + SPACE * 1.60);
-        rest.lineTo(centerX + SPACE * 0.36, top + SPACE * 2.35);
-        rest.curveTo(
-                centerX - SPACE * 0.32, top + SPACE * 2.10,
-                centerX - SPACE * 0.34, top + SPACE * 3.05,
-                centerX + SPACE * 0.30, top + SPACE * 3.20);
-        g.setColor(ink);
-        g.setStroke(new BasicStroke(1.9f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.draw(rest);
+        g.setFont(MusicFont.sizedTo(SPACE));
+        double width = g.getFontMetrics().stringWidth(glyph);
+        g.drawString(glyph, (float) (centerX - width / 2), (float) y);
     }
 
     private static void paintHookedRest(
             Graphics2D g, ScoreLayout layout, int trackIndex, int measureIndex, double centerX, int hooks, Color ink) {
-        double top = layout.stepY(trackIndex, measureIndex, 6 - (hooks - 1));
-        double bottom = layout.stepY(trackIndex, measureIndex, 2);
-        g.setColor(ink);
-        g.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.draw(new Line2D.Double(
-                centerX + SPACE * 0.42, top, centerX - SPACE * 0.30, bottom));
-        for (int hook = 0; hook < hooks; hook++) {
-            double y = top + hook * SPACE;
-            fill(g, dot(centerX - SPACE * 0.10, y + SPACE * 0.10, SPACE * 0.20));
-            g.draw(new Line2D.Double(
-                    centerX - SPACE * 0.10, y + SPACE * 0.10, centerX + SPACE * 0.40, y - SPACE * 0.10));
+        switch (hooks) {
+            case 1 -> paintRestGlyph(
+                    g, layout, trackIndex, measureIndex, centerX, MusicFont.rest8th(), MIDDLE_LINE_STEP, ink);
+            case 2 -> paintRestGlyph(
+                    g, layout, trackIndex, measureIndex, centerX, MusicFont.rest16th(), MIDDLE_LINE_STEP, ink);
+            case 3 -> paintRestGlyph(
+                    g, layout, trackIndex, measureIndex, centerX, MusicFont.rest32nd(), MIDDLE_LINE_STEP, ink);
+            default -> paintRestGlyph(
+                    g, layout, trackIndex, measureIndex, centerX, MusicFont.rest64th(), MIDDLE_LINE_STEP, ink);
         }
-    }
-
-    private static Shape dot(double x, double y, double radius) {
-        return new Ellipse2D.Double(x - radius, y - radius, radius * 2, radius * 2);
-    }
-
-    private static void fill(Graphics2D g, Shape shape) {
-        g.fill(shape);
-    }
-
-    private static Shape trebleClef(double x, double gLineY) {
-        double u = SPACE;
-        double cx = x + 1.35 * u;
-        Path2D clef = new Path2D.Double();
-
-        clef.moveTo(cx + 0.50 * u, gLineY - 4.20 * u);
-        clef.curveTo(
-                cx + 1.02 * u, gLineY - 4.00 * u,
-                cx + 0.98 * u, gLineY - 3.10 * u,
-                cx + 0.42 * u, gLineY - 2.50 * u);
-        clef.curveTo(
-                cx - 0.08 * u, gLineY - 1.95 * u,
-                cx - 0.08 * u, gLineY - 0.30 * u,
-                cx + 0.04 * u, gLineY + 0.90 * u);
-        clef.curveTo(
-                cx + 0.16 * u, gLineY + 1.90 * u,
-                cx + 0.38 * u, gLineY + 2.35 * u,
-                cx - 0.12 * u, gLineY + 2.78 * u);
-        clef.curveTo(
-                cx - 0.50 * u, gLineY + 3.08 * u,
-                cx - 0.92 * u, gLineY + 2.52 * u,
-                cx - 0.72 * u, gLineY + 2.10 * u);
-
-        clef.append(spiral(cx, gLineY, 1.18 * u, 0.16 * u, -80, 1.6), false);
-        return clef;
-    }
-
-    /** La voluta de la clave de sol: una espiral que se cierra sobre la linea de sol. */
-    private static Path2D spiral(
-            double cx, double cy, double outerRadius, double innerRadius, double startDegrees, double turns) {
-        Path2D path = new Path2D.Double();
-        int steps = 80;
-        for (int step = 0; step <= steps; step++) {
-            double progress = (double) step / steps;
-            double angle = Math.toRadians(startDegrees) - progress * turns * 2 * Math.PI;
-            double radius = outerRadius + progress * (innerRadius - outerRadius);
-            double px = cx + radius * Math.cos(angle);
-            double py = cy + radius * Math.sin(angle);
-            if (step == 0) {
-                path.moveTo(px, py);
-            } else {
-                path.lineTo(px, py);
-            }
-        }
-        return path;
-    }
-
-    private static Shape bassClef(double x, double fLineY) {
-        double u = SPACE;
-        double cx = x + 1.05 * u;
-        Path2D clef = new Path2D.Double();
-        clef.moveTo(cx - 0.95 * u, fLineY - 0.35 * u);
-        clef.curveTo(
-                cx - 0.60 * u, fLineY - 1.25 * u,
-                cx + 0.60 * u, fLineY - 1.10 * u,
-                cx + 0.58 * u, fLineY - 0.10 * u);
-        clef.curveTo(
-                cx + 0.56 * u, fLineY + 1.15 * u,
-                cx - 0.30 * u, fLineY + 1.95 * u,
-                cx - 1.20 * u, fLineY + 2.25 * u);
-        return clef;
     }
 
     private record Stem(double x, double rootY, double endY, boolean up) {

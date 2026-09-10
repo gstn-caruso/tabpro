@@ -5,12 +5,9 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.notation.VerticalStack;
-import java.awt.BasicStroke;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 
 /**
  * Los cambios de parametro que el manual deja insertar en medio de la
@@ -78,15 +75,15 @@ final class ParameterChangePainter {
         FontMetrics metrics = g.getFontMetrics();
         int left = centerX - (QUARTER_NOTE_WIDTH + metrics.stringWidth(label)) / 2;
         paintQuarterNote(g, left, baselineY);
+        g.setFont(ScoreFonts.TEMPO_FONT);
         g.setColor(ScoreColors.INK);
         g.drawString(label, left + QUARTER_NOTE_WIDTH, baselineY);
     }
 
-    /** La negra a la que se refiere el numero: cabeza rellena y plica para arriba. */
+    /** La negra a la que se refiere el numero. */
     private static void paintQuarterNote(Graphics2D g, int x, int baselineY) {
         g.setColor(ScoreColors.INK);
-        g.fill(new Ellipse2D.Double(x, baselineY - 4, 5, 4));
-        g.setStroke(new BasicStroke(1.2f));
-        g.draw(new Line2D.Double(x + 4.4, baselineY - 3, x + 4.4, baselineY - 10));
+        g.setFont(MusicFont.sizedTo(2));
+        g.drawString(MusicFont.metNoteQuarterUp(), x, baselineY);
     }
 }

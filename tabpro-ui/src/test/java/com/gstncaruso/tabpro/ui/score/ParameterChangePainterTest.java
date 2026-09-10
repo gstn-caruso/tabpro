@@ -70,6 +70,21 @@ class ParameterChangePainterTest {
     }
 
     @Test
+    void aTempoChangeIsWrittenWithTheQuarterNoteGlyphOfBravura() {
+        Measure measure = changingAt(0, change(SoundParameter.TEMPO, 90));
+        Track track = guitarWith(measure);
+        ScoreLayout layout = ScoreLayout.of(scoreWith(measure), WIDTH, VisibleTracks.all());
+        LienzoDePrueba lienzo = new LienzoDePrueba();
+
+        ParameterChangePainter.paintMeasure(lienzo, layout, track, 0, 0);
+
+        // STAFF_CLEARANCE (16) de ParameterChangePainter: el aire entre el tempo y el pentagrama.
+        int bottom = layout.staffTop(0, 0) - 16;
+        assertTrue(lienzo.escribeTextoEnRegion(MusicFont.metNoteQuarterUp(), new Rectangle(0, bottom - 14, WIDTH, 16)),
+                "el tempo tiene que escribir la negra chiquita con el glifo de Bravura");
+    }
+
+    @Test
     void aChangeThatTouchesTempoAndPanShowsBothThings() {
         ParameterChange both = change(SoundParameter.TEMPO, 90).changing(SoundParameter.PAN, 20);
         Painted painted = paint(scoreWith(changingAt(1, both)));
