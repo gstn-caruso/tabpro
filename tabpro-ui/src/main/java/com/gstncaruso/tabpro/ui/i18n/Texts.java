@@ -1,10 +1,15 @@
 package com.gstncaruso.tabpro.ui.i18n;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 public final class Texts {
+
+    public static final List<String> AREAS = List.of(
+            "common", "menus", "domain", "library", "edit_dialogs",
+            "score_dialogs", "views", "window", "defaults");
 
     private static final ResourceBundle.Control NO_FALLBACK =
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES);
