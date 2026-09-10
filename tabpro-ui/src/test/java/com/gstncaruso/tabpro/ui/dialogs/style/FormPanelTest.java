@@ -1,6 +1,8 @@
 package com.gstncaruso.tabpro.ui.dialogs.style;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Component;
 import java.awt.Insets;
@@ -9,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import org.junit.jupiter.api.Test;
 
@@ -94,5 +97,28 @@ class FormPanelTest {
     private Insets innerPaddingOf(JPanel section) {
         CompoundBorder border = (CompoundBorder) section.getBorder();
         return border.getInsideBorder().getBorderInsets(section);
+    }
+
+    @Test
+    void cadaSeccionQuedaConLasFilasQueLeSiguenHastaLaProximaSeccion() {
+        FormPanel panel = new FormPanel();
+        JTextField fueraDeToda = new JTextField();
+        JTextField deNotacion = new JTextField();
+        JTextField deEstilo = new JTextField();
+
+        panel.addRow("Nombre", fueraDeToda);
+        panel.addSection("Notation");
+        panel.addRow("Tablatura", deNotacion);
+        panel.addSection("Style");
+        panel.addRow("Sangria", deEstilo);
+
+        JPanel notation = sectionTitled(panel, "Notation");
+        JPanel style = sectionTitled(panel, "Style");
+        assertFalse(SwingUtilities.isDescendingFrom(fueraDeToda, notation));
+        assertFalse(SwingUtilities.isDescendingFrom(fueraDeToda, style));
+        assertTrue(SwingUtilities.isDescendingFrom(deNotacion, notation));
+        assertFalse(SwingUtilities.isDescendingFrom(deNotacion, style));
+        assertTrue(SwingUtilities.isDescendingFrom(deEstilo, style));
+        assertFalse(SwingUtilities.isDescendingFrom(deEstilo, notation));
     }
 }
