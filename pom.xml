@@ -91,7 +91,17 @@
               compilar con C2 cuesta mas de lo que llega a devolver antes de que la maquina
               virtual termine.
             -->
-            <argLine>-Djava.awt.headless=${tests.headless} -XX:TieredStopAtLevel=1 --add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED</argLine>
+            <!--
+              java.util.prefs.userRoot y java.io.tmpdir aislados: MainFrame guarda Preferences
+              (archivos recientes, autoguardado, etc.) en java.util.prefs.Preferences.userRoot(),
+              y ScoreDocument busca su archivo de recuperacion en java.io.tmpdir +
+              "tabpro-recuperacion" -las mismas rutas que usa un tabpro instalado de verdad en
+              esta maquina-. La auditoria de uso real (tabpro-app/.../audit) instancia MainFrame
+              de verdad: sin esto, un archivo de recuperacion real que haya quedado de una sesion
+              real dispara un dialogo real (offerToRecover) en cada test, y las preferencias que
+              se lean o se escriban serian las reales de quien corre la suite.
+            -->
+            <argLine>-Djava.awt.headless=${tests.headless} -XX:TieredStopAtLevel=1 --add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED -Djava.util.prefs.userRoot=${project.build.directory}/test-prefs-root -Djava.io.tmpdir=${project.build.directory}</argLine>
             <excludedGroups>${tests.excluded.groups}</excludedGroups>
             <skipTests>true</skipTests>
             <properties>

@@ -17,6 +17,7 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 /**
  * Manual, "Play the Score" (linea 2087 del texto extraido): Espacio arranca y frena la
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.Test;
  * sirve aca porque termina la reproduccion sola en el mismo llamado).
  */
 @Tag("integracion")
+@ResourceLock(AuditSupport.SWING_LOCK)
 class PlayTheScoreAuditTest {
 
     @Test

@@ -21,6 +21,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 /**
  * Manual, "Write a Score" (linea 481 del texto extraido): escribir notas con los digitos del
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Test;
  * el KeyEvent real de su atajo, nunca invocando el Action a mano.
  */
 @Tag("integracion")
+@ResourceLock(AuditSupport.SWING_LOCK)
 class WriteAScoreAuditTest {
 
     @Test

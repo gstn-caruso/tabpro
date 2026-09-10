@@ -43,6 +43,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 final class AuditSupport {
 
+    /**
+     * Swing tiene un solo EDT por maquina virtual, y la suite corre en una sola maquina virtual
+     * con las clases en paralelo (ver pom.xml raiz): sin este lock, un dialogo modal real que
+     * abre un test puede terminar cerrado por el AWTEventListener global de otro test que corre
+     * al mismo tiempo -Toolkit.addAWTEventListener no distingue de que test es cada ventana-, y
+     * la suite queda colgada esperando un WINDOW_OPENED que ya paso. Cada clase de la auditoria
+     * se anota con {@code @ResourceLock(AuditSupport.SWING_LOCK)} para que JUnit las serialice
+     * entre si, aunque sigan en paralelo con el resto de la suite (que no toca Swing de verdad).
+     */
+    static final String SWING_LOCK = "tabpro-audit-swing";
+
     private AuditSupport() {
     }
 
@@ -205,6 +216,24 @@ final class AuditSupport {
             }
             if (item instanceof JMenu submenu) {
                 JMenuItem found = findMenuItem(submenu, label);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    static javax.swing.JCheckBox findCheckBox(Container root, String text) {
+        if (root instanceof javax.swing.JCheckBox box && text.equals(box.getText())) {
+            return box;
+        }
+        for (Component child : root.getComponents()) {
+            if (child instanceof javax.swing.JCheckBox box && text.equals(box.getText())) {
+                return box;
+            }
+            if (child instanceof Container container) {
+                javax.swing.JCheckBox found = findCheckBox(container, text);
                 if (found != null) {
                     return found;
                 }

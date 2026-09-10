@@ -25,6 +25,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 /**
  * Manual, tablas "Keyboard Shortcuts" (Reference, pp. 79 a 81, transcritas ya letra por letra en
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test;
  * JSplitPane, que traen atajos de fabrica propios.
  */
 @Tag("integracion")
+@ResourceLock(AuditSupport.SWING_LOCK)
 class KeyboardShortcutsAuditTest {
 
     /**

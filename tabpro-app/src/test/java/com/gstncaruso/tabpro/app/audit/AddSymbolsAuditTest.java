@@ -26,6 +26,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 /**
  * Manual, "Add Symbols" (linea 961 del texto extraido): bend, trino y armonicos, cada uno con su
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.Test;
  * spinner, combo) y se lee lo que quedo en el modelo despues de aceptar.
  */
 @Tag("integracion")
+@ResourceLock(AuditSupport.SWING_LOCK)
 class AddSymbolsAuditTest {
 
     @Test
