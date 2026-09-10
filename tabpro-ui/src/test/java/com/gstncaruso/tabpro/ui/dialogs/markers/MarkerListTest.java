@@ -38,6 +38,6 @@ class MarkerListTest {
     void labelShowsOneBasedMeasureNumber() {
         MarkerList.Positioned positioned = new MarkerList.Positioned(2, Marker.named("Solo"));
 
-        assertEquals("Compas 3: Solo", positioned.label());
+        assertEquals("Compás 3: Solo", positioned.label());
     }
 }
