@@ -31,7 +31,7 @@ public final class ScoreLayout {
     public static final int STAFF_LINE_SPACING = 8;
     public static final int STAFF_HEIGHT = 4 * STAFF_LINE_SPACING;
     public static final int STAFF_HEADROOM = 34;
-    public static final int STAFF_TO_TAB_GAP = 42;
+    public static final int STAFF_TO_TAB_GAP = 36;
     public static final int STRING_SPACING = 12;
     public static final int TRACK_GAP = 20;
 
