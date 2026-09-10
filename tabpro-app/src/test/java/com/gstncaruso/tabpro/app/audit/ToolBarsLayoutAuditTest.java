@@ -33,7 +33,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class ToolBarsLayoutAuditTest {
 
     @Test
-    void laBarraDeEfectosQuedaEntreLaPartituraYLaMesaDeMezcla() throws Exception {
+    void theEffectsToolbarStaysBetweenTheScoreAndTheMixingConsole() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -61,7 +61,7 @@ class ToolBarsLayoutAuditTest {
     }
 
     @Test
-    void elMenuVerMenusYBarrasEscondeYMuestraLaFilaDeDocumentoReal() throws Exception {
+    void theViewMenusAndToolbarsMenuHidesAndShowsTheRealDocumentRow() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -84,7 +84,7 @@ class ToolBarsLayoutAuditTest {
     }
 
     @Test
-    void elMenuEfectosEscondeLaBarraRealYRecuerdaLaPreferencia() throws Exception {
+    void theEffectsMenuHidesTheRealToolbarAndRemembersThePreference() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         com.gstncaruso.tabpro.ui.Preferences preferences = new com.gstncaruso.tabpro.ui.Preferences();
