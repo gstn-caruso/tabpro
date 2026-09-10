@@ -5,7 +5,6 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import java.awt.Component;
 
-/** La ventana de Propiedades de pista [F6]. */
 public final class TrackPropertiesDialog {
 
     private TrackPropertiesDialog() {

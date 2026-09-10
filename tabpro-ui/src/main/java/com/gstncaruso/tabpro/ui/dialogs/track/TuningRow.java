@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/** Una cuerda de la afinacion: su altura en numero MIDI, su nombre y un boton para escucharla. */
 final class TuningRow extends JPanel {
 
     private final JSpinner midiNumber;
@@ -30,7 +29,6 @@ final class TuningRow extends JPanel {
         add(listen, BorderLayout.EAST);
 
         updateNoteName();
-        // El listener se cuelga despues de fijar el valor inicial, para no avisar un cambio que no hizo el usuario.
         midiNumber.addChangeListener(event -> {
             updateNoteName();
             onChange.accept(toPitch());

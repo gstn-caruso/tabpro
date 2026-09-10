@@ -16,12 +16,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * Todo lo que define una pista: nombre, color, afinacion, trastes, cejilla y que
- * partes de la partitura dibuja. Se puede leer sin mostrarse. Dos columnas anchas,
- * como "Properties of the track" del manual: afinacion y diapason a la izquierda,
- * notacion, estilo y canales a la derecha.
- */
 public final class TrackPropertiesPanel extends JPanel {
 
     private final JTextField name = new JTextField();
@@ -103,7 +97,6 @@ public final class TrackPropertiesPanel extends JPanel {
         return column;
     }
 
-    /** El pentagrama y la tablatura no pueden estar los dos apagados a la vez. */
     private void keepAtLeastOneStaffVisible() {
         standardNotation.addItemListener(event -> {
             if (!standardNotation.isSelected() && !tablature.isSelected()) {

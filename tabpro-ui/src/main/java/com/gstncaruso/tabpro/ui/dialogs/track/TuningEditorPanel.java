@@ -16,11 +16,6 @@ import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 
-/**
- * La cantidad de cuerdas, la afinacion elegida de la biblioteca (por familia de
- * instrumento) y la afinacion personalizada, cuerda por cuerda, con boton para
- * escuchar cada una.
- */
 public final class TuningEditorPanel extends JPanel {
 
     private static final int MAX_STRINGS = 12;
@@ -161,7 +156,6 @@ public final class TuningEditorPanel extends JPanel {
         repaint();
     }
 
-    /** Hace sonar la cuerda con el instrumento de la pista, como pide el boton Escuchar. */
     public void listen(int string) {
         player.playNote(tuning.pitchOfString(string), previewProgram);
     }
@@ -200,13 +194,11 @@ public final class TuningEditorPanel extends JPanel {
         switchFamily(TuningLibrary.otherStringInstruments());
     }
 
-    /** Cambia el traste de una cuerda a mano, como si se editara su spinner. */
     public void setStringPitch(int string, com.gstncaruso.tabpro.core.model.Pitch pitch) {
         tuning = tuning.withStringPitch(string, pitch);
         rebuildRows();
     }
 
-    /** Elige una afinacion de la familia actual por nombre, como si se hiciera en el combo. */
     public void selectFromLibrary(String tuningName) {
         for (int index = 0; index < library.getItemCount(); index++) {
             if (library.getItemAt(index).name().equals(tuningName)) {
