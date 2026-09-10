@@ -19,7 +19,7 @@ public enum KeyboardDisplayMode {
             return KeyMarks.of(keysOf(location.beat(), tuning), Set.of());
         }
     },
-    BEAT_AND_MEASURE("Beat y compas") {
+    BEAT_AND_MEASURE("Beat y compás") {
         @Override
         public KeyMarks marks(BeatLocation location, Optional<Scale> scale) {
             Tuning tuning = location.track().tuning();

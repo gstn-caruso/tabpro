@@ -14,7 +14,7 @@ class BarDurationReportTest {
 
         String description = BarDurationReport.describe(finding);
 
-        assertEquals("Pista 1, compas 3: le faltan pulsos", description);
+        assertEquals("Pista 1, compás 3: le faltan pulsos", description);
     }
 
     @Test

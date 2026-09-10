@@ -12,7 +12,7 @@ import javax.swing.SpinnerNumberModel;
 public final class PreferencesPanel extends FormPanel {
 
     private final JComboBox<NoteValue> defaultNoteValue = new JComboBox<>(NoteValue.values());
-    private final JCheckBox autoScroll = new JCheckBox("Desplazar la pantalla durante la reproduccion");
+    private final JCheckBox autoScroll = new JCheckBox("Desplazar la pantalla durante la reproducción");
     private final JCheckBox showBassInChordName =
             new JCheckBox("Indicar el bajo en el nombre del acorde cuando es distinto de la fundamental");
     private final JCheckBox undoEnabled = new JCheckBox("Deshacer y rehacer");
@@ -30,9 +30,9 @@ public final class PreferencesPanel extends FormPanel {
         addFullWidthRow(showBassInChordName);
         addFullWidthRow(undoEnabled);
         addFullWidthRow(forceMultitrack);
-        addRow("Guardado automatico cada N acciones", autosaveEvery);
+        addRow("Guardado automático cada N acciones", autosaveEvery);
         addSection("Accesibilidad");
-        addRow("Tamano de letra de la interfaz", interfaceFontSize);
+        addRow("Tamaño de letra de la interfaz", interfaceFontSize);
         addFullWidthRow(highContrast);
         addFullWidthRow(disableAnimations);
         apply(initial);

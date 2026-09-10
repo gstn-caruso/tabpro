@@ -31,7 +31,7 @@ public final class LyricsPanel extends FormPanel {
 
         addFullWidthRow(new JLabel(
                 "<html>Silabas: separadas con espacio o guion. Un + une dos palabras."
-                        + " Lo que va entre corchetes [asi] no se dibuja.</html>"));
+                        + " Lo que va entre corchetes [así] no se dibuja.</html>"));
 
         JTabbedPane lineTabs = new JTabbedPane();
         for (int index = 0; index < LyricLine.MAX_LINES; index++) {

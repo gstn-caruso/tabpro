@@ -3,7 +3,7 @@ package com.gstncaruso.tabpro.core.model;
 /** Donde se dibujan los diagramas de acordes de una pista. */
 public enum DiagramPlacement {
     ABOVE_THE_STAFF("Sobre el pentagrama"),
-    UNDER_THE_TITLE("Debajo del titulo"),
+    UNDER_THE_TITLE("Debajo del título"),
     BOTH("En los dos lados"),
     HIDDEN("Ocultos");
 

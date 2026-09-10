@@ -76,12 +76,12 @@ class AddLyricsAndMarkersAuditTest {
                 assertNotNull(nombre, "no encontre el campo real de nombre del marcador");
                 nombre.setText("Estribillo");
 
-                findButton(dialog, "Insertar aqui").doClick();
+                findButton(dialog, "Insertar aquí").doClick();
                 findButton(dialog, "Cerrar").doClick();
             });
 
             var marker = editor.score().attributesOf(0).marker();
-            assertTrue(marker.isPresent(), "el boton real 'Insertar aqui' tiene que dejar un marcador en el modelo");
+            assertTrue(marker.isPresent(), "el boton real 'Insertar aquí' tiene que dejar un marcador en el modelo");
             assertEquals("Estribillo", marker.get().name(),
                     "el nombre tecleado en el campo real tiene que ser el del marcador");
         } finally {

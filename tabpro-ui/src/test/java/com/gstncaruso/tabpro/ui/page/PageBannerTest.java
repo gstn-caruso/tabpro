@@ -64,7 +64,7 @@ class PageBannerTest {
         assertEquals(
                 List.of(
                         new BannerText(PageElement.COPYRIGHT, "(c) 1978 Straitjacket"),
-                        new BannerText(PageElement.PAGE_NUMBER, "Pagina 4 de 7")),
+                        new BannerText(PageElement.PAGE_NUMBER, "Página 4 de 7")),
                 printed);
     }
 

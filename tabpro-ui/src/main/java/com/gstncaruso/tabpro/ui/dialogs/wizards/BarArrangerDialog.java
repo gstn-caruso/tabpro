@@ -32,7 +32,7 @@ public final class BarArrangerDialog {
     static Fields buildFields() {
         JPanel content = new JPanel(new BorderLayout(0, DialogStyle.GAP_S));
         DialogStyle.padded(content);
-        content.add(new JLabel("<html>Reacomoda los beats para que cada compas sume<br>"
+        content.add(new JLabel("<html>Reacomoda los beats para que cada compás sume<br>"
                 + "exactamente lo que pide su medida.</html>"), BorderLayout.NORTH);
         TrackScopePanel scope = new TrackScopePanel();
         content.add(scope, BorderLayout.CENTER);

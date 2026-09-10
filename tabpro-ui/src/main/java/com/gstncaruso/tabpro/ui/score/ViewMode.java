@@ -7,7 +7,7 @@ package com.gstncaruso.tabpro.ui.score;
  * cortes; pantalla horizontal no envuelve en sistemas, sino que hace un unico renglon largo.
  */
 public enum ViewMode {
-    PAGE("Pagina", true, true, false),
+    PAGE("Página", true, true, false),
     PARCHMENT("Pergamino", true, false, false),
     SCREEN_VERTICAL("Pantalla vertical", false, false, false),
     SCREEN_HORIZONTAL("Pantalla horizontal", false, false, true);

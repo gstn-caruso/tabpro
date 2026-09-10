@@ -41,16 +41,16 @@ public final class PageSetupPanel extends FormPanel {
         orientation.setRenderer(new LabeledListCellRenderer());
 
         addRow("Papel", paperFormat);
-        addRow("Orientacion", orientation);
-        addSection("Margenes (mm)");
+        addRow("Orientación", orientation);
+        addSection("Márgenes (mm)");
         addRow("Superior", marginTop);
         addRow("Inferior", marginBottom);
         addRow("Izquierdo", marginLeft);
         addRow("Derecho", marginRight);
-        addRow("Tamano de la partitura (%)", scorePercent);
+        addRow("Tamaño de la partitura (%)", scorePercent);
         addSection("Encabezado");
         addBannerRows(PageBanner.header(), headerRows);
-        addSection("Pie de pagina");
+        addSection("Pie de página");
         addBannerRows(PageBanner.footer(), footerRows);
         addFullWidthRow(new JLabel(
                 "<html>Campos disponibles: [%title] [%subtitle] [%artist] [%album] [%words]"

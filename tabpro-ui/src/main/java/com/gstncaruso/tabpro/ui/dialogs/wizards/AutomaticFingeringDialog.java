@@ -17,7 +17,7 @@ public final class AutomaticFingeringDialog {
     public static void show(Component parent, Editor editor) {
         JPanel content = buildContent(editor.currentTrack().name());
 
-        boolean accepted = DialogShell.ask(parent, "Digitacion automatica", content, "Aplicar");
+        boolean accepted = DialogShell.ask(parent, "Digitación automática", content, "Aplicar");
         if (!accepted) {
             return;
         }
@@ -30,7 +30,7 @@ public final class AutomaticFingeringDialog {
         JPanel content = new JPanel();
         DialogStyle.padded(content);
         content.add(new JLabel("<html>Reubica las notas de \"" + trackName
-                + "\" en el diapason<br>para que la mano viaje lo menos posible.</html>"));
+                + "\" en el diapasón<br>para que la mano viaje lo menos posible.</html>"));
         return content;
     }
 }

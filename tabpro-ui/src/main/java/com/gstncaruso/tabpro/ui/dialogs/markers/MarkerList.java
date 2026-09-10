@@ -26,7 +26,7 @@ public final class MarkerList {
     public record Positioned(int measureIndex, Marker marker) {
 
         public String label() {
-            return "Compas " + (measureIndex + 1) + ": " + marker.name();
+            return "Compás " + (measureIndex + 1) + ": " + marker.name();
         }
     }
 }

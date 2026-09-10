@@ -107,15 +107,15 @@ class WorkWithAScoreAuditTest {
             assertNotNull(item, "no encontre 'Propiedades de la pista…' en el menu real");
 
             withDialog(item::doClick, dialog -> {
-                JCheckBox afinacion = AuditSupport.findCheckBox(dialog, "Afinacion");
-                assertNotNull(afinacion, "no encontre la casilla real 'Afinacion'");
+                JCheckBox afinacion = AuditSupport.findCheckBox(dialog, "Afinación");
+                assertNotNull(afinacion, "no encontre la casilla real 'Afinación'");
                 afinacion.doClick();
 
                 findButton(dialog, "Aceptar").doClick();
             });
 
             assertTrue(editor.score().track(0).settings().display().tuningLegend(),
-                    "tildar 'Afinacion' en el dialogo real tiene que prender la leyenda en el modelo real");
+                    "tildar 'Afinación' en el dialogo real tiene que prender la leyenda en el modelo real");
         } finally {
             AuditSupport.dispose(frame);
         }

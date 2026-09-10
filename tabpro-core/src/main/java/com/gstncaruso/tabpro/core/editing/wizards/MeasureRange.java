@@ -5,7 +5,7 @@ public record MeasureRange(int from, int to) {
 
     public MeasureRange {
         if (from < 1) {
-            throw new IllegalArgumentException("el primer compas se cuenta desde 1: " + from);
+            throw new IllegalArgumentException("el primer compás se cuenta desde 1: " + from);
         }
         if (to < from) {
             throw new IllegalArgumentException("el rango termina antes de empezar: " + from + ".." + to);

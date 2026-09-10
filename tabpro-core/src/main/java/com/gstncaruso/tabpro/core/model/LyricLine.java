@@ -15,7 +15,7 @@ public record LyricLine(int startingMeasure, String text) {
 
     public LyricLine {
         if (startingMeasure < 1) {
-            throw new IllegalArgumentException("el compas inicial se cuenta desde 1: " + startingMeasure);
+            throw new IllegalArgumentException("el compás inicial se cuenta desde 1: " + startingMeasure);
         }
         text = text == null ? "" : text;
     }

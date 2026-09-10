@@ -22,7 +22,7 @@ public record Track(
 
     public Track {
         if (measures.isEmpty()) {
-            throw new IllegalArgumentException("una pista necesita al menos un compas");
+            throw new IllegalArgumentException("una pista necesita al menos un compás");
         }
         measures = List.copyOf(measures);
     }

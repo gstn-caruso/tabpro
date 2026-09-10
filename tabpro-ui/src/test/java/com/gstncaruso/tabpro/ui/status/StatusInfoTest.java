@@ -66,7 +66,7 @@ class StatusInfoTest {
         StatusInfo info = StatusInfo.of(editor, Pagination.single());
 
         assertEquals("Sultans of Swing", info.title());
-        assertEquals("Musica: Mark Knopfler", info.author());
+        assertEquals("Música: Mark Knopfler", info.author());
     }
 
     @Test
