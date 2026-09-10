@@ -79,7 +79,12 @@
               Gervill (el sintetizador del JDK) para eso. No es API publica, pero es la unica
               forma de pedirle audio al sintetizador mas rapido que en tiempo real.
             -->
-            <argLine>-Djava.awt.headless=true --add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED</argLine>
+            <!--
+              TieredStopAtLevel=1 deja el JIT en C1. La suite entera vive medio segundo:
+              compilar con C2 cuesta mas de lo que llega a devolver antes de que la maquina
+              virtual termine.
+            -->
+            <argLine>-Djava.awt.headless=true -XX:TieredStopAtLevel=1 --add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED</argLine>
             <excludedGroups>${tests.excluded.groups}</excludedGroups>
             <skipTests>true</skipTests>
             <properties>
