@@ -36,7 +36,6 @@ class EditorListenerSubscriptionTest {
             "BeatViews.java#this::refresh",
             "MainFrame.java#this::updateTitle",
             "MainFrame.java#() -> spinner.setValue(editor.score().tempo())",
-            "TrackSelector.java#this::refresh",
             "Commands.java#this::refreshEditMarkerCommand",
             "TrackPanel.java#this::editorChanged");
 
