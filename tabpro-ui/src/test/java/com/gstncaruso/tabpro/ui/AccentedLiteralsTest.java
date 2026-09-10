@@ -43,13 +43,6 @@ class AccentedLiteralsTest {
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/page/PageFields.java::album",
             "tabpro-core/src/main/java/com/gstncaruso/tabpro/core/model/Channel.java::tremolo");
 
-    /**
-     * Archivos con deuda ya conocida que todavia no se corrigio: mientras un archivo este aca,
-     * sus literales no se chequean. Se van sacando uno a uno a medida que se corrigen, hasta que
-     * quede vacio.
-     */
-    private static final Set<String> PENDING_FILES = Set.of();
-
     private static final Pattern PLACEHOLDER = Pattern.compile("\\[%[a-zA-Z]+]");
     private static final Pattern IDENTIFIER_LITERAL =
             Pattern.compile("^[A-Za-z][A-Za-z0-9]*(\\.[A-Za-z0-9]+)+$");
@@ -72,7 +65,6 @@ class AccentedLiteralsTest {
         try (Stream<Path> files = Files.walk(root)) {
             return files.filter(path -> path.toString().endsWith(".java"))
                     .filter(AccentedLiteralsTest::isNotExcluded)
-                    .filter(AccentedLiteralsTest::isNotPending)
                     .flatMap(AccentedLiteralsTest::literalsIn)
                     .toList()
                     .stream();
@@ -84,11 +76,6 @@ class AccentedLiteralsTest {
     private static boolean isNotExcluded(Path file) {
         String path = file.toString().replace('\\', '/');
         return EXCLUDED_FILES.stream().noneMatch(path::endsWith);
-    }
-
-    private static boolean isNotPending(Path file) {
-        String path = file.toString().replace('\\', '/');
-        return PENDING_FILES.stream().noneMatch(path::endsWith);
     }
 
     private static Stream<Literal> literalsIn(Path file) {
