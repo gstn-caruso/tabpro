@@ -17,4 +17,9 @@ class ContrastTest {
         Color orange = new Color(0xE8A33D);
         assertEquals(1.0, Contrast.ratio(orange, orange), 0.001);
     }
+
+    @Test
+    void matchesTheWorkedExampleFromTheSpec() {
+        assertEquals(4.48, Contrast.ratio(new Color(0x77, 0x77, 0x77), Color.WHITE), 0.01);
+    }
 }
