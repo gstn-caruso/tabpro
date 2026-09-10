@@ -29,7 +29,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class WorkWithAScoreAuditTest {
 
     @Test
-    void agregarUnaPistaPorElAtajoCtrlShiftInsertCreaUnaPistaDePercusionConElNombreElegido() throws Exception {
+    void addingATrackByTheCtrlShiftInsertShortcutCreatesAPercussionTrackWithTheChosenName() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -38,28 +38,28 @@ class WorkWithAScoreAuditTest {
             assertNotNull(item, "no encontre 'Agregar una pista…' en el menu real");
             assertEquals(KeyStroke.getKeyStroke("ctrl shift INSERT"), item.getAccelerator());
 
-            int pistasAntes = editor.score().trackCount();
+            int tracksBefore = editor.score().trackCount();
 
             withDialog(() -> canvas.dispatchEvent(new KeyEvent(canvas, KeyEvent.KEY_PRESSED,
                     System.currentTimeMillis(), KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK,
                     KeyEvent.VK_INSERT, KeyEvent.CHAR_UNDEFINED)), dialog -> {
-                JTextField nombre = findComponent(dialog, JTextField.class);
-                assertNotNull(nombre, "no encontre el campo de texto real del nombre");
-                nombre.setText("Batería nueva");
+                JTextField name = findComponent(dialog, JTextField.class);
+                assertNotNull(name, "no encontre el campo de texto real del nombre");
+                name.setText("Batería nueva");
 
-                JRadioButton percusion = AuditSupport.findRadioButton(dialog, "Percusión");
-                assertNotNull(percusion, "no encontre el radio button real de Percusión");
-                percusion.doClick();
+                JRadioButton percussion = AuditSupport.findRadioButton(dialog, "Percusión");
+                assertNotNull(percussion, "no encontre el radio button real de Percusión");
+                percussion.doClick();
 
                 findButton(dialog, "Aceptar").doClick();
             });
 
-            assertEquals(pistasAntes + 1, editor.score().trackCount(),
+            assertEquals(tracksBefore + 1, editor.score().trackCount(),
                     "el atajo real tiene que agregar una pista al modelo");
-            var nueva = editor.score().track(editor.score().trackCount() - 1);
-            assertEquals("Batería nueva", nueva.name(),
+            var newTrack = editor.score().track(editor.score().trackCount() - 1);
+            assertEquals("Batería nueva", newTrack.name(),
                     "el nombre tecleado en el campo real tiene que ser el de la pista nueva");
-            assertTrue(nueva.settings().percussion(),
+            assertTrue(newTrack.settings().percussion(),
                     "el radio button real de Percusión tiene que dejar la pista como percusion");
         } finally {
             AuditSupport.dispose(frame);
@@ -67,7 +67,7 @@ class WorkWithAScoreAuditTest {
     }
 
     @Test
-    void propiedadesDeLaPistaPorElMenuRenombraLaPistaReal() throws Exception {
+    void trackPropertiesThroughTheMenuRenamesTheRealTrack() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -75,9 +75,9 @@ class WorkWithAScoreAuditTest {
             assertNotNull(item, "no encontre 'Propiedades de la pista…' en el menu real");
 
             withDialog(item::doClick, dialog -> {
-                JTextField nombre = findComponent(dialog, JTextField.class);
-                assertNotNull(nombre, "no encontre el campo de texto real del nombre de la pista");
-                nombre.setText("Guitarra renombrada");
+                JTextField name = findComponent(dialog, JTextField.class);
+                assertNotNull(name, "no encontre el campo de texto real del nombre de la pista");
+                name.setText("Guitarra renombrada");
 
                 findButton(dialog, "Aceptar").doClick();
             });
@@ -90,7 +90,7 @@ class WorkWithAScoreAuditTest {
     }
 
     @Test
-    void afinacionEnPropiedadesDeLaPistaMuestraLosNombresDeCuerdaEnElModeloReal() throws Exception {
+    void tuningInTrackPropertiesShowsTheStringNamesInTheRealModel() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -101,9 +101,9 @@ class WorkWithAScoreAuditTest {
             assertNotNull(item, "no encontre 'Propiedades de la pista…' en el menu real");
 
             withDialog(item::doClick, dialog -> {
-                JCheckBox afinacion = AuditSupport.findCheckBox(dialog, "Afinación");
-                assertNotNull(afinacion, "no encontre la casilla real 'Afinación'");
-                afinacion.doClick();
+                JCheckBox tuning = AuditSupport.findCheckBox(dialog, "Afinación");
+                assertNotNull(tuning, "no encontre la casilla real 'Afinación'");
+                tuning.doClick();
 
                 findButton(dialog, "Aceptar").doClick();
             });
@@ -116,7 +116,7 @@ class WorkWithAScoreAuditTest {
     }
 
     @Test
-    void forzarCanales11a16EnPropiedadesDeLaPistaSeGuardaEnElModeloReal() throws Exception {
+    void forcingChannels11To16InTrackPropertiesIsSavedInTheRealModel() throws Exception {
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);
         try {
@@ -127,9 +127,9 @@ class WorkWithAScoreAuditTest {
             assertNotNull(item, "no encontre 'Propiedades de la pista…' en el menu real");
 
             withDialog(item::doClick, dialog -> {
-                JCheckBox forzarCanales = AuditSupport.findCheckBox(dialog, "Forzar canales 11 a 16");
-                assertNotNull(forzarCanales, "no encontre la casilla real 'Forzar canales 11 a 16'");
-                forzarCanales.doClick();
+                JCheckBox forceChannels = AuditSupport.findCheckBox(dialog, "Forzar canales 11 a 16");
+                assertNotNull(forceChannels, "no encontre la casilla real 'Forzar canales 11 a 16'");
+                forceChannels.doClick();
 
                 findButton(dialog, "Aceptar").doClick();
             });
