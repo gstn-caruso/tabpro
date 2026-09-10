@@ -1,3 +1,13 @@
+## [0.34.0](https://github.com/gstn-caruso/tabpro/compare/v0.33.1...v0.34.0) (2026-09-10)
+
+### Features
+
+* **icons:** los símbolos musicales de las barras salen de la fuente Bravura ([#118](https://github.com/gstn-caruso/tabpro/issues/118)) ([c861de1](https://github.com/gstn-caruso/tabpro/commit/c861de16ae73794efb51bc8dbfadc151ff5f51f5))
+
+### Bug Fixes
+
+* **sound:** la configuración del metrónomo se abre desde el menú Sonido ([#119](https://github.com/gstn-caruso/tabpro/issues/119)) ([74a1ab4](https://github.com/gstn-caruso/tabpro/commit/74a1ab4c5ff1e42aaeed19dd804231a4fa1c7943))
+
 ## [0.33.1](https://github.com/gstn-caruso/tabpro/compare/v0.33.0...v0.33.1) (2026-09-10)
 
 ### Bug Fixes
