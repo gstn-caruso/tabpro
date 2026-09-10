@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 class ScoreCanvasTest {
 
-    private final Editor editor = new Editor(new Score("Prueba", 120, List.of(
+    private final Editor editor = new Editor(new Score("Test", 120, List.of(
             Track.standardGuitar("Guitarra"), Track.standardBass("Bajo"))));
     private final ScoreCanvas canvas = new ScoreCanvas(editor);
 
@@ -137,7 +137,7 @@ class ScoreCanvasTest {
         canvas.setTablatureShown(false);
         canvas.setStandardNotationShown(false);
 
-        assertTrue(canvas.showsTablature(), "una pista sin ninguna notacion no se veria");
+        assertTrue(canvas.showsTablature(), "a track without any notation would not be visible");
     }
 
     @Test
@@ -148,7 +148,7 @@ class ScoreCanvasTest {
         editor.selectTrack(1);
 
         assertTrue(canvas.getPreferredSize().height != height,
-                "el bajo tiene cuatro cuerdas, asi que ocupa menos alto que la guitarra");
+                "the bass has four strings, so it takes up less height than the guitar");
     }
 
     @Test
@@ -254,7 +254,7 @@ class ScoreCanvasTest {
 
     @Test
     void rightClickingAPercussionTrackOffersItsSoundsInsteadOfFrets() {
-        Editor percussionEditor = new Editor(new Score("Prueba", 120, List.of(Track.percussion("Bateria"))));
+        Editor percussionEditor = new Editor(new Score("Test", 120, List.of(Track.percussion("Bateria"))));
         ScoreCanvas percussionCanvas = new ScoreCanvas(percussionEditor);
         ScoreLayout layout = ScoreLayout.of(percussionEditor.score(), 900);
         Rectangle firstBeat = layout.beatBounds(0, 0, 0);
@@ -303,7 +303,7 @@ class ScoreCanvasTest {
         horizontal.showPlayhead(Playhead.silent().advancedTo(new BeatPosition(0, 29, 0)));
 
         assertTrue(pane.getViewport().getViewPosition().x > 0,
-                "con el auto-scroll prendido (el default) un playhead lejano tiene que traer la vista hasta el");
+                "with auto-scroll on (the default) a distant playhead has to bring the view up to it");
     }
 
     @Test
@@ -315,7 +315,7 @@ class ScoreCanvasTest {
         horizontal.showPlayhead(Playhead.silent().advancedTo(new BeatPosition(0, 29, 0)));
 
         assertEquals(0, pane.getViewport().getViewPosition().x,
-                "con el auto-scroll destildado la vista no se tiene que mover aunque el playhead quede afuera");
+                "with auto-scroll unchecked the view must not move even when the playhead is out of sight");
     }
 
     @Test
@@ -328,9 +328,9 @@ class ScoreCanvasTest {
         SwingUtilities.invokeAndWait(manyMeasures::moveToLastMeasure);
 
         assertEquals(0, pane.getViewport().getViewPosition().x,
-                "sin layout todavia (viewport 0x0) no hay que mover el scroll a un lugar sin sentido");
+                "without a layout yet (viewport 0x0) the scroll must not move to a nonsensical place");
         assertEquals(0, pane.getViewport().getViewPosition().y,
-                "sin layout todavia (viewport 0x0) no hay que mover el scroll a un lugar sin sentido");
+                "without a layout yet (viewport 0x0) the scroll must not move to a nonsensical place");
     }
 
     @Test
@@ -347,13 +347,13 @@ class ScoreCanvasTest {
         background.join();
 
         assertEquals(0, pane.getViewport().getViewPosition().x,
-                "todavia no llego al EDT: el scroll de otro hilo no se puede haber aplicado ya");
+                "it has not reached the EDT yet: the scroll from another thread cannot have applied already");
 
         releaseEdt.countDown();
         SwingUtilities.invokeAndWait(() -> { });
 
         assertTrue(pane.getViewport().getViewPosition().x > 0,
-                "una vez que el EDT proceso la cola, el scroll real tiene que haber llegado");
+                "once the EDT has processed the queue, the real scroll has to have arrived");
     }
 
     private static CountDownLatch blockTheEdtQueueUntilReleased() {
@@ -382,7 +382,7 @@ class ScoreCanvasTest {
             measures.add(Measure.empty(TimeSignature.fourFour(), Duration.quarter()));
         }
         Track guitar = Track.standardGuitar("Guitarra").withMeasures(measures);
-        return new Editor(new Score("Prueba", 120, List.of(guitar)));
+        return new Editor(new Score("Test", 120, List.of(guitar)));
     }
 
     private static JScrollPane paneShowing(ScoreCanvas canvas) {
@@ -398,7 +398,7 @@ class ScoreCanvasTest {
         Track guitar = Track.standardGuitar("Guitarra").withMeasures(List.of(
                 Measure.empty(TimeSignature.fourFour(), Duration.quarter()),
                 Measure.empty(TimeSignature.fourFour(), Duration.quarter())));
-        return new Editor(new Score("Prueba", 120, List.of(guitar)));
+        return new Editor(new Score("Test", 120, List.of(guitar)));
     }
 
     @Test
