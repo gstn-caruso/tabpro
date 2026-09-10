@@ -30,6 +30,7 @@ public final class TrackSelector extends JPanel {
             trackButtons.add(button);
         }
         refreshSelection();
+        editor.addListener(this::refreshSelection);
     }
 
     private void refreshSelection() {

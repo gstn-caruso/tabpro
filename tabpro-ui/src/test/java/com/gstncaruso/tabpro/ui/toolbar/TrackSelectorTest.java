@@ -113,6 +113,19 @@ class TrackSelectorTest {
         assertEquals(0, editor.cursor().track());
     }
 
+    @Test
+    void unCambioDeCursorPorOtroCaminoActualizaElBotonSeleccionado() {
+        editor.addTrack(Track.standardBass("Bajo"));
+        editor.addTrack(Track.standardGuitar("Guitarra 2"));
+        editor.selectTrack(0);
+        TrackSelector selector = new TrackSelector(editor, commands);
+
+        editor.selectTrack(2);
+
+        assertFalse(selector.trackButtons().get(0).isSelected());
+        assertTrue(selector.trackButtons().get(2).isSelected());
+    }
+
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
         InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;
