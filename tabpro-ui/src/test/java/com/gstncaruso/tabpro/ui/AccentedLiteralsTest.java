@@ -61,7 +61,6 @@ class AccentedLiteralsTest {
             "tabpro-core/src/main/java/com/gstncaruso/tabpro/core/model/Track.java",
             "tabpro-core/src/main/java/com/gstncaruso/tabpro/core/model/Tuning.java",
             "tabpro-core/src/main/java/com/gstncaruso/tabpro/core/model/TuningLibrary.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/actions/Commands.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/effects/GraceNotePanel.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/effects/NoteEffectsDialog.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/effects/StrokePanel.java",
@@ -87,8 +86,6 @@ class AccentedLiteralsTest {
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/BarDurationReport.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/MeasureRangePanel.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/dialogs/wizards/StringOptionsPanel.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/font/BravuraFont.java",
-            "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/icons/GlyphIcon.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/page/PageElement.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/score/ViewMode.java",
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/ScoreDocument.java");

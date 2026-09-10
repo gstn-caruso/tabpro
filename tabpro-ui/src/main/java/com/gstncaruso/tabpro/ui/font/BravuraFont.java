@@ -26,7 +26,7 @@ public final class BravuraFont {
     private static Font load() {
         try (InputStream resource = BravuraFont.class.getResourceAsStream(RESOURCE)) {
             if (resource == null) {
-                throw new IllegalStateException("No se encontro " + RESOURCE + " en el classpath");
+                throw new IllegalStateException("No se encontró " + RESOURCE + " en el classpath");
             }
             return Font.createFont(Font.TRUETYPE_FONT, resource);
         } catch (FontFormatException e) {
