@@ -4,12 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 import org.junit.jupiter.api.Test;
 
 class PdfDocumentTest {
@@ -66,6 +70,19 @@ class PdfDocumentTest {
     }
 
     @Test
+    void theImageStreamDecodesToTheExactPixelsOfTheOriginalImage() throws IOException, DataFormatException {
+        BufferedImage image = page(11, 7);
+        PdfDocument pdf = new PdfDocument();
+        pdf.addPage(image);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        pdf.writeTo(out);
+
+        byte[] decoded = inflate(imageStreamOf(out.toByteArray()));
+        assertArrayEquals(rgbBytesOf(image), decoded, "el pdf tiene que decodificar a los mismos pixeles que la imagen");
+    }
+
+    @Test
     void theSheetIsAsBigAsThePaperItWasAskedFor() throws IOException {
         PdfDocument pdf = new PdfDocument(612, 792);
         pdf.addPage(page(40, 60));
@@ -95,6 +112,46 @@ class PdfDocumentTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         pdf.writeTo(out);
         return out.toString(StandardCharsets.ISO_8859_1);
+    }
+
+    private static byte[] rgbBytesOf(BufferedImage image) {
+        byte[] rgb = new byte[image.getWidth() * image.getHeight() * 3];
+        int at = 0;
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                int pixel = image.getRGB(x, y);
+                rgb[at++] = (byte) ((pixel >> 16) & 0xFF);
+                rgb[at++] = (byte) ((pixel >> 8) & 0xFF);
+                rgb[at++] = (byte) (pixel & 0xFF);
+            }
+        }
+        return rgb;
+    }
+
+    private static byte[] imageStreamOf(byte[] pdfBytes) {
+        String pdf = new String(pdfBytes, StandardCharsets.ISO_8859_1);
+        int imageObjectAt = pdf.indexOf("/Subtype /Image");
+        int streamAt = pdf.indexOf("stream\n", imageObjectAt) + "stream\n".length();
+        int endStreamAt = pdf.indexOf("\nendstream", streamAt);
+        byte[] stream = new byte[endStreamAt - streamAt];
+        System.arraycopy(pdfBytes, streamAt, stream, 0, stream.length);
+        return stream;
+    }
+
+    private static byte[] inflate(byte[] deflated) throws DataFormatException {
+        Inflater inflater = new Inflater();
+        inflater.setInput(deflated);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(deflated.length * 3);
+        byte[] buffer = new byte[4096];
+        while (!inflater.finished()) {
+            int count = inflater.inflate(buffer);
+            if (count == 0 && inflater.needsInput()) {
+                break;
+            }
+            out.write(buffer, 0, count);
+        }
+        inflater.end();
+        return out.toByteArray();
     }
 
     private static int countOf(String text, String fragment) {
