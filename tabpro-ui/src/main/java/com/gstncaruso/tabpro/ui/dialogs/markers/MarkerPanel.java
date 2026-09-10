@@ -5,7 +5,6 @@ import com.gstncaruso.tabpro.ui.dialogs.style.ColorSwatchButton;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import javax.swing.JTextField;
 
-/** El nombre y el color de un marcador. */
 public final class MarkerPanel extends FormPanel {
 
     private final JTextField name = new JTextField();

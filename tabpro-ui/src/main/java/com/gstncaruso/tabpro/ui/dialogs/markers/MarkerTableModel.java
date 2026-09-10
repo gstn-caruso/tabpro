@@ -4,7 +4,6 @@ import com.gstncaruso.tabpro.core.model.Score;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
-/** Las columnas Posicion/Nombre de la tabla de marcadores, en el orden en que caen los compases. */
 final class MarkerTableModel extends AbstractTableModel {
 
     private static final String[] COLUMNS = {"Posición", "Nombre"};

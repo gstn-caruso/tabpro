@@ -13,10 +13,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-/**
- * La ventana de Marcadores: insertar uno en el compas donde esta el cursor, y la
- * lista de los que ya hay para navegar hasta ellos o editarlos.
- */
 public final class MarkersDialog {
 
     private MarkersDialog() {
@@ -26,17 +22,14 @@ public final class MarkersDialog {
         DialogShell.show(parent, "Marcadores", buildContent(editor));
     }
 
-    /** Abre el mismo dialogo, pero arrancando posicionado en el marcador de ese compas. */
     public static void showEditing(Component parent, Editor editor, int measureIndex) {
         DialogShell.show(parent, "Marcadores", buildContentEditing(editor, measureIndex));
     }
 
-    /** Arma el contenido de la ventana sin abrir ningun dialogo, para poder probarlo. */
     static JPanel buildContent(Editor editor) {
         return build(editor).panel();
     }
 
-    /** Como {@link #buildContent}, pero con el marcador de ese compas ya seleccionado. */
     static JPanel buildContentEditing(Editor editor, int measureIndex) {
         Content content = build(editor);
         select(content.list(), measureIndex);
@@ -52,7 +45,6 @@ public final class MarkersDialog {
         }
     }
 
-    /** El panel armado junto con la lista que lo alimenta, para poder posicionarla desde afuera. */
     private record Content(JPanel panel, JList<MarkerList.Positioned> list) {
     }
 
