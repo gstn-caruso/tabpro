@@ -62,7 +62,7 @@ class ImportExportAuditTest {
 
     @BeforeEach
     @AfterEach
-    void limpiarArchivosRecientes() {
+    void clearRecentFiles() {
         java.util.prefs.Preferences.userRoot().node("com/gstncaruso/tabpro").remove("recentFiles");
     }
 
@@ -71,7 +71,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void abrirPorElMenuLeeUnArchivoTabproPropioIgualQueSeGuardo(@TempDir Path tempDir) throws Exception {
+    void openingThroughTheMenuReadsAnOwnTabproFileTheSameAsItWasSaved(@TempDir Path tempDir) throws Exception {
         Score original = Score.blank();
         Path path = tempDir.resolve("propia.tabpro");
         new JsonScoreFiles().save(original, path);
@@ -96,7 +96,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void abrirPorElMenuReconoceUnArchivoDeGuitarProSinPasarPorImportar() throws Exception {
+    void openingThroughTheMenuRecognizesAGuitarProFileWithoutGoingThroughImport() throws Exception {
         Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-features.gp5");
         assertTrue(Files.exists(path), "no encontre el fixture real de Guitar Pro en tabpro-format");
 
@@ -119,7 +119,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void guardarSinArchivoTodaviaAbreGuardarComoYLaSegundaVezSobreescribeSinPreguntar(@TempDir Path tempDir)
+    void savingWithoutAFileYetOpensSaveAsAndTheSecondTimeOverwritesWithoutAsking(@TempDir Path tempDir)
             throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
@@ -151,7 +151,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void archivoRecienGuardadoApareceEnAbrirRecienteYAlElegirloSeAbreDeVerdad(@TempDir Path tempDir) throws Exception {
+    void aRecentlySavedFileAppearsInOpenRecentAndChoosingItReallyOpensIt(@TempDir Path tempDir) throws Exception {
         Path path = tempDir.resolve("reciente.tabpro");
         Editor firstEditor = editorWithANote();
         MainFrame firstFrame = newFrame(firstEditor);
@@ -185,7 +185,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void importarMidiPorElMenuOfreceLasPistasRealesYElImportRapidoLasTraeAlModelo(@TempDir Path tempDir)
+    void importingMidiThroughTheMenuOffersTheRealTracksAndQuickImportBringsThemToTheModel(@TempDir Path tempDir)
             throws Exception {
         Path midiPath = tempDir.resolve("ajeno.mid");
         new MidiScoreExporter().export(Score.blank(), midiPath);
@@ -226,7 +226,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void importarTablaturaAsciiPorElMenuTraeLasNotasRealesALaPistaActiva() throws Exception {
+    void importingAsciiTablatureThroughTheMenuBringsTheRealNotesToTheActiveTrack() throws Exception {
         String tab = "|--5--0--|\n" + "|--------|\n".repeat(5);
 
         Editor editor = blankEditor();
@@ -251,7 +251,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void importarMusicXmlPorElMenuLeeLaArmaduraYLasNotasRealesDelArchivo() throws Exception {
+    void importingMusicXmlThroughTheMenuReadsTheKeySignatureAndTheRealNotesFromTheFile() throws Exception {
         Path path = repoFile("tabpro-format/src/test/resources/musicxml/armadura-en-fa.musicxml");
         assertTrue(Files.exists(path), "no encontre el fixture real de MusicXML en tabpro-format");
 
@@ -278,7 +278,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void importarPowerTabPorElMenuLeeUnArchivoRealDelRepositorioDePowerTabEditor() throws Exception {
+    void importingPowerTabThroughTheMenuReadsARealFileFromThePowerTabEditorRepository() throws Exception {
         Path path = repoFile("tabpro-format/src/test/resources/powertab/guitars.ptb");
         assertTrue(Files.exists(path), "no encontre el fixture real de PowerTab en tabpro-format");
 
@@ -303,7 +303,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void importarTablEditPorElMenuLeeUnTef3MinimoConElMismoLayoutQueElLectorReal(@TempDir Path tempDir)
+    void importingTablEditThroughTheMenuReadsAMinimalTef3WithTheSameLayoutAsTheRealReader(@TempDir Path tempDir)
             throws Exception {
         byte[] bytes = TabEditMinimalFixture.oneTrackOneMeasureScore(
                 "Cancion de prueba", 140, "Guitarra de prueba", List.of(3, 5, 7, 8));
@@ -332,7 +332,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void importarGuitarProDesdeElSubmenuImportarUsaElMismoLectorQueAbrir() throws Exception {
+    void importingGuitarProFromTheImportSubmenuUsesTheSameReaderAsOpen() throws Exception {
         Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-features.gp5");
 
         Editor editor = blankEditor();
@@ -355,7 +355,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void exportarMidiPorElMenuEscribeUnArchivoQueMidiSystemLeeConSusNotas(@TempDir Path tempDir) throws Exception {
+    void exportingMidiThroughTheMenuWritesAFileThatMidiSystemReadsWithItsNotes(@TempDir Path tempDir) throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -379,7 +379,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void exportarWavePorElMenuPreguntaLaCalidadYEscribeUnAudioReal(@TempDir Path tempDir) throws Exception {
+    void exportingWaveThroughTheMenuAsksForQualityAndWritesRealAudio(@TempDir Path tempDir) throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -411,7 +411,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void exportarTablaturaAsciiPorElMenuEscribeLaPistaActivaYSeReimportaConLaMismaNota(@TempDir Path tempDir)
+    void exportingAsciiTablatureThroughTheMenuWritesTheActiveTrackAndReimportsWithTheSameNote(@TempDir Path tempDir)
             throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
@@ -441,7 +441,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void exportarTablaturaAsciiPorElMenuMuestraElTrasteDeLaNotaEnLaVistaPrevia() throws Exception {
+    void exportingAsciiTablatureThroughTheMenuShowsTheNoteFretInThePreview() throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -462,7 +462,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void exportarMusicXmlPorElMenuEscribeUnArchivoQueElImportadorRealLeeIgual(@TempDir Path tempDir) throws Exception {
+    void exportingMusicXmlThroughTheMenuWritesAFileTheRealImporterReadsBack(@TempDir Path tempDir) throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -487,7 +487,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void exportarGuitarPro4PorElMenuEscribeUnArchivoQueElLectorRealDeGuitarProReconoce(@TempDir Path tempDir)
+    void exportingGuitarPro4ThroughTheMenuWritesAFileTheRealGuitarProReaderRecognizes(@TempDir Path tempDir)
             throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
@@ -515,7 +515,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void exportarImagenPorElMenuEscribeUnPngReal(@TempDir Path tempDir) throws Exception {
+    void exportingImageThroughTheMenuWritesARealPng(@TempDir Path tempDir) throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
@@ -540,7 +540,7 @@ class ImportExportAuditTest {
     }
 
     @Test
-    void exportarPdfPorElMenuEscribeUnPdfReal(@TempDir Path tempDir) throws Exception {
+    void exportingPdfThroughTheMenuWritesARealPdf(@TempDir Path tempDir) throws Exception {
         Editor editor = editorWithANote();
         MainFrame frame = newFrame(editor);
         try {
