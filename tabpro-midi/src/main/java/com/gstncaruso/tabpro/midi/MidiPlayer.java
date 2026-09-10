@@ -166,7 +166,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
             closeChosenOutput();
             chosenOutput = device;
         } catch (MidiUnavailableException e) {
-            System.err.println("No se pudo usar la salida MIDI " + info.getName() + ": " + e.getMessage());
+            System.err.println("Could not use the MIDI output " + info.getName() + ": " + e.getMessage());
         }
     }
 
@@ -179,7 +179,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
             secondaryPortOutput(port).useDevice(info);
         } catch (MidiUnavailableException e) {
             System.err.println(
-                    "No se pudo usar la salida MIDI " + info.getName() + " en el puerto " + port + ": "
+                    "Could not use the MIDI output " + info.getName() + " on port " + port + ": "
                             + e.getMessage());
         }
     }
@@ -300,13 +300,13 @@ public final class MidiPlayer implements Player, AutoCloseable {
 
         void useDevice(javax.sound.midi.MidiDevice.Info info) throws MidiUnavailableException {
             if (isSilent()) {
-                throw new MidiUnavailableException("el puerto no tiene secuenciador disponible");
+                throw new MidiUnavailableException("the port has no sequencer available");
             }
             javax.sound.midi.MidiDevice chosen = MidiSystem.getMidiDevice(info);
             chosen.open();
             if (!openIfNeeded()) {
                 chosen.close();
-                throw new MidiUnavailableException("no se pudo abrir el secuenciador del puerto");
+                throw new MidiUnavailableException("could not open the port's sequencer");
             }
             for (javax.sound.midi.Transmitter transmitter : sequencer.getTransmitters()) {
                 transmitter.close();
@@ -343,7 +343,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
                 sequencer.getTransmitter().setReceiver(defaultReceiver.get());
                 wiredToDefault = true;
             } catch (MidiUnavailableException e) {
-                System.err.println("Un puerto se queda mudo, sin poder conectar su sintetizador: " + e.getMessage());
+                System.err.println("A port goes silent, unable to connect its synthesizer: " + e.getMessage());
             }
         }
 
