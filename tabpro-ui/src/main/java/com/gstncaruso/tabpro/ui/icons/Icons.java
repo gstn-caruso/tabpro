@@ -49,6 +49,8 @@ public final class Icons {
     private static final String NOTEHEAD_BLACK = "";
     /** SMuFL U+E262 "accidentalSharp": el sostenido. */
     private static final String ACCIDENTAL_SHARP = "";
+    /** SMuFL U+E084 "timeSig4": el digito 4 de una cifra de compas. */
+    private static final String TIME_SIG_4 = "";
 
     private Icons() {
     }
@@ -151,11 +153,7 @@ public final class Icons {
     }
 
     public static Icon timeSignature() {
-        return icon((graphics, size) -> {
-            graphics.setFont(small(size));
-            graphics.drawString("4", (float) (size * 0.36), (float) (size * 0.46));
-            graphics.drawString("4", (float) (size * 0.36), (float) (size * 0.86));
-        });
+        return new GlyphIcon(SIZE, TIME_SIG_4, TIME_SIG_4);
     }
 
     public static Icon marker() {
