@@ -199,3 +199,33 @@ de cada archivo por separado, no de la clase entera.
 donde arma el rectángulo para `scrollRectToVisible`) que no pida scroll si el viewport todavía
 mide 0×0. El cuelgue en sí (agravante) es más caro de diagnosticar: hace falta reproducirlo con
 un thread dump (`jstack`) en el momento exacto, no con `assertTimeoutPreemptively`.
+
+**Cerrado en `fix/las-notificaciones-del-editor-llegan-por-el-edt`:**
+`ScoreCanvas.editorChanged` ahora salta el `scrollRectToVisible` si el rectángulo del cursor o
+`getVisibleRect()` están vacíos (viewport todavía en 0×0), con test (`ScoreCanvasTest`,
+probado con la maqueta que reproducía el `IllegalArgumentException` de más arriba: sin el guard,
+el `JViewport` real terminaba con una posición de scroll sin sentido en vez de tirar en un test
+headless — el `IllegalArgumentException` en sí sólo sale con ventana real, porque
+`RepaintManager` sólo intenta el buffer de doble buffering cuando el componente está *showing*).
+Como defensa en profundidad, se sumó `EdtEditorListener` (`tabpro-ui`): un adaptador que entrega
+en el acto si ya está en el EDT, o difiere con `invokeLater` si no — todos los componentes Swing
+podrían engancharse al `Editor` a través de él, pero sólo `ScoreCanvas` quedó conectado en este
+cambio, porque `TrackPanel`/`StatusBar`/`TrackSelector`/etc. cachean estado dentro de su
+`refresh()`/`editorChanged()` (patrón *push*) y sus tests existentes mutan el `Editor` y aseveran
+en el mismo statement, desde el hilo del test — nunca el EDT —: diferir esa entrega los rompería.
+Extender el adaptador a esos componentes es un cambio más grande (reescribir esos tests para
+bombear el EDT) que queda pendiente, fuera del alcance acotado de este fix.
+
+El humo con ventana real (`ViewSwitchThenCursorMoveAuditTest`, `tabpro-app`, con una partitura
+propia con Coda/Segno) recorre las cuatro vistas y mueve el cursor al último compás desde el
+hilo del test, igual que el harness original: no tira y no cuelga, ni sólo ni corriendo con las
+otras 103 pruebas del grupo `integracion` en paralelo.
+
+**Sobre el cuelgue:** no se pudo reproducir con el harness reconstruido (ni en aislamiento ni en
+la corrida completa del grupo `integracion`, varias veces). La hipótesis con más evidencia es la
+que ya documentó `docs/auditoria-uso-real.md`: un `AWTEventListener` global (`Toolkit`) sin
+`@ResourceLock(AuditSupport.SWING_LOCK)` en una clase que corre en paralelo con otra que sí abre
+diálogos reales dejaba encolada la suite entera ("se reprodujo una vez, sin el lock"). El
+`GuiSmokeAuditTest` descartable pudo haber corrido sin ese lock -no quedó en el repositorio para
+confirmarlo-, lo que también explicaría que la segunda corrida (con otro conjunto de archivos)
+se colgara igual: la colisión es con *otra* clase de la suite, no con el archivo bajo prueba.
