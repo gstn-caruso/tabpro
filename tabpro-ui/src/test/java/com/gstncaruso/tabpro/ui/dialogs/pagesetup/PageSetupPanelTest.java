@@ -7,10 +7,16 @@ import com.gstncaruso.tabpro.ui.page.Orientation;
 import com.gstncaruso.tabpro.ui.page.PageBanner;
 import com.gstncaruso.tabpro.ui.page.PageElement;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
+import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import org.junit.jupiter.api.Test;
 
 class PageSetupPanelTest {
+
+    @Test
+    void ningunControlQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(new PageSetupPanel(PageSetup.defaults()));
+    }
 
     @Test
     void startsWithTheGivenSetup() {
