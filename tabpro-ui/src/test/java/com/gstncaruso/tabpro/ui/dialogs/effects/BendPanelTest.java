@@ -17,6 +17,12 @@ class BendPanelTest {
     }
 
     @Test
+    void ningunControlDeLaPalancaQuedaSinNombreNiTooltipAccesible() {
+        AccessibilityAssertions.assertNoViolations(
+                new BendPanel(Bend.of(BendType.DIP, 4), BendType.tremoloBarTypes()));
+    }
+
+    @Test
     void startsWithTheGivenBend() {
         Bend bend = Bend.of(BendType.BEND_RELEASE, 6);
 
