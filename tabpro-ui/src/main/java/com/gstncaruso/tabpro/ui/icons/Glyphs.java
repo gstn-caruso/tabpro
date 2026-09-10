@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.ui.icons;
 
-import com.gstncaruso.tabpro.core.model.NoteValue;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -22,76 +21,6 @@ public final class Glyphs {
         AffineTransform placed = AffineTransform.getTranslateInstance(centerX, centerY);
         placed.rotate(Math.toRadians(-20));
         return placed.createTransformedShape(head);
-    }
-
-    /** Una cabeza blanca: el ovalo de afuera menos el hueco de adentro. */
-    public static Shape hollowHead(double centerX, double centerY, double width) {
-        java.awt.geom.Area head = new java.awt.geom.Area(noteHead(centerX, centerY, width, true));
-        head.subtract(new java.awt.geom.Area(noteHead(centerX, centerY, width * 0.5, true)));
-        return head;
-    }
-
-    /**
-     * Una figura completa: cabeza, plica y corchetes segun su valor. Todo se
-     * mide respecto del ancho de la cabeza, asi que la figura escala pareja.
-     */
-    public static void note(Graphics2D graphics, double centerX, double baseY, double headWidth, NoteValue value, boolean dotted) {
-        boolean hollow = value == NoteValue.WHOLE || value == NoteValue.HALF;
-        graphics.setStroke(new BasicStroke((float) (headWidth * 0.16)));
-        graphics.fill(hollow ? hollowHead(centerX, baseY, headWidth) : noteHead(centerX, baseY, headWidth, false));
-        if (value == NoteValue.WHOLE) {
-            markDot(graphics, centerX, baseY, headWidth, dotted);
-            return;
-        }
-        double stemX = centerX + headWidth * 0.44;
-        double stemTop = baseY - headWidth * 2.1;
-        graphics.draw(new java.awt.geom.Line2D.Double(stemX, baseY - headWidth * 0.2, stemX, stemTop));
-        flags(graphics, stemX, stemTop, headWidth, flagsOf(value));
-        markDot(graphics, centerX, baseY, headWidth, dotted);
-    }
-
-    private static void markDot(Graphics2D graphics, double centerX, double baseY, double headWidth, boolean dotted) {
-        if (!dotted) {
-            return;
-        }
-        double dot = headWidth * 0.32;
-        graphics.fill(new Ellipse2D.Double(centerX + headWidth * 0.8, baseY - dot / 2, dot, dot));
-    }
-
-    private static int flagsOf(NoteValue value) {
-        return switch (value) {
-            case WHOLE, HALF, QUARTER -> 0;
-            case EIGHTH -> 1;
-            case SIXTEENTH -> 2;
-            case THIRTY_SECOND -> 3;
-            case SIXTY_FOURTH -> 4;
-        };
-    }
-
-    private static void flags(Graphics2D graphics, double stemX, double stemTop, double headWidth, int count) {
-        for (int index = 0; index < count; index++) {
-            double y = stemTop + index * headWidth * 0.5;
-            Path2D flag = new Path2D.Double();
-            flag.moveTo(stemX, y);
-            flag.quadTo(stemX + headWidth, y + headWidth * 0.35, stemX + headWidth * 0.7, y + headWidth * 1.3);
-            flag.quadTo(stemX + headWidth * 0.8, y + headWidth * 0.55, stemX, y + headWidth * 0.55);
-            flag.closePath();
-            graphics.fill(flag);
-        }
-    }
-
-    /** Un silencio de negra, el que se usa como simbolo de silencio en general. */
-    public static void quarterRest(Graphics2D graphics, double centerX, double centerY, double scale) {
-        // El silencio se dibuja con la misma unidad que la cabeza de nota.
-        Path2D rest = new Path2D.Double();
-        rest.moveTo(centerX - 2 * scale, centerY - 7 * scale);
-        rest.lineTo(centerX + 2.2 * scale, centerY - 2 * scale);
-        rest.lineTo(centerX - 1.6 * scale, centerY + 1.4 * scale);
-        rest.lineTo(centerX + 2.4 * scale, centerY + 6.6 * scale);
-        rest.quadTo(centerX - 2.6 * scale, centerY + 3.4 * scale, centerX + 0.6 * scale, centerY + 2.2 * scale);
-        rest.lineTo(centerX - 2.6 * scale, centerY - 1.8 * scale);
-        rest.closePath();
-        graphics.fill(rest);
     }
 
     /** Un pentagrama chiquito, para los iconos que hablan de la partitura. */

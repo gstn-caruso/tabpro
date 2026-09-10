@@ -464,26 +464,12 @@ public final class Icons {
         graphics.draw(new Line2D.Double(centerX, centerY - arm, centerX, centerY + arm));
     }
 
-    private static void repeat(Graphics2D graphics, int size, boolean opening) {
-        double x = opening ? size * 0.24 : size * 0.66;
-        double dots = opening ? size * 0.56 : size * 0.34;
-        Glyphs.staff(graphics, size * 0.1, size * 0.26, size * 0.8, size * 0.12);
-        graphics.fill(Glyphs.barLine(x, size * 0.26, size * 0.74, size * 0.09));
-        graphics.fill(Glyphs.barLine(x + (opening ? size * 0.12 : -size * 0.06), size * 0.26, size * 0.74, size * 0.05));
-        graphics.fill(new Ellipse2D.Double(dots, size * 0.4, size * 0.1, size * 0.1));
-        graphics.fill(new Ellipse2D.Double(dots, size * 0.56, size * 0.1, size * 0.1));
-    }
-
     private static BasicStroke thin() {
         return new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     }
 
     private static Font small(int size) {
         return new Font(Font.SANS_SERIF, Font.BOLD, Math.round(size * 0.62f));
-    }
-
-    private static Font big(int size) {
-        return new Font(Font.SERIF, Font.BOLD, Math.round(size * 0.86f));
     }
 
     private static Icon icon(ToolIcon.Drawing drawing) {
