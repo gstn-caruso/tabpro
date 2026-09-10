@@ -34,12 +34,7 @@ public final class Icons {
     }
 
     public static Icon print() {
-        return icon((graphics, size) -> {
-            graphics.setStroke(thin());
-            graphics.draw(new Rectangle2D.Double(size * 0.28, size * 0.12, size * 0.44, size * 0.22));
-            graphics.draw(new RoundRectangle2D.Double(size * 0.12, size * 0.34, size * 0.76, size * 0.34, 3, 3));
-            graphics.draw(new Rectangle2D.Double(size * 0.28, size * 0.6, size * 0.44, size * 0.28));
-        });
+        return svgIcon("printer");
     }
 
     public static Icon scoreInformation() {
