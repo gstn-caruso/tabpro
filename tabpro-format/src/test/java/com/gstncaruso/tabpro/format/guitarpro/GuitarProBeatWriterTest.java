@@ -26,7 +26,7 @@ class GuitarProBeatWriterTest {
     private final GuitarProBeatWriter writer = new GuitarProBeatWriter();
 
     @Test
-    void unaNotaNormalNoEsUnCompasVacio() {
+    void aNormalNoteIsNotAnEmptyBeat() {
         byte[] bytes = write(Beat.of(Duration.quarter(), new Note(1, 5)));
 
         assertEquals(HAS_STATUS, bytes[0] & 0xFF);
@@ -36,7 +36,7 @@ class GuitarProBeatWriterTest {
     }
 
     @Test
-    void elSilencioTambienEscribeSuMascaraDeCuerdas() {
+    void aRestAlsoWritesItsStringMask() {
         byte[] bytes = write(Beat.rest(Duration.quarter()));
 
         assertEquals(STATUS_REST, bytes[1] & 0xFF);
@@ -46,7 +46,7 @@ class GuitarProBeatWriterTest {
     }
 
     @Test
-    void elCambioDeParametrosEscribeLasPerillasEnSusPasos() {
+    void theParameterChangeWritesTheKnobsInTheirSteps() {
         ParameterChange change = ParameterChange.nothing()
                 .changing(SoundParameter.VOLUME, 104)
                 .changing(SoundParameter.PAN, 64);

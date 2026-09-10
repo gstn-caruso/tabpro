@@ -71,7 +71,7 @@ class GuitarProBeatReaderTest {
     }
 
     @Test
-    void unSilencioIgualTraeSuMascaraDeCuerdas() {
+    void aRestAlsoCarriesItsStringMask() {
         GuitarProByteReader bytes = new GuitarProByteReader(new GuitarProFileWriter()
                 .writeUnsignedByte(WITH_STATUS)
                 .writeUnsignedByte(REST_STATUS)
@@ -83,11 +83,11 @@ class GuitarProBeatReaderTest {
                 .writeUnsignedByte(NOTE_WITH_FRET).writeUnsignedByte(NORMAL_NOTE).writeSignedByte(9)
                 .bytes());
 
-        Beat silencio = reader.read(bytes, GuitarProVersion.GP4, 6);
-        Beat siguiente = reader.read(bytes, GuitarProVersion.GP4, 6);
+        Beat rest = reader.read(bytes, GuitarProVersion.GP4, 6);
+        Beat next = reader.read(bytes, GuitarProVersion.GP4, 6);
 
-        assertTrue(silencio.isRest());
-        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+        assertTrue(rest.isRest());
+        assertEquals(9, next.noteOn(1).orElseThrow().fret());
     }
 
     @Test
@@ -338,10 +338,10 @@ class GuitarProBeatReaderTest {
                 .bytes());
 
         Beat wahBeat = reader.read(bytes, GuitarProVersion.GP5_00, 6);
-        Beat siguiente = reader.read(bytes, GuitarProVersion.GP5_00, 6);
+        Beat next = reader.read(bytes, GuitarProVersion.GP5_00, 6);
 
         assertEquals(Wah.OPEN, wahBeat.effects().wah().orElseThrow());
-        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+        assertEquals(9, next.noteOn(1).orElseThrow().fret());
     }
 
     @Test
@@ -356,10 +356,10 @@ class GuitarProBeatReaderTest {
                 .bytes());
 
         Beat wahBeat = reader.read(bytes, GuitarProVersion.GP5_10, 6);
-        Beat siguiente = reader.read(bytes, GuitarProVersion.GP5_10, 6);
+        Beat next = reader.read(bytes, GuitarProVersion.GP5_10, 6);
 
         assertEquals(Wah.OPEN, wahBeat.effects().wah().orElseThrow());
-        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+        assertEquals(9, next.noteOn(1).orElseThrow().fret());
     }
 
     @ParameterizedTest
@@ -484,10 +484,10 @@ class GuitarProBeatReaderTest {
                 .writeInt(100)
                 .writeUnsignedByte(NO_STRINGS));
 
-        Bend palanca = beat.effects().tremoloBar().orElseThrow();
-        assertEquals(-4, palanca.points().get(1).quarterTones(), "un tono entero hacia abajo");
-        assertEquals(0, palanca.points().getFirst().quarterTones());
-        assertEquals(0, palanca.points().getLast().quarterTones());
+        Bend tremoloBar = beat.effects().tremoloBar().orElseThrow();
+        assertEquals(-4, tremoloBar.points().get(1).quarterTones(), "un tono entero hacia abajo");
+        assertEquals(0, tremoloBar.points().getFirst().quarterTones());
+        assertEquals(0, tremoloBar.points().getLast().quarterTones());
     }
 
     @Test
@@ -506,9 +506,9 @@ class GuitarProBeatReaderTest {
                 .bytes());
 
         reader.read(bytes, GuitarProVersion.GP3, 6);
-        Beat siguiente = reader.read(bytes, GuitarProVersion.GP3, 6);
+        Beat next = reader.read(bytes, GuitarProVersion.GP3, 6);
 
-        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+        assertEquals(9, next.noteOn(1).orElseThrow().fret());
     }
 
     @Test
@@ -526,11 +526,11 @@ class GuitarProBeatReaderTest {
                 .writeUnsignedByte(NOTE_WITH_FRET).writeUnsignedByte(NORMAL_NOTE).writeSignedByte(9)
                 .bytes());
 
-        Beat golpe = reader.read(bytes, GuitarProVersion.GP3, 6);
-        Beat siguiente = reader.read(bytes, GuitarProVersion.GP3, 6);
+        Beat slap = reader.read(bytes, GuitarProVersion.GP3, 6);
+        Beat next = reader.read(bytes, GuitarProVersion.GP3, 6);
 
-        assertTrue(golpe.effects().slapping());
-        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+        assertTrue(slap.effects().slapping());
+        assertEquals(9, next.noteOn(1).orElseThrow().fret());
     }
 
     @Test
@@ -548,11 +548,11 @@ class GuitarProBeatReaderTest {
                 .writeUnsignedByte(NOTE_WITH_FRET).writeUnsignedByte(NORMAL_NOTE).writeSignedByte(9)
                 .bytes());
 
-        Beat golpe = reader.read(bytes, GuitarProVersion.GP4, 6);
-        Beat siguiente = reader.read(bytes, GuitarProVersion.GP4, 6);
+        Beat slap = reader.read(bytes, GuitarProVersion.GP4, 6);
+        Beat next = reader.read(bytes, GuitarProVersion.GP4, 6);
 
-        assertTrue(golpe.effects().slapping());
-        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+        assertTrue(slap.effects().slapping());
+        assertEquals(9, next.noteOn(1).orElseThrow().fret());
     }
 
     @Test
@@ -567,11 +567,11 @@ class GuitarProBeatReaderTest {
                 .bytes());
 
         Beat tempoBeat = reader.read(bytes, GuitarProVersion.GP5_10, 6);
-        Beat siguiente = reader.read(bytes, GuitarProVersion.GP5_10, 6);
+        Beat next = reader.read(bytes, GuitarProVersion.GP5_10, 6);
 
         assertEquals(OptionalInt.of(140),
                 tempoBeat.effects().parameterChange().valueOf(SoundParameter.TEMPO));
-        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+        assertEquals(9, next.noteOn(1).orElseThrow().fret());
     }
 
     @Test
@@ -586,11 +586,11 @@ class GuitarProBeatReaderTest {
                 .bytes());
 
         Beat tempoBeat = reader.read(bytes, GuitarProVersion.GP5_00, 6);
-        Beat siguiente = reader.read(bytes, GuitarProVersion.GP5_00, 6);
+        Beat next = reader.read(bytes, GuitarProVersion.GP5_00, 6);
 
         assertEquals(OptionalInt.of(140),
                 tempoBeat.effects().parameterChange().valueOf(SoundParameter.TEMPO));
-        assertEquals(9, siguiente.noteOn(1).orElseThrow().fret());
+        assertEquals(9, next.noteOn(1).orElseThrow().fret());
     }
 
     private static GuitarProFileWriter gp5Beat(int wah, boolean withRseInstrumentEffect) {
