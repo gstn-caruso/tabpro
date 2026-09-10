@@ -23,16 +23,6 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-/**
- * El "File &gt; Export &gt; Wave" del manual, pero fuera de tiempo real: en vez de grabar
- * mientras suena, le manda al sintetizador todos los eventos de la secuencia ya calculados en
- * microsegundos y despues lee el audio que produce tan rapido como se pueda, sin esperar a que
- * la partitura efectivamente termine de sonar.
- *
- * <p>El sintetizador (y su banco de sonidos) es un colaborador que se recibe de afuera: esta
- * clase nunca lo crea. Asi, cuando el sintetizador venga con un banco de sonidos cargado, el
- * WAVE suena mejor sin tocar una linea de este archivo.
- */
 public final class WaveRenderer {
 
     private static final int TEMPO_META_TYPE = 0x51;
@@ -66,9 +56,9 @@ public final class WaveRenderer {
     }
 
     /**
-     * Le manda al receptor cada evento de la secuencia con su marca de tiempo en microsegundos,
-     * todos de una vez: el sintetizador los sincroniza el mismo con el audio a medida que lo
-     * vamos leyendo, sin que nadie tenga que esperar en tiempo real.
+     * Sends every event already timestamped in microseconds, all at once: Gervill's
+     * AudioSynthesizer synchronizes them with the audio as it is read back, so nothing here has
+     * to wait in real time.
      */
     private static void sendEvents(Sequence sequence, Receiver receiver) {
         double microsecondsPerTick = DEFAULT_MICROSECONDS_PER_QUARTER / (double) sequence.getResolution();
@@ -104,7 +94,6 @@ public final class WaveRenderer {
         return ((data[0] & 0xFF) << 16) | ((data[1] & 0xFF) << 8) | (data[2] & 0xFF);
     }
 
-    /** Lee del stream exactamente la cantidad de cuadros que dura la partitura, y la escribe. */
     private static void writeWave(AudioInputStream stream, AudioFormat format, long microsecondLength, Path path)
             throws IOException {
         long frames = Math.round(microsecondLength / 1_000_000.0 * format.getSampleRate());
