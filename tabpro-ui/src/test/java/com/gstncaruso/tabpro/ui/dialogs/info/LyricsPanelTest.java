@@ -53,4 +53,14 @@ class LyricsPanelTest {
 
         assertEquals(LyricLine.MAX_LINES, panel.toLyrics().lines().size());
     }
+
+    @Test
+    void lineBreaksSurviveGoingThroughTheDialog() {
+        LyricsPanel panel = new LyricsPanel(trackNames, Lyrics.none());
+        LyricLine multilinea = new LyricLine(1, "primera linea\nsegunda linea");
+
+        panel.setLine(0, multilinea);
+
+        assertEquals(multilinea, panel.line(0));
+    }
 }
