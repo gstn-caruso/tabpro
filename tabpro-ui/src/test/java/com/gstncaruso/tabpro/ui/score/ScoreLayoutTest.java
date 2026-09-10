@@ -51,9 +51,9 @@ class ScoreLayoutTest {
 
         assertEquals(0, layout.systemAt(ScoreLayout.TOP_MARGIN));
         assertEquals(1, layout.systemAt(ScoreLayout.TOP_MARGIN + stride));
-        assertEquals(0, layout.systemAt(-500), "arriba de todo se recorta al primer sistema");
+        assertEquals(0, layout.systemAt(-500), "clamped at the very top it crops to the first system");
         assertEquals(layout.systemCount() - 1, layout.systemAt(1_000_000),
-                "abajo de todo se recorta al ultimo sistema");
+                "clamped at the very bottom it crops to the last system");
     }
 
     @Test
@@ -75,7 +75,7 @@ class ScoreLayoutTest {
         assertEquals(2, layout.lastMeasureOfSystem(0));
         assertEquals(5, layout.lastMeasureOfSystem(1));
         assertEquals(8, layout.lastMeasureOfSystem(2));
-        assertEquals(11, layout.lastMeasureOfSystem(3), "el ultimo sistema termina en el ultimo compas");
+        assertEquals(11, layout.lastMeasureOfSystem(3), "the last system ends at the last measure");
     }
 
     @Test
@@ -117,7 +117,7 @@ class ScoreLayoutTest {
         int sparseWidth = ScoreLayout.of(sparse, WIDE).measureWidth(0);
         int busyWidth = ScoreLayout.of(busy, WIDE).measureWidth(0);
 
-        assertTrue(busyWidth > sparseWidth, "el compas con ocho corcheas tiene que pedir mas ancho");
+        assertTrue(busyWidth > sparseWidth, "the measure with eight eighth notes has to ask for more width");
     }
 
     @Test
@@ -179,7 +179,7 @@ class ScoreLayoutTest {
         ScoreLayout layout = ScoreLayout.of(score, 800);
 
         int firstOfSecondSystem = firstMeasureOfSystem(layout, 1, 12);
-        assertTrue(firstOfSecondSystem > 1, "el sistema tiene que entrar mas de un compas");
+        assertTrue(firstOfSecondSystem > 1, "the system has to fit more than one measure");
         assertTrue(layout.startsASystem(0));
         assertTrue(layout.startsASystem(firstOfSecondSystem));
         assertEquals(ScoreLayout.SYSTEM_HEAD_WIDTH, layout.headWidth(0));
@@ -213,8 +213,8 @@ class ScoreLayoutTest {
         assertEquals(0, layout.systemOf(0));
         assertEquals(0, layout.systemOf(1));
         assertEquals(1, layout.systemOf(2));
-        assertTrue(layout.startsASystem(2), "el compas forzado tiene que arrancar el sistema");
-        assertEquals(1, layout.systemOf(3), "sobra ancho, asi que el resto sigue en el mismo sistema");
+        assertTrue(layout.startsASystem(2), "the forced measure has to start the system");
+        assertEquals(1, layout.systemOf(3), "there is width to spare, so the rest continues in the same system");
         assertEquals(2, layout.systemCount());
     }
 
@@ -239,9 +239,9 @@ class ScoreLayoutTest {
 
         ScoreLayout layout = ScoreLayout.of(score, 800);
 
-        assertEquals(0, layout.systemOf(3), "el compas impedido se queda en el sistema anterior, que se estira");
+        assertEquals(0, layout.systemOf(3), "the prevented measure stays in the previous system, which stretches");
         assertFalse(layout.startsASystem(3));
-        assertEquals(1, layout.systemOf(4), "el corte se corre al compas siguiente que si puede arrancar sistema");
+        assertEquals(1, layout.systemOf(4), "the break moves to the next measure that can start a system");
         assertTrue(layout.startsASystem(4));
     }
 
@@ -255,9 +255,9 @@ class ScoreLayoutTest {
         ScoreLayout onFirstTrack = ScoreLayout.of(score, WIDE, firstTrackActive);
 
         assertTrue(onSecondTrack.startsASystem(2),
-                "el corte forzado en la pista activa tiene que arrancar un sistema nuevo");
+                "the forced break on the active track has to start a new system");
         assertFalse(onFirstTrack.startsASystem(2),
-                "el corte de la otra pista no tiene que verse mientras esa pista no es la activa");
+                "the other track's break must not show while that track is not the active one");
     }
 
     @Test
@@ -268,7 +268,7 @@ class ScoreLayoutTest {
         ScoreLayout layout = ScoreLayout.of(score, WIDE, multitrackWithSecondActive);
 
         assertTrue(layout.startsASystem(2),
-                "en la vista multipista el corte compartido vale sin importar cual pista este activa");
+                "in the multitrack view the shared break applies no matter which track is active");
     }
 
     @Test
@@ -281,9 +281,9 @@ class ScoreLayoutTest {
         ScoreLayout resetLayout = ScoreLayout.of(reset, 800);
         ScoreLayout automaticLayout = ScoreLayout.of(automatic, 800);
 
-        assertEquals(1, forcedLayout.systemOf(1), "forzado, el compas 1 arranca su propio sistema");
+        assertEquals(1, forcedLayout.systemOf(1), "forced, measure 1 starts its own system");
         assertEquals(automaticLayout.systemOf(1), resetLayout.systemOf(1),
-                "reiniciado, vuelve a repartirse igual que si nunca se hubiera tocado");
+                "once reset, it lays out again as if it had never been touched");
     }
 
     @Test
@@ -319,7 +319,7 @@ class ScoreLayoutTest {
 
         Optional<ScoreLayout.Hit> hit = layout.hitTest(target.x + target.width / 2, staffY);
 
-        assertTrue(hit.isPresent(), "un clic en el pentagrama tiene que encontrar el compas y el beat");
+        assertTrue(hit.isPresent(), "a click on the staff has to find the measure and the beat");
         assertEquals(0, hit.get().measure());
         assertEquals(0, hit.get().beat());
     }
@@ -387,11 +387,11 @@ class ScoreLayoutTest {
 
         ScoreLayout layout = ScoreLayout.of(score, WIDE);
 
-        assertFalse(layout.startsASystem(1), "sigue siendo el mismo sistema");
+        assertFalse(layout.startsASystem(1), "it is still the same system");
         assertTrue(layout.hasSignatureChange(1));
         assertEquals(ScoreLayout.SIGNATURE_CHANGE_WIDTH, layout.headWidth(1));
-        assertFalse(layout.hasSignatureChange(2), "el compas 2 sigue en el mismo compas que el 1, no cambia nada");
-        assertFalse(layout.hasSignatureChange(0), "el primer compas de la partitura no cambia nada");
+        assertFalse(layout.hasSignatureChange(2), "measure 2 stays in the same measure as 1, nothing changes");
+        assertFalse(layout.hasSignatureChange(0), "the score's first measure changes nothing");
     }
 
     @Test
@@ -404,7 +404,7 @@ class ScoreLayoutTest {
 
         assertTrue(onlyTheSecond.totalHeight() < both.totalHeight());
         assertEquals(both.trackTop(0, 0), onlyTheSecond.trackTop(1, 0),
-                "la pista que queda sube al lugar de la que se apago");
+                "the remaining track moves up to the spot of the one that was hidden");
     }
 
     @Test
@@ -450,7 +450,7 @@ class ScoreLayoutTest {
 
         assertTrue(onlyTablature.totalHeight() < both.totalHeight());
         assertEquals(both.staffTop(0, 0), onlyTablature.tabTop(0, 0),
-                "la tablatura sube al lugar donde arrancaba el pentagrama");
+                "the tablature moves up to where the staff used to start");
     }
 
     @Test
@@ -465,7 +465,7 @@ class ScoreLayoutTest {
         assertEquals(both.staffBottom(0, 0), onlyStaff.staffBottom(0, 0));
         assertTrue(onlyStaff.totalHeight() < both.totalHeight());
         assertEquals(onlyStaff.tabTop(0, 0), onlyStaff.tabBottom(0, 0),
-                "sin tablatura, la franja de la tablatura no mide nada");
+                "without a tablature, the tablature strip has zero height");
     }
 
     @Test
@@ -496,7 +496,7 @@ class ScoreLayoutTest {
                 return measure;
             }
         }
-        throw new AssertionError("no hay un compas en el sistema " + system);
+        throw new AssertionError("there is no measure in system " + system);
     }
 
     private static Score withLineBreakAt(Score score, int measureIndex, LineBreak lineBreak) {
