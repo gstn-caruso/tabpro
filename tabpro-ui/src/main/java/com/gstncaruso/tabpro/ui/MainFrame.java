@@ -22,6 +22,7 @@ import com.gstncaruso.tabpro.ui.dialogs.help.HelpDialog;
 import com.gstncaruso.tabpro.ui.dialogs.info.ScoreInfoDialog;
 import com.gstncaruso.tabpro.ui.dialogs.instrument.InstrumentDialog;
 import com.gstncaruso.tabpro.ui.dialogs.markers.MarkersDialog;
+import com.gstncaruso.tabpro.ui.dialogs.markers.MarkersTableDialog;
 import com.gstncaruso.tabpro.ui.dialogs.measure.MeasurePropertiesDialog;
 import com.gstncaruso.tabpro.ui.dialogs.metronome.MetronomeDialog;
 import com.gstncaruso.tabpro.ui.dialogs.metronome.MetronomeSettings;
@@ -1254,7 +1255,8 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void markerList() {
-            insertMarker();
+            MarkersTableDialog.show(MainFrame.this, editor);
+            backToTheScore();
         }
 
         @Override

@@ -70,6 +70,15 @@ public final class DialogShell {
 
     /** Para ventanas sin Cancelar, como los reportes de un asistente: solo Cerrar. */
     public static void show(Component parent, String title, JComponent content) {
+        show(parent, title, closer -> content);
+    }
+
+    /**
+     * Como {@link #show(Component, String, JComponent)}, pero el contenido se arma con acceso a
+     * un cierre propio: sirve para botones internos (un "Ir a" que ademas de moverse, cierra la
+     * ventana) sin depender solo del boton "Cerrar" de la barra.
+     */
+    public static void show(Component parent, String title, java.util.function.Function<Runnable, JComponent> content) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title, Dialog.ModalityType.APPLICATION_MODAL);
         javax.swing.JButton close = DialogStyle.flatButton("Cerrar");
         close.addActionListener(event -> dialog.dispose());
@@ -78,7 +87,7 @@ public final class DialogShell {
 
         dialog.getRootPane().setDefaultButton(close);
         dialog.getContentPane().setLayout(new BorderLayout());
-        dialog.getContentPane().add(content, BorderLayout.CENTER);
+        dialog.getContentPane().add(content.apply(dialog::dispose), BorderLayout.CENTER);
         dialog.getContentPane().add(bar, BorderLayout.SOUTH);
         dialog.pack();
         dialog.setLocationRelativeTo(parent);

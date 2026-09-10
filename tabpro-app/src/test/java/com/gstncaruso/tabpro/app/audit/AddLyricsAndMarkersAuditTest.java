@@ -16,6 +16,7 @@ import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import java.awt.Container;
 import javax.swing.JMenuItem;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import org.junit.jupiter.api.Tag;
@@ -114,6 +115,35 @@ class AddLyricsAndMarkersAuditTest {
             assertTrue(marker.isPresent(), "el boton real 'Guardar cambios' tiene que dejar el marcador en el modelo");
             assertEquals("Estribillo", marker.get().name(),
                     "el nombre editado en el campo real tiene que quedar en el modelo");
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    /**
+     * Guitar Pro 5, manual pagina 30 ("Add Markers"): el menu Marcador > Lista abre la tabla
+     * Posicion/Nombre con Agregar/Editar/Borrar/Ir a, no el editor de un solo marcador.
+     */
+    @Test
+    void borrarEnLaTablaRealDeMarcadoresQuitaElMarcadorDelModelo() throws Exception {
+        Editor editor = blankEditor();
+        editor.setMarker(Marker.named("Intro"));
+        MainFrame frame = newFrame(editor);
+        try {
+            JMenuItem item = findMenuItem(frame.getJMenuBar(), "Lista de marcadores…");
+            assertNotNull(item, "no encontre 'Lista de marcadores…' en el menu real");
+
+            withDialog(item::doClick, dialog -> {
+                JTable table = AuditSupport.findComponent(dialog, JTable.class);
+                assertNotNull(table, "no encontre la tabla real de marcadores");
+                table.setRowSelectionInterval(0, 0);
+
+                findButton(dialog, "Borrar").doClick();
+                findButton(dialog, "Cerrar").doClick();
+            });
+
+            assertTrue(editor.score().attributesOf(0).marker().isEmpty(),
+                    "el boton real 'Borrar' tiene que quitar el marcador del modelo");
         } finally {
             AuditSupport.dispose(frame);
         }

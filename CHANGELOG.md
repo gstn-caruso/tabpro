@@ -1,3 +1,15 @@
+## [0.53.0](https://github.com/gstn-caruso/tabpro/compare/v0.52.1...v0.53.0) (2026-09-10)
+
+### Features
+
+* **dialogs:** las secciones de los formularios son cajas de grupo con título, como en Guitar Pro 5 ([#162](https://github.com/gstn-caruso/tabpro/issues/162)) ([ee52961](https://github.com/gstn-caruso/tabpro/commit/ee529617fe09078b8d388e9e5d75bef410399b8f))
+
+## [0.52.1](https://github.com/gstn-caruso/tabpro/compare/v0.52.0...v0.52.1) (2026-09-10)
+
+### Bug Fixes
+
+* **dialogs:** los combos y listas muestran etiquetas en castellano en vez del toString de enums y records ([#161](https://github.com/gstn-caruso/tabpro/issues/161)) ([6191b4b](https://github.com/gstn-caruso/tabpro/commit/6191b4ba88674a8248574dc98f070c3deb93a891))
+
 ## [0.52.0](https://github.com/gstn-caruso/tabpro/compare/v0.51.0...v0.52.0) (2026-09-10)
 
 ### Features

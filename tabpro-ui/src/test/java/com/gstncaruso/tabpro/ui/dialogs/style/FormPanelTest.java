@@ -1,11 +1,18 @@
 package com.gstncaruso.tabpro.ui.dialogs.style;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.awt.Component;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.border.CompoundBorder;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -54,5 +61,75 @@ class FormPanelTest {
             }
         }
         throw new AssertionError("no se encontro una etiqueta para " + field);
+    }
+
+    @Test
+    void unaSeccionTieneBordeTituladoConElTextoDado() {
+        FormPanel panel = new FormPanel();
+
+        panel.addSection("Notation");
+
+        JPanel section = sectionTitled(panel, "Notation");
+        assertEquals("Notation", section.getAccessibleContext().getAccessibleName());
+    }
+
+    private JPanel sectionTitled(FormPanel panel, String title) {
+        for (Component component : panel.getComponents()) {
+            if (component instanceof JPanel candidate
+                    && title.equals(candidate.getAccessibleContext().getAccessibleName())) {
+                return candidate;
+            }
+        }
+        throw new AssertionError("no se encontro una seccion titulada " + title);
+    }
+
+    @Test
+    void elPaddingInteriorDeUnaSeccionEsElMedidoEnGuitarPro5EscaladoATabpro() {
+        FormPanel panel = new FormPanel();
+
+        panel.addSection("Notation");
+
+        Insets padding = innerPaddingOf(sectionTitled(panel, "Notation"));
+        int expected = DialogStyle.SECTION_INNER_PADDING;
+        assertEquals(new Insets(expected, expected, expected, expected), padding);
+    }
+
+    private Insets innerPaddingOf(JPanel section) {
+        CompoundBorder border = (CompoundBorder) section.getBorder();
+        return border.getInsideBorder().getBorderInsets(section);
+    }
+
+    @Test
+    void cadaSeccionQuedaConLasFilasQueLeSiguenHastaLaProximaSeccion() {
+        FormPanel panel = new FormPanel();
+        JTextField fueraDeToda = new JTextField();
+        JTextField deNotacion = new JTextField();
+        JTextField deEstilo = new JTextField();
+
+        panel.addRow("Nombre", fueraDeToda);
+        panel.addSection("Notation");
+        panel.addRow("Tablatura", deNotacion);
+        panel.addSection("Style");
+        panel.addRow("Sangria", deEstilo);
+
+        JPanel notation = sectionTitled(panel, "Notation");
+        JPanel style = sectionTitled(panel, "Style");
+        assertFalse(SwingUtilities.isDescendingFrom(fueraDeToda, notation));
+        assertFalse(SwingUtilities.isDescendingFrom(fueraDeToda, style));
+        assertTrue(SwingUtilities.isDescendingFrom(deNotacion, notation));
+        assertFalse(SwingUtilities.isDescendingFrom(deNotacion, style));
+        assertTrue(SwingUtilities.isDescendingFrom(deEstilo, style));
+        assertFalse(SwingUtilities.isDescendingFrom(deEstilo, notation));
+    }
+
+    @Test
+    void dosSeccionesSeguidasSinFilasQuedanComoCajasSeparadas() {
+        FormPanel panel = new FormPanel();
+
+        panel.addSection("Encabezado");
+        panel.addSection("Pie de pagina");
+
+        assertEquals("Encabezado", sectionTitled(panel, "Encabezado").getAccessibleContext().getAccessibleName());
+        assertEquals("Pie de pagina", sectionTitled(panel, "Pie de pagina").getAccessibleContext().getAccessibleName());
     }
 }
