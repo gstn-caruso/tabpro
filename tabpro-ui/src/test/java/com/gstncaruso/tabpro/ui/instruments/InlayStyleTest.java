@@ -35,7 +35,7 @@ class InlayStyleTest {
         InlayStyle.DIAMONDS.draw(graphicsOf(image), 5, 5, 3);
 
         assertNotEquals(Color.BLACK.getRGB(), image.getRGB(5, 5));
-        assertEquals(Color.BLACK.getRGB(), image.getRGB(1, 1), "el diamante no llena las esquinas");
+        assertEquals(Color.BLACK.getRGB(), image.getRGB(1, 1), "the diamond does not fill the corners");
     }
 
     private static BufferedImage blank() {

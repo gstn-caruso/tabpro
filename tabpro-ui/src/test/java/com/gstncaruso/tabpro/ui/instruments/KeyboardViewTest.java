@@ -49,7 +49,7 @@ class KeyboardViewTest {
 
         assertTrue(c4.x < d4.x);
         assertTrue(d4.x < c5.x);
-        assertTrue(Math.abs(c4.width - d4.width) <= 1, "las teclas blancas miden casi lo mismo");
+        assertTrue(Math.abs(c4.width - d4.width) <= 1, "the white keys measure almost the same");
     }
 
     @Test
@@ -69,7 +69,7 @@ class KeyboardViewTest {
             assertEquals(
                     current.x + current.width,
                     following.x,
-                    "entre la tecla " + key + " y la " + next + " quedo un hueco");
+                    "a gap was left between key " + key + " and " + next);
         }
     }
 
@@ -112,8 +112,8 @@ class KeyboardViewTest {
 
         Rectangle lowE = view.keyBounds(40).orElseThrow();
         Rectangle highE = view.keyBounds(64).orElseThrow();
-        assertTrue(isPressed(image, lowE), "falta la nota de la sexta cuerda");
-        assertTrue(isPressed(image, highE), "falta la nota de la primera cuerda");
+        assertTrue(isPressed(image, lowE), "missing the note of the sixth string");
+        assertTrue(isPressed(image, highE), "missing the note of the first string");
     }
 
     @Test
@@ -137,7 +137,7 @@ class KeyboardViewTest {
         BufferedImage image = paint(view);
 
         Rectangle context = view.keyBounds(67).orElseThrow();
-        assertTrue(isMarked(image, context, InstrumentColors.CONTEXT), "el traste del beat siguiente es contexto");
+        assertTrue(isMarked(image, context, InstrumentColors.CONTEXT), "the next beat's fret is context");
     }
 
     @Test
@@ -149,8 +149,8 @@ class KeyboardViewTest {
         Rectangle key = view.keyBounds(64).orElseThrow();
 
         assertEquals(InstrumentColors.WHITE_KEY.getRGB(), image.getRGB(key.x + key.width / 2, key.y + 4),
-                "el punto no puede llegar hasta arriba de la tecla");
-        assertTrue(isPressed(image, key), "el punto tiene que verse cerca de la base de la tecla");
+                "the dot cannot reach the top of the key");
+        assertTrue(isPressed(image, key), "the dot has to appear near the base of the key");
     }
 
     @Test
@@ -163,7 +163,7 @@ class KeyboardViewTest {
         int dotRow = key.y + key.height - 6;
 
         assertEquals(InstrumentColors.WHITE_KEY.getRGB(), image.getRGB(key.x + 1, dotRow),
-                "el punto no puede llegar hasta el borde izquierdo de la tecla");
+                "the dot cannot reach the left edge of the key");
     }
 
     @Test
@@ -175,8 +175,8 @@ class KeyboardViewTest {
         Rectangle key = view.keyBounds(42).orElseThrow();
 
         assertEquals(InstrumentColors.BLACK_KEY.getRGB(), image.getRGB(key.x + key.width / 2, key.y + 2),
-                "el punto no puede llegar hasta arriba de la tecla negra");
-        assertTrue(isPressed(image, key), "el punto tiene que verse en la tecla negra marcada");
+                "the dot cannot reach the top of the black key");
+        assertTrue(isPressed(image, key), "the dot has to appear on the marked black key");
     }
 
     @Test
@@ -237,7 +237,7 @@ class KeyboardViewTest {
             int x = bounds.x + bounds.width / 2;
             int y = KeyboardView.isWhite(key) ? bounds.y + bounds.height - 4 : bounds.y + bounds.height / 2;
 
-            assertEquals(OptionalInt.of(key), view.keyAt(x, y), "la tecla " + key);
+            assertEquals(OptionalInt.of(key), view.keyAt(x, y), "key " + key);
         }
     }
 
@@ -320,7 +320,7 @@ class KeyboardViewTest {
         gainFocus(view);
         BufferedImage withFocus = paint(view);
 
-        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "the focus has to be visible in the drawing");
     }
 
     private static void gainFocus(KeyboardView view) {

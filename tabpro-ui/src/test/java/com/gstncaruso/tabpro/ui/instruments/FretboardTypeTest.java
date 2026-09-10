@@ -26,7 +26,7 @@ class FretboardTypeTest {
                 FretboardType.CLASSICAL.woodColor(),
                 FretboardType.BASIC.woodColor());
 
-        assertEquals(4, colors.size(), "los cuatro tipos se ven distintos");
+        assertEquals(4, colors.size(), "all four types look different");
     }
 
     @Test
