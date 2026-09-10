@@ -5,12 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * El manual: "You can force the multitrack view when using the Horizontal Screen Mode in the
- * Options > Preferences". El efecto que importa no es que la preferencia se guarde -eso ya lo
- * prueba PreferencesTest- sino que entrar en pantalla horizontal con la preferencia prendida
- * deje la vista en multipista.
- */
 class HorizontalMultitrackTest {
 
     private final TrackVisibility visibleTracks = new TrackVisibility();

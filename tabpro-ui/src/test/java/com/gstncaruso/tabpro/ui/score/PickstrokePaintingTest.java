@@ -17,10 +17,6 @@ import java.awt.Rectangle;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 dibuja el pickstroke con el glifo grabado de Bravura que corresponde a la
- * direccion de la pua, en vez de un GeneralPath trazado a mano.
- */
 class PickstrokePaintingTest {
 
     private static final int WIDTH = 900;

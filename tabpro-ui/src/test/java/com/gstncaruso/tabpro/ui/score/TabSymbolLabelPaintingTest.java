@@ -18,11 +18,6 @@ import com.gstncaruso.tabpro.core.model.effects.TremoloPicking;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El tremolo de pua y el vibrato ancho se anuncian con una sigla de texto arriba de la
- * tablatura: tiene que quedar en un tipo de letra que la sepa mostrar, no en un simbolo que le
- * falte a la fuente de la partitura.
- */
 class TabSymbolLabelPaintingTest {
 
     private static final int WIDTH = 900;

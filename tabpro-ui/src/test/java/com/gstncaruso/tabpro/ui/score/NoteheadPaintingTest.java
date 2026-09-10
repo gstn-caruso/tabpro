@@ -18,10 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 dibuja la cabeza de cada nota con el glifo grabado de Bravura que corresponde a su
- * figura -redonda, blanca o negra- en vez de una elipse inclinada a mano.
- */
 class NoteheadPaintingTest {
 
     private static final int WIDTH = 900;

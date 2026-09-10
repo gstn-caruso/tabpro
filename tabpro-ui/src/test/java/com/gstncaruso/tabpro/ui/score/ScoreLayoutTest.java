@@ -43,12 +43,6 @@ class ScoreLayoutTest {
         assertEquals(layout.systemCount() - 1, layout.systemOf(11));
     }
 
-    /**
-     * El pintor necesita ir de "esta altura de pantalla" a "que sistema hay que pintar", para
-     * saltear los que quedan fuera del clip. Fuera del rango real de la partitura -arriba del
-     * primero o abajo del ultimo- se recorta al sistema mas cercano, no se cae ni devuelve un
-     * indice invalido.
-     */
     @Test
     void systemAtFindsWhichSystemCoversThatScreenHeight() {
         Score score = scoreWithMeasures(12);
@@ -62,11 +56,6 @@ class ScoreLayoutTest {
                 "abajo de todo se recorta al ultimo sistema");
     }
 
-    /**
-     * Quien exporta o imprime una hoja necesita el camino inverso al de {@link #systemAtFindsWhichSystemCoversThatScreenHeight}:
-     * dado el rango de sistemas de esa hoja, en que compas arrancar a pintar sin recorrer los de
-     * las hojas anteriores.
-     */
     @Test
     void firstMeasureOfSystemFindsWhereEachSystemStarts() {
         Score score = scoreWithMeasures(12);
@@ -97,11 +86,6 @@ class ScoreLayoutTest {
         assertEquals(layout.measureCount() - 1, layout.lastMeasureOfSystem(0));
     }
 
-    /**
-     * El rango de un sistema tiene que coincidir con {@link ScoreLayout#systemOf} para cualquier
-     * compas que caiga adentro, incluso con un quiebre de linea forzado que deja sistemas de
-     * distinto tamano.
-     */
     @Test
     void everyMeasureFallsWithinTheRangeOfItsOwnSystem() {
         Score score = withLineBreakAt(scoreWithMeasures(20), 7, LineBreak.FORCED);
@@ -261,11 +245,6 @@ class ScoreLayoutTest {
         assertTrue(layout.startsASystem(4));
     }
 
-    /**
-     * El manual dice que el salto de linea vale solo para la pista activa, o para la vista
-     * multipista: fuera de la vista multipista, el corte de una pista no puede aparecer en el
-     * layout de otra pista.
-     */
     @Test
     void outsideTheMultitrackViewOnlyTheActiveTracksOwnLineBreakApplies() {
         Score score = withLineBreakOnTrack(twoTrackScoreWithMeasures(5), 1, 2, LineBreak.FORCED);
@@ -498,7 +477,6 @@ class ScoreLayoutTest {
         assertTrue(onlyTablature.showsTablature(0));
     }
 
-    /** Ver > Notas con dinamica [F11]: por defecto no se muestran, para no recargar la hoja. */
     @Test
     void byDefaultTheLayoutDoesNotShowDynamicNotes() {
         assertFalse(ScoreLayout.of(Score.blank(), WIDE).showsDynamicNotes());

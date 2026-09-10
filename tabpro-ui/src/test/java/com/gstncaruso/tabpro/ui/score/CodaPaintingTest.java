@@ -13,10 +13,6 @@ import java.awt.Rectangle;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Guitar Pro 5 dibuja la coda con el glifo grabado de Bravura en vez de un circulo y una cruz
- * trazados a mano.
- */
 class CodaPaintingTest {
 
     private static final int WIDTH = 900;

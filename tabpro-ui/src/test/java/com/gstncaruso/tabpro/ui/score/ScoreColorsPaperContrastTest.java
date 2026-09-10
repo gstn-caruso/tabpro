@@ -6,11 +6,6 @@ import com.gstncaruso.tabpro.ui.theme.PaletteCheck.Pair;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * La paleta clara: lo que {@link PaperGraphics} deja en la hoja del Modo Pagina y del Modo
- * Pergamino, traduciendo cada color de {@link ScoreColors} con {@link ScoreColors#onPaper}
- * igual que lo hace la pintura real.
- */
 class ScoreColorsPaperContrastTest {
 
     @Test
@@ -64,7 +59,6 @@ class ScoreColorsPaperContrastTest {
                 ScoreColors.PAGE_PAPER, minimumRatio);
     }
 
-    /** La tinta que escribe sobre un relleno translucido, no el relleno contra la hoja. */
     private static Pair translucentOverPaper(String description, java.awt.Color fill, double minimumRatio) {
         java.awt.Color composedFill = PaletteCheck.compositeOver(ScoreColors.onPaper(fill), ScoreColors.PAGE_PAPER);
         return new Pair(description, ScoreColors.onPaper(ScoreColors.INK), composedFill, minimumRatio);

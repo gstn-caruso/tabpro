@@ -26,11 +26,6 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * "Ver > Notas con dinamica [F11]" del manual: en vez de la tinta pareja de siempre, la cabeza
- * de la nota se dibuja con un gradiente de color -mas clara cuanto mas suave, mas oscura cuanto
- * mas fuerte- sin que eso cambie donde se escribe la nota ni como suena.
- */
 class StaffPainterTest {
 
     private static final int WIDTH = 900;
