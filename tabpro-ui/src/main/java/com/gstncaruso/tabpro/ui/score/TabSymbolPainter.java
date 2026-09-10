@@ -144,19 +144,10 @@ final class TabSymbolPainter {
     }
 
     private static void paintPickstroke(Graphics2D g, int centerX, int y, PickstrokeDirection direction) {
+        String glyph = direction == PickstrokeDirection.DOWN ? MusicFont.stringsDownBow() : MusicFont.stringsUpBow();
         g.setColor(ScoreColors.LABEL);
-        g.setStroke(new BasicStroke(1.3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        GeneralPath path = new GeneralPath();
-        if (direction == PickstrokeDirection.DOWN) {
-            path.moveTo(centerX - 4, y - 8);
-            path.lineTo(centerX - 4, y - 2);
-            path.lineTo(centerX + 4, y - 2);
-            path.lineTo(centerX + 4, y - 8);
-        } else {
-            path.moveTo(centerX - 4, y - 2);
-            path.lineTo(centerX, y - 8);
-            path.lineTo(centerX + 4, y - 2);
-        }
-        g.draw(path);
+        g.setFont(MusicFont.sizedTo(2));
+        FontMetrics metrics = g.getFontMetrics();
+        g.drawString(glyph, centerX - metrics.stringWidth(glyph) / 2, y);
     }
 }
