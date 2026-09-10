@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import org.junit.jupiter.api.Test;
 
-/** Un sistema minimo armado a mano: sin direcciones ni acordes, un pentagrama vacio y sin barras internas. */
 class PowerTabSystemReaderTest {
 
     private final PowerTabSystemReader reader = new PowerTabSystemReader();
@@ -14,27 +13,26 @@ class PowerTabSystemReaderTest {
     @Test
     void readsAMinimalSystem() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(new byte[16], 0, 16); // rectangulo.
-        out.write((PowerTabBarline.REPEAT_END << 5) | 4); // barra final: repite 4 veces.
-        out.write(20); // espaciado entre posiciones.
+        out.write(new byte[16], 0, 16);
+        out.write((PowerTabBarline.REPEAT_END << 5) | 4);
+        out.write(20);
         out.write(0);
         out.write(0);
         out.write(0);
 
-        writeBarline(out); // barra de arranque.
+        writeBarline(out);
 
-        writeEmptyVector(out); // direcciones.
-        writeEmptyVector(out); // texto de acorde.
-        writeEmptyVector(out); // rhythm slash.
+        writeEmptyVector(out);
+        writeEmptyVector(out);
+        writeEmptyVector(out);
 
-        // un pentagrama.
         out.write(1);
         out.write(0);
-        out.write(0x00); // etiqueta de clase: referencia corta.
+        out.write(0x00);
         out.write(0x00);
         writeStaff(out);
 
-        writeEmptyVector(out); // barras internas.
+        writeEmptyVector(out);
 
         PowerTabSystem system = reader.read(new PowerTabByteReader(out.toByteArray()));
 
@@ -47,23 +45,23 @@ class PowerTabSystemReaderTest {
     }
 
     private static void writeBarline(ByteArrayOutputStream out) {
-        out.write(0); // posicion.
-        out.write(0); // tipo bar, sin repeticion.
-        out.write(0); // armadura: Do mayor.
-        out.write(new byte[4], 0, 4); // medida: todo en cero (comun/corte apagados).
-        out.write(0); // pulsos.
-        out.write(0); // letra de marca de ensayo.
-        out.write(0); // descripcion vacia.
+        out.write(0);
+        out.write(0);
+        out.write(0);
+        out.write(new byte[4], 0, 4);
+        out.write(0);
+        out.write(0);
+        out.write(0);
     }
 
     private static void writeStaff(ByteArrayOutputStream out) {
-        out.write(0x06); // clave treble, 6 cuerdas.
+        out.write(0x06);
         out.write(9);
         out.write(9);
         out.write(0);
         out.write(0);
-        writeEmptyVector(out); // voz principal.
-        writeEmptyVector(out); // segunda voz.
+        writeEmptyVector(out);
+        writeEmptyVector(out);
     }
 
     private static void writeEmptyVector(ByteArrayOutputStream out) {

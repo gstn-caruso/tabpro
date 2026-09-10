@@ -6,10 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * El fixture es {@code tempo_markers.ptb}, del propio repositorio de
- * powertabeditor: un marcador estandar en la posicion 3 a negra = 99.
- */
 class PowerTabTempoMarkerReaderTest {
 
     @Test
