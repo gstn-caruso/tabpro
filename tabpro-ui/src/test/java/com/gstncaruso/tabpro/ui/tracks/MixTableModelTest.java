@@ -21,7 +21,7 @@ class MixTableModelTest {
 
         model.toggleVisibleInMultitrackView(2);
         assertFalse(model.isVisibleInMultitrackView(2));
-        assertTrue(model.isVisibleInMultitrackView(0), "las demas pistas no se ven afectadas");
+        assertTrue(model.isVisibleInMultitrackView(0), "the other tracks are not affected");
 
         model.toggleVisibleInMultitrackView(2);
         assertTrue(model.isVisibleInMultitrackView(2));

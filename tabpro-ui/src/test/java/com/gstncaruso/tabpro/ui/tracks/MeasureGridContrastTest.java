@@ -12,7 +12,7 @@ class MeasureGridContrastTest {
     @Test
     void theColumnThatIsPlayingStandsOutFromTheGrid() {
         PaletteCheck.assertEveryPairReads(List.of(
-                new Pair("tinte del compas que suena (PLAYING_TINT) / panel de pistas",
+                new Pair("playing measure tint (PLAYING_TINT) / track panel",
                         PaletteCheck.compositeOver(MeasureGrid.PLAYING_TINT, ScoreColors.SURFACE),
                         ScoreColors.SURFACE, Contrast.GRAPHICAL_MINIMUM_RATIO)));
     }
@@ -20,9 +20,9 @@ class MeasureGridContrastTest {
     @Test
     void anEmptyMeasureStandsOutFromTheGrid() {
         PaletteCheck.assertEveryPairReads(List.of(
-                new Pair("compas vacio (EMPTY_MEASURE) / panel de pistas", ScoreColors.EMPTY_MEASURE,
+                new Pair("empty measure (EMPTY_MEASURE) / track panel", ScoreColors.EMPTY_MEASURE,
                         ScoreColors.SURFACE, Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("compas vacio (EMPTY_MEASURE) / fila elegida", ScoreColors.EMPTY_MEASURE,
+                new Pair("empty measure (EMPTY_MEASURE) / chosen row", ScoreColors.EMPTY_MEASURE,
                         ScoreColors.SURFACE_HIGHLIGHT, Contrast.GRAPHICAL_MINIMUM_RATIO)));
     }
 }

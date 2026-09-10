@@ -160,7 +160,7 @@ class MeasureGridTest {
         gainFocus(grid);
         BufferedImage withFocus = paint(grid);
 
-        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "the focus has to be visible in the drawing");
     }
 
     private static void gainFocus(MeasureGrid grid) {

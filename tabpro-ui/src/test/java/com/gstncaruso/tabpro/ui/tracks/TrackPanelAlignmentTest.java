@@ -29,11 +29,11 @@ class TrackPanelAlignmentTest {
             Band square = bandOf(painted, TrackColors.of(track), MixTable.WIDTH, WIDTH);
 
             assertTrue(square.isInside(row),
-                    "el cuadrado de la pista " + (track + 1) + " tiene que caer dentro de su fila del mixer:"
-                            + " fila " + row + ", cuadrado " + square);
+                    "track " + (track + 1) + "'s square has to fall inside its mixer row:"
+                            + " row " + row + ", square " + square);
             assertTrue(Math.abs(row.center() - square.center()) <= 1,
-                    "el cuadrado de la pista " + (track + 1) + " tiene que ir centrado en su fila del mixer:"
-                            + " fila " + row + ", cuadrado " + square);
+                    "track " + (track + 1) + "'s square has to be centered in its mixer row:"
+                            + " row " + row + ", square " + square);
         }
     }
 
@@ -80,7 +80,7 @@ class TrackPanelAlignmentTest {
             }
         }
         if (bottom < top) {
-            return fail("no se pinto ningun pixel " + color + " entre x=" + fromX + " y x=" + toX);
+            return fail("no pixel " + color + " was painted between x=" + fromX + " and x=" + toX);
         }
         return new Band(top, bottom);
     }

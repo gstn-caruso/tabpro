@@ -101,7 +101,7 @@ class MixTableTest {
             int textWidth = title.getFontMetrics(title.getFont()).stringWidth(title.getText());
             int columnWidth = title.getPreferredSize().width;
             assertTrue(textWidth < columnWidth,
-                    "la cabecera \"" + title.getText() + "\" (" + textWidth + "px) no entra holgada en su columna de "
+                    "header \"" + title.getText() + "\" (" + textWidth + "px) does not fit comfortably in its column of "
                             + columnWidth + "px");
         }
     }

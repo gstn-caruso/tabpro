@@ -12,21 +12,21 @@ class MixTableContrastTest {
     @Test
     void everyMarkOfTheMixTableReadsOverItsBackground() {
         PaletteCheck.assertEveryPairReads(List.of(
-                new Pair("relleno del deslizador de volumen (VOLUME_LEVEL) / panel de pistas",
+                new Pair("volume slider fill (VOLUME_LEVEL) / track panel",
                         ScoreColors.VOLUME_LEVEL, ScoreColors.SURFACE, Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("relleno del deslizador de volumen (VOLUME_LEVEL) / fila elegida",
+                new Pair("volume slider fill (VOLUME_LEVEL) / chosen row",
                         ScoreColors.VOLUME_LEVEL, ScoreColors.SURFACE_HIGHLIGHT, Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("relleno del deslizador de paneo (PAN_LEVEL) / panel de pistas", ScoreColors.PAN_LEVEL,
+                new Pair("pan slider fill (PAN_LEVEL) / track panel", ScoreColors.PAN_LEVEL,
                         ScoreColors.SURFACE, Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("relleno del deslizador de paneo (PAN_LEVEL) / fila elegida", ScoreColors.PAN_LEVEL,
+                new Pair("pan slider fill (PAN_LEVEL) / chosen row", ScoreColors.PAN_LEVEL,
                         ScoreColors.SURFACE_HIGHLIGHT, Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("caja numerica del deslizador (PAGE_PAPER) / panel de pistas", ScoreColors.PAGE_PAPER,
+                new Pair("slider number box (PAGE_PAPER) / track panel", ScoreColors.PAGE_PAPER,
                         ScoreColors.SURFACE, Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("caja numerica del deslizador (PAGE_PAPER) / fila elegida", ScoreColors.PAGE_PAPER,
+                new Pair("slider number box (PAGE_PAPER) / chosen row", ScoreColors.PAGE_PAPER,
                         ScoreColors.SURFACE_HIGHLIGHT, Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("numero de la caja (PAGE_INK) / caja numerica (PAGE_PAPER)", ScoreColors.PAGE_INK,
+                new Pair("box number (PAGE_INK) / number box (PAGE_PAPER)", ScoreColors.PAGE_INK,
                         ScoreColors.PAGE_PAPER, Contrast.TEXT_MINIMUM_RATIO),
-                new Pair("texto atenuado (MUTED_INK) / fila elegida", ScoreColors.MUTED_INK,
+                new Pair("muted text (MUTED_INK) / chosen row", ScoreColors.MUTED_INK,
                         ScoreColors.SURFACE_HIGHLIGHT, Contrast.TEXT_MINIMUM_RATIO)));
     }
 }
