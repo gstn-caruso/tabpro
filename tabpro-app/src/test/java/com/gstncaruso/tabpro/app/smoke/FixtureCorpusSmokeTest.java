@@ -133,6 +133,21 @@ class FixtureCorpusSmokeTest {
         return exchange.importMidi(midiPath);
     }
 
+    @Test
+    void unGuitarProSimpleSeExportaAMusicXmlYSeReabre(@TempDir Path tempDir) {
+        Path path = repoFile("tabpro-format/src/test/resources/guitarpro/tabpro-synthetic.gp5");
+        Score score = abrir(path);
+
+        Score reabierto = exportarYReabrirMusicXml(score, tempDir.resolve("reexportado.musicxml"));
+
+        assertNotNull(reabierto, () -> path.getFileName() + ": el export a MusicXML se reabre");
+    }
+
+    private Score exportarYReabrirMusicXml(Score score, Path musicXmlPath) {
+        exchange.exportMusicXml(score, musicXmlPath);
+        return exchange.importMusicXml(musicXmlPath);
+    }
+
     private Score abrir(Path path) {
         String nombre = path.getFileName().toString();
         if (nombre.endsWith(".gp3") || nombre.endsWith(".gp4") || nombre.endsWith(".gp5")) {
