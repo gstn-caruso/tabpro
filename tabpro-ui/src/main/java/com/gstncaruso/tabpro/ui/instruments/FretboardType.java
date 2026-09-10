@@ -117,9 +117,4 @@ public enum FretboardType {
     public Color nutColor() {
         return palette.nut();
     }
-
-    @Override
-    public String toString() {
-        return label;
-    }
 }

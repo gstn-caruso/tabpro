@@ -1,11 +1,15 @@
 package com.gstncaruso.tabpro.ui.dialogs.info;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.gstncaruso.tabpro.core.model.LyricLine;
 import com.gstncaruso.tabpro.core.model.Lyrics;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import java.awt.Component;
+import java.awt.Container;
 import java.util.List;
+import javax.swing.JTabbedPane;
 import org.junit.jupiter.api.Test;
 
 class LyricsPanelTest {
@@ -52,5 +56,43 @@ class LyricsPanelTest {
         LyricsPanel panel = new LyricsPanel(trackNames, Lyrics.none());
 
         assertEquals(LyricLine.MAX_LINES, panel.toLyrics().lines().size());
+    }
+
+    @Test
+    void lineBreaksSurviveGoingThroughTheDialog() {
+        LyricsPanel panel = new LyricsPanel(trackNames, Lyrics.none());
+        LyricLine multilinea = new LyricLine(1, "primera linea\nsegunda linea");
+
+        panel.setLine(0, multilinea);
+
+        assertEquals(multilinea, panel.line(0));
+    }
+
+    @Test
+    void eachLineIsItsOwnTabNamedLikeGP5() {
+        LyricsPanel panel = new LyricsPanel(trackNames, Lyrics.none());
+
+        JTabbedPane lineTabs = findTabbedPane(panel);
+
+        assertNotNull(lineTabs, "no encontre las pestañas de linea");
+        assertEquals(LyricLine.MAX_LINES, lineTabs.getTabCount());
+        for (int index = 0; index < LyricLine.MAX_LINES; index++) {
+            assertEquals("Línea " + (index + 1), lineTabs.getTitleAt(index));
+        }
+    }
+
+    private static JTabbedPane findTabbedPane(Container root) {
+        if (root instanceof JTabbedPane tabs) {
+            return tabs;
+        }
+        for (Component child : root.getComponents()) {
+            if (child instanceof Container container) {
+                JTabbedPane found = findTabbedPane(container);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 }

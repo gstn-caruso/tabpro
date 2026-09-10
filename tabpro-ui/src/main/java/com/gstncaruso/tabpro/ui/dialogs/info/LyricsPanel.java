@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 
 /**
  * La letra de la cancion sobre una pista elegida, hasta cinco lineas cada una con
@@ -21,7 +22,7 @@ public final class LyricsPanel extends FormPanel {
 
     private final JComboBox<String> trackChooser;
     private final List<LyricLineRow> lines = new ArrayList<>();
-    private JTextField lastFocused;
+    private JTextArea lastFocused;
 
     public LyricsPanel(List<String> trackNames, Lyrics initial) {
         trackChooser = new JComboBox<>(trackNames.toArray(new String[0]));
@@ -32,17 +33,19 @@ public final class LyricsPanel extends FormPanel {
                 "<html>Silabas: separadas con espacio o guion. Un + une dos palabras."
                         + " Lo que va entre corchetes [asi] no se dibuja.</html>"));
 
+        JTabbedPane lineTabs = new JTabbedPane();
         for (int index = 0; index < LyricLine.MAX_LINES; index++) {
             LyricLineRow row = new LyricLineRow(initial.line(index), index + 1);
-            row.textField().addFocusListener(rememberingFocus(row.textField()));
+            row.textArea().addFocusListener(rememberingFocus(row.textArea()));
             lines.add(row);
-            addRow("Linea " + (index + 1), row);
+            lineTabs.addTab("Línea " + (index + 1), row);
         }
+        addFullWidthRow(lineTabs);
 
         addFullWidthRow(cutCopyPasteBar());
     }
 
-    private FocusAdapter rememberingFocus(JTextField field) {
+    private FocusAdapter rememberingFocus(JTextArea field) {
         return new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
@@ -55,9 +58,9 @@ public final class LyricsPanel extends FormPanel {
         javax.swing.JButton cut = DialogStyle.flatButton("Cortar");
         javax.swing.JButton copy = DialogStyle.flatButton("Copiar");
         javax.swing.JButton paste = DialogStyle.flatButton("Pegar");
-        cut.addActionListener(event -> onFocusedField(JTextField::cut));
-        copy.addActionListener(event -> onFocusedField(JTextField::copy));
-        paste.addActionListener(event -> onFocusedField(JTextField::paste));
+        cut.addActionListener(event -> onFocusedField(JTextArea::cut));
+        copy.addActionListener(event -> onFocusedField(JTextArea::copy));
+        paste.addActionListener(event -> onFocusedField(JTextArea::paste));
 
         javax.swing.JPanel bar = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, DialogStyle.GAP_S, 0));
         bar.setOpaque(false);
@@ -67,7 +70,7 @@ public final class LyricsPanel extends FormPanel {
         return bar;
     }
 
-    private void onFocusedField(java.util.function.Consumer<JTextField> action) {
+    private void onFocusedField(java.util.function.Consumer<JTextArea> action) {
         if (lastFocused != null) {
             action.accept(lastFocused);
         }

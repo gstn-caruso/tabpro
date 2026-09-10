@@ -32,9 +32,4 @@ public enum NoteNameMode {
     }
 
     public abstract boolean shows(MarkKind kind);
-
-    @Override
-    public String toString() {
-        return label;
-    }
 }

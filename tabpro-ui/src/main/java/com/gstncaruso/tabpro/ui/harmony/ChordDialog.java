@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -87,6 +88,11 @@ public final class ChordDialog {
                 roots.addItem(pitchClass);
                 basses.addItem(pitchClass);
             });
+            roots.setRenderer(new LabeledListCellRenderer());
+            basses.setRenderer(new LabeledListCellRenderer());
+            types.setRenderer(new LabeledListCellRenderer());
+            complexities.setRenderer(new LabeledListCellRenderer());
+            barres.setRenderer(new LabeledListCellRenderer());
             name.getAccessibleContext().setAccessibleName("Nombre del acorde");
             name.setToolTipText("Nombre del acorde");
             baseFret.getAccessibleContext().setAccessibleName("Traste base");
@@ -146,7 +152,9 @@ public final class ChordDialog {
         private JPanel listsZone() {
             JPanel zone = new JPanel();
             zone.setLayout(new BoxLayout(zone, BoxLayout.Y_AXIS));
-            zone.add(namedList("Nombres alternativos", new JList<>(alternatives), 90));
+            JList<Chord> alternativeNames = new JList<>(alternatives);
+            alternativeNames.setCellRenderer(new LabeledListCellRenderer());
+            zone.add(namedList("Nombres alternativos", alternativeNames, 90));
             zone.add(Box.createVerticalStrut(6));
             zone.add(namedList("Usados en la pista", diagramList(used), 90));
             zone.add(Box.createVerticalStrut(6));

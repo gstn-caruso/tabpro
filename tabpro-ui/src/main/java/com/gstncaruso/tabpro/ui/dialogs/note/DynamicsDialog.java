@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import java.awt.Component;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -32,6 +33,7 @@ public final class DynamicsDialog {
     /** Arma el formulario y los campos que hay que releer si se acepta; sin abrir ningun dialogo. */
     static Fields buildFields(Dynamic current) {
         JComboBox<Dynamic> dynamics = new JComboBox<>(Dynamic.values());
+        dynamics.setRenderer(new LabeledListCellRenderer());
         dynamics.setSelectedItem(current);
         JCheckBox wholeChord = new JCheckBox("Aplicar a todo el acorde");
 

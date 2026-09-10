@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.dialogs.preferences;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
@@ -23,6 +24,7 @@ public final class PreferencesPanel extends FormPanel {
     private final JCheckBox disableAnimations = new JCheckBox("Sin animaciones");
 
     public PreferencesPanel(Preferences initial) {
+        defaultNoteValue.setRenderer(new LabeledListCellRenderer());
         addRow("Figura por defecto al insertar", defaultNoteValue);
         addFullWidthRow(autoScroll);
         addFullWidthRow(showBassInChordName);

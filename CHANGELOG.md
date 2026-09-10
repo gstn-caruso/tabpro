@@ -1,3 +1,27 @@
+## [0.53.0](https://github.com/gstn-caruso/tabpro/compare/v0.52.1...v0.53.0) (2026-09-10)
+
+### Features
+
+* **dialogs:** las secciones de los formularios son cajas de grupo con título, como en Guitar Pro 5 ([#162](https://github.com/gstn-caruso/tabpro/issues/162)) ([ee52961](https://github.com/gstn-caruso/tabpro/commit/ee529617fe09078b8d388e9e5d75bef410399b8f))
+
+## [0.52.1](https://github.com/gstn-caruso/tabpro/compare/v0.52.0...v0.52.1) (2026-09-10)
+
+### Bug Fixes
+
+* **dialogs:** los combos y listas muestran etiquetas en castellano en vez del toString de enums y records ([#161](https://github.com/gstn-caruso/tabpro/issues/161)) ([6191b4b](https://github.com/gstn-caruso/tabpro/commit/6191b4ba88674a8248574dc98f070c3deb93a891))
+
+## [0.52.0](https://github.com/gstn-caruso/tabpro/compare/v0.51.0...v0.52.0) (2026-09-10)
+
+### Features
+
+* **dialogs:** las cinco líneas de letra se editan en pestañas con área multilínea, como en Guitar Pro 5 ([#160](https://github.com/gstn-caruso/tabpro/issues/160)) ([ab52899](https://github.com/gstn-caruso/tabpro/commit/ab5289932e08bd529ff104f0b878a226b0ad3746))
+
+## [0.51.0](https://github.com/gstn-caruso/tabpro/compare/v0.50.2...v0.51.0) (2026-09-10)
+
+### Features
+
+* **print:** el casillero «Documento centrado» de Guitar Pro 5 centra la hoja en el papel ([#159](https://github.com/gstn-caruso/tabpro/issues/159)) ([d13cb4f](https://github.com/gstn-caruso/tabpro/commit/d13cb4f05de336ad7d4f1128b2618913ec6a04f4))
+
 ## [0.50.2](https://github.com/gstn-caruso/tabpro/compare/v0.50.1...v0.50.2) (2026-09-10)
 
 ### Bug Fixes

@@ -169,6 +169,12 @@ class ScoreDtoTest {
     }
 
     @Test
+    void roundTripsMultilineLyricsText() {
+        Lyrics lyrics = Lyrics.none().onTrack(0).withLine(0, new LyricLine(1, "primera linea\nsegunda linea"));
+        assertRoundTrips(new Score(ScoreInfo.titled("Prueba"), 120, List.of(Track.standardGuitar("Guitarra")), lyrics));
+    }
+
+    @Test
     void roundTripsSeveralTracks() {
         assertRoundTrips(new Score(
                 "Prueba", 120, List.of(Track.standardGuitar("Guitarra"), Track.standardBass("Bajo"))));
