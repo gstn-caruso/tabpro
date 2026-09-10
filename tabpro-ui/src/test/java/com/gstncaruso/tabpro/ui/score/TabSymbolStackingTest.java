@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.score;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.model.Beat;
@@ -44,6 +45,29 @@ class TabSymbolStackingTest {
 
         assertEquals(plain.inkIn(staffArea), withSymbols.inkIn(staffArea),
                 "fade in, P.M. y let ring apilados no pueden pintar tinta dentro del pentagrama");
+    }
+
+    @Test
+    void aSingleLabelSitsBetweenTheStaffAndTheTablature() {
+        Note fretted = new Note(3, 5).toggling(Ornament.PALM_MUTE);
+        Painted withLabel = paint(measureWith(fretted, BeatEffects.none()));
+        Painted plain = paint(measureWith(new Note(3, 5), BeatEffects.none()));
+
+        Rectangle staffArea = new Rectangle(
+                plain.layout.measureX(0), plain.layout.staffTop(0, 0),
+                plain.layout.measureWidth(0), ScoreLayout.STAFF_HEIGHT);
+        Rectangle gapArea = new Rectangle(
+                plain.layout.measureX(0), plain.layout.staffBottom(0, 0),
+                plain.layout.measureWidth(0), ScoreLayout.STAFF_TO_TAB_GAP);
+        Rectangle tabLineArea = new Rectangle(
+                plain.layout.measureX(0), plain.layout.tabTop(0, 0) - 1,
+                plain.layout.measureWidth(0), 3);
+
+        assertTrue(withLabel.inkIn(gapArea) > plain.inkIn(gapArea), "P.M. tiene que dibujarse en la brecha");
+        assertEquals(plain.inkIn(staffArea), withLabel.inkIn(staffArea),
+                "P.M. no puede pintar tinta dentro del pentagrama");
+        assertEquals(plain.inkIn(tabLineArea), withLabel.inkIn(tabLineArea),
+                "P.M. no puede pintar tinta sobre la primera linea de la tablatura");
     }
 
     private static Measure measureWith(Note note, BeatEffects effects) {
