@@ -1,3 +1,10 @@
+## [0.42.0](https://github.com/gstn-caruso/tabpro/compare/v0.41.0...v0.42.0) (2026-09-10)
+
+### Features
+
+* **status:** la barra de estado tiene los seis paneles hundidos de Guitar Pro 5 ([#139](https://github.com/gstn-caruso/tabpro/issues/139)) ([e4682d7](https://github.com/gstn-caruso/tabpro/commit/e4682d73eb88750f462d747fdb8ce520b340e6ab))
+* **toolbar:** el zoom es un combo editable con el porcentaje visible, como en Guitar Pro 5 ([#140](https://github.com/gstn-caruso/tabpro/issues/140)) ([9815fcb](https://github.com/gstn-caruso/tabpro/commit/9815fcbab09992a96d533afb222bfaaeb88de79e))
+
 ## [0.41.0](https://github.com/gstn-caruso/tabpro/compare/v0.40.0...v0.41.0) (2026-09-10)
 
 ### Features
