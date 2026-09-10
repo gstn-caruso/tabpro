@@ -283,7 +283,7 @@ public final class ScorePainter {
     private static void paintSelectedArea(Graphics2D g, Rectangle bounds) {
         g.setColor(ScoreColors.SELECTION);
         g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
-        g.setColor(ScoreColors.ACCENT);
+        g.setColor(ScoreColors.SELECTION_BORDER);
         g.drawRect(bounds.x, bounds.y, bounds.width - 1, bounds.height - 1);
     }
 

@@ -70,10 +70,17 @@ class ScoreColorsContrastTest {
                         ScoreColors.BACKGROUND, Contrast.GRAPHICAL_MINIMUM_RATIO),
                 new Pair("borde de compas incompleto (INCOMPLETE_MEASURE) / fondo", ScoreColors.INCOMPLETE_MEASURE,
                         ScoreColors.BACKGROUND, Contrast.GRAPHICAL_MINIMUM_RATIO),
-                new Pair("borde de seleccion (ACCENT) / fondo", ScoreColors.ACCENT, ScoreColors.BACKGROUND,
-                        Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("borde de seleccion (SELECTION_BORDER) / fondo", ScoreColors.SELECTION_BORDER,
+                        ScoreColors.BACKGROUND, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("tinta sobre el relleno de seleccion (INK) / relleno de seleccion",
+                        ScoreColors.INK,
+                        PaletteCheck.compositeOver(ScoreColors.SELECTION, ScoreColors.BACKGROUND),
+                        Contrast.TEXT_MINIMUM_RATIO),
                 new Pair("nota correspondiente (CORRESPONDING_NOTE) / fondo",
                         PaletteCheck.compositeOver(ScoreColors.CORRESPONDING_NOTE, ScoreColors.BACKGROUND),
+                        ScoreColors.BACKGROUND, Contrast.GRAPHICAL_MINIMUM_RATIO),
+                new Pair("color por defecto del marcador (Marker.DEFAULT_COLOR) / fondo",
+                        ScoreColors.of(com.gstncaruso.tabpro.core.model.bars.Marker.DEFAULT_COLOR),
                         ScoreColors.BACKGROUND, Contrast.GRAPHICAL_MINIMUM_RATIO)));
 
         for (int track = 0; track < TrackColors.COUNT; track++) {
