@@ -180,6 +180,43 @@ class KeyboardViewTest {
     }
 
     @Test
+    void theTopEdgeOfAWhiteKeyCatchesLight() {
+        KeyboardView view = sized();
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        BufferedImage image = paint(view);
+
+        Rectangle c4 = view.keyBounds(60).orElseThrow();
+
+        assertEquals(InstrumentColors.WHITE_KEY.brighter().getRGB(), image.getRGB(c4.x + c4.width / 2, c4.y));
+    }
+
+    @Test
+    void theBottomEdgeOfAWhiteKeyFallsInShadow() {
+        KeyboardView view = sized();
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        BufferedImage image = paint(view);
+
+        Rectangle c4 = view.keyBounds(60).orElseThrow();
+
+        assertEquals(InstrumentColors.WHITE_KEY.darker().getRGB(),
+                image.getRGB(c4.x + c4.width / 2, c4.y + c4.height - 1));
+    }
+
+    @Test
+    void theBlackKeyHasTheSameBevelAsTheWhiteOnes() {
+        KeyboardView view = sized();
+        view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
+        BufferedImage image = paint(view);
+
+        Rectangle cSharp4 = view.keyBounds(61).orElseThrow();
+
+        assertEquals(InstrumentColors.BLACK_KEY.brighter().getRGB(),
+                image.getRGB(cSharp4.x + cSharp4.width / 2, cSharp4.y));
+        assertEquals(InstrumentColors.BLACK_KEY.darker().getRGB(),
+                image.getRGB(cSharp4.x + cSharp4.width / 2, cSharp4.y + cSharp4.height - 1));
+    }
+
+    @Test
     void tracksTheKeyUnderTheMouseWithoutClicking() {
         KeyboardView view = sized();
         view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));

@@ -54,6 +54,7 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
     private static final int MARK_RADIUS_MIN = 2;
     private static final double MARK_MARGIN_RATIO = 0.04;
     private static final int MARK_MARGIN_MIN = 1;
+    private static final int BEVEL_THICKNESS = 2;
 
     private BeatLocation location = defaultLocation();
     private KeyboardDisplayMode displayMode = KeyboardDisplayMode.ONLY_BEAT;
@@ -300,14 +301,24 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
     }
 
     private void paintKeys(Graphics2D g, KeyMarks marks, boolean white) {
+        Color base = white ? InstrumentColors.WHITE_KEY : InstrumentColors.BLACK_KEY;
         for (int key : keysInRange(white)) {
             Rectangle bounds = keyBounds(key).orElseThrow();
-            g.setColor(white ? InstrumentColors.WHITE_KEY : InstrumentColors.BLACK_KEY);
+            g.setColor(base);
             g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
             g.setColor(InstrumentColors.KEY_EDGE);
             g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+            paintBevel(g, bounds, base);
             marks.kindOf(key).ifPresent(kind -> paintMark(g, bounds, kind));
         }
+    }
+
+    /** El degrade que le da volumen a la tecla: clarea arriba, donde le pega la luz, y oscurece abajo. */
+    private void paintBevel(Graphics2D g, Rectangle bounds, Color base) {
+        g.setColor(base.brighter());
+        g.fillRect(bounds.x, bounds.y, bounds.width, BEVEL_THICKNESS);
+        g.setColor(base.darker());
+        g.fillRect(bounds.x, bounds.y + bounds.height - BEVEL_THICKNESS, bounds.width, BEVEL_THICKNESS);
     }
 
     /** El punto que marca una tecla, chico y pegado a su base: la tecla conserva su color. */
