@@ -13,6 +13,8 @@ final class GlobalUiMutationScan {
     private static final Pattern INSTALLS_THE_THEME = Pattern.compile("Theme\\.install\\(");
     private static final Pattern CHANGES_THE_FONT_SIZE = Pattern.compile("\\.useFontSize\\(");
     private static final Pattern TOGGLES_HIGH_CONTRAST = Pattern.compile("\\.useHighContrast\\(");
+    private static final Pattern SETS_UP_FLATLAF = Pattern.compile("Flat\\w*Laf\\.setup\\(");
+    private static final Pattern UPDATES_THE_FLATLAF_UI = Pattern.compile("FlatLaf\\.updateUI\\(");
     private static final Pattern ISOLATED = Pattern.compile("@Isolated\\b");
 
     private GlobalUiMutationScan() {
@@ -33,7 +35,9 @@ final class GlobalUiMutationScan {
         String code = read(file);
         return INSTALLS_THE_THEME.matcher(code).find()
                 || CHANGES_THE_FONT_SIZE.matcher(code).find()
-                || TOGGLES_HIGH_CONTRAST.matcher(code).find();
+                || TOGGLES_HIGH_CONTRAST.matcher(code).find()
+                || SETS_UP_FLATLAF.matcher(code).find()
+                || UPDATES_THE_FLATLAF_UI.matcher(code).find();
     }
 
     private static boolean isIsolated(Path file) {

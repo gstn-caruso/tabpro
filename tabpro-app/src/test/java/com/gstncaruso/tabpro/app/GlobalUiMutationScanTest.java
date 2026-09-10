@@ -86,6 +86,32 @@ class GlobalUiMutationScanTest {
         assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
     }
 
+    @Test
+    void aTestThatSetsUpFlatLafWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "SetsUpFlatLaf.java", """
+                class SetsUpFlatLaf {
+                    void setsUp() {
+                        FlatDarkLaf.setup();
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
+    @Test
+    void aTestThatUpdatesTheFlatLafUiWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "UpdatesTheFlatLafUi.java", """
+                class UpdatesTheFlatLafUi {
+                    void updates() {
+                        FlatLaf.updateUI();
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
     private static Path write(Path root, String fileName, String content) throws IOException {
         Path file = root.resolve(fileName);
         Files.writeString(file, content);
