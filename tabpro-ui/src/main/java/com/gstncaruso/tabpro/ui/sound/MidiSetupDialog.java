@@ -81,12 +81,15 @@ public final class MidiSetupDialog {
         soundFont.addTo(panel);
 
         List<PortRow> rows = new ArrayList<>(PORT_COUNT);
+        List<FormPanel.Section> portSections = new ArrayList<>(PORT_COUNT);
         for (int index = 0; index < PORT_COUNT; index++) {
             int port = index + 1;
             PortRow row = new PortRow(devices, port, current.ports().get(index));
-            row.addTo(panel);
+            portSections.add(row.addTo(panel));
             rows.add(row);
         }
+        panel.addSideBySide(portSections.get(0), portSections.get(1));
+        panel.addSideBySide(portSections.get(2), portSections.get(3));
 
         panel.addSection("Entrada MIDI");
         JComboBox<String> inputs = comboOf(devices.inputs(), current.input());
@@ -204,14 +207,15 @@ public final class MidiSetupDialog {
             });
         }
 
-        void addTo(FormPanel panel) {
-            panel.addSection("Puerto " + port);
-            panel.addRow("Dispositivo", device, testButton);
+        FormPanel.Section addTo(FormPanel panel) {
+            FormPanel.Section section = panel.newDetachedSection("Puerto " + port);
+            section.addRow("Dispositivo", device, testButton);
             JPanel patchButtons = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, DialogStyle.GAP_S, 0));
             patchButtons.add(loadPatchButton);
             patchButtons.add(clearPatchButton);
-            panel.addRow("Patch de instrumentos", patchLabel, patchButtons);
-            panel.addRow("", limitPitchVariation);
+            section.addRow("Patch de instrumentos", patchLabel, patchButtons);
+            section.addRow("", limitPitchVariation);
+            return section;
         }
 
         PortSetup toSetup() {
