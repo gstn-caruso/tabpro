@@ -74,7 +74,7 @@ class InstrumentEditingTest {
 
         editing.pressKey(20);
 
-        assertTrue(editor.currentBeat().isRest(), "ninguna cuerda baja tanto");
+        assertTrue(editor.currentBeat().isRest(), "no string goes down that far");
     }
 
     @Test

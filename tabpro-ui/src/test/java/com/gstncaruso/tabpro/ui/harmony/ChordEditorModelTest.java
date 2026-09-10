@@ -178,7 +178,7 @@ class ChordEditorModelTest {
         for (int i = 0; i < Finger.values().length - 1; i++) {
             model.cycleFinger(1);
         }
-        assertTrue(model.current().fingerOfString(1).isEmpty(), "despues del ultimo dedo vuelve a no tener ninguno");
+        assertTrue(model.current().fingerOfString(1).isEmpty(), "after the last finger it goes back to having none");
     }
 
     @Test
@@ -196,7 +196,7 @@ class ChordEditorModelTest {
         ChordDiagram fBarreDiagram = model.candidates().stream()
                 .filter(ChordDiagram::requiresBarre)
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("hace falta una posicion con cejilla para Fa mayor"));
+                .orElseThrow(() -> new AssertionError("a position with a barre is needed for F major"));
         model.pickCandidate(fBarreDiagram);
 
         model.setFinger(1, Finger.LITTLE);
@@ -205,10 +205,10 @@ class ChordEditorModelTest {
         List<ChordDiagram> sameShapeDiagrams = model.candidates().stream()
                 .filter(diagram -> diagram.shape().equals(fBarreDiagram.shape()))
                 .toList();
-        assertFalse(sameShapeDiagrams.isEmpty(), "Sol mayor tiene que ofrecer la misma forma de cejilla que Fa");
+        assertFalse(sameShapeDiagrams.isEmpty(), "G major has to offer the same barre shape as F");
         assertTrue(
                 sameShapeDiagrams.stream().allMatch(diagram -> diagram.fingerOfString(1).equals(Optional.of(Finger.LITTLE))),
-                "la digitacion corregida a mano se reusa en la forma parecida");
+                "the hand-corrected fingering is reused in the similar shape");
     }
 
     @Test
@@ -235,7 +235,7 @@ class ChordEditorModelTest {
 
         model.setToneOmitted(Interval.PERFECT_FIFTH, true);
 
-        assertTrue(model.candidates().size() > beforeOmitting, "omitir la quinta suma posiciones nuevas");
+        assertTrue(model.candidates().size() > beforeOmitting, "omitting the fifth adds new positions");
         assertTrue(model.omittedTones().contains(Interval.PERFECT_FIFTH));
     }
 
@@ -262,9 +262,9 @@ class ChordEditorModelTest {
     void typingAnyNameOnlyAppliesInCustomMode() {
         model.toggleFret(1, 3);
 
-        model.setCustomName("Mi acorde raro");
+        model.setCustomName("My weird chord");
 
-        assertEquals("Mi acorde raro", model.current().name());
+        assertEquals("My weird chord", model.current().name());
     }
 
     @Test
@@ -272,7 +272,7 @@ class ChordEditorModelTest {
         model.setUseDiagram(false);
 
         assertFalse(model.result().shown());
-        assertTrue(model.current().shown(), "la zona B sigue mostrando el diagrama mientras se edita");
+        assertTrue(model.current().shown(), "zone B keeps showing the diagram while editing");
     }
 
     @Test

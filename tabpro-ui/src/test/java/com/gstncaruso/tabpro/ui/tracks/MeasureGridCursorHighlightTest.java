@@ -37,7 +37,7 @@ class MeasureGridCursorHighlightTest {
         measures.add(Measure.empty(new TimeSignature(1, 4), Duration.quarter()));
         measures.add(Measure.empty(new TimeSignature(1, 4), Duration.quarter()));
         Track guitar = Track.standardGuitar("Guitarra").withMeasures(measures);
-        return new Editor(new Score("Prueba", 120, List.of(guitar)));
+        return new Editor(new Score("Test", 120, List.of(guitar)));
     }
 
     private static final class SpyingMeasureGrid extends MeasureGrid {

@@ -19,10 +19,10 @@ class MarkerZoneTruncationTest {
 
     @Test
     void truncatesANameThatDoesNotFitTheSegment() {
-        String truncated = MarkerZone.truncated("Estribillo final", 20, METRICS);
+        String truncated = MarkerZone.truncated("Chorus final", 20, METRICS);
 
-        assertTrue(truncated.endsWith("…"), "tiene que terminar en puntos suspensivos: " + truncated);
-        assertTrue(METRICS.stringWidth(truncated) <= 20, "tiene que entrar en el ancho del segmento");
+        assertTrue(truncated.endsWith("…"), "has to end in an ellipsis: " + truncated);
+        assertTrue(METRICS.stringWidth(truncated) <= 20, "has to fit within the segment width");
     }
 
     private static FontMetrics metrics() {

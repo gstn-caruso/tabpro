@@ -36,7 +36,7 @@ class PaperFormatTest {
     @Test
     void everyFormatIsTallerThanItIsWide() {
         for (PaperFormat format : PaperFormat.values()) {
-            assertTrue(format.heightMillimetres() > format.widthMillimetres(), format + " se mide en vertical");
+            assertTrue(format.heightMillimetres() > format.widthMillimetres(), format + " is measured in portrait");
         }
     }
 }

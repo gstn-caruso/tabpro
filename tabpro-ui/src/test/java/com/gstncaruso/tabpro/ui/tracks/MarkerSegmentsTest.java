@@ -22,14 +22,14 @@ class MarkerSegmentsTest {
     void oneMarkerCoversFromItsMeasureToTheEnd() {
         Editor editor = fourMeasureEditor();
         editor.moveToNextMeasure();
-        editor.setMarker(Marker.named("Estribillo"));
+        editor.setMarker(Marker.named("Chorus"));
 
         List<MarkerSegments.Segment> segments = MarkerSegments.of(editor.score());
 
         assertEquals(1, segments.size());
         assertEquals(1, segments.get(0).fromMeasure());
         assertEquals(4, segments.get(0).toMeasureExclusive());
-        assertEquals("Estribillo", segments.get(0).marker().name());
+        assertEquals("Chorus", segments.get(0).marker().name());
     }
 
     @Test

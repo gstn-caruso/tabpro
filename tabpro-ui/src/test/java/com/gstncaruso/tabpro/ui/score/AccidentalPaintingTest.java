@@ -37,7 +37,7 @@ class AccidentalPaintingTest {
         int step = StaffPainter.positionOf(track, Clef.TREBLE, note, 0).step();
         int y = layout.stepY(0, 0, step);
         assertTrue(canvas.writesTextInRegion(MusicFont.accidentalSharp(), new Rectangle(0, y - 2, WIDTH, 4)),
-                "la nota fuera de la armadura tiene que llevar el glifo del sostenido");
+                "the note outside the key signature has to carry the sharp glyph");
     }
 
     @Test
@@ -50,7 +50,7 @@ class AccidentalPaintingTest {
 
         int y = layout.stepY(0, 0, 8);
         assertTrue(canvas.writesTextInRegion(MusicFont.accidentalSharp(), new Rectangle(0, y - 2, WIDTH, 4)),
-                "el fa sostenido de la armadura tiene que llevar el glifo del sostenido");
+                "the F sharp of the key signature has to carry the sharp glyph");
     }
 
     @Test
@@ -63,7 +63,7 @@ class AccidentalPaintingTest {
 
         int y = layout.stepY(0, 0, 4);
         assertTrue(canvas.writesTextInRegion(MusicFont.accidentalFlat(), new Rectangle(0, y - 2, WIDTH, 4)),
-                "el si bemol de la armadura tiene que llevar el glifo del bemol");
+                "the B flat of the key signature has to carry the flat glyph");
     }
 
     @Test
@@ -82,7 +82,7 @@ class AccidentalPaintingTest {
         int step = StaffPainter.positionOf(track, Clef.TREBLE, backToNatural, 0).step();
         int y = layout.stepY(0, 0, step);
         assertTrue(canvas.writesTextInRegion(MusicFont.accidentalNatural(), new Rectangle(0, y - 2, WIDTH, 4)),
-                "la nota que vuelve a la armadura tiene que llevar el glifo del becuadro");
+                "the note that returns to the key signature has to carry the natural glyph");
     }
 
     private static ScoreLayout layoutFor(KeySignature key) {

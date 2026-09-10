@@ -19,7 +19,7 @@ class ChordDiagramCanvasTest {
     void stringSixStaysOnTheLeftAndStringOneOnTheRight() {
         ChordDiagramCanvas canvas = sized(new ChordDiagramCanvas());
 
-        assertTrue(canvas.stringX(6) < canvas.stringX(1), "la mas grave va a la izquierda, como en el manual");
+        assertTrue(canvas.stringX(6) < canvas.stringX(1), "the lowest string goes on the left, as in the manual");
         assertTrue(canvas.stringX(6) < canvas.stringX(5));
     }
 

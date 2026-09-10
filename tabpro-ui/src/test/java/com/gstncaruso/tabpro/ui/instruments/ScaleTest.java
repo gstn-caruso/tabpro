@@ -13,10 +13,10 @@ class ScaleTest {
         Scale scale = Scale.cMajor();
 
         for (int midi : new int[] {60, 62, 64, 65, 67, 69, 71}) {
-            assertTrue(scale.contains(midi), midi + " es de Do mayor");
+            assertTrue(scale.contains(midi), midi + " belongs to C major");
         }
         for (int midi : new int[] {61, 63, 66, 68, 70}) {
-            assertFalse(scale.contains(midi), midi + " no es de Do mayor");
+            assertFalse(scale.contains(midi), midi + " does not belong to C major");
         }
     }
 
@@ -34,9 +34,9 @@ class ScaleTest {
         Scale dMajor = new Scale(2, ScaleType.MAJOR);
 
         for (int midi : new int[] {62, 64, 66, 67, 69, 71, 73}) {
-            assertTrue(dMajor.contains(midi), midi + " es de Re mayor");
+            assertTrue(dMajor.contains(midi), midi + " belongs to D major");
         }
-        assertFalse(dMajor.contains(65), "fa natural no es de Re mayor");
+        assertFalse(dMajor.contains(65), "F natural does not belong to D major");
     }
 
     @Test
@@ -49,7 +49,7 @@ class ScaleTest {
                 found++;
             }
         }
-        assertTrue(found == 5, "la pentatonica tiene cinco notas por octava, encontre " + found);
+        assertTrue(found == 5, "the pentatonic has five notes per octave, found " + found);
     }
 
     @Test
@@ -67,7 +67,7 @@ class ScaleTest {
         assertEquals("3", scale.intervalLabelOf(64));
         assertEquals("4", scale.intervalLabelOf(65));
         assertEquals("5", scale.intervalLabelOf(67));
-        assertEquals("b3", scale.intervalLabelOf(63), "el intervalo se nombra aunque la nota no sea de la escala");
+        assertEquals("b3", scale.intervalLabelOf(63), "the interval is named even when the note is not in the scale");
     }
 
     @Test

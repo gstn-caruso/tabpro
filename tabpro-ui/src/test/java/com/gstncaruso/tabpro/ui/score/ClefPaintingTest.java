@@ -27,7 +27,7 @@ class ClefPaintingTest {
 
         int gLine = layout.staffLineY(0, 0, 1);
         assertTrue(canvas.writesTextInRegion(MusicFont.trebleClef(), new Rectangle(0, gLine - 2, WIDTH, 4)),
-                "la clave de sol tiene que escribir el glifo gClef apoyado en la linea de Sol");
+                "the treble clef has to write the gClef glyph resting on the G line");
     }
 
     @Test
@@ -39,7 +39,7 @@ class ClefPaintingTest {
 
         int fLine = layout.staffLineY(0, 0, 3);
         assertTrue(canvas.writesTextInRegion(MusicFont.bassClef(), new Rectangle(0, fLine - 2, WIDTH, 4)),
-                "la clave de fa tiene que escribir el glifo fClef apoyado en la linea de Fa");
+                "the bass clef has to write the fClef glyph resting on the F line");
     }
 
     private static ScoreLayout layout() {

@@ -25,16 +25,16 @@ class MarkerZoneTest {
         for (int i = 0; i < 5; i++) {
             editor.insertMeasure();
         }
-        editor.setMarker(Marker.named("Estribillo"));
+        editor.setMarker(Marker.named("Chorus"));
         MarkerZone zone = new MarkerZone(editor);
         zone.setSize(zone.getPreferredSize());
 
         BufferedImage painted = paint(zone);
 
         assertTrue(containsColor(painted, ScoreColors.WARNING),
-                "el nombre del marcador tiene que pintarse en rojo (WARNING)");
+                "the marker name has to paint in warning red (WARNING)");
         assertFalse(containsColor(painted, new java.awt.Color(0xFF, 0, 0)),
-                "ya no se pinta con el color propio del marcador");
+                "it no longer paints with the marker's own color");
     }
 
     private static boolean containsColor(BufferedImage image, java.awt.Color color) {
@@ -109,7 +109,7 @@ class MarkerZoneTest {
         gainFocus(zone);
         BufferedImage withFocus = paint(zone);
 
-        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "the focus has to be visible in the drawing");
     }
 
     private static void gainFocus(MarkerZone zone) {
@@ -143,11 +143,11 @@ class MarkerZoneTest {
         editor.insertMeasure();
         editor.insertMeasure();
         MarkerZone zone = new MarkerZone(editor);
-        zone.markerNamePrompt = initial -> "Estribillo";
+        zone.markerNamePrompt = initial -> "Chorus";
         pressShortcut(zone, KeyStroke.getKeyStroke("RIGHT"));
 
         pressShortcut(zone, KeyStroke.getKeyStroke("ENTER"));
 
-        assertEquals("Estribillo", editor.score().attributesOf(1).marker().orElseThrow().name());
+        assertEquals("Chorus", editor.score().attributesOf(1).marker().orElseThrow().name());
     }
 }

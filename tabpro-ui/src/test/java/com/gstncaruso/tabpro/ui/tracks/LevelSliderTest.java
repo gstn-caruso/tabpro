@@ -124,7 +124,7 @@ class LevelSliderTest {
         }
         BufferedImage withFocus = paint(slider);
 
-        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "the focus has to be visible in the drawing");
     }
 
     private static BufferedImage paint(LevelSlider slider) {

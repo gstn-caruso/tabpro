@@ -33,11 +33,11 @@ class FretboardViewTest {
         FretboardView view = sized(new FretboardView());
         view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
 
-        assertTrue(view.stringY(1) < view.stringY(6), "la primera cuerda va arriba");
+        assertTrue(view.stringY(1) < view.stringY(6), "the first string goes on top");
         assertEquals(
                 view.stringY(2) - view.stringY(1),
                 view.stringY(6) - view.stringY(5),
-                "las cuerdas van parejas");
+                "the strings are evenly spaced");
     }
 
     @Test
@@ -66,7 +66,7 @@ class FretboardViewTest {
         for (int fret = 1; fret < view.fretCount(); fret++) {
             assertTrue(
                     view.fretCenterX(fret) < view.fretCenterX(fret + 1),
-                    "el traste " + fret + " tiene que estar antes que el siguiente");
+                    "fret " + fret + " has to come before the next one");
         }
     }
 
@@ -156,9 +156,9 @@ class FretboardViewTest {
         view.show(locationOf(Track.standardGuitar("g"), chord));
         BufferedImage image = paint(view);
 
-        assertTrue(hasMarkNear(image, view.fretCenterX(3), view.stringY(6)), "falta la nota del traste 3");
-        assertTrue(hasMarkNear(image, view.fretCenterX(0), view.stringY(1)), "falta la cuerda al aire");
-        assertTrue(!hasMarkNear(image, view.fretCenterX(7), view.stringY(4)), "marco una nota que no suena");
+        assertTrue(hasMarkNear(image, view.fretCenterX(3), view.stringY(6)), "missing the note at fret 3");
+        assertTrue(hasMarkNear(image, view.fretCenterX(0), view.stringY(1)), "missing the open string");
+        assertTrue(!hasMarkNear(image, view.fretCenterX(7), view.stringY(4)), "marked a note that does not sound");
     }
 
     @Test
@@ -170,7 +170,7 @@ class FretboardViewTest {
         for (int string = 1; string <= 6; string++) {
             assertTrue(
                     !hasMarkNear(image, view.fretCenterX(5), view.stringY(string)),
-                    "un silencio no tiene que marcar nada");
+                    "a rest must not mark anything");
         }
     }
 
@@ -185,7 +185,7 @@ class FretboardViewTest {
         BufferedImage image = paint(view);
 
         assertTrue(hasMark(image, view.fretCenterX(5), view.stringY(1), InstrumentColors.CONTEXT),
-                "el beat siguiente tiene que verse distinto, como contexto");
+                "the next beat has to look different, as context");
     }
 
     @Test
@@ -198,7 +198,7 @@ class FretboardViewTest {
                 assertEquals(
                         Optional.of(new Note(string, fret)),
                         view.noteAt(view.fretCenterX(fret), view.stringY(string)),
-                        "el punto de la cuerda " + string + " traste " + fret);
+                        "the dot for string " + string + " fret " + fret);
             }
         }
     }
@@ -246,11 +246,11 @@ class FretboardViewTest {
         view.show(locationOf(Track.standardGuitar("g"), Beat.rest(Duration.quarter())));
         view.setHandedness(Handedness.LEFT_HANDED);
 
-        assertTrue(view.fretCenterX(0) > view.fretCenterX(view.fretCount()), "el diapason quedo al reves");
+        assertTrue(view.fretCenterX(0) > view.fretCenterX(view.fretCount()), "the fretboard ended up flipped");
         assertEquals(
                 Optional.of(new Note(1, 3)),
                 view.noteAt(view.fretCenterX(3), view.stringY(1)),
-                "el clic tiene que seguir cayendo sobre el mismo traste, ya espejado");
+                "the click has to keep landing on the same fret, now mirrored");
     }
 
     @Test
@@ -355,7 +355,7 @@ class FretboardViewTest {
         gainFocus(view);
         BufferedImage withFocus = paint(view);
 
-        assertTrue(differsSomewhere(withoutFocus, withFocus), "el foco tiene que verse en el dibujo");
+        assertTrue(differsSomewhere(withoutFocus, withFocus), "the focus has to be visible in the drawing");
     }
 
     private static void gainFocus(FretboardView view) {
@@ -399,7 +399,7 @@ class FretboardViewTest {
                 break;
             }
         }
-        assertTrue(sawTheGrain, "el mastil tiene que mostrar veta, no un color plano");
+        assertTrue(sawTheGrain, "the neck has to show grain, not a flat color");
     }
 
     @Test
@@ -410,7 +410,7 @@ class FretboardViewTest {
         BufferedImage first = paint(view);
         BufferedImage second = paint(view);
 
-        assertTrue(!differsSomewhere(first, second), "la veta tiene que ser reproducible, no aleatoria");
+        assertTrue(!differsSomewhere(first, second), "the grain has to be reproducible, not random");
     }
 
     @Test
@@ -423,9 +423,9 @@ class FretboardViewTest {
         int y = (view.stringY(3) + view.stringY(4)) / 2;
         Color fretWire = FretboardType.ELECTRIC.fretWireColor();
 
-        assertEquals(fretWire.brighter().getRGB(), image.getRGB(wireX - 1, y), "falta el brillo del traste");
-        assertEquals(fretWire.getRGB(), image.getRGB(wireX, y), "el cuerpo del traste tiene que seguir igual");
-        assertEquals(fretWire.darker().getRGB(), image.getRGB(wireX + 1, y), "falta la sombra del traste");
+        assertEquals(fretWire.brighter().getRGB(), image.getRGB(wireX - 1, y), "missing the fret highlight");
+        assertEquals(fretWire.getRGB(), image.getRGB(wireX, y), "the fret body has to stay the same");
+        assertEquals(fretWire.darker().getRGB(), image.getRGB(wireX + 1, y), "missing the fret shadow");
     }
 
     private static void pressShortcut(JComponent component, KeyStroke keyStroke) {

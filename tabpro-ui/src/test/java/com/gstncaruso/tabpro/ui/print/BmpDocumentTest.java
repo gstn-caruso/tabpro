@@ -42,8 +42,8 @@ class BmpDocumentTest {
 
         writeWithBmpDocument(image);
 
-        assertEquals(0, image.singlePixelCalls(), "no puede llamar a getRGB(x, y) por cada pixel");
-        assertEquals(image.getHeight(), image.bulkRowCalls(), "tiene que pedir los pixeles fila por fila");
+        assertEquals(0, image.singlePixelCalls(), "must not call getRGB(x, y) for every pixel");
+        assertEquals(image.getHeight(), image.bulkRowCalls(), "has to ask for the pixels row by row");
     }
 
     private static byte[] writeWithBmpDocument(BufferedImage image) throws IOException {

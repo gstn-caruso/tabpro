@@ -37,7 +37,7 @@ class AugmentationDotPaintingTest {
         int step = StaffPainter.positionOf(track, Clef.TREBLE, note, 0).step();
         int y = layout.stepY(0, 0, step);
         assertTrue(canvas.writesTextInRegion(MusicFont.augmentationDot(), new Rectangle(0, y - 2, WIDTH, 4)),
-                "la nota con puntillo tiene que llevar el glifo del puntillo junto a su cabeza");
+                "the dotted note has to carry the dot glyph next to its head");
     }
 
     @Test
@@ -53,6 +53,6 @@ class AugmentationDotPaintingTest {
 
         int y = layout.stepY(0, 0, 5);
         assertTrue(canvas.writesTextInRegion(MusicFont.augmentationDot(), new Rectangle(0, y - 2, WIDTH, 4)),
-                "el silencio con puntillo tiene que llevar el glifo del puntillo");
+                "the dotted rest has to carry the dot glyph");
     }
 }

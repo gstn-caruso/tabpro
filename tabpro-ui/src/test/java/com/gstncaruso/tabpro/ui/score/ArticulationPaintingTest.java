@@ -59,6 +59,6 @@ class ArticulationPaintingTest {
         int noteY = layout.stepY(0, 0, step);
         int markY = (int) Math.round(above ? noteY - MARK_OFFSET : noteY + MARK_OFFSET);
         assertTrue(canvas.writesTextInRegion(glyph, new Rectangle(0, markY - 4, WIDTH, 8)),
-                "la marca tiene que escribir el glifo de Bravura del lado que corresponde de la nota");
+                "the mark has to write the Bravura glyph on the note's corresponding side");
     }
 }

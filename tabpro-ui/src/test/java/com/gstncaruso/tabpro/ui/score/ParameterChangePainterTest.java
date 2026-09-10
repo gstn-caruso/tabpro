@@ -41,7 +41,7 @@ class ParameterChangePainterTest {
         Painted painted = paint(scoreWith(changingAt(0, change(SoundParameter.PAN, 20))));
 
         assertTrue(painted.hasColorAbove(0, 0, 0, ScoreColors.PARAMETER_CHANGE),
-                "el cambio de paneo se anuncia con el rectangulito rojo");
+                "the pan change is announced with the little red rectangle");
     }
 
     @Test
@@ -50,7 +50,7 @@ class ParameterChangePainterTest {
 
         assertTrue(painted.hasColorAbove(0, 0, 2, ScoreColors.PARAMETER_CHANGE));
         assertFalse(painted.hasColorAbove(0, 0, 0, ScoreColors.PARAMETER_CHANGE),
-                "los otros beats no llevan nada");
+                "the other beats carry nothing");
     }
 
     @Test
@@ -59,9 +59,9 @@ class ParameterChangePainterTest {
         Painted plain = paint(scoreWith(plainMeasure()));
 
         assertFalse(withTempo.looksLikeAbove(plain, 0, 0, 1),
-                "el cambio de tempo se escribe arriba del pentagrama");
+                "the tempo change is written above the staff");
         assertFalse(withTempo.hasColorAbove(0, 0, 1, ScoreColors.PARAMETER_CHANGE),
-                "el tempo tiene símbolo musical, así que no necesita el rectángulo");
+                "the tempo has a musical symbol, so it does not need the rectangle");
     }
 
     @Test
@@ -75,7 +75,7 @@ class ParameterChangePainterTest {
 
         int bottom = layout.staffTop(0, 0) - 16;
         assertTrue(canvas.writesTextInRegion(MusicFont.metNoteQuarterUp(), new Rectangle(0, bottom - 14, WIDTH, 16)),
-                "el tempo tiene que escribir la negra chiquita con el glifo de Bravura");
+                "the tempo has to write the small quarter note with the Bravura glyph");
     }
 
     @Test
@@ -87,8 +87,8 @@ class ParameterChangePainterTest {
 
         ParameterChangePainter.paintMeasure(canvas, layout, track, 0, 0);
 
-        assertTrue(canvas.drawsColor(ScoreColors.TEMPO), "el tempo se escribe en rojo, como en GP5");
-        assertFalse(canvas.drawsColor(ScoreColors.INK), "el tempo no deja tinta plana");
+        assertTrue(canvas.drawsColor(ScoreColors.TEMPO), "the tempo is written in red, as in GP5");
+        assertFalse(canvas.drawsColor(ScoreColors.INK), "the tempo does not leave flat ink");
     }
 
     @Test
@@ -102,7 +102,7 @@ class ParameterChangePainterTest {
 
         int bottom = layout.staffTop(0, 0) - 16;
         assertTrue(canvas.writesTextInRegion(MusicFont.metNoteQuarterUp(), new Rectangle(0, bottom - 14, WIDTH, 16)),
-                "el tempo inicial tiene que escribir la negra de Bravura arriba del primer compas");
+                "the initial tempo has to write the Bravura quarter note above the first measure");
     }
 
     @Test
@@ -115,7 +115,7 @@ class ParameterChangePainterTest {
         ParameterChangePainter.paintInitialTempo(canvas, layout, track, 0, 0, 120);
 
         assertFalse(canvas.drawsColor(ScoreColors.TEMPO),
-                "el cambio de tempo del beat 0 ya lo escribe; el tempo inicial no se duplica");
+                "beat 0's tempo change already writes it; the initial tempo is not duplicated");
     }
 
     @Test
@@ -125,7 +125,7 @@ class ParameterChangePainterTest {
         Painted panOnly = paint(scoreWith(changingAt(1, change(SoundParameter.PAN, 20))));
 
         assertTrue(painted.hasColorAbove(0, 0, 1, ScoreColors.PARAMETER_CHANGE));
-        assertFalse(painted.looksLikeAbove(panOnly, 0, 0, 1), "además del rectángulo, el tempo dice su número");
+        assertFalse(painted.looksLikeAbove(panOnly, 0, 0, 1), "besides the rectangle, the tempo states its number");
     }
 
     @Test

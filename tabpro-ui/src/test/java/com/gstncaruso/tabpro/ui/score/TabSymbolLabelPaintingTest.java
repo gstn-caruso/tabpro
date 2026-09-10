@@ -46,10 +46,10 @@ class TabSymbolLabelPaintingTest {
         TabSymbolPainter.paintMeasure(canvas, layout, track, 0, 0);
 
         List<RecordingCanvas.DrawnText> drawnTexts = canvas.drawnTexts();
-        assertEquals(1, drawnTexts.size(), "el efecto tiene que escribir exactamente una sigla");
+        assertEquals(1, drawnTexts.size(), "the effect has to write exactly one label");
         RecordingCanvas.DrawnText drawnText = drawnTexts.get(0);
         assertEquals(-1, drawnText.font().canDisplayUpTo(drawnText.text()),
-                "la sigla \"" + drawnText.text() + "\" tiene un caracter que "
-                        + drawnText.font().getFontName() + " no sabe mostrar");
+                "label \"" + drawnText.text() + "\" has a character that "
+                        + drawnText.font().getFontName() + " does not know how to show");
     }
 }

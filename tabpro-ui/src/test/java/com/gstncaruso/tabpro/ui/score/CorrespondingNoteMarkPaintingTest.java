@@ -47,7 +47,7 @@ class CorrespondingNoteMarkPaintingTest {
 
         int yLow = stepYOf(lowScore, low);
         int yHigh = stepYOf(highScore, high);
-        assertNotEquals(yLow, yHigh, "el fixture no sirve si las dos notas caen en el mismo grado");
+        assertNotEquals(yLow, yHigh, "the fixture is useless if both notes land on the same degree");
 
         Painted lowBare = paint(lowScore, new Cursor(-1, 0, 0, 6));
         Painted lowOnNote = paint(lowScore, new Cursor(0, 0, 0, 6));
@@ -56,9 +56,9 @@ class CorrespondingNoteMarkPaintingTest {
         int x = lowBare.noteX();
 
         assertNotEquals(lowBare.pixelAt(x, yLow), lowOnNote.pixelAt(x, yLow),
-                "la marca tiene que aparecer en el grado de la nota grave");
+                "the mark has to appear on the low note's degree");
         assertNotEquals(highBare.pixelAt(x, yHigh), highOnNote.pixelAt(x, yHigh),
-                "la marca tiene que aparecer en el grado de la nota aguda");
+                "the mark has to appear on the high note's degree");
     }
 
     @Test
@@ -71,9 +71,9 @@ class CorrespondingNoteMarkPaintingTest {
         int yLow = stepYOf(score, lowString);
         int yMid = stepYOf(score, midString);
         int yHigh = stepYOf(score, highString);
-        assertNotEquals(yLow, yMid, "el fixture no sirve si dos notas caen en el mismo grado");
-        assertNotEquals(yMid, yHigh, "el fixture no sirve si dos notas caen en el mismo grado");
-        assertNotEquals(yLow, yHigh, "el fixture no sirve si dos notas caen en el mismo grado");
+        assertNotEquals(yLow, yMid, "the fixture is useless if two notes land on the same degree");
+        assertNotEquals(yMid, yHigh, "the fixture is useless if two notes land on the same degree");
+        assertNotEquals(yLow, yHigh, "the fixture is useless if two notes land on the same degree");
 
         Painted bare = paint(score, new Cursor(-1, 0, 0, 6));
         Painted onLowString = paint(score, new Cursor(0, 0, 0, 6));
@@ -81,17 +81,17 @@ class CorrespondingNoteMarkPaintingTest {
         Painted onHighString = paint(score, new Cursor(0, 0, 0, 1));
         int x = bare.noteX();
 
-        assertNotEquals(bare.pixelAt(x, yLow), onLowString.pixelAt(x, yLow), "falta la marca en la cuerda del cursor");
-        assertEquals(bare.pixelAt(x, yMid), onLowString.pixelAt(x, yMid), "no puede aparecer marca en otra cuerda del acorde");
-        assertEquals(bare.pixelAt(x, yHigh), onLowString.pixelAt(x, yHigh), "no puede aparecer marca en otra cuerda del acorde");
+        assertNotEquals(bare.pixelAt(x, yLow), onLowString.pixelAt(x, yLow), "missing the mark on the cursor's string");
+        assertEquals(bare.pixelAt(x, yMid), onLowString.pixelAt(x, yMid), "no mark can appear on another string of the chord");
+        assertEquals(bare.pixelAt(x, yHigh), onLowString.pixelAt(x, yHigh), "no mark can appear on another string of the chord");
 
-        assertEquals(bare.pixelAt(x, yLow), onMidString.pixelAt(x, yLow), "no puede aparecer marca en otra cuerda del acorde");
-        assertNotEquals(bare.pixelAt(x, yMid), onMidString.pixelAt(x, yMid), "falta la marca en la cuerda del cursor");
-        assertEquals(bare.pixelAt(x, yHigh), onMidString.pixelAt(x, yHigh), "no puede aparecer marca en otra cuerda del acorde");
+        assertEquals(bare.pixelAt(x, yLow), onMidString.pixelAt(x, yLow), "no mark can appear on another string of the chord");
+        assertNotEquals(bare.pixelAt(x, yMid), onMidString.pixelAt(x, yMid), "missing the mark on the cursor's string");
+        assertEquals(bare.pixelAt(x, yHigh), onMidString.pixelAt(x, yHigh), "no mark can appear on another string of the chord");
 
-        assertEquals(bare.pixelAt(x, yLow), onHighString.pixelAt(x, yLow), "no puede aparecer marca en otra cuerda del acorde");
-        assertEquals(bare.pixelAt(x, yMid), onHighString.pixelAt(x, yMid), "no puede aparecer marca en otra cuerda del acorde");
-        assertNotEquals(bare.pixelAt(x, yHigh), onHighString.pixelAt(x, yHigh), "falta la marca en la cuerda del cursor");
+        assertEquals(bare.pixelAt(x, yLow), onHighString.pixelAt(x, yLow), "no mark can appear on another string of the chord");
+        assertEquals(bare.pixelAt(x, yMid), onHighString.pixelAt(x, yMid), "no mark can appear on another string of the chord");
+        assertNotEquals(bare.pixelAt(x, yHigh), onHighString.pixelAt(x, yHigh), "missing the mark on the cursor's string");
     }
 
     @Test
@@ -108,7 +108,7 @@ class CorrespondingNoteMarkPaintingTest {
         int bottom = bare.layout.tabTop(0, 0);
         assertTrue(
                 sameInArea(bare, onRest, new Rectangle(beat.x + 1, top, beat.width - 2, bottom - top)),
-                "sin nota en la cuerda del cursor no puede aparecer ninguna marca gris");
+                "without a note on the cursor's string no gray mark can appear");
     }
 
     @Test
@@ -130,14 +130,14 @@ class CorrespondingNoteMarkPaintingTest {
         int targetY = (int) Math.round((layout.stepY(0, 0, noteStep) - shiftUp) * scale);
 
         int[] diff = firstDifferingPixelNear(bare, onNote, targetX, targetY, 4);
-        assertNotNull(diff, "la marca tiene que llegar tambien a la hoja impresa, cerca de la nota");
+        assertNotNull(diff, "the mark also has to reach the printed sheet, near the note");
         int base = bare.getRGB(diff[0], diff[1]);
         int actual = onNote.getRGB(diff[0], diff[1]);
 
         assertEquals(blended(base, ScoreColors.onPaper(ScoreColors.CORRESPONDING_NOTE)), actual,
-                "en la hoja tiene que quedar el gris invertido de ON_PAPER");
+                "on the sheet it has to be ON_PAPER's inverted gray");
         assertNotEquals(blended(base, ScoreColors.CORRESPONDING_NOTE), actual,
-                "el gris crudo de pantalla, sin invertir, se leeria mal sobre el papel claro");
+                "the raw screen gray, uninverted, would read poorly on light paper");
     }
 
     @Test
@@ -155,7 +155,7 @@ class CorrespondingNoteMarkPaintingTest {
         StaffPosition unshiftedPosition = StaffPosition.of(score.track(0).tuning().pitchOf(note), Clef.TREBLE);
         int unshiftedStep = unshiftedPosition.step();
         int shiftedStep = unshiftedPosition.shiftedBySteps(OctaveMark.OTTAVA_ALTA.staffStepShift()).step();
-        assertNotEquals(unshiftedStep, shiftedStep, "el fixture no sirve si 8va no mueve la cabeza");
+        assertNotEquals(unshiftedStep, shiftedStep, "the fixture is useless if 8va does not move the head");
 
         Painted bare = paint(score, new Cursor(-1, 0, 0, 1));
         Painted onNote = paint(score, new Cursor(0, 0, 0, 1));
@@ -165,10 +165,10 @@ class CorrespondingNoteMarkPaintingTest {
 
         assertNotEquals(
                 bare.pixelAt(x, yWhereTheHeadActuallyIs), onNote.pixelAt(x, yWhereTheHeadActuallyIs),
-                "8va corre la cabeza siete grados: la marca tiene que seguirla hasta ahi");
+                "8va shifts the head seven degrees: the mark has to follow it there");
         assertEquals(
                 bare.pixelAt(x, yWhereTheHeadWouldBeWithoutTheMark), onNote.pixelAt(x, yWhereTheHeadWouldBeWithoutTheMark),
-                "sin el corrimiento la marca queda senalando pentagrama vacio");
+                "without the shift the mark ends up pointing at an empty staff");
     }
 
     @Test
@@ -187,19 +187,19 @@ class CorrespondingNoteMarkPaintingTest {
         int yString = bare.layout.stringY(0, 0, 3);
 
         assertNotEquals(bare.pixelAt(xEdge, yString), onTablature.pixelAt(xEdge, yString),
-                "en tablatura, el cuadradito del cursor tiene que estar sobre la cuerda");
+                "in tablature, the cursor's little square has to be on the string");
         assertNotEquals(bare.pixelAt(xCenter, yStaff), onTablature.pixelAt(xCenter, yStaff),
-                "en tablatura, la marca gris tiene que estar sobre la cabeza de la nota");
+                "in tablature, the gray mark has to be on the notehead");
 
         assertNotEquals(bare.pixelAt(xCenter, yStaff), onStaff.pixelAt(xCenter, yStaff),
-                "en el pentagrama, el cuadradito del cursor tiene que pasar a la cabeza de la nota");
+                "on the staff, the cursor's little square has to move to the notehead");
         assertNotEquals(bare.pixelAt(xEdge, yString), onStaff.pixelAt(xEdge, yString),
-                "en el pentagrama, la marca gris tiene que pasar a la cuerda");
+                "on the staff, the gray mark has to move to the string");
 
         assertNotEquals(onTablature.pixelAt(xEdge, yString), onStaff.pixelAt(xEdge, yString),
-                "donde antes iba el cuadradito del cursor ahora va la marca gris: tiene que cambiar de color");
+                "where the cursor's little square used to go now the gray mark goes: it has to change color");
         assertNotEquals(onTablature.pixelAt(xCenter, yStaff), onStaff.pixelAt(xCenter, yStaff),
-                "donde antes iba la marca gris ahora va el cuadradito del cursor: tiene que cambiar de color");
+                "where the gray mark used to go now the cursor's little square goes: it has to change color");
     }
 
     private static int stepYOf(Score score, Note note) {

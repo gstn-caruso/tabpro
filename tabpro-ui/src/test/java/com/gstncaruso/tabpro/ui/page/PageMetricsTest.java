@@ -61,8 +61,8 @@ class PageMetricsTest {
     void marginsWiderThanTheSheetStillLeaveRoomToDrawSomething() {
         PageMetrics sheet = PageMetrics.of(withMargins(500, 500, 500, 500));
 
-        assertTrue(sheet.contentWidth() > 0, "el ancho del contenido nunca puede ser negativo");
-        assertTrue(sheet.contentHeight() > 0, "el alto del contenido nunca puede ser negativo");
+        assertTrue(sheet.contentWidth() > 0, "content width can never be negative");
+        assertTrue(sheet.contentHeight() > 0, "content height can never be negative");
     }
 
     @Test
@@ -89,7 +89,7 @@ class PageMetricsTest {
 
         assertEquals(small.pageWidth(), big.pageWidth());
         assertEquals(small.pageHeight(), big.pageHeight());
-        assertTrue(big.layoutWidth() < small.layoutWidth(), "agrandar la partitura deja entrar menos musica");
+        assertTrue(big.layoutWidth() < small.layoutWidth(), "enlarging the score fits in less music");
     }
 
     @Test

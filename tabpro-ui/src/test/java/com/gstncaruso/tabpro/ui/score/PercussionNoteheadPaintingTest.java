@@ -53,6 +53,6 @@ class PercussionNoteheadPaintingTest {
         int centerX = bounds.x + bounds.width / 2;
         int y = layout.stringY(0, 0, note.string());
         assertTrue(canvas.writesTextInRegion(glyph, new Rectangle(centerX - 8, y - 8, 16, 16)),
-                "la cabeza de percusion tiene que escribir el glifo de Bravura que corresponde a su forma");
+                "the percussion notehead has to write the Bravura glyph that matches its shape");
     }
 }

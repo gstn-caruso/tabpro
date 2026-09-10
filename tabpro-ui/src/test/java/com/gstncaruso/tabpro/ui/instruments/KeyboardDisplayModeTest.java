@@ -71,9 +71,9 @@ class KeyboardDisplayModeTest {
 
         KeyMarks marks = KeyboardDisplayMode.BEAT_AND_SCALE.marks(location, Optional.of(Scale.cMajor()));
 
-        assertTrue(marks.secondary().contains(60), "Do central es de Do mayor");
-        assertTrue(marks.secondary().contains(62), "Re central es de Do mayor");
-        assertTrue(!marks.secondary().contains(61), "Do sostenido no es de Do mayor");
+        assertTrue(marks.secondary().contains(60), "middle C belongs to C major");
+        assertTrue(marks.secondary().contains(62), "middle D belongs to C major");
+        assertTrue(!marks.secondary().contains(61), "C sharp does not belong to C major");
     }
 
     @Test

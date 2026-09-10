@@ -67,9 +67,9 @@ class ChordDialogTest {
         ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
 
         javax.swing.JRadioButton simple = Combos.radioButtonWithText(panel, "Simple");
-        assertNotNull(Combos.radioButtonWithText(panel, "Media"), "no encontre el radio 'Media'");
-        assertNotNull(Combos.radioButtonWithText(panel, "Todas"), "no encontre el radio 'Todas'");
-        assertNotNull(simple, "no encontre el radio 'Simple'");
+        assertNotNull(Combos.radioButtonWithText(panel, "Media"), "could not find the 'Media' radio button");
+        assertNotNull(Combos.radioButtonWithText(panel, "Todas"), "could not find the 'Todas' radio button");
+        assertNotNull(simple, "could not find the 'Simple' radio button");
 
         simple.doClick();
 
@@ -85,9 +85,9 @@ class ChordDialogTest {
         ChordDialog.Panel panel = new ChordDialog.Panel(model, library, editor, new RecordingPlayer());
 
         javax.swing.JRadioButton force = Combos.radioButtonWithText(panel, "Forzar cejilla");
-        assertNotNull(Combos.radioButtonWithText(panel, "Cualquiera"), "no encontre el radio 'Cualquiera'");
-        assertNotNull(Combos.radioButtonWithText(panel, "Prohibir cejilla"), "no encontre el radio 'Prohibir cejilla'");
-        assertNotNull(force, "no encontre el radio 'Forzar cejilla'");
+        assertNotNull(Combos.radioButtonWithText(panel, "Cualquiera"), "could not find the 'Cualquiera' radio button");
+        assertNotNull(Combos.radioButtonWithText(panel, "Prohibir cejilla"), "could not find the 'Prohibir cejilla' radio button");
+        assertNotNull(force, "could not find the 'Forzar cejilla' radio button");
 
         force.doClick();
 

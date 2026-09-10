@@ -11,7 +11,7 @@ public record Scale(int rootPitchClass, Set<Integer> semitones) {
 
     public Scale {
         if (rootPitchClass < 0 || rootPitchClass > 11) {
-            throw new IllegalArgumentException("rootPitchClass debe estar entre 0 y 11: " + rootPitchClass);
+            throw new IllegalArgumentException("rootPitchClass must be between 0 and 11: " + rootPitchClass);
         }
         semitones = Set.copyOf(semitones);
     }

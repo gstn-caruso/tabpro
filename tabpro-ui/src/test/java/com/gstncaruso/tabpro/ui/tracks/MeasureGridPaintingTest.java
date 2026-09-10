@@ -25,11 +25,11 @@ class MeasureGridPaintingTest {
         BufferedImage painted = paint(grid);
 
         assertEquals(ScoreColors.INK.getRGB(), topEdgeOf(painted, grid, 1, 2),
-                "el compas donde esta el cursor tiene que quedar marcado");
+                "the measure where the cursor is has to be marked");
         assertNotEquals(ScoreColors.INK.getRGB(), topEdgeOf(painted, grid, 1, 1),
-                "los otros compases de la pista no");
+                "the other measures of the track are not");
         assertNotEquals(ScoreColors.INK.getRGB(), topEdgeOf(painted, grid, 0, 2),
-                "ese compas en las otras pistas tampoco");
+                "nor is that measure on the other tracks");
     }
 
     @Test
@@ -40,7 +40,7 @@ class MeasureGridPaintingTest {
         BufferedImage painted = paint(grid);
 
         assertEquals(ScoreColors.EMPTY_MEASURE.getRGB(), centerOf(painted, grid, 0, 1),
-                "un compas sin notas se pinta plata");
+                "a measure without notes is painted silver");
     }
 
     @Test
@@ -49,7 +49,7 @@ class MeasureGridPaintingTest {
         MeasureGrid grid = new MeasureGrid(editor);
         editor.selectTrack(0);
         editor.moveTo(0, 0, 1);
-        assertEquals(ScoreColors.INK.getRGB(), topEdgeOf(paint(grid), grid, 0, 0), "el fixture arranca en 0");
+        assertEquals(ScoreColors.INK.getRGB(), topEdgeOf(paint(grid), grid, 0, 0), "the fixture starts at 0");
 
         editor.selectTrack(1);
         editor.moveTo(2, 0, 1);
@@ -57,7 +57,7 @@ class MeasureGridPaintingTest {
         BufferedImage painted = paint(grid);
         assertEquals(ScoreColors.INK.getRGB(), topEdgeOf(painted, grid, 1, 2));
         assertNotEquals(ScoreColors.INK.getRGB(), topEdgeOf(painted, grid, 0, 0),
-                "la marca vieja no puede quedar pegada");
+                "the old mark cannot stay stuck");
     }
 
     private static int topEdgeOf(BufferedImage painted, MeasureGrid grid, int track, int measure) {

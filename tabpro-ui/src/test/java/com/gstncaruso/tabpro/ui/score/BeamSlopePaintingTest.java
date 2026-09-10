@@ -45,7 +45,7 @@ class BeamSlopePaintingTest {
         int lastTop = painted.topInkY(2, true);
 
         assertTrue(lastTop < firstTop,
-                "un grupo ascendente tiene que subir: el y de la ultima nota tiene que ser menor que el de la primera");
+                "a rising group has to go up: the last note's y has to be less than the first note's");
     }
 
     @Test
@@ -56,7 +56,7 @@ class BeamSlopePaintingTest {
         int lastTop = painted.topInkY(2, true);
 
         assertTrue(lastTop > firstTop,
-                "un grupo descendente tiene que bajar: el y de la ultima nota tiene que ser mayor que el de la primera");
+                "a falling group has to go down: the last note's y has to be greater than the first note's");
     }
 
     @Test
@@ -64,7 +64,7 @@ class BeamSlopePaintingTest {
         Painted painted = paintEighths(false, LOW, LOW);
 
         assertEquals(painted.topInkY(1, true), painted.topInkY(2, true),
-                "notas a la misma altura: la barra sigue horizontal");
+                "notes at the same pitch: the beam stays horizontal");
     }
 
     @Test
@@ -72,7 +72,7 @@ class BeamSlopePaintingTest {
         Painted painted = paintSixteenths(LOW, HIGHER, LOW);
 
         assertEquals(painted.topInkY(1, true), painted.topInkY(3, true),
-                "el grupo en zigzag tiene que aplanarse: los extremos quedan a la misma altura");
+                "the zigzag group has to flatten out: the endpoints end up at the same height");
     }
 
     @Test
@@ -83,7 +83,7 @@ class BeamSlopePaintingTest {
         int lastTop = painted.topInkY(2, true);
 
         assertEquals(MAX_BEAM_SLOPE, firstTop - lastTop, 0.6,
-                "la pendiente tiene que quedar acotada al tope aunque el intervalo entre las notas sea mas grande");
+                "the slope has to stay capped even when the interval between the notes is larger");
     }
 
     @Test
@@ -94,7 +94,7 @@ class BeamSlopePaintingTest {
         int noteheadY = painted.noteheadY(VERY_LOW);
 
         assertTrue(painted.hasContinuousInk(painted.stemX(1, true), beamTop, noteheadY),
-                "la plica tiene que llegar sin cortes desde la cabeza de la nota hasta la barra inclinada");
+                "the stem has to run unbroken from the notehead to the sloped beam");
     }
 
     @Test
@@ -103,12 +103,12 @@ class BeamSlopePaintingTest {
 
         int primaryFirst = painted.topInkY(1, true);
         int primaryLast = painted.topInkY(4, true);
-        assertTrue(primaryLast < primaryFirst, "el grupo es ascendente: la barra primaria tiene que subir");
+        assertTrue(primaryLast < primaryFirst, "the group is rising: the primary beam has to go up");
 
         assertTrue(painted.hasInkNear(painted.stemX(1, true), (int) Math.round(primaryFirst + BEAM_GAP), 2),
-                "la barra secundaria tiene que acompañar a la primaria en el primer extremo");
+                "the secondary beam has to follow the primary one at the first endpoint");
         assertTrue(painted.hasInkNear(painted.stemX(4, true), (int) Math.round(primaryLast + BEAM_GAP), 2),
-                "la barra secundaria tiene que acompañar a la primaria en el ultimo extremo, con la misma pendiente");
+                "the secondary beam has to follow the primary one at the last endpoint, with the same slope");
     }
 
     @Test
@@ -116,7 +116,7 @@ class BeamSlopePaintingTest {
         Painted painted = paintEighths(true, LOW, HIGHER);
 
         assertEquals(painted.topInkY(1, true), painted.topInkY(2, true),
-                "con 'Forzar barras horizontales' activo, un grupo ascendente tiene que quedar horizontal");
+                "with 'Forzar barras horizontales' on, a rising group has to stay horizontal");
     }
 
     private static Painted paintEighths(boolean forceHorizontalBeams, Note first, Note second) {

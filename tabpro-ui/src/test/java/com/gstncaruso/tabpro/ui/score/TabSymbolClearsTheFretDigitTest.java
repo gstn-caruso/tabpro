@@ -40,9 +40,9 @@ class TabSymbolClearsTheFretDigitTest {
         Rectangle digitArea = digitArea(plain.layout);
 
         assertTrue(withLabel.inkIn(gapArea) > plain.inkIn(gapArea),
-                ornament + " tiene que dibujarse en la brecha");
+                ornament + " has to draw itself in the gap");
         assertEquals(plain.inkIn(digitArea), withLabel.inkIn(digitArea),
-                ornament + " no puede pintar tinta sobre el digito de traste de su propia cuerda");
+                ornament + " cannot paint ink over the fret digit of its own string");
     }
 
     private static Rectangle digitArea(ScoreLayout layout) {

@@ -55,9 +55,9 @@ class PaginationTest {
     void aLongScoreIsSpreadOverSeveralSheets() {
         Pagination pages = paginationOf(scoreWithMeasures(80));
 
-        assertTrue(pages.pageCount() > 1, "una partitura larga no entra en una sola hoja");
+        assertTrue(pages.pageCount() > 1, "a long score does not fit on a single sheet");
         assertEquals(1, pages.pageOf(0));
-        assertTrue(pages.pageOf(79) > 1, "los ultimos compases caen en una hoja posterior");
+        assertTrue(pages.pageOf(79) > 1, "the last measures fall on a later sheet");
     }
 
     @Test
@@ -67,7 +67,7 @@ class PaginationTest {
 
         for (int measure = 0; measure < score.measureCount(); measure++) {
             int page = pages.pageOf(measure);
-            assertTrue(page >= 1 && page <= pages.pageCount(), "el compas " + measure + " cayo en la hoja " + page);
+            assertTrue(page >= 1 && page <= pages.pageCount(), "measure " + measure + " landed on sheet " + page);
         }
     }
 

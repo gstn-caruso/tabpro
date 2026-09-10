@@ -77,7 +77,7 @@ class BeatViewsTest {
 
         JButton close = findButtonNamed(views, "Cerrar diapasón").orElseThrow();
 
-        assertTrue(close.getIcon() != null, "el boton de cerrar tiene que mostrar un icono, no un caracter");
+        assertTrue(close.getIcon() != null, "the close button has to show an icon, not a text glyph");
     }
 
     @Test
@@ -88,7 +88,7 @@ class BeatViewsTest {
 
         findButtonNamed(views, "Cerrar diapasón").orElseThrow().doClick();
 
-        assertTrue(invoked.get(), "el boton tiene que disparar el comando que le paso quien lo cablea");
+        assertTrue(invoked.get(), "the button has to fire the command whoever wired it passed in");
     }
 
     @Test
@@ -99,7 +99,7 @@ class BeatViewsTest {
 
         findButtonNamed(views, "Cerrar teclado").orElseThrow().doClick();
 
-        assertTrue(invoked.get(), "el boton tiene que disparar el comando que le paso quien lo cablea");
+        assertTrue(invoked.get(), "the button has to fire the command whoever wired it passed in");
     }
 
     @Test
@@ -203,7 +203,7 @@ class BeatViewsTest {
 
         assertFalse(
                 BeatViews.showsTheCursorBeat(editor, playhead),
-                "mientras suena se ve el beat que suena, no el del cursor");
+                "while it plays, the sounding beat is shown, not the cursor's");
     }
 
     @Test
@@ -250,7 +250,7 @@ class BeatViewsTest {
 
         views.prepareForScalesTool();
 
-        assertTrue(views.isKeyboardVisible(), "el manual dice que abrir la herramienta abre el teclado solo");
+        assertTrue(views.isKeyboardVisible(), "the manual says opening the tool opens only the keyboard");
         assertEquals(FretboardDisplayMode.BEAT_AND_SCALE, views.fretboard().displayMode());
         assertEquals(KeyboardDisplayMode.BEAT_AND_SCALE, views.keyboard().displayMode());
     }
@@ -264,7 +264,7 @@ class BeatViewsTest {
 
         assertFalse(
                 views.isFretboardVisible(),
-                "el manual pide usar View > Fretboard antes: la herramienta no lo fuerza");
+                "the manual asks to use View > Fretboard first: the tool does not force it open");
     }
 
     @Test
@@ -282,7 +282,7 @@ class BeatViewsTest {
                         .map(note -> editor.currentTrack().tuning().pitchOf(note).midiNumber())
                         .sorted()
                         .toList(),
-                "las tres teclas suenan juntas en el mismo beat");
+                "the three keys sound together on the same beat");
     }
 
     @Test
@@ -351,12 +351,12 @@ class BeatViewsTest {
     void theHandednessButtonFlipsTheFretboardWithAnIcon() {
         BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
         JToggleButton toggle = findHandednessToggle(views)
-                .orElseThrow(() -> new AssertionError("no encontre el boton de zurdo"));
+                .orElseThrow(() -> new AssertionError("could not find the left-handed button"));
 
         toggle.doClick();
 
         assertEquals(Handedness.LEFT_HANDED, views.fretboard().handedness());
-        assertTrue(toggle.getIcon() != null, "el boton de zurdo tiene que mostrar un icono, no una casilla de texto");
+        assertTrue(toggle.getIcon() != null, "the left-handed button has to show an icon, not a text field");
     }
 
     private static java.util.Optional<JToggleButton> findHandednessToggle(Container container) {

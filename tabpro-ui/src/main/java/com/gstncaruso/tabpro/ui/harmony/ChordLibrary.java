@@ -81,7 +81,7 @@ public final class ChordLibrary {
         try {
             node.removeNode();
         } catch (java.util.prefs.BackingStoreException e) {
-            throw new IllegalStateException("no se pudo limpiar la biblioteca de acordes", e);
+            throw new IllegalStateException("could not clear the chord library", e);
         }
     }
 

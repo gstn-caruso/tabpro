@@ -37,7 +37,7 @@ class StaffPainterTest {
         assertNotEquals(
                 painted.image().getRGB(painted.noteX(0), painted.noteY()),
                 painted.image().getRGB(painted.noteX(1), painted.noteY()),
-                "una nota suave y una fuerte tienen que pintarse distinto");
+                "a soft note and a loud one have to be painted differently");
     }
 
     @Test
@@ -48,7 +48,7 @@ class StaffPainterTest {
         int loudRgb = painted.image().getRGB(painted.noteX(1), painted.noteY());
 
         assertTrue(brightnessOf(loudRgb) > brightnessOf(softRgb),
-                "sobre el fondo oscuro, cuanto mas fuerte suena una nota mas clara se dibuja");
+                "on the dark background, the louder a note sounds the lighter it is drawn");
     }
 
     @Test

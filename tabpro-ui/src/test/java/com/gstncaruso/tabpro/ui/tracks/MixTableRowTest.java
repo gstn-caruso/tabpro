@@ -114,8 +114,8 @@ class MixTableRowTest {
         row.refresh();
 
         assertTrue(row.parameterCells().stream().noneMatch(java.awt.Component::isVisible));
-        assertTrue(row.nameLabel().isVisible(), "el nombre sigue visible al reducir");
-        assertTrue(row.portField().isVisible(), "el puerto no es un parametro de sonido");
+        assertTrue(row.nameLabel().isVisible(), "the name stays visible when reducing");
+        assertTrue(row.portField().isVisible(), "the port is not a sound parameter");
     }
 
     @Test
@@ -142,7 +142,7 @@ class MixTableRowTest {
 
     @Test
     void aPercussionTrackOffersDrumKitsInsteadOfInstruments() {
-        Editor editor = new Editor(new Score("Cancion", 120, List.of(Track.percussion("Bateria"))));
+        Editor editor = new Editor(new Score("Song", 120, List.of(Track.percussion("Drums"))));
         MixTableRow row = new MixTableRow(editor, new MixTableModel(), 0);
 
         assertEquals(DrumKits.names(), comboContents(row.instrumentField()));
@@ -150,8 +150,8 @@ class MixTableRowTest {
 
     @Test
     void thePercussionComboPreselectsTheTracksCurrentKit() {
-        Track drums = Track.percussion("Bateria").withChannel(Channel.percussion().withProgram(25));
-        Editor editor = new Editor(new Score("Cancion", 120, List.of(drums)));
+        Track drums = Track.percussion("Drums").withChannel(Channel.percussion().withProgram(25));
+        Editor editor = new Editor(new Score("Song", 120, List.of(drums)));
 
         MixTableRow row = new MixTableRow(editor, new MixTableModel(), 0);
 
@@ -160,7 +160,7 @@ class MixTableRowTest {
 
     @Test
     void selectingADrumKitPushesItsGeneralMidiProgramToTheEditor() {
-        Editor editor = new Editor(new Score("Cancion", 120, List.of(Track.percussion("Bateria"))));
+        Editor editor = new Editor(new Score("Song", 120, List.of(Track.percussion("Drums"))));
         MixTableRow row = new MixTableRow(editor, new MixTableModel(), 0);
 
         row.instrumentField().setSelectedIndex(DrumKits.indexOf(25));
@@ -196,8 +196,8 @@ class MixTableRowTest {
 
         for (JSpinner spinner : List.of(row.portField(), row.channelField(), row.effectChannelField())) {
             assertTrue(spinner.getWidth() >= needed,
-                    "el spinner mide " + spinner.getWidth() + "px, necesita al menos " + needed
-                            + "px para mostrar dos digitos");
+                    "the spinner measures " + spinner.getWidth() + "px, needs at least " + needed
+                            + "px to show two full digits");
         }
     }
 
@@ -215,8 +215,8 @@ class MixTableRowTest {
         int needed = probe.getPreferredSize().width;
 
         assertTrue(row.instrumentField().getWidth() >= needed,
-                "el combo mide " + row.instrumentField().getWidth() + "px, necesita al menos " + needed
-                        + "px para mostrar \"" + longest + "\" completo");
+                "the combo measures " + row.instrumentField().getWidth() + "px, needs at least " + needed
+                        + "px to show \"" + longest + "\" in full");
     }
 
     private static Editor twoTrackEditor() {

@@ -32,7 +32,7 @@ class TrackColorsTest {
     @Test
     void neighbouringTracksNeverShareAColour() {
         for (int track = 0; track < 3 * TrackColors.COUNT; track++) {
-            assertNotEquals(TrackColors.of(track), TrackColors.of(track + 1), "pistas vecinas del " + track);
+            assertNotEquals(TrackColors.of(track), TrackColors.of(track + 1), "neighbouring tracks of " + track);
         }
     }
 
@@ -42,7 +42,7 @@ class TrackColorsTest {
             assertNotEquals(
                     ScoreColors.PLAYING_MEASURE,
                     TrackColors.of(track),
-                    "el rojo esta reservado para el compas que suena");
+                    "red is reserved for the measure that is playing");
         }
     }
 
@@ -56,7 +56,7 @@ class TrackColorsTest {
         for (int track = 0; track < TrackColors.COUNT; track++) {
             assertTrue(
                     brightness(TrackColors.of(track)) > brightness(ScoreColors.SURFACE) + 0.25,
-                    "el color de la pista " + track + " no se despega del fondo");
+                    "the color of track " + track + " does not stand out from the background");
         }
     }
 

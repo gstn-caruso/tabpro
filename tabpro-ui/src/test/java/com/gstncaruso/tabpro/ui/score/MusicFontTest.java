@@ -13,7 +13,7 @@ class MusicFontTest {
     @Test
     void theBravuraResourceLoadsFromTheClasspathAsAFont() throws Exception {
         try (InputStream resource = MusicFontTest.class.getResourceAsStream("/fonts/Bravura.otf")) {
-            assertNotNull(resource, "Bravura.otf tiene que viajar en el classpath");
+            assertNotNull(resource, "Bravura.otf has to ship on the classpath");
             Font bravura = Font.createFont(Font.TRUETYPE_FONT, resource);
             assertEquals("Bravura", bravura.getFamily());
         }
