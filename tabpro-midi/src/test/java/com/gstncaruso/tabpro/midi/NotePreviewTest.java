@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Pitch;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.sound.midi.MidiMessage;
@@ -71,6 +72,29 @@ class NotePreviewTest {
         preview.close();
     }
 
+    @Test
+    void reproduceCadaNotaDeLaSecuenciaEnOrdenConSeparacionCreciente() {
+        RecordingReceiver receiver = new RecordingReceiver();
+        List<Long> scheduledGaps = new ArrayList<>();
+        NotePreview preview = new NotePreview(receiver, (millis, accion) -> {
+            scheduledGaps.add(millis);
+            accion.run();
+        });
+
+        preview.playSequence(List.of(new Pitch(60), new Pitch(62), new Pitch(64)), 25);
+
+        assertEquals(List.of(60, 62, 64), receiver.notesOn());
+        List<Long> noteScheduleGaps = new ArrayList<>();
+        for (int index = 0; index < scheduledGaps.size(); index += 2) {
+            noteScheduleGaps.add(scheduledGaps.get(index));
+        }
+        assertEquals(
+                List.of(0L, NotePreview.NOTE_GAP_MILLIS, NotePreview.NOTE_GAP_MILLIS * 2),
+                noteScheduleGaps);
+
+        preview.close();
+    }
+
     private static final class RecordingReceiver implements Receiver {
 
         private final List<ShortMessage> received = new CopyOnWriteArrayList<>();
@@ -93,6 +117,13 @@ class NotePreviewTest {
                     .filter(message -> message.getCommand() == command)
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("no llego ningun mensaje " + command));
+        }
+
+        List<Integer> notesOn() {
+            return received.stream()
+                    .filter(message -> message.getCommand() == ShortMessage.NOTE_ON)
+                    .map(ShortMessage::getData1)
+                    .toList();
         }
     }
 }
