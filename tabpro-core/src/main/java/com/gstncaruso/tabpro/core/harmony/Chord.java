@@ -8,9 +8,9 @@ import java.util.Set;
 public record Chord(PitchClass root, ChordType type, PitchClass bass) {
 
     public Chord {
-        Objects.requireNonNull(root, "un acorde necesita una fundamental");
-        Objects.requireNonNull(type, "un acorde necesita un tipo");
-        Objects.requireNonNull(bass, "un acorde necesita un bajo, aunque sea la fundamental");
+        Objects.requireNonNull(root, "a chord needs a root");
+        Objects.requireNonNull(type, "a chord needs a type");
+        Objects.requireNonNull(bass, "a chord needs a bass note, even if it is the root");
     }
 
     public static Chord of(PitchClass root, ChordType type) {

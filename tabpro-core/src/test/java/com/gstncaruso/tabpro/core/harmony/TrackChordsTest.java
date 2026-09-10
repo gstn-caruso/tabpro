@@ -22,7 +22,7 @@ class TrackChordsTest {
 
     @Test
     void aTrackWithoutChordsHasNone() {
-        Track track = Track.standardGuitar("Guitarra");
+        Track track = Track.standardGuitar("Guitar");
         assertTrue(TrackChords.usedIn(track).isEmpty());
     }
 
@@ -31,7 +31,7 @@ class TrackChordsTest {
         Measure bar1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
         Measure bar2 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(C)));
 
-        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(bar1, bar2));
+        Track track = Track.standardGuitar("Guitar").withMeasures(List.of(bar1, bar2));
 
         assertEquals(List.of(AM, C), TrackChords.usedIn(track));
     }
@@ -40,7 +40,7 @@ class TrackChordsTest {
     void doesNotRepeatTheSameChordTwice() {
         Measure bar1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM), beatWithChord(AM)));
 
-        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(bar1));
+        Track track = Track.standardGuitar("Guitar").withMeasures(List.of(bar1));
 
         assertEquals(List.of(AM), TrackChords.usedIn(track));
     }
@@ -48,7 +48,7 @@ class TrackChordsTest {
     @Test
     void underTheTitleIgnoresTracksThatDidNotAskForIt() {
         Measure bar1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
-        Track track = Track.standardGuitar("Guitarra").withMeasures(List.of(bar1));
+        Track track = Track.standardGuitar("Guitar").withMeasures(List.of(bar1));
         Score score = new Score("", 120, List.of(track));
 
         assertTrue(TrackChords.underTheTitle(score).isEmpty());
@@ -58,7 +58,7 @@ class TrackChordsTest {
     void underTheTitleBringsChordsFromTheTrackThatAskedForIt() {
         Measure bar1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
         Measure bar2 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(C)));
-        Track track = Track.standardGuitar("Guitarra")
+        Track track = Track.standardGuitar("Guitar")
                 .withMeasures(List.of(bar1, bar2))
                 .mappingSettings(settings -> settings.withDisplay(
                         settings.display().withDiagrams(DiagramPlacement.UNDER_THE_TITLE)));
@@ -70,7 +70,7 @@ class TrackChordsTest {
     @Test
     void underTheTitleAlsoAppliesToThePlacementOnBothSides() {
         Measure bar1 = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
-        Track track = Track.standardGuitar("Guitarra")
+        Track track = Track.standardGuitar("Guitar")
                 .withMeasures(List.of(bar1))
                 .mappingSettings(settings -> settings.withDisplay(
                         settings.display().withDiagrams(DiagramPlacement.BOTH)));
@@ -83,11 +83,11 @@ class TrackChordsTest {
     void underTheTitleMergesTracksInOrderAndDoesNotRepeatTheSameName() {
         Measure barWithAm = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(AM)));
         Measure barWithC = new Measure(TimeSignature.fourFour(), List.of(beatWithChord(C)));
-        Track firstTrack = Track.standardGuitar("Guitarra 1")
+        Track firstTrack = Track.standardGuitar("Guitar 1")
                 .withMeasures(List.of(barWithAm))
                 .mappingSettings(settings -> settings.withDisplay(
                         settings.display().withDiagrams(DiagramPlacement.UNDER_THE_TITLE)));
-        Track secondTrack = Track.standardGuitar("Guitarra 2")
+        Track secondTrack = Track.standardGuitar("Guitar 2")
                 .withMeasures(List.of(barWithAm, barWithC))
                 .mappingSettings(settings -> settings.withDisplay(
                         settings.display().withDiagrams(DiagramPlacement.UNDER_THE_TITLE)));

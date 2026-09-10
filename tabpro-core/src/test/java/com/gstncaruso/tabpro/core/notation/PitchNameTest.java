@@ -39,7 +39,7 @@ class PitchNameTest {
         assertEquals(
                 PitchName.of(new Pitch(61)).diatonicIndex(),
                 PitchName.of(new Pitch(60)).diatonicIndex(),
-                "un sostenido comparte el grado con su natural");
+                "a sharp shares its staff degree with its natural");
     }
 
     @Test
