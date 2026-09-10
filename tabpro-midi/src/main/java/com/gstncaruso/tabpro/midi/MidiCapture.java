@@ -9,14 +9,8 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 
-/**
- * Escucha un instrumento MIDI externo y avisa cada nota que se toca, para
- * escribir la partitura tocando, como describe "Enter Notes > Using a MIDI
- * Instrument".
- */
 public final class MidiCapture implements AutoCloseable {
 
-    /** Cuanto puede tardar la segunda nota de un acorde antes de contar como otro beat. */
     public static final int DEFAULT_SENSITIVITY_MILLIS = 60;
 
     private final MidiDevice device;
@@ -28,14 +22,12 @@ public final class MidiCapture implements AutoCloseable {
         this(info, notes, DEFAULT_SENSITIVITY_MILLIS);
     }
 
-    /** La sensibilidad configurable desde Options > MIDI Setup, en milisegundos. */
     public MidiCapture(MidiDevice.Info info, CapturedNotes notes, int sensitivityMillis) throws MidiUnavailableException {
         this.device = MidiSystem.getMidiDevice(info);
         this.notes = notes;
         this.sensitivityMillis = sensitivityMillis;
     }
 
-    /** Que hacer con lo que llega: una nota nueva, o una nota del mismo acorde. */
     public interface CapturedNotes {
 
         void noteInTheSameChord(int midiNumber, int channel);
@@ -57,7 +49,6 @@ public final class MidiCapture implements AutoCloseable {
         device.close();
     }
 
-    /** Junta en un acorde las notas que llegan casi juntas, y abre un beat nuevo con las demas. */
     private final class NoteReceiver implements Receiver {
 
         private final ChordSensitivity sensitivity;
