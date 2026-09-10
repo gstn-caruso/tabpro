@@ -11,45 +11,45 @@ import org.junit.jupiter.api.Test;
 class NewScoreDefaultsTest {
 
     @Test
-    void laPartituraNuevaUsaElTempoYElCompasFijadosPorDefecto() {
+    void theNewScoreUsesTheDefaultTempoAndTimeSignature() {
         NewScoreDefaults defaults = new NewScoreDefaults(
                 90, new TimeSignature(3, 4), KeySignature.cMajor(), "", "");
 
-        Score nueva = defaults.newScore();
+        Score newScore = defaults.newScore();
 
-        assertEquals(90, nueva.tempo());
-        assertEquals(new TimeSignature(3, 4), nueva.timeSignatureOf(0));
+        assertEquals(90, newScore.tempo());
+        assertEquals(new TimeSignature(3, 4), newScore.timeSignatureOf(0));
     }
 
     @Test
-    void laPartituraNuevaUsaLaArmaduraFijadaPorDefecto() {
-        KeySignature reBemolMenor = new KeySignature(-5, Mode.MINOR);
+    void theNewScoreUsesTheDefaultKeySignature() {
+        KeySignature dFlatMinor = new KeySignature(-5, Mode.MINOR);
         NewScoreDefaults defaults = new NewScoreDefaults(
-                120, TimeSignature.fourFour(), reBemolMenor, "", "");
+                120, TimeSignature.fourFour(), dFlatMinor, "", "");
 
-        Score nueva = defaults.newScore();
+        Score newScore = defaults.newScore();
 
-        assertEquals(reBemolMenor, nueva.attributesOf(0).keySignature());
+        assertEquals(dFlatMinor, newScore.attributesOf(0).keySignature());
     }
 
     @Test
-    void sinTituloNiArtistaLaPartituraQuedaSinTitulo() {
+    void withoutTitleOrArtistTheNewScoreHasNoTitle() {
         NewScoreDefaults defaults = NewScoreDefaults.blank();
 
-        Score nueva = defaults.newScore();
+        Score newScore = defaults.newScore();
 
-        assertEquals("", nueva.info().title());
-        assertEquals("", nueva.info().artist());
+        assertEquals("", newScore.info().title());
+        assertEquals("", newScore.info().artist());
     }
 
     @Test
-    void conTituloYArtistaPorDefectoLaPartituraNuevaLosTrae() {
+    void withDefaultTitleAndArtistTheNewScoreCarriesThem() {
         NewScoreDefaults defaults = new NewScoreDefaults(
                 120, TimeSignature.fourFour(), KeySignature.cMajor(), "Improvisando", "Yo");
 
-        Score nueva = defaults.newScore();
+        Score newScore = defaults.newScore();
 
-        assertEquals("Improvisando", nueva.info().title());
-        assertEquals("Yo", nueva.info().artist());
+        assertEquals("Improvisando", newScore.info().title());
+        assertEquals("Yo", newScore.info().artist());
     }
 }
