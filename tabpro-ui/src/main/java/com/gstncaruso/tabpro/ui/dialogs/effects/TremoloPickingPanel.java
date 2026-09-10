@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.effects.TremoloPicking;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JComboBox;
 
 public final class TremoloPickingPanel extends FormPanel {
@@ -12,7 +13,7 @@ public final class TremoloPickingPanel extends FormPanel {
 
     public TremoloPickingPanel(TremoloPicking initial) {
         speed.setRenderer(new LabeledListCellRenderer());
-        addRow("Velocidad", speed);
+        addRow(Texts.get("edit_dialogs.shared.speed"), speed);
         apply(initial);
     }
 
