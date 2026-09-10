@@ -13,6 +13,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.accessibility.AccessibleContext;
@@ -23,6 +25,7 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 /**
  * La franja arriba de la grilla de compases: el nombre de cada marcador con su color, sobre los
@@ -34,6 +37,7 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
 
     private final Editor editor;
     private int caret;
+    private boolean showsFocusRing;
 
     public MarkerZone(Editor editor) {
         this.editor = editor;
@@ -50,6 +54,23 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
             }
         });
         installKeyboardShortcuts();
+        installFocusRing();
+    }
+
+    private void installFocusRing() {
+        addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                showsFocusRing = true;
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                showsFocusRing = false;
+                repaint();
+            }
+        });
     }
 
     /** Donde esta parado el caret de teclado: no se confunde con el cursor real hasta Enter. */
@@ -116,6 +137,20 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
         for (MarkerSegments.Segment segment : MarkerSegments.of(editor.score())) {
             paintSegment(g, segment);
         }
+        if (showsFocusRing) {
+            paintCaretRing(g);
+        }
+    }
+
+    private void paintCaretRing(Graphics2D g) {
+        int x = caret * MeasureGrid.CELL_WIDTH;
+        g.setColor(focusRingColor());
+        g.drawRect(x + 1, 1, MeasureGrid.CELL_WIDTH - 3, HEIGHT - 3);
+    }
+
+    private Color focusRingColor() {
+        Color fromLookAndFeel = UIManager.getColor("Component.focusColor");
+        return fromLookAndFeel != null ? fromLookAndFeel : ScoreColors.ACCENT;
     }
 
     private void paintSegment(Graphics2D g, MarkerSegments.Segment segment) {
