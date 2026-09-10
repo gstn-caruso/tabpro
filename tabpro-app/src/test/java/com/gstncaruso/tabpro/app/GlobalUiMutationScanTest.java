@@ -166,6 +166,21 @@ class GlobalUiMutationScanTest {
         assertTrue(GlobalUiMutationScan.unisolatedMutators(root).isEmpty());
     }
 
+    @Test
+    void aClassWithSeveralMutationsIsFlaggedOnlyOnce(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "MutatesSeveralThings.java", """
+                class MutatesSeveralThings {
+                    void mutates() {
+                        Theme.install();
+                        UIManager.put("defaultFont", font);
+                        FlatLaf.updateUI();
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
     private static Path write(Path root, String fileName, String content) throws IOException {
         Path file = root.resolve(fileName);
         Files.writeString(file, content);
