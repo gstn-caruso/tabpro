@@ -66,6 +66,14 @@ final class MusicFont {
     private static final int FLAG_64TH_UP = 0xE246;
     /** SMuFL U+E247 "flag64thDown": la bandera de semifusa de una plica hacia abajo. */
     private static final int FLAG_64TH_DOWN = 0xE247;
+    /** SMuFL U+E4A0 "articAccentAbove": el acento dibujado arriba de la nota. */
+    private static final int ARTIC_ACCENT_ABOVE = 0xE4A0;
+    /** SMuFL U+E4A1 "articAccentBelow": el acento dibujado abajo de la nota. */
+    private static final int ARTIC_ACCENT_BELOW = 0xE4A1;
+    /** SMuFL U+E4A2 "articStaccatoAbove": el staccato dibujado arriba de la nota. */
+    private static final int ARTIC_STACCATO_ABOVE = 0xE4A2;
+    /** SMuFL U+E4A3 "articStaccatoBelow": el staccato dibujado abajo de la nota. */
+    private static final int ARTIC_STACCATO_BELOW = 0xE4A3;
 
     private static final Font BASE = load();
     private static final Map<Float, Font> SIZED = new ConcurrentHashMap<>();
@@ -196,6 +204,26 @@ final class MusicFont {
     /** La bandera de semifusa de una plica hacia abajo. */
     static String flag64thDown() {
         return glyph(FLAG_64TH_DOWN);
+    }
+
+    /** El acento dibujado arriba de la nota. */
+    static String articAccentAbove() {
+        return glyph(ARTIC_ACCENT_ABOVE);
+    }
+
+    /** El acento dibujado abajo de la nota. */
+    static String articAccentBelow() {
+        return glyph(ARTIC_ACCENT_BELOW);
+    }
+
+    /** El staccato dibujado arriba de la nota. */
+    static String articStaccatoAbove() {
+        return glyph(ARTIC_STACCATO_ABOVE);
+    }
+
+    /** El staccato dibujado abajo de la nota. */
+    static String articStaccatoBelow() {
+        return glyph(ARTIC_STACCATO_BELOW);
     }
 
     /**
