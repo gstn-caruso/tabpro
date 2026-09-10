@@ -18,20 +18,8 @@ import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Manual, linea 764: "you can enter notes either on the tablature or on the standard notation
- * display. Each note added in a notation is automatically added in the other one." La tabla de
- * atajos (Reference, pp. 79-80) tiene dos filas de Enter -"Add a Note" en el pentagrama, "Next
- * Note" en la tablatura- que es la misma tecla decidiendo dos cosas distintas segun
- * {@link Cursor#notation()}.
- */
 class EditorNotationTest {
 
-    /**
-     * El mismo Enter, dos efectos: en la tablatura avanza sin tocar la nota; en el pentagrama
-     * agrega la nota ahi mismo sin avanzar. Si algun dia alguien vuelve a cablear "nav.nextNote"
-     * directo a moveRight, este test lo agarra.
-     */
     @Test
     void enterAddsInStandardNotationButAdvancesInTablature() {
         Editor tabEditor = new Editor(Score.blank());
@@ -46,10 +34,6 @@ class EditorNotationTest {
         assertFalse(staffEditor.currentBeat().isRest(), "en el pentagrama, Enter tiene que agregar una nota");
     }
 
-    /**
-     * La altura donde esta el cursor, sin nota todavia, es la de la cuerda al aire: Enter tiene
-     * que agregar exactamente esa altura -no una nota vacia ni un traste cualquiera.
-     */
     @Test
     void enterInStandardNotationAddsTheNoteAtTheStringsOpenPitchWhenTheBeatIsSilent() {
         Editor editor = new Editor(Score.blank());
@@ -64,11 +48,6 @@ class EditorNotationTest {
         assertEquals(editor.currentTrack().tuning().pitchOfString(3), editor.currentTrack().tuning().pitchOf(added));
     }
 
-    /**
-     * Decision para cuando ninguna cuerda alcanza la altura del cursor (por ejemplo, una nota
-     * escrita a mano muy por encima del limite de trastes de la afinacion): Enter no hace nada,
-     * igual que AutomaticFingering deja la nota como estaba cuando ninguna cuerda la alcanza.
-     */
     @Test
     void enterDoesNothingInStandardNotationWhenNoStringCanReachTheCursorsPitch() {
         Editor editor = new Editor(Score.blank());
@@ -83,11 +62,6 @@ class EditorNotationTest {
         assertEquals(couldUndoBefore, editor.canUndo(), "sin cambios de verdad, el historial de deshacer no se tiene que mover");
     }
 
-    /**
-     * La altura es la pedida, no cualquiera: Enter tiene que preservar la altura exacta de la
-     * nota que ya sonaba en la cuerda del cursor -no un traste 0 por default- verificado contra
-     * {@code tuning().pitchOf(nota)}, como pide el enunciado.
-     */
     @Test
     void enterInStandardNotationPreservesTheExactPitchOfTheNoteAlreadyOnTheCursorsString() {
         Beat beat = Beat.of(Duration.quarter(), new Note(2, 7));
@@ -103,11 +77,6 @@ class EditorNotationTest {
                 "la altura tiene que ser la que estaba, ni un semitono de mas ni de menos");
     }
 
-    /**
-     * Manual, Reference p. 80: en la tablatura las flechas mueven cuerda por cuerda; en el
-     * pentagrama tienen que moverse grado por grado, que para una cuerda al aire casi nunca
-     * coincide con "la cuerda de al lado".
-     */
     @Test
     void arrowsMoveByStringInTablatureAndByStaffDegreeInStandardNotation() {
         Editor tabEditor = new Editor(Score.blank());
@@ -125,11 +94,6 @@ class EditorNotationTest {
                         + " como en la tablatura");
     }
 
-    /**
-     * Decision simetrica a la de Enter: si ningun traste de ninguna cuerda alcanza el grado
-     * siguiente (por ejemplo, un grado mas grave que la cuerda mas grave al aire), la flecha no
-     * mueve el cursor.
-     */
     @Test
     void arrowsStayPutInStandardNotationWhenNoStringCanReachTheNextDegree() {
         Editor editor = new Editor(Score.blank());
@@ -141,14 +105,6 @@ class EditorNotationTest {
         assertEquals(6, editor.cursor().string(), "sin cuerda que llegue a la altura de abajo, el cursor se queda quieto");
     }
 
-    /**
-     * El recorrido real, no las piezas sueltas: navegar hasta la altura que se quiere y
-     * confirmarla con Enter. Antes de este test, el cursor no tenia una altura propia mas alla de
-     * la que ya hubiera una nota o la cuerda al aire, asi que cada flecha volvia a partir de cero
-     * -subir "de a un grado" tres veces no avanzaba tres grados-. El grado esperado se calcula con
-     * las mismas piezas de dominio (Clef/StaffPosition) pero sin llamar a moveUp, para no
-     * convertir el test en un espejo de la implementacion.
-     */
     @Test
     void enteringAfterMovingUpThreeStaffDegreesAddsTheNoteExactlyThreeDegreesAbove() {
         Editor editor = new Editor(Score.blank());
@@ -170,7 +126,6 @@ class EditorNotationTest {
                 "tres flechas arriba tienen que confirmar la altura tres grados por encima de donde arranco");
     }
 
-    /** El simetrico hacia abajo del test anterior. */
     @Test
     void enteringAfterMovingDownThreeStaffDegreesAddsTheNoteExactlyThreeDegreesBelow() {
         Editor editor = new Editor(Score.blank());
@@ -192,11 +147,6 @@ class EditorNotationTest {
                 "tres flechas abajo tienen que confirmar la altura tres grados por debajo de donde arranco");
     }
 
-    /**
-     * La altura propia del cursor es exclusiva del pentagrama: navegar en la tablatura -que sigue
-     * moviendose cuerda por cuerda- no le puede dejar pegado nada que despues, al pasar al
-     * pentagrama, cambie donde cae Enter.
-     */
     @Test
     void tablatureNavigationNeverTouchesThePointerThatDrivesTheStaff() {
         Editor editor = new Editor(Score.blank());

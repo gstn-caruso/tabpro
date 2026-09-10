@@ -26,11 +26,6 @@ class EditorEffectsTest {
 
     private final Editor editor = new Editor(Score.blank());
 
-    /**
-     * El manual (linea 923): "es posible cambiar a mano las barras... usando el menu Nota".
-     * Vale para el beat bajo el cursor, igual que el resto de {@code BeatEffects} (stroke, wah):
-     * no hace falta una nota, el corte se pide sobre el beat entero.
-     */
     @Test
     void aBeamBreakGoesOnTheBeatUnderTheCursorWithoutNeedingANote() {
         editor.setBeamBreak(BeamBreak.FORCED);
@@ -172,10 +167,6 @@ class EditorEffectsTest {
         assertTrue(editor.currentBeat().duration().tuplet().isPlain());
     }
 
-    /**
-     * El manual: "agrupar" un beat con un n-tuplet cualquiera es el mismo gesto que el tresillo,
-     * solo que con otro numero. No hace falta un metodo por cada n.
-     */
     @Test
     void aQuintupletMakesFiveNotesFitInTheTimeOfFour() {
         editor.setNoteValue(NoteValue.EIGHTH);

@@ -58,7 +58,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 
-/** La sesion de edicion: la partitura, donde esta parado el cursor y como cambiarla. */
 public final class Editor {
 
     private Score score;
@@ -70,17 +69,12 @@ public final class Editor {
     private final Clipboard clipboard;
     private final List<EditorListener> listeners = new ArrayList<>();
     private boolean undoEnabled = true;
-    /** Preferencias [F12], "Figura por defecto al insertar": la usa {@link #insertBeat()}. */
     private NoteValue defaultNoteValue = NoteValue.QUARTER;
 
     public Editor(Score initial) {
         this(initial, ClipboardStorage.inMemory());
     }
 
-    /**
-     * Con un lugar de portapapeles compartido: copiar en un Editor y pegar en otro que
-     * use el mismo storage es lo que el manual pide entre dos sesiones de Guitar Pro.
-     */
     public Editor(Score initial, ClipboardStorage clipboardStorage) {
         this.score = initial;
         this.cursor = new Cursor(0, 0, 0, 1);
@@ -119,8 +113,6 @@ public final class Editor {
         return currentBeat().noteOn(cursor.string());
     }
 
-    // ---- notas ------------------------------------------------------------
-
     public void setFret(int fret) {
         Note existing = currentNote().orElse(new Note(cursor.string(), fret));
         changeCurrentBeat(beat -> beat.withNote(existing.withFret(fret)));
@@ -134,7 +126,6 @@ public final class Editor {
         changeCurrentBeat(beat -> Beat.rest(beat.duration()));
     }
 
-    /** Mueve la nota a otra cuerda sin cambiar su altura, como el Alt+flecha del manual. */
     public void moveNoteToString(int string) {
         Optional<Note> note = currentNote();
         Track track = currentTrack();
@@ -165,12 +156,9 @@ public final class Editor {
         changeCurrentNote(note -> note.tied(!note.tied()));
     }
 
-    /** Liga todas las notas del beat con las del anterior, como el Ctrl+L del manual. */
     public void tieWholeBeat() {
         changeCurrentBeat(beat -> beat.mappingEveryNote(note -> note.tied(true)));
     }
-
-    // ---- figuras ----------------------------------------------------------
 
     public void lengthenDuration() {
         changeCurrentBeat(beat -> beat.withDuration(beat.duration().longer()));
@@ -196,14 +184,10 @@ public final class Editor {
         toggleTuplet(3);
     }
 
-    /** El manual: cualquier n-tuplet (quintillo, seisillo...) se pone y se saca igual que el
-     * tresillo, nomas que con otro numero. */
     public void toggleTuplet(int enters) {
         Tuplet current = currentBeat().duration().tuplet();
         setTuplet(current.enters() == enters ? 1 : enters);
     }
-
-    // ---- efectos de nota --------------------------------------------------
 
     public void toggleOrnament(Ornament ornament) {
         changeCurrentNote(note -> note.toggling(ornament));
@@ -213,7 +197,6 @@ public final class Editor {
         changeCurrentNote(note -> note.withDynamic(dynamic));
     }
 
-    /** La dinamica del acorde entero, como ofrece el menu Nota del manual. */
     public void setChordDynamic(Dynamic dynamic) {
         changeCurrentBeat(beat -> beat.mappingEveryNote(note -> note.withDynamic(dynamic)));
     }
@@ -242,7 +225,6 @@ public final class Editor {
         changeNoteEffects(effects -> grace == null ? effects.withoutGrace() : effects.withGrace(grace));
     }
 
-    /** Cuanto suena la nota respecto de su figura, como pide Nota > Duracion del sonido. */
     public void setSoundDuration(int percent) {
         changeNoteEffects(effects -> effects.withSoundDuration(percent));
     }
@@ -254,8 +236,6 @@ public final class Editor {
     public void setRightHandFinger(Finger finger) {
         changeNoteEffects(effects -> effects.withRightHand(finger));
     }
-
-    // ---- efectos de beat --------------------------------------------------
 
     public void setStroke(Stroke stroke) {
         changeBeatEffects(effects -> effects.withStroke(stroke));
@@ -297,16 +277,10 @@ public final class Editor {
         changeBeatEffects(effects -> effects.withText(text));
     }
 
-    /**
-     * El manual (linea 923): el agrupamiento por barra de union es automatico, pero "es posible
-     * cambiar a mano las barras... usando el menu Nota". Misma forma que {@link #setLineBreak}:
-     * automatico por default, forzado a lo que pida el usuario sobre el beat del cursor.
-     */
     public void setBeamBreak(BeamBreak beamBreak) {
         changeBeatEffects(effects -> effects.withBeamBreak(beamBreak));
     }
 
-    /** El manual (linea 923): "...y la direccion de la plica", con la misma forma de arriba. */
     public void setStemOverride(StemOverride stemOverride) {
         changeBeatEffects(effects -> effects.withStemOverride(stemOverride));
     }
@@ -318,8 +292,6 @@ public final class Editor {
     public void setChord(ChordDiagram chord) {
         changeBeatEffects(effects -> effects.withChord(chord));
     }
-
-    // ---- beats ------------------------------------------------------------
 
     public void insertBeat() {
         Beat rest = Beat.rest(Duration.of(defaultNoteValue));
@@ -340,7 +312,6 @@ public final class Editor {
         changeVoiceAndCursor(voice -> voice.withoutBeatAt(cursor.beat()), cursor.onBeat(beat));
     }
 
-    /** Repite el beat hasta llenar el compas, como la tecla C del manual. */
     public void repeatBeatToTheEndOfTheMeasure() {
         Beat beat = currentBeat();
         Measure measure = currentMeasure();
@@ -362,8 +333,6 @@ public final class Editor {
         }, cursor);
     }
 
-    // ---- voces ------------------------------------------------------------
-
     public void editVoice(VoicePart part) {
         if (currentMeasure().voice(part).isUnused()) {
             Measure started = currentMeasure().withVoice(part, Voice.restingFor(Duration.quarter()));
@@ -373,8 +342,6 @@ public final class Editor {
         int beat = Math.min(cursor.beat(), currentMeasure().voice(part).beatCount() - 1);
         moveCursor(cursor.onVoice(part).onBeat(beat));
     }
-
-    // ---- compases ---------------------------------------------------------
 
     public void insertMeasure() {
         change(score.withMeasureInsertedInEveryTrackAt(cursor.measure()), cursor.onBeat(0));
@@ -386,7 +353,6 @@ public final class Editor {
         change(next, cursor.at(measure, 0));
     }
 
-    /** Vacia el compas dejando sus atributos, como el Compas > Vaciar del manual. */
     public void emptyCurrentMeasure(boolean everyTrack) {
         int index = cursor.measure();
         Score next = everyTrack
@@ -399,12 +365,10 @@ public final class Editor {
         change(score.withTimeSignatureFrom(cursor.measure(), timeSignature), cursor.onBeat(0));
     }
 
-    /** La armadura rige desde este compas hasta el proximo cambio, como pide el manual. */
     public void setKeySignature(KeySignature keySignature) {
         change(score.withKeySignatureFrom(cursor.measure(), keySignature), cursor);
     }
 
-    /** El triplet feel rige desde este compas hasta el proximo cambio, como pide el manual. */
     public void setTripletFeel(TripletFeel tripletFeel) {
         change(score.withTripletFeelFrom(cursor.measure(), tripletFeel), cursor);
     }
@@ -437,11 +401,6 @@ public final class Editor {
         changeAttributes(attributes -> attributes.withMarker(marker));
     }
 
-    /**
-     * A diferencia del resto de los atributos del compas, el salto de linea no rige para toda
-     * la partitura: el manual dice que vale solo para la pista activa, salvo que se este en la
-     * vista multipista, donde vale para esa vista, compartida por todas las pistas.
-     */
     public void setLineBreak(LineBreak lineBreak, boolean everyTrack) {
         if (everyTrack) {
             changeAttributes(attributes -> attributes.withLineBreak(lineBreak));
@@ -450,17 +409,9 @@ public final class Editor {
         }
     }
 
-    /**
-     * 8va/8vb/15ma/15mb del manual: cambian donde se escribe la nota en el pentagrama de la
-     * pista activa, nunca como suena ni que dice la tablatura -y, como es una decision de
-     * notacion de esa pista en ese pasaje, no de toda la partitura, vale solo para la pista
-     * activa (nunca se propaga a las demas).
-     */
     public void setOctaveMark(OctaveMark octaveMark) {
         change(score.withOctaveMarkInTrackAt(cursor.track(), cursor.measure(), octaveMark), cursor);
     }
-
-    // ---- pistas -----------------------------------------------------------
 
     public void addTrack(Track track) {
         addTrackAt(score.trackCount(), track);
@@ -555,8 +506,6 @@ public final class Editor {
         changeChannel(index, Channel::toggledSolo);
     }
 
-    // ---- partitura --------------------------------------------------------
-
     public void setTempo(int bpm) {
         change(score.withTempo(bpm), cursor);
     }
@@ -581,25 +530,15 @@ public final class Editor {
         notifyListeners(EditorChange.CONTENT);
     }
 
-    /** Aplica el resultado de un asistente, que trabaja sobre la partitura entera. */
     public void apply(UnaryOperator<Score> wizard) {
         Score next = wizard.apply(score);
         change(next, clampedCursorIn(next, Math.min(cursor.track(), next.trackCount() - 1)));
     }
 
-    // ---- navegacion -------------------------------------------------------
-
-    /** El TAB del manual (linea 780): alterna entre editar en la tablatura y en el pentagrama,
-     * sin mover el cursor de donde esta. */
     public void toggleNotation() {
         moveCursor(cursor.onNotation(cursor.notation().other()));
     }
 
-    /**
-     * El Enter de la tabla de atajos (Reference, pp. 79-80): en la tablatura es "Next Note" -va
-     * a la nota siguiente-; en el pentagrama es "Add a Note" -agrega la nota en la altura donde
-     * esta el cursor, sin avanzar-.
-     */
     public void enter() {
         if (cursor.notation() == Notation.STANDARD) {
             addNoteAtCursorPitch();
@@ -639,12 +578,6 @@ public final class Editor {
         moveCursor(cursor.onString(Math.max(1, cursor.string() - 1)));
     }
 
-    /**
-     * Arriba/abajo en el pentagrama (Reference p. 80): un grado del pentagrama, no una cuerda.
-     * Busca, con la misma heuristica de AutomaticFingering, la cuerda mas cercana a la mano que
-     * toque la nota natural de ese grado; si ninguna cuerda la alcanza, el cursor se queda
-     * quieto -la misma decision que toma Enter cuando ninguna cuerda alcanza su altura-.
-     */
     private void moveByStaffDegree(int steps) {
         Track track = currentTrack();
         Clef clef = Clef.forTuning(track.tuning());
@@ -654,9 +587,6 @@ public final class Editor {
             return;
         }
         Pitch pitch = target.get();
-        // El puntero guarda la altura exacta (pitch), no la cuerda: la cuerda es solo la mejor
-        // digitacion PARA esa altura, y volver a derivarla de la cuerda al aire en la proxima
-        // flecha perderia los grados ya andados.
         AutomaticFingering.bestFingeringFor(track.tuning(), pitch, handPosition(), List.of())
                 .ifPresent(found -> moveCursor(cursor.onString(found.string()).withPointer(pitch)));
     }
@@ -721,10 +651,6 @@ public final class Editor {
         moveCursor(clampedCursorIn(score, Math.min(score.trackCount() - 1, cursor.track() + 1)));
     }
 
-    /**
-     * Los marcadores son la forma rapida de moverse entre las partes de la partitura. Si no hay
-     * ninguno hacia donde se pide, el cursor se queda donde esta.
-     */
     public void moveToNextMarker() {
         for (int measure = cursor.measure() + 1; measure < currentTrack().measureCount(); measure++) {
             if (score.attributesOf(measure).marker().isPresent()) {
@@ -751,8 +677,6 @@ public final class Editor {
         moveCursor(cursor.onBeat(currentVoice().beatCount() - 1));
     }
 
-    // ---- seleccion --------------------------------------------------------
-
     public Optional<Selection> selection() {
         return Optional.ofNullable(selectionAnchor)
                 .map(anchor -> Selection.of(anchor, cursor, selectingWholeMeasures));
@@ -769,11 +693,6 @@ public final class Editor {
         notifyListeners(EditorChange.CURSOR);
     }
 
-    /**
-     * El Shift del manual sobre una flecha, un clic o un arrastre: a diferencia de cualquier
-     * otro movimiento del cursor, este no colapsa la seleccion vieja sino que la extiende desde
-     * su ancla (arrancando una si todavia no habia ninguna).
-     */
     public void whileExtendingSelection(Runnable movement) {
         if (selectionAnchor == null) {
             startSelection(false);
@@ -802,18 +721,11 @@ public final class Editor {
         }
     }
 
-    // ---- cortar, copiar y pegar -------------------------------------------
-
-    /**
-     * Copia lo seleccionado. Dentro de un compas copia beats; en cualquier otro
-     * caso, compases enteros, de la pista activa o de todas.
-     */
     public void copy(boolean everyTrack) {
         Selection range = selection().orElseGet(this::justTheCurrentMeasure);
         clipboard.hold(clippingOf(range, everyTrack));
     }
 
-    /** Corta compases de todas las pistas, como el Compas > Cortar del manual. */
     public void cut() {
         Selection range = selection().orElseGet(this::justTheCurrentMeasure);
         clipboard.hold(clippingOf(range, true));
@@ -937,17 +849,10 @@ public final class Editor {
         return Selection.ofMeasures(cursor.track(), cursor.measure(), cursor.measure());
     }
 
-    // ---- historia ---------------------------------------------------------
-
     public boolean isUndoEnabled() {
         return undoEnabled;
     }
 
-    /**
-     * Deshacer y rehacer se pueden apagar para no cargar memoria en una
-     * computadora vieja, tal como ofrece Preferencias. Al apagarla se olvida
-     * lo que ya se podia deshacer.
-     */
     public void setUndoEnabled(boolean undoEnabled) {
         this.undoEnabled = undoEnabled;
         if (!undoEnabled) {
@@ -979,8 +884,6 @@ public final class Editor {
         listeners.add(listener);
     }
 
-    // ---- como se aplican los cambios --------------------------------------
-
     void change(Score next, Cursor nextCursor) {
         if (next.equals(score)) {
             moveCursor(nextCursor);
@@ -1001,14 +904,6 @@ public final class Editor {
         changeCurrentBeat(beat -> beat.mappingNoteOn(cursor.string(), howToChange));
     }
 
-    /**
-     * Agrega, en el pentagrama, la nota a la altura donde esta el cursor: reutiliza la misma
-     * heuristica de AutomaticFingering (la cuerda libre mas cercana a la mano) para elegir cuerda
-     * y traste, excluyendo las cuerdas que ya suenan en el beat para no pisar otra nota del
-     * acorde. Si ninguna cuerda alcanza esa altura -por ejemplo, una nota tipeada mas alla del
-     * limite de trastes de la afinacion- no hace nada, igual que AutomaticFingering deja una nota
-     * asi como estaba.
-     */
     private void addNoteAtCursorPitch() {
         Track track = currentTrack();
         List<Integer> otherStrings = currentBeat().notes().stream()
@@ -1019,8 +914,6 @@ public final class Editor {
                 .ifPresent(found -> changeBeatAndCursor(beat -> beat.withNote(found), cursor.onString(found.string())));
     }
 
-    /** La altura donde esta el cursor: la de la nota que ya suena en su cuerda, o la de la
-     * cuerda al aire si el beat esta en silencio ahi. */
     private Pitch pitchAtCursor() {
         if (cursor.pointer().isPresent()) {
             return cursor.pointer().get();
@@ -1029,7 +922,6 @@ public final class Editor {
         return currentNote().map(tuning::pitchOf).orElseGet(() -> tuning.pitchOfString(cursor.string()));
     }
 
-    /** Donde esta la mano: el traste de la nota actual, o el primer traste si no hay ninguna. */
     private int handPosition() {
         return currentNote().map(Note::fret).orElse(0);
     }
@@ -1081,11 +973,6 @@ public final class Editor {
         return index < track.measureCount() ? track.mappingMeasure(index, Measure::emptied) : track;
     }
 
-    /**
-     * Al cambiar la afinacion, cada nota conserva su altura y se reubica en la cuerda y el
-     * traste de la afinacion nueva que la produzcan (el mismo truco de ChordFretting, que ya
-     * resuelve reunir alturas sueltas en cuerdas). Solo se pierde si no entra en ninguna cuerda.
-     */
     private static Track retuned(Track track, Tuning tuning) {
         Tuning oldTuning = track.tuning();
         int fretLimit = Tuning.MAX_FRET;
@@ -1116,13 +1003,6 @@ public final class Editor {
         return relocated;
     }
 
-    /**
-     * Una pista nueva entra con la misma cantidad de compases que la partitura,
-     * con los mismos atributos -porque un compas vale igual en todas las pistas-
-     * y, si no es de percusion, en el proximo canal libre: sin esto quedaria en
-     * el canal por defecto de {@link Channel#playing}, que colisiona con
-     * cualquier otra pista que tampoco lo haya tocado.
-     */
     private Track alignedToTheScore(Track track) {
         Track aligned = track.isPercussion()
                 ? track
@@ -1140,7 +1020,6 @@ public final class Editor {
         return aligned;
     }
 
-    /** Los canales -limpio y de efectos- que ya estan usando las pistas no percutivas de la partitura. */
     private Set<Integer> channelsInUse() {
         Set<Integer> used = new HashSet<>();
         for (int index = 0; index < score.trackCount(); index++) {

@@ -1,6 +1,5 @@
 package com.gstncaruso.tabpro.core.editing;
 
-/** Lo que pregunta la ventana de pegar: si inserta o reemplaza, y cuantas veces. */
 public record PasteOptions(boolean inserting, int repetitions) {
 
     public PasteOptions {

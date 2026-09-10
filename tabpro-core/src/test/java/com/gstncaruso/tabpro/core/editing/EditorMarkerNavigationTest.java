@@ -12,7 +12,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/** Los marcadores son la forma rapida de moverse por las partes de la partitura. */
 class EditorMarkerNavigationTest {
 
     private Editor editor;

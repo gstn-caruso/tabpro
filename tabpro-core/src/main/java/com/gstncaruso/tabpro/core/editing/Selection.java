@@ -1,9 +1,5 @@
 package com.gstncaruso.tabpro.core.editing;
 
-/**
- * El rango que abarca la seleccion multiple. Si abarca compases enteros, las
- * acciones valen para las dos voces; si no, solo para la que se esta editando.
- */
 public record Selection(int track, int fromMeasure, int fromBeat, int toMeasure, int toBeat, boolean wholeMeasures) {
 
     public static Selection of(Cursor anchor, Cursor head, boolean wholeMeasures) {

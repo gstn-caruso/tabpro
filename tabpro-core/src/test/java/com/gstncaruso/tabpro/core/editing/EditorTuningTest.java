@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
-/** Al cambiar la afinacion, las notas conservan su altura en vez de perderse en silencio. */
 class EditorTuningTest {
 
     @Test
@@ -28,7 +27,7 @@ class EditorTuningTest {
                 List.of(Measure.empty(TimeSignature.fourFour(), Duration.quarter())));
         Editor editor = new Editor(Score.blank());
         editor.addTrack(banjo);
-        moveDown(editor, 4); // de la cuerda 1 a la 5, la mas aguda del banjo (Sol, 67)
+        moveDown(editor, 4);
         editor.setFret(0);
 
         editor.setTuning(1, Tuning.standard());
@@ -40,11 +39,11 @@ class EditorTuningTest {
     @Test
     void relocatesAChordThatFitsWhenAGuitarBecomesABass() {
         Editor editor = new Editor(Score.blank());
-        moveDown(editor, 3); // cuerda 4: Re3 (50)
+        moveDown(editor, 3);
         editor.setFret(0);
-        editor.moveDown(); // cuerda 5: La2 (45)
+        editor.moveDown();
         editor.setFret(0);
-        editor.moveDown(); // cuerda 6: Mi2 (40)
+        editor.moveDown();
         editor.setFret(0);
 
         editor.setTuning(0, Tuning.standardBass());
@@ -62,7 +61,7 @@ class EditorTuningTest {
     @Test
     void dropsANoteThatIsTooLowForTheNewTuning() {
         Editor editor = new Editor(Score.blank());
-        moveDown(editor, 5); // cuerda 6: Mi2 (40), la mas grave de la guitarra estandar
+        moveDown(editor, 5);
         editor.setFret(0);
 
         editor.setTuning(0, Tuning.of("Ukelele en Do", 69, 64, 60, 67));
@@ -73,7 +72,7 @@ class EditorTuningTest {
     @Test
     void dropsANoteThatIsTooHighForTheNewTuning() {
         Editor editor = new Editor(Score.blank());
-        editor.setFret(20); // cuerda 1 al traste 20: Do5 (84)
+        editor.setFret(20);
 
         editor.setTuning(0, Tuning.standardBass());
 
@@ -84,7 +83,7 @@ class EditorTuningTest {
     @Test
     void preservesThePitchWhenTheTuningChangesButTheStringCountDoesNot() {
         Editor editor = new Editor(Score.blank());
-        moveDown(editor, 5); // cuerda 6: Mi2 (40)
+        moveDown(editor, 5);
         editor.setFret(0);
 
         editor.setTuning(0, Tuning.of("Drop D", 64, 59, 55, 50, 45, 38));
@@ -107,8 +106,8 @@ class EditorTuningTest {
     @Test
     void undoingARetuneRestoresBothTheTuningAndTheDiscardedNotes() {
         Editor editor = new Editor(Score.blank());
-        moveDown(editor, 5); // cuerda 6
-        editor.setFret(40); // Mi2 + 40 = Do8 (80): no entra en el bajo
+        moveDown(editor, 5);
+        editor.setFret(40);
         Score before = editor.score();
 
         editor.setTuning(0, Tuning.standardBass());

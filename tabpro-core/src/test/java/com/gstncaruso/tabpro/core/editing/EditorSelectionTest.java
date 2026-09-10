@@ -8,10 +8,6 @@ import com.gstncaruso.tabpro.core.model.Track;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Como en Guitar Pro 5 y en cualquier editor: mover el cursor sin Shift limpia la seleccion
- * vieja; con Shift (acá, {@link Editor#whileExtendingSelection}) la sigue extendiendo.
- */
 class EditorSelectionTest {
 
     private final Editor editor = new Editor(
@@ -53,12 +49,6 @@ class EditorSelectionTest {
         assertEquals(3, selection.toBeat());
     }
 
-    /**
-     * En el limite del pentagrama, moveRight() no solo mueve el cursor: tambien inserta un
-     * compas nuevo al final de la pista (el mismo camino que usa {@link Editor#change}, no
-     * {@link Editor#cursor()} a secas). Tiene que limpiar la seleccion igual que cualquier otro
-     * movimiento sin extender.
-     */
     @Test
     void movingRightPastTheLastMeasureStillClearsTheSelection() {
         editor.moveRight();
@@ -80,12 +70,6 @@ class EditorSelectionTest {
         assertTrue(editor.selection().isEmpty());
     }
 
-    /**
-     * {@link Editor#change} y {@link Editor#restore} nunca tocan el ancla -solo
-     * {@link Editor#moveCursor} lo hace-, asi que deshacer una edicion que tambien movio el
-     * cursor (acá, {@link Editor#deleteBeat}) tiene que devolver la seleccion tal como estaba
-     * antes de esa edicion, no la que quedo achicada despues de ella.
-     */
     @Test
     void undoRestoresTheSelectionThatWasActiveBeforeTheEdit() {
         editor.whileExtendingSelection(editor::moveRight);

@@ -104,11 +104,6 @@ class EditorEditingTest {
         assertFalse(editor.currentBeat().duration().dotted());
     }
 
-    /**
-     * Preferencias [F12], "Figura por defecto al insertar": el beat que se inserta tiene que
-     * salir con esa figura, no con la del beat que ya estaba en el cursor -que es lo que hacia
-     * antes, ignorando la preferencia por completo-.
-     */
     @Test
     void insertsARestUsingTheDefaultNoteValueNotTheCurrentBeatsDuration() {
         Beat first = Beat.of(Duration.of(NoteValue.HALF), new Note(1, 3));
