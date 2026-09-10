@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.toolbar;
 
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.Zoom;
 import com.gstncaruso.tabpro.ui.score.ZoomHolder;
 import java.awt.Dimension;
@@ -16,7 +17,7 @@ public final class ZoomSelector extends JComboBox<String> {
         super(presetLabels());
         this.zoomHolder = zoomHolder;
         setEditable(true);
-        getAccessibleContext().setAccessibleName("Zoom");
+        getAccessibleContext().setAccessibleName(Texts.get("menus.toolbar.zoom"));
         setToolTipText(tooltipFrom(commands));
         addActionListener(event -> applyEnteredZoom());
         zoomHolder.onZoomChange(this::refresh);
