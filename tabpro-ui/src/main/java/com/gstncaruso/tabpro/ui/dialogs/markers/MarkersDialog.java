@@ -26,9 +26,30 @@ public final class MarkersDialog {
         DialogShell.show(parent, "Marcadores", buildContent(editor));
     }
 
+    /** Abre el mismo dialogo, pero arrancando posicionado en el marcador de ese compas. */
+    public static void showEditing(Component parent, Editor editor, int measureIndex) {
+        DialogShell.show(parent, "Marcadores", buildContentEditing(editor, measureIndex));
+    }
+
     /** Arma el contenido de la ventana sin abrir ningun dialogo, para poder probarlo. */
     static JPanel buildContent(Editor editor) {
         return build(editor).panel();
+    }
+
+    /** Como {@link #buildContent}, pero con el marcador de ese compas ya seleccionado. */
+    static JPanel buildContentEditing(Editor editor, int measureIndex) {
+        Content content = build(editor);
+        select(content.list(), measureIndex);
+        return content.panel();
+    }
+
+    private static void select(JList<MarkerList.Positioned> list, int measureIndex) {
+        for (int i = 0; i < list.getModel().getSize(); i++) {
+            if (list.getModel().getElementAt(i).measureIndex() == measureIndex) {
+                list.setSelectedIndex(i);
+                return;
+            }
+        }
     }
 
     /** El panel armado junto con la lista que lo alimenta, para poder posicionarla desde afuera. */
