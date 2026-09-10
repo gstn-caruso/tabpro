@@ -40,7 +40,7 @@ class CommandsTest {
             record(Ports.Playback.class), record(Ports.View.class));
 
     @BeforeEach
-    void olvidaLoQuePreguntoElConstructor() {
+    void forgetsWhatTheConstructorAsked() {
         asked.clear();
     }
 
@@ -55,7 +55,7 @@ class CommandsTest {
     @Test
     void noTwoCommandsShareTheSameShortcut() {
         Map<KeyStroke, String> byShortcut = new HashMap<>();
-        List<String> repetidos = new ArrayList<>();
+        List<String> duplicates = new ArrayList<>();
         commands.all().forEach((name, command) -> {
             KeyStroke shortcut = command.accelerator();
             if (shortcut == null) {
@@ -63,12 +63,12 @@ class CommandsTest {
             }
             String previous = byShortcut.put(shortcut, name);
             if (previous != null) {
-                repetidos.add("el atajo " + shortcut + " lo usan " + previous + " y " + name);
+                duplicates.add("el atajo " + shortcut + " lo usan " + previous + " y " + name);
             }
         });
 
         assertFalse(byShortcut.isEmpty(), "ningun comando tiene atajo: no habria nada que verificar");
-        assertEquals(List.of(), repetidos);
+        assertEquals(List.of(), duplicates);
     }
 
     @Test
@@ -294,7 +294,7 @@ class CommandsTest {
     }
 
     @Test
-    void lasFlechasDePistaTienenIcono() {
+    void theTrackArrowsHaveAnIcon() {
         assertNotNull(commands.get("track.previous").icon());
         assertNotNull(commands.get("track.next").icon());
     }
