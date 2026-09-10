@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 class FormPanelTest {
 
     @Test
-    void unaFilaSimpleEtiquetaElCampo() {
+    void aSimpleRowLabelsTheField() {
         FormPanel panel = new FormPanel();
         JTextField field = new JTextField();
 
@@ -29,7 +29,7 @@ class FormPanelTest {
     }
 
     @Test
-    void unaFilaConTrailingEtiquetaElCampoYNoElPanelQueLoEnvuelve() {
+    void aRowWithTrailingLabelsTheFieldAndNotThePanelWrappingIt() {
         FormPanel panel = new FormPanel();
         JTextField field = new JTextField();
         JButton trailing = new JButton("Escuchar");
@@ -40,7 +40,7 @@ class FormPanelTest {
     }
 
     @Test
-    void unaFilaSimpleLeDaMnemonicoASuEtiqueta() {
+    void aSimpleRowGivesItsLabelAMnemonic() {
         FormPanel panel = new FormPanel();
         JTextField field = new JTextField();
 
@@ -60,7 +60,7 @@ class FormPanelTest {
     }
 
     @Test
-    void unaSeccionTieneBordeTituladoConElTextoDado() {
+    void aSectionHasATitledBorderWithTheGivenText() {
         FormPanel panel = new FormPanel();
 
         panel.addSection("Notation");
@@ -80,7 +80,7 @@ class FormPanelTest {
     }
 
     @Test
-    void elPaddingInteriorDeUnaSeccionEsElMedidoEnGuitarPro5EscaladoATabpro() {
+    void theInnerPaddingOfASectionIsTheOneMeasuredInGuitarPro5ScaledToTabpro() {
         FormPanel panel = new FormPanel();
 
         panel.addSection("Notation");
@@ -96,30 +96,30 @@ class FormPanelTest {
     }
 
     @Test
-    void cadaSeccionQuedaConLasFilasQueLeSiguenHastaLaProximaSeccion() {
+    void eachSectionKeepsTheRowsThatFollowUntilTheNextSection() {
         FormPanel panel = new FormPanel();
-        JTextField fueraDeToda = new JTextField();
-        JTextField deNotacion = new JTextField();
-        JTextField deEstilo = new JTextField();
+        JTextField outsideAnySection = new JTextField();
+        JTextField inNotation = new JTextField();
+        JTextField inStyle = new JTextField();
 
-        panel.addRow("Nombre", fueraDeToda);
+        panel.addRow("Nombre", outsideAnySection);
         panel.addSection("Notation");
-        panel.addRow("Tablatura", deNotacion);
+        panel.addRow("Tablatura", inNotation);
         panel.addSection("Style");
-        panel.addRow("Sangria", deEstilo);
+        panel.addRow("Sangria", inStyle);
 
         JPanel notation = sectionTitled(panel, "Notation");
         JPanel style = sectionTitled(panel, "Style");
-        assertFalse(SwingUtilities.isDescendingFrom(fueraDeToda, notation));
-        assertFalse(SwingUtilities.isDescendingFrom(fueraDeToda, style));
-        assertTrue(SwingUtilities.isDescendingFrom(deNotacion, notation));
-        assertFalse(SwingUtilities.isDescendingFrom(deNotacion, style));
-        assertTrue(SwingUtilities.isDescendingFrom(deEstilo, style));
-        assertFalse(SwingUtilities.isDescendingFrom(deEstilo, notation));
+        assertFalse(SwingUtilities.isDescendingFrom(outsideAnySection, notation));
+        assertFalse(SwingUtilities.isDescendingFrom(outsideAnySection, style));
+        assertTrue(SwingUtilities.isDescendingFrom(inNotation, notation));
+        assertFalse(SwingUtilities.isDescendingFrom(inNotation, style));
+        assertTrue(SwingUtilities.isDescendingFrom(inStyle, style));
+        assertFalse(SwingUtilities.isDescendingFrom(inStyle, notation));
     }
 
     @Test
-    void dosSeccionesSeguidasSinFilasQuedanComoCajasSeparadas() {
+    void twoConsecutiveSectionsWithoutRowsEndUpAsSeparateBoxes() {
         FormPanel panel = new FormPanel();
 
         panel.addSection("Encabezado");
@@ -130,7 +130,7 @@ class FormPanelTest {
     }
 
     @Test
-    void dosSeccionesDetachedUbicadasLadoALadoQuedanComoDescendientesDelFormulario() {
+    void twoDetachedSectionsPlacedSideBySideEndUpAsDescendantsOfTheForm() {
         FormPanel panel = new FormPanel();
         FormPanel.Section left = panel.newDetachedSection("Puerto 1");
         FormPanel.Section right = panel.newDetachedSection("Puerto 2");
@@ -142,7 +142,7 @@ class FormPanelTest {
     }
 
     @Test
-    void dosSeccionesDetachedComparenLosMnemonicosParaNoRepetirLetra() {
+    void twoDetachedSectionsCompareMnemonicsToAvoidRepeatingALetter() {
         FormPanel panel = new FormPanel();
         FormPanel.Section left = panel.newDetachedSection("Puerto 1");
         JTextField leftField = new JTextField();
