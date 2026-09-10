@@ -36,6 +36,12 @@ public record Bend(BendType type, List<BendPoint> points) {
             case PREBEND -> List.of(BendPoint.at(0, height), BendPoint.at(BendPoint.LAST_POSITION, height));
             case PREBEND_RELEASE -> List.of(
                     BendPoint.at(0, height), BendPoint.at(middle, height), BendPoint.at(BendPoint.LAST_POSITION, 0));
+            case DIP -> List.of(BendPoint.at(0, 0), BendPoint.at(middle, -height), BendPoint.at(BendPoint.LAST_POSITION, 0));
+            case INVERTED_DIP -> List.of(BendPoint.at(0, 0), BendPoint.at(middle, height), BendPoint.at(BendPoint.LAST_POSITION, 0));
+            case DIVE -> List.of(BendPoint.at(0, 0), BendPoint.at(BendPoint.LAST_POSITION, -height));
+            case RETURN -> List.of(BendPoint.at(0, 0), BendPoint.at(BendPoint.LAST_POSITION, height));
+            case RELEASE_UP -> List.of(BendPoint.at(0, -height), BendPoint.at(BendPoint.LAST_POSITION, 0));
+            case RELEASE_DOWN -> List.of(BendPoint.at(0, height), BendPoint.at(BendPoint.LAST_POSITION, 0));
         };
     }
 

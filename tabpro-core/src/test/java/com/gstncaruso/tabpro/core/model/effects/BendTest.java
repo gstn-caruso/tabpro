@@ -33,4 +33,12 @@ class BendTest {
 
         assertEquals(-6, vaYViene.farthestQuarterTones());
     }
+
+    @Test
+    void unDipDeLaPalancaBajaYVuelve() {
+        Bend dip = Bend.of(BendType.DIP, 4);
+
+        assertEquals(-4, dip.farthestQuarterTones());
+        assertEquals(0, dip.points().getLast().quarterTones());
+    }
 }
