@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.tracks;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.Instruments;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import java.awt.BorderLayout;
@@ -9,12 +10,14 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -33,7 +36,7 @@ public final class MixTable extends JPanel {
     public static final int NAME_WIDTH = 92;
     public static final int PORT_WIDTH = spinnerWidth(Channel.CHANNELS_PER_PORT);
     public static final int CHANNEL_WIDTH = spinnerWidth(Channel.CHANNELS_PER_PORT);
-    public static final int INSTRUMENT_WIDTH = 132;
+    public static final int INSTRUMENT_WIDTH = comboWidth(longestInstrumentName());
     public static final int LEVEL_WIDTH = 96;
     public static final int PARAMETER_WIDTH = 42;
     public static final int TOGGLE_WIDTH = 22;
@@ -196,5 +199,14 @@ public final class MixTable extends JPanel {
     private static int spinnerWidth(int maxValue) {
         JSpinner probe = new JSpinner(new SpinnerNumberModel(maxValue, 1, maxValue, 1));
         return probe.getPreferredSize().width;
+    }
+
+    private static int comboWidth(String longestText) {
+        JComboBox<String> probe = new JComboBox<>(new String[] {longestText});
+        return probe.getPreferredSize().width;
+    }
+
+    private static String longestInstrumentName() {
+        return Instruments.names().stream().max(Comparator.comparingInt(String::length)).orElseThrow();
     }
 }

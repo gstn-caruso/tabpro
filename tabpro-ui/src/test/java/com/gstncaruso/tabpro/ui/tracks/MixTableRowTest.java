@@ -14,6 +14,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
@@ -198,6 +199,24 @@ class MixTableRowTest {
                     "el spinner mide " + spinner.getWidth() + "px, necesita al menos " + needed
                             + "px para mostrar dos digitos");
         }
+    }
+
+    @Test
+    void elComboDeInstrumentoMuestraElNombreMasLargoDelBancoGeneralMidiSinTruncarlo() {
+        Editor editor = twoTrackEditor();
+        MixTableRow row = new MixTableRow(editor, new MixTableModel(), 0);
+        String longest =
+                Instruments.names().stream().max(Comparator.comparingInt(String::length)).orElseThrow();
+        row.instrumentField().setSelectedItem(longest);
+        row.setSize(row.getPreferredSize());
+        layOut(row);
+
+        JComboBox<String> probe = new JComboBox<>(new String[] {longest});
+        int needed = probe.getPreferredSize().width;
+
+        assertTrue(row.instrumentField().getWidth() >= needed,
+                "el combo mide " + row.instrumentField().getWidth() + "px, necesita al menos " + needed
+                        + "px para mostrar \"" + longest + "\" completo");
     }
 
     private static Editor twoTrackEditor() {
