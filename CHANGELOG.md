@@ -1,3 +1,9 @@
+## [0.43.0](https://github.com/gstn-caruso/tabpro/compare/v0.42.0...v0.43.0) (2026-09-10)
+
+### Features
+
+* **tracks:** la mesa de mezcla tiene los deslizadores, los números planos y las columnas de Guitar Pro 5 ([#141](https://github.com/gstn-caruso/tabpro/issues/141)) ([f89e946](https://github.com/gstn-caruso/tabpro/commit/f89e946438eb44e273a6c7c4b9276180f377c129))
+
 ## [0.42.0](https://github.com/gstn-caruso/tabpro/compare/v0.41.0...v0.42.0) (2026-09-10)
 
 ### Features
