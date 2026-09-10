@@ -206,6 +206,6 @@ public final class TuningEditorPanel extends JPanel {
                 return;
             }
         }
-        throw new IllegalArgumentException("no esta en la familia actual: " + tuningName);
+        throw new IllegalArgumentException("not in the current family: " + tuningName);
     }
 }
