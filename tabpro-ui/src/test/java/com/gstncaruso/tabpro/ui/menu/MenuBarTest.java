@@ -42,19 +42,19 @@ class MenuBarTest {
 
     @Test
     void offersEveryRecentFileWithItsName() {
-        List<Path> recent = List.of(Path.of("/tmp/una.tabpro"), Path.of("/tmp/otra.tabpro"));
+        List<Path> recent = List.of(Path.of("/tmp/one.tabpro"), Path.of("/tmp/another.tabpro"));
         JMenuBar bar = new MenuBar(commands, () -> recent, opened::add).build();
 
         JMenu recentMenu = recentFilesMenuOf(bar);
 
         assertEquals(2, recentMenu.getItemCount());
-        assertEquals("una.tabpro", recentMenu.getItem(0).getText());
-        assertEquals("otra.tabpro", recentMenu.getItem(1).getText());
+        assertEquals("one.tabpro", recentMenu.getItem(0).getText());
+        assertEquals("another.tabpro", recentMenu.getItem(1).getText());
     }
 
     @Test
     void choosingARecentFileOpensIt() {
-        Path path = Path.of("/tmp/una.tabpro");
+        Path path = Path.of("/tmp/one.tabpro");
         JMenuBar bar = new MenuBar(commands, () -> List.of(path), opened::add).build();
 
         recentFilesMenuOf(bar).getItem(0).doClick();
@@ -77,8 +77,8 @@ class MenuBarTest {
                 .map(Map.Entry::getKey)
                 .toList();
 
-        assertTrue(withAccelerator > 0, "ningun comando tiene acelerador: no habria nada que verificar");
-        assertEquals(List.of(), stray, "hay atajos que no cuelgan de ningun menu");
+        assertTrue(withAccelerator > 0, "no command has an accelerator: there would be nothing to check");
+        assertEquals(List.of(), stray, "there are shortcuts that do not hang from any menu");
     }
 
     @Test
@@ -109,7 +109,7 @@ class MenuBarTest {
                 .filter(accelerator -> (accelerator.getModifiers() & java.awt.event.InputEvent.ALT_DOWN_MASK) != 0)
                 .toList();
 
-        assertTrue(!altLetterAccelerators.isEmpty(), "no hay ningun acelerador Alt+letra para verificar");
+        assertTrue(!altLetterAccelerators.isEmpty(), "no Alt+letter accelerator to check");
         assertTrue(altLetterAccelerators.stream().noneMatch(a -> menuMnemonics.contains(a.getKeyCode())));
     }
 
