@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Cursor;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.editing.Selection;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.tab.FretContextMenu;
@@ -77,7 +78,7 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
         setBackground(ScoreColors.BACKGROUND);
         setToolTipText("Partitura");
         getAccessibleContext().setAccessibleName("Partitura");
-        editor.addListener(this::editorChanged);
+        editor.addListener(EdtEditorListener.onEdt(this::editorChanged));
         new KeyboardEditing(editor, new FretDigits(System::currentTimeMillis)).install(this);
 
         MouseAdapter mouse = new MouseAdapter() {
@@ -403,7 +404,10 @@ public final class ScoreCanvas extends JComponent implements Scrollable, Accessi
     private void editorChanged() {
         revalidate();
         repaint();
-        scrollRectToVisible(cursorBounds(editor.cursor()));
+        Rectangle cursor = cursorBounds(editor.cursor());
+        if (!cursor.isEmpty() && !getVisibleRect().isEmpty()) {
+            scrollRectToVisible(cursor);
+        }
     }
 
     private Rectangle cursorBounds(Cursor cursor) {

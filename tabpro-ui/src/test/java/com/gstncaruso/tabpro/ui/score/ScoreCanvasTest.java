@@ -22,9 +22,11 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Test;
 
 class ScoreCanvasTest {
@@ -318,17 +320,90 @@ class ScoreCanvasTest {
                 "con el auto-scroll destildado la vista no se tiene que mover aunque el playhead quede afuera");
     }
 
+    /**
+     * Auditoria de corpus, hallazgo 2: justo despues de cambiar de modo de vista, el JViewport
+     * real todavia mide 0x0 -Swing no layouteo todavia-. Pedirle un scroll ahi (como hacia
+     * {@code editorChanged} sin guarda) no tira excepcion en un test headless, pero mueve la
+     * vista a una posicion sin sentido -el mismo mecanismo que en pantalla real termina en
+     * {@code IllegalArgumentException: Width (0) and height (0) cannot be <= 0}.
+     */
+    @Test
+    void doesNotScrollWhenTheAncestorViewportHasNoSizeYet() throws Exception {
+        Editor manyMeasures = editorWithManyMeasures(30);
+        ScoreCanvas horizontal = new ScoreCanvas(manyMeasures);
+        horizontal.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+        JScrollPane pane = new JScrollPane(horizontal);
+
+        SwingUtilities.invokeAndWait(manyMeasures::moveToLastMeasure);
+
+        assertEquals(0, pane.getViewport().getViewPosition().x,
+                "sin layout todavia (viewport 0x0) no hay que mover el scroll a un lugar sin sentido");
+        assertEquals(0, pane.getViewport().getViewPosition().y,
+                "sin layout todavia (viewport 0x0) no hay que mover el scroll a un lugar sin sentido");
+    }
+
+    /**
+     * Defensa en profundidad, mas alla del guard anterior: si algun dia algo mueve el cursor
+     * desde otro hilo, la reaccion del canvas (revalidate/repaint/scroll) tiene que llegar por
+     * el EDT, nunca en el acto sobre el hilo que llamo.
+     */
+    @Test
+    void deliversTheEditorNotificationOnTheEdtEvenWhenItCameFromAnotherThread() throws Exception {
+        Editor manyMeasures = editorWithManyMeasures(30);
+        ScoreCanvas horizontal = new ScoreCanvas(manyMeasures);
+        horizontal.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+        JScrollPane pane = paneShowing(horizontal);
+
+        CountDownLatch releaseEdt = blockTheEdtQueueUntilReleased();
+
+        Thread background = new Thread(manyMeasures::moveToLastMeasure);
+        background.start();
+        background.join();
+
+        assertEquals(0, pane.getViewport().getViewPosition().x,
+                "todavia no llego al EDT: el scroll de otro hilo no se puede haber aplicado ya");
+
+        releaseEdt.countDown();
+        SwingUtilities.invokeAndWait(() -> { });
+
+        assertTrue(pane.getViewport().getViewPosition().x > 0,
+                "una vez que el EDT proceso la cola, el scroll real tiene que haber llegado");
+    }
+
+    /**
+     * Encola en el EDT una tarea que no vuelve hasta que se cuente abajo el latch devuelto:
+     * cualquier aviso que otro hilo encole despues queda esperando detras, asi la prueba puede
+     * mirar el estado de antes de que ese aviso se procese sin que sea una carrera.
+     */
+    private static CountDownLatch blockTheEdtQueueUntilReleased() {
+        CountDownLatch releaseEdt = new CountDownLatch(1);
+        SwingUtilities.invokeLater(() -> await(releaseEdt));
+        return releaseEdt;
+    }
+
+    private static void await(CountDownLatch latch) {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     /** Treinta compases en Pantalla Horizontal -que nunca envuelve- para que el ultimo quede
      * bien lejos del origen y un scroll de verdad haga falta para llegar a el. */
     private static ScoreCanvas canvasWithManyMeasuresScrolledHorizontally() {
+        ScoreCanvas manyMeasures = new ScoreCanvas(editorWithManyMeasures(30));
+        manyMeasures.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+        return manyMeasures;
+    }
+
+    private static Editor editorWithManyMeasures(int count) {
         List<Measure> measures = new java.util.ArrayList<>();
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < count; i++) {
             measures.add(Measure.empty(TimeSignature.fourFour(), Duration.quarter()));
         }
         Track guitar = Track.standardGuitar("Guitarra").withMeasures(measures);
-        ScoreCanvas manyMeasures = new ScoreCanvas(new Editor(new Score("Prueba", 120, List.of(guitar))));
-        manyMeasures.setViewMode(ViewMode.SCREEN_HORIZONTAL);
-        return manyMeasures;
+        return new Editor(new Score("Prueba", 120, List.of(guitar)));
     }
 
     /** Un JScrollPane real, medido y layouteado sin necesidad de mostrar ninguna ventana. */
