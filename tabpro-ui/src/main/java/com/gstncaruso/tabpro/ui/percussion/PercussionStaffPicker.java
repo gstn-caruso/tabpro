@@ -11,6 +11,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -19,7 +20,11 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 
 /**
  * La zona (2) del asistente de percusion: un pentagrama en miniatura donde cada
@@ -38,6 +43,7 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
 
     private boolean preferElectric;
     private Optional<PercussionLine> hovered = Optional.empty();
+    private PercussionLine caret = PercussionLine.values()[0];
 
     /** Para geometria y tests: sin acciones al clickear. */
     public PercussionStaffPicker() {
@@ -58,6 +64,7 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
         getAccessibleContext().setAccessibleName("Pentagrama de percusión");
         trackTheMouse();
         installClicking(onPlay, onAdd);
+        installKeyboardShortcuts(onPlay, onAdd);
     }
 
     @Override
@@ -86,6 +93,35 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
                 });
             }
         });
+    }
+
+    /** Donde esta parado el caret de teclado: arranca en la primera linea del pentagrama. */
+    public PercussionLine caret() {
+        return caret;
+    }
+
+    private void installKeyboardShortcuts(IntConsumer onPlay, Consumer<PercussionLine> onAdd) {
+        InputMap inputMap = getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = getActionMap();
+        bindCaretMove(inputMap, actionMap, "DOWN", 1);
+    }
+
+    private void bindCaretMove(InputMap inputMap, ActionMap actionMap, String keyStroke, int delta) {
+        String name = "percussionstaff.caret." + keyStroke;
+        inputMap.put(KeyStroke.getKeyStroke(keyStroke), name);
+        actionMap.put(name, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moveCaret(delta);
+            }
+        });
+    }
+
+    private void moveCaret(int delta) {
+        PercussionLine[] lines = PercussionLine.values();
+        int index = Math.max(0, Math.min(lines.length - 1, caret.ordinal() + delta));
+        caret = lines[index];
+        repaint();
     }
 
     public void setPreferElectric(boolean preferElectric) {

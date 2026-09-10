@@ -4,10 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class PercussionStaffPickerTest {
@@ -99,5 +102,19 @@ class PercussionStaffPickerTest {
         PercussionStaffPicker picker = new PercussionStaffPicker();
         picker.setSize(WIDTH, HEIGHT);
         return picker;
+    }
+
+    @Test
+    void theDownArrowKeyMovesTheCaretToTheNextLine() {
+        PercussionStaffPicker picker = sized();
+
+        pressShortcut(picker, KeyStroke.getKeyStroke("DOWN"));
+
+        assertEquals(PercussionLine.HI_HAT, picker.caret());
+    }
+
+    private static void pressShortcut(JComponent component, KeyStroke keyStroke) {
+        Object name = component.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        component.getActionMap().get(name).actionPerformed(new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
     }
 }
