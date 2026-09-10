@@ -1,3 +1,13 @@
+## [0.55.0](https://github.com/gstn-caruso/tabpro/compare/v0.54.0...v0.55.0) (2026-09-10)
+
+### Features
+
+* **percussion:** el asistente muestra los sonidos en una grilla de cuatro columnas, como Guitar Pro 5 ([#165](https://github.com/gstn-caruso/tabpro/issues/165)) ([b59354a](https://github.com/gstn-caruso/tabpro/commit/b59354ad7d118b36c8644b4d29bd37586a3d9312))
+
+### Bug Fixes
+
+* **a11y:** el oráculo de combos mira el texto pintado por cualquier renderer, y Orientación y Papel usan etiquetas ([#168](https://github.com/gstn-caruso/tabpro/issues/168)) ([1272f53](https://github.com/gstn-caruso/tabpro/commit/1272f53de6c711713c0517f8c2df84f19ec335e4))
+
 ## [0.54.0](https://github.com/gstn-caruso/tabpro/compare/v0.53.0...v0.54.0) (2026-09-10)
 
 ### Features
