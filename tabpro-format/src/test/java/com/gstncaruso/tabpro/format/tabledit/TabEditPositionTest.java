@@ -13,7 +13,7 @@ class TabEditPositionTest {
     private static final int GRID_POSITIONS_IN_FOUR_FOUR = 16;
 
     @Test
-    void repartaMedidaYCuerdaDentroDeUnaSolaPista() {
+    void splitsMeasureAndStringWithinASingleTrack() {
         List<TabEditMeasure> measures = List.of(measure(4, 4), measure(4, 4));
         List<Integer> trackStringCounts = List.of(6);
         int valuePerPosition = VALUE_PER_POSITION_PER_STRING * 6;
@@ -29,7 +29,7 @@ class TabEditPositionTest {
     }
 
     @Test
-    void avanzaAlSegundoCompasSegunSuPropiaMedida() {
+    void advancesToTheSecondMeasureAccordingToItsOwnTimeSignature() {
         List<TabEditMeasure> measures = List.of(measure(4, 4), measure(3, 4));
         List<Integer> trackStringCounts = List.of(6);
         int valuePerPosition = VALUE_PER_POSITION_PER_STRING * 6;
@@ -45,7 +45,7 @@ class TabEditPositionTest {
     }
 
     @Test
-    void reconoceLaPistaSegunLaCuerdaAcumulada() {
+    void recognizesTheTrackFromTheAccumulatedStringCount() {
         List<TabEditMeasure> measures = List.of(measure(4, 4));
         List<Integer> trackStringCounts = List.of(4, 6);
         int totalStrings = 10;
