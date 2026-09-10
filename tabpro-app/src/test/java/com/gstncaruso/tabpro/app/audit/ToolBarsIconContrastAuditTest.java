@@ -93,8 +93,8 @@ class ToolBarsIconContrastAuditTest {
         double ratio = Contrast.ratio(foreground, background);
 
         assertTrue(ratio >= Contrast.GRAPHICAL_MINIMUM_RATIO,
-                "\"" + description + "\" da " + String.format("%.2f", ratio)
-                        + ":1 contra su fondo real, necesita >= " + Contrast.GRAPHICAL_MINIMUM_RATIO + ":1");
+                "\"" + description + "\" gives " + String.format("%.2f", ratio)
+                        + ":1 against its real background, needs >= " + Contrast.GRAPHICAL_MINIMUM_RATIO + ":1");
     }
 
     private Rectangle boundsWithin(JComponent component, Container ancestor) {
