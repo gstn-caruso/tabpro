@@ -157,6 +157,17 @@ class TrackSelectorTest {
         assertEquals("Pista 1: Guitarra", selector.trackButtons().get(0).getToolTipText());
     }
 
+    @Test
+    void reordenarPistasActualizaElNombreAccesibleDeCadaBoton() {
+        editor.addTrack(Track.standardBass("Bajo"));
+        TrackSelector selector = new TrackSelector(editor, commands);
+
+        editor.moveCurrentTrack(-1);
+
+        assertEquals("Pista 1: Bajo", selector.trackButtons().get(0).getAccessibleContext().getAccessibleName());
+        assertEquals("Pista 2: Guitarra", selector.trackButtons().get(1).getAccessibleContext().getAccessibleName());
+    }
+
     @SuppressWarnings("unchecked")
     private <T> T record(Class<T> port) {
         InvocationHandler handler = (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null;

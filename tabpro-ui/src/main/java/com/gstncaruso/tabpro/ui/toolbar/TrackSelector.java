@@ -49,10 +49,7 @@ public final class TrackSelector extends JPanel {
         trackButtons.clear();
         for (int trackIndex = 0; trackIndex < editor.score().trackCount(); trackIndex++) {
             int selectedTrackIndex = trackIndex;
-            String label = "Pista " + (trackIndex + 1) + ": " + editor.score().track(trackIndex).name();
             JToggleButton button = new JToggleButton();
-            button.getAccessibleContext().setAccessibleName(label);
-            button.setToolTipText(label);
             button.addActionListener(event -> editor.selectTrack(selectedTrackIndex));
             trackButtons.add(button);
             numbers.add(button);
@@ -65,7 +62,11 @@ public final class TrackSelector extends JPanel {
     private void refreshSelection() {
         int active = editor.cursor().track();
         for (int trackIndex = 0; trackIndex < trackButtons.size(); trackIndex++) {
-            trackButtons.get(trackIndex).setSelected(trackIndex == active);
+            JToggleButton button = trackButtons.get(trackIndex);
+            String label = "Pista " + (trackIndex + 1) + ": " + editor.score().track(trackIndex).name();
+            button.getAccessibleContext().setAccessibleName(label);
+            button.setToolTipText(label);
+            button.setSelected(trackIndex == active);
         }
         previousButton.setEnabled(active > 0);
         nextButton.setEnabled(active < editor.score().trackCount() - 1);
