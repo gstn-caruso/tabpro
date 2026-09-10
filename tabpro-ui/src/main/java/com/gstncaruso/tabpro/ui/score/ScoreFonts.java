@@ -75,11 +75,6 @@ final class ScoreFonts {
         return new Font(FAMILY, Font.ITALIC, (int) Math.round(staffLineSpacing * 1.7));
     }
 
-    /** Los dos numeros de la armadura de tiempo, proporcionales a la interlinea del pentagrama. */
-    static Font timeSignatureFont(double staffLineSpacing) {
-        return new Font(FAMILY, Font.BOLD, (int) Math.round(staffLineSpacing * 2.1));
-    }
-
     private static String resolveFamily(List<String> preference, String fallback) {
         List<String> installed =
                 Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());

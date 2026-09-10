@@ -97,16 +97,25 @@ final class StaffPainter {
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, double x) {
         Measure measure = track.measure(measureIndex);
         g.setColor(ScoreColors.INK);
-        g.setFont(ScoreFonts.timeSignatureFont(SPACE));
+        g.setFont(MusicFont.sizedTo(SPACE));
         FontMetrics metrics = g.getFontMetrics();
 
-        String top = String.valueOf(measure.timeSignature().beats());
-        String bottom = String.valueOf(measure.timeSignature().beatUnit());
+        String top = timeSignatureGlyphsOf(measure.timeSignature().beats());
+        String bottom = timeSignatureGlyphsOf(measure.timeSignature().beatUnit());
         int centerX = (int) Math.round(x + Math.max(metrics.stringWidth(top), metrics.stringWidth(bottom)) / 2.0);
-        int upperY = layout.staffLineY(trackIndex, measureIndex, 3) + metrics.getAscent() / 2 - 1;
-        int lowerY = layout.staffLineY(trackIndex, measureIndex, 1) + metrics.getAscent() / 2 - 1;
+        int upperY = layout.staffLineY(trackIndex, measureIndex, 3);
+        int lowerY = layout.staffLineY(trackIndex, measureIndex, 1);
         g.drawString(top, centerX - metrics.stringWidth(top) / 2, upperY);
         g.drawString(bottom, centerX - metrics.stringWidth(bottom) / 2, lowerY);
+    }
+
+    /** Una cifra de compas armada glifo por glifo, uno por cada digito del numero. */
+    private static String timeSignatureGlyphsOf(int number) {
+        StringBuilder glyphs = new StringBuilder();
+        for (char digit : String.valueOf(number).toCharArray()) {
+            glyphs.append(MusicFont.timeSignatureDigit(digit - '0'));
+        }
+        return glyphs.toString();
     }
 
     /** Los sostenidos o los bemoles de la armadura, en el orden convencional de la clave. */
