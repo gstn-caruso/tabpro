@@ -18,10 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Lee un beat del archivo: su figura, su grupo irregular, sus efectos y las
- * notas de las cuerdas que suenan, que vienen marcadas en una mascara de bits.
- */
 final class GuitarProBeatReader {
 
     private static final int HAS_DOT = 0x01;
@@ -34,28 +30,28 @@ final class GuitarProBeatReader {
 
     private static final int HAS_TREMOLO_BAR_OR_SLAP = 0x20;
 
-    /** El vibrato ancho es del beat entero, y viene en el mismo bit en las tres generaciones. */
+    /** Wide vibrato belongs to the whole beat and uses the same bit in all three versions. */
     private static final int WIDE_VIBRATO = 0x02;
 
-    /** El sentido de la pua, en el segundo byte de efectos que existe desde GP4. */
+    /** Pickstroke direction, in the second effects byte that exists since GP4. */
     private static final int HAS_PICKSTROKE = 0x02;
 
-    /** El byte que en GP3 elige entre la palanca (0) y el golpe. */
+    /** The byte that in GP3 selects between the tremolo bar (0) and the slap effect. */
     private static final int NO_SLAP = 0;
 
     private static final int HAS_STROKE = 0x40;
     private static final int FADE_IN = 0x10;
 
-    /** Cuando el beat rompe el corchete secundario, dice de cuantas figuras. */
+    /** When the beat breaks the secondary beam, it says how many note values. */
     private static final int BREAK_SECONDARY_BEAM = 0x0800;
 
-    /** La cuerda 1 del archivo es la mas aguda y ocupa el bit mas alto de la mascara. */
+    /** String 1 in the file is the highest-pitched one and occupies the top bit of the mask. */
     private static final int HIGHEST_STRING_BIT = 0x40;
 
-    /** Los seis bits de la mascara del cambio de parametros que hablan de las demas pistas. */
+    /** The six bits of the parameter-change mask that speak for every other track. */
     private static final int EVERY_TRACK_KNOBS = 0x3F;
 
-    /** El wah del cambio de parametros: -1 no lo toca, -2 lo apaga, 0 a 100 es cerrado a abierto. */
+    /** The wah of the parameter change: -1 leaves it untouched, -2 turns it off, 0 to 100 is closed to open. */
     private static final int WAH_UNCHANGED = -1;
     private static final int WAH_OFF = -2;
     private static final int WAH_HALFWAY = 50;
@@ -93,10 +89,10 @@ final class GuitarProBeatReader {
     }
 
     /**
-     * El byte de estado dice si el beat esta vacio, es normal o es un silencio. Los tres
-     * casos se escriben igual: siempre viene despues la mascara de cuerdas, aunque este
-     * en cero. Por eso el estado no cambia como se lee lo que sigue, y un beat es un
-     * silencio para tabpro cuando no tiene ninguna nota.
+     * The status byte says whether the beat is empty, normal, or a rest. All three cases
+     * are written the same way: the string mask always follows, even when it is zero. So
+     * the status does not change how what follows is read, and a beat is a rest for
+     * tabpro when it has no notes.
      */
     private static void skipStatus(GuitarProByteReader reader, int flags) {
         if ((flags & HAS_STATUS) != 0) {
@@ -113,7 +109,7 @@ final class GuitarProBeatReader {
         return new Duration(value, (flags & HAS_DOT) != 0, tuplet);
     }
 
-    /** Guitar Pro numera las figuras de -2 (redonda) a 5 (semifusa). */
+    /** Guitar Pro numbers note values from -2 (whole) to 5 (sixty-fourth). */
     private static NoteValue noteValueOf(int encoded) {
         return switch (encoded) {
             case -2 -> NoteValue.WHOLE;
@@ -154,7 +150,7 @@ final class GuitarProBeatReader {
         return read;
     }
 
-    /** El sentido de la pua es un numero: 1 hacia arriba, 2 hacia abajo, 0 ninguno. */
+    /** Pickstroke direction is a number: 1 up, 2 down, 0 none. */
     private static PickstrokeDirection pickstrokeOf(int code) {
         return switch (code) {
             case 1 -> PickstrokeDirection.UP;
@@ -164,8 +160,8 @@ final class GuitarProBeatReader {
     }
 
     /**
-     * En GP3 el vibrato y los armonicos valen para todo el beat y no traen bytes
-     * propios; de GP4 en adelante viven en cada nota. Se los reparte a mano.
+     * In GP3, vibrato and harmonics apply to the whole beat and carry no bytes
+     * of their own; from GP4 on they live on each note. They are spread by hand.
      */
     private record OldOrnaments(boolean vibrato, HarmonicType harmonic) {
 
@@ -196,10 +192,10 @@ final class GuitarProBeatReader {
     }
 
     /**
-     * En GP3 la palanca y el golpe entran por el mismo bit: un byte dice cual de los dos
-     * es -- 0 es la palanca -- y detras van cuatro bytes, la profundidad de la palanca o
-     * un entero que el golpe no usa. De GP4 en adelante ese byte es solo el golpe, y la
-     * palanca pasa a tener bit propio y curva de puntos.
+     * In GP3 the tremolo bar and the slap effect share the same bit: a byte says which of
+     * the two it is -- 0 is the tremolo bar -- followed by four bytes, either the bar depth
+     * or an integer the slap effect does not use. From GP4 on that byte is only the slap
+     * effect, and the tremolo bar gets its own bit and point curve.
      */
     private BeatEffects readSlapOrTremoloBar(
             GuitarProByteReader reader, GuitarProVersion version, BeatEffects effects) {
@@ -224,8 +220,8 @@ final class GuitarProBeatReader {
     }
 
     /**
-     * El rasgueo trae las dos velocidades, la de arriba y la de abajo, y suena en la
-     * direccion de la que no este en cero. GP5 invierte el orden en que las escribe.
+     * The stroke carries both speeds, up and down, and sounds in whichever direction is
+     * not zero. GP5 reverses the order in which it writes them.
      */
     private static BeatEffects readStroke(
             GuitarProByteReader reader, GuitarProVersion version, BeatEffects effects) {
@@ -243,9 +239,9 @@ final class GuitarProBeatReader {
     }
 
     /**
-     * La velocidad es un numero de figura que empieza en la semifusa doble: 1 es 1/128,
-     * 2 es 1/64, y asi hasta 6, que es la negra. Tabpro no llega a 1/128 y la aproxima
-     * con la semifusa, que es lo mas rapido que tiene.
+     * The speed is a note-value number starting at the 128th note: 1 is 1/128, 2 is 1/64,
+     * and so on up to 6, which is the quarter note. Tabpro does not reach 1/128 and
+     * approximates it with the sixty-fourth, its fastest value.
      */
     private static NoteValue strokeSpeed(int encoded) {
         return switch (encoded) {
@@ -269,9 +265,9 @@ final class GuitarProBeatReader {
     }
 
     /**
-     * El cambio de parametros que la mesa de mezcla inserta desde este beat, con el wah del
-     * pedal si lo trae -- solo existe desde GP5. Lo que el cambio no toca viene escrito en -1
-     * y no se lista.
+     * The parameter change the mixing table inserts starting at this beat, with the pedal
+     * wah if it carries one -- this only exists since GP5. Whatever the change does not
+     * touch is written as -1 and left out.
      */
     private static BeatEffects readMixTableChange(GuitarProByteReader reader, GuitarProVersion version, BeatEffects effects) {
         int program = reader.readSignedByte();
@@ -322,14 +318,14 @@ final class GuitarProBeatReader {
     }
 
     /**
-     * Las perillas de la mesa cambian en sus dieciseis pasos, los mismos de la tabla de
-     * canales; el instrumento y el tempo, en cambio, van tal cual.
+     * The mixing-table knobs change in their sixteen steps, the same ones as the channel
+     * table; the instrument and the tempo, on the other hand, go through as is.
      */
     private static ParameterChange changingKnob(ParameterChange change, SoundParameter parameter, int step) {
         return changing(change, parameter, step < 0 ? step : new GuitarProMixerLevel(step).midi());
     }
 
-    /** -2 apagado, -1 sin cambios, 0 a 100 de cerrado a abierto: tabpro solo distingue los tres estados. */
+    /** -2 off, -1 unchanged, 0 to 100 closed to open: tabpro only distinguishes the three states. */
     private static Optional<Wah> wahOf(int value) {
         if (value == WAH_UNCHANGED) {
             return Optional.empty();
@@ -341,9 +337,9 @@ final class GuitarProBeatReader {
     }
 
     /**
-     * El tempo trae su transicion como cualquier otro parametro, pero desde GP5.10 la
-     * sigue una bandera que dice si el cambio se muestra en la partitura. Sin consumirla,
-     * todo lo que viene despues en el archivo queda corrido en un byte.
+     * The tempo carries its transition like any other parameter, but since GP5.10 it is
+     * followed by a flag saying whether the change shows in the score. Without consuming
+     * it, everything that comes after in the file is shifted by one byte.
      */
     private static int readTempoTransition(GuitarProByteReader reader, GuitarProVersion version, int tempo) {
         if (tempo < 0) {
@@ -357,8 +353,8 @@ final class GuitarProBeatReader {
     }
 
     /**
-     * Cada valor que cambia trae cuantos beats tarda en llegar. El modelo maneja
-     * una sola transicion por cambio, asi que se queda con la mas larga.
+     * Each value that changes carries how many beats it takes to arrive. The model
+     * handles a single transition per change, so it keeps the longest one.
      */
     private static int readTransitionDurations(GuitarProByteReader reader, int... changedValues) {
         int longest = 0;
@@ -370,11 +366,11 @@ final class GuitarProBeatReader {
         return longest;
     }
 
-    /** Desde GP4 una mascara dice que parametros valen para todas las pistas y no solo para esta. */
     /**
-     * De esa mascara, "para todas las pistas" son solo los seis bits de las perillas: los
-     * dos de arriba dicen que el cambio usa el RSE y que el wah se muestra en la
-     * partitura, y en un .gp5 estan puestos casi siempre.
+     * Since GP4 a mask says which parameters apply to every track and not just this one.
+     * Of that mask, "every track" is only the six knob bits: the top two say whether the
+     * change uses the RSE and whether the wah shows in the score, and in a .gp5 file they
+     * are set almost always.
      */
     private static boolean readEveryTrackMask(GuitarProByteReader reader, GuitarProVersion version) {
         return version.hasSecondFlagsByte() && (reader.readUnsignedByte() & EVERY_TRACK_KNOBS) != 0;
