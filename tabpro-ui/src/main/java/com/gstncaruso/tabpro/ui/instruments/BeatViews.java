@@ -184,7 +184,7 @@ public final class BeatViews extends JPanel {
                     if (SwingUtilities.isRightMouseButton(e)) {
                         editing.pressKeyAndAdvance(key);
                     } else {
-                        editing.toggleKey(key);
+                        writeKeyNote(editing, key);
                     }
                 });
             }
@@ -198,6 +198,10 @@ public final class BeatViews extends JPanel {
 
     private void writeFretNote(InstrumentEditing editing, Note note) {
         editing.toggleFret(note);
+    }
+
+    private void writeKeyNote(InstrumentEditing editing, int midiNumber) {
+        editing.toggleKey(midiNumber);
     }
 
     private void refresh() {
