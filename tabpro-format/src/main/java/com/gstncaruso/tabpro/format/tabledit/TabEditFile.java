@@ -17,23 +17,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Procedencia del formato: TablEdit tampoco publica una especificacion
- * aparte, asi que el layout binario de este lector sale de leer el codigo
- * fuente de TuxGuitar (github.com/helge17/tuxguitar, LGPL), puntualmente su
- * lector de TEF3 (desktop/TuxGuitar-tef/src/app/tuxguitar/io/tef3/:
- * TEInputStream, TESongParser, TESongReader). De ahi no se copio ni una
- * linea de codigo: se leyo el orden y el tamano de los campos (un hecho del
- * formato, no una expresion con derecho de autor) y se escribio esta
- * implementacion entera de cero, en Java, con el diseno y los nombres del
- * resto de tabpro. A diferencia de PowerTab, los fixtures de test de este
- * lector son sinteticos (armados a mano en {@code TabEditFileWriter}), no
- * archivos de terceros.
+ * Format provenance: TablEdit also publishes no separate specification, so this
+ * reader's binary layout comes from reading the TuxGuitar source code
+ * (github.com/helge17/tuxguitar, LGPL), specifically its TEF3 reader
+ * (desktop/TuxGuitar-tef/src/app/tuxguitar/io/tef3/: TEInputStream, TESongParser,
+ * TESongReader). Not a single line of code was copied from there: the order and size of
+ * the fields were read (a fact of the format, not a copyrightable expression) and this
+ * implementation was written entirely from scratch, in Java, with the design and names
+ * of the rest of tabpro. Unlike PowerTab, this reader's test fixtures are synthetic
+ * (hand-built in {@code TabEditFileWriter}), not third-party files.
  *
- * <p>Abre una partitura de TablEdit (formato TEF3, la unica version que
- * soportamos). El archivo trae, en este orden: el encabezado, los metadatos
- * de la cancion, los acordes (si hay), los compases, las pistas, los datos de
- * impresion, la lista de lectura (si hay) y, al final, la lista de
- * componentes que ubica cada nota y cada silencio.
+ * <p>Opens a TablEdit score (TEF3 format, the only version supported). The file
+ * carries, in this order: the header, the song metadata, the chords (if any), the
+ * measures, the tracks, the print data, the reading list (if any) and, at the end, the
+ * list of components that places each note and each rest.
  */
 public final class TabEditFile {
 
@@ -73,7 +70,7 @@ public final class TabEditFile {
         return assemble(metadata, header, measures, trackHeaders, events);
     }
 
-    /** Los acordes tienen un tamano de registro propio, declarado justo antes de la lista. */
+    /** Chords have their own record size, declared right before the list. */
     private static void skipChordDefinitions(TabEditByteReader input, TabEditHeader header) {
         if (!header.hasChords()) {
             return;
@@ -81,11 +78,11 @@ public final class TabEditFile {
         int chordRecordSize = input.readUnsignedShort();
         int totalChords = input.readUnsignedShort();
         input.skip(chordRecordSize * totalChords);
-        // Los diagramas de acorde no tienen donde vivir en esta primera version del
-        // importador: se descartan, aunque el archivo los traiga.
+        // Chord diagrams have nowhere to live in this first version of the importer:
+        // they are discarded, even when the file carries them.
     }
 
-    /** Datos de paginacion e impresion: no afectan la musica, se descartan enteros. */
+    /** Pagination and print data: they do not affect the music, discarded whole. */
     private static void skipPrintMetadata(TabEditByteReader input) {
         int printDataLength = input.readUnsignedByte();
         input.skip(1);
@@ -97,7 +94,7 @@ public final class TabEditFile {
         }
     }
 
-    /** El orden de lectura de las secciones marcadas: no son repeticiones musicales. */
+    /** The reading order of the marked sections: not musical repeats. */
     private static void skipReadingList(TabEditByteReader input, TabEditHeader header) {
         if (!header.hasReadingList()) {
             return;
@@ -160,7 +157,7 @@ public final class TabEditFile {
         return strings.isEmpty() ? Tuning.standard() : TuningLibrary.identify(strings);
     }
 
-    /** TablEdit guarda pan y volumen en una escala de 0 a 15; el volumen, ademas, al reves. */
+    /** TablEdit stores pan and volume in a 0-to-15 scale; the volume, moreover, reversed. */
     private static Channel channelOf(TabEditTrackHeader header) {
         int volume = Math.clamp((15 - header.volume()) * 127 / 15, 0, Channel.MAX);
         int pan = Math.clamp(header.pan() * 127 / 15, 0, Channel.MAX);
