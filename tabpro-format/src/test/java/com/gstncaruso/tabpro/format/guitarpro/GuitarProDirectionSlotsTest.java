@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class GuitarProDirectionSlotsTest {
 
     @Test
-    void losCincoSimbolosSeLeenEnElOrdenQueMandaElFormato() {
+    void theFiveSymbolsAreReadInTheOrderTheFormatDemands() {
         assertEquals(
                 List.of(
                         DirectionSymbol.CODA,
@@ -25,7 +25,7 @@ class GuitarProDirectionSlotsTest {
     }
 
     @Test
-    void losCatorceSaltosSeLeenEnElOrdenQueMandaElFormato() {
+    void theFourteenJumpsAreReadInTheOrderTheFormatDemands() {
         assertEquals(
                 List.of(
                         DirectionJump.DA_CAPO,
@@ -48,7 +48,7 @@ class GuitarProDirectionSlotsTest {
     }
 
     @Test
-    void sonDiecinueveCasillerosEnTotal() {
+    void thereAreNineteenSlotsInTotal() {
         assertEquals(
                 19,
                 GuitarProHeaderReader.SYMBOL_SLOTS.size() + GuitarProHeaderReader.JUMP_SLOTS.size(),
@@ -57,7 +57,7 @@ class GuitarProDirectionSlotsTest {
     }
 
     @Test
-    void cadaDireccionDelModeloTieneSuCasillero() {
+    void eachDirectionInTheModelHasItsSlot() {
         assertEquals(
                 DirectionSymbol.values().length,
                 GuitarProHeaderReader.SYMBOL_SLOTS.size(),
