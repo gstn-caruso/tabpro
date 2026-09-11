@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -37,7 +38,7 @@ public final class ScalesDialog {
 
     public static void show(Component parent, Editor editor, Player player, ChosenScale chosen) {
         Panel panel = new Panel(editor, player, chosen);
-        DialogShell.show(parent, "Escalas", panel);
+        DialogShell.show(parent, Texts.get("views.ScalesDialog.title"), panel);
     }
 
     static final class Panel extends JPanel {
@@ -62,11 +63,11 @@ public final class ScalesDialog {
             fromMeasure = new JSpinner(new SpinnerNumberModel(1, 1, lastMeasure, 1));
             toMeasure = new JSpinner(new SpinnerNumberModel(lastMeasure, 1, lastMeasure, 1));
             tonics.setCellRenderer(new LabeledListCellRenderer());
-            tonics.getAccessibleContext().setAccessibleName("Tonalidad");
-            tonics.setToolTipText("Tonalidad");
+            tonics.getAccessibleContext().setAccessibleName(Texts.get("views.ScalesDialog.tonality"));
+            tonics.setToolTipText(Texts.get("views.ScalesDialog.tonality"));
             scales.setCellRenderer(new LabeledListCellRenderer());
-            scales.getAccessibleContext().setAccessibleName("Escala");
-            scales.setToolTipText("Escala");
+            scales.getAccessibleContext().setAccessibleName(Texts.get("views.ScalesDialog.scale"));
+            scales.setToolTipText(Texts.get("views.ScalesDialog.scale"));
             PitchClasses.chromatic().forEach(tonicsModel::addElement);
             ScaleLibrary.all().forEach(scalesModel::addElement);
             tonics.setSelectedValue(chosen.tonic().orElseGet(() -> PitchClass.of("C")), true);
@@ -91,14 +92,14 @@ public final class ScalesDialog {
 
         private JPanel chooserZone() {
             JPanel zone = new JPanel(new GridLayout(1, 0, 8, 0));
-            zone.add(labelled("Tonalidad", new JScrollPane(tonics)));
-            zone.add(labelled("Escala", new JScrollPane(scales)));
+            zone.add(labelled(Texts.get("views.ScalesDialog.tonality"), new JScrollPane(tonics)));
+            zone.add(labelled(Texts.get("views.ScalesDialog.scale"), new JScrollPane(scales)));
             return zone;
         }
 
         private JPanel degreesZone() {
             JPanel zone = new JPanel(new BorderLayout());
-            zone.setBorder(BorderFactory.createTitledBorder("Grados de la escala"));
+            zone.setBorder(BorderFactory.createTitledBorder(Texts.get("views.ScalesDialog.scaleDegreesSection")));
             zone.add(listenBar(), BorderLayout.NORTH);
             zone.add(degrees, BorderLayout.CENTER);
             return zone;
@@ -107,8 +108,8 @@ public final class ScalesDialog {
         private JPanel listenBar() {
             JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             JButton listen = new JButton(Icons.play());
-            listen.setToolTipText("Escuchar la escala");
-            listen.getAccessibleContext().setAccessibleName("Escuchar");
+            listen.setToolTipText(Texts.get("views.ScalesDialog.listenTooltip"));
+            listen.getAccessibleContext().setAccessibleName(Texts.get("views.ScalesDialog.listen"));
             listen.addActionListener(event -> listenToScale());
             bar.add(listen);
             return bar;
@@ -123,18 +124,18 @@ public final class ScalesDialog {
 
         private JPanel finderZone() {
             JPanel zone = new JPanel(new BorderLayout(8, 8));
-            zone.setBorder(BorderFactory.createTitledBorder("Buscar la escala de la partitura"));
+            zone.setBorder(BorderFactory.createTitledBorder(Texts.get("views.ScalesDialog.findScaleSection")));
             JPanel range = new JPanel(new GridLayout(1, 0, 8, 0));
-            range.add(labelled("Desde el compás", fromMeasure));
-            range.add(labelled("Hasta el compás", toMeasure));
-            JButton find = new JButton("Buscar");
+            range.add(labelled(Texts.get("views.ScalesDialog.fromBar"), fromMeasure));
+            range.add(labelled(Texts.get("views.ScalesDialog.toBar"), toMeasure));
+            JButton find = new JButton(Texts.get("views.ScalesDialog.find"));
             find.addActionListener(event -> findScales());
             range.add(find);
             zone.add(range, BorderLayout.NORTH);
 
             JList<ScaleMatch> list = new JList<>(matches);
-            list.getAccessibleContext().setAccessibleName("Escalas encontradas");
-            list.setToolTipText("Escalas encontradas");
+            list.getAccessibleContext().setAccessibleName(Texts.get("views.ScalesDialog.matchesFound"));
+            list.setToolTipText(Texts.get("views.ScalesDialog.matchesFound"));
             list.setCellRenderer(new javax.swing.DefaultListCellRenderer() {
 
                 @Override

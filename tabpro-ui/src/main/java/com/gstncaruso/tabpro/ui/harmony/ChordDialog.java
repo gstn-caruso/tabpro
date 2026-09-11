@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -49,7 +50,7 @@ public final class ChordDialog {
                 editor.currentBeat(), editor.currentTrack().tuning(), showBassInChordName, FingeringMemory.userMemory());
         ChordLibrary library = ChordLibrary.userLibrary();
         Panel panel = new Panel(model, library, editor, player);
-        if (DialogShell.ask(parent, "Acorde", panel)) {
+        if (DialogShell.ask(parent, Texts.get("views.ChordDialog.title"), panel)) {
             model.applyTo(editor);
         }
     }
@@ -68,8 +69,8 @@ public final class ChordDialog {
         private final Map<ChordComplexity, JRadioButton> complexityButtons = new EnumMap<>(ChordComplexity.class);
         private final Map<BarrePreference, JRadioButton> barreButtons = new EnumMap<>(BarrePreference.class);
         private final JTextField name = new JTextField(12);
-        private final JCheckBox useDiagram = new JCheckBox("Usar diagrama", true);
-        private final JCheckBox showFingering = new JCheckBox("Digitación", true);
+        private final JCheckBox useDiagram = new JCheckBox(Texts.get("views.ChordDialog.useDiagram"), true);
+        private final JCheckBox showFingering = new JCheckBox(Texts.get("views.ChordDialog.fingering"), true);
         private final ChordDiagramCanvas canvas = new ChordDiagramCanvas();
         private final JScrollBar baseFret = new JScrollBar(JScrollBar.VERTICAL, 1, 1, 1, Tuning.MAX_FRET + 1);
         private final JPanel omitChecks = new JPanel();
@@ -92,12 +93,12 @@ public final class ChordDialog {
             basses.setRenderer(new LabeledListCellRenderer());
             types.setRenderer(new LabeledListCellRenderer());
             inversions.setRenderer(inversionRenderer());
-            name.getAccessibleContext().setAccessibleName("Nombre del acorde");
-            name.setToolTipText("Nombre del acorde");
-            baseFret.getAccessibleContext().setAccessibleName("Traste base");
-            baseFret.setToolTipText("Traste base");
+            name.getAccessibleContext().setAccessibleName(Texts.get("views.ChordDialog.chordName"));
+            name.setToolTipText(Texts.get("views.ChordDialog.chordName"));
+            baseFret.getAccessibleContext().setAccessibleName(Texts.get("views.ChordDialog.baseFret"));
+            baseFret.setToolTipText(Texts.get("views.ChordDialog.baseFret"));
             omitChecks.setLayout(new BoxLayout(omitChecks, BoxLayout.Y_AXIS));
-            omitChecks.setBorder(BorderFactory.createTitledBorder("Omitir"));
+            omitChecks.setBorder(BorderFactory.createTitledBorder(Texts.get("views.ChordDialog.omit")));
             setLayout(new BorderLayout(10, 10));
             add(constructionZone(), BorderLayout.WEST);
             add(mainDiagramZone(), BorderLayout.CENTER);
@@ -108,13 +109,13 @@ public final class ChordDialog {
         }
 
         private JPanel constructionZone() {
-            JPanel zone = titled("Acorde");
-            zone.add(labelled("Fundamental", roots));
-            zone.add(labelled("Tipo", types));
-            zone.add(labelled("Inversión", inversions));
-            zone.add(labelled("Bajo", basses));
-            zone.add(labelled("Posiciones", complexityChoice()));
-            zone.add(labelled("Cejilla", barreChoice()));
+            JPanel zone = titled(Texts.get("views.ChordDialog.chordSection"));
+            zone.add(labelled(Texts.get("views.ChordDialog.fundamental"), roots));
+            zone.add(labelled(Texts.get("views.ChordDialog.type"), types));
+            zone.add(labelled(Texts.get("views.ChordDialog.inversion"), inversions));
+            zone.add(labelled(Texts.get("views.ChordDialog.bass"), basses));
+            zone.add(labelled(Texts.get("views.ChordDialog.positions"), complexityChoice()));
+            zone.add(labelled(Texts.get("views.ChordDialog.barre"), barreChoice()));
             return zone;
         }
 
@@ -146,7 +147,7 @@ public final class ChordDialog {
 
         private JPanel mainDiagramZone() {
             JPanel zone = new JPanel(new BorderLayout(6, 6));
-            zone.setBorder(BorderFactory.createTitledBorder("Diagrama"));
+            zone.setBorder(BorderFactory.createTitledBorder(Texts.get("views.ChordDialog.diagramSection")));
             zone.add(name, BorderLayout.NORTH);
             zone.add(canvas, BorderLayout.CENTER);
             zone.add(baseFret, BorderLayout.WEST);
@@ -159,11 +160,11 @@ public final class ChordDialog {
             JPanel controls = new JPanel(new GridLayout(0, 1, 4, 4));
             controls.add(useDiagram);
             controls.add(showFingering);
-            JButton listen = new JButton("Escuchar");
+            JButton listen = new JButton(Texts.get("views.ChordDialog.listen"));
             listen.addActionListener(event -> ChordSound.play(
                     model.current(), model.tuning(), player, editor.currentTrack().channel().program()));
             controls.add(listen);
-            JButton clear = new JButton("Sacar el acorde del beat");
+            JButton clear = new JButton(Texts.get("views.ChordDialog.clearChord"));
             clear.addActionListener(event -> {
                 editor.setChord(null);
                 model.setUseDiagram(false);
@@ -177,9 +178,9 @@ public final class ChordDialog {
             zone.setLayout(new BoxLayout(zone, BoxLayout.Y_AXIS));
             JList<Chord> alternativeNames = new JList<>(alternatives);
             alternativeNames.setCellRenderer(new LabeledListCellRenderer());
-            zone.add(namedList("Nombres alternativos", alternativeNames, 90));
+            zone.add(namedList(Texts.get("views.ChordDialog.alternativeNames"), alternativeNames, 90));
             zone.add(Box.createVerticalStrut(6));
-            zone.add(namedList("Usados en la pista", diagramList(used), 90));
+            zone.add(namedList(Texts.get("views.ChordDialog.usedInTrack"), diagramList(used), 90));
             zone.add(Box.createVerticalStrut(6));
             zone.add(libraryZone());
             return zone;
@@ -188,30 +189,30 @@ public final class ChordDialog {
         private JPanel libraryZone() {
             JPanel zone = new JPanel(new BorderLayout(4, 4));
             JList<ChordDiagram> list = diagramList(saved);
-            zone.add(namedList("Biblioteca", list, 90), BorderLayout.CENTER);
+            zone.add(namedList(Texts.get("views.ChordDialog.library"), list, 90), BorderLayout.CENTER);
             JPanel buttons = new JPanel(new GridLayout(1, 0, 4, 0));
             JButton add = new JButton("+");
-            add.getAccessibleContext().setAccessibleName("Agregar a la biblioteca");
+            add.getAccessibleContext().setAccessibleName(Texts.get("views.ChordDialog.addToLibrary"));
             add.addActionListener(event -> {
                 library.add(model.current());
                 refreshLists();
             });
             JButton remove = new JButton("−");
-            remove.getAccessibleContext().setAccessibleName("Quitar de la biblioteca");
+            remove.getAccessibleContext().setAccessibleName(Texts.get("views.ChordDialog.removeFromLibrary"));
             remove.addActionListener(event -> {
                 if (list.getSelectedIndex() >= 0) {
                     library.remove(list.getSelectedIndex());
                     refreshLists();
                 }
             });
-            JButton update = new JButton("Actualizar");
+            JButton update = new JButton(Texts.get("views.ChordDialog.update"));
             update.addActionListener(event -> {
                 if (list.getSelectedIndex() >= 0) {
                     library.update(list.getSelectedIndex(), model.current());
                     refreshLists();
                 }
             });
-            JButton sort = new JButton("Ordenar");
+            JButton sort = new JButton(Texts.get("views.ChordDialog.sort"));
             sort.addActionListener(event -> {
                 library.sortByName();
                 refreshLists();
@@ -226,8 +227,8 @@ public final class ChordDialog {
 
         private JScrollPane candidatesZone() {
             JList<ChordDiagram> list = diagramList(candidates);
-            list.getAccessibleContext().setAccessibleName("Posiciones");
-            list.setToolTipText("Posiciones");
+            list.getAccessibleContext().setAccessibleName(Texts.get("views.ChordDialog.positions"));
+            list.setToolTipText(Texts.get("views.ChordDialog.positions"));
             list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
             list.setVisibleRowCount(1);
             list.addListSelectionListener(event -> {
@@ -237,7 +238,7 @@ public final class ChordDialog {
                 }
             });
             JScrollPane scroll = new JScrollPane(list);
-            scroll.setBorder(BorderFactory.createTitledBorder("Posiciones"));
+            scroll.setBorder(BorderFactory.createTitledBorder(Texts.get("views.ChordDialog.positions")));
             scroll.setPreferredSize(new Dimension(640, 70));
             return scroll;
         }
@@ -334,7 +335,7 @@ public final class ChordDialog {
 
         private String inversionLabel(Interval degree) {
             if (degree == Interval.ROOT) {
-                return "Fundamental";
+                return Texts.get("views.ChordDialog.fundamental");
             }
             PitchClass note = degree.from(model.selection().root());
             return note.name() + " (" + Labels.of(degree) + ")";

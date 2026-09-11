@@ -6,10 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.harmony.Interval;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.ScaleTone;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class ScaleDegreesViewTest {
+
+    @Test
+    void theAccessibleNameIsAvailableInEnglish() {
+        assertEquals("Scale Degrees", Texts.forLocale(Locale.ENGLISH).text("views.ScaleDegreesView.name"));
+    }
 
     @Test
     void withoutAChosenScaleThereIsNoDegreeToPaint() {

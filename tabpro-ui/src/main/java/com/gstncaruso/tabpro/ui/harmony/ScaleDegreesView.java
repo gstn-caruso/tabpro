@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.harmony;
 
 import com.gstncaruso.tabpro.core.harmony.ScaleTone;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -25,8 +26,8 @@ public final class ScaleDegreesView extends JComponent {
         setOpaque(true);
         setBackground(ChordDiagramColors.BACKGROUND);
         setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
-        setToolTipText("Grados de la escala");
-        getAccessibleContext().setAccessibleName("Grados de la escala");
+        setToolTipText(Texts.get("views.ScaleDegreesView.name"));
+        getAccessibleContext().setAccessibleName(Texts.get("views.ScaleDegreesView.name"));
     }
 
     public void show(List<ScaleTone> tones) {
