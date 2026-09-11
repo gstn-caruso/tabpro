@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class MetronomePanelTest {
@@ -11,6 +13,14 @@ class MetronomePanelTest {
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new MetronomePanel(120, new MetronomeSettings(true, 80)));
+    }
+
+    @Test
+    void theActiveCheckboxAndVolumeLabelAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Metronome Active", english.text("score_dialogs.MetronomePanel.active"));
+        assertEquals("Volume", english.text("score_dialogs.MetronomePanel.volume"));
     }
 
     @Test

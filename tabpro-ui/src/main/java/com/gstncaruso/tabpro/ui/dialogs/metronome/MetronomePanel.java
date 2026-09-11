@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.metronome;
 
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -8,14 +9,14 @@ import javax.swing.SpinnerNumberModel;
 
 public final class MetronomePanel extends FormPanel {
 
-    private final JCheckBox active = new JCheckBox("Metrónomo activado");
+    private final JCheckBox active = new JCheckBox(Texts.get("score_dialogs.MetronomePanel.active"));
     private final JSpinner tempo = new JSpinner(new SpinnerNumberModel(120, 1, 400, 1));
     private final JSlider volume = new JSlider(MetronomeSettings.MIN_VOLUME, MetronomeSettings.MAX_VOLUME, 100);
 
     public MetronomePanel(int currentTempo, MetronomeSettings settings) {
         addFullWidthRow(active);
-        addRow("Tempo (BPM)", tempo);
-        addRow("Volumen", volume);
+        addRow(Texts.get("score_dialogs.MetronomePanel.tempo"), tempo);
+        addRow(Texts.get("score_dialogs.MetronomePanel.volume"), volume);
         apply(currentTempo, settings);
     }
 
