@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.format.exchange.ascii;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -22,6 +23,12 @@ import java.util.TreeMap;
 
 public final class AsciiTabImporter {
 
+    private final DefaultNames names;
+
+    public AsciiTabImporter(DefaultNames names) {
+        this.names = names;
+    }
+
     public Score importScore(Path path, AsciiTabImportOptions options) {
         try {
             return importScore(Files.readString(path), options);
@@ -39,7 +46,7 @@ public final class AsciiTabImporter {
             List<List<List<String>>> tracks = groupIntoTracks(blocks);
             List<Track> result = new ArrayList<>();
             for (int index = 0; index < tracks.size(); index++) {
-                result.add(trackFrom(tracks.get(index), index, options));
+                result.add(trackFrom(tracks.get(index), index, options, names));
             }
             return new Score("", 120, result);
         } catch (IllegalArgumentException e) {
@@ -74,12 +81,12 @@ public final class AsciiTabImporter {
         return tracks;
     }
 
-    private static Track trackFrom(List<List<String>> blocks, int index, AsciiTabImportOptions options) {
+    private static Track trackFrom(List<List<String>> blocks, int index, AsciiTabImportOptions options, DefaultNames names) {
         int stringCount = blocks.getFirst().size();
         List<Measure> measures = measuresFrom(blocks, options);
         Tuning tuning = tuningForStringCount(stringCount);
         int program = tuning.equals(Tuning.standardBass()) ? Track.BASS_PROGRAM : Track.GUITAR_PROGRAM;
-        return new Track("Pista " + (index + 1), tuning, Channel.playing(program), measures);
+        return new Track(names.track(index + 1), tuning, Channel.playing(program), measures);
     }
 
     private static List<Measure> measuresFrom(List<List<String>> blocks, AsciiTabImportOptions options) {

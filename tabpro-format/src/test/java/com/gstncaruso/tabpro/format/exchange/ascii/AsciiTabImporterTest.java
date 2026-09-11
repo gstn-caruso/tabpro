@@ -9,9 +9,11 @@ import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 class AsciiTabImporterTest {
 
-    private final AsciiTabImporter importer = new AsciiTabImporter();
+    private final DefaultNames names = new TestDefaultNames();
+    private final AsciiTabImporter importer = new AsciiTabImporter(names);
 
     @Test
     void ignoresCommentsAroundTheTabAndReadsTwoNotesWithAFixedRhythm() {
@@ -35,6 +38,15 @@ class AsciiTabImporterTest {
         assertEquals(new Duration(NoteValue.EIGHTH, false), first.duration());
         assertEquals(List.of(new Note(1, 5)), first.notes());
         assertEquals(List.of(new Note(1, 0)), second.notes());
+    }
+
+    @Test
+    void namesEachTrackFromTheInjectedDefaultNames() {
+        String text = block(6, "--5--0--");
+
+        Score score = importer.importScore(text, AsciiTabImportOptions.standard());
+
+        assertEquals(names.track(1), score.track(0).name());
     }
 
     @Test
