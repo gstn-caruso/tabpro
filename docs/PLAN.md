@@ -553,6 +553,8 @@ three waves; slices in the same wave run in parallel because they share no files
 | 4.9 | `defaults` | default track and chord names and `PageElement` defaults, handed to importers and `Score.blank()` from the app | C |
 | 4.10 | — | the switch (`feat`): `Language` preference, resolution, `Locale.setDefault`, English mnemonic collisions, `AccentedLiteralsTest` on the `_es` files, guardian against Spanish UI literals in Java | C |
 
+Waves as run: A = 4.2 + 4.3; B = 4.4 + 4.5; C = 4.7 + 4.8; D = 4.6 + 4.9 (4.6 needs 4.8's `ErrorTexts`, 4.9 touches importers that 4.8 edits); E = 4.10. Slice 4.10 must install the language before any UI class loads, because `ScoreDocument.UNTITLED` is resolved at class load.
+
 ### How to resume without context
 
 Read this section and the table below, then take the first row that is not
@@ -584,6 +586,15 @@ their changes touch the same lines.
 | 2 · format identifiers and test names | `test/format-english-names` | #210 | merged |
 | 3 · midi, core, rest of ui, ui/dialogs, app, ui/score group | `refactor/*-internal-strings-in-english` | #209, #211, #212, #213, #214, #215 | merged |
 | 3 · format, with `StrokeDto.rasgueado` → `strummed` keeping its JSON key | `refactor/format-internal-strings-in-english` | #216 | merged |
-| 4.1 · `Texts`, area bundles, `DialogShell` buttons | `refactor/i18n-infrastructure` | — | in progress |
-| 4.2–4.10 · see the refined slices above | — | — | pending |
-| 5 · docs in English | — | — | pending |
+| 4.1 · `Texts`, area bundles, `DialogShell` buttons (a locale-dependent test fixed with `@Isolated`) | `refactor/i18n-infrastructure` | #218 | merged |
+| CI · `tests.locale` property, suite runs under es_ES too | `ci/test-suite-under-both-locales` | #219 | merged |
+| 4.2 · `menus`: 238 keys (commands, menu bar, toolbars) | `refactor/i18n-menus` | #220 | merged |
+| 4.3 · `domain`: 18 core and 8 ui enums lose `label()`, 154 keys | `refactor/i18n-domain-labels` | #221 | merged |
+| 4.5 · `edit_dialogs`: effects, note, measure, markers, paste, instrument, help, 77 keys | `refactor/i18n-edit-dialogs` | #223 | merged |
+| 4.4 · `library`: `TuningName` (library/user/custom), scale and GM ids, 146 keys; `.tabpro` keeps storing the Spanish tuning name | `refactor/i18n-library-names` | #224 | merged |
+| 4.7 · `views` | `refactor/i18n-views` | — | in progress |
+| 4.8 · `window`, structured `ScoreFileException` problems | `refactor/i18n-window-and-errors` | — | in progress |
+| 4.6, 4.9, 4.10 | — | — | pending (wave D after 4.7 and 4.8, then the switch) |
+| test · deterministic multi-port seek in `MidiPlayerTest` (flaked in the es_ES run) | `test/midi-deterministic-multi-port-seek` | — | in progress |
+| 5 · audits and fixture READMEs in English, renamed `docs/audit-*.md` | `docs/audits-in-english` | #222 | merged |
+| 5 · README and this plan in English | — | — | pending (after 4.10) |
