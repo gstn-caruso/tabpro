@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format.guitarpro;
 
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.ScoreColor;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
@@ -31,12 +32,15 @@ final class GuitarProMeasureAttributesReader {
     private KeySignature keySignature;
     private int roundsAlreadyTaken;
     private final TripletFeel defaultTripletFeel;
+    private final DefaultNames names;
 
     GuitarProMeasureAttributesReader(
-            TimeSignature initialTimeSignature, KeySignature initialKeySignature, TripletFeel defaultTripletFeel) {
+            TimeSignature initialTimeSignature, KeySignature initialKeySignature, TripletFeel defaultTripletFeel,
+            DefaultNames names) {
         this.timeSignature = initialTimeSignature;
         this.keySignature = initialKeySignature;
         this.defaultTripletFeel = defaultTripletFeel;
+        this.names = names;
     }
 
     GuitarProMasterBar read(GuitarProByteReader reader, GuitarProVersion version, boolean isFirstMeasure) {

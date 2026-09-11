@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ class GuitarProMeasureAttributesReaderTest {
     private static final int OPENS_REPEAT = 0x04;
 
     private final GuitarProMeasureAttributesReader reader = new GuitarProMeasureAttributesReader(
-            TimeSignature.fourFour(), KeySignature.cMajor(), TripletFeel.NONE);
+            TimeSignature.fourFour(), KeySignature.cMajor(), TripletFeel.NONE, new TestDefaultNames());
 
     @Test
     void beforeGp5TheByteSaysHowFarTheEndingGoes() {

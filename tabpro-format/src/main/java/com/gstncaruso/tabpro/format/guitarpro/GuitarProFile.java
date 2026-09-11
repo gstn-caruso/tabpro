@@ -36,10 +36,12 @@ public final class GuitarProFile {
     private final GuitarProChannelReader channelReader = new GuitarProChannelReader();
     private final GuitarProTrackReader trackReader;
     private final GuitarProBeatReader beatReader;
+    private final DefaultNames names;
 
     public GuitarProFile(DefaultNames names) {
         this.trackReader = new GuitarProTrackReader(names);
         this.beatReader = new GuitarProBeatReader(names);
+        this.names = names;
     }
 
     public Score read(Path path) {
@@ -63,7 +65,8 @@ public final class GuitarProFile {
         GuitarProMeasureAttributesReader measureReader = new GuitarProMeasureAttributesReader(
                 com.gstncaruso.tabpro.core.model.TimeSignature.fourFour(),
                 header.keySignature(),
-                header.globalTripletFeel().orElse(com.gstncaruso.tabpro.core.model.bars.TripletFeel.NONE));
+                header.globalTripletFeel().orElse(com.gstncaruso.tabpro.core.model.bars.TripletFeel.NONE),
+                names);
         List<GuitarProMasterBar> bars = withDirections(
                 readMasterBars(measureReader, reader, version, measureCount), directions);
         List<GuitarProTrackHeader> trackHeaders = readTrackHeaders(reader, version, trackCount);
