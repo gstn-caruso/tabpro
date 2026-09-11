@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.dialogs.instrument;
 
 import com.gstncaruso.tabpro.core.model.InstrumentPatch;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -29,10 +30,10 @@ public final class InstrumentPanel extends JPanel {
         DialogStyle.padded(this);
         list.setCellRenderer((jlist, program, index, isSelected, hasFocus) ->
                 new javax.swing.JLabel(program + " - " + patch.nameOf(program)));
-        search.getAccessibleContext().setAccessibleName("Buscar instrumento");
-        search.setToolTipText("Buscar instrumento");
-        list.getAccessibleContext().setAccessibleName("Instrumentos");
-        list.setToolTipText("Instrumentos");
+        search.getAccessibleContext().setAccessibleName(Texts.get("edit_dialogs.InstrumentPanel.search"));
+        search.setToolTipText(Texts.get("edit_dialogs.InstrumentPanel.search"));
+        list.getAccessibleContext().setAccessibleName(Texts.get("edit_dialogs.InstrumentPanel.list"));
+        list.setToolTipText(Texts.get("edit_dialogs.InstrumentPanel.list"));
 
         add(search, BorderLayout.NORTH);
         add(new JScrollPane(list), BorderLayout.CENTER);
