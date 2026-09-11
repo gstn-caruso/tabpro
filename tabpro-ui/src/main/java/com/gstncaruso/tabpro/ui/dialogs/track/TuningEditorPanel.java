@@ -199,13 +199,13 @@ public final class TuningEditorPanel extends JPanel {
         rebuildRows();
     }
 
-    public void selectFromLibrary(String tuningName) {
+    public void selectFromLibrary(Tuning libraryTuning) {
         for (int index = 0; index < library.getItemCount(); index++) {
-            if (library.getItemAt(index).name().equals(tuningName)) {
+            if (library.getItemAt(index).equals(libraryTuning)) {
                 library.setSelectedIndex(index);
                 return;
             }
         }
-        throw new IllegalArgumentException("not in the current family: " + tuningName);
+        throw new IllegalArgumentException("not in the current family: " + libraryTuning);
     }
 }

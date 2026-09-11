@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.dialogs.RecordingPlayer;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Component;
 import javax.swing.JComboBox;
@@ -49,26 +50,30 @@ class TuningEditorPanelTest {
         TuningEditorPanel panel = new TuningEditorPanel(Tuning.standardBass(), 33, player);
 
         panel.switchToBasses();
-        panel.selectFromLibrary("Bajo Drop D");
+        panel.selectFromLibrary(libraryTuningLabeled("Bajo Drop D (DADG)"));
 
-        assertEquals("Bajo Drop D", panel.toTuning().name());
+        assertEquals("Bajo Drop D (DADG)", Labels.of(panel.toTuning()));
     }
 
     @Test
     void pickingFromTheLibraryReplacesTheTuning() {
         TuningEditorPanel panel = new TuningEditorPanel(Tuning.standard(), 25, player);
+        Tuning dropD = libraryTuningLabeled("Drop D (DADGBE)");
 
-        panel.selectFromLibrary("Drop D");
+        panel.selectFromLibrary(dropD);
 
-        assertEquals(TuningLibrary.guitars().stream().filter(t -> t.name().equals("Drop D")).findFirst().orElseThrow(),
-                panel.toTuning());
+        assertEquals(dropD, panel.toTuning());
     }
 
     @Test
     void aTuningOutsideTheCurrentFamilyIsRejected() {
         TuningEditorPanel panel = new TuningEditorPanel(Tuning.standard(), 25, player);
 
-        assertThrows(IllegalArgumentException.class, () -> panel.selectFromLibrary("Bajo estándar"));
+        assertThrows(IllegalArgumentException.class, () -> panel.selectFromLibrary(TuningLibrary.standardBass()));
+    }
+
+    private static Tuning libraryTuningLabeled(String label) {
+        return TuningLibrary.all().stream().filter(tuning -> Labels.of(tuning).equals(label)).findFirst().orElseThrow();
     }
 
     @Test
