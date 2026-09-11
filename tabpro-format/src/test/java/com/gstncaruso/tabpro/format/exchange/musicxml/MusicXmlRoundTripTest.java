@@ -1,8 +1,11 @@
 package com.gstncaruso.tabpro.format.exchange.musicxml;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -112,8 +115,41 @@ class MusicXmlRoundTripTest {
         Path file = folder.resolve("broken.musicxml");
         Files.writeString(file, "this is not xml");
 
-        org.junit.jupiter.api.Assertions.assertThrows(
-                com.gstncaruso.tabpro.core.files.ScoreFileException.class, () -> importer.importScore(file));
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> importer.importScore(file));
+
+        assertEquals(ScoreFileProblem.NOT_RECOGNIZED, failure.problem());
+        assertEquals(List.of("MusicXML"), failure.arguments());
+    }
+
+    @Test
+    void aMissingFileIsReportedWithItsPath(@TempDir Path folder) {
+        Path file = folder.resolve("missing.musicxml");
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> importer.importScore(file));
+
+        assertEquals(ScoreFileProblem.CANNOT_READ, failure.problem());
+        assertEquals(List.of(file), failure.arguments());
+    }
+
+    @Test
+    void aScoreWithoutPartsHasNothingToImport(@TempDir Path folder) throws Exception {
+        Path file = folder.resolve("empty.musicxml");
+        Files.writeString(file, "<score-partwise version=\"3.1\"></score-partwise>");
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> importer.importScore(file));
+
+        assertEquals(ScoreFileProblem.NOTHING_TO_IMPORT, failure.problem());
+    }
+
+    @Test
+    void aFileThatCannotBeWrittenIsReportedWithItsPath(@TempDir Path folder) {
+        Path file = folder.resolve("missing-folder").resolve("test.musicxml");
+        Score score = scoreWithMeasures(measureInC());
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> exporter.export(score, file));
+
+        assertEquals(ScoreFileProblem.CANNOT_WRITE, failure.problem());
+        assertEquals(List.of(file), failure.arguments());
     }
 
     @Test
