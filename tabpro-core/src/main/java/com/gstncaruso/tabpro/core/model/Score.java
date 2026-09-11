@@ -24,7 +24,7 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
             throw new IllegalArgumentException("a score needs at least one track");
         }
         if (tracks.size() > MAX_TRACKS) {
-            throw new IllegalArgumentException("a score allows up to " + MAX_TRACKS + " pistas");
+            throw new IllegalArgumentException("a score allows up to " + MAX_TRACKS + " tracks");
         }
         tracks = List.copyOf(tracks);
     }
