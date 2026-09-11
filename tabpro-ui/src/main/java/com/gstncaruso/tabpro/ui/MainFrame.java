@@ -1036,6 +1036,7 @@ public final class MainFrame extends JFrame {
                 preferences.setInterfaceFontSize(updated.interfaceFontSize());
                 preferences.setHighContrastEnabled(updated.highContrastEnabled());
                 preferences.setAnimationsDisabled(updated.animationsDisabled());
+                preferences.setInterfaceLanguage(updated.interfaceLanguage());
                 AccessibilitySettings.applyFrom(preferences, themes);
             });
             backToTheScore();

@@ -40,4 +40,21 @@ class InterfaceLanguagePreferenceAuditTest {
             AuditSupport.dispose(frame);
         }
     }
+
+    @Test
+    void acceptingEnglishStoresItAsTheInterfaceLanguage() throws Exception {
+        MainFrame frame = AuditSupport.newFrame(AuditSupport.blankEditor());
+        try {
+            JMenuItem preferencesItem = AuditSupport.findMenuItem(frame.getJMenuBar(), "Preferencias…");
+            AuditSupport.withDialog(preferencesItem::doClick, dialog -> {
+                PreferencesPanel panel = AuditSupport.findComponent(dialog, PreferencesPanel.class);
+                panel.apply(panel.toPreferences().withInterfaceLanguage(Language.ENGLISH));
+                AuditSupport.findButton(dialog, "Aceptar").doClick();
+            });
+
+            assertEquals(Language.ENGLISH, new Preferences().interfaceLanguage());
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
 }
