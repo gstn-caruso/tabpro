@@ -57,6 +57,14 @@ class LibraryLabelsTest {
     }
 
     @Test
+    void aLibraryTuningIsLabeledInSpanishAndNamedInEnglishThroughItsId() {
+        Tuning standardGuitar = TuningLibrary.standardGuitar();
+
+        assertEquals("Guitarra estándar (EADGBE)", Labels.of(standardGuitar));
+        assertEquals("Standard Guitar", ENGLISH.text("library.tuning." + libraryIdOf(standardGuitar)));
+    }
+
+    @Test
     void anEditedTuningIsLabeledAsCustomInSpanish() {
         assertEquals("Personalizada (DADGBE)", Labels.of(Tuning.standard().withStringPitch(6, new Pitch(38))));
     }
