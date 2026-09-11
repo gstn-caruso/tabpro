@@ -8,7 +8,9 @@ import com.gstncaruso.tabpro.ui.page.PageBanner;
 import com.gstncaruso.tabpro.ui.page.PageElement;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class PageSetupPanelTest {
@@ -16,6 +18,14 @@ class PageSetupPanelTest {
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new PageSetupPanel(PageSetup.defaults()));
+    }
+
+    @Test
+    void theMarginsSectionAndScoreSizeLabelAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Margins (mm)", english.text("score_dialogs.PageSetupPanel.margins"));
+        assertEquals("Score Size (%)", english.text("score_dialogs.PageSetupPanel.scorePercent"));
     }
 
     @Test
