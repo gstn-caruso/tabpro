@@ -15,13 +15,14 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class GuitarProExporterFixtureRoundTripTest {
 
-    private final GuitarProFile files = new GuitarProFile();
+    private final GuitarProFile files = new GuitarProFile(new TestDefaultNames());
     private final GuitarProExporter exporter = new GuitarProExporter();
 
     private Score roundTrip(Score original) {

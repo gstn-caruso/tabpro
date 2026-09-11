@@ -14,8 +14,8 @@ import javax.swing.UIManager;
 
 public final class Theme implements ThemeSwitch {
 
-    public static final String DARK = "Oscuro";
-    public static final String LIGHT = "Claro";
+    public static final String DARK = "dark";
+    public static final String LIGHT = "light";
 
     private static final Color WARNING = new Color(0xE05C5C);
 

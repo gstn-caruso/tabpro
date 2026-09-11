@@ -12,13 +12,14 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class AsciiTabRoundTripTest {
 
     private final AsciiTabExporter exporter = new AsciiTabExporter();
-    private final AsciiTabImporter importer = new AsciiTabImporter();
+    private final AsciiTabImporter importer = new AsciiTabImporter(new TestDefaultNames());
 
     @Test
     void aTrackWithoutRestsRoundTripsExactlyThroughSpacing() {

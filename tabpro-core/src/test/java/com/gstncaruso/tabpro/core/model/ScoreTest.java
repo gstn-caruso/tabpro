@@ -22,6 +22,13 @@ class ScoreTest {
     }
 
     @Test
+    void aBlankScoreNamesItsTrackFromTheInjectedDefaultNames() {
+        DefaultNames names = new TestDefaultNames();
+        Score score = Score.blank(names);
+        assertEquals(Track.standardGuitar(names.guitarTrack()), score.track(0));
+    }
+
+    @Test
     void replacesATrack() {
         Score score = Score.blank();
         Track newTrack = Track.standardGuitar("Bass");

@@ -37,6 +37,10 @@ public record Score(ScoreInfo info, int tempo, List<Track> tracks, Lyrics lyrics
         return new Score(ScoreInfo.empty(), 120, List.of(Track.standardGuitar("Guitarra")), Lyrics.none());
     }
 
+    public static Score blank(DefaultNames names) {
+        return new Score(ScoreInfo.empty(), 120, List.of(Track.standardGuitar(names.guitarTrack())), Lyrics.none());
+    }
+
     public String title() {
         return info.title();
     }

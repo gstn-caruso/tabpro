@@ -240,7 +240,7 @@ class MenuBarTest {
     void everyMenuTitleInTheBarResolvesInEnglish() {
         Commands withATheme = new Commands(
                 editor, record(Ports.Document.class), record(Ports.Dialogs.class),
-                record(Ports.Playback.class), record(Ports.View.class), List.of("Oscuro"));
+                record(Ports.Playback.class), record(Ports.View.class), List.of("dark"));
         JMenuBar bar = new MenuBar(withATheme, () -> List.of(Path.of("/tmp/one.tabpro")), path -> { }).build();
         Set<String> spanishTitles = new HashSet<>();
         for (int i = 0; i < bar.getMenuCount(); i++) {

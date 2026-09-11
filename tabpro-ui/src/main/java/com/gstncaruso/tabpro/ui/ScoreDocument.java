@@ -97,18 +97,29 @@ public final class ScoreDocument {
         markSaved();
     }
 
+    private static final String LEGACY_RECOVERY_FILE_NAME = "tabpro-recuperación";
+
     public Path recoveryFile() {
-        return Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recuperación" + EXTENSION);
+        return Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recovery" + EXTENSION);
+    }
+
+    private Path legacyRecoveryFile() {
+        return Path.of(System.getProperty("java.io.tmpdir"), LEGACY_RECOVERY_FILE_NAME + EXTENSION);
     }
 
     public Optional<Path> pendingRecovery() {
         Path recovery = recoveryFile();
-        return Files.exists(recovery) ? Optional.of(recovery) : Optional.empty();
+        if (Files.exists(recovery)) {
+            return Optional.of(recovery);
+        }
+        Path legacyRecovery = legacyRecoveryFile();
+        return Files.exists(legacyRecovery) ? Optional.of(legacyRecovery) : Optional.empty();
     }
 
     public void discardRecovery() {
         try {
             Files.deleteIfExists(recoveryFile());
+            Files.deleteIfExists(legacyRecoveryFile());
         } catch (IOException nextRecoveryWillOverwriteIt) {
         }
     }

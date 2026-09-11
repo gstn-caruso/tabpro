@@ -2,7 +2,9 @@ package com.gstncaruso.tabpro.format.guitarpro;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -13,7 +15,8 @@ class GuitarProChordReaderTest {
 
     private static final int STRING_MASK = 0x7C;
 
-    private final GuitarProChordReader chords = new GuitarProChordReader();
+    private final DefaultNames names = new TestDefaultNames();
+    private final GuitarProChordReader chords = new GuitarProChordReader(names);
 
     @Test
     void anOldChordBringsItsNameAndTheFretOfEveryString() {
@@ -74,6 +77,20 @@ class GuitarProChordReaderTest {
 
         assertEquals("Em", chord.name());
         assertEquals(STRING_MASK, reader.readUnsignedByte(), "the string mask stays intact");
+    }
+
+    @Test
+    void aChordWithABlankNameGetsTheInjectedDefaultChordName() {
+        GuitarProByteReader reader = reading(new GuitarProFileWriter()
+                .writeUnsignedByte(OLD_FORMAT)
+                .writeLengthPrefixedString("")
+                .writeInt(1)
+                .writeInt(0).writeInt(0).writeInt(1).writeInt(1).writeInt(2).writeInt(0)
+                .writeUnsignedByte(STRING_MASK));
+
+        ChordDiagram chord = chords.read(reader, GuitarProVersion.GP3, 6);
+
+        assertEquals(names.chord(), chord.name());
     }
 
     private static GuitarProByteReader reading(GuitarProFileWriter written) {

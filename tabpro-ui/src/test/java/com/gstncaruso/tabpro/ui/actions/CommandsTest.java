@@ -79,6 +79,47 @@ class CommandsTest {
     }
 
     @Test
+    void addingAGuitarTrackNamesItFromTheDefaultsBundle() {
+        commands.get("track.addGuitar").actionPerformed(event());
+
+        assertEquals(Texts.get("defaults.guitarTrack"), editor.currentTrack().name());
+    }
+
+    @Test
+    void addingABassTrackNamesItFromTheDefaultsBundle() {
+        commands.get("track.addBass").actionPerformed(event());
+
+        assertEquals(Texts.get("defaults.bassTrack"), editor.currentTrack().name());
+    }
+
+    @Test
+    void addingAPercussionTrackNamesItFromTheDefaultsBundle() {
+        commands.get("track.addPercussion").actionPerformed(event());
+
+        assertEquals(Texts.get("defaults.percussionTrack"), editor.currentTrack().name());
+    }
+
+    @Test
+    void theBassTrackDefaultNameIsAlsoAvailableInEnglish() {
+        assertEquals("Bass", Texts.forLocale(Locale.ENGLISH).text("defaults.bassTrack"));
+    }
+
+    @Test
+    void aThemeCommandShowsItsLocalizedLabelRatherThanTheStoredIdentifier() {
+        Commands withThemes = new Commands(
+                editor, record(Ports.Document.class), record(Ports.Dialogs.class),
+                record(Ports.Playback.class), record(Ports.View.class), List.of("dark"));
+
+        assertEquals(Texts.get("window.Theme.dark"), withThemes.get("view.theme.dark").label());
+    }
+
+    @Test
+    void theThemeLabelsAreAlsoAvailableInEnglish() {
+        assertEquals("Dark", Texts.forLocale(Locale.ENGLISH).text("window.Theme.dark"));
+        assertEquals("Light", Texts.forLocale(Locale.ENGLISH).text("window.Theme.light"));
+    }
+
+    @Test
     void plusShortensTheFigureAndMinusLengthensIt() {
         commands.get("note.value.QUARTER").actionPerformed(event());
 

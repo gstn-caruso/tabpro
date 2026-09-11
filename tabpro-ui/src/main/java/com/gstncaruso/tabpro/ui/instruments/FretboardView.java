@@ -158,7 +158,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
     }
 
     private static BeatLocation defaultLocation() {
-        return new BeatLocation(Track.standardGuitar("Guitarra"), 0, VoicePart.LEAD, 0);
+        return new BeatLocation(Track.standardGuitar(Texts.get("defaults.guitarTrack")), 0, VoicePart.LEAD, 0);
     }
 
     public void show(BeatLocation location) {

@@ -14,6 +14,7 @@ import com.gstncaruso.tabpro.midi.SoundExchange;
 import com.gstncaruso.tabpro.midi.SoundFontBank;
 import com.gstncaruso.tabpro.midi.WaveRenderer;
 import com.gstncaruso.tabpro.ui.MainFrame;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.print.SystemPrinting;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -29,7 +30,8 @@ public class App {
 
     public static void main(String[] args) {
         Theme theme = Theme.install();
-        Editor editor = new Editor(Score.blank(), new SystemClipboardStorage());
+        TextsDefaultNames defaultNames = new TextsDefaultNames();
+        Editor editor = new Editor(Score.blank(defaultNames), new SystemClipboardStorage());
 
         SoundFontBank soundBank = new SoundFontBank(Optional.empty());
         Optional<MidiPlayer> midiPlayer = openMidiPlayer(soundBank);
@@ -40,7 +42,7 @@ public class App {
 
         SwingUtilities.invokeLater(() -> {
             ScoreExchange exchange = new CombinedExchange(
-                    new NotationExchange(),
+                    new NotationExchange(defaultNames),
                     new SoundExchange(new WaveRenderer(() -> synthesizerForWaveExport(soundBank))));
             MainFrame frame = new MainFrame(
                     editor, new JsonScoreFiles(), player, theme, devices, exchange, new Microphone(),

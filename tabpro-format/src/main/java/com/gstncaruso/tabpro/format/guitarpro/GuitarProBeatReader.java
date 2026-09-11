@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.format.guitarpro;
 
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
@@ -57,8 +58,12 @@ final class GuitarProBeatReader {
     private static final int WAH_HALFWAY = 50;
 
     private final GuitarProNoteReader notes = new GuitarProNoteReader();
-    private final GuitarProChordReader chords = new GuitarProChordReader();
+    private final GuitarProChordReader chords;
     private final GuitarProBendReader bends = new GuitarProBendReader();
+
+    GuitarProBeatReader(DefaultNames names) {
+        this.chords = new GuitarProChordReader(names);
+    }
 
     Beat read(GuitarProByteReader reader, GuitarProVersion version, int stringCount) {
         int flags = reader.readUnsignedByte();

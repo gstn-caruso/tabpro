@@ -102,7 +102,7 @@
             <!--
               java.util.prefs.userRoot and java.io.tmpdir are isolated: MainFrame saves Preferences (recent files, autosave, etc.)
               in java.util.prefs.Preferences.userRoot(), and ScoreDocument looks for its recovery file in java.io.tmpdir +
-              "tabpro-recuperacion" — the same paths a real installed tabpro uses on this machine. Real-use audit tests (tabpro-app/.../audit)
+              "tabpro-recovery" — the same paths a real installed tabpro uses on this machine. Real-use audit tests (tabpro-app/.../audit)
               instantiate MainFrame: without this, a real recovery file left from a real session would trigger a real dialog (offerToRecover)
               in each test, and preferences read or written would be the real ones from whoever runs the suite.
             -->

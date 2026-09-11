@@ -24,6 +24,7 @@ import com.gstncaruso.tabpro.midi.MidiScoreExporter;
 import com.gstncaruso.tabpro.midi.SoundExchange;
 import com.gstncaruso.tabpro.midi.WaveRenderer;
 import com.gstncaruso.tabpro.ui.MainFrame;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,7 +59,8 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 class ImportExportAuditTest {
 
     private final ScoreExchange exchange = new CombinedExchange(
-            new NotationExchange(), new SoundExchange(new WaveRenderer(ImportExportAuditTest::systemSynthesizer)));
+            new NotationExchange(new TextsDefaultNames()),
+            new SoundExchange(new WaveRenderer(ImportExportAuditTest::systemSynthesizer)));
 
     @BeforeEach
     @AfterEach
@@ -506,7 +508,7 @@ class ImportExportAuditTest {
             });
 
             assertTrue(Files.exists(path));
-            Score reread = new GuitarProFile().read(path);
+            Score reread = new GuitarProFile(new TextsDefaultNames()).read(path);
             assertEquals(1, reread.trackCount());
             assertTrue(containsFret(reread, 3), "the exported .gp4 must bring back fret 3");
         } finally {

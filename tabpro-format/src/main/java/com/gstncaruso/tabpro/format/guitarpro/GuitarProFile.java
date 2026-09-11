@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.format.guitarpro;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Pitch;
@@ -33,8 +34,13 @@ public final class GuitarProFile {
 
     private final GuitarProHeaderReader headerReader = new GuitarProHeaderReader();
     private final GuitarProChannelReader channelReader = new GuitarProChannelReader();
-    private final GuitarProTrackReader trackReader = new GuitarProTrackReader();
-    private final GuitarProBeatReader beatReader = new GuitarProBeatReader();
+    private final GuitarProTrackReader trackReader;
+    private final GuitarProBeatReader beatReader;
+
+    public GuitarProFile(DefaultNames names) {
+        this.trackReader = new GuitarProTrackReader(names);
+        this.beatReader = new GuitarProBeatReader(names);
+    }
 
     public Score read(Path path) {
         try {

@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format.tabledit;
 
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,12 @@ final class TabEditTrackReader {
 
     /** A reference MIDI number: the raw tuning byte is how much lower that string sounds. */
     private static final int TUNING_REFERENCE_MIDI_NUMBER = 96;
+
+    private final DefaultNames names;
+
+    TabEditTrackReader(DefaultNames names) {
+        this.names = names;
+    }
 
     List<TabEditTrackHeader> read(TabEditByteReader input) {
         int maxTrackSize = input.readUnsignedShort();
@@ -54,7 +61,7 @@ final class TabEditTrackReader {
         String name = record.readNullTerminatedString(maxTrackSize);
 
         return new TabEditTrackHeader(
-                name.isBlank() ? "Pista" : name, stringCount, List.copyOf(tuning), midiInstrument, capo, pan, volume,
-                midiInstrument == PERCUSSION_MIDI_INSTRUMENT);
+                name.isBlank() ? names.unnamedTrack() : name, stringCount, List.copyOf(tuning), midiInstrument, capo,
+                pan, volume, midiInstrument == PERCUSSION_MIDI_INSTRUMENT);
     }
 }

@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class PowerTabFileTest {
 
-    private final PowerTabFile files = new PowerTabFile();
+    private final PowerTabFile files = new PowerTabFile(new TestDefaultNames());
 
     @Test
     void readsTheSongInformation() {

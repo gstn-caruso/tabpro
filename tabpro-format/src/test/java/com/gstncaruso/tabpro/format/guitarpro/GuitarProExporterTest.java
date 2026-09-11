@@ -34,6 +34,7 @@ import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ import org.junit.jupiter.api.io.TempDir;
 class GuitarProExporterTest {
 
     private final GuitarProExporter exporter = new GuitarProExporter();
-    private final GuitarProFile files = new GuitarProFile();
+    private final GuitarProFile files = new GuitarProFile(new TestDefaultNames());
 
     private Score exportAndReread(Score score) {
         return files.read(exporter.write(score));

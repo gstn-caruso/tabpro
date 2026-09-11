@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Lyrics;
 import com.gstncaruso.tabpro.core.model.Measure;
@@ -62,6 +63,11 @@ public final class PowerTabFile {
 
     private final PowerTabHeaderReader headerReader = new PowerTabHeaderReader();
     private final PowerTabScoreReader scoreReader = new PowerTabScoreReader();
+    private final DefaultNames names;
+
+    public PowerTabFile(DefaultNames names) {
+        this.names = names;
+    }
 
     public Score read(Path path) {
         try {
@@ -174,7 +180,7 @@ public final class PowerTabFile {
         if (measures.isEmpty()) {
             measures.add(Measure.empty(TimeSignature.fourFour(), Duration.quarter()));
         }
-        String name = guitar.description().isBlank() ? "Pista" : guitar.description();
+        String name = guitar.description().isBlank() ? names.unnamedTrack() : guitar.description();
         return new Track(
                 name, tuningOf(guitar, stringCount), channelOf(guitar, staffIndex), settingsOf(guitar, staffIndex),
                 measures);
