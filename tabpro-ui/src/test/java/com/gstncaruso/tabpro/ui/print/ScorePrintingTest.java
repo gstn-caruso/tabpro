@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
@@ -193,6 +195,29 @@ class ScorePrintingTest {
         assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("jpg"),
                 "the message has to say which format failed");
         assertFalse(Files.exists(path), "if ImageIO could not write anything, no file can be left behind");
+    }
+
+    @Test
+    void aPdfThatCannotBeWrittenIsReportedWithItsPath(@TempDir Path tempDir) {
+        Path path = tempDir.resolve("missing-folder").resolve("score.pdf");
+
+        ScoreFileException failure = assertThrows(
+                ScoreFileException.class, () -> ScorePrinting.exportPdf(scoreWithMeasures(1), A4, path));
+
+        assertEquals(ScoreFileProblem.CANNOT_WRITE, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
+    }
+
+    @Test
+    void anImageThatCannotBeWrittenIsReportedWithItsPath(@TempDir Path tempDir) {
+        Path path = tempDir.resolve("missing-folder").resolve("score.bmp");
+        BufferedImage opaque = new BufferedImage(4, 4, BufferedImage.TYPE_INT_RGB);
+
+        ScoreFileException failure =
+                assertThrows(ScoreFileException.class, () -> ScorePrinting.writeImage(opaque, "bmp", path));
+
+        assertEquals(ScoreFileProblem.CANNOT_WRITE, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
     }
 
     private static BufferedImage imageWithRealTransparency() {

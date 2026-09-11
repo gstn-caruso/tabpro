@@ -585,9 +585,8 @@ public final class MainFrame extends JFrame {
                 ScorePrinting.exportPdf(
                         editor.score(), pageSetup, ScorePrinting.withPdfExtension(chooser.getSelectedFile()));
                 backToTheScore();
-            } catch (java.io.UncheckedIOException e) {
-                JOptionPane.showMessageDialog(
-                        MainFrame.this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
+            } catch (ScoreFileException e) {
+                showError(e);
             }
         }
 
@@ -604,7 +603,9 @@ public final class MainFrame extends JFrame {
                         editor.score(), pageSetup, ScorePrinting.withImageExtension(chooser.getSelectedFile()),
                         canvas.viewMode(), canvas.zoom());
                 backToTheScore();
-            } catch (java.io.UncheckedIOException | ImageExportException e) {
+            } catch (ScoreFileException e) {
+                showError(e);
+            } catch (ImageExportException e) {
                 JOptionPane.showMessageDialog(
                         MainFrame.this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
             }

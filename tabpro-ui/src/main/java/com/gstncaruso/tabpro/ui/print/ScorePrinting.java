@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.print;
 
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.page.PageMetrics;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
@@ -14,7 +15,6 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
 
@@ -68,7 +68,7 @@ public final class ScorePrinting {
             try (java.io.OutputStream out = java.nio.file.Files.newOutputStream(path)) {
                 BmpDocument.writeTo(image, out);
             } catch (IOException e) {
-                throw new UncheckedIOException("no se pudo escribir " + path, e);
+                throw ScoreFileException.cannotWrite(path, e);
             }
             return;
         }
@@ -76,7 +76,7 @@ public final class ScorePrinting {
         try {
             written = ImageIO.write(image, format, path.toFile());
         } catch (IOException e) {
-            throw new UncheckedIOException("no se pudo escribir " + path, e);
+            throw ScoreFileException.cannotWrite(path, e);
         }
         if (!written) {
             throw new ImageExportException(
@@ -92,7 +92,7 @@ public final class ScorePrinting {
         try (java.io.OutputStream out = java.nio.file.Files.newOutputStream(path)) {
             pdf.writeTo(out);
         } catch (IOException e) {
-            throw new UncheckedIOException("no se pudo escribir " + path, e);
+            throw ScoreFileException.cannotWrite(path, e);
         }
     }
 
