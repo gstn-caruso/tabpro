@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,7 +29,7 @@ public final class ScoreDocument {
     }
 
     public ScoreDocument(Editor editor, ScoreFiles files, Preferences preferences) {
-        this(editor, files, preferences, Score::blank);
+        this(editor, files, preferences, () -> Score.blank(new TextsDefaultNames()));
     }
 
     public ScoreDocument(Editor editor, ScoreFiles files, Preferences preferences, Supplier<Score> newScoreTemplate) {
