@@ -22,16 +22,36 @@ public final class NoteEffectsDialog {
     private NoteEffectsDialog() {
     }
 
-    public static final String BEND = Texts.get("edit_dialogs.NoteEffectsDialog.bend");
-    public static final String TREMOLO_BAR = Texts.get("edit_dialogs.NoteEffectsDialog.tremoloBar");
-    public static final String GRACE_NOTE = Texts.get("edit_dialogs.NoteEffectsDialog.graceNote");
-    public static final String STROKE = Texts.get("edit_dialogs.NoteEffectsDialog.stroke");
-    public static final String TRILL = Texts.get("edit_dialogs.NoteEffectsDialog.trill");
-    public static final String TREMOLO_PICKING = Texts.get("edit_dialogs.NoteEffectsDialog.tremoloPicking");
-    public static final String HARMONICS = Texts.get("edit_dialogs.NoteEffectsDialog.harmonics");
+    public static String bendTabTitle() {
+        return Texts.get("edit_dialogs.NoteEffectsDialog.bend");
+    }
+
+    public static String tremoloBarTabTitle() {
+        return Texts.get("edit_dialogs.NoteEffectsDialog.tremoloBar");
+    }
+
+    public static String graceNoteTabTitle() {
+        return Texts.get("edit_dialogs.NoteEffectsDialog.graceNote");
+    }
+
+    public static String strokeTabTitle() {
+        return Texts.get("edit_dialogs.NoteEffectsDialog.stroke");
+    }
+
+    public static String trillTabTitle() {
+        return Texts.get("edit_dialogs.NoteEffectsDialog.trill");
+    }
+
+    public static String tremoloPickingTabTitle() {
+        return Texts.get("edit_dialogs.NoteEffectsDialog.tremoloPicking");
+    }
+
+    public static String harmonicsTabTitle() {
+        return Texts.get("edit_dialogs.NoteEffectsDialog.harmonics");
+    }
 
     public static void show(Component parent, Editor editor) {
-        show(parent, editor, BEND);
+        show(parent, editor, bendTabTitle());
     }
 
     public static void show(Component parent, Editor editor, String openOn) {
@@ -56,13 +76,13 @@ public final class NoteEffectsDialog {
                 noteEffects.harmonic().isPresent(), new HarmonicPanel(noteEffects.harmonic().orElse(HarmonicType.NATURAL)));
 
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab(BEND, bendTab);
-        tabs.addTab(TREMOLO_BAR, tremoloBarTab);
-        tabs.addTab(GRACE_NOTE, graceTab);
-        tabs.addTab(STROKE, strokeTab);
-        tabs.addTab(TRILL, trillTab);
-        tabs.addTab(TREMOLO_PICKING, tremoloPickingTab);
-        tabs.addTab(HARMONICS, harmonicTab);
+        tabs.addTab(bendTabTitle(), bendTab);
+        tabs.addTab(tremoloBarTabTitle(), tremoloBarTab);
+        tabs.addTab(graceNoteTabTitle(), graceTab);
+        tabs.addTab(strokeTabTitle(), strokeTab);
+        tabs.addTab(trillTabTitle(), trillTab);
+        tabs.addTab(tremoloPickingTabTitle(), tremoloPickingTab);
+        tabs.addTab(harmonicsTabTitle(), harmonicTab);
 
         selectTab(tabs, openOn);
 
