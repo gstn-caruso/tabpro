@@ -4,9 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.editing.PasteOptions;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class PastePanelTest {
+
+    @Test
+    void theInsertAndRepetitionsFieldsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Insert", english.text("edit_dialogs.PastePanel.insert"));
+        assertEquals("Repetitions", english.text("edit_dialogs.PastePanel.repetitions"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
