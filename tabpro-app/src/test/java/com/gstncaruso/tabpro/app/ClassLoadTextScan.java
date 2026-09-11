@@ -28,6 +28,6 @@ final class ClassLoadTextScan {
     }
 
     private static boolean readsTextAtClassLoad(Path file) {
-        return STATIC_FINAL_FIELD_READING_TEXTS.matcher(JavaSources.read(file)).find();
+        return STATIC_FINAL_FIELD_READING_TEXTS.matcher(JavaSources.withoutComments(JavaSources.read(file))).find();
     }
 }

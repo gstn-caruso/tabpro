@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.app;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,6 +32,18 @@ class TextReadAtClassLoadIsFlaggedTest {
                 """);
 
         assertEquals(List.of(culprit), ClassLoadTextScan.filesReadingTextAtClassLoad(root));
+    }
+
+    @Test
+    void aStaticFinalFieldMentionedOnlyInACommentIsNotFlagged(@TempDir Path root) throws IOException {
+        write(root, "MentionsACacheInAComment.java", """
+                class MentionsACacheInAComment {
+                    // private static final String TITLE = Texts.get("area.title");
+                    /* static final String[] COLUMNS = {Texts.get("area.column")}; */
+                }
+                """);
+
+        assertTrue(ClassLoadTextScan.filesReadingTextAtClassLoad(root).isEmpty());
     }
 
     private static Path write(Path root, String fileName, String content) throws IOException {
