@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningName;
+import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
@@ -30,6 +31,8 @@ public final class Labels {
             case Scale scale -> Texts.get("library.scale." + scale.id());
             case Tuning tuning -> tuningNameLabel(tuning.name()) + " (" + stringLetters(tuning) + ")";
             case Dynamic dynamic -> dynamic.symbol();
+            case KeySignature keySignature ->
+                    Texts.get("domain.KeySignature." + keySignature.mode().name() + "." + keySignature.accidentals());
             case PaperFormat paperFormat -> paperFormatLabelWithDimensions(paperFormat);
             case Enum<?> constant -> domainLabel(constant);
             default -> throw new IllegalArgumentException("No label for " + value);
