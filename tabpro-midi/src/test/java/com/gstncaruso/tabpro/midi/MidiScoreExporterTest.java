@@ -1,9 +1,12 @@
 package com.gstncaruso.tabpro.midi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -48,6 +51,17 @@ class MidiScoreExporterTest {
 
         MetaMessage tempoEvent = onlyMetaOfType(sequence.getTracks()[0], 0x51);
         assertEquals(140, microsecondsPerQuarterToBpm(tempoEvent.getData()));
+    }
+
+    @Test
+    void aMidiFileThatCannotBeWrittenIsReportedWithItsPath(@TempDir Path tempDir) {
+        Score score = new Score("Test", 120, List.of(Track.standardGuitar("Guitar")));
+        Path path = tempDir.resolve("missing-folder").resolve("test.mid");
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> exporter.export(score, path));
+
+        assertEquals(ScoreFileProblem.CANNOT_WRITE, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
     }
 
     @Test

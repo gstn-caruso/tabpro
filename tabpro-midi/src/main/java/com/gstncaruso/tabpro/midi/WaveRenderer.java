@@ -37,8 +37,8 @@ public final class WaveRenderer {
     public void render(Sequence sequence, Path path, AudioQuality quality) {
         Synthesizer synth = synthesizers.get();
         if (!(synth instanceof AudioSynthesizer audioSynth)) {
-            throw new ScoreFileException(
-                    "el sintetizador " + synth.getClass().getName() + " no soporta el render fuera de tiempo real.");
+            throw ScoreFileException.cannotExport(
+                    path, "the synthesizer " + synth.getClass().getName() + " cannot render offline");
         }
         AudioFormat format = new AudioFormat(
                 quality.sampleRateHz(), quality.bitDepth(), quality.channels(), true, false);
@@ -51,7 +51,7 @@ public final class WaveRenderer {
                 audioSynth.close();
             }
         } catch (MidiUnavailableException | IOException e) {
-            throw new ScoreFileException("no se pudo exportar " + path, e);
+            throw ScoreFileException.cannotExport(path, e);
         }
     }
 

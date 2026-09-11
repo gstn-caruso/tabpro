@@ -6,10 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.files.AudioQuality;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
@@ -73,7 +75,22 @@ class WaveRendererTest {
         Sequence sequence = twoQuarterNoteSequenceAt(120);
         Path path = tempDir.resolve("test.wav");
 
-        assertThrows(ScoreFileException.class, () -> withoutOfflineSupport.render(sequence, path, AudioQuality.standard()));
+        ScoreFileException failure = assertThrows(
+                ScoreFileException.class, () -> withoutOfflineSupport.render(sequence, path, AudioQuality.standard()));
+
+        assertEquals(ScoreFileProblem.CANNOT_EXPORT, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
+    }
+
+    @Test
+    void aWaveThatCannotBeWrittenIsReportedWithItsPath(@TempDir Path tempDir) throws Exception {
+        Path path = tempDir.resolve("missing-folder").resolve("test.wav");
+
+        ScoreFileException failure = assertThrows(
+                ScoreFileException.class, () -> renderer.render(twoQuarterNoteSequenceAt(120), path, AudioQuality.standard()));
+
+        assertEquals(ScoreFileProblem.CANNOT_EXPORT, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
     }
 
     private static boolean hasSound(AudioInputStream in) throws Exception {
