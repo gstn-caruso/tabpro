@@ -70,6 +70,6 @@ final class PowerTabPositionReader {
                 return value;
             }
         }
-        throw new ScoreFileException("figura desconocida en una posicion de PowerTab: " + durationType);
+        throw ScoreFileException.damaged("unknown note value in a PowerTab position: " + durationType);
     }
 }

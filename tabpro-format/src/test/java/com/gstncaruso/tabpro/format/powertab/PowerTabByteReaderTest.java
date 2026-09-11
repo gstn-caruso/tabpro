@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import org.junit.jupiter.api.Test;
 
 class PowerTabByteReaderTest {
@@ -68,8 +69,10 @@ class PowerTabByteReaderTest {
     void aSmallFixedArrayLargerThanItsCapacityIsReported() {
         byte[] data = {0x03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-        assertThrows(ScoreFileException.class,
+        ScoreFileException failure = assertThrows(ScoreFileException.class,
                 () -> new PowerTabByteReader(data).readSmallFixedArrayOfInts(2));
+
+        assertEquals(ScoreFileProblem.DAMAGED, failure.problem());
     }
 
     @Test
@@ -100,6 +103,10 @@ class PowerTabByteReaderTest {
 
     @Test
     void aTruncatedReadIsReported() {
-        assertThrows(ScoreFileException.class, () -> new PowerTabByteReader(new byte[] {0x01}).readInt());
+        ScoreFileException failure =
+                assertThrows(ScoreFileException.class, () -> new PowerTabByteReader(new byte[] {0x01}).readInt());
+
+        assertEquals(ScoreFileProblem.DAMAGED, failure.problem());
+        assertEquals("truncated PowerTab file: expected 4 bytes at position 0 but only 1 remain", failure.getMessage());
     }
 }

@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format.powertab;
 
+import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 
 /**
@@ -26,20 +27,18 @@ final class PowerTabHeaderReader {
     PowerTabHeader read(PowerTabByteReader reader) {
         int marker = reader.readInt();
         if (marker != MARKER) {
-            throw new ScoreFileException("el archivo no es un archivo de PowerTab");
+            throw ScoreFileException.notRecognized("PowerTab", "missing the ptab marker");
         }
         int version = reader.readUnsignedShort();
         if (version != VERSION_1_7) {
-            throw new ScoreFileException(
-                    "solo se soporta el formato de PowerTab version 1.7; este archivo trae la version "
-                            + version);
+            throw ScoreFileException.unsupportedVersion("PowerTab", String.valueOf(version));
         }
         int fileType = reader.readUnsignedByte();
         if (fileType == FILETYPE_LESSON) {
-            throw new ScoreFileException("las lecciones de PowerTab todavia no estan soportadas, solo las canciones");
+            throw ScoreFileException.unsupportedContent(ScoreFeature.POWER_TAB_LESSONS, "PowerTab lesson file");
         }
         if (fileType != FILETYPE_SONG) {
-            throw new ScoreFileException("tipo de archivo de PowerTab desconocido: " + fileType);
+            throw ScoreFileException.notRecognized("PowerTab", "unknown PowerTab file type: " + fileType);
         }
         return readSong(reader);
     }

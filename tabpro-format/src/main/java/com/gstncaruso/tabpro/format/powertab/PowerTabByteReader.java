@@ -80,7 +80,7 @@ final class PowerTabByteReader {
         }
         int dwordCount = readInt();
         if (dwordCount < 0) {
-            throw new ScoreFileException("archivo PowerTab corrupto: conteo de vector negativo");
+            throw ScoreFileException.damaged("corrupt PowerTab file: negative vector count");
         }
         return dwordCount;
     }
@@ -184,9 +184,8 @@ final class PowerTabByteReader {
     int[] readSmallFixedArrayOfInts(int capacity) {
         int size = readUnsignedByte();
         if (size > capacity) {
-            throw new ScoreFileException(
-                    "archivo PowerTab corrupto: un arreglo de simbolos trae " + size
-                            + " elementos pero el maximo es " + capacity);
+            throw ScoreFileException.damaged(
+                    "corrupt PowerTab file: a symbol array holds " + size + " items but the maximum is " + capacity);
         }
         int[] values = new int[capacity];
         for (int i = 0; i < size; i++) {
@@ -197,10 +196,10 @@ final class PowerTabByteReader {
 
     private void require(int byteCount) {
         if (byteCount < 0 || position + byteCount > data.length) {
-            throw new ScoreFileException(
-                    "archivo PowerTab truncado: se esperaban " + byteCount
-                            + " bytes en la posicion " + position
-                            + " pero solo quedan " + (data.length - position));
+            throw ScoreFileException.damaged(
+                    "truncated PowerTab file: expected " + byteCount
+                            + " bytes at position " + position
+                            + " but only " + (data.length - position) + " remain");
         }
     }
 }

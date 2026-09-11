@@ -4,13 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
+import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -94,12 +99,18 @@ class PowerTabFileTest {
     @ParameterizedTest
     @ValueSource(strings = {"positions", "merge_multibar_rests"})
     void aMultibarRestIsReportedInsteadOfGuessed(String name) {
-        assertThrows(ScoreFileException.class, () -> read(name));
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> read(name));
+
+        assertEquals(ScoreFileProblem.UNSUPPORTED_CONTENT, failure.problem());
+        assertEquals(List.of(ScoreFeature.MULTIBAR_RESTS), failure.arguments());
     }
 
     @Test
     void aGuitarReassignmentIsReportedInsteadOfGuessed() {
-        assertThrows(ScoreFileException.class, () -> read("guitar_ins"));
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> read("guitar_ins"));
+
+        assertEquals(ScoreFileProblem.UNSUPPORTED_CONTENT, failure.problem());
+        assertEquals(List.of(ScoreFeature.STAFF_GUITAR_CHANGES), failure.arguments());
     }
 
     @ParameterizedTest
@@ -115,7 +126,21 @@ class PowerTabFileTest {
 
     @Test
     void aFileThatIsNotPowerTabIsReported() {
-        assertThrows(ScoreFileException.class, () -> files.read("this is not PowerTab".getBytes()));
+        ScoreFileException failure =
+                assertThrows(ScoreFileException.class, () -> files.read("this is not PowerTab".getBytes()));
+
+        assertEquals(ScoreFileProblem.NOT_RECOGNIZED, failure.problem());
+        assertEquals(List.of("PowerTab"), failure.arguments());
+    }
+
+    @Test
+    void aMissingFileIsReportedWithItsPath(@TempDir Path folder) {
+        Path path = folder.resolve("missing.ptb");
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> files.read(path));
+
+        assertEquals(ScoreFileProblem.CANNOT_READ, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
     }
 
     private Score read(String name) {

@@ -3,11 +3,14 @@ package com.gstncaruso.tabpro.format.powertab;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class PowerTabHeaderReaderTest {
@@ -33,7 +36,40 @@ class PowerTabHeaderReaderTest {
     void aFileThatIsNotPowerTabIsReported() {
         PowerTabByteReader bytes = new PowerTabByteReader("this is not a PowerTab file".getBytes());
 
-        assertThrows(ScoreFileException.class, () -> reader.read(bytes));
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> reader.read(bytes));
+
+        assertEquals(ScoreFileProblem.NOT_RECOGNIZED, failure.problem());
+        assertEquals(List.of("PowerTab"), failure.arguments());
+    }
+
+    @Test
+    void aVersionOtherThanOnePointSevenIsReported() {
+        PowerTabByteReader bytes = new PowerTabByteReader(new byte[] {'p', 't', 'a', 'b', 3, 0});
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> reader.read(bytes));
+
+        assertEquals(ScoreFileProblem.UNSUPPORTED_VERSION, failure.problem());
+        assertEquals(List.of("PowerTab", "3"), failure.arguments());
+    }
+
+    @Test
+    void aLessonIsReportedAsContentThatIsNotSupported() {
+        PowerTabByteReader bytes = new PowerTabByteReader(new byte[] {'p', 't', 'a', 'b', 4, 0, 1});
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> reader.read(bytes));
+
+        assertEquals(ScoreFileProblem.UNSUPPORTED_CONTENT, failure.problem());
+        assertEquals(List.of(ScoreFeature.POWER_TAB_LESSONS), failure.arguments());
+    }
+
+    @Test
+    void anUnknownFileTypeIsNotRecognized() {
+        PowerTabByteReader bytes = new PowerTabByteReader(new byte[] {'p', 't', 'a', 'b', 4, 0, 7});
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> reader.read(bytes));
+
+        assertEquals(ScoreFileProblem.NOT_RECOGNIZED, failure.problem());
+        assertEquals(List.of("PowerTab"), failure.arguments());
     }
 
     private PowerTabHeader read(String name) {
