@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.util.Locale;
 import javax.swing.JCheckBox;
@@ -21,6 +22,14 @@ class PreferencesPanelTest {
         PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
 
         AccessibilityAssertions.assertNoViolations(panel);
+    }
+
+    @Test
+    void theAccessibilitySectionAndHighContrastCheckboxAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Accessibility", english.text("score_dialogs.PreferencesPanel.accessibility"));
+        assertEquals("High Contrast", english.text("score_dialogs.PreferencesPanel.highContrast"));
     }
 
     @Test
