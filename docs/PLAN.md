@@ -1,133 +1,135 @@
-# Plan — el clon completo del manual de Guitar Pro 5
+# Plan — the complete Guitar Pro 5 manual clone
 
-Documento vivo. Se actualiza al cerrar cada etapa para poder retomar sin contexto previo.
+Living document. Updated when each stage closes, so it can be picked up again without prior context.
 
-## Objetivo
+## Goal
 
-tabpro tiene que hacer **todo** lo que describe `assets/manual-guitar-pro-5.pdf`.
-Es un clon libre: donde Guitar Pro usa algo propietario, tabpro pone la
-alternativa libre más cercana.
+tabpro has to do **everything** described in `assets/manual-guitar-pro-5.pdf`.
+It is a free clone: wherever Guitar Pro uses something proprietary, tabpro
+provides the closest free alternative.
 
-Decisiones tomadas con el usuario (2026-09-06):
+Decisions made with the user (2026-09-06):
 
-- **Alcance:** todo lo que falte contra el manual, no sólo los cuatro huecos que
-  declaraba el README de v0.8.0.
-- **Sonido:** el RSE se reemplaza por un **SoundFont libre cargado en Gervill**,
-  el sintetizador del JDK. Mejora toda la reproducción, no sólo el export a WAVE.
-  No se commitea ningún `.sf2` al repo (pesan más de 100 MB): el programa
-  descubre los del sistema o el usuario elige uno, la elección se persiste, y si
-  no hay ninguno se degrada al banco interno del JDK. El `.deb` recomienda
-  `fluid-soundfont-gm`.
-- **Versionado:** deja de ser manual. Lo maneja **semantic-release** en el push a
-  `main`, según el tipo del commit de squash: `feat:` → minor, `fix:`/`perf:` →
-  patch, breaking → major, `docs:`/`chore:`/`ci:`/`test:` → sin bump. De ahí sale
-  el tag y el release del `.deb`, automáticamente. **Nadie toca la versión en los
-  poms ni en el README a mano.**
-- **Higiene:** el árbol arranca limpio; cada cambio entra por su branch + PR con
-  CI verde.
+- **Scope:** everything missing against the manual, not just the four gaps
+  the v0.8.0 README declared.
+- **Sound:** RSE is replaced with a **free SoundFont loaded into Gervill**,
+  the JDK's synthesizer. It improves all playback, not just the WAVE export.
+  No `.sf2` file is committed to the repo (they weigh over 100 MB): the
+  program discovers the ones on the system, or the user picks one, the
+  choice persists, and if there is none it falls back to the JDK's internal
+  bank. The `.deb` recommends `fluid-soundfont-gm`.
+- **Versioning:** stops being manual. **semantic-release** handles it on push
+  to `main`, based on the squash commit type: `feat:` → minor, `fix:`/`perf:`
+  → patch, breaking → major, `docs:`/`chore:`/`ci:`/`test:` → no bump. That
+  produces the tag and the `.deb` release, automatically. **Nobody touches
+  the version in the poms or the README by hand.**
+- **Hygiene:** the tree starts clean; every change goes through its own
+  branch + PR with green CI.
 
-## Cómo se trabaja
+## How We Work
 
-- El agente principal orquesta y no implementa: reparte a subagentes con worktree
-  propio (`Agent(isolation: "worktree")`), y abre él los PRs.
-- Modelos: mecánico/read-only → `haiku`; loops TDD/refactor → `sonnet`;
-  diseño difícil → `opus`. Nunca `fable` fuera de planning.
-- TDD obligatorio: test que falla → mínimo código → refactor. Un PR por hueco.
-- Se sube en cada verde (los agentes se caen por rate limit; el trabajo no se pierde).
+- The main agent orchestrates and does not implement: it hands work off to
+  subagents with their own worktree (`Agent(isolation: "worktree")`), and it
+  opens the PRs itself.
+- Models: mechanical/read-only → `haiku`; TDD/refactor loops → `sonnet`; hard
+  design → `opus`. Never `fable` outside planning.
+- TDD mandatory: failing test → minimal code → refactor. One PR per gap.
+- Push on every green (agents drop out from rate limits; work is not lost).
 
-Para regenerar el texto del manual:
+To regenerate the manual's text:
 
 ```sh
 pdftotext -layout assets/manual-guitar-pro-5.pdf /tmp/manual.txt
 ```
 
-Secciones (líneas de ese `.txt`): Understanding Notation 385, Main Screen 458,
+Sections (line numbers in that `.txt`): Understanding Notation 385, Main Screen 458,
 Write a Score 481, Add Symbols 961, Insert Parameter Changes 1340, Add Lyrics 1377,
 Add Markers 1448, Cut/Copy/Paste 1478, Wizards 1587, Percussion 1670,
 Work with a Score 1723, Configure the Display 1886, Configure the Sound 1945,
 Play the Score 2087, Print a Score 2207, Import a Score 2293, Export a Score 2506,
-Tools for the Guitarist 2665, Keyboard Shortcuts 3154 **hasta el final del archivo**
-(recortarlo antes deja afuera las tablas Effects, Navigation, Sound y Misc.).
+Tools for the Guitarist 2665, Keyboard Shortcuts 3154 **through the end of the file**
+(trimming it earlier leaves out the Effects, Navigation, Sound and Misc tables).
 
-## Dos sesiones trabajando a la vez
+## Two Sessions Working at Once
 
-Hay **otra sesión de Claude** sobre el mismo repo (`tabpro-mvp-editor-playback`),
-que cerró los PRs #30 a #42. El reparto acordado:
+There is **another Claude session** on the same repo (`tabpro-mvp-editor-playback`),
+which closed PRs #30 to #42. The agreed split:
 
-| Sesión | Se ocupa de |
+| Session | Handles |
 |---|---|
-| Esta (`docs/`, formatos, sonido) | Todo el capítulo Importar/Exportar, el motor de sonido con SoundFont, y los huecos del lector de Guitar Pro |
-| La otra | Notación, efectos, interfaz, reproducción, herramientas del guitarrista y atajos |
+| This one (`docs/`, formats, sound) | The whole Import/Export chapter, the SoundFont sound engine, and the Guitar Pro reader's gaps |
+| The other | Notation, effects, interface, playback, guitarist's tools and shortcuts |
 
-Reglas de convivencia: cada una trabaja en worktrees aislados, nunca en el
-checkout compartido; `docs/` lo maneja esta sesión; y quien vaya a tocar
-`MidiSetupDialog.java` avisa antes, porque las dos mitades caen ahí.
+Coexistence rules: each one works in isolated worktrees, never in the shared
+checkout; this session handles `docs/`; and whoever is about to touch
+`MidiSetupDialog.java` gives a heads-up first, because both halves land
+there.
 
-## Estado
+## Status
 
-| Etapa | Estado |
+| Stage | Status |
 |---|---|
-| 0. Limpieza del árbol (PR #41 y #42 mergeados, worktrees y branches podadas) | ✅ hecho |
-| 1. Auditoría del manual contra el código | ✅ hecho — ver [audit-manual.md](audit-manual.md) |
-| 1b. Auditoría de las tablas de atajos que quedaron fuera del recorte | ✅ re-auditado 2026-09-06 — ver abajo |
-| 2. Versionado automático con semantic-release | ✅ hecho — publicó la v0.9.0 sola |
-| 3. Implementación de los huecos, un PR por hueco | 🔜 en curso |
-| 4. Verificación independiente de los formatos binarios | 🔜 en curso — ver abajo |
+| 0. Tree cleanup (PR #41 and #42 merged, worktrees and branches pruned) | ✅ done |
+| 1. Manual audit against the code | ✅ done — see [audit-manual.md](audit-manual.md) |
+| 1b. Audit of the shortcut tables left out of the trim | ✅ re-audited 2026-09-06 — see below |
+| 2. Automatic versioning with semantic-release | ✅ done — it published v0.9.0 on its own |
+| 3. Implementing the gaps, one PR per gap | 🔜 in progress |
+| 4. Independent verification of the binary formats | 🔜 in progress — see below |
 
-Punto de partida: `main` = `4702129`, versión 0.8.0. Al cerrar la etapa 2, `main`
-quedó en **v0.9.0**, publicada automáticamente por el pipeline.
+Starting point: `main` = `4702129`, version 0.8.0. When stage 2 closed, `main`
+was at **v0.9.0**, published automatically by the pipeline.
 
-### Lo que enseñó poner en marcha el pipeline
+### What Bringing Up the Pipeline Taught Us
 
-Dos cosas que conviene no volver a aprender:
+Two things worth not learning twice:
 
-1. **`v0.8.0` no existía.** El último tag del repo era `v0.6.1`, aunque los poms
-   dijeran 0.8.0 y el README mandara a bajar un `.deb` de esa versión. Antes de
-   activar semantic-release hubo que taggear `v0.8.0`, o habría calculado una
-   versión **anterior** a la que el programa ya decía tener.
-2. **Un dry-run sin credenciales no prueba lo que parece.** semantic-release se
-   frena en `verifyConditions` del plugin de GitHub, que corre *antes* de
-   `generateNotes`, así que el dry-run verificaba que la configuración cargara,
-   no que las notas se pudieran generar. El primer release real falló por un
-   preset incompatible que el dry-run nunca llegó a ejercitar. Para probar de
-   verdad hay que correrlo sacando los plugins que piden credenciales.
+1. **`v0.8.0` did not exist.** The repo's last tag was `v0.6.1`, even though
+   the poms said 0.8.0 and the README pointed at downloading a `.deb` of that
+   version. Before turning on semantic-release, `v0.8.0` had to be tagged,
+   or it would have computed a version **older** than the one the program
+   already claimed to have.
+2. **A dry-run without credentials does not prove what it looks like.**
+   semantic-release stops at the GitHub plugin's `verifyConditions`, which
+   runs *before* `generateNotes`, so the dry-run only verified that the
+   configuration loaded, not that the notes could be generated. The first
+   real release failed on an incompatible preset the dry-run never got to
+   exercise. To really test it, you have to run it with the
+   credential-requiring plugins removed.
 
-### Re-auditoría de atajos (2026-09-06)
+### Shortcut Re-audit (2026-09-06)
 
-El "37 de 41" era de antes de una docena de PRs y nadie lo había vuelto a
-medir. Se rehizo entero contra `Commands.java`, cotejando las 76 filas del
-capítulo Reference del manual (páginas 79 a 81) una por una — no si "algún"
-comando tenía la tecla, si el comando **correcto** la tenía. Test que sostiene
-esto: `ManualKeyboardShortcutsTest` (72 filas comparables 1:1 contra el
-catálogo).
+The "37 of 41" predated a dozen PRs and nobody had measured it again. It was
+redone in full against `Commands.java`, checking the manual's Reference
+chapter's 76 rows (pages 79 to 81) one by one — not whether "some" command
+had the key, but whether the **correct** command had it. Test that backs
+this up: `ManualKeyboardShortcutsTest` (72 rows comparable 1:1 against the
+catalog).
 
-- **72 de 72 coinciden.** Ni una sola diferencia contra el manual hoy.
-- **4 no pasan por el catálogo pero están:** Home/End (primer/último beat del
-  compás) y el `*` del puntillo los resuelve `KeyboardEditing` como tecla
-  cruda del lienzo (con su propio test); Page Up/Page Down los resuelve Swing
-  solo, scrolleando el `JScrollPane` de la partitura.
-- **Atajos que tiene tabpro y el manual no lista:** zoom (`Ctrl +`/`Ctrl -`/
-  `Ctrl 0`), diapasón (`Ctrl 3`) y teclado (`Ctrl 4`). No pisan ningún atajo
-  del manual, se dejan.
-- **Feature faltante, no atajo:** `Enter` como "agregar nota en notación
-  estándar" no existe — ya estaba anotado en
-  [audit-manual.md](audit-manual.md) ("Enter no agrega una nota en
-  notación estándar — AUSENTE · grande"). tabpro solo escribe por dígitos de
-  traste.
-- **Bug real encontrado y arreglado — no en el catálogo, en la plomería:**
-  `JScrollPane` y `JSplitPane` traen atajos de fábrica (scroll, navegar el
-  split) que Swing revisa *antes* que el acelerador de un menú. Con el foco en
-  la partitura -la situación normal al editar- se comían `Ctrl+Home`
-  (nav.firstBar), `Ctrl+Fin` (nav.lastBar), `F6` (track.properties), `F8`
-  (file.pageSetup) y `Ctrl+Tab` (marker.next): el catálogo declaraba la tecla
-  correcta y colgaba de su menú, pero apretarla no hacía nada. Arreglado por
-  `AcceleratorGuard` (`AcceleratorGuardTest`); ver el PR de la branch
-  `fix/los-atajos-que-el-manual-manda`.
-- **Sin colisiones.** `CommandsTest.noTwoCommandsShareTheSameShortcut` ya
-  cubría esto y sigue en verde; se sumó
-  `MenuBarTest.todoComandoConAceleradorCuelgaDeAlgunMenu` para que un atajo
-  declarado y nunca colgado de un menú (la otra forma de quedar muerto) tampoco
-  pase desapercibido.
+- **72 of 72 match.** Not a single difference against the manual today.
+- **4 do not go through the catalog but are there:** Home/End (first/last
+  beat of the bar) and the dotted-value `*` are resolved by `KeyboardEditing`
+  as a raw canvas key (with its own test); Page Up/Page Down are resolved by
+  Swing alone, scrolling the score's `JScrollPane`.
+- **Shortcuts tabpro has that the manual does not list:** zoom (`Ctrl +`/
+  `Ctrl -`/`Ctrl 0`), fretboard (`Ctrl 3`) and keyboard (`Ctrl 4`). They do
+  not collide with any manual shortcut, so they stay.
+- **Missing feature, not a shortcut:** `Enter` as "add a note in standard
+  notation" does not exist — already noted in
+  [audit-manual.md](audit-manual.md) ("Enter does not add a note in standard
+  notation — MISSING · large"). tabpro only writes via fret digits.
+- **Real bug found and fixed — not in the catalog, in the plumbing:**
+  `JScrollPane` and `JSplitPane` come with factory shortcuts (scroll,
+  navigate the split) that Swing checks *before* a menu accelerator. With
+  focus on the score — the normal situation while editing — they swallowed
+  `Ctrl+Home` (nav.firstBar), `Ctrl+End` (nav.lastBar), `F6`
+  (track.properties), `F8` (file.pageSetup) and `Ctrl+Tab` (marker.next):
+  the catalog declared the right key and it hung off its menu, but pressing
+  it did nothing. Fixed by `AcceleratorGuard` (`AcceleratorGuardTest`); see
+  the PR on branch `fix/los-atajos-que-el-manual-manda`.
+- **No collisions.** `CommandsTest.noTwoCommandsShareTheSameShortcut` already
+  covered this and stays green; `MenuBarTest.todoComandoConAceleradorCuelgaDeAlgunMenu`
+  was added so that a declared shortcut that never hung off any menu (the
+  other way to end up dead) would not go unnoticed either.
 
 ## Los huecos de esta sesión
 
