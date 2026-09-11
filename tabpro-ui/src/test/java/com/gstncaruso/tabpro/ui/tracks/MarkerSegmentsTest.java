@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ class MarkerSegmentsTest {
 
     @Test
     void aScoreWithoutMarkersHasNoSegments() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         assertTrue(MarkerSegments.of(editor.score()).isEmpty());
     }
@@ -63,7 +64,7 @@ class MarkerSegmentsTest {
     }
 
     private Editor fourMeasureEditor() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.insertMeasure();
         editor.insertMeasure();
         editor.insertMeasure();

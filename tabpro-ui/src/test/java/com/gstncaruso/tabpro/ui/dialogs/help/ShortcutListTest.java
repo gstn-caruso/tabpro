@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Locale;
@@ -17,7 +18,7 @@ import org.junit.jupiter.api.Test;
 class ShortcutListTest {
 
     private final Commands commands = new Commands(
-            new Editor(Score.blank()), record(Ports.Document.class), record(Ports.Dialogs.class),
+            new Editor(Score.blank(new TextsDefaultNames())), record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
 
     @Test

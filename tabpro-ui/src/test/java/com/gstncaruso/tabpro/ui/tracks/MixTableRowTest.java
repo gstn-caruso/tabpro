@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.Instruments;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.MouseEvent;
@@ -232,7 +233,7 @@ class MixTableRowTest {
     }
 
     private static Editor twoTrackEditor() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
         return editor;
     }

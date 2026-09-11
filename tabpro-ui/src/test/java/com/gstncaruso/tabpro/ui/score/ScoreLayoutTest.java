@@ -14,6 +14,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.bars.LineBreak;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ class ScoreLayoutTest {
 
     @Test
     void aShortScoreFitsInOneSystem() {
-        ScoreLayout layout = ScoreLayout.of(Score.blank(), WIDE);
+        ScoreLayout layout = ScoreLayout.of(Score.blank(new TextsDefaultNames()), WIDE);
 
         assertEquals(1, layout.systemCount());
         assertEquals(0, layout.systemOf(0));
@@ -80,7 +81,7 @@ class ScoreLayoutTest {
 
     @Test
     void aSingleSystemScoreSpansAllItsMeasures() {
-        ScoreLayout layout = ScoreLayout.of(Score.blank(), WIDE);
+        ScoreLayout layout = ScoreLayout.of(Score.blank(new TextsDefaultNames()), WIDE);
 
         assertEquals(0, layout.firstMeasureOfSystem(0));
         assertEquals(layout.measureCount() - 1, layout.lastMeasureOfSystem(0));
@@ -143,7 +144,7 @@ class ScoreLayoutTest {
 
     @Test
     void theStaffSitsAboveTheTablatureOfItsOwnTrack() {
-        ScoreLayout layout = ScoreLayout.of(Score.blank(), WIDE);
+        ScoreLayout layout = ScoreLayout.of(Score.blank(new TextsDefaultNames()), WIDE);
 
         assertEquals(ScoreLayout.STAFF_HEIGHT, layout.staffBottom(0, 0) - layout.staffTop(0, 0));
         assertTrue(layout.tabTop(0, 0) > layout.staffBottom(0, 0));
@@ -151,7 +152,7 @@ class ScoreLayoutTest {
 
     @Test
     void stringsAreEvenlySpacedDownFromTheTopOfTheTablature() {
-        ScoreLayout layout = ScoreLayout.of(Score.blank(), WIDE);
+        ScoreLayout layout = ScoreLayout.of(Score.blank(new TextsDefaultNames()), WIDE);
 
         assertEquals(layout.tabTop(0, 0), layout.stringY(0, 0, 1));
         assertEquals(layout.tabTop(0, 0) + ScoreLayout.STRING_SPACING, layout.stringY(0, 0, 2));
@@ -343,7 +344,7 @@ class ScoreLayoutTest {
 
     @Test
     void findsNothingBeyondTheScore() {
-        ScoreLayout layout = ScoreLayout.of(Score.blank(), WIDE);
+        ScoreLayout layout = ScoreLayout.of(Score.blank(new TextsDefaultNames()), WIDE);
 
         assertEquals(Optional.empty(), layout.hitTest(-50, -50));
         assertEquals(Optional.empty(), layout.hitTest(10, 100_000));
@@ -442,7 +443,7 @@ class ScoreLayoutTest {
 
     @Test
     void hidingTheStaffLiftsTheTablatureIntoItsPlace() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TextsDefaultNames());
 
         ScoreLayout both = ScoreLayout.of(score, WIDE);
         ScoreLayout onlyTablature = ScoreLayout.of(score, WIDE, VisibleTracks.all(),
@@ -455,7 +456,7 @@ class ScoreLayoutTest {
 
     @Test
     void hidingTheTablatureLeavesTheStaffWhereItWas() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TextsDefaultNames());
 
         ScoreLayout both = ScoreLayout.of(score, WIDE);
         ScoreLayout onlyStaff = ScoreLayout.of(score, WIDE, VisibleTracks.all(),
@@ -470,7 +471,7 @@ class ScoreLayoutTest {
 
     @Test
     void theLayoutAnswersWhichNotationsEachTrackDraws() {
-        ScoreLayout onlyTablature = ScoreLayout.of(Score.blank(), WIDE, VisibleTracks.all(),
+        ScoreLayout onlyTablature = ScoreLayout.of(Score.blank(new TextsDefaultNames()), WIDE, VisibleTracks.all(),
                 VisibleNotations.both().withStandardNotation(false));
 
         assertFalse(onlyTablature.showsStandardNotation(0));
@@ -479,13 +480,13 @@ class ScoreLayoutTest {
 
     @Test
     void byDefaultTheLayoutDoesNotShowDynamicNotes() {
-        assertFalse(ScoreLayout.of(Score.blank(), WIDE).showsDynamicNotes());
+        assertFalse(ScoreLayout.of(Score.blank(new TextsDefaultNames()), WIDE).showsDynamicNotes());
     }
 
     @Test
     void theLayoutCanBeAskedToShowDynamicNotes() {
         ScoreLayout layout = ScoreLayout.of(
-                Score.blank(), WIDE, VisibleTracks.all(), VisibleNotations.both(), true);
+                Score.blank(new TextsDefaultNames()), WIDE, VisibleTracks.all(), VisibleNotations.both(), true);
 
         assertTrue(layout.showsDynamicNotes());
     }

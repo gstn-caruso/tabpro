@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
@@ -21,12 +22,12 @@ class MarkerListTest {
 
     @Test
     void isEmptyForAFreshScore() {
-        assertTrue(MarkerList.collect(Score.blank()).isEmpty());
+        assertTrue(MarkerList.collect(Score.blank(new TextsDefaultNames())).isEmpty());
     }
 
     @Test
     void collectsMarkersInMeasureOrder() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.insertMeasure();
         editor.moveToFirstMeasure();
         editor.setMarker(Marker.named("Intro"));

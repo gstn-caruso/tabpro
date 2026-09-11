@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.page.Orientation;
 import com.gstncaruso.tabpro.ui.page.PageBanner;
 import com.gstncaruso.tabpro.ui.page.PageMetrics;
@@ -30,7 +31,7 @@ class ScoreSheetsTest {
 
     @Test
     void aShortScoreFitsInASingleSheet() {
-        assertEquals(1, ScoreSheets.pageCount(Score.blank(), A4));
+        assertEquals(1, ScoreSheets.pageCount(Score.blank(new TextsDefaultNames()), A4));
     }
 
     @Test
@@ -78,10 +79,10 @@ class ScoreSheetsTest {
     @Test
     void everySheetIsOpaqueSoThatBmpCanBeWritten() {
         assertFalse(
-                ScoreSheets.render(Score.blank(), Zoom.whole(), A4).getColorModel().hasAlpha(),
+                ScoreSheets.render(Score.blank(new TextsDefaultNames()), Zoom.whole(), A4).getColorModel().hasAlpha(),
                 "the whole score is drawn without transparency");
         assertFalse(
-                ScoreSheets.renderPage(Score.blank(), Zoom.whole(), A4, 0).getColorModel().hasAlpha(),
+                ScoreSheets.renderPage(Score.blank(new TextsDefaultNames()), Zoom.whole(), A4, 0).getColorModel().hasAlpha(),
                 "and so is every sheet on its own");
     }
 

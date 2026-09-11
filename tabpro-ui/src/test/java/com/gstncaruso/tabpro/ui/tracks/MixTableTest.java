@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.Locale;
 import javax.swing.JLabel;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ class MixTableTest {
 
     @Test
     void everyControlOfTheMixTableHasAnAccessibleNameAndTooltip() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
         MixTable table = new MixTable(editor);
 
@@ -36,7 +37,7 @@ class MixTableTest {
 
     @Test
     void listsOneRowPerTrack() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         MixTable table = new MixTable(editor);
 
         assertEquals(1, table.rows().size());
@@ -44,7 +45,7 @@ class MixTableTest {
 
     @Test
     void followsTheEditorWhenATrackIsAdded() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         MixTable table = new MixTable(editor);
 
         editor.addTrack(Track.standardBass("Bajo"));
@@ -55,7 +56,7 @@ class MixTableTest {
 
     @Test
     void reduceAllParametersButtonHidesEveryRowsKnobs() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
         MixTable table = new MixTable(editor);
 
@@ -71,7 +72,7 @@ class MixTableTest {
 
     @Test
     void restoreAllParametersButtonShowsThemAgain() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         MixTable table = new MixTable(editor);
         table.model().reduceAllParameters();
         table.refresh();
@@ -88,7 +89,7 @@ class MixTableTest {
 
     @Test
     void theReduceButtonHidesEveryKnobAndTheRestoreButtonBringsThemBack() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         MixTable table = new MixTable(editor);
 
         table.reduceButton().doClick();
@@ -102,7 +103,7 @@ class MixTableTest {
 
     @Test
     void noColumnHeaderEncroachesOnTheNext() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
         MixTable table = new MixTable(editor);
 

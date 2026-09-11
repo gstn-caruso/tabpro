@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -38,7 +39,7 @@ class TrackPanelAlignmentTest {
     }
 
     private static TrackPanel panelWithTwoTracksPlayingTheFirstMeasure() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
         for (int track = 0; track < 2; track++) {
             editor.selectTrack(track);

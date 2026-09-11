@@ -8,13 +8,14 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class InstrumentEditingTest {
 
-    private final Editor editor = new Editor(Score.blank());
+    private final Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
     private final RecordingPlayer player = new RecordingPlayer();
     private final InstrumentEditing editing = new InstrumentEditing(editor, player);
 

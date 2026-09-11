@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -28,7 +29,7 @@ class MeasureGridTest {
 
     @Test
     void aCellSitsUnderItsMeasureAndBesideItsTrack() {
-        MeasureGrid grid = new MeasureGrid(new Editor(Score.blank()));
+        MeasureGrid grid = new MeasureGrid(new Editor(Score.blank(new TextsDefaultNames())));
 
         Rectangle first = grid.cellBounds(0, 0);
         Rectangle laterMeasure = grid.cellBounds(0, 3);
@@ -205,7 +206,7 @@ class MeasureGridTest {
     }
 
     private static Editor editorWithTwoTracksAndThreeMeasures() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
         editor.insertMeasure();
         editor.insertMeasure();
@@ -216,7 +217,7 @@ class MeasureGridTest {
 
     @Test
     void hasAnAccessibleNameAndTooltip() {
-        MeasureGrid grid = new MeasureGrid(new Editor(Score.blank()));
+        MeasureGrid grid = new MeasureGrid(new Editor(Score.blank(new TextsDefaultNames())));
 
         assertEquals("Grilla de compases", grid.getAccessibleContext().getAccessibleName());
         assertTrue(grid.getToolTipText() != null && !grid.getToolTipText().isBlank());

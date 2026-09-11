@@ -22,6 +22,7 @@ import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.page.Orientation;
 import com.gstncaruso.tabpro.ui.page.PageBanner;
 import com.gstncaruso.tabpro.ui.page.PageElement;
@@ -60,8 +61,8 @@ class PageScorePainterTest {
     void layoutIsRecalculatedWhenTheScoreChanges() {
         ScoreViewport viewport = ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH);
 
-        ScoreLayout first = PageScorePainter.layoutFor(Score.blank(), viewport);
-        ScoreLayout second = PageScorePainter.layoutFor(Score.blank(), viewport);
+        ScoreLayout first = PageScorePainter.layoutFor(Score.blank(new TextsDefaultNames()), viewport);
+        ScoreLayout second = PageScorePainter.layoutFor(Score.blank(new TextsDefaultNames()), viewport);
 
         assertNotSame(first, second,
                 "two different scores, even with equal content, cannot share the cache");
@@ -92,7 +93,7 @@ class PageScorePainterTest {
 
     @Test
     void pageModeIsAsWideAsTheChosenPaper() {
-        Dimension size = PageScorePainter.canvasSize(Score.blank(), pageViewport(paperOf(PaperFormat.LETTER, Orientation.PORTRAIT)));
+        Dimension size = PageScorePainter.canvasSize(Score.blank(new TextsDefaultNames()), pageViewport(paperOf(PaperFormat.LETTER, Orientation.PORTRAIT)));
 
         assertEquals(850, size.width);
     }
@@ -100,9 +101,9 @@ class PageScorePainterTest {
     @Test
     void turningThePaperSidewaysMakesTheSheetWider() {
         Dimension portrait = PageScorePainter.canvasSize(
-                Score.blank(), pageViewport(paperOf(PaperFormat.A4, Orientation.PORTRAIT)));
+                Score.blank(new TextsDefaultNames()), pageViewport(paperOf(PaperFormat.A4, Orientation.PORTRAIT)));
         Dimension landscape = PageScorePainter.canvasSize(
-                Score.blank(), pageViewport(paperOf(PaperFormat.A4, Orientation.LANDSCAPE)));
+                Score.blank(new TextsDefaultNames()), pageViewport(paperOf(PaperFormat.A4, Orientation.LANDSCAPE)));
 
         assertTrue(landscape.width > portrait.width, "a landscape sheet is wider");
     }
@@ -131,15 +132,15 @@ class PageScorePainterTest {
     @Test
     void screenVerticalModeFillsTheViewport() {
         Dimension size = PageScorePainter.canvasSize(
-                Score.blank(), ScoreViewport.of(ViewMode.SCREEN_VERTICAL, Zoom.whole(), VIEWPORT_WIDTH));
+                Score.blank(new TextsDefaultNames()), ScoreViewport.of(ViewMode.SCREEN_VERTICAL, Zoom.whole(), VIEWPORT_WIDTH));
 
         assertEquals(VIEWPORT_WIDTH, size.width);
     }
 
     @Test
     void zoomScalesTheCanvas() {
-        Dimension whole = PageScorePainter.canvasSize(Score.blank(), ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
-        Dimension half = PageScorePainter.canvasSize(Score.blank(), ScoreViewport.of(ViewMode.PAGE, new Zoom(50), VIEWPORT_WIDTH));
+        Dimension whole = PageScorePainter.canvasSize(Score.blank(new TextsDefaultNames()), ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
+        Dimension half = PageScorePainter.canvasSize(Score.blank(new TextsDefaultNames()), ScoreViewport.of(ViewMode.PAGE, new Zoom(50), VIEWPORT_WIDTH));
 
         assertEquals(whole.width / 2.0, half.width, ONE_PIXEL_OF_REDONDEO);
         assertEquals(whole.height / 2.0, half.height, ONE_PIXEL_OF_REDONDEO);
@@ -149,7 +150,7 @@ class PageScorePainterTest {
     void aTallScoreNeedsMoreThanOnePageInPageMode() {
         Score score = scoreWithMeasures(60);
 
-        Dimension onePage = PageScorePainter.canvasSize(Score.blank(), ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
+        Dimension onePage = PageScorePainter.canvasSize(Score.blank(new TextsDefaultNames()), ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
         Dimension manyPages = PageScorePainter.canvasSize(score, ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
 
         assertTrue(manyPages.height > onePage.height * 2, "a long score takes up several sheets");
@@ -175,7 +176,7 @@ class PageScorePainterTest {
 
     @Test
     void hitTestInPageModeFindsTheSameBeatAsAPlainClick() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TextsDefaultNames());
         Dimension size = PageScorePainter.canvasSize(score, ScoreViewport.of(ViewMode.PAGE, Zoom.whole(), VIEWPORT_WIDTH));
         paint(score, ViewMode.PAGE, Zoom.whole());
         PageMetrics sheet = PageMetrics.of(PageSetup.defaults());
@@ -191,7 +192,7 @@ class PageScorePainterTest {
 
     @Test
     void hitTestOutsideAnyPageFindsNothing() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TextsDefaultNames());
         paint(score, ViewMode.PAGE, Zoom.whole());
 
         Optional<ScoreLayout.Hit> hit = PageScorePainter.hitTest(
@@ -277,7 +278,7 @@ class PageScorePainterTest {
 
     @Test
     void turningOffAnElementOfTheHeaderChangesWhatTheSheetShows() {
-        Score score = Score.blank().withInfo(ScoreInfo.titled("Test song"));
+        Score score = Score.blank(new TextsDefaultNames()).withInfo(ScoreInfo.titled("Test song"));
         PageSetup showingTheTitle = PageSetup.defaults();
         PageSetup hidingTheTitle = new PageSetup(
                 PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, 100,
@@ -295,8 +296,8 @@ class PageScorePainterTest {
                 PaperFormat.A4, Orientation.PORTRAIT, 20, 20, 20, 20, 100,
                 onlyTheTitleSaying("House Songbook"), PageBanner.footer());
 
-        RecordingCanvas one = renderOnCanvas(Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
-        RecordingCanvas another = renderOnCanvas(Score.blank().withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
+        RecordingCanvas one = renderOnCanvas(Score.blank(new TextsDefaultNames()).withInfo(ScoreInfo.titled("Sultans of Swing")), fixedHeading);
+        RecordingCanvas another = renderOnCanvas(Score.blank(new TextsDefaultNames()).withInfo(ScoreInfo.titled("Money for Nothing")), fixedHeading);
 
         assertTrue(one.matchesInRegion(another, headerRegionOf(fixedHeading)),
                 "the header is the configured text, not the score's title");
@@ -483,7 +484,7 @@ class PageScorePainterTest {
     }
 
     private static Score scoreWithLyricsAndInfo() {
-        Score score = Score.blank().withInfo(
+        Score score = Score.blank(new TextsDefaultNames()).withInfo(
                 ScoreInfo.titled("Test song").withArtist("Someone").withCopyright("(c) 2026"));
         return score.withLyrics(
                 com.gstncaruso.tabpro.core.model.Lyrics.none().onTrack(0)

@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -85,7 +86,7 @@ class PageLayoutTest {
 
     @Test
     void aShortScoreFitsInOnePage() {
-        ScoreLayout layout = ScoreLayout.of(Score.blank(), 4000);
+        ScoreLayout layout = ScoreLayout.of(Score.blank(new TextsDefaultNames()), 4000);
 
         PageLayout page = PageLayout.paginated(layout, A_PAGE_TALL);
 

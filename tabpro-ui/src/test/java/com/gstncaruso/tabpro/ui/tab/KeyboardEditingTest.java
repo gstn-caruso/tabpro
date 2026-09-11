@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,14 +29,14 @@ class KeyboardEditingTest {
 
     @Test
     void typingADigitWritesTheFret() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         keyboardEditing(editor).keyTyped('5');
         assertEquals(Optional.of(new Note(1, 5)), editor.currentBeat().noteOn(1));
     }
 
     @Test
     void typingTwoDigitsQuicklyWritesATwoDigitFret() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         KeyboardEditing keyboard = keyboardEditing(editor);
         keyboard.keyTyped('1');
         now[0] += 100;
@@ -45,7 +46,7 @@ class KeyboardEditingTest {
 
     @Test
     void bindsArrowsToCursorMoves() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
 
         bindings.get(KeyStroke.getKeyStroke("RIGHT")).run();
@@ -63,7 +64,7 @@ class KeyboardEditingTest {
 
     @Test
     void bindsTabToToggleTheNotation() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
 
         bindings.get(KeyStroke.getKeyStroke("TAB")).run();
@@ -76,7 +77,7 @@ class KeyboardEditingTest {
 
     @Test
     void bindsShiftRightToExtendTheSelectionInsteadOfClearingIt() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
 
         bindings.get(KeyStroke.getKeyStroke("shift RIGHT")).run();
@@ -87,7 +88,7 @@ class KeyboardEditingTest {
 
     @Test
     void bindsPlainRightToClearAnyActiveSelection() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.startSelection(false);
         Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
 
@@ -98,7 +99,7 @@ class KeyboardEditingTest {
 
     @Test
     void bindsHomeAndEndToMeasureEdges() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.moveRight();
         Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
 
@@ -114,7 +115,7 @@ class KeyboardEditingTest {
 
     @Test
     void bindsBackspaceToClearNote() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(3);
         Map<KeyStroke, Runnable> bindings = keyboardEditing(editor).bindings();
 
@@ -128,7 +129,7 @@ class KeyboardEditingTest {
 
     @Test
     void movingTheCursorResetsTheDigitBuffer() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         KeyboardEditing keyboard = keyboardEditing(editor);
         Map<KeyStroke, Runnable> bindings = keyboard.bindings();
 
@@ -144,7 +145,7 @@ class KeyboardEditingTest {
 
     @Test
     void aNonDigitKeyResetsTheDigitBuffer() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         KeyboardEditing keyboard = keyboardEditing(editor);
 
         keyboard.keyTyped('1');
@@ -158,7 +159,7 @@ class KeyboardEditingTest {
 
     @Test
     void typingAnAsteriskTogglesTheDotJustLikeThePeriodDoes() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         KeyboardEditing keyboard = keyboardEditing(editor);
 
         keyboard.keyTyped('*');
@@ -172,7 +173,7 @@ class KeyboardEditingTest {
 
     @Test
     void typingAnAsteriskAlsoResetsTheDigitBuffer() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         KeyboardEditing keyboard = keyboardEditing(editor);
 
         keyboard.keyTyped('1');

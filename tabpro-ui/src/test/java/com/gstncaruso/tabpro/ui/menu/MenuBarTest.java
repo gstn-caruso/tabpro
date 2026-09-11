@@ -15,6 +15,7 @@ import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.nio.file.Path;
@@ -33,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 class MenuBarTest {
 
-    private final Editor editor = new Editor(Score.blank());
+    private final Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
     private final List<Path> opened = new ArrayList<>();
     private final Commands commands = new Commands(
             editor, record(Ports.Document.class), record(Ports.Dialogs.class),

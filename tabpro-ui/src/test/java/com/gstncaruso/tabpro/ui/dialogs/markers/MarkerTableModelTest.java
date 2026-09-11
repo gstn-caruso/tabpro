@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
@@ -21,14 +22,14 @@ class MarkerTableModelTest {
 
     @Test
     void isEmptyForAFreshScore() {
-        MarkerTableModel model = new MarkerTableModel(Score.blank());
+        MarkerTableModel model = new MarkerTableModel(Score.blank(new TextsDefaultNames()));
 
         assertEquals(0, model.getRowCount());
     }
 
     @Test
     void showsThePositionAndNameOfOneMarker() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setMarker(Marker.named("Intro"));
 
         MarkerTableModel model = new MarkerTableModel(editor.score());
@@ -40,7 +41,7 @@ class MarkerTableModelTest {
 
     @Test
     void ordersSeveralMarkersByMeasure() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.insertMeasure();
         editor.moveToFirstMeasure();
         editor.setMarker(Marker.named("Intro"));
@@ -56,7 +57,7 @@ class MarkerTableModelTest {
 
     @Test
     void namesItsColumnsAsInTheManual() {
-        MarkerTableModel model = new MarkerTableModel(Score.blank());
+        MarkerTableModel model = new MarkerTableModel(Score.blank(new TextsDefaultNames()));
 
         assertEquals("Posición", model.getColumnName(0));
         assertEquals("Nombre", model.getColumnName(1));

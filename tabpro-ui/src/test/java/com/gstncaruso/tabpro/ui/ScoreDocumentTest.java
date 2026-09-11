@@ -14,6 +14,7 @@ import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties;
 import com.gstncaruso.tabpro.ui.dialogs.info.NewScoreDefaults;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -44,14 +45,14 @@ class ScoreDocumentTest {
 
     @Test
     void startsWithABlankScoreAndNoPath() {
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank(new TextsDefaultNames())), new FakeScoreFiles(), testPreferences());
 
         assertTrue(document.path().isEmpty());
     }
 
     @Test
     void theRecoveryFileNameIsALanguageNeutralIdentifier() {
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank(new TextsDefaultNames())), new FakeScoreFiles(), testPreferences());
 
         assertEquals("tabpro-recovery" + ScoreDocument.EXTENSION, document.recoveryFile().getFileName().toString());
     }
@@ -62,7 +63,7 @@ class ScoreDocumentTest {
         deleteRealRecoveryFiles();
         Path legacyRecovery = Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recuperación" + ScoreDocument.EXTENSION);
         Files.createFile(legacyRecovery);
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank(new TextsDefaultNames())), new FakeScoreFiles(), testPreferences());
 
         try {
             assertEquals(Optional.of(legacyRecovery), document.pendingRecovery());
@@ -77,7 +78,7 @@ class ScoreDocumentTest {
         deleteRealRecoveryFiles();
         Path legacyRecovery = Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recuperación" + ScoreDocument.EXTENSION);
         Files.createFile(legacyRecovery);
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank(new TextsDefaultNames())), new FakeScoreFiles(), testPreferences());
 
         try {
             document.discardRecovery();
@@ -90,7 +91,7 @@ class ScoreDocumentTest {
 
     @Test
     void describesAnUntitledDocument() {
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank(new TextsDefaultNames())), new FakeScoreFiles(), testPreferences());
 
         assertEquals(ScoreDocument.untitled(), document.displayName());
     }
@@ -98,7 +99,7 @@ class ScoreDocumentTest {
     @Test
     void saveWithoutAPathAsksForOne() {
         FakeScoreFiles files = new FakeScoreFiles();
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files, testPreferences());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank(new TextsDefaultNames())), files, testPreferences());
 
         assertFalse(document.save());
         assertEquals(0, files.saveCount);
@@ -107,7 +108,7 @@ class ScoreDocumentTest {
     @Test
     void saveAsRemembersThePath() {
         FakeScoreFiles files = new FakeScoreFiles();
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files, testPreferences());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank(new TextsDefaultNames())), files, testPreferences());
         Path path = Path.of("song.tabpro");
 
         document.saveAs(path);
@@ -119,7 +120,7 @@ class ScoreDocumentTest {
     @Test
     void saveReusesTheRememberedPath() {
         FakeScoreFiles files = new FakeScoreFiles();
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files, testPreferences());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank(new TextsDefaultNames())), files, testPreferences());
         Path path = Path.of("song.tabpro");
         document.saveAs(path);
 
@@ -133,9 +134,9 @@ class ScoreDocumentTest {
     void openReplacesTheScoreAndRemembersThePath() {
         FakeScoreFiles files = new FakeScoreFiles();
         Path path = Path.of("song.tabpro");
-        Score savedScore = Score.blank().withTitle("Saved song");
+        Score savedScore = Score.blank(new TextsDefaultNames()).withTitle("Saved song");
         files.scores.put(path, savedScore);
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ScoreDocument document = new ScoreDocument(editor, files, testPreferences());
 
         document.open(path);
@@ -147,14 +148,14 @@ class ScoreDocumentTest {
     @Test
     void newForgetsThePath() {
         FakeScoreFiles files = new FakeScoreFiles();
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ScoreDocument document = new ScoreDocument(editor, files, testPreferences());
         document.saveAs(Path.of("song.tabpro"));
 
         document.newScore();
 
         assertTrue(document.path().isEmpty());
-        assertEquals(Score.blank(), editor.score());
+        assertEquals(Score.blank(new TextsDefaultNames()), editor.score());
     }
 
     @Test
@@ -165,7 +166,7 @@ class ScoreDocumentTest {
         DefaultScoreProperties defaultProperties = new DefaultScoreProperties(defaultsNode);
         defaultProperties.save(new NewScoreDefaults(
                 90, new TimeSignature(3, 4), KeySignature.cMajor(), "", ""));
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ScoreDocument document = new ScoreDocument(
                 editor, new FakeScoreFiles(), testPreferences(), () -> defaultProperties.get().newScore());
 
@@ -178,7 +179,7 @@ class ScoreDocumentTest {
     @Test
     void describesTheDocumentByItsFileName() {
         FakeScoreFiles files = new FakeScoreFiles();
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), files, testPreferences());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank(new TextsDefaultNames())), files, testPreferences());
 
         document.saveAs(Path.of("folder", "song.tabpro"));
 
@@ -189,20 +190,20 @@ class ScoreDocumentTest {
     void aFailedOpenKeepsThePreviousPath() {
         FakeScoreFiles files = new FakeScoreFiles();
         Path savedPath = Path.of("song.tabpro");
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ScoreDocument document = new ScoreDocument(editor, files, testPreferences());
         document.saveAs(savedPath);
 
         assertThrows(ScoreFileException.class, () -> document.open(Path.of("does-not-exist.tabpro")));
 
         assertEquals(Optional.of(savedPath), document.path());
-        assertEquals(Score.blank(), editor.score());
+        assertEquals(Score.blank(new TextsDefaultNames()), editor.score());
     }
 
 
     @Test
     void aFreshDocumentHasNothingToSave() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
 
         assertFalse(document.hasUnsavedChanges());
@@ -210,7 +211,7 @@ class ScoreDocumentTest {
 
     @Test
     void writingANoteLeavesUnsavedChanges() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
 
         editor.setFret(5);
@@ -220,7 +221,7 @@ class ScoreDocumentTest {
 
     @Test
     void savingClearsTheUnsavedChanges() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
         document.saveAs(Path.of("/tmp/test.tabpro"));
 
@@ -232,7 +233,7 @@ class ScoreDocumentTest {
 
     @Test
     void theWindowTitleShowsTheFileTheChangesAndTheScore() {
-        Editor editor = new Editor(Score.blank().withTitle("My song"));
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()).withTitle("My song"));
         ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
 
         editor.setFret(5);
@@ -243,14 +244,14 @@ class ScoreDocumentTest {
 
     @Test
     void theWindowTitleOfAnUntitledScoreWithoutAnArtistUsesUntitledAsItsHeading() {
-        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank(new TextsDefaultNames())), new FakeScoreFiles(), testPreferences());
 
         assertEquals("Sin título — Sin título — tabpro", document.windowTitle());
     }
 
     @Test
     void theWindowTitleHeadingJoinsTheTitleAndTheArtistWithADash() {
-        Score score = Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing").withArtist("Dire Straits"));
+        Score score = Score.blank(new TextsDefaultNames()).withInfo(ScoreInfo.titled("Sultans of Swing").withArtist("Dire Straits"));
         ScoreDocument document = new ScoreDocument(new Editor(score), new FakeScoreFiles(), testPreferences());
 
         assertEquals("Sin título — Sultans of Swing - Dire Straits — tabpro", document.windowTitle());
@@ -258,7 +259,7 @@ class ScoreDocumentTest {
 
     @Test
     void theWindowTitleHeadingFallsBackToTheArtistWhenThereIsNoTitle() {
-        Score score = Score.blank().withInfo(ScoreInfo.empty().withArtist("Dire Straits"));
+        Score score = Score.blank(new TextsDefaultNames()).withInfo(ScoreInfo.empty().withArtist("Dire Straits"));
         ScoreDocument document = new ScoreDocument(new Editor(score), new FakeScoreFiles(), testPreferences());
 
         assertEquals("Sin título — Dire Straits — tabpro", document.windowTitle());
@@ -267,10 +268,10 @@ class ScoreDocumentTest {
     @Test
     void openingAFileRemembersItAmongTheRecentOnes() {
         Preferences preferences = testPreferences();
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         FakeScoreFiles files = new FakeScoreFiles();
         Path path = Path.of("/tmp/test.tabpro");
-        files.scores.put(path, Score.blank());
+        files.scores.put(path, Score.blank(new TextsDefaultNames()));
         ScoreDocument document = new ScoreDocument(editor, files, preferences);
 
         document.open(path);
@@ -281,10 +282,10 @@ class ScoreDocumentTest {
     @Test
     void exposesTheRecentFilesToOfferThemInTheFileMenu() {
         Preferences preferences = testPreferences();
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         FakeScoreFiles files = new FakeScoreFiles();
         Path path = Path.of("/tmp/test.tabpro");
-        files.scores.put(path, Score.blank());
+        files.scores.put(path, Score.blank(new TextsDefaultNames()));
         ScoreDocument document = new ScoreDocument(editor, files, preferences);
 
         document.open(path);
@@ -294,10 +295,10 @@ class ScoreDocumentTest {
 
     @Test
     void anImportedScoreHasNoFileOfItsOwn() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ScoreDocument document = new ScoreDocument(editor, new FakeScoreFiles(), testPreferences());
 
-        document.adopt(Score.blank().withTitle("Imported"));
+        document.adopt(Score.blank(new TextsDefaultNames()).withTitle("Imported"));
 
         assertTrue(document.path().isEmpty());
         assertTrue(document.hasUnsavedChanges());

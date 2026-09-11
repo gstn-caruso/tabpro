@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -28,7 +29,7 @@ class MarkerZoneTest {
 
     @Test
     void paintsTheMarkerNameInWarningRedInsteadOfItsOwnColor() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         for (int i = 0; i < 5; i++) {
             editor.insertMeasure();
         }
@@ -57,7 +58,7 @@ class MarkerZoneTest {
 
     @Test
     void isAsWideAsTheGridAndAsTallAsItsOwnBand() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.insertMeasure();
         editor.insertMeasure();
         MarkerZone zone = new MarkerZone(editor);
@@ -70,7 +71,7 @@ class MarkerZoneTest {
 
     @Test
     void findsTheMeasureUnderThePointer() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.insertMeasure();
         editor.insertMeasure();
         MarkerZone zone = new MarkerZone(editor);
@@ -82,7 +83,7 @@ class MarkerZoneTest {
 
     @Test
     void hasAnAccessibleNameAndTooltip() {
-        MarkerZone zone = new MarkerZone(new Editor(Score.blank()));
+        MarkerZone zone = new MarkerZone(new Editor(Score.blank(new TextsDefaultNames())));
 
         assertEquals("Zona de marcadores", zone.getAccessibleContext().getAccessibleName());
         assertTrue(zone.getToolTipText() != null && !zone.getToolTipText().isBlank());
@@ -90,7 +91,7 @@ class MarkerZoneTest {
 
     @Test
     void theRightArrowKeyMovesTheCaretToTheNextMeasure() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.insertMeasure();
         editor.insertMeasure();
         MarkerZone zone = new MarkerZone(editor);
@@ -107,7 +108,7 @@ class MarkerZoneTest {
 
     @Test
     void paintsAVisibleCaretRingWhenItGetsFocus() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.insertMeasure();
         MarkerZone zone = new MarkerZone(editor);
         zone.setSize(zone.getPreferredSize());
@@ -146,7 +147,7 @@ class MarkerZoneTest {
 
     @Test
     void enterEditsTheMarkerAtTheCaretJustLikeADoubleClick() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.insertMeasure();
         editor.insertMeasure();
         MarkerZone zone = new MarkerZone(editor);

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -81,7 +82,7 @@ class MeasureGridPaintingTest {
     }
 
     private static Editor editorWithTwoTracksAndThreeMeasures() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
         editor.insertMeasure();
         editor.insertMeasure();

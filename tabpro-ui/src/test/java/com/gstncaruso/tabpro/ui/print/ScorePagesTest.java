@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.score.RecordingCanvas;
 import com.gstncaruso.tabpro.ui.score.Zoom;
@@ -101,7 +102,7 @@ class ScorePagesTest {
 
     @Test
     void theChosenScaleIsAppliedAndFitsMoreSheetOnTheSamePaper() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TextsDefaultNames());
         BufferedImage fullSheet = ScoreSheets.renderPage(score, Zoom.whole(), A4, 0);
         int footerRow = lastInkRowOf(fullSheet);
         Dimension sheet = ScoreSheets.pageSize(Zoom.whole(), A4);

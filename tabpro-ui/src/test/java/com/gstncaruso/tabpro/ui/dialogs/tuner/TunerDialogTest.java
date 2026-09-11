@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import com.gstncaruso.tabpro.ui.dialogs.RecordingPlayer;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ class TunerDialogTest {
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         AccessibilityAssertions.assertNoViolations(
                 TunerDialog.buildTabs(editor, new RecordingPlayer(), Ports.Microphone.NONE).pane());

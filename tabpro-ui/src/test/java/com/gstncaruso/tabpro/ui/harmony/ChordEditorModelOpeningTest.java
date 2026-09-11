@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.model.effects.BeatEffects;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ class ChordEditorModelOpeningTest {
 
     @Test
     void acceptingWritesTheChordIntoTheBeat() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), editor.currentTrack().tuning());
         model.selectRoot(PitchClass.of("G"));
 
@@ -87,7 +88,7 @@ class ChordEditorModelOpeningTest {
 
     @Test
     void ifTheBeatHadNoNotesAcceptingWritesThem() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), editor.currentTrack().tuning());
         model.selectType(com.gstncaruso.tabpro.core.harmony.ChordType.MINOR);
 
@@ -98,7 +99,7 @@ class ChordEditorModelOpeningTest {
 
     @Test
     void ifTheBeatAlreadyHadNotesAcceptingDoesNotTouchThem() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(5);
         Note originalNote = editor.currentBeat().noteOn(editor.cursor().string()).orElseThrow();
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), editor.currentTrack().tuning());
@@ -110,7 +111,7 @@ class ChordEditorModelOpeningTest {
 
     @Test
     void acceptingLeavesTheCursorWhereItWas() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.moveTo(0, 0, 3);
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), editor.currentTrack().tuning());
 

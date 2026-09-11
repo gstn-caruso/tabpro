@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Component;
 import java.util.Locale;
@@ -45,7 +46,7 @@ class ChordDialogTest {
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 
@@ -56,7 +57,7 @@ class ChordDialogTest {
 
     @Test
     void theChordTypeComboShowsTheMusicalSuffixInsteadOfTheRawEnum() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 
@@ -72,7 +73,7 @@ class ChordDialogTest {
 
     @Test
     void thePositionsAreAlwaysVisibleRadioButtonsThatChooseTheComplexity() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 
@@ -90,7 +91,7 @@ class ChordDialogTest {
 
     @Test
     void theBarreIsChosenWithAlwaysVisibleRadioButtons() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 
@@ -108,7 +109,7 @@ class ChordDialogTest {
 
     @Test
     void theRootComboShowsTheNoteNameInSpanish() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 
@@ -124,7 +125,7 @@ class ChordDialogTest {
 
     @Test
     void theInversionComboShowsFundamentalForTheRootAndTheDegreeWithTheNoteForTheOthers() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 
@@ -145,7 +146,7 @@ class ChordDialogTest {
 
     @Test
     void theAlternativeNamesListShowsTheChordNameInsteadOfTheRawRecord() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChordEditorModel model = ChordEditorModel.forBeat(editor.currentBeat(), Tuning.standard());
         ChordLibrary library = new ChordLibrary(scratch);
 

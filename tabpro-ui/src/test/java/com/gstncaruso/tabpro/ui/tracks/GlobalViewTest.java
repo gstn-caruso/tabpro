@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.Dimension;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ class GlobalViewTest {
 
     @Test
     void stacksTheMarkerZoneOnTopOfTheGrid() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         GlobalView view = new GlobalView(editor);
 
         Dimension size = view.getPreferredSize();
@@ -23,7 +24,7 @@ class GlobalViewTest {
 
     @Test
     void movingTheCursorHighlightDelegatesToTheGridWithoutRevalidating() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         SpyingMeasureGrid grid = new SpyingMeasureGrid(editor);
         GlobalView view = new GlobalView(new MarkerZone(editor), grid);
         grid.forgetCallsMadeWhileBuilding();
