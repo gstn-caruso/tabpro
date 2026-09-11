@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.editing.Clipboard;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.editing.PasteOptions;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -16,13 +17,13 @@ class ClippingJsonTest {
 
     @Test
     void aClippingSurvivesTheRoundTripToJsonAndBack() {
-        Editor source = new Editor(Score.blank());
+        Editor source = new Editor(Score.blank(new TextsDefaultNames()));
         source.setFret(5);
         source.copy(false);
 
         Clipboard.Clipping roundTripped = json.decode(json.encode(source.clipboard().content()));
 
-        Editor target = new Editor(Score.blank());
+        Editor target = new Editor(Score.blank(new TextsDefaultNames()));
         target.clipboard().hold(roundTripped);
         target.paste(PasteOptions.replacingOnce());
 

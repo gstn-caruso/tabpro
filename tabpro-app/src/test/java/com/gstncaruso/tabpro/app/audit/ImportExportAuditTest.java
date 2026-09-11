@@ -74,7 +74,7 @@ class ImportExportAuditTest {
 
     @Test
     void openingThroughTheMenuReadsAnOwnTabproFileTheSameAsItWasSaved(@TempDir Path tempDir) throws Exception {
-        Score original = Score.blank();
+        Score original = Score.blank(new TextsDefaultNames());
         Path path = tempDir.resolve("own.tabpro");
         new JsonScoreFiles().save(original, path);
 
@@ -190,7 +190,7 @@ class ImportExportAuditTest {
     void importingMidiThroughTheMenuOffersTheRealTracksAndQuickImportBringsThemToTheModel(@TempDir Path tempDir)
             throws Exception {
         Path midiPath = tempDir.resolve("other.mid");
-        new MidiScoreExporter().export(Score.blank(), midiPath);
+        new MidiScoreExporter().export(Score.blank(new TextsDefaultNames()), midiPath);
 
         Editor editor = blankEditor();
         MainFrame frame = newFrame(editor);

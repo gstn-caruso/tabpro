@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.playback.Timeline;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +25,8 @@ class CombinedExchangeTest {
 
     @Test
     void sendsTheSoundFormatsToTheSoundSide() {
-        exchange.exportMidi(Score.blank(), Path.of("test.mid"));
-        exchange.exportWave(Score.blank(), Path.of("test.wav"), AudioQuality.standard());
+        exchange.exportMidi(Score.blank(new TextsDefaultNames()), Path.of("test.mid"));
+        exchange.exportWave(Score.blank(new TextsDefaultNames()), Path.of("test.wav"), AudioQuality.standard());
 
         assertEquals(List.of("exportMidi", "exportWave"), soundCalls);
         assertEquals(List.of(), notationCalls);
@@ -35,7 +36,7 @@ class CombinedExchangeTest {
     void sendsTheNotationFormatsToTheNotationSide() {
         exchange.importMidi(Path.of("other.mid"));
         exchange.importGuitarPro(Path.of("other.gp5"));
-        exchange.exportMusicXml(Score.blank(), Path.of("test.xml"));
+        exchange.exportMusicXml(Score.blank(new TextsDefaultNames()), Path.of("test.xml"));
 
         assertEquals(List.of("importMidi", "importGuitarPro", "exportMusicXml"), notationCalls);
         assertEquals(List.of(), soundCalls);
@@ -46,13 +47,13 @@ class CombinedExchangeTest {
             @Override
             public Score importMidi(Path path) {
                 notationCalls.add("importMidi");
-                return Score.blank();
+                return Score.blank(new TextsDefaultNames());
             }
 
             @Override
             public Score importGuitarPro(Path path) {
                 notationCalls.add("importGuitarPro");
-                return Score.blank();
+                return Score.blank(new TextsDefaultNames());
             }
 
             @Override
