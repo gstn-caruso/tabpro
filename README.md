@@ -1,273 +1,278 @@
 # tabpro
 
-Editor libre de tablaturas y partituras para guitarra, en Java 25 con Swing.
-Escribís la música, la ves como en un cancionero publicado y la escuchás sonar.
+A free guitar tablature and score editor, in Java 25 with Swing. You write
+the music, see it as it looks in a published songbook, and hear it play.
 
 ![The tabpro window](docs/screenshots/tabpro.png)
 
-Está inspirado en Guitar Pro 5.2, del que toma la disposición de las barras
-—con la de efectos pegada debajo de la partitura, como el original— y los
-atajos de teclado. Tema oscuro, con los pictogramas de Tabler Icons y los
-símbolos musicales de la fuente Bravura.
+It takes after Guitar Pro 5.2, borrowing its toolbar layout — with the
+effects bar right under the score, like the original — and its keyboard
+shortcuts. Dark theme, with Tabler Icons pictograms and musical symbols from
+the Bravura font.
 
-## Qué hace
+## What It Does
 
-**Escribís en la tablatura y en el pentagrama a la vez.** Lo que ponés en una
-aparece en la otra. Se escribe con el teclado —los dígitos son el traste, las
-flechas mueven el cursor—, clickeando el diapasón o el piano de arriba, o tocando
-un instrumento MIDI conectado.
+**You write in the tablature and the staff at the same time.** Whatever you
+enter in one shows up in the other. Write with the keyboard — digits are the
+fret, arrows move the cursor —, by clicking the fretboard or the keyboard
+above, or by playing a connected MIDI instrument.
 
-**Una partitura tiene todas las pistas que quieras**, cada una con su afinación,
-su cantidad de cuerdas, su capo y su instrumento. Podés verlas todas juntas o de
-a una —saltando entre ellas con el selector numerado de la barra— y apagar desde
-la mesa de mezcla las que molestan. Si le cambiás la cantidad de cuerdas a una
-pista, las notas se transponen a la afinación nueva en vez de perderse: una
-línea de banjo se convierte en una de guitarra.
+**A score holds as many tracks as you want**, each with its own tuning,
+string count, capo and instrument. You can view them all together or one at
+a time — jumping between them with the numbered selector on the toolbar —
+and mute the ones in your way from the mix table. If you change a track's
+string count, its notes transpose to the new tuning instead of getting lost:
+a banjo line becomes a guitar one.
 
-**La partitura se ve como sale impresa.** Hay modo página con su hoja, márgenes,
-encabezado y pie; modo pergamino sin cortes; y dos modos de pantalla que usan
-todo el espacio disponible. Con zoom del 30% al 200%, en un combo editable de la
-barra con los valores predefinidos del manual.
+**The score looks the way it prints.** There is Page mode with its sheet,
+margins, header and footer; Parchment mode with no page breaks; and two
+screen modes that use all the available space. Zoom ranges from 30% to 200%,
+in an editable toolbar combo with the manual's preset values.
 
 ![The score as it prints](docs/screenshots/sheet.png)
 
-**Suena.** Reproducción MIDI que respeta el orden real de los compases
-—repeticiones, finales alternativos y los saltos tipo *D.C. al Coda*— y los
-efectos: bends y palanca con su curva, slides, ligados, trinos, trémolos,
-armónicos, rasgueos demorados, notas de adorno, fade in y swing. Con metrónomo,
-cuenta regresiva, loop con entrenador de velocidad, tempo relativo de x0.25 a x2
-y modo paso a paso. Mientras suena, una línea vertical fina recorre el sistema
-marcando dónde va; hacer clic en cualquier compás salta ahí sin frenar el sonido,
-los botones de paso a paso pasan a moverse de compás en compás, y el título de la
-ventana muestra el tempo real de ese momento.
+**It plays.** MIDI playback that follows the real order of the bars —
+repeats, alternate endings and jumps like *D.C. al Coda* — and the effects:
+bends and the tremolo bar with their curve, slides, hammer-ons/pull-offs,
+trills, tremolo picking, harmonics, delayed strums, grace notes, fade in and
+swing. With metronome, count-in, loop with a speed trainer, relative tempo
+from x0.25 to x2 and step-by-step mode. While it plays, a thin vertical line
+runs across the system marking where it is; clicking any bar jumps there
+without stopping the sound, the step buttons switch to moving bar by bar,
+and the window title shows the actual tempo at that moment.
 
-**Con samples reales, si querés.** `F2` prende el banco de sonidos: tabpro busca
-los SoundFont (`.sf2`, `.dls`) instalados en la máquina y los toca con Gervill, el
-sintetizador que ya trae Java. Sin banco suena el sintetizador del sistema, como
-siempre. Y exporta la partitura a WAVE, que se renderiza sin abrir ninguna línea
-de audio: se puede exportar en una máquina sin placa de sonido.
+**With real samples, if you want.** `F2` turns on the sound bank: tabpro
+looks for the SoundFont files (`.sf2`, `.dls`) installed on the machine and
+plays them with Gervill, the synthesizer that ships with Java. Without a
+bank it sounds like the system synthesizer, as always. And it exports the
+score to WAVE, rendered without opening any audio line: you can export it on
+a machine with no sound card.
 
-Los cambios de parámetro que se insertan a mitad de partitura suenan de verdad:
-bajar el volumen de todas las pistas sobre el final, cambiar de instrumento en el
-estribillo o acelerar el tempo, con su transición medida en beats.
+Parameter changes inserted mid-score actually play: lowering every track's
+volume toward the end, switching instrument at the chorus, or speeding up
+the tempo, with a transition measured in beats.
 
-## La notación
+## Notation
 
-Clave, armadura, figuras con puntillo, plicas, barras de unión, silencios,
-alteraciones, ligaduras, grupos irregulares y **dos voces** por pista.
+Clef, key signature, dotted note values, stems, beams, rests, accidentals,
+ties, tuplets and **two voices** per track.
 
-Sobre eso, los símbolos del guitarrista: palm mute, let ring, tapping, slap y
-pop, armónicos naturales y artificiales, vibrato y vibrato amplio, trino, trémolo
-de púa, rasgueos, dirección de la púa, notas fantasma y muertas, acentos,
-staccato, ligados, los seis tipos de slide, bends con su curva editable, notas de
-adorno, digitación de las dos manos, texto libre y diagramas de acordes.
+On top of that, the guitarist's symbols: palm mute, let ring, tapping, slap
+and pop, natural and artificial harmonics, vibrato and wide vibrato, trill,
+tremolo picking, strums, pickstroke direction, ghost and dead notes, accents,
+staccato, hammer-ons/pull-offs, all six slide types, bends with an editable
+curve, grace notes, fingering for both hands, free text and chord diagrams.
 
-Y la estructura del compás: repeticiones con su conteo, finales alternativos,
-doble barra, direcciones musicales (Coda, Segno, Fine y los catorce saltos),
-marcadores —se editan desde el compás del cursor, sin abrir la lista completa—,
-octavas (8va, 8vb, 15ma y 15mb, que cambian dónde se escribe la nota sin tocar
-cómo suena), y saltos de línea forzados o impedidos para maquetar la hoja.
+And bar structure: repeats with their count, alternate endings, double bar,
+musical directions (Coda, Segno, Fine and the fourteen jumps), markers —
+edited from the bar under the cursor, without opening the full list —,
+octave marks (8va, 8vb, 15ma and 15mb, which change where the note is
+written without touching how it sounds), and forced or prevented line breaks
+to lay out the page.
 
-## El diapasón y el teclado
+## The Fretboard and the Keyboard
 
 ![The fretboard and the keyboard](docs/screenshots/fretboard-and-keyboard.png)
 
-Marcan las notas del beat y escriben al clic. Se ajustan solos a la afinación, al
-capo y a la cantidad de cuerdas de la pista activa. Muestran el beat solo, el
-compás, el próximo beat, el último diagrama de acorde o la escala elegida —y para
-las notas de la escala podés ver el nombre, el intervalo o el grado. Cuatro tipos
-de diapasón, zurdo o diestro, y la nota que está bajo el mouse. El diapasón
-tiene veta de madera y trastes metálicos; el teclado, teclas con bisel y la
-nota marcada con un punto. Cada uno se cierra con la ✕ de su propia banda de
-título.
+They mark the beat's notes and write on click. They adjust themselves to the
+active track's tuning, capo and string count. They can show just the beat,
+the bar, the next beat, the last chord diagram, or the chosen scale — and
+for scale notes you can show the name, the interval or the degree. Four
+fretboard types, left- or right-handed, and the note under the mouse. The
+fretboard has a wood grain finish and metal frets; the keyboard has beveled
+keys and marks the note with a dot. Each one closes with the ✕ on its own
+title bar.
 
-También podés colorear las cabezas de nota según su intensidad, para leer la
-dinámica de un vistazo, elegir qué barras de herramientas ves y cuáles no, e
-intercambiar de lugar la partitura y la mesa de mezcla.
+You can also color note heads by dynamic intensity, to read the dynamics at
+a glance, choose which toolbars you see and which you do not, and swap the
+score and the mix table's positions.
 
-## La mesa de mezcla y la vista global
+## The Mix Table and the Global View
 
 ![The mix table and the global view](docs/screenshots/mix-table.png)
 
-Puerto, los dos canales de la pista —el suyo y el de sus efectos, para que un bend
-no le corra la afinación a las notas limpias—, instrumento General MIDI —o kit de
-batería, si la pista es de percusión—, volumen y paneo con deslizador y caja
-numérica, chorus, reverb, phaser y trémolo como número plano, y silenciar y solo
-junto al número de cada pista. Todo editable mientras suena. Al lado, la vista
-global: una fila de color por pista, la regla de compases, los marcadores en
-rojo y un cuadradito plateado en cada compás sin notas, para saltar a cualquier
-parte de un clic.
+Port, the track's two channels — its own and its effects channel, so a bend
+does not shift the tuning of clean notes —, General MIDI instrument — or a
+drum kit, for percussion tracks —, volume and pan with a slider and a number
+box, chorus, reverb, phaser and tremolo as a plain number, and mute and solo
+next to each track's number. Everything editable while it plays. Next to it,
+the global view: one colored row per track, the bar ruler, markers in red,
+and a small silver square on every bar with no notes, to jump anywhere with
+a click.
 
-## Las herramientas
+## The Tools
 
-**La ventana de acordes** genera los diagramas para cualquier afinación, los
-nombra, propone la digitación y te deja corregirla a mano —y se acuerda de la que
-elegiste para la próxima vez que aparezca esa forma. Podés mover el traste base,
-forzar o prohibir la cejilla, omitir notas del acorde y guardarte los que más usás
-en una biblioteca propia.
+**The chord window** generates diagrams for any tuning, names them, suggests
+a fingering and lets you correct it by hand — and remembers the one you
+picked for the next time that shape shows up. You can move the base fret,
+force or forbid the barre, omit chord notes, and save the ones you use most
+in your own library.
 
-**La ventana de escalas** trae su biblioteca, muestra la construcción de cada
-escala y encuentra la que usa un rango de compases, ordenada por cuántas notas se
-le escapan.
+**The scale window** ships its own library, shows how each scale is built,
+and finds the one a range of bars uses, sorted by how many notes fall
+outside it.
 
-Más el **afinador** —el de oído, cuerda por cuerda, y el digital con micrófono—,
-el **asistente de percusión** y los asistentes del menú Herramientas: let ring,
-palm mute y dinámica por cuerda sobre un rango de compases, acomodar los compases,
-completar con silencios, digitación automática, transportar y revisar la duración
-de los compases.
+Plus the **tuner** — by ear, string by string, and the digital one with a
+microphone —, the **percussion assistant** and the wizards in the Tools
+menu: let ring, palm mute and dynamics per string over a range of bars,
+arranging bars, filling in with rests, automatic fingering, transposing and
+checking bar durations.
 
-## Accesibilidad
+## Accessibility
 
-**Todo se maneja sin mouse.** Los menús y los formularios se navegan por
-mnemónico (`Alt` + la letra subrayada); los deslizadores de la mesa de mezcla,
-el diapasón, el teclado, la grilla de la vista global, los marcadores, el
-asistente de percusión, los bends y el afinador se operan por teclado y
-muestran el foco. Desde la partitura, `Ctrl+F6` le cede el foco al resto de la
-ventana.
+**Everything works without a mouse.** Menus and dialogs are navigated by
+mnemonic (`Alt` + the underlined letter); the mix table's sliders, the
+fretboard, the keyboard, the global view grid, markers, the percussion
+assistant, bends and the tuner are all operated by keyboard and show focus.
+From the score, `Ctrl+F6` hands focus to the rest of the window.
 
-**Todo control tiene nombre y descripción accesibles**, además de su tooltip,
-para que un lector de pantalla lo anuncie aunque no lleve texto. La barra de
-estado, abajo de todo, separa página, posición, estado y duración del compás,
-pista, y título y autor en seis paneles con relieve propio, cada uno con su
-nombre.
+**Every control has an accessible name and description**, on top of its
+tooltip, so a screen reader announces it even without visible text. The
+status bar at the bottom separates page, position, bar status and duration,
+track, and title and author into six recessed panels, each with its own
+name.
 
-**Las dos paletas, clara y oscura, cumplen el contraste WCAG AA.**
-`Preferencias > Accesibilidad` suma tamaño de letra ajustable, alto contraste
-y la opción de apagar las animaciones.
+**Both palettes, light and dark, meet WCAG AA contrast.**
+`Preferences > Accessibility` adds an adjustable font size, high contrast,
+and the option to turn off animations.
 
-## Archivos
+**The interface ships in Spanish and English.** `Preferences > Language`
+offers Automatic, Español and English; Automatic follows the system
+language, and a change applies on restart.
 
-Cada partitura nueva arranca con el tempo, el compás, la armadura y los datos de
-encabezado que hayas dejado como propiedades por defecto.
+## Files
 
-Guarda en `.tabpro`, un JSON legible y versionado que conserva todo: efectos,
-ligaduras, grupos irregulares, las dos voces, los atributos de cada compás, las
-propiedades de pista, los datos del encabezado y la letra.
+Every new score starts with the tempo, time signature, key signature and
+header data you left as default properties.
 
-Abre archivos `.gp3`, `.gp4`, `.gp5` y `.gtp`, y exporta al formato de Guitar
-Pro 4 (avisando antes qué se pierde, si la partitura usa algo que ese formato no
-soporta).
+It saves to `.tabpro`, a readable, versioned JSON that keeps everything:
+effects, ties, tuplets, both voices, each bar's attributes, track
+properties, header data and lyrics.
 
-El lector y el escritor están verificados contra PyGuitarPro y contra los
-**sesenta y un archivos auténticos** de su suite de pruebas —diez `.gp3`,
-dieciséis `.gp4` y treinta y cinco `.gp5`—, no contra archivos que hubiera
-escrito tabpro: un lector y un escritor que comparten la misma suposición
-equivocada se dan la razón entre ellos, así que el oráculo tiene que venir de
-afuera.
+It opens `.gp3`, `.gp4`, `.gp5` and `.gtp` files, and exports to the Guitar
+Pro 4 format (warning beforehand about what is lost, if the score uses
+something that format does not support).
 
-**Abren sesenta de los sesenta y uno**, y el que falta tampoco lo abre
-PyGuitarPro. Antes de esa comprobación abrían veinticuatro: de los treinta y
-cinco `.gp5` abría **uno solo**.
+The reader and writer are verified against PyGuitarPro and against the
+**sixty-one authentic files** in its test suite — ten `.gp3`, sixteen `.gp4`
+and thirty-five `.gp5` — not against files tabpro itself wrote: a reader and
+a writer that share the same wrong assumption agree with each other, so the
+oracle has to come from outside.
 
-> Si importaste partituras de Guitar Pro con una versión anterior a la 0.17.1,
-> sus bends quedaron a la mitad de profundidad y algunos adornos con la
-> transición cambiada. No hay forma de arreglarlos desde el archivo ya
-> importado: volvé a importar el original.
+**Sixty of the sixty-one open**, and the one that does not is one
+PyGuitarPro cannot open either. Before that check, twenty-four used to open:
+of the thirty-five `.gp5` files, only **one** opened.
 
-Importa archivos `.tef` de TablEdit y `.ptb` de PowerTab.
+> If you imported Guitar Pro scores with a version earlier than 0.17.1,
+> their bends ended up at half depth and some grace notes with the wrong
+> transition. There is no way to fix them from the already-imported file:
+> re-import the original.
 
-Importa y exporta MIDI, tablatura ASCII y MusicXML, con sus ventanas: la de MIDI
-lista las pistas del archivo y deja importarlas de una o fusionar varias sobre una
-pista existente; la de ASCII deja pegar y corregir la tablatura antes de
-importarla sobre la pista activa.
+It imports `.tef` files from TablEdit and `.ptb` files from PowerTab.
 
-Exporta también la partitura como imagen y como PDF, y la imprime eligiendo el
-rango de páginas y la escala.
+It imports and exports MIDI, ASCII tablature and MusicXML, each with its own
+window: the MIDI one lists the file's tracks and lets you import them one at
+a time or merge several onto an existing track; the ASCII one lets you paste
+and fix the tablature before importing it onto the active track.
 
-El explorador de partituras (`Ctrl+B`) recorre una carpeta y deja escuchar cada
-archivo sin abrirlo: se elige cuántos compases suenan y la reproducción pasa sola
-al siguiente.
+It also exports the score as an image and as a PDF, and prints it letting
+you choose the page range and the scale.
 
-## Instalación
+The score browser (`Ctrl+B`) walks a folder and lets you listen to each file
+without opening it: you choose how many bars play and playback moves on to
+the next one by itself.
 
-**Debian / Ubuntu:** bajá el `.deb` de la última
-[release](https://github.com/gstn-caruso/tabpro/releases) e instalalo:
+## Installation
+
+**Debian / Ubuntu:** download the `.deb` from the latest
+[release](https://github.com/gstn-caruso/tabpro/releases) and install it:
 
 ```sh
 sudo apt install ./tabpro_0.59.5_all.deb
 tabpro
 ```
 
-Queda en el menú de aplicaciones y se asocia a los archivos `.tabpro`, `.gp3`,
-`.gp4`, `.gp5` y `.gtp`: abrir cualquiera desde el escritorio abre tabpro con esa
-partitura. Necesita una JRE 25 con entorno gráfico (`openjdk-25-jre`); la variante
-*headless* no alcanza.
+It shows up in the applications menu and gets associated with `.tabpro`,
+`.gp3`, `.gp4`, `.gp5` and `.gtp` files: opening any of them from the
+desktop opens tabpro with that score. It needs a JRE 25 with a graphical
+environment (`openjdk-25-jre`); the *headless* variant is not enough.
 
-**Cualquier sistema con Java 25:**
+**Any system with Java 25:**
 
 ```sh
-java -jar tabpro-app-0.59.5.jar [archivo]
+java -jar tabpro-app-0.59.5.jar [file]
 ```
 
-## Atajos
+## Keyboard Shortcuts
 
-Los dígitos escriben el traste, las flechas mueven el cursor, `+` acorta la figura
-y `-` la alarga, `R` pone un silencio, `L` liga, `/` hace un tresillo, `H` un
-ligado, `S` un slide, `B` un bend, `V` vibrato, `P` palm mute, `I` let ring, `X`
-nota muerta, `O` nota fantasma, `G` nota de adorno, `T` texto, `A` acorde, `F`
-fade in, `Espacio` reproduce.
+Digits write the fret, arrows move the cursor, `+` shortens the note value
+and `-` lengthens it, `R` inserts a rest, `L` ties, `/` makes a triplet, `H`
+a hammer-on/pull-off, `S` a slide, `B` a bend, `V` vibrato, `P` palm mute,
+`I` let ring, `X` a dead note, `O` a ghost note, `G` a grace note, `T` text,
+`A` a chord, `F` fade in, `Space` plays.
 
-`F2` prende y apaga el banco de sonidos, `F5` abre la información de la partitura, `F6` las propiedades de la pista, `F7`
-el instrumento, `F8` la configuración de página, `F9` el loop, `F10` los cambios
-de parámetro, `F11` las notas con dinámica, `F12` las preferencias. `Ctrl+Tab` y `Shift+Tab` saltan entre
-marcadores. `F1` abre la lista completa.
+`F2` turns the sound bank on and off, `F5` opens the score information, `F6`
+the track properties, `F7` the instrument, `F8` the page setup, `F9` the
+loop, `F10` the mix table, `F11` the dynamic notes, `F12` the preferences.
+`Ctrl+Tab` and `Shift+Tab` jump between markers. `F1` opens the full list.
 
-Los doce menús —Archivo, Editar, Compás, Pista, Nota, Efectos, Marcadores,
-Herramientas, Sonido, Ver, Opciones y Ayuda— llevan todo lo demás.
+The twelve menus — File, Edit, Bar, Track, Note, Effects, Markers, Tools,
+Sound, View, Options and Help — carry everything else.
 
-## Lo que todavía no está
+## What Is Still Missing
 
-La exportación a `.gp5` —tabpro exporta a `.gp4`, que es lo que pide el manual;
-los archivos `.gp5` por ahora sólo se leen—.
+Exporting to `.gp5` — tabpro exports to `.gp4`, which is what the manual
+asks for; `.gp5` files are read-only for now.
 
-## Cómo está hecho
+## How It's Built
 
-Java 25, Maven multi-módulo, Swing con FlatLaf (tema propio, claro y oscuro),
-Gson para el formato propio y `javax.sound.midi` para la reproducción y la
-captura.
+Java 25, multi-module Maven, Swing with FlatLaf (its own light and dark
+theme), Gson for the native format, and `javax.sound.midi` for playback and
+capture.
 
-Las dependencias van en una sola dirección hacia `tabpro-core`; la interfaz habla
-con el formato y con MIDI sólo a través de los puertos `ScoreFiles`,
-`ScoreExchange` y `Player`, definidos en core. `tabpro-format` y `tabpro-midi` no
-se conocen entre sí: `ScoreExchange` lo implementan los dos por mitades —la
-notación uno, el sonido el otro— y `tabpro-app` las compone.
+Dependencies point one way, toward `tabpro-core`; the interface talks to the
+format and to MIDI only through the `ScoreFiles`, `ScoreExchange` and
+`Player` ports, defined in core. `tabpro-format` and `tabpro-midi` do not
+know about each other: `ScoreExchange` is implemented by both, in halves —
+notation by one, sound by the other — and `tabpro-app` composes them.
 
-- `tabpro-core` — el modelo de la partitura (inmutable), la sesión de edición con
-  deshacer y rehacer, la notación, la armonía, los asistentes y la reproducción.
-- `tabpro-format` — el formato propio, la notación ajena que se lee y se escribe
-  (importar MIDI, ASCII y MusicXML) y el lector de `.gp3/.gp4/.gp5/.gtp`.
-- `tabpro-midi` — reproducción, captura y el sonido a archivo: exportar `.mid` y
+- `tabpro-core` — the score model (immutable), the editing session with
+  undo and redo, notation, harmony, the wizards and playback.
+- `tabpro-format` — the native format, the foreign notation that gets read
+  and written (importing MIDI, ASCII and MusicXML) and the
+  `.gp3/.gp4/.gp5/.gtp` reader.
+- `tabpro-midi` — playback, capture and sound to file: exporting `.mid` and
   `.wav`.
-- `tabpro-ui` — la interfaz: partitura, diapasón, teclado, percusión, mesa de
-  mezcla, vista global, barra de estado, menús, barras de herramientas y las
-  ventanas de diálogo.
-- `tabpro-app` — `main`, el tema, el cableado —incluida la composición del
-  intercambio— y el empaquetado.
+- `tabpro-ui` — the interface: score, fretboard, keyboard, percussion, mix
+  table, global view, status bar, menus, toolbars and the dialog windows.
+- `tabpro-app` — `main`, the theme, the wiring — including composing the
+  exchange — and packaging.
 
-Los tests viven al lado del código que prueban, pero no corren ahí. Surefire
-levanta una máquina virtual por módulo y cada una vuelve a pagar el arranque y la
-carga de clases, que es lo que domina una suite corta: cinco módulos son cinco
-calentamientos para tests que, con las clases ya cargadas, corren en menos de
-medio segundo. `tabpro-tests` reúne los `test-classes` de los cinco y los corre de
-una sola vez, en una sola máquina virtual y con el JIT en C1.
+Tests live next to the code they test, but they do not run there. Surefire
+spins up one JVM per module, and each one pays the startup and
+class-loading cost again, which dominates a short suite: five modules are
+five warm-ups for tests that, once the classes are loaded, run in under half
+a second. `tabpro-tests` gathers the `test-classes` of all five and runs
+them once, in a single JVM and with the JIT pinned to C1.
 
-- `tabpro-tests` — no tiene código propio; sólo junta la suite y la corre.
+- `tabpro-tests` — has no code of its own; it just gathers the suite and
+  runs it.
 
-Como los tests de los cinco módulos corren ahí, `mvn test -pl <módulo>` no corre
-ninguno: la suite entera se corre desde la raíz.
+Since the five modules' tests run there, `mvn test -pl <module>` runs none
+of them: the whole suite runs from the root.
 
 ```sh
 mvn verify
 ```
 
-Genera `tabpro-app/target/tabpro-app-<versión>.jar` (ejecutable) y
-`tabpro-app/target/tabpro_<versión>_all.deb`.
+It produces `tabpro-app/target/tabpro-app-<version>.jar` (executable) and
+`tabpro-app/target/tabpro_<version>_all.deb`.
 
-Todo comportamiento entra por un test que falla primero. Cada cambio va en una
-branch, se abre un PR contra `main` y el CI (`mvn -B verify`, headless) es el gate
-para mergear. Un tag `vX.Y.Z` en `main` dispara el release, que construye el
-`.deb` y lo publica.
+Every behavior change starts with a failing test. Each change goes on its
+own branch, opens a PR against `main`, and CI (`mvn -B verify`, headless)
+gates the merge. A `vX.Y.Z` tag on `main` triggers the release, which builds
+the `.deb` and publishes it.
 
-## Licencia
+## License
 
 [MIT](LICENSE)
