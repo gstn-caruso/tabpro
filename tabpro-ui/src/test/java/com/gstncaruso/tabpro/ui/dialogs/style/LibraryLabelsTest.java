@@ -14,6 +14,7 @@ import com.gstncaruso.tabpro.core.model.TuningName;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -136,7 +137,14 @@ class LibraryLabelsTest {
         String key = "library.percussion." + sound;
 
         assertEquals(todaysSpanishName, SPANISH.text(key));
+        assertEquals(Optional.of(todaysSpanishName), Labels.percussionSoundName(sound));
         assertFalse(ENGLISH.text(key).isBlank());
+    }
+
+    @Test
+    void aNumberOutsideTheGeneralMidiPercussionRangeHasNoSoundName() {
+        assertEquals(Optional.empty(), Labels.percussionSoundName(PercussionKit.LOWEST_SOUND - 1));
+        assertEquals(Optional.empty(), Labels.percussionSoundName(PercussionKit.HIGHEST_SOUND + 1));
     }
 
     @Test

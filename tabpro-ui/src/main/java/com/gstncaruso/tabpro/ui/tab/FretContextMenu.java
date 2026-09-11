@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.tab;
 import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntConsumer;
@@ -37,7 +38,7 @@ public final class FretContextMenu {
 
     private static String labelFor(Track track, int number) {
         if (track.isPercussion()) {
-            return number + " – " + PercussionKit.nameOf(number).orElse("");
+            return number + " – " + Labels.percussionSoundName(number).orElse("");
         }
         return String.valueOf(number);
     }

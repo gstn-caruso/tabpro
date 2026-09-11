@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.percussion;
 
 import com.gstncaruso.tabpro.core.model.PercussionKit;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -86,7 +87,7 @@ public final class PercussionSoundPalette extends JPanel {
                 JList<?> jlist, Object value, int index, boolean isSelected, boolean hasFocus) {
             super.getListCellRendererComponent(jlist, value, index, isSelected, hasFocus);
             int sound = (Integer) value;
-            setText(sound + " — " + PercussionKit.nameOf(sound).orElse("?"));
+            setText(sound + " — " + Labels.percussionSoundName(sound).orElse("?"));
             if (!isSelected) {
                 setBackground(ScoreColors.SURFACE);
                 setForeground(ScoreColors.INK);
