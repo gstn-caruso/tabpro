@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.ui.i18n.Language;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
@@ -164,5 +165,10 @@ class PreferencesTest {
         preferences.setKeyboardVisible(true);
 
         assertTrue(preferences.keyboardVisible());
+    }
+
+    @Test
+    void theInterfaceLanguageStartsAutomatic() {
+        assertEquals(Language.AUTOMATIC, preferences.interfaceLanguage());
     }
 }

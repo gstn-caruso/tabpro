@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.ui.i18n.Language;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,5 +149,9 @@ public final class Preferences {
 
     public void setKeyboardVisible(boolean visible) {
         stored.putBoolean(KEYBOARD_VISIBLE, visible);
+    }
+
+    public Language interfaceLanguage() {
+        return Language.AUTOMATIC;
     }
 }
