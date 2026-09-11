@@ -23,7 +23,7 @@ class SpanishUiTextInJavaIsFlaggedTest {
             "tabpro-ui/src/main/java/com/gstncaruso/tabpro/ui/ScoreDocument.java::tabpro-recuperación",
             "the recovery file name of older versions, still looked up so their recovery is offered",
             "tabpro-format/src/main/java/com/gstncaruso/tabpro/format/exchange/midi/TrackTuningGuess.java::bajo",
-            "a token that recognizes imported tracks named in Spanish as bass tracks, never shown");
+            "a word that recognizes imported tracks named in Spanish as bass tracks, never shown");
 
     @Test
     void noMainSourceOfTheFiveModulesHoldsSpanishUiText() {
