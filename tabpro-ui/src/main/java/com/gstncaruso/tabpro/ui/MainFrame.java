@@ -183,7 +183,7 @@ public final class MainFrame extends JFrame {
         boolean effectsToolBarVisible = preferences.effectsToolBarVisible();
         toolBars.setEffectsToolBarVisible(effectsToolBarVisible);
         commands.get("view.toolBars.effects").putValue(javax.swing.Action.SELECTED_KEY, effectsToolBarVisible);
-        JLabel tempoLabel = new JLabel("Tempo ");
+        JLabel tempoLabel = new JLabel(Texts.get("window.MainFrame.tempo") + " ");
         tempoLabel.setForeground(Palette.text());
         toolBars.addToSoundRow(tempoLabel);
         toolBars.addToSoundRow(tempoSpinner);
@@ -242,7 +242,7 @@ public final class MainFrame extends JFrame {
         document.pendingRecovery().ifPresent(recovery -> {
             int answer = JOptionPane.showConfirmDialog(
                     this,
-                    "Quedó una partitura sin guardar de la última sesión. ¿Recuperarla?",
+                    Texts.get("window.MainFrame.recoverUnsavedScore"),
                     "tabpro",
                     JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) {
@@ -683,7 +683,7 @@ public final class MainFrame extends JFrame {
             }
             int answer = JOptionPane.showConfirmDialog(
                     MainFrame.this,
-                    "La partitura tiene cambios sin guardar. ¿Guardarlos?",
+                    Texts.get("window.MainFrame.saveUnsavedChanges"),
                     "tabpro",
                     JOptionPane.YES_NO_CANCEL_OPTION);
             if (answer == JOptionPane.CANCEL_OPTION) {
@@ -744,7 +744,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void tempo() {
             String answer = JOptionPane.showInputDialog(
-                    MainFrame.this, "Tempo en negras por minuto", editor.score().tempo());
+                    MainFrame.this, Texts.get("window.MainFrame.tempoPrompt"), editor.score().tempo());
             if (answer == null) {
                 return;
             }
@@ -764,7 +764,7 @@ public final class MainFrame extends JFrame {
             if (devices.inputs().isEmpty()) {
                 JOptionPane.showMessageDialog(
                         MainFrame.this,
-                        "No hay ningún instrumento MIDI conectado.",
+                        Texts.get("window.MainFrame.noMidiInstrument"),
                         "tabpro",
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -790,7 +790,8 @@ public final class MainFrame extends JFrame {
 
         private void showTempoError() {
             JOptionPane.showMessageDialog(
-                    MainFrame.this, "El tempo se escribe con un número.", "tabpro", JOptionPane.ERROR_MESSAGE);
+                    MainFrame.this, Texts.get("window.MainFrame.tempoMustBeANumber"), "tabpro",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -893,7 +894,7 @@ public final class MainFrame extends JFrame {
             if (!PercussionAssistant.appliesTo(editor.currentTrack())) {
                 JOptionPane.showMessageDialog(
                         MainFrame.this,
-                        "El asistente de percusión sólo sirve en una pista de percusión.",
+                        Texts.get("window.MainFrame.percussionAssistantNeedsAPercussionTrack"),
                         "tabpro",
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -901,7 +902,7 @@ public final class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(
                     MainFrame.this,
                     new PercussionAssistant(editor, player),
-                    "Asistente de percusión",
+                    Texts.get("window.MainFrame.percussionAssistantTitle"),
                     JOptionPane.PLAIN_MESSAGE);
             backToTheScore();
         }
@@ -1145,7 +1146,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void text() {
             String written = JOptionPane.showInputDialog(
-                    MainFrame.this, "Texto sobre la tablatura",
+                    MainFrame.this, Texts.get("window.MainFrame.textPrompt"),
                     editor.currentBeat().effects().text().orElse(""));
             if (written != null) {
                 editor.setText(written);
@@ -1284,8 +1285,8 @@ public final class MainFrame extends JFrame {
         public void about() {
             JOptionPane.showMessageDialog(
                     MainFrame.this,
-                    "tabpro — clon libre de Guitar Pro 5.",
-                    "Acerca de tabpro",
+                    Texts.get("window.MainFrame.aboutMessage"),
+                    Texts.get("window.MainFrame.aboutTitle"),
                     JOptionPane.INFORMATION_MESSAGE);
         }
 
