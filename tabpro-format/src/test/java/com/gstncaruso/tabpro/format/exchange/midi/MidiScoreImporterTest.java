@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -242,7 +244,41 @@ class MidiScoreImporterTest {
     void quickImportWithNoTracksSelectedThrows(@TempDir Path tempDir) {
         Path path = export(new Score("Test", 120, List.of(Track.standardGuitar("Guitar"))), tempDir);
 
-        assertThrows(ScoreFileException.class, () -> importer.importQuick(path, List.of(), false));
+        ScoreFileException failure =
+                assertThrows(ScoreFileException.class, () -> importer.importQuick(path, List.of(), false));
+
+        assertEquals(ScoreFileProblem.NOTHING_TO_IMPORT, failure.problem());
+    }
+
+    @Test
+    void quickImportOfATrackWithoutNotesHasNothingToImport(@TempDir Path tempDir) {
+        Path path = export(new Score("Test", 120, List.of(Track.standardGuitar("Guitar"))), tempDir);
+
+        ScoreFileException failure =
+                assertThrows(ScoreFileException.class, () -> importer.importQuick(path, List.of(7), false));
+
+        assertEquals(ScoreFileProblem.NOTHING_TO_IMPORT, failure.problem());
+    }
+
+    @Test
+    void aFileThatIsNotMidiIsNotRecognized(@TempDir Path tempDir) throws Exception {
+        Path path = tempDir.resolve("not-midi.mid");
+        java.nio.file.Files.writeString(path, "this is nowhere close to a MIDI file");
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> importer.importQuick(path));
+
+        assertEquals(ScoreFileProblem.NOT_RECOGNIZED, failure.problem());
+        assertEquals(List.of("MIDI"), failure.arguments());
+    }
+
+    @Test
+    void aSmpteTimedFileIsContentThatIsNotSupported() throws Exception {
+        Sequence smpte = new Sequence(Sequence.SMPTE_25, 40);
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> MidiFileParser.parse(smpte));
+
+        assertEquals(ScoreFileProblem.UNSUPPORTED_CONTENT, failure.problem());
+        assertEquals(List.of(ScoreFeature.SMPTE_TIME_CODE), failure.arguments());
     }
 
     @Test
@@ -365,18 +401,27 @@ class MidiScoreImporterTest {
     void timelineOfRejectsWhenNoTrackIsSelected(@TempDir Path tempDir) {
         Path path = export(new Score("Test", 120, List.of(Track.standardGuitar("Guitar"))), tempDir);
 
-        assertThrows(ScoreFileException.class, () -> importer.timelineOf(path, List.of()));
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> importer.timelineOf(path, List.of()));
+
+        assertEquals(ScoreFileProblem.NOTHING_TO_IMPORT, failure.problem());
     }
 
     @Test
     void rejectsAFileThatDoesNotExist() {
-        assertThrows(ScoreFileException.class, () -> importer.importQuick(Path.of("does-not-exist.mid")));
+        ScoreFileException failure =
+                assertThrows(ScoreFileException.class, () -> importer.importQuick(Path.of("does-not-exist.mid")));
+
+        assertEquals(ScoreFileProblem.CANNOT_READ, failure.problem());
+        assertEquals(List.of(Path.of("does-not-exist.mid")), failure.arguments());
     }
 
     @Test
     void importingTitleAndTimeSignaturesRejectsAFileThatDoesNotExist() {
         Score target = Score.blank();
-        assertThrows(ScoreFileException.class, () -> importer.importTitleAndTimeSignatures(target, Path.of("does-not-exist.mid")));
+        ScoreFileException failure = assertThrows(
+                ScoreFileException.class, () -> importer.importTitleAndTimeSignatures(target, Path.of("does-not-exist.mid")));
+
+        assertEquals(ScoreFileProblem.CANNOT_READ, failure.problem());
     }
 
     @Test
