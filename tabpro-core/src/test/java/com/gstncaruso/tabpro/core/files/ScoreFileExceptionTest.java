@@ -42,4 +42,13 @@ class ScoreFileExceptionTest {
         assertEquals("could not export song.gp5", failure.getMessage());
         assertSame(CAUSE, failure.getCause());
     }
+
+    @Test
+    void anOperationThatIsNotSupportedCarriesTheOperation() {
+        ScoreFileException failure = ScoreFileException.notSupported(ScoreOperation.EXPORT_WAVE);
+
+        assertEquals(ScoreFileProblem.NOT_SUPPORTED, failure.problem());
+        assertEquals(List.of(ScoreOperation.EXPORT_WAVE), failure.arguments());
+        assertEquals("not supported yet: EXPORT_WAVE", failure.getMessage());
+    }
 }

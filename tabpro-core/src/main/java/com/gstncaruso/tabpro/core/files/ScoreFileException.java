@@ -20,6 +20,12 @@ public class ScoreFileException extends RuntimeException {
         this.arguments = List.of();
     }
 
+    private ScoreFileException(ScoreFileProblem problem, List<Object> arguments, String detail) {
+        super(detail);
+        this.problem = problem;
+        this.arguments = arguments;
+    }
+
     private ScoreFileException(ScoreFileProblem problem, List<Object> arguments, String detail, Throwable cause) {
         super(detail, cause);
         this.problem = problem;
@@ -37,6 +43,11 @@ public class ScoreFileException extends RuntimeException {
     public static ScoreFileException cannotExport(Path path, Throwable cause) {
         return new ScoreFileException(
                 ScoreFileProblem.CANNOT_EXPORT, List.of(path), "could not export " + path, cause);
+    }
+
+    public static ScoreFileException notSupported(ScoreOperation operation) {
+        return new ScoreFileException(
+                ScoreFileProblem.NOT_SUPPORTED, List.of(operation), "not supported yet: " + operation);
     }
 
     public ScoreFileProblem problem() {
