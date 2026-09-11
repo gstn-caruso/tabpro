@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.format.tabledit;
 import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -41,9 +42,13 @@ public final class TabEditFile {
     private final TabEditHeaderReader headerReader = new TabEditHeaderReader();
     private final TabEditSongMetadataReader metadataReader = new TabEditSongMetadataReader();
     private final TabEditMeasureReader measureReader = new TabEditMeasureReader();
-    private final TabEditTrackReader trackReader = new TabEditTrackReader();
+    private final TabEditTrackReader trackReader;
     private final TabEditComponentsReader componentsReader = new TabEditComponentsReader();
     private final TabEditBeatAssembler beatAssembler = new TabEditBeatAssembler();
+
+    public TabEditFile(DefaultNames names) {
+        this.trackReader = new TabEditTrackReader(names);
+    }
 
     public Score read(Path path) {
         try {

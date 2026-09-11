@@ -14,6 +14,7 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 class TabEditFileTest {
 
-    private final TabEditFile file = new TabEditFile();
+    private final TabEditFile file = new TabEditFile(new TestDefaultNames());
 
     @Test
     void readsTheTitleTheTempoAndTheBasicStructure() {

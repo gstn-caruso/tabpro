@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.model.DefaultNames;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +13,8 @@ class TabEditTrackReaderTest {
 
     private static final int MAX_TRACK_SIZE = 64;
 
-    private final TabEditTrackReader reader = new TabEditTrackReader();
+    private final DefaultNames names = new TestDefaultNames();
+    private final TabEditTrackReader reader = new TabEditTrackReader(names);
 
     @Test
     void readsTheMidiTuningAndTheTrackName() {
@@ -54,6 +57,16 @@ class TabEditTrackReaderTest {
         assertEquals(4, tracks.get(0).stringCount());
         assertEquals("Guitar 2", tracks.get(1).name());
         assertEquals(6, tracks.get(1).stringCount());
+    }
+
+    @Test
+    void aTrackWithABlankNameGetsTheInjectedUnnamedTrackName() {
+        TabEditFileWriter writer = new TabEditFileWriter().writeShort(MAX_TRACK_SIZE).writeShort(1);
+        writeTrack(writer, 6, 25, 0, new int[] {64, 59, 55, 50, 45, 40}, "");
+
+        List<TabEditTrackHeader> tracks = reader.read(new TabEditByteReader(writer.bytes()));
+
+        assertEquals(names.unnamedTrack(), tracks.get(0).name());
     }
 
     private static void writeTrack(
