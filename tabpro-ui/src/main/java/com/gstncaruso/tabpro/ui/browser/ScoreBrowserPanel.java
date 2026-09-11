@@ -126,7 +126,7 @@ public final class ScoreBrowserPanel extends JPanel {
                 ? ScoreSearch.inFolderAndBelow(folder)
                 : ScoreSearch.inFolder(folder);
         paths.forEach(found::addElement);
-        summary.setText(Texts.get("views.ScoreBrowserPanel.summary", paths.size(), folder));
+        summary.setText(Texts.get("views.ScoreBrowserPanel.summary", String.valueOf(paths.size()), folder));
     }
 
     private void describeSelection() {

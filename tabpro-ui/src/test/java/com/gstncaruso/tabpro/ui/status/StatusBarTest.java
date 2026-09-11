@@ -8,13 +8,28 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.awt.Container;
+import java.util.Locale;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.junit.jupiter.api.Test;
 
 class StatusBarTest {
+
+    @Test
+    void thePanelNamesAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Page", english.text("views.StatusBar.page"));
+        assertEquals("Position", english.text("views.StatusBar.position"));
+        assertEquals("Bar Status", english.text("views.StatusBar.measureStatus"));
+        assertEquals("Track", english.text("views.StatusBar.track"));
+        assertEquals("Bar Duration", english.text("views.StatusBar.measureDuration"));
+        assertEquals("Title and Author", english.text("views.StatusBar.titleAndAuthor"));
+        assertEquals("Page 1/1", english.text("views.StatusBar.pageText", "1", "1"));
+    }
 
     @Test
     void everyStatusBarControlHasAnAccessibleNameAndTooltip() {

@@ -7,9 +7,21 @@ import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class BeatDescriptionTest {
+
+    @Test
+    void theTemplatesAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Bar 1 · Beat 1 · String 1 · Quarter",
+                english.text("views.BeatDescription.summary", "1", "1", "1", "Quarter"));
+        assertEquals("Half dotted", english.text("views.BeatDescription.dotted", "Half"));
+        assertEquals("Rest of quarter", english.text("views.BeatDescription.rest", "quarter"));
+    }
 
     @Test
     void describesTheCursorPositionOneBased() {

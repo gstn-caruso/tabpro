@@ -1,17 +1,12 @@
 package com.gstncaruso.tabpro.ui.status;
 
 import com.gstncaruso.tabpro.core.model.Measure;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 
 public enum MeasureCompleteness {
-    COMPLETE("completo"),
-    TOO_SHORT("corto"),
-    TOO_LONG("largo");
-
-    private final String label;
-
-    MeasureCompleteness(String label) {
-        this.label = label;
-    }
+    COMPLETE,
+    TOO_SHORT,
+    TOO_LONG;
 
     public static MeasureCompleteness of(Measure measure) {
         if (measure.isTooShort()) {
@@ -24,6 +19,6 @@ public enum MeasureCompleteness {
     }
 
     public String label() {
-        return label;
+        return Texts.get("views.MeasureCompleteness." + name());
     }
 }
