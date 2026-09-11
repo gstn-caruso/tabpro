@@ -17,6 +17,8 @@ import com.gstncaruso.tabpro.ui.dialogs.info.NewScoreDefaults;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,8 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 
 @ResourceLock(RealPreferencesTests.SHARED_PREFERENCES_FILESYSTEM_NODE_LOCK)
 class ScoreDocumentTest {
+
+    private static final String REAL_RECOVERY_FILE_LOCK = "tabpro-real-recovery-file";
 
     private final List<java.util.prefs.Preferences> scratchNodes = new ArrayList<>();
 
@@ -50,6 +54,21 @@ class ScoreDocumentTest {
         ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
 
         assertEquals("tabpro-recovery" + ScoreDocument.EXTENSION, document.recoveryFile().getFileName().toString());
+    }
+
+    @Test
+    @ResourceLock(REAL_RECOVERY_FILE_LOCK)
+    void pendingRecoveryFallsBackToTheLegacyFileNameWhenTheNewOneIsAbsent() throws IOException {
+        deleteRealRecoveryFiles();
+        Path legacyRecovery = Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recuperación" + ScoreDocument.EXTENSION);
+        Files.createFile(legacyRecovery);
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
+
+        try {
+            assertEquals(Optional.of(legacyRecovery), document.pendingRecovery());
+        } finally {
+            deleteRealRecoveryFiles();
+        }
     }
 
     @Test
@@ -272,6 +291,11 @@ class ScoreDocumentTest {
                 .node("com/gstncaruso/tabpro/test/" + java.util.UUID.randomUUID());
         scratchNodes.add(node);
         return new Preferences(node);
+    }
+
+    private void deleteRealRecoveryFiles() throws IOException {
+        Files.deleteIfExists(Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recovery" + ScoreDocument.EXTENSION));
+        Files.deleteIfExists(Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recuperación" + ScoreDocument.EXTENSION));
     }
 
     private static final class FakeScoreFiles implements ScoreFiles {
