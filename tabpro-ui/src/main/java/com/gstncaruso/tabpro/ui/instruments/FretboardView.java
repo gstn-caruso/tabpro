@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.notation.PitchName;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
@@ -67,8 +68,8 @@ public final class FretboardView extends JComponent implements AccessibleControl
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setPreferredSize(new Dimension(0, PREFERRED_HEIGHT));
         setMinimumSize(new Dimension(0, PREFERRED_HEIGHT));
-        setToolTipText("Diapasón");
-        getAccessibleContext().setAccessibleName("Diapasón");
+        setToolTipText(Texts.get("views.FretboardView.name"));
+        getAccessibleContext().setAccessibleName(Texts.get("views.FretboardView.name"));
         trackTheMouse();
         installKeyboardShortcuts();
         installFocusRing();

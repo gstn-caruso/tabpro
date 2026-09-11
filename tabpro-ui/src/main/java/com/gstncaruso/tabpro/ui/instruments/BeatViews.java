@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
@@ -49,10 +50,10 @@ public final class BeatViews extends JPanel {
         setBackground(ScoreColors.SURFACE);
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ScoreColors.BORDER));
 
-        fretboardBox = titled("Diapasón", fretboard, FretboardView.PREFERRED_HEIGHT, fretboardToolbar(),
-                "Cerrar diapasón", () -> onCloseFretboard.run());
-        keyboardBox = titled("Teclado", keyboard, KeyboardView.PREFERRED_HEIGHT, keyboardToolbar(),
-                "Cerrar teclado", () -> onCloseKeyboard.run());
+        fretboardBox = titled(Texts.get("views.BeatViews.fretboardTitle"), fretboard, FretboardView.PREFERRED_HEIGHT,
+                fretboardToolbar(), Texts.get("views.BeatViews.closeFretboard"), () -> onCloseFretboard.run());
+        keyboardBox = titled(Texts.get("views.BeatViews.keyboardTitle"), keyboard, KeyboardView.PREFERRED_HEIGHT,
+                keyboardToolbar(), Texts.get("views.BeatViews.closeKeyboard"), () -> onCloseKeyboard.run());
         add(fretboardBox);
         add(keyboardBox);
 
@@ -206,10 +207,14 @@ public final class BeatViews extends JPanel {
 
     private JComponent fretboardToolbar() {
         JPanel bar = toolbar();
-        bar.add(comboOf("Modo de vista del diapasón", FretboardDisplayMode.values(), fretboard::setDisplayMode));
-        bar.add(comboOf("Modo de nombres de nota", NoteNameMode.values(), fretboard::setNoteNameMode));
-        bar.add(comboOf("Modo de etiqueta de escala", ScaleLabelMode.values(), fretboard::setScaleLabelMode));
-        bar.add(comboOf("Tipo de diapasón", FretboardType.values(), fretboard::setFretboardType));
+        bar.add(comboOf(Texts.get("views.BeatViews.fretboardDisplayMode"), FretboardDisplayMode.values(),
+                fretboard::setDisplayMode));
+        bar.add(comboOf(Texts.get("views.BeatViews.noteNameMode"), NoteNameMode.values(),
+                fretboard::setNoteNameMode));
+        bar.add(comboOf(Texts.get("views.BeatViews.scaleLabelMode"), ScaleLabelMode.values(),
+                fretboard::setScaleLabelMode));
+        bar.add(comboOf(Texts.get("views.BeatViews.fretboardType"), FretboardType.values(),
+                fretboard::setFretboardType));
         bar.add(scalePicker(fretboard::setScale));
         bar.add(handednessToggle());
         bar.add(navigationButtons());
@@ -218,7 +223,8 @@ public final class BeatViews extends JPanel {
 
     private JComponent keyboardToolbar() {
         JPanel bar = toolbar();
-        bar.add(comboOf("Modo de vista del teclado", KeyboardDisplayMode.values(), keyboard::setDisplayMode));
+        bar.add(comboOf(Texts.get("views.BeatViews.keyboardDisplayMode"), KeyboardDisplayMode.values(),
+                keyboard::setDisplayMode));
         bar.add(scalePicker(keyboard::setScale));
         bar.add(navigationButtons());
         return bar;
@@ -247,13 +253,13 @@ public final class BeatViews extends JPanel {
 
         JComboBox<String> rootCombo = new JComboBox<>(roots);
         rootCombo.setFont(rootCombo.getFont().deriveFont(10f));
-        rootCombo.getAccessibleContext().setAccessibleName("Nota raíz de la escala");
-        rootCombo.setToolTipText("Nota raíz de la escala");
+        rootCombo.getAccessibleContext().setAccessibleName(Texts.get("views.BeatViews.scaleRootNote"));
+        rootCombo.setToolTipText(Texts.get("views.BeatViews.scaleRootNote"));
         JComboBox<ScaleType> typeCombo = new JComboBox<>(ScaleType.values());
         typeCombo.setRenderer(new LabeledListCellRenderer());
         typeCombo.setFont(typeCombo.getFont().deriveFont(10f));
-        typeCombo.getAccessibleContext().setAccessibleName("Tipo de escala");
-        typeCombo.setToolTipText("Tipo de escala");
+        typeCombo.getAccessibleContext().setAccessibleName(Texts.get("views.BeatViews.scaleType"));
+        typeCombo.setToolTipText(Texts.get("views.BeatViews.scaleType"));
 
         Runnable notify = () -> onChoice.accept(
                 new Scale(rootCombo.getSelectedIndex(), typeCombo.getItemAt(typeCombo.getSelectedIndex())));
@@ -267,8 +273,8 @@ public final class BeatViews extends JPanel {
 
     private JComponent handednessToggle() {
         JToggleButton zurdo = new JToggleButton(Icons.handedness());
-        zurdo.setToolTipText("Zurdo: invierte el diapasón");
-        zurdo.getAccessibleContext().setAccessibleName("Zurdo");
+        zurdo.setToolTipText(Texts.get("views.BeatViews.leftHandedTooltip"));
+        zurdo.getAccessibleContext().setAccessibleName(Texts.get("views.BeatViews.leftHanded"));
         zurdo.setFocusable(false);
         zurdo.setMargin(new java.awt.Insets(0, 4, 0, 4));
         zurdo.addActionListener(
@@ -279,8 +285,8 @@ public final class BeatViews extends JPanel {
     private JComponent navigationButtons() {
         JPanel nav = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
         nav.setOpaque(false);
-        JButton previous = navButton("◀", "Beat anterior", editor::moveLeft);
-        JButton next = navButton("▶", "Beat siguiente", editor::moveRight);
+        JButton previous = navButton("◀", Texts.get("views.BeatViews.previousBeat"), editor::moveLeft);
+        JButton next = navButton("▶", Texts.get("views.BeatViews.nextBeat"), editor::moveRight);
         nav.add(previous);
         nav.add(next);
         return nav;

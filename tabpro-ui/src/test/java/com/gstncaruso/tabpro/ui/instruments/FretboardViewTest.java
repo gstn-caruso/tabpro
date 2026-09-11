@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.TrackSettings;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -18,12 +19,18 @@ import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class FretboardViewTest {
+
+    @Test
+    void theAccessibleNameIsAvailableInEnglish() {
+        assertEquals("Fretboard", Texts.forLocale(Locale.ENGLISH).text("views.FretboardView.name"));
+    }
 
     private static final int WIDTH = 900;
     private static final int HEIGHT = 120;

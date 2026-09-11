@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.AwaitEdt;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Component;
@@ -22,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -30,6 +32,17 @@ import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class BeatViewsTest {
+
+    @Test
+    void theZoneTitlesAndControlsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Fretboard", english.text("views.BeatViews.fretboardTitle"));
+        assertEquals("Keyboard", english.text("views.BeatViews.keyboardTitle"));
+        assertEquals("Left-handed", english.text("views.BeatViews.leftHanded"));
+        assertEquals("Previous Beat", english.text("views.BeatViews.previousBeat"));
+        assertEquals("Next Beat", english.text("views.BeatViews.nextBeat"));
+    }
 
     @Test
     void theScaleTypeComboShowsItsNameInSpanish() {
