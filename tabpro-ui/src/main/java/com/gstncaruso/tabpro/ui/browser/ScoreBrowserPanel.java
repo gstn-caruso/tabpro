@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.browser;
 
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -30,10 +31,11 @@ public final class ScoreBrowserPanel extends JPanel {
     private final BrowserPlayback playback;
     private final DefaultListModel<Path> found = new DefaultListModel<>();
     private final JList<Path> results = new JList<>(found);
-    private final JCheckBox includeSubfolders = new JCheckBox("Incluir subcarpetas", true);
+    private final JCheckBox includeSubfolders =
+            new JCheckBox(Texts.get("views.ScoreBrowserPanel.includeSubfolders"), true);
     private final JSpinner barsBeforeJumping =
             new JSpinner(new SpinnerNumberModel(DEFAULT_BARS_BEFORE_JUMPING, 1, 999, 1));
-    private final JButton listen = new JButton("Escuchar");
+    private final JButton listen = new JButton(Texts.get("views.ScoreBrowserPanel.listen"));
     private final JLabel summary = new JLabel(" ");
     private Path folder;
     private boolean listening;
@@ -46,8 +48,8 @@ public final class ScoreBrowserPanel extends JPanel {
 
         results.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         results.setCellRenderer(new PathRenderer());
-        results.getAccessibleContext().setAccessibleName("Partituras encontradas");
-        results.setToolTipText("Partituras encontradas");
+        results.getAccessibleContext().setAccessibleName(Texts.get("views.ScoreBrowserPanel.resultsList"));
+        results.setToolTipText(Texts.get("views.ScoreBrowserPanel.resultsList"));
         results.addListSelectionListener(event -> describeSelection());
 
         add(topBar(), BorderLayout.NORTH);
@@ -66,13 +68,13 @@ public final class ScoreBrowserPanel extends JPanel {
             return;
         }
         listening = false;
-        listen.setText("Escuchar");
+        listen.setText(Texts.get("views.ScoreBrowserPanel.listen"));
         playback.stop();
     }
 
     private JPanel topBar() {
         JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-        JButton chooseFolder = new JButton("Elegir carpeta…");
+        JButton chooseFolder = new JButton(Texts.get("views.ScoreBrowserPanel.chooseFolder"));
         chooseFolder.addActionListener(event -> chooseFolder());
         bar.add(chooseFolder);
         bar.add(includeSubfolders);
@@ -84,18 +86,18 @@ public final class ScoreBrowserPanel extends JPanel {
         JPanel bar = new JPanel(new BorderLayout(8, 0));
         bar.add(summary, BorderLayout.CENTER);
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
-        JLabel barsLabel = new JLabel("Compases antes de saltar:");
+        JLabel barsLabel = new JLabel(Texts.get("views.ScoreBrowserPanel.barsBeforeJumping"));
         barsLabel.setLabelFor(barsBeforeJumping);
         buttons.add(barsLabel);
         buttons.add(barsBeforeJumping);
         listen.addActionListener(event -> toggleListening());
-        JButton open = new JButton("Abrir");
+        JButton open = new JButton(Texts.get("views.ScoreBrowserPanel.open"));
         open.addActionListener(event -> selected().ifPresent(path -> {
             stopListening();
             onOpen.accept(path);
             onClose.run();
         }));
-        JButton close = new JButton("Cerrar");
+        JButton close = new JButton(Texts.get("views.ScoreBrowserPanel.close"));
         close.addActionListener(event -> {
             stopListening();
             onClose.run();
@@ -124,7 +126,7 @@ public final class ScoreBrowserPanel extends JPanel {
                 ? ScoreSearch.inFolderAndBelow(folder)
                 : ScoreSearch.inFolder(folder);
         paths.forEach(found::addElement);
-        summary.setText(paths.size() + " partituras en " + folder);
+        summary.setText(Texts.get("views.ScoreBrowserPanel.summary", paths.size(), folder));
     }
 
     private void describeSelection() {
@@ -141,7 +143,7 @@ public final class ScoreBrowserPanel extends JPanel {
 
     private void startListening(Path path) {
         listening = true;
-        listen.setText("Parar");
+        listen.setText(Texts.get("views.ScoreBrowserPanel.stop"));
         playback.play(allResults(), path, (Integer) barsBeforeJumping.getValue());
     }
 
@@ -163,13 +165,13 @@ public final class ScoreBrowserPanel extends JPanel {
 
         @Override
         public void loadFailed(Path path) {
-            summary.setText("No se pudo abrir: " + path);
+            summary.setText(Texts.get("views.ScoreBrowserPanel.loadFailed", path));
         }
 
         @Override
         public void chainEnded() {
             listening = false;
-            listen.setText("Escuchar");
+            listen.setText(Texts.get("views.ScoreBrowserPanel.listen"));
         }
     }
 
