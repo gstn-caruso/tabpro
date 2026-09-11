@@ -6,10 +6,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
 import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class DirectionsPanelTest {
+
+    @Test
+    void theSymbolAndJumpFieldsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Symbol", english.text("edit_dialogs.DirectionsPanel.symbol"));
+        assertEquals("Jump", english.text("edit_dialogs.DirectionsPanel.jump"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
