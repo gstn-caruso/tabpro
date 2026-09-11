@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.ColorSwatchButton;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.GridLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -23,18 +24,26 @@ public final class TrackPropertiesPanel extends JPanel {
     private final TuningEditorPanel tuningEditor;
     private final JSpinner fretCount = new JSpinner(new SpinnerNumberModel(TrackSettings.DEFAULT_FRET_COUNT, 1, Tuning.MAX_FRET, 1));
     private final JSpinner capo = new JSpinner(new SpinnerNumberModel(0, 0, Tuning.MAX_FRET, 1));
-    private final JCheckBox twelveString = new JCheckBox("Doce cuerdas");
-    private final JCheckBox banjoFifthString = new JCheckBox("Banjo de 5ta cuerda");
+    private final JCheckBox twelveString = new JCheckBox(Texts.get("score_dialogs.TrackPropertiesPanel.twelveString"));
+    private final JCheckBox banjoFifthString =
+            new JCheckBox(Texts.get("score_dialogs.TrackPropertiesPanel.banjoFifthString"));
 
-    private final JCheckBox standardNotation = new JCheckBox("Pentagrama");
-    private final JCheckBox tablature = new JCheckBox("Tablatura");
-    private final JCheckBox tuningLegend = new JCheckBox("Afinación");
-    private final JCheckBox rhythmOnTablature = new JCheckBox("Ritmo sobre la tablatura");
-    private final JCheckBox diagramsOnTheScore = new JCheckBox("Diagramas en la partitura");
-    private final JCheckBox diagramsUnderTheTitle = new JCheckBox("Lista de diagramas arriba de la partitura");
-    private final JCheckBox diagramsBelowStandardNotation = new JCheckBox("Diagramas debajo del pentagrama");
-    private final JCheckBox forceHorizontalBeams = new JCheckBox("Forzar barras horizontales");
-    private final JCheckBox forceChannels11to16 = new JCheckBox("Forzar canales 11 a 16");
+    private final JCheckBox standardNotation =
+            new JCheckBox(Texts.get("score_dialogs.TrackPropertiesPanel.standardNotation"));
+    private final JCheckBox tablature = new JCheckBox(Texts.get("score_dialogs.TrackPropertiesPanel.tablature"));
+    private final JCheckBox tuningLegend = new JCheckBox(Texts.get("score_dialogs.shared.tuning"));
+    private final JCheckBox rhythmOnTablature =
+            new JCheckBox(Texts.get("score_dialogs.TrackPropertiesPanel.rhythmOnTablature"));
+    private final JCheckBox diagramsOnTheScore =
+            new JCheckBox(Texts.get("score_dialogs.TrackPropertiesPanel.diagramsOnTheScore"));
+    private final JCheckBox diagramsUnderTheTitle =
+            new JCheckBox(Texts.get("score_dialogs.TrackPropertiesPanel.diagramsUnderTheTitle"));
+    private final JCheckBox diagramsBelowStandardNotation =
+            new JCheckBox(Texts.get("score_dialogs.TrackPropertiesPanel.diagramsBelowStandardNotation"));
+    private final JCheckBox forceHorizontalBeams =
+            new JCheckBox(Texts.get("score_dialogs.TrackPropertiesPanel.forceHorizontalBeams"));
+    private final JCheckBox forceChannels11to16 =
+            new JCheckBox(Texts.get("score_dialogs.TrackPropertiesPanel.forceChannels11to16"));
 
     private final boolean initialPercussion;
 
@@ -68,13 +77,13 @@ public final class TrackPropertiesPanel extends JPanel {
 
     private FormPanel leftColumn() {
         FormPanel column = new FormPanel();
-        column.addRow("Nombre", name);
-        column.addRow("Color", color);
-        column.addSection("Afinación");
+        column.addRow(Texts.get("score_dialogs.shared.name"), name);
+        column.addRow(Texts.get("score_dialogs.TrackPropertiesPanel.color"), color);
+        column.addSection(Texts.get("score_dialogs.shared.tuning"));
         column.addFullWidthRow(tuningEditor);
-        column.addSection("Diapasón");
-        column.addRow("Trastes", fretCount);
-        column.addRow("Cejilla", capo);
+        column.addSection(Texts.get("score_dialogs.TrackPropertiesPanel.fretboard"));
+        column.addRow(Texts.get("score_dialogs.TrackPropertiesPanel.frets"), fretCount);
+        column.addRow(Texts.get("score_dialogs.TrackPropertiesPanel.capo"), capo);
         column.addFullWidthRow(twelveString);
         column.addFullWidthRow(banjoFifthString);
         return column;
@@ -82,17 +91,17 @@ public final class TrackPropertiesPanel extends JPanel {
 
     private FormPanel rightColumn() {
         FormPanel column = new FormPanel();
-        column.addSection("Notación");
+        column.addSection(Texts.get("score_dialogs.TrackPropertiesPanel.notation"));
         column.addFullWidthRow(standardNotation);
         column.addFullWidthRow(tablature);
-        column.addSection("Estilo");
+        column.addSection(Texts.get("score_dialogs.TrackPropertiesPanel.style"));
         column.addFullWidthRow(tuningLegend);
         column.addFullWidthRow(rhythmOnTablature);
         column.addFullWidthRow(diagramsOnTheScore);
         column.addFullWidthRow(diagramsUnderTheTitle);
         column.addFullWidthRow(diagramsBelowStandardNotation);
         column.addFullWidthRow(forceHorizontalBeams);
-        column.addSection("Canales");
+        column.addSection(Texts.get("score_dialogs.TrackPropertiesPanel.channels"));
         column.addFullWidthRow(forceChannels11to16);
         return column;
     }

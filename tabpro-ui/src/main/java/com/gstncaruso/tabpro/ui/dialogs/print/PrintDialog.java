@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.print;
 
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.print.PrintSettings;
 import com.gstncaruso.tabpro.ui.print.ScorePrinting;
 import java.awt.Component;
@@ -15,7 +16,8 @@ public final class PrintDialog {
         PrintPanel panel = new PrintPanel(sheetCount);
         panel.configureButton().addActionListener(event -> printing.configurePrinterPage());
 
-        boolean accepted = DialogShell.ask(parent, "Imprimir", panel, "Imprimir");
+        boolean accepted = DialogShell.ask(
+                parent, Texts.get("score_dialogs.shared.print"), panel, Texts.get("score_dialogs.shared.print"));
         return accepted ? Optional.of(panel.toPrintSettings()) : Optional.empty();
     }
 }

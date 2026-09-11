@@ -28,12 +28,12 @@ public final class AsciiExportDialog {
         panel.printButton().addActionListener(event -> print(parent, panel.previewText()));
         panel.exportButton().addActionListener(event -> export(parent, exchange, activeTrack, panel.columnsPerLine()));
 
-        DialogShell.show(parent, "Exportar tablatura ASCII", panel);
+        DialogShell.show(parent, Texts.get("score_dialogs.AsciiExportDialog.title"), panel);
     }
 
     private static void export(Component parent, ScoreExchange exchange, Track track, int columnsPerLine) {
         JFileChooser chooser = new JFileChooser();
-        chooser.setFileFilter(new FileNameExtensionFilter("Tablatura ASCII (*.tab)", "tab"));
+        chooser.setFileFilter(new FileNameExtensionFilter(Texts.get("score_dialogs.AsciiExportDialog.fileFilter"), "tab"));
         if (chooser.showSaveDialog(parent) != JFileChooser.APPROVE_OPTION) {
             return;
         }

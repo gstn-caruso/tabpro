@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.track;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.notation.PitchName;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,14 +18,15 @@ final class TuningRow extends JPanel {
     TuningRow(int stringNumber, Pitch initial, Runnable onListen, java.util.function.Consumer<Pitch> onChange) {
         super(new BorderLayout(DialogStyle.GAP_S, 0));
         midiNumber = new JSpinner(new SpinnerNumberModel(initial.midiNumber(), 0, 127, 1));
-        String name = "Cuerda " + stringNumber;
+        String name = Texts.get("score_dialogs.shared.string", stringNumber);
         midiNumber.getAccessibleContext().setAccessibleName(name);
         midiNumber.setToolTipText(name);
         setOpaque(false);
         add(midiNumber, BorderLayout.WEST);
         add(noteName, BorderLayout.CENTER);
-        javax.swing.JButton listen = DialogStyle.flatButton("Escuchar");
-        listen.getAccessibleContext().setAccessibleName("Escuchar " + name.toLowerCase(java.util.Locale.ROOT));
+        javax.swing.JButton listen = DialogStyle.flatButton(Texts.get("score_dialogs.TuningRow.listen"));
+        listen.getAccessibleContext().setAccessibleName(
+                Texts.get("score_dialogs.TuningRow.listenToString", name.toLowerCase(java.util.Locale.ROOT)));
         listen.addActionListener(event -> onListen.run());
         add(listen, BorderLayout.EAST);
 

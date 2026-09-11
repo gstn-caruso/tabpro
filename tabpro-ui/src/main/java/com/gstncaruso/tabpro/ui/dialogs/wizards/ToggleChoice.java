@@ -1,11 +1,12 @@
 package com.gstncaruso.tabpro.ui.dialogs.wizards;
 
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.Optional;
 
 public enum ToggleChoice {
-    NO_CHANGE("Sin cambios"),
-    ON("Activar"),
-    OFF("Desactivar");
+    NO_CHANGE(Texts.get("score_dialogs.shared.noChange")),
+    ON(Texts.get("score_dialogs.ToggleChoice.on")),
+    OFF(Texts.get("score_dialogs.ToggleChoice.off"));
 
     private final String label;
 

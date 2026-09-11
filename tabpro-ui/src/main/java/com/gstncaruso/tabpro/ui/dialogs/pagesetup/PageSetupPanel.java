@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.ui.page.Orientation;
 import com.gstncaruso.tabpro.ui.page.PageBanner;
 import com.gstncaruso.tabpro.ui.page.PageElement;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.page.PaperFormat;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -39,21 +40,19 @@ public final class PageSetupPanel extends FormPanel {
         paperFormat.setRenderer(new LabeledListCellRenderer());
         orientation.setRenderer(new LabeledListCellRenderer());
 
-        addRow("Papel", paperFormat);
-        addRow("Orientación", orientation);
-        addSection("Márgenes (mm)");
-        addRow("Superior", marginTop);
-        addRow("Inferior", marginBottom);
-        addRow("Izquierdo", marginLeft);
-        addRow("Derecho", marginRight);
-        addRow("Tamaño de la partitura (%)", scorePercent);
-        addSection("Encabezado");
+        addRow(Texts.get("score_dialogs.PageSetupPanel.paper"), paperFormat);
+        addRow(Texts.get("score_dialogs.PageSetupPanel.orientation"), orientation);
+        addSection(Texts.get("score_dialogs.PageSetupPanel.margins"));
+        addRow(Texts.get("score_dialogs.PageSetupPanel.marginTop"), marginTop);
+        addRow(Texts.get("score_dialogs.PageSetupPanel.marginBottom"), marginBottom);
+        addRow(Texts.get("score_dialogs.PageSetupPanel.marginLeft"), marginLeft);
+        addRow(Texts.get("score_dialogs.PageSetupPanel.marginRight"), marginRight);
+        addRow(Texts.get("score_dialogs.PageSetupPanel.scorePercent"), scorePercent);
+        addSection(Texts.get("score_dialogs.PageSetupPanel.header"));
         addBannerRows(PageBanner.header(), headerRows);
-        addSection("Pie de página");
+        addSection(Texts.get("score_dialogs.PageSetupPanel.footer"));
         addBannerRows(PageBanner.footer(), footerRows);
-        addFullWidthRow(new JLabel(
-                "<html>Campos disponibles: [%title] [%subtitle] [%artist] [%album] [%words]"
-                        + " [%music] [%copyright] [%transcriber] [%page] [%pages]</html>"));
+        addFullWidthRow(new JLabel(Texts.get("score_dialogs.PageSetupPanel.availableFields")));
 
         apply(initial);
     }
@@ -116,8 +115,8 @@ public final class PageSetupPanel extends FormPanel {
             setOpaque(false);
             shown.setOpaque(false);
             shown.setPreferredSize(new Dimension(LABEL_WIDTH, shown.getPreferredSize().height));
-            text.getAccessibleContext().setAccessibleName("Texto de " + element.label());
-            text.setToolTipText("Texto de " + element.label());
+            text.getAccessibleContext().setAccessibleName(Texts.get("score_dialogs.PageSetupPanel.elementText", element.label()));
+            text.setToolTipText(Texts.get("score_dialogs.PageSetupPanel.elementText", element.label()));
             add(shown, BorderLayout.WEST);
             add(text, BorderLayout.CENTER);
         }

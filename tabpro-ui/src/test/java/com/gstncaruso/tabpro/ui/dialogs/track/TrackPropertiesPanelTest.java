@@ -8,8 +8,10 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.TrackDisplay;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.dialogs.RecordingPlayer;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.awt.Container;
+import java.util.Locale;
 import java.util.Optional;
 import javax.swing.JCheckBox;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,14 @@ class TrackPropertiesPanelTest {
     void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(
                 new TrackPropertiesPanel(Track.standardGuitar("Guitarra 1"), player));
+    }
+
+    @Test
+    void theFretboardSectionAndCapoLabelAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Fretboard", english.text("score_dialogs.TrackPropertiesPanel.fretboard"));
+        assertEquals("Capo", english.text("score_dialogs.TrackPropertiesPanel.capo"));
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.wizards.MeasureRange;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,13 +35,13 @@ public final class StringOptionsPanel extends FormPanel {
         letRing.setRenderer((list, value, index, isSelected, hasFocus) -> new javax.swing.JLabel(value == null ? "" : value.label()));
         palmMute.setRenderer((list, value, index, isSelected, hasFocus) -> new javax.swing.JLabel(value == null ? "" : value.label()));
         dynamic.setRenderer((list, value, index, isSelected, hasFocus) ->
-                new javax.swing.JLabel(value == null ? "Sin cambios" : value.symbol()));
+                new javax.swing.JLabel(value == null ? Texts.get("score_dialogs.shared.noChange") : value.symbol()));
 
-        addRow("Cuerdas", stringRow);
+        addRow(Texts.get("score_dialogs.shared.strings"), stringRow);
         addFullWidthRow(range);
-        addRow("Let ring", letRing);
-        addRow("Palm mute", palmMute);
-        addRow("Dinámica", dynamic);
+        addRow(Texts.get("score_dialogs.StringOptionsPanel.letRing"), letRing);
+        addRow(Texts.get("score_dialogs.StringOptionsPanel.palmMute"), palmMute);
+        addRow(Texts.get("score_dialogs.StringOptionsPanel.dynamic"), dynamic);
     }
 
     private static Dynamic[] withNoChange() {

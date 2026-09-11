@@ -3,6 +3,8 @@ package com.gstncaruso.tabpro.ui.dialogs.ascii;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class AsciiExportPanelTest {
@@ -10,6 +12,14 @@ class AsciiExportPanelTest {
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new AsciiExportPanel());
+    }
+
+    @Test
+    void theColumnsPerLineLabelAndExportButtonAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Columns per Line", english.text("score_dialogs.AsciiExportPanel.columnsPerLine"));
+        assertEquals("Export…", english.text("score_dialogs.AsciiExportPanel.export"));
     }
 
     @Test

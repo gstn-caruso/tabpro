@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.dialogs.pagesetup;
 
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.page.DefaultPageSetup;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import java.awt.Component;
@@ -24,16 +25,18 @@ public final class PageSetupDialog {
         PageSetupPanel panel = new PageSetupPanel(current);
 
         boolean accepted = DialogShell.ask(
-                parent, "Configurar página", panel, extraButtons(panel, refresh, defaults), "Aceptar", null);
+                parent, Texts.get("score_dialogs.PageSetupDialog.title"), panel, extraButtons(panel, refresh, defaults),
+                Texts.get("common.accept"), null);
         return accepted ? Optional.of(panel.toPageSetup()) : Optional.empty();
     }
 
     private static JPanel extraButtons(PageSetupPanel panel, Consumer<PageSetup> refresh, DefaultPageSetup defaults) {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, DialogStyle.GAP_S));
         buttons.setOpaque(false);
-        buttons.add(button("Actualizar partitura", () -> refresh.accept(panel.toPageSetup())));
-        buttons.add(button("Guardar como configuración por defecto", () -> defaults.save(panel.toPageSetup())));
-        buttons.add(button("Aplicar configuración por defecto", () -> {
+        buttons.add(button(Texts.get("score_dialogs.PageSetupDialog.refreshScore"), () -> refresh.accept(panel.toPageSetup())));
+        buttons.add(button(
+                Texts.get("score_dialogs.PageSetupDialog.saveAsDefault"), () -> defaults.save(panel.toPageSetup())));
+        buttons.add(button(Texts.get("score_dialogs.PageSetupDialog.applyDefault"), () -> {
             panel.apply(defaults.get());
             refresh.accept(panel.toPageSetup());
         }));

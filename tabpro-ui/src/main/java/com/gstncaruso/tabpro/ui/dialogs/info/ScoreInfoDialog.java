@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.info;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.util.List;
 import javax.swing.JTabbedPane;
@@ -23,11 +24,11 @@ public final class ScoreInfoDialog {
         DefaultScorePropertiesPanel defaultsPanel = new DefaultScorePropertiesPanel(defaultProperties.get());
 
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("General", infoPanel);
-        tabs.addTab("Letra", lyricsPanel);
-        tabs.addTab("Propiedades por defecto", defaultsPanel);
+        tabs.addTab(Texts.get("score_dialogs.ScoreInfoDialog.generalTab"), infoPanel);
+        tabs.addTab(Texts.get("score_dialogs.ScoreInfoDialog.lyricsTab"), lyricsPanel);
+        tabs.addTab(Texts.get("score_dialogs.ScoreInfoDialog.defaultsTab"), defaultsPanel);
 
-        boolean accepted = DialogShell.ask(parent, "Información de la partitura", tabs);
+        boolean accepted = DialogShell.ask(parent, Texts.get("score_dialogs.ScoreInfoDialog.title"), tabs);
         if (accepted) {
             editor.setInfo(infoPanel.toScoreInfo());
             editor.setLyrics(lyricsPanel.toLyrics());

@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.gstncaruso.tabpro.core.model.LyricLine;
 import com.gstncaruso.tabpro.core.model.Lyrics;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.JTabbedPane;
 import org.junit.jupiter.api.Test;
 
@@ -79,6 +81,14 @@ class LyricsPanelTest {
         for (int index = 0; index < LyricLine.MAX_LINES; index++) {
             assertEquals("Línea " + (index + 1), lineTabs.getTitleAt(index));
         }
+    }
+
+    @Test
+    void theTrackLabelAndFirstLineTitleAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Track", english.text("score_dialogs.LyricsPanel.track"));
+        assertEquals("Line 1", english.text("score_dialogs.shared.line", 1));
     }
 
     private static JTabbedPane findTabbedPane(Container root) {

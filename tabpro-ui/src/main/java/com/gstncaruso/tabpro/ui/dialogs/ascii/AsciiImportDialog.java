@@ -24,7 +24,9 @@ public final class AsciiImportDialog {
         panel.openButton().addActionListener(event -> openFile(parent, panel));
         panel.printButton().addActionListener(event -> print(parent, panel.text()));
 
-        boolean accepted = DialogShell.ask(parent, "Importar tablatura ASCII", panel, "Importar");
+        boolean accepted = DialogShell.ask(
+                parent, Texts.get("score_dialogs.AsciiImportDialog.title"), panel,
+                Texts.get("score_dialogs.AsciiImportDialog.accept"));
         if (!accepted) {
             return;
         }

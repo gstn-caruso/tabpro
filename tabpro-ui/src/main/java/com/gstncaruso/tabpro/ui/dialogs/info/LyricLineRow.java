@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.dialogs.info;
 
 import com.gstncaruso.tabpro.core.model.LyricLine;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
@@ -18,8 +19,8 @@ final class LyricLineRow extends FormPanel {
         setOpaque(false);
         text.setLineWrap(true);
         text.setWrapStyleWord(true);
-        addRow("Compás inicial de la línea " + lineNumber, startingMeasure);
-        addRow("Línea " + lineNumber, new JScrollPane(text));
+        addRow(Texts.get("score_dialogs.LyricLineRow.startingBar", lineNumber), startingMeasure);
+        addRow(Texts.get("score_dialogs.shared.line", lineNumber), new JScrollPane(text));
         apply(initial);
     }
 

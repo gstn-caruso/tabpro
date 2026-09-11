@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.ui.dialogs.measure.KeySignaturePanel;
 import com.gstncaruso.tabpro.ui.dialogs.measure.TimeSignaturePanel;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
@@ -17,13 +18,13 @@ public final class DefaultScorePropertiesPanel extends FormPanel {
     private final JTextField artist = new JTextField(DialogStyle.TEXT_FIELD_COLUMNS);
 
     public DefaultScorePropertiesPanel(NewScoreDefaults initial) {
-        addRow("Tempo", tempo);
+        addRow(Texts.get("score_dialogs.DefaultScorePropertiesPanel.tempo"), tempo);
         timeSignaturePanel = new TimeSignaturePanel(initial.timeSignature());
         addFullWidthRow(timeSignaturePanel);
         keySignaturePanel = new KeySignaturePanel(initial.keySignature());
         addFullWidthRow(keySignaturePanel);
-        addRow("Título", title);
-        addRow("Artista", artist);
+        addRow(Texts.get("score_dialogs.shared.title"), title);
+        addRow(Texts.get("score_dialogs.shared.artist"), artist);
         apply(initial);
     }
 

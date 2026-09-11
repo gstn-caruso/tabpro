@@ -10,8 +10,10 @@ import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.dialogs.RecordingPlayer;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Component;
+import java.util.Locale;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -24,6 +26,23 @@ class TuningEditorPanelTest {
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new TuningEditorPanel(Tuning.standard(), 25, player));
+    }
+
+    @Test
+    void theFamilyButtonsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Guitars", english.text("score_dialogs.TuningEditorPanel.guitars"));
+        assertEquals("Basses", english.text("score_dialogs.TuningEditorPanel.basses"));
+        assertEquals("Others", english.text("score_dialogs.TuningEditorPanel.others"));
+    }
+
+    @Test
+    void theStringRowLabelsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("String 3", english.text("score_dialogs.shared.string", 3));
+        assertEquals("Listen to string 3", english.text("score_dialogs.TuningRow.listenToString", "string 3"));
     }
 
     @Test

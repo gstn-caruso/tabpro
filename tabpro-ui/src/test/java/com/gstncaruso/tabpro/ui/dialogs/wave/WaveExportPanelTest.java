@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.files.AudioQuality;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class WaveExportPanelTest {
@@ -11,6 +13,14 @@ class WaveExportPanelTest {
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new WaveExportPanel(new AudioQuality(44_100, 16, 2)));
+    }
+
+    @Test
+    void theSampleRateAndBitDepthLabelsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Sample Rate", english.text("score_dialogs.WaveExportPanel.sampleRate"));
+        assertEquals("Bit Depth", english.text("score_dialogs.WaveExportPanel.bitDepth"));
     }
 
     @Test

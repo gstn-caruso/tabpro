@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.List;
@@ -40,12 +41,12 @@ public final class TuningEditorPanel extends JPanel {
 
         JPanel top = new JPanel(new BorderLayout(DialogStyle.GAP_S, 0));
         top.setOpaque(false);
-        top.add(labeled("Cuerdas", stringCount), BorderLayout.WEST);
+        top.add(labeled(Texts.get("score_dialogs.shared.strings"), stringCount), BorderLayout.WEST);
         top.add(familyButtons(), BorderLayout.CENTER);
         add(top, BorderLayout.NORTH);
         library.setRenderer(new LabeledListCellRenderer());
-        library.getAccessibleContext().setAccessibleName("Afinación de la biblioteca");
-        library.setToolTipText("Afinación de la biblioteca");
+        library.getAccessibleContext().setAccessibleName(Texts.get("score_dialogs.TuningEditorPanel.libraryTuning"));
+        library.setToolTipText(Texts.get("score_dialogs.TuningEditorPanel.libraryTuning"));
         add(library, BorderLayout.CENTER);
         rows.setLayout(new GridLayout(0, 1, 0, DialogStyle.GAP_XS));
         add(rows, BorderLayout.SOUTH);
@@ -77,9 +78,9 @@ public final class TuningEditorPanel extends JPanel {
     }
 
     private JPanel familyButtons() {
-        JToggleButton guitars = new JToggleButton("Guitarras");
-        JToggleButton basses = new JToggleButton("Bajos");
-        JToggleButton others = new JToggleButton("Otros");
+        JToggleButton guitars = new JToggleButton(Texts.get("score_dialogs.TuningEditorPanel.guitars"));
+        JToggleButton basses = new JToggleButton(Texts.get("score_dialogs.TuningEditorPanel.basses"));
+        JToggleButton others = new JToggleButton(Texts.get("score_dialogs.TuningEditorPanel.others"));
         ButtonGroup group = new ButtonGroup();
         group.add(guitars);
         group.add(basses);

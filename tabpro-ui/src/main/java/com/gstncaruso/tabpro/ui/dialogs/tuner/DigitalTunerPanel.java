@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.tuner;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.notation.PitchName;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -27,8 +28,8 @@ public final class DigitalTunerPanel extends JComponent implements AccessibleCon
         this.target = target;
         setFocusable(true);
         setPreferredSize(new Dimension(220, 140));
-        setToolTipText("Afinador digital");
-        getAccessibleContext().setAccessibleName("Afinador digital");
+        setToolTipText(Texts.get("score_dialogs.DigitalTunerPanel.title"));
+        getAccessibleContext().setAccessibleName(Texts.get("score_dialogs.DigitalTunerPanel.title"));
         installFocusRing();
         updateAccessibleDescription();
     }
@@ -40,10 +41,12 @@ public final class DigitalTunerPanel extends JComponent implements AccessibleCon
 
     private String deviationDescription() {
         if (deviationCents == 0) {
-            return "afinado";
+            return Texts.get("score_dialogs.DigitalTunerPanel.inTune");
         }
-        String direction = deviationCents > 0 ? "agudo" : "grave";
-        return Math.abs(deviationCents) + " centésimas " + direction;
+        String direction = deviationCents > 0
+                ? Texts.get("score_dialogs.DigitalTunerPanel.sharp")
+                : Texts.get("score_dialogs.DigitalTunerPanel.flat");
+        return Texts.get("score_dialogs.DigitalTunerPanel.deviation", Math.abs(deviationCents), direction);
     }
 
     private void installFocusRing() {

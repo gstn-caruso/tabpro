@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
@@ -21,7 +22,7 @@ public final class AddTrackDialog {
     public static void show(Component parent, Editor editor) {
         Fields fields = buildFields(editor.score().trackCount() + 1);
 
-        if (!DialogShell.ask(parent, "Agregar una pista", fields.form())) {
+        if (!DialogShell.ask(parent, Texts.get("score_dialogs.shared.addTrack"), fields.form())) {
             return;
         }
         Track track = fields.percussion().isSelected()
@@ -35,9 +36,9 @@ public final class AddTrackDialog {
     }
 
     static Fields buildFields(int nextTrackNumber) {
-        JTextField name = new JTextField("Pista " + nextTrackNumber, 16);
-        JRadioButton instrumental = new JRadioButton("Instrumental", true);
-        JRadioButton percussion = new JRadioButton("Percusión");
+        JTextField name = new JTextField(Texts.get("score_dialogs.AddTrackDialog.defaultName", nextTrackNumber), 16);
+        JRadioButton instrumental = new JRadioButton(Texts.get("score_dialogs.AddTrackDialog.instrumental"), true);
+        JRadioButton percussion = new JRadioButton(Texts.get("score_dialogs.AddTrackDialog.percussion"));
         group(instrumental, percussion);
 
         JComboBox<Tuning> tunings = new JComboBox<>(TuningLibrary.all().toArray(Tuning[]::new));
@@ -45,16 +46,16 @@ public final class AddTrackDialog {
         instrumental.addActionListener(event -> tunings.setEnabled(true));
         percussion.addActionListener(event -> tunings.setEnabled(false));
 
-        JRadioButton atTheEnd = new JRadioButton("Al final", true);
-        JRadioButton beforeCurrent = new JRadioButton("Antes de la pista actual");
+        JRadioButton atTheEnd = new JRadioButton(Texts.get("score_dialogs.AddTrackDialog.atTheEnd"), true);
+        JRadioButton beforeCurrent = new JRadioButton(Texts.get("score_dialogs.AddTrackDialog.beforeCurrentTrack"));
         group(atTheEnd, beforeCurrent);
 
         FormPanel form = new FormPanel()
-                .addRow("Nombre", name)
-                .addRow("Tipo", instrumental)
+                .addRow(Texts.get("score_dialogs.shared.name"), name)
+                .addRow(Texts.get("score_dialogs.AddTrackDialog.type"), instrumental)
                 .addRow("", percussion)
-                .addRow("Afinación", tunings)
-                .addRow("Posición", atTheEnd)
+                .addRow(Texts.get("score_dialogs.shared.tuning"), tunings)
+                .addRow(Texts.get("score_dialogs.shared.position"), atTheEnd)
                 .addRow("", beforeCurrent);
 
         return new Fields(form, name, percussion, tunings, beforeCurrent);

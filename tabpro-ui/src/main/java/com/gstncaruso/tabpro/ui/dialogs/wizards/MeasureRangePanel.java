@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.dialogs.wizards;
 
 import com.gstncaruso.tabpro.core.editing.wizards.MeasureRange;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
@@ -17,8 +18,8 @@ public final class MeasureRangePanel extends FormPanel {
     public MeasureRangePanel(MeasureRange initial, int measureCount) {
         from = new JSpinner(new SpinnerNumberModel(initial.from(), 1, Math.max(1, measureCount), 1));
         to = new JSpinner(new SpinnerNumberModel(initial.to(), 1, Math.max(1, measureCount), 1));
-        addRow("Desde el compás", from);
-        addRow("Hasta el compás", to);
+        addRow(Texts.get("score_dialogs.MeasureRangePanel.fromBar"), from);
+        addRow(Texts.get("score_dialogs.MeasureRangePanel.toBar"), to);
     }
 
     public MeasureRange toMeasureRange() {

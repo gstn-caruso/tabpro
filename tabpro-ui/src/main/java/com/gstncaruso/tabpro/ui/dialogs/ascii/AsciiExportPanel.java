@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.ascii;
 
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FlowLayout;
@@ -21,8 +22,8 @@ public final class AsciiExportPanel extends JPanel {
     private final JSpinner columnsPerLine =
             new JSpinner(new SpinnerNumberModel(DEFAULT_COLUMNS_PER_LINE, MIN_COLUMNS_PER_LINE, MAX_COLUMNS_PER_LINE, 1));
     private final JTextArea preview = new JTextArea(20, 60);
-    private final JButton printButton = DialogStyle.flatButton("Imprimir");
-    private final JButton exportButton = DialogStyle.flatButton("Exportar…");
+    private final JButton printButton = DialogStyle.flatButton(Texts.get("score_dialogs.shared.print"));
+    private final JButton exportButton = DialogStyle.flatButton(Texts.get("score_dialogs.AsciiExportPanel.export"));
 
     public AsciiExportPanel() {
         super(new BorderLayout(0, DialogStyle.GAP_S));
@@ -30,7 +31,7 @@ public final class AsciiExportPanel extends JPanel {
         preview.setEditable(false);
         preview.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
-        JLabel columnsLabel = new JLabel("Columnas por línea");
+        JLabel columnsLabel = new JLabel(Texts.get("score_dialogs.AsciiExportPanel.columnsPerLine"));
         columnsLabel.setLabelFor(columnsPerLine);
 
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, DialogStyle.GAP_S));
