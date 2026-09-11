@@ -49,6 +49,27 @@ class SpanishUiTextInJavaIsFlaggedTest {
                 SpanishUiTextScan.spanishLiteralsUnder(root));
     }
 
+    @Test
+    void commentsAndCharactersAreSkippedWhileTextBlocksAndStringsWithSlashesAreRead(@TempDir Path root)
+            throws IOException {
+        Path file = write(root, "Mixed.java", """
+                class Mixed {
+                    // "Configuración" is only mentioned here
+                    /* "Guitarra" too */
+                    char quote = '"';
+                    String url = "http://example.org/pista";
+                    String block = \"""
+                            Nueva partitura
+                            \""";
+                }
+                """);
+
+        assertEquals(
+                List.of(new SpanishLiteral(file, "http://example.org/pista"),
+                        new SpanishLiteral(file, "\n            Nueva partitura\n            ")),
+                SpanishUiTextScan.spanishLiteralsUnder(root));
+    }
+
     private static Path write(Path root, String fileName, String content) throws IOException {
         Path file = root.resolve(fileName);
         Files.writeString(file, content);
