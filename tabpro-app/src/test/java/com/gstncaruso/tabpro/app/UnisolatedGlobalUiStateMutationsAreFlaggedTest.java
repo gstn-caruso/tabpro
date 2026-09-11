@@ -169,6 +169,20 @@ class UnisolatedGlobalUiStateMutationsAreFlaggedTest {
     }
 
     @Test
+    void aTestThatChangesTheDefaultLocaleWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "ChangesTheDefaultLocale.java", """
+                class ChangesTheDefaultLocale {
+                    @Test
+                    void changes() {
+                        Locale.setDefault(Locale.ENGLISH);
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
+    @Test
     void aPanelThatAppliesAValueIsNotFlagged(@TempDir Path root) throws IOException {
         write(root, "AppliesAValueToAPanel.java", """
                 class AppliesAValueToAPanel {
