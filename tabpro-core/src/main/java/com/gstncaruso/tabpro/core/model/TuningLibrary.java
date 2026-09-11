@@ -57,17 +57,17 @@ public final class TuningLibrary {
 
     public static List<Tuning> otherStringInstruments() {
         return List.of(
-                Tuning.of("Banjo Open G", 62, 59, 55, 50, 67),
-                Tuning.of("Banjo Open D", 62, 57, 54, 50, 66),
-                Tuning.of("Banjo Drop C", 62, 59, 55, 48, 67),
-                Tuning.of("Banjo Sol menor", 62, 58, 55, 50, 67),
-                Tuning.of("Banjo Sol modal", 62, 57, 55, 50, 67),
-                Tuning.of("Mandolina", 76, 69, 62, 55),
-                Tuning.of("Ukelele en Do", 69, 64, 60, 67),
-                Tuning.of("Ukelele en Sol", 71, 66, 62, 69),
-                Tuning.of("Violín", 76, 69, 62, 55),
-                Tuning.of("Viola", 69, 62, 55, 48),
-                Tuning.of("Violoncello", 57, 50, 43, 36));
+                Tuning.fromLibrary("banjo.openG", 62, 59, 55, 50, 67),
+                Tuning.fromLibrary("banjo.openD", 62, 57, 54, 50, 66),
+                Tuning.fromLibrary("banjo.dropC", 62, 59, 55, 48, 67),
+                Tuning.fromLibrary("banjo.gMinor", 62, 58, 55, 50, 67),
+                Tuning.fromLibrary("banjo.gModal", 62, 57, 55, 50, 67),
+                Tuning.fromLibrary("mandolin.standard", 76, 69, 62, 55),
+                Tuning.fromLibrary("ukulele.c", 69, 64, 60, 67),
+                Tuning.fromLibrary("ukulele.g", 71, 66, 62, 69),
+                Tuning.fromLibrary("violin.standard", 76, 69, 62, 55),
+                Tuning.fromLibrary("viola.standard", 69, 62, 55, 48),
+                Tuning.fromLibrary("cello.standard", 57, 50, 43, 36));
     }
 
     public static List<Tuning> all() {

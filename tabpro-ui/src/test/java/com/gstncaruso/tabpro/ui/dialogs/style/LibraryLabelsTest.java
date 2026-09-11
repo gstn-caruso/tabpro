@@ -34,10 +34,16 @@ class LibraryLabelsTest {
             "Bajo estándar", "Bajo Drop D", "Bajo medio tono abajo", "Bajo un tono abajo", "Bajo de 5 cuerdas",
             "Bajo de 6 cuerdas");
 
+    private static final List<String> TODAYS_SPANISH_OTHER_INSTRUMENT_TUNING_NAMES = List.of(
+            "Banjo Open G", "Banjo Open D", "Banjo Drop C", "Banjo Sol menor", "Banjo Sol modal", "Mandolina",
+            "Ukelele en Do", "Ukelele en Sol", "Violín", "Viola", "Violoncello");
+
     static Stream<Arguments> libraryTuningsWithTodaysSpanishName() {
-        return Stream.concat(
-                pairedInOrder(TuningLibrary.guitars(), TODAYS_SPANISH_GUITAR_TUNING_NAMES),
-                pairedInOrder(TuningLibrary.basses(), TODAYS_SPANISH_BASS_TUNING_NAMES));
+        return Stream.of(
+                        pairedInOrder(TuningLibrary.guitars(), TODAYS_SPANISH_GUITAR_TUNING_NAMES),
+                        pairedInOrder(TuningLibrary.basses(), TODAYS_SPANISH_BASS_TUNING_NAMES),
+                        pairedInOrder(TuningLibrary.otherStringInstruments(), TODAYS_SPANISH_OTHER_INSTRUMENT_TUNING_NAMES))
+                .flatMap(pairs -> pairs);
     }
 
     @ParameterizedTest(name = "{1}")

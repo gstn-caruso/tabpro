@@ -43,6 +43,17 @@ final class StoredTuningName {
             entry("bass.wholeStepDown", "Bajo un tono abajo"),
             entry("bass.fiveString", "Bajo de 5 cuerdas"),
             entry("bass.sixString", "Bajo de 6 cuerdas"),
+            entry("banjo.openG", "Banjo Open G"),
+            entry("banjo.openD", "Banjo Open D"),
+            entry("banjo.dropC", "Banjo Drop C"),
+            entry("banjo.gMinor", "Banjo Sol menor"),
+            entry("banjo.gModal", "Banjo Sol modal"),
+            entry("mandolin.standard", "Mandolina"),
+            entry("ukulele.c", "Ukelele en Do"),
+            entry("ukulele.g", "Ukelele en Sol"),
+            entry("violin.standard", "Violín"),
+            entry("viola.standard", "Viola"),
+            entry("cello.standard", "Violoncello"),
             entry("percussion", "Percusión"));
 
     private static final Map<String, String> LIBRARY_IDS_BY_STORED_NAME = STORED_NAMES_BY_LIBRARY_ID.entrySet()

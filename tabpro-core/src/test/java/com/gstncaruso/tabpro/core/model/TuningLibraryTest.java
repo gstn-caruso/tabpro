@@ -16,8 +16,8 @@ class TuningLibraryTest {
     }
 
     @Test
-    void everyGuitarAndBassTuningIsNamedByItsOwnLibraryId() {
-        List<TuningName> names = Stream.concat(TuningLibrary.guitars().stream(), TuningLibrary.basses().stream())
+    void everyLibraryTuningIsNamedByItsOwnLibraryId() {
+        List<TuningName> names = Stream.concat(TuningLibrary.all().stream(), Stream.of(PercussionKit.tuning()))
                 .map(Tuning::name)
                 .toList();
 
