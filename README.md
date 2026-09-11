@@ -3,7 +3,7 @@
 Editor libre de tablaturas y partituras para guitarra, en Java 25 con Swing.
 Escribís la música, la ves como en un cancionero publicado y la escuchás sonar.
 
-![La ventana de tabpro](docs/capturas/tabpro.png)
+![The tabpro window](docs/screenshots/tabpro.png)
 
 Está inspirado en Guitar Pro 5.2, del que toma la disposición de las barras
 —con la de efectos pegada debajo de la partitura, como el original— y los
@@ -29,7 +29,7 @@ encabezado y pie; modo pergamino sin cortes; y dos modos de pantalla que usan
 todo el espacio disponible. Con zoom del 30% al 200%, en un combo editable de la
 barra con los valores predefinidos del manual.
 
-![La partitura tal como se imprime](docs/capturas/hoja.png)
+![The score as it prints](docs/screenshots/sheet.png)
 
 **Suena.** Reproducción MIDI que respeta el orden real de los compases
 —repeticiones, finales alternativos y los saltos tipo *D.C. al Coda*— y los
@@ -70,7 +70,7 @@ cómo suena), y saltos de línea forzados o impedidos para maquetar la hoja.
 
 ## El diapasón y el teclado
 
-![El diapasón y el teclado](docs/capturas/diapason-y-teclado.png)
+![The fretboard and the keyboard](docs/screenshots/fretboard-and-keyboard.png)
 
 Marcan las notas del beat y escriben al clic. Se ajustan solos a la afinación, al
 capo y a la cantidad de cuerdas de la pista activa. Muestran el beat solo, el
@@ -87,7 +87,7 @@ intercambiar de lugar la partitura y la mesa de mezcla.
 
 ## La mesa de mezcla y la vista global
 
-![La mesa de mezcla y la vista global](docs/capturas/mesa-de-mezcla.png)
+![The mix table and the global view](docs/screenshots/mix-table.png)
 
 Puerto, los dos canales de la pista —el suyo y el de sus efectos, para que un bend
 no le corra la afinación a las notas limpias—, instrumento General MIDI —o kit de
