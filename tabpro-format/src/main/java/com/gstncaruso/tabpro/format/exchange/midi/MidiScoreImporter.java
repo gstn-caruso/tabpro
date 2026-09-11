@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.ChordFretting;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -34,6 +35,12 @@ import javax.sound.midi.Sequence;
 public final class MidiScoreImporter {
 
     private static final int OCTAVE = 12;
+
+    private final DefaultNames names;
+
+    public MidiScoreImporter(DefaultNames names) {
+        this.names = names;
+    }
 
     public List<MidiTrackSummary> tracksIn(Path path) {
         return parse(path).tracks().stream().map(MidiTrackSummary::of).toList();
@@ -150,10 +157,10 @@ public final class MidiScoreImporter {
         return result;
     }
 
-    private static ParsedMidiFile parse(Path path) {
+    private ParsedMidiFile parse(Path path) {
         try {
             Sequence sequence = MidiSystem.getSequence(path.toFile());
-            return MidiFileParser.parse(sequence);
+            return MidiFileParser.parse(sequence, names);
         } catch (InvalidMidiDataException e) {
             throw ScoreFileException.notRecognized("MIDI", "invalid MIDI data: " + path, e);
         } catch (IOException e) {

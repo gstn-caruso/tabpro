@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.format.exchange.midi;
 import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
@@ -42,7 +43,7 @@ final class MidiFileParser {
     private MidiFileParser() {
     }
 
-    static ParsedMidiFile parse(Sequence sequence) {
+    static ParsedMidiFile parse(Sequence sequence, DefaultNames names) {
         if (sequence.getDivisionType() != Sequence.PPQ) {
             throw ScoreFileException.unsupportedContent(ScoreFeature.SMPTE_TIME_CODE, "SMPTE timed MIDI file");
         }
@@ -70,7 +71,7 @@ final class MidiFileParser {
                 }
             }
             if (builder.hasContent()) {
-                rawTracks.add(builder.build(lastTick));
+                rawTracks.add(builder.build(lastTick, names));
             }
         }
         signatureChanges.putIfAbsent(0L, TimeSignature.fourFour());
@@ -224,7 +225,7 @@ final class MidiFileParser {
             }
         }
 
-        RawMidiTrack build(long trackEndTick) {
+        RawMidiTrack build(long trackEndTick, DefaultNames names) {
             for (Map.Entry<Integer, Deque<Long>> entry : pendingOnsets.entrySet()) {
                 for (Long onsetTick : entry.getValue()) {
                     addNote(onsetTick, entry.getKey(), trackEndTick - onsetTick);
@@ -232,7 +233,7 @@ final class MidiFileParser {
             }
             int channel = channelNumber == null ? 1 : channelNumber;
             boolean percussion = channel == Channel.PERCUSSION_CHANNEL;
-            String finalName = name == null || name.isBlank() ? "Pista " + (index + 1) : name;
+            String finalName = name == null || name.isBlank() ? names.track(index + 1) : name;
             return new RawMidiTrack(
                     index, finalName, program, channel, port, volume, pan, reverb, tremolo, chorus, phaser, percussion, notesByTick);
         }

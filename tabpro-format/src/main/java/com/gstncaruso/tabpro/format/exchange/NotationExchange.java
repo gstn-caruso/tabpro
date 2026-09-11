@@ -30,7 +30,7 @@ import java.util.Optional;
 
 public final class NotationExchange implements ScoreExchange {
 
-    private final MidiScoreImporter midiImporter = new MidiScoreImporter();
+    private final MidiScoreImporter midiImporter;
     private final AsciiTabImporter asciiImporter;
     private final AsciiTabExporter asciiExporter = new AsciiTabExporter();
     private final GuitarProFile guitarPro;
@@ -45,6 +45,7 @@ public final class NotationExchange implements ScoreExchange {
         this.tabEdit = new TabEditFile(names);
         this.powerTab = new PowerTabFile(names);
         this.asciiImporter = new AsciiTabImporter(names);
+        this.midiImporter = new MidiScoreImporter(names);
     }
 
     @Override

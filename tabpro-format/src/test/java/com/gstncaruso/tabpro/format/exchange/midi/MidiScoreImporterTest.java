@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -21,6 +22,7 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.playback.ScheduledNote;
 import com.gstncaruso.tabpro.core.playback.Timeline;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
@@ -34,7 +36,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 class MidiScoreImporterTest {
 
-    private final MidiScoreImporter importer = new MidiScoreImporter();
+    private final DefaultNames names = new TestDefaultNames();
+    private final MidiScoreImporter importer = new MidiScoreImporter(names);
 
     @Test
     void listsTheTracksOfTheFileWithoutTheConductor(@TempDir Path tempDir) {
@@ -153,6 +156,19 @@ class MidiScoreImporterTest {
         Score imported = importer.importQuick(path);
 
         assertEquals("no-name", imported.title());
+    }
+
+    @Test
+    void quickImportNamesAnUnnamedTrackFromTheInjectedDefaultNames(@TempDir Path tempDir) throws Exception {
+        Path path = tempDir.resolve("no-track-name.mid");
+        Track guitar = Track.standardGuitar("Guitar");
+        Sequence sequence = PlainMidiWriter.sequenceOf(new Score("Test", 120, List.of(guitar)));
+        removeTrackNameEvents(sequence);
+        javax.sound.midi.MidiSystem.write(sequence, 1, path.toFile());
+
+        Score imported = importer.importQuick(path);
+
+        assertEquals(names.track(2), imported.track(0).name());
     }
 
     @Test
@@ -275,7 +291,7 @@ class MidiScoreImporterTest {
     void aSmpteTimedFileIsContentThatIsNotSupported() throws Exception {
         Sequence smpte = new Sequence(Sequence.SMPTE_25, 40);
 
-        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> MidiFileParser.parse(smpte));
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> MidiFileParser.parse(smpte, names));
 
         assertEquals(ScoreFileProblem.UNSUPPORTED_CONTENT, failure.problem());
         assertEquals(List.of(ScoreFeature.SMPTE_TIME_CODE), failure.arguments());
