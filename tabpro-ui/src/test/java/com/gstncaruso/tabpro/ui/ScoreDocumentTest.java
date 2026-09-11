@@ -92,7 +92,7 @@ class ScoreDocumentTest {
     void describesAnUntitledDocument() {
         ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
 
-        assertEquals(ScoreDocument.UNTITLED, document.displayName());
+        assertEquals(ScoreDocument.untitled(), document.displayName());
     }
 
     @Test
@@ -237,7 +237,7 @@ class ScoreDocumentTest {
 
         editor.setFret(5);
 
-        assertTrue(document.windowTitle().startsWith(ScoreDocument.UNTITLED + " *"));
+        assertTrue(document.windowTitle().startsWith(ScoreDocument.untitled() + " *"));
         assertTrue(document.windowTitle().contains("My song"));
     }
 

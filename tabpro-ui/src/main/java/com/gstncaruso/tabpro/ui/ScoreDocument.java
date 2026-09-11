@@ -13,7 +13,6 @@ import java.util.function.Supplier;
 
 public final class ScoreDocument {
 
-    public static final String UNTITLED = Texts.get("library.score.untitled");
     public static final String EXTENSION = ".tabpro";
 
     private final Editor editor;
@@ -45,12 +44,16 @@ public final class ScoreDocument {
         return Optional.ofNullable(path);
     }
 
+    public static String untitled() {
+        return Texts.get("library.score.untitled");
+    }
+
     public java.util.List<Path> recentFiles() {
         return preferences.recentFiles();
     }
 
     public String displayName() {
-        return path == null ? UNTITLED : path.getFileName().toString();
+        return path == null ? untitled() : path.getFileName().toString();
     }
 
     public String windowTitle() {
