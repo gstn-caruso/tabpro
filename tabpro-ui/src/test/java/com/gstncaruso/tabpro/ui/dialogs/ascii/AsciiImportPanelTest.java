@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class AsciiImportPanelTest {
@@ -13,6 +15,14 @@ class AsciiImportPanelTest {
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new AsciiImportPanel());
+    }
+
+    @Test
+    void theToolbarLabelsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Import with", english.text("score_dialogs.AsciiImportPanel.importWith"));
+        assertEquals("Intervals per Quarter Note", english.text("score_dialogs.AsciiImportPanel.intervalsPerQuarterNote"));
     }
 
     @Test

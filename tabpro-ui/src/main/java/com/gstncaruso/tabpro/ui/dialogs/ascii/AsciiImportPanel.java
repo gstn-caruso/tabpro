@@ -2,6 +2,8 @@ package com.gstncaruso.tabpro.ui.dialogs.ascii;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.Optional;
@@ -14,27 +16,27 @@ import javax.swing.JTextArea;
 
 public final class AsciiImportPanel extends JPanel {
 
-    private static final String VARIABLE_LABEL = "<variable>";
+    private static final String VARIABLE_LABEL = Texts.get("score_dialogs.AsciiImportPanel.variableRhythm");
     private static final Integer[] INTERVAL_CHOICES = {2, 3, 4, 6, 8, 12, 16};
     private static final int DEFAULT_INTERVALS_PER_QUARTER_NOTE = 4;
 
     private final JTextArea text = new JTextArea(18, 60);
     private final JComboBox<String> rhythmChoice = new JComboBox<>(rhythmLabels());
     private final JComboBox<Integer> intervalsChoice = new JComboBox<>(INTERVAL_CHOICES);
-    private final JButton openButton = DialogStyle.flatButton("Abrir archivo…");
-    private final JButton printButton = DialogStyle.flatButton("Imprimir");
+    private final JButton openButton = DialogStyle.flatButton(Texts.get("score_dialogs.AsciiImportPanel.openFile"));
+    private final JButton printButton = DialogStyle.flatButton(Texts.get("score_dialogs.shared.print"));
 
     public AsciiImportPanel() {
         super(new BorderLayout(0, DialogStyle.GAP_S));
         DialogStyle.padded(this);
-        rhythmChoice.setSelectedItem(figureName(NoteValue.EIGHTH));
+        rhythmChoice.setSelectedItem(Labels.of(NoteValue.EIGHTH));
         intervalsChoice.setSelectedItem(DEFAULT_INTERVALS_PER_QUARTER_NOTE);
         intervalsChoice.setEnabled(fixedRhythm().isEmpty());
         rhythmChoice.addActionListener(event -> intervalsChoice.setEnabled(fixedRhythm().isEmpty()));
 
-        JLabel rhythmLabel = new JLabel("Importar con");
+        JLabel rhythmLabel = new JLabel(Texts.get("score_dialogs.AsciiImportPanel.importWith"));
         rhythmLabel.setLabelFor(rhythmChoice);
-        JLabel intervalsLabel = new JLabel("Intervalos por negra");
+        JLabel intervalsLabel = new JLabel(Texts.get("score_dialogs.AsciiImportPanel.intervalsPerQuarterNote"));
         intervalsLabel.setLabelFor(intervalsChoice);
 
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, DialogStyle.GAP_S, DialogStyle.GAP_S));
@@ -71,7 +73,7 @@ public final class AsciiImportPanel extends JPanel {
     }
 
     public void chooseFixedRhythm(NoteValue value) {
-        rhythmChoice.setSelectedItem(figureName(value));
+        rhythmChoice.setSelectedItem(Labels.of(value));
     }
 
     public void chooseVariableRhythm() {
@@ -94,7 +96,7 @@ public final class AsciiImportPanel extends JPanel {
         NoteValue[] values = NoteValue.values();
         String[] labels = new String[values.length + 1];
         for (int index = 0; index < values.length; index++) {
-            labels[index] = figureName(values[index]);
+            labels[index] = Labels.of(values[index]);
         }
         labels[values.length] = VARIABLE_LABEL;
         return labels;
@@ -102,22 +104,10 @@ public final class AsciiImportPanel extends JPanel {
 
     private static NoteValue noteValueOf(String label) {
         for (NoteValue value : NoteValue.values()) {
-            if (figureName(value).equals(label)) {
+            if (Labels.of(value).equals(label)) {
                 return value;
             }
         }
         throw new IllegalStateException("unknown figure: " + label);
-    }
-
-    private static String figureName(NoteValue value) {
-        return switch (value) {
-            case WHOLE -> "Redonda";
-            case HALF -> "Blanca";
-            case QUARTER -> "Negra";
-            case EIGHTH -> "Corchea";
-            case SIXTEENTH -> "Semicorchea";
-            case THIRTY_SECOND -> "Fusa";
-            case SIXTY_FOURTH -> "Semifusa";
-        };
     }
 }
