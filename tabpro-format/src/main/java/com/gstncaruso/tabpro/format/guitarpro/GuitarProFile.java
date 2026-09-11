@@ -40,9 +40,9 @@ public final class GuitarProFile {
         try {
             return read(Files.readAllBytes(path));
         } catch (IOException e) {
-            throw new ScoreFileException("no se pudo leer " + path, e);
+            throw ScoreFileException.cannotRead(path, e);
         } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-            throw new ScoreFileException("el archivo " + path + " no se pudo interpretar: " + e.getMessage(), e);
+            throw ScoreFileException.damaged("could not parse " + path + ": " + e.getMessage(), e);
         }
     }
 
@@ -183,7 +183,7 @@ public final class GuitarProFile {
             tracks.add(trackOf(trackHeaders.get(index), channels, measuresByTrack.get(index), index));
         }
         if (tracks.isEmpty()) {
-            throw new ScoreFileException("el archivo no tiene ninguna pista");
+            throw ScoreFileException.nothingToImport("the file has no tracks");
         }
         ScoreInfo info = header.info();
         int tempo = Math.max(1, header.tempo());

@@ -2,8 +2,11 @@ package com.gstncaruso.tabpro.format.guitarpro;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -29,8 +32,10 @@ import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
+import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class GuitarProExporterTest {
 
@@ -39,6 +44,17 @@ class GuitarProExporterTest {
 
     private Score exportAndReread(Score score) {
         return files.read(exporter.write(score));
+    }
+
+    @Test
+    void aFileThatCannotBeWrittenIsReportedWithItsPath(@TempDir Path folder) {
+        Path path = folder.resolve("missing-folder").resolve("song.gp4");
+
+        ScoreFileException failure =
+                assertThrows(ScoreFileException.class, () -> exporter.write(Score.blank(), path));
+
+        assertEquals(ScoreFileProblem.CANNOT_WRITE, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
     }
 
     @Test

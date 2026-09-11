@@ -35,7 +35,7 @@ public final class GuitarProExporter {
         try {
             Files.write(path, write(score));
         } catch (IOException e) {
-            throw new ScoreFileException("no se pudo escribir " + path, e);
+            throw ScoreFileException.cannotWrite(path, e);
         }
     }
 
