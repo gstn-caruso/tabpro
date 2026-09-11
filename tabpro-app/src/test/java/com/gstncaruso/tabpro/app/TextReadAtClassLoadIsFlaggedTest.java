@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -78,6 +79,17 @@ class TextReadAtClassLoadIsFlaggedTest {
                 """);
 
         assertEquals(List.of(culprit), ClassLoadTextScan.filesReadingTextAtClassLoad(root));
+    }
+
+    @Test
+    void noUiOrAppClassReadsItsTextWhenItLoads() {
+        Path repoRoot = Path.of(System.getProperty("user.dir"), "..").normalize();
+        List<Path> culprits = Stream.of("tabpro-ui", "tabpro-app")
+                .map(module -> repoRoot.resolve(Path.of(module, "src", "main", "java")))
+                .flatMap(root -> ClassLoadTextScan.filesReadingTextAtClassLoad(root).stream())
+                .toList();
+
+        assertEquals(List.of(), culprits, "text must be read after the interface language is installed");
     }
 
     private static Path write(Path root, String fileName, String content) throws IOException {
