@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.format.exchange;
 import com.gstncaruso.tabpro.core.files.AudioQuality;
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
+import com.gstncaruso.tabpro.core.files.ScoreOperation;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -44,7 +45,7 @@ public final class NotationExchange implements ScoreExchange {
 
     @Override
     public void exportMidi(Score score, Path path) {
-        throw ScoreExchange.notSupported("la exportación a MIDI");
+        throw ScoreExchange.notSupported(ScoreOperation.EXPORT_MIDI);
     }
 
     @Override
@@ -82,7 +83,7 @@ public final class NotationExchange implements ScoreExchange {
 
     @Override
     public void exportWave(Score score, Path path, AudioQuality quality) {
-        throw ScoreExchange.notSupported("la exportación a WAVE");
+        throw ScoreExchange.notSupported(ScoreOperation.EXPORT_WAVE);
     }
 
     private static MidiTrackInfo toMidiTrackInfo(MidiTrackSummary summary) {
