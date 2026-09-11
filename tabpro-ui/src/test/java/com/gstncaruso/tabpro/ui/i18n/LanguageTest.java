@@ -15,4 +15,10 @@ class LanguageTest {
     void automaticPicksSpanishWhenTheSystemSpeaksSpanishInAnyCountry(String systemLanguageTag) {
         assertEquals(SPANISH, Language.AUTOMATIC.resolve(Locale.forLanguageTag(systemLanguageTag)));
     }
+
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"en-US", "pt-BR", "de", "fr", "und"})
+    void automaticPicksEnglishWhenTheSystemSpeaksAnyOtherLanguage(String systemLanguageTag) {
+        assertEquals(Locale.ENGLISH, Language.AUTOMATIC.resolve(Locale.forLanguageTag(systemLanguageTag)));
+    }
 }

@@ -8,6 +8,10 @@ public enum Language {
     private static final Locale SPANISH = Locale.forLanguageTag("es");
 
     public Locale resolve(Locale systemLocale) {
-        return SPANISH;
+        return speaksSpanish(systemLocale) ? SPANISH : Locale.ENGLISH;
+    }
+
+    private static boolean speaksSpanish(Locale locale) {
+        return SPANISH.getLanguage().equals(locale.getLanguage());
     }
 }
