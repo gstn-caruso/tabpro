@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ class BeatLocationTest {
 
     @Test
     void pointsToTheBeatAtItsIndex() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(3);
 
         BeatLocation location = new BeatLocation(editor.currentTrack(), 0, VoicePart.LEAD, 0);
@@ -26,7 +27,7 @@ class BeatLocationTest {
 
     @Test
     void listsEveryBeatOfItsMeasure() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(3);
         editor.moveRight();
         editor.setFret(5);
@@ -38,7 +39,7 @@ class BeatLocationTest {
 
     @Test
     void theNextBeatIsTheOneRightAfterInTheSameMeasure() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(3);
         editor.moveRight();
         editor.setFret(5);
@@ -50,7 +51,7 @@ class BeatLocationTest {
 
     @Test
     void theNextBeatCrossesIntoTheFollowingMeasure() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.insertMeasure();
         editor.moveToNextMeasure();
         editor.setFret(9);
@@ -63,7 +64,7 @@ class BeatLocationTest {
 
     @Test
     void thereIsNoNextBeatPastTheLastMeasure() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         BeatLocation location = new BeatLocation(editor.currentTrack(), 0, VoicePart.LEAD, 0);
 
@@ -72,7 +73,7 @@ class BeatLocationTest {
 
     @Test
     void followsTheVoiceItWasGiven() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.editVoice(VoicePart.BASS);
         editor.setFret(2);
 

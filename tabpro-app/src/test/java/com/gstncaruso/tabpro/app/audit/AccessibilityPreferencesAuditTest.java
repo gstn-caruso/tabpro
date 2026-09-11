@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import com.gstncaruso.tabpro.ui.dialogs.preferences.PreferencesPanel;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.theme.ThemeSwitch;
 import java.util.List;
 import javax.swing.JButton;
@@ -38,7 +39,7 @@ class AccessibilityPreferencesAuditTest {
         preferences.setAnimationsDisabled(true);
         RecordingThemeSwitch themes = new RecordingThemeSwitch();
 
-        MainFrame frame = AuditSupport.newFrame(new Editor(com.gstncaruso.tabpro.core.model.Score.blank()), themes);
+        MainFrame frame = AuditSupport.newFrame(new Editor(com.gstncaruso.tabpro.core.model.Score.blank(new TextsDefaultNames())), themes);
         try {
             assertEquals(18, themes.lastFontSize);
             assertEquals(true, themes.lastHighContrast);
@@ -52,7 +53,7 @@ class AccessibilityPreferencesAuditTest {
     void acceptingPreferencesPersistsAndAppliesTheAccessibilityChoices() throws Exception {
         RecordingThemeSwitch themes = new RecordingThemeSwitch();
         MainFrame frame = AuditSupport.newFrame(
-                new Editor(com.gstncaruso.tabpro.core.model.Score.blank()), themes);
+                new Editor(com.gstncaruso.tabpro.core.model.Score.blank(new TextsDefaultNames())), themes);
         try {
             JMenuItem preferencesItem = AuditSupport.findMenuItem(frame.getJMenuBar(), "Preferencias…");
             AuditSupport.withDialog(preferencesItem::doClick, dialog -> {

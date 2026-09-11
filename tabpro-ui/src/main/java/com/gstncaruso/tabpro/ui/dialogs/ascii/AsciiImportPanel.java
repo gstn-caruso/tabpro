@@ -16,7 +16,6 @@ import javax.swing.JTextArea;
 
 public final class AsciiImportPanel extends JPanel {
 
-    private static final String VARIABLE_LABEL = Texts.get("score_dialogs.AsciiImportPanel.variableRhythm");
     private static final Integer[] INTERVAL_CHOICES = {2, 3, 4, 6, 8, 12, 16};
     private static final int DEFAULT_INTERVALS_PER_QUARTER_NOTE = 4;
 
@@ -69,7 +68,7 @@ public final class AsciiImportPanel extends JPanel {
 
     public Optional<NoteValue> fixedRhythm() {
         String choice = (String) rhythmChoice.getSelectedItem();
-        return VARIABLE_LABEL.equals(choice) ? Optional.empty() : Optional.of(noteValueOf(choice));
+        return variableRhythmLabel().equals(choice) ? Optional.empty() : Optional.of(noteValueOf(choice));
     }
 
     public void chooseFixedRhythm(NoteValue value) {
@@ -77,7 +76,7 @@ public final class AsciiImportPanel extends JPanel {
     }
 
     public void chooseVariableRhythm() {
-        rhythmChoice.setSelectedItem(VARIABLE_LABEL);
+        rhythmChoice.setSelectedItem(variableRhythmLabel());
     }
 
     public int intervalsPerQuarterNote() {
@@ -98,8 +97,12 @@ public final class AsciiImportPanel extends JPanel {
         for (int index = 0; index < values.length; index++) {
             labels[index] = Labels.of(values[index]);
         }
-        labels[values.length] = VARIABLE_LABEL;
+        labels[values.length] = variableRhythmLabel();
         return labels;
+    }
+
+    private static String variableRhythmLabel() {
+        return Texts.get("score_dialogs.AsciiImportPanel.variableRhythm");
     }
 
     private static NoteValue noteValueOf(String label) {

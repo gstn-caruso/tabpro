@@ -188,7 +188,7 @@ class MidiScoreExporterTest {
 
     @Test
     void aFreshScoreWithThreeTracksSoundsAsThreeDistinctTracksWithoutTouchingTheMixer() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.addTrack(Track.standardBass("Bass"));
         editor.addTrack(Track.standardGuitar("Guitar 2"));
 
@@ -392,7 +392,7 @@ class MidiScoreExporterTest {
 
     @Test
     void writesAndReadsBackAFile(@TempDir Path tempDir) throws Exception {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         Path path = tempDir.resolve("test.mid");
 
         exporter.export(score, path);

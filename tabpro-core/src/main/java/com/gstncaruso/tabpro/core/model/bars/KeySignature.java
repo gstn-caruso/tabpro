@@ -8,12 +8,6 @@ public record KeySignature(int accidentals, Mode mode) {
 
     private static final List<Integer> FLAT_ORDER = List.of(6, 2, 5, 1, 4, 0, 3);
 
-    private static final List<String> MAJOR_NAMES =
-            List.of("Do b", "Sol b", "Re b", "La b", "Mi b", "Si b", "Fa", "Do", "Sol", "Re", "La", "Mi", "Si", "Fa #", "Do #");
-
-    private static final List<String> MINOR_NAMES =
-            List.of("La b", "Mi b", "Si b", "Fa", "Do", "Sol", "Re", "La", "Mi", "Si", "Fa #", "Do #", "Sol #", "Re #", "La #");
-
     public KeySignature {
         if (accidentals < -7 || accidentals > 7) {
             throw new IllegalArgumentException("the key signature ranges from -7 to 7 accidentals: " + accidentals);
@@ -45,9 +39,5 @@ public record KeySignature(int accidentals, Mode mode) {
             return 0;
         }
         return hasFlats() ? -1 : 1;
-    }
-
-    public String name() {
-        return (mode == Mode.MAJOR ? MAJOR_NAMES : MINOR_NAMES).get(accidentals + 7);
     }
 }

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import com.gstncaruso.tabpro.core.model.bars.DirectionJump;
 import com.gstncaruso.tabpro.core.model.bars.DirectionSymbol;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
@@ -122,7 +123,7 @@ class PlayOrderTest {
     }
 
     private Score scoreWithMeasures(int count) {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         for (int i = 1; i < count; i++) {
             score = score.withMeasureInsertedInEveryTrackAt(i);
         }

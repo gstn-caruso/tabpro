@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +22,7 @@ class MixParameterTest {
 
     @Test
     void readsTheCurrentValueOfEveryKnob() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         assertEquals(100, MixParameter.VOLUME.valueOf(editor.currentTrack()));
         assertEquals(64, MixParameter.PAN.valueOf(editor.currentTrack()));
@@ -33,7 +34,7 @@ class MixParameterTest {
 
     @Test
     void movingAKnobChangesThatChannelFieldAndNoOther() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         MixParameter.CHORUS.applyTo(editor, 0, 90);
 

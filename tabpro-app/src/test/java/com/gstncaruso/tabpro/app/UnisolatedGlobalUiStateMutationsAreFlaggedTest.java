@@ -155,6 +155,34 @@ class UnisolatedGlobalUiStateMutationsAreFlaggedTest {
     }
 
     @Test
+    void aTestThatInstallsTheInterfaceLanguageWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "InstallsTheInterfaceLanguage.java", """
+                class InstallsTheInterfaceLanguage {
+                    @Test
+                    void installs() {
+                        Texts.install(Locale.ENGLISH);
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
+    @Test
+    void aTestThatChangesTheDefaultLocaleWithoutIsolationIsFlagged(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "ChangesTheDefaultLocale.java", """
+                class ChangesTheDefaultLocale {
+                    @Test
+                    void changes() {
+                        Locale.setDefault(Locale.ENGLISH);
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), GlobalUiMutationScan.unisolatedMutators(root));
+    }
+
+    @Test
     void aPanelThatAppliesAValueIsNotFlagged(@TempDir Path root) throws IOException {
         write(root, "AppliesAValueToAPanel.java", """
                 class AppliesAValueToAPanel {

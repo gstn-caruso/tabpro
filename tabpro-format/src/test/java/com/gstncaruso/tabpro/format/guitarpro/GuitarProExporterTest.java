@@ -54,7 +54,7 @@ class GuitarProExporterTest {
         Path path = folder.resolve("missing-folder").resolve("song.gp4");
 
         ScoreFileException failure =
-                assertThrows(ScoreFileException.class, () -> exporter.write(Score.blank(), path));
+                assertThrows(ScoreFileException.class, () -> exporter.write(Score.blank(new TestDefaultNames()), path));
 
         assertEquals(ScoreFileProblem.CANNOT_WRITE, failure.problem());
         assertEquals(List.of(path), failure.arguments());

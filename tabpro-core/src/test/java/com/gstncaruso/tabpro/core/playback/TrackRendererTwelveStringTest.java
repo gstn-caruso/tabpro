@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import java.util.List;
@@ -52,6 +53,6 @@ class TrackRendererTwelveStringTest {
         Track track = Track.standardGuitar("Guitar")
                 .withMeasure(0, measure)
                 .mappingSettings(settings -> settings.withTwelveString(twelveString));
-        return Score.blank().withTrack(0, track);
+        return Score.blank(new TestDefaultNames()).withTrack(0, track);
     }
 }

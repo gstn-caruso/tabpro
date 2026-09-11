@@ -18,6 +18,8 @@ final class GlobalUiMutationScan {
     private static final Pattern UPDATES_THE_FLATLAF_UI = Pattern.compile("FlatLaf\\.updateUI\\(");
     private static final Pattern WRITES_TO_UI_MANAGER = Pattern.compile("UIManager\\.put\\(");
     private static final Pattern SWITCHES_THE_LOOK_AND_FEEL = Pattern.compile("UIManager\\.setLookAndFeel\\(");
+    private static final Pattern INSTALLS_THE_INTERFACE_LANGUAGE = Pattern.compile("Texts\\.install\\(");
+    private static final Pattern CHANGES_THE_DEFAULT_LOCALE = Pattern.compile("Locale\\.setDefault\\(");
     private static final Pattern THEME_VARIABLE = Pattern.compile("\\bTheme\\s+(\\w+)\\s*[=;]");
     private static final Pattern ISOLATED = Pattern.compile("@Isolated\\b");
     private static final Pattern DECLARES_A_TEST = Pattern.compile("@(Test|ParameterizedTest)\\b");
@@ -38,11 +40,11 @@ final class GlobalUiMutationScan {
     }
 
     private static boolean isATestClass(Path file) {
-        return DECLARES_A_TEST.matcher(withoutComments(read(file))).find();
+        return DECLARES_A_TEST.matcher(JavaSources.withoutComments(JavaSources.read(file))).find();
     }
 
     private static boolean mutatesGlobalUiState(Path file) {
-        String code = withoutComments(read(file));
+        String code = JavaSources.withoutComments(JavaSources.read(file));
         return INSTALLS_THE_THEME.matcher(code).find()
                 || CHANGES_THE_FONT_SIZE.matcher(code).find()
                 || TOGGLES_HIGH_CONTRAST.matcher(code).find()
@@ -50,6 +52,8 @@ final class GlobalUiMutationScan {
                 || UPDATES_THE_FLATLAF_UI.matcher(code).find()
                 || WRITES_TO_UI_MANAGER.matcher(code).find()
                 || SWITCHES_THE_LOOK_AND_FEEL.matcher(code).find()
+                || INSTALLS_THE_INTERFACE_LANGUAGE.matcher(code).find()
+                || CHANGES_THE_DEFAULT_LOCALE.matcher(code).find()
                 || appliesARealTheme(code);
     }
 
@@ -65,36 +69,6 @@ final class GlobalUiMutationScan {
     }
 
     private static boolean isIsolated(Path file) {
-        return ISOLATED.matcher(read(file)).find();
-    }
-
-    private static String withoutComments(String source) {
-        StringBuilder withoutComments = new StringBuilder();
-        int index = 0;
-        int length = source.length();
-        while (index < length) {
-            char current = source.charAt(index);
-            if (current == '/' && index + 1 < length && source.charAt(index + 1) == '/') {
-                int lineEnd = source.indexOf('\n', index);
-                index = lineEnd == -1 ? length : lineEnd;
-                continue;
-            }
-            if (current == '/' && index + 1 < length && source.charAt(index + 1) == '*') {
-                int blockEnd = source.indexOf("*/", index + 2);
-                index = blockEnd == -1 ? length : blockEnd + 2;
-                continue;
-            }
-            withoutComments.append(current);
-            index++;
-        }
-        return withoutComments.toString();
-    }
-
-    private static String read(Path file) {
-        try {
-            return Files.readString(file);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        return ISOLATED.matcher(JavaSources.read(file)).find();
     }
 }

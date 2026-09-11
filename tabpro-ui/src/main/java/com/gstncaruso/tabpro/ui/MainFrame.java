@@ -1019,7 +1019,8 @@ public final class MainFrame extends JFrame {
                     .withForceMultitrackInHorizontalMode(preferences.forceMultitrackInHorizontalMode())
                     .withInterfaceFontSize(preferences.interfaceFontSize())
                     .withHighContrastEnabled(preferences.highContrastEnabled())
-                    .withAnimationsDisabled(preferences.animationsDisabled());
+                    .withAnimationsDisabled(preferences.animationsDisabled())
+                    .withInterfaceLanguage(preferences.interfaceLanguage());
             PreferencesDialog.ask(MainFrame.this, current).ifPresent(updated -> {
                 editingPreferences = updated;
                 preferences.setDefaultNoteValue(updated.defaultNoteValue());
@@ -1035,6 +1036,7 @@ public final class MainFrame extends JFrame {
                 preferences.setInterfaceFontSize(updated.interfaceFontSize());
                 preferences.setHighContrastEnabled(updated.highContrastEnabled());
                 preferences.setAnimationsDisabled(updated.animationsDisabled());
+                preferences.setInterfaceLanguage(updated.interfaceLanguage());
                 AccessibilitySettings.applyFrom(preferences, themes);
             });
             backToTheScore();
@@ -1068,32 +1070,32 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void timeSignature() {
-            measureProperties(MeasurePropertiesDialog.TIME_SIGNATURE);
+            measureProperties(MeasurePropertiesDialog.timeSignatureTabTitle());
         }
 
         @Override
         public void keySignature() {
-            measureProperties(MeasurePropertiesDialog.KEY_SIGNATURE);
+            measureProperties(MeasurePropertiesDialog.keySignatureTabTitle());
         }
 
         @Override
         public void tripletFeel() {
-            measureProperties(MeasurePropertiesDialog.TRIPLET_FEEL);
+            measureProperties(MeasurePropertiesDialog.tripletFeelTabTitle());
         }
 
         @Override
         public void repeatClose() {
-            measureProperties(MeasurePropertiesDialog.REPEAT);
+            measureProperties(MeasurePropertiesDialog.repeatTabTitle());
         }
 
         @Override
         public void alternateEndings() {
-            measureProperties(MeasurePropertiesDialog.ALTERNATE_ENDINGS);
+            measureProperties(MeasurePropertiesDialog.alternateEndingsTabTitle());
         }
 
         @Override
         public void musicalDirections() {
-            measureProperties(MeasurePropertiesDialog.DIRECTIONS);
+            measureProperties(MeasurePropertiesDialog.directionsTabTitle());
         }
 
         @Override
@@ -1110,37 +1112,37 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void bend() {
-            noteEffects(NoteEffectsDialog.BEND);
+            noteEffects(NoteEffectsDialog.bendTabTitle());
         }
 
         @Override
         public void tremoloBar() {
-            noteEffects(NoteEffectsDialog.TREMOLO_BAR);
+            noteEffects(NoteEffectsDialog.tremoloBarTabTitle());
         }
 
         @Override
         public void graceNote() {
-            noteEffects(NoteEffectsDialog.GRACE_NOTE);
+            noteEffects(NoteEffectsDialog.graceNoteTabTitle());
         }
 
         @Override
         public void stroke() {
-            noteEffects(NoteEffectsDialog.STROKE);
+            noteEffects(NoteEffectsDialog.strokeTabTitle());
         }
 
         @Override
         public void trill() {
-            noteEffects(NoteEffectsDialog.TRILL);
+            noteEffects(NoteEffectsDialog.trillTabTitle());
         }
 
         @Override
         public void tremoloPicking() {
-            noteEffects(NoteEffectsDialog.TREMOLO_PICKING);
+            noteEffects(NoteEffectsDialog.tremoloPickingTabTitle());
         }
 
         @Override
         public void harmonics() {
-            noteEffects(NoteEffectsDialog.HARMONICS);
+            noteEffects(NoteEffectsDialog.harmonicsTabTitle());
         }
 
         @Override

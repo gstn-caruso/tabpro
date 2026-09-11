@@ -7,7 +7,7 @@ import javax.swing.table.AbstractTableModel;
 
 final class MarkerTableModel extends AbstractTableModel {
 
-    private static final String[] COLUMNS =
+    private final String[] columns =
             {Texts.get("edit_dialogs.MarkerTableModel.position"), Texts.get("edit_dialogs.MarkerPanel.name")};
 
     private List<MarkerList.Positioned> rows;
@@ -37,7 +37,7 @@ final class MarkerTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return COLUMNS[column];
+        return columns[column];
     }
 
     @Override

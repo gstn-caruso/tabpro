@@ -22,6 +22,7 @@ import com.gstncaruso.tabpro.core.playback.PlaybackRange;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.RelativeTempo;
 import com.gstncaruso.tabpro.core.playback.Timeline;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
@@ -30,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 class TransportTest {
 
-    private final Editor editor = new Editor(Score.blank());
+    private final Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
     private final FakePlayer player = new FakePlayer();
     private Transport transport;
 

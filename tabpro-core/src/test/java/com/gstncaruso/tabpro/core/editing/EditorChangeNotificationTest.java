@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.core.editing;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ class EditorChangeNotificationTest {
 
     @Test
     void changingTheScoreNotifiesAContentChange() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         List<EditorChange> received = new ArrayList<>();
         editor.addListener(new EditorListener() {
             @Override
@@ -31,7 +32,7 @@ class EditorChangeNotificationTest {
 
     @Test
     void movingTheCursorNotifiesACursorChange() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         List<EditorChange> received = new ArrayList<>();
         editor.addListener(new EditorListener() {
             @Override
@@ -51,7 +52,7 @@ class EditorChangeNotificationTest {
 
     @Test
     void startingASelectionNotifiesACursorChange() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         List<EditorChange> received = new ArrayList<>();
         editor.addListener(new EditorListener() {
             @Override

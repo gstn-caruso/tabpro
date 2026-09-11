@@ -13,15 +13,32 @@ public final class MeasurePropertiesDialog {
     private MeasurePropertiesDialog() {
     }
 
-    public static final String TIME_SIGNATURE = Texts.get("edit_dialogs.MeasurePropertiesDialog.timeSignature");
-    public static final String KEY_SIGNATURE = Texts.get("edit_dialogs.MeasurePropertiesDialog.keySignature");
-    public static final String TRIPLET_FEEL = Texts.get("edit_dialogs.MeasurePropertiesDialog.tripletFeel");
-    public static final String REPEAT = Texts.get("edit_dialogs.MeasurePropertiesDialog.repeat");
-    public static final String ALTERNATE_ENDINGS = Texts.get("edit_dialogs.AlternateEndingsPanel.title");
-    public static final String DIRECTIONS = Texts.get("edit_dialogs.MeasurePropertiesDialog.directions");
+    public static String timeSignatureTabTitle() {
+        return Texts.get("edit_dialogs.MeasurePropertiesDialog.timeSignature");
+    }
+
+    public static String keySignatureTabTitle() {
+        return Texts.get("edit_dialogs.MeasurePropertiesDialog.keySignature");
+    }
+
+    public static String tripletFeelTabTitle() {
+        return Texts.get("edit_dialogs.MeasurePropertiesDialog.tripletFeel");
+    }
+
+    public static String repeatTabTitle() {
+        return Texts.get("edit_dialogs.MeasurePropertiesDialog.repeat");
+    }
+
+    public static String alternateEndingsTabTitle() {
+        return Texts.get("edit_dialogs.AlternateEndingsPanel.title");
+    }
+
+    public static String directionsTabTitle() {
+        return Texts.get("edit_dialogs.MeasurePropertiesDialog.directions");
+    }
 
     public static void show(Component parent, Editor editor) {
-        show(parent, editor, TIME_SIGNATURE);
+        show(parent, editor, timeSignatureTabTitle());
     }
 
     public static void show(Component parent, Editor editor, String openOn) {
@@ -37,12 +54,12 @@ public final class MeasurePropertiesDialog {
         DirectionsPanel directionsPanel = new DirectionsPanel(attributes.symbol(), attributes.jump());
 
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab(TIME_SIGNATURE, timeSignaturePanel);
-        tabs.addTab(KEY_SIGNATURE, keySignaturePanel);
-        tabs.addTab(TRIPLET_FEEL, tripletFeelPanel);
-        tabs.addTab(REPEAT, repeatPanel);
-        tabs.addTab(ALTERNATE_ENDINGS, alternateEndingsPanel);
-        tabs.addTab(DIRECTIONS, directionsPanel);
+        tabs.addTab(timeSignatureTabTitle(), timeSignaturePanel);
+        tabs.addTab(keySignatureTabTitle(), keySignaturePanel);
+        tabs.addTab(tripletFeelTabTitle(), tripletFeelPanel);
+        tabs.addTab(repeatTabTitle(), repeatPanel);
+        tabs.addTab(alternateEndingsTabTitle(), alternateEndingsPanel);
+        tabs.addTab(directionsTabTitle(), directionsPanel);
 
         selectTab(tabs, openOn);
         boolean accepted = DialogShell.ask(parent, Texts.get("edit_dialogs.MeasurePropertiesDialog.title"), tabs);

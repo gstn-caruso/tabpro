@@ -32,6 +32,7 @@ import com.gstncaruso.tabpro.core.notation.Clef;
 import com.gstncaruso.tabpro.core.notation.StaffPosition;
 import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -50,14 +51,14 @@ class ScorePainterTest {
 
     @Test
     void paintsTheBackground() {
-        Painted painted = paint(Score.blank(), new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted painted = paint(Score.blank(new TextsDefaultNames()), new Cursor(0, 0, 0, 1), Playhead.silent());
 
         assertEquals(ScoreColors.BACKGROUND.getRGB(), painted.image().getRGB(0, 0));
     }
 
     @Test
     void drawsTheFiveStaffLinesAboveTheTablature() {
-        Painted painted = paint(Score.blank(), new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted painted = paint(Score.blank(new TextsDefaultNames()), new Cursor(0, 0, 0, 1), Playhead.silent());
         int x = painted.layout().measureX(0) + painted.layout().measureWidth(0) - 4;
 
         for (int line = 0; line <= 4; line++) {
@@ -68,7 +69,7 @@ class ScorePainterTest {
 
     @Test
     void drawsOneTablatureLinePerString() {
-        Painted painted = paint(Score.blank(), new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted painted = paint(Score.blank(new TextsDefaultNames()), new Cursor(0, 0, 0, 1), Playhead.silent());
         int x = painted.layout().measureX(0) + painted.layout().measureWidth(0) - 4;
 
         for (int string = 1; string <= 6; string++) {
@@ -106,7 +107,7 @@ class ScorePainterTest {
     @Test
     void theEditingCursorIsAThinRedLineAcrossTheStaffAndTheTablature() {
         Cursor cursor = new Cursor(0, 0, 0, 3);
-        Painted painted = paint(Score.blank(), cursor, Playhead.silent());
+        Painted painted = paint(Score.blank(new TextsDefaultNames()), cursor, Playhead.silent());
 
         int x = painted.layout().beatBounds(0, 0, 0).x;
         int nearTheStaff = painted.layout().staffTop(0, 0) + 2;
@@ -121,7 +122,7 @@ class ScorePainterTest {
     @Test
     void theEditingCursorIsThinNotARectangleFillingTheBeat() {
         Cursor cursor = new Cursor(0, 0, 0, 3);
-        Painted painted = paint(Score.blank(), cursor, Playhead.silent());
+        Painted painted = paint(Score.blank(new TextsDefaultNames()), cursor, Playhead.silent());
 
         Rectangle beat = painted.layout().beatBounds(0, 0, 0);
         int y = painted.layout().tabTop(0, 0) + 3;
@@ -134,7 +135,7 @@ class ScorePainterTest {
     @Test
     void theEditingCursorStillShowsWhichStringItIsOn() {
         Cursor cursor = new Cursor(0, 0, 0, 3);
-        Painted painted = paint(Score.blank(), cursor, Playhead.silent());
+        Painted painted = paint(Score.blank(new TextsDefaultNames()), cursor, Playhead.silent());
 
         int x = painted.layout().beatBounds(0, 0, 0).x;
         int onItsString = painted.layout().stringY(0, 0, 3);
@@ -227,7 +228,7 @@ class ScorePainterTest {
 
     @Test
     void writesTheScoresTempoAboveTheFirstMeasure() {
-        Painted painted = paint(Score.blank(), new Cursor(0, 0, 0, 1), Playhead.silent());
+        Painted painted = paint(Score.blank(new TextsDefaultNames()), new Cursor(0, 0, 0, 1), Playhead.silent());
 
         Rectangle beat = painted.layout().beatBounds(0, 0, 0);
         int staffTop = painted.layout().staffTop(0, 0);

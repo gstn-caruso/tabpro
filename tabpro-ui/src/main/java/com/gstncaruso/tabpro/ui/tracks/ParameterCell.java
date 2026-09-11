@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.tracks;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -38,7 +39,8 @@ public final class ParameterCell extends JPanel {
     }
 
     private void refreshAccessibleName() {
-        String name = parameter.label() + " de " + editor.score().track(trackIndex).name();
+        String name = Texts.get(
+                "views.ParameterCell.accessibleName", parameter.label(), editor.score().track(trackIndex).name());
         numberField.getAccessibleContext().setAccessibleName(name);
         numberField.setToolTipText(name);
     }

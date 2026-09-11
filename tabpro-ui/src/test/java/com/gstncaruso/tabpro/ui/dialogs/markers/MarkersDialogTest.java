@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.Locale;
@@ -26,14 +27,14 @@ class MarkersDialogTest {
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         AccessibilityAssertions.assertNoViolations(MarkersDialog.buildContent(editor));
     }
 
     @Test
     void startsWithTheFormLoadedWithTheRequestedBarsMarker() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setMarker(Marker.named("Intro"));
 
         JPanel content = MarkersDialog.buildContentEditing(editor, 0);
@@ -56,7 +57,7 @@ class MarkersDialogTest {
     }
 
     private Score scoreWithMeasures(int count) {
-        Score score = Score.blank();
+        Score score = Score.blank(new TextsDefaultNames());
         for (int i = 1; i < count; i++) {
             score = score.withMeasureInsertedInEveryTrackAt(i);
         }

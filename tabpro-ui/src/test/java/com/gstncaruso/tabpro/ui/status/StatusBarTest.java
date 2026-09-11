@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.Locale;
@@ -33,14 +34,14 @@ class StatusBarTest {
 
     @Test
     void everyStatusBarControlHasAnAccessibleNameAndTooltip() {
-        StatusBar bar = new StatusBar(new Editor(Score.blank()));
+        StatusBar bar = new StatusBar(new Editor(Score.blank(new TextsDefaultNames())));
 
         AccessibilityAssertions.assertNoViolations(bar);
     }
 
     @Test
     void showsThePageThePositionAndTheActiveTrack() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         StatusBar bar = new StatusBar(editor);
 
         assertEquals("Pág. 1/1", bar.pageText());
@@ -50,7 +51,7 @@ class StatusBarTest {
 
     @Test
     void warnsWhenTheMeasureIsNotComplete() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         StatusBar bar = new StatusBar(editor);
 
         assertEquals("Compás corto", bar.completenessText());
@@ -58,7 +59,7 @@ class StatusBarTest {
 
     @Test
     void showsTheMeasureDurationInBeats() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         StatusBar bar = new StatusBar(editor);
 
         assertEquals("1.000 : 4.000", bar.durationText());
@@ -67,7 +68,7 @@ class StatusBarTest {
     @Test
     void showsTheTitleAndTheAuthorOnTheRight() {
         ScoreInfo info = ScoreInfo.empty().withTitle("Sultans of Swing").withMusicAuthor("Mark Knopfler");
-        Editor editor = new Editor(new Score(info, 120, Score.blank().tracks(), Score.blank().lyrics()));
+        Editor editor = new Editor(new Score(info, 120, Score.blank(new TextsDefaultNames()).tracks(), Score.blank(new TextsDefaultNames()).lyrics()));
         StatusBar bar = new StatusBar(editor);
 
         assertEquals("Sultans of Swing — Música: Mark Knopfler", bar.creditsText());
@@ -75,7 +76,7 @@ class StatusBarTest {
 
     @Test
     void followsTheEditorWhenTheCursorMoves() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
         StatusBar bar = new StatusBar(editor);
 
@@ -87,7 +88,7 @@ class StatusBarTest {
 
     @Test
     void everyPanelHasAnAccessibleNameAndASunkenBorder() {
-        StatusBar bar = new StatusBar(new Editor(Score.blank()));
+        StatusBar bar = new StatusBar(new Editor(Score.blank(new TextsDefaultNames())));
 
         assertHasASunkenPanel(bar, "Página");
         assertHasASunkenPanel(bar, "Posición");

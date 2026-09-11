@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ class MetronomeTest {
 
     @Test
     void whenOffProducesNoClicks() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
 
         List<MetronomeClick> clicks = Metronome.off().clicksFor(score);
 
@@ -24,7 +25,7 @@ class MetronomeTest {
 
     @Test
     void marksOneClickPerBeatOfTheBar() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
 
         List<MetronomeClick> clicks = Metronome.on().clicksFor(score);
 
@@ -33,7 +34,7 @@ class MetronomeTest {
 
     @Test
     void theFirstBeatOfEachBarIsAccented() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
 
         List<MetronomeClick> clicks = Metronome.on().clicksFor(score);
 
@@ -43,7 +44,7 @@ class MetronomeTest {
 
     @Test
     void beatsAreSpacedByAQuarterNote() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
 
         List<MetronomeClick> clicks = Metronome.on().clicksFor(score);
 
@@ -69,7 +70,7 @@ class MetronomeTest {
 
     @Test
     void clicksSoundAtTheVolumeConfiguredOnTheMetronome() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
 
         List<MetronomeClick> clicks = new Metronome(true, 42).clicksFor(score);
 
@@ -104,7 +105,7 @@ class MetronomeTest {
 
     @Test
     void followsThePlaybackOrderWithRepeats() {
-        Score score = Score.blank().withMeasureInsertedInEveryTrackAt(1);
+        Score score = Score.blank(new TestDefaultNames()).withMeasureInsertedInEveryTrackAt(1);
         Score withRepeat = score.withAttributesInEveryTrackAt(1,
                 MeasureAttributes.plain().withRepeatOpen(false).withRepeatCount(2));
         Score fullScore = withRepeat.withAttributesInEveryTrackAt(0,

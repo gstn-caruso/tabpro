@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.harmony.ScaleMatch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Component;
 import java.awt.Container;
@@ -35,7 +36,7 @@ class ScalesDialogTest {
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), new ChosenScale());
 
@@ -44,7 +45,7 @@ class ScalesDialogTest {
 
     @Test
     void theTonicListShowsTheNoteNameInSpanish() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), new ChosenScale());
 
@@ -55,7 +56,7 @@ class ScalesDialogTest {
 
     @Test
     void theScaleListShowsTheNameInSpanishInsteadOfTheRawRecord() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), new ChosenScale());
 
@@ -66,7 +67,7 @@ class ScalesDialogTest {
 
     @Test
     void aFoundScaleShowsItsTonicItsSpanishNameAndItsIncidentNotes() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), new ChosenScale());
 
@@ -78,7 +79,7 @@ class ScalesDialogTest {
 
     @Test
     void withoutAPreviousChoiceItOpensWithCMajorAndTheDiagramAlreadyPainted() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChosenScale chosen = new ChosenScale();
 
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), chosen);
@@ -91,7 +92,7 @@ class ScalesDialogTest {
 
     @Test
     void withAPreviousChoiceItRespectsItInsteadOfForcingCMajor() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChosenScale chosen = new ChosenScale();
         chosen.choose(PitchClass.of("D"), ScaleLibrary.dorian());
 
@@ -103,7 +104,7 @@ class ScalesDialogTest {
 
     @Test
     void pickingTonicAndScaleInTheListsReachesChosenScale() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChosenScale chosen = new ChosenScale();
 
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), chosen);
@@ -122,7 +123,7 @@ class ScalesDialogTest {
 
     @Test
     void pickingAScaleMakesTheDegreeDiagramShowItsNotes() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChosenScale chosen = new ChosenScale();
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), chosen);
         @SuppressWarnings("unchecked")
@@ -140,7 +141,7 @@ class ScalesDialogTest {
 
     @Test
     void theListenButtonPlaysTheChosenScaleAscending() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         ChosenScale chosen = new ChosenScale();
         RecordingPlayer player = new RecordingPlayer();
         ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, player, chosen);

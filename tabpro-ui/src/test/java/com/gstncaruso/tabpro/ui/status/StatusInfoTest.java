@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.score.Pagination;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ class StatusInfoTest {
 
     @Test
     void aBlankScoreStartsOnMeasureOneAndTrackOne() {
-        StatusInfo info = StatusInfo.of(new Editor(Score.blank()), Pagination.single());
+        StatusInfo info = StatusInfo.of(new Editor(Score.blank(new TextsDefaultNames())), Pagination.single());
 
         assertEquals(1, info.measureNumber());
         assertEquals(1, info.trackNumber());
@@ -22,7 +23,7 @@ class StatusInfoTest {
 
     @Test
     void aFreshMeasureIsTooShort() {
-        StatusInfo info = StatusInfo.of(new Editor(Score.blank()), Pagination.single());
+        StatusInfo info = StatusInfo.of(new Editor(Score.blank(new TextsDefaultNames())), Pagination.single());
 
         assertEquals(MeasureCompleteness.TOO_SHORT, info.completeness());
         assertEquals("1/4", info.measureDurationText());
@@ -30,14 +31,14 @@ class StatusInfoTest {
 
     @Test
     void aFreshMeasureShowsItsBeatsRatioInGuitarProFormat() {
-        StatusInfo info = StatusInfo.of(new Editor(Score.blank()), Pagination.single());
+        StatusInfo info = StatusInfo.of(new Editor(Score.blank(new TextsDefaultNames())), Pagination.single());
 
         assertEquals("1.000 : 4.000", info.measureBeatsRatioText());
     }
 
     @Test
     void movingTheCursorMovesThePosition() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
         editor.insertMeasure();
         editor.selectTrack(1);
@@ -52,7 +53,7 @@ class StatusInfoTest {
 
     @Test
     void aBlankScoreHasNoTitleNorAuthorToShow() {
-        StatusInfo info = StatusInfo.of(new Editor(Score.blank()), Pagination.single());
+        StatusInfo info = StatusInfo.of(new Editor(Score.blank(new TextsDefaultNames())), Pagination.single());
 
         assertEquals("Sin título", info.title());
         assertEquals("", info.author());
@@ -61,7 +62,7 @@ class StatusInfoTest {
     @Test
     void showsTheTitleAndTheCreditedAuthors() {
         ScoreInfo scoreInfo = ScoreInfo.empty().withTitle("Sultans of Swing").withMusicAuthor("Mark Knopfler");
-        Editor editor = new Editor(new Score(scoreInfo, 120, Score.blank().tracks(), Score.blank().lyrics()));
+        Editor editor = new Editor(new Score(scoreInfo, 120, Score.blank(new TextsDefaultNames()).tracks(), Score.blank(new TextsDefaultNames()).lyrics()));
 
         StatusInfo info = StatusInfo.of(editor, Pagination.single());
 
@@ -93,14 +94,14 @@ class StatusInfoTest {
     }
 
     private static StatusInfo statusOf(ScoreInfo scoreInfo) {
-        Editor editor = new Editor(new Score(scoreInfo, 120, Score.blank().tracks(), Score.blank().lyrics()));
+        Editor editor = new Editor(new Score(scoreInfo, 120, Score.blank(new TextsDefaultNames()).tracks(), Score.blank(new TextsDefaultNames()).lyrics()));
         return StatusInfo.of(editor, Pagination.single());
     }
 
     @Test
     void fallsBackToTheArtistWhenNoAuthorWasCredited() {
         ScoreInfo scoreInfo = ScoreInfo.empty().withTitle("Sultans of Swing").withArtist("Dire Straits");
-        Editor editor = new Editor(new Score(scoreInfo, 120, Score.blank().tracks(), Score.blank().lyrics()));
+        Editor editor = new Editor(new Score(scoreInfo, 120, Score.blank(new TextsDefaultNames()).tracks(), Score.blank(new TextsDefaultNames()).lyrics()));
 
         StatusInfo info = StatusInfo.of(editor, Pagination.single());
 
@@ -109,7 +110,7 @@ class StatusInfoTest {
 
     @Test
     void aScoreOnASingleSheetSaysPageOneOfOne() {
-        StatusInfo info = StatusInfo.of(new Editor(Score.blank()), Pagination.single());
+        StatusInfo info = StatusInfo.of(new Editor(Score.blank(new TextsDefaultNames())), Pagination.single());
 
         assertEquals(1, info.pageNumber());
         assertEquals(1, info.pageCount());
@@ -117,7 +118,7 @@ class StatusInfoTest {
 
     @Test
     void theStatusSaysWhichSheetTheCursorIsStandingOn() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         for (int i = 0; i < 10; i++) {
             editor.insertMeasure();
         }
@@ -131,7 +132,7 @@ class StatusInfoTest {
 
     @Test
     void theStatusCountsEveryMeasureOfTheScore() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.insertMeasure();
         editor.insertMeasure();
 

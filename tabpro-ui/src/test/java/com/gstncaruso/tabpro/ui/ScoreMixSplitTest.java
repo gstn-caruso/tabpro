@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.tracks.TrackPanel;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class ScoreMixSplitTest {
 
     private final JComponent score = new JPanel();
-    private final TrackPanel mixTable = new TrackPanel(new Editor(Score.blank()));
+    private final TrackPanel mixTable = new TrackPanel(new Editor(Score.blank(new TextsDefaultNames())));
     private final ScoreMixSplit split = new ScoreMixSplit(score, mixTable);
 
     @Test

@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.Locale;
@@ -29,7 +30,7 @@ class MarkersTableDialogTest {
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setMarker(Marker.named("Intro"));
 
         AccessibilityAssertions.assertNoViolations(MarkersTableDialog.buildContent(editor, () -> {
@@ -38,7 +39,7 @@ class MarkersTableDialogTest {
 
     @Test
     void emptyScoreLeavesOnlyAddEnabled() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         JPanel content = MarkersTableDialog.buildContent(editor, () -> {
         });
@@ -53,7 +54,7 @@ class MarkersTableDialogTest {
 
     @Test
     void selectingTheOnlyRowEnablesEditDeleteAndGoTo() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setMarker(Marker.named("Intro"));
 
         JPanel content = MarkersTableDialog.buildContent(editor, () -> {
@@ -68,7 +69,7 @@ class MarkersTableDialogTest {
 
     @Test
     void deletingTheSelectedRowRemovesTheMarkerFromTheModel() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setMarker(Marker.named("Intro"));
 
         JPanel content = MarkersTableDialog.buildContent(editor, () -> {
@@ -81,7 +82,7 @@ class MarkersTableDialogTest {
 
     @Test
     void goingToTheSelectedRowMovesTheCursorAndCloses() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.insertMeasure();
         editor.moveToLastMeasure();
         editor.setMarker(Marker.named("Chorus"));

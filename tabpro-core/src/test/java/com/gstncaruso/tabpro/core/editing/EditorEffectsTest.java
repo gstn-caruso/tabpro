@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.effects.BeamBreak;
 import com.gstncaruso.tabpro.core.model.effects.Bend;
@@ -24,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 class EditorEffectsTest {
 
-    private final Editor editor = new Editor(Score.blank());
+    private final Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 
     @Test
     void aBeamBreakGoesOnTheBeatUnderTheCursorWithoutNeedingANote() {

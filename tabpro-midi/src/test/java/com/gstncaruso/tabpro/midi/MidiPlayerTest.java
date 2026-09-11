@@ -391,7 +391,7 @@ class MidiPlayerTest {
                 Beat.of(sixteenth, new Note(1, 2)),
                 Beat.of(sixteenth, new Note(1, 3))));
         Track track = Track.standardGuitar("Guitar").withMeasure(0, measure);
-        Score score = Score.blank().withTempo(600).withTrack(0, track);
+        Score score = Score.blank(new TestDefaultNames()).withTempo(600).withTrack(0, track);
         return Timeline.of(score);
     }
 

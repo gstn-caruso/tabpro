@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import com.gstncaruso.tabpro.core.model.Track;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ class EditorTracksTest {
 
     @Test
     void addsATrackAndSelectsIt() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 
         editor.addTrack(Track.standardBass("Bass"));
 
@@ -25,7 +26,7 @@ class EditorTracksTest {
 
     @Test
     void addingATrackAssignsItTheNextFreeChannelPair() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 
         editor.addTrack(Track.standardBass("Bass"));
         editor.addTrack(Track.standardGuitar("Guitar 2"));
@@ -42,7 +43,7 @@ class EditorTracksTest {
 
     @Test
     void addingATrackThatForcesChannels11to16AssignsItThere() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 
         editor.addTrack(Track.standardBass("Bass")
                 .mappingSettings(settings -> settings.withForceChannels11to16(true)));
@@ -54,7 +55,7 @@ class EditorTracksTest {
 
     @Test
     void addingAPercussionTrackKeepsItOnTheTenthChannel() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 
         editor.addTrack(Track.percussion("Drums"));
 
@@ -65,7 +66,7 @@ class EditorTracksTest {
 
     @Test
     void addingATrackGivesItAsManyMeasuresAsTheScoreAlreadyHas() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.insertMeasure();
         editor.insertMeasure();
 
@@ -76,7 +77,7 @@ class EditorTracksTest {
 
     @Test
     void selectsAnotherTrack() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.addTrack(Track.standardBass("Bass"));
 
         editor.selectTrack(0);
@@ -86,7 +87,7 @@ class EditorTracksTest {
 
     @Test
     void selectingATrackPullsTheCursorBackInsideIt() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveDown();
         editor.moveDown();
         editor.moveDown();
@@ -101,7 +102,7 @@ class EditorTracksTest {
 
     @Test
     void rejectsSelectingATrackThatIsNotThere() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 
         assertThrows(IllegalArgumentException.class, () -> editor.selectTrack(1));
         assertThrows(IllegalArgumentException.class, () -> editor.selectTrack(-1));
@@ -109,26 +110,26 @@ class EditorTracksTest {
 
     @Test
     void removesTheSelectedTrackAndSelectsTheOneBefore() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.addTrack(Track.standardBass("Bass"));
 
         editor.removeCurrentTrack();
 
         assertEquals(1, editor.score().trackCount());
         assertEquals(0, editor.cursor().track());
-        assertEquals("Guitarra", editor.currentTrack().name());
+        assertEquals("Test Guitar", editor.currentTrack().name());
     }
 
     @Test
     void refusesToRemoveTheOnlyTrack() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 
         assertThrows(IllegalStateException.class, editor::removeCurrentTrack);
     }
 
     @Test
     void renamesATrack() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 
         editor.renameTrack(0, "Rhythm");
 
@@ -137,7 +138,7 @@ class EditorTracksTest {
 
     @Test
     void changesTheMixerOfATrackThatIsNotTheSelectedOne() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.addTrack(Track.standardBass("Bass"));
 
         editor.setProgram(0, 30);
@@ -157,7 +158,7 @@ class EditorTracksTest {
 
     @Test
     void mixerChangesCanBeUndone() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 
         editor.setVolume(0, 40);
         editor.undo();
@@ -167,7 +168,7 @@ class EditorTracksTest {
 
     @Test
     void addingATrackCanBeUndone() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 
         editor.addTrack(Track.standardBass("Bass"));
         editor.undo();
@@ -178,7 +179,7 @@ class EditorTracksTest {
 
     @Test
     void insertingAMeasureKeepsEveryTrackTheSameLength() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.addTrack(Track.standardBass("Bass"));
 
         editor.insertMeasure();
@@ -189,7 +190,7 @@ class EditorTracksTest {
 
     @Test
     void deletingAMeasureKeepsEveryTrackTheSameLength() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.addTrack(Track.standardBass("Bass"));
         editor.insertMeasure();
 
@@ -201,7 +202,7 @@ class EditorTracksTest {
 
     @Test
     void runningPastTheEndAppendsAMeasureToEveryTrack() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.addTrack(Track.standardBass("Bass"));
         fillTheMeasure(editor);
 
@@ -214,10 +215,10 @@ class EditorTracksTest {
 
     @Test
     void aFreshScoreSelectsItsFirstTrack() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.addTrack(Track.standardBass("Bass"));
 
-        editor.replaceScore(Score.blank());
+        editor.replaceScore(Score.blank(new TestDefaultNames()));
 
         assertEquals(0, editor.cursor().track());
         assertFalse(editor.canUndo());

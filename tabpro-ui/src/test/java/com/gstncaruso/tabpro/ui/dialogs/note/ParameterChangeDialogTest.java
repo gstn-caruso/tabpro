@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.effects.ParameterChange;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +23,7 @@ class ParameterChangeDialogTest {
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         ParameterChangeDialog.Fields fields = ParameterChangeDialog.buildFields(ParameterChange.nothing(), editor);
 

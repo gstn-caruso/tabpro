@@ -21,6 +21,7 @@ import com.gstncaruso.tabpro.core.model.effects.SlideType;
 import com.gstncaruso.tabpro.core.model.effects.StemOverride;
 import com.gstncaruso.tabpro.ui.AwaitEdt;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -40,7 +41,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class CommandsTest {
 
-    private final Editor editor = new Editor(Score.blank());
+    private final Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
     private final List<String> asked = new ArrayList<>();
     private final Commands commands = new Commands(
             editor, record(Ports.Document.class), record(Ports.Dialogs.class),
@@ -329,7 +330,7 @@ class CommandsTest {
     }
 
     private Score scoreWithMeasures(int count) {
-        Score score = Score.blank();
+        Score score = Score.blank(new TextsDefaultNames());
         for (int i = 1; i < count; i++) {
             score = score.withMeasureInsertedInEveryTrackAt(i);
         }
@@ -372,7 +373,7 @@ class CommandsTest {
 
     static Stream<String> everyCommandId() {
         Commands everyCommand = new Commands(
-                new Editor(Score.blank()), fakePort(Ports.Document.class), fakePort(Ports.Dialogs.class),
+                new Editor(Score.blank(new TextsDefaultNames())), fakePort(Ports.Document.class), fakePort(Ports.Dialogs.class),
                 fakePort(Ports.Playback.class), fakePort(Ports.View.class));
         return everyCommand.all().keySet().stream().sorted();
     }

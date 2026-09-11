@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Proxy;
 import javax.swing.InputMap;
@@ -20,7 +21,7 @@ import org.junit.jupiter.api.Test;
 class AcceleratorGuardTest {
 
     private final Commands commands = new Commands(
-            new Editor(Score.blank()), record(Ports.Document.class), record(Ports.Dialogs.class),
+            new Editor(Score.blank(new TextsDefaultNames())), record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
 
     @Test

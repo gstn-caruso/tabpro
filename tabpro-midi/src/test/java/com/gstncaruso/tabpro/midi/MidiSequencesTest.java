@@ -613,7 +613,7 @@ class MidiSequencesTest {
                 new BendPoint(0, 4, level), new BendPoint(BendPoint.LAST_POSITION, 4, 0)));
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(
                 Beat.of(Duration.quarter(), new Note(1, 0).withBend(bend))));
-        Score score = Score.blank().withTrack(0,
+        Score score = Score.blank(new TestDefaultNames()).withTrack(0,
                 com.gstncaruso.tabpro.core.model.Track.standardGuitar("Guitar").withMeasure(0, measure));
 
         Track track = MidiSequences.fromTimeline(Timeline.of(score)).getTracks()[1];
@@ -662,7 +662,7 @@ class MidiSequencesTest {
 
     private List<MidiEvent> wahEventsOf(Beat... beats) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beats));
-        Score score = Score.blank().withTrack(0,
+        Score score = Score.blank(new TestDefaultNames()).withTrack(0,
                 com.gstncaruso.tabpro.core.model.Track.standardGuitar("Guitar").withMeasure(0, measure));
 
         Track track = MidiSequences.fromTimeline(Timeline.of(score)).getTracks()[1];

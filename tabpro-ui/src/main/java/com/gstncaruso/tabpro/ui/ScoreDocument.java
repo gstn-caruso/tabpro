@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,7 +14,6 @@ import java.util.function.Supplier;
 
 public final class ScoreDocument {
 
-    public static final String UNTITLED = Texts.get("library.score.untitled");
     public static final String EXTENSION = ".tabpro";
 
     private final Editor editor;
@@ -29,7 +29,7 @@ public final class ScoreDocument {
     }
 
     public ScoreDocument(Editor editor, ScoreFiles files, Preferences preferences) {
-        this(editor, files, preferences, Score::blank);
+        this(editor, files, preferences, () -> Score.blank(new TextsDefaultNames()));
     }
 
     public ScoreDocument(Editor editor, ScoreFiles files, Preferences preferences, Supplier<Score> newScoreTemplate) {
@@ -45,12 +45,16 @@ public final class ScoreDocument {
         return Optional.ofNullable(path);
     }
 
+    public static String untitled() {
+        return Texts.get("library.score.untitled");
+    }
+
     public java.util.List<Path> recentFiles() {
         return preferences.recentFiles();
     }
 
     public String displayName() {
-        return path == null ? UNTITLED : path.getFileName().toString();
+        return path == null ? untitled() : path.getFileName().toString();
     }
 
     public String windowTitle() {

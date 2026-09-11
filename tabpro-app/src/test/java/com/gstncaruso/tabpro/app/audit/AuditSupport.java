@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.print.Printing;
 import com.gstncaruso.tabpro.ui.print.SystemPrinting;
 import java.awt.AWTEvent;
@@ -338,7 +339,7 @@ final class AuditSupport {
     }
 
     static Editor blankEditor() {
-        return new Editor(Score.blank());
+        return new Editor(Score.blank(new TextsDefaultNames()));
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
+import com.gstncaruso.tabpro.ui.i18n.Language;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ public final class Preferences {
     private static final String EFFECTS_TOOL_BAR_VISIBLE = "effectsToolBarVisible";
     private static final String FRETBOARD_VISIBLE = "fretboardVisible";
     private static final String KEYBOARD_VISIBLE = "keyboardVisible";
+    private static final String INTERFACE_LANGUAGE = "interfaceLanguage";
     private static final String SEPARATOR = "\n";
 
     private final java.util.prefs.Preferences stored;
@@ -148,5 +150,17 @@ public final class Preferences {
 
     public void setKeyboardVisible(boolean visible) {
         stored.putBoolean(KEYBOARD_VISIBLE, visible);
+    }
+
+    public Language interfaceLanguage() {
+        String storedName = stored.get(INTERFACE_LANGUAGE, Language.AUTOMATIC.name());
+        return Arrays.stream(Language.values())
+                .filter(language -> language.name().equals(storedName))
+                .findFirst()
+                .orElse(Language.AUTOMATIC);
+    }
+
+    public void setInterfaceLanguage(Language language) {
+        stored.put(INTERFACE_LANGUAGE, language.name());
     }
 }

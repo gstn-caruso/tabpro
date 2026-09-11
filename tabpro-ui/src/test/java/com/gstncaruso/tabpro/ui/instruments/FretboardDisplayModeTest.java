@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ class FretboardDisplayModeTest {
 
     @Test
     void onlyTheBeatMarksJustItsOwnNotesAsPrimary() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(3);
         BeatLocation location = new BeatLocation(editor.currentTrack(), 0, VoicePart.LEAD, 0);
 
@@ -28,7 +29,7 @@ class FretboardDisplayModeTest {
 
     @Test
     void theMeasureModeAddsTheOtherBeatsAsContext() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(3);
         editor.moveRight();
         editor.setFret(5);
@@ -43,7 +44,7 @@ class FretboardDisplayModeTest {
 
     @Test
     void theChordModeMarksOnlyThePlayedStringsOfTheDiagram() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(0);
         editor.setChord(new ChordDiagram("Do", 1,
                 List.of(0, 1, 0, 2, 3, ChordDiagram.MUTED), List.of(), true));
@@ -60,7 +61,7 @@ class FretboardDisplayModeTest {
 
     @Test
     void theChordModeWithoutAChordAddsNoContext() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(3);
         BeatLocation location = new BeatLocation(editor.currentTrack(), 0, VoicePart.LEAD, 0);
 
@@ -71,7 +72,7 @@ class FretboardDisplayModeTest {
 
     @Test
     void theNextBeatModeAddsWhatComesRightAfter() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(3);
         editor.moveRight();
         editor.setFret(7);
@@ -85,7 +86,7 @@ class FretboardDisplayModeTest {
 
     @Test
     void theNextBeatModeAddsNothingAtTheVeryEnd() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(3);
         BeatLocation location = new BeatLocation(editor.currentTrack(), 0, VoicePart.LEAD, 0);
 
@@ -110,7 +111,7 @@ class FretboardDisplayModeTest {
 
     @Test
     void theScaleModeAddsNothingWithoutAChosenScale() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(3);
         BeatLocation location = new BeatLocation(editor.currentTrack(), 0, VoicePart.LEAD, 0);
 

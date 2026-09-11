@@ -34,6 +34,12 @@ class TextsDefaultNamesTest {
     }
 
     @Test
+    void namesAMarkerInBothLanguages() {
+        assertEquals("Marcador", spanish.marker());
+        assertEquals("Marker", english.marker());
+    }
+
+    @Test
     void numbersAnUnnamedTrackInBothLanguages() {
         assertEquals("Pista 3", spanish.track(3));
         assertEquals("Track 3", english.track(3));

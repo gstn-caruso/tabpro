@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import javax.swing.KeyStroke;
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class ManualKeyboardShortcutsTest {
 
     private final Commands commands = new Commands(
-            new Editor(Score.blank()), record(Ports.Document.class), record(Ports.Dialogs.class),
+            new Editor(Score.blank(new TextsDefaultNames())), record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
 
     private record ManualShortcut(String command, String accelerator) {

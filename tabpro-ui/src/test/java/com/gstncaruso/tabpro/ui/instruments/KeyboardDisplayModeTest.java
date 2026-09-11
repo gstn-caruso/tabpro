@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ class KeyboardDisplayModeTest {
 
     @Test
     void onlyTheBeatMarksJustItsOwnKeysAsPrimary() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(0);
         BeatLocation location = new BeatLocation(editor.currentTrack(), 0, VoicePart.LEAD, 0);
 
@@ -26,7 +27,7 @@ class KeyboardDisplayModeTest {
 
     @Test
     void theMeasureModeAddsTheOtherBeatsAsContext() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(0);
         editor.moveRight();
         editor.setFret(3);
@@ -41,7 +42,7 @@ class KeyboardDisplayModeTest {
 
     @Test
     void theNextBeatModeAddsWhatComesRightAfter() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(0);
         editor.moveRight();
         editor.setFret(5);
@@ -55,7 +56,7 @@ class KeyboardDisplayModeTest {
 
     @Test
     void theNextBeatModeAddsNothingAtTheVeryEnd() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(0);
         BeatLocation location = new BeatLocation(editor.currentTrack(), 0, VoicePart.LEAD, 0);
 
@@ -66,7 +67,7 @@ class KeyboardDisplayModeTest {
 
     @Test
     void theScaleModeMarksEveryKeyInTheChosenScale() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         BeatLocation location = new BeatLocation(editor.currentTrack(), 0, VoicePart.LEAD, 0);
 
         KeyMarks marks = KeyboardDisplayMode.BEAT_AND_SCALE.marks(location, Optional.of(Scale.cMajor()));
@@ -78,7 +79,7 @@ class KeyboardDisplayModeTest {
 
     @Test
     void theScaleModeAddsNothingWithoutAChosenScale() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         BeatLocation location = new BeatLocation(editor.currentTrack(), 0, VoicePart.LEAD, 0);
 
         KeyMarks marks = KeyboardDisplayMode.BEAT_AND_SCALE.marks(location, Optional.empty());

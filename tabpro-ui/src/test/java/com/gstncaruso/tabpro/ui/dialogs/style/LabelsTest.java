@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
 import com.gstncaruso.tabpro.core.model.DiagramPlacement;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.VoicePart;
@@ -116,6 +117,18 @@ class LabelsTest {
     @Test
     void translatesTheNoteWithItsSpanishNameInParentheses() {
         assertEquals("C (Do)", Labels.of(PitchClass.of("C")));
+    }
+
+    @Test
+    void namesAKeySignatureAfterItsTonicInBothLanguages() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("La b", Labels.of(new KeySignature(-7, Mode.MINOR)));
+        assertEquals("Do", Labels.of(KeySignature.cMajor()));
+        assertEquals("Fa #", Labels.of(new KeySignature(6, Mode.MAJOR)));
+        assertEquals("Ab", english.text("domain.KeySignature.MINOR.-7"));
+        assertEquals("C", english.text("domain.KeySignature.MAJOR.0"));
+        assertEquals("F#", english.text("domain.KeySignature.MAJOR.6"));
     }
 
     @Test

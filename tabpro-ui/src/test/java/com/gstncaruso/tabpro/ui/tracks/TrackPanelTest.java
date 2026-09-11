@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.AwaitEdt;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,7 @@ class TrackPanelTest {
 
     @Test
     void listsOneRowPerTrack() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         TrackPanel panel = new TrackPanel(editor);
 
         assertEquals(1, panel.rows().size());
@@ -73,7 +74,7 @@ class TrackPanelTest {
 
     @Test
     void addsARowWhenATrackIsAdded() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         TrackPanel panel = new TrackPanel(editor);
 
         panel.addBass();
@@ -86,7 +87,7 @@ class TrackPanelTest {
 
     @Test
     void namesTheSecondTrackOfAKindApart() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         TrackPanel panel = new TrackPanel(editor);
 
         panel.addGuitar();
@@ -96,7 +97,7 @@ class TrackPanelTest {
 
     @Test
     void dropsTheRowWhenATrackIsRemoved() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         TrackPanel panel = new TrackPanel(editor);
         panel.addBass();
         AwaitEdt.flush();
@@ -110,7 +111,7 @@ class TrackPanelTest {
 
     @Test
     void growsTallerWithEveryTrack() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         TrackPanel panel = new TrackPanel(editor);
         int oneTrack = panel.preferredPanelHeight();
 
@@ -121,7 +122,7 @@ class TrackPanelTest {
 
     @Test
     void theGridIsAsTallAsTheListOfTracks() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         TrackPanel panel = new TrackPanel(editor);
         panel.addBass();
 

@@ -14,6 +14,7 @@ import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.AwaitEdt;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Component;
@@ -46,7 +47,7 @@ class BeatViewsTest {
 
     @Test
     void theScaleTypeComboShowsItsNameInSpanish() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
 
         String renderedText = Combos.renderedTextOf(views, ScaleType.class, ScaleType.MAJOR);
 
@@ -55,7 +56,7 @@ class BeatViewsTest {
 
     @Test
     void combosBuiltByComboOfShowTheirLabelInSpanish() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
 
         assertEquals("Solo el beat",
                 Combos.renderedTextOf(views, FretboardDisplayMode.class, FretboardDisplayMode.ONLY_BEAT));
@@ -68,7 +69,7 @@ class BeatViewsTest {
 
     @Test
     void closingTheFretboardTitleBarHidesTheFretboard() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
 
         findButtonNamed(views, "Cerrar diapasón").orElseThrow().doClick();
 
@@ -77,7 +78,7 @@ class BeatViewsTest {
 
     @Test
     void closingTheKeyboardTitleBarHidesTheKeyboard() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
 
         findButtonNamed(views, "Cerrar teclado").orElseThrow().doClick();
 
@@ -86,7 +87,7 @@ class BeatViewsTest {
 
     @Test
     void theCloseButtonsShowAnIconNotATextGlyph() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
 
         JButton close = findButtonNamed(views, "Cerrar diapasón").orElseThrow();
 
@@ -95,7 +96,7 @@ class BeatViewsTest {
 
     @Test
     void theFretboardCloseButtonCanBeRewiredToTheSameCommandAsTheMenu() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
         java.util.concurrent.atomic.AtomicBoolean invoked = new java.util.concurrent.atomic.AtomicBoolean(false);
         views.setOnCloseFretboard(() -> invoked.set(true));
 
@@ -106,7 +107,7 @@ class BeatViewsTest {
 
     @Test
     void theKeyboardCloseButtonCanBeRewiredToTheSameCommandAsTheMenu() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
         java.util.concurrent.atomic.AtomicBoolean invoked = new java.util.concurrent.atomic.AtomicBoolean(false);
         views.setOnCloseKeyboard(() -> invoked.set(true));
 
@@ -117,7 +118,7 @@ class BeatViewsTest {
 
     @Test
     void theFretboardAndTheKeyboardEachHaveTheirOwnTitleBand() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
 
         assertEquals(2, opaquePanelsBackedBy(views, ScoreColors.TITLE_BAR).size());
     }
@@ -153,14 +154,14 @@ class BeatViewsTest {
 
     @Test
     void everyControlOnTheFretboardAndKeyboardHasAnAccessibleNameAndTooltip() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
 
         AccessibilityAssertions.assertNoViolations(views);
     }
 
     @Test
     void showsTheBeatUnderTheCursorWhileNothingSounds() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(7);
 
         assertEquals(editor.currentBeat(), BeatViews.beatToShow(editor, Playhead.silent()));
@@ -168,7 +169,7 @@ class BeatViewsTest {
 
     @Test
     void showsTheBeatThatSoundsWhileItPlays() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.setFret(3);
         editor.moveRight();
         editor.setFret(5);
@@ -181,7 +182,7 @@ class BeatViewsTest {
 
     @Test
     void followsTheTrackTheCursorIsOnAndNotAnotherOne() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
         editor.setFret(9);
         editor.selectTrack(0);
@@ -193,7 +194,7 @@ class BeatViewsTest {
 
     @Test
     void fallsBackToTheCursorWhenThePlayheadPointsPastTheScore() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         Playhead stale = Playhead.silent().advancedTo(new BeatPosition(0, 9, 9));
 
@@ -202,14 +203,14 @@ class BeatViewsTest {
 
     @Test
     void letsYouWriteWhileNothingSounds() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
 
         assertTrue(BeatViews.showsTheCursorBeat(editor, Playhead.silent()));
     }
 
     @Test
     void doesNotLetYouWriteOnABeatYouAreNotSeeing() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.moveRight();
 
         Playhead playhead = Playhead.silent().advancedTo(new BeatPosition(0, 0, 0));
@@ -221,7 +222,7 @@ class BeatViewsTest {
 
     @Test
     void letsYouWriteWhileAnotherTrackSounds() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
         editor.selectTrack(0);
 
@@ -232,7 +233,7 @@ class BeatViewsTest {
 
     @Test
     void usesTheTuningOfTheTrackTheCursorIsOn() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         editor.addTrack(Track.standardBass("Bajo"));
 
         assertEquals(4, BeatViews.tuningToShow(editor).stringCount());
@@ -244,7 +245,7 @@ class BeatViewsTest {
 
     @Test
     void bothViewsCanBeHidden() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
 
         assertTrue(views.isFretboardVisible());
         assertTrue(views.isKeyboardVisible());
@@ -258,7 +259,7 @@ class BeatViewsTest {
 
     @Test
     void preparingForTheScalesToolShowsTheKeyboardAndSwitchesBothViewsToScaleMode() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
         views.setKeyboardVisible(false);
 
         views.prepareForScalesTool();
@@ -270,7 +271,7 @@ class BeatViewsTest {
 
     @Test
     void preparingForTheScalesToolDoesNotForceTheFretboardOpen() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
         views.setFretboardVisible(false);
 
         views.prepareForScalesTool();
@@ -282,7 +283,7 @@ class BeatViewsTest {
 
     @Test
     void clickingSeveralKeysBuildsTheChordOfTheBeat() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         BeatViews views = new BeatViews(editor, new RecordingPlayer());
 
         clickKey(views, 60);
@@ -300,7 +301,7 @@ class BeatViewsTest {
 
     @Test
     void clickingTheSameKeyAgainTakesItOutOfTheChord() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         BeatViews views = new BeatViews(editor, new RecordingPlayer());
         clickKey(views, 60);
         clickKey(views, 64);
@@ -312,7 +313,7 @@ class BeatViewsTest {
 
     @Test
     void pressingEnterOnTheFretboardWritesTheNoteUnderTheCaretLikeAClickWould() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         BeatViews views = new BeatViews(editor, new RecordingPlayer());
         FretboardView fretboard = views.fretboard();
         fretboard.setSize(900, FretboardView.PREFERRED_HEIGHT);
@@ -325,7 +326,7 @@ class BeatViewsTest {
 
     @Test
     void pressingEnterOnTheKeyboardWritesTheKeyUnderTheCaretLikeAClickWould() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         BeatViews views = new BeatViews(editor, new RecordingPlayer());
         KeyboardView keyboard = views.keyboard();
         keyboard.setSize(900, KeyboardView.PREFERRED_HEIGHT);
@@ -362,7 +363,7 @@ class BeatViewsTest {
 
     @Test
     void theHandednessButtonFlipsTheFretboardWithAnIcon() {
-        BeatViews views = new BeatViews(new Editor(Score.blank()), new RecordingPlayer());
+        BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
         JToggleButton toggle = findHandednessToggle(views)
                 .orElseThrow(() -> new AssertionError("could not find the left-handed button"));
 
@@ -389,7 +390,7 @@ class BeatViewsTest {
 
     @Test
     void followsTheEditorWithoutBlowingUp() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
         BeatViews views = new BeatViews(editor, new RecordingPlayer());
 
         editor.setFret(Tuning.MAX_FRET);
