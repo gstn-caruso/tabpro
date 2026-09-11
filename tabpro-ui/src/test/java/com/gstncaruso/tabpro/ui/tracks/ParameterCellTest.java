@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class ParameterCellTest {
@@ -38,5 +40,11 @@ class ParameterCellTest {
         ParameterCell cell = new ParameterCell(editor, MixParameter.REVERB, 1);
 
         assertEquals("Reverb de Bajo", cell.numberField().getAccessibleContext().getAccessibleName());
+    }
+
+    @Test
+    void theAccessibleNameIsAvailableInEnglish() {
+        assertEquals("Reverb for Bass",
+                Texts.forLocale(Locale.ENGLISH).text("views.ParameterCell.accessibleName", "Reverb", "Bass"));
     }
 }
