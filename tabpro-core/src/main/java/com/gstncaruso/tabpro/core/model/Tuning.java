@@ -20,11 +20,19 @@ public record Tuning(TuningName name, List<Pitch> strings) {
     }
 
     public static Tuning of(String name, int... midiNumbers) {
+        return new Tuning(new TuningName.UserNamed(name), pitchesOf(midiNumbers));
+    }
+
+    static Tuning fromLibrary(String id, int... midiNumbers) {
+        return new Tuning(new TuningName.Library(id), pitchesOf(midiNumbers));
+    }
+
+    private static List<Pitch> pitchesOf(int... midiNumbers) {
         List<Pitch> pitches = new ArrayList<>();
         for (int midiNumber : midiNumbers) {
             pitches.add(new Pitch(midiNumber));
         }
-        return new Tuning(new TuningName.UserNamed(name), pitches);
+        return pitches;
     }
 
     public static Tuning standard() {

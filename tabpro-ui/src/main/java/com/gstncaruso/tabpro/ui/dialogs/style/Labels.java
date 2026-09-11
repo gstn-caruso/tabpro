@@ -43,6 +43,7 @@ public final class Labels {
 
     private static String tuningNameLabel(TuningName name) {
         return switch (name) {
+            case TuningName.Library(String id) -> Texts.get("library.tuning." + id);
             case TuningName.UserNamed(String typed) -> typed;
             case TuningName.Custom() -> Texts.get("library.tuning.custom");
         };

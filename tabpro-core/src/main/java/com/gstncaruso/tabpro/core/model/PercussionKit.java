@@ -23,7 +23,7 @@ public final class PercussionKit {
     }
 
     public static Tuning tuning() {
-        return Tuning.of("Percusión", 0, 0, 0, 0, 0, 0);
+        return Tuning.fromLibrary("percussion", 0, 0, 0, 0, 0, 0);
     }
 
     public static Optional<String> nameOf(int sound) {
