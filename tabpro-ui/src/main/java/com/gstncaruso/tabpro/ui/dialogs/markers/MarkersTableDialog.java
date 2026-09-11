@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import javax.swing.BoxLayout;
@@ -20,20 +21,20 @@ public final class MarkersTableDialog {
     }
 
     public static void show(Component parent, Editor editor) {
-        DialogShell.show(parent, "Lista de marcadores", closer -> buildContent(editor, closer));
+        DialogShell.show(parent, Texts.get("edit_dialogs.MarkersTableDialog.title"), closer -> buildContent(editor, closer));
     }
 
     static JPanel buildContent(Editor editor, Runnable onClose) {
         MarkerTableModel model = new MarkerTableModel(editor.score());
         JTable table = new JTable(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.getAccessibleContext().setAccessibleName("Marcadores");
-        table.setToolTipText("Marcadores");
+        table.getAccessibleContext().setAccessibleName(Texts.get("edit_dialogs.MarkersDialog.title"));
+        table.setToolTipText(Texts.get("edit_dialogs.MarkersDialog.title"));
 
-        JButton add = DialogStyle.flatButton("Agregar");
-        JButton edit = DialogStyle.flatButton("Editar");
-        JButton delete = DialogStyle.flatButton("Borrar");
-        JButton goTo = DialogStyle.flatButton("Ir a");
+        JButton add = DialogStyle.flatButton(Texts.get("edit_dialogs.MarkersTableDialog.add"));
+        JButton edit = DialogStyle.flatButton(Texts.get("edit_dialogs.MarkersTableDialog.edit"));
+        JButton delete = DialogStyle.flatButton(Texts.get("edit_dialogs.MarkersTableDialog.delete"));
+        JButton goTo = DialogStyle.flatButton(Texts.get("edit_dialogs.MarkersTableDialog.goTo"));
         edit.setEnabled(false);
         delete.setEnabled(false);
         goTo.setEnabled(false);
@@ -59,14 +60,17 @@ public final class MarkersTableDialog {
         });
 
         add.addActionListener(event -> {
-            if (editMarker(table, editor, Marker.named("Marcador"), editor.cursor().measure(), "Agregar un marcador")) {
+            Marker defaultMarker = Marker.named(Texts.get("edit_dialogs.MarkersDialog.defaultName"));
+            if (editMarker(table, editor, defaultMarker, editor.cursor().measure(),
+                    Texts.get("edit_dialogs.MarkersTableDialog.addTitle"))) {
                 model.refresh(editor.score());
             }
         });
 
         edit.addActionListener(event -> {
             MarkerList.Positioned positioned = model.rowAt(table.getSelectedRow());
-            if (editMarker(table, editor, positioned.marker(), positioned.measureIndex(), "Editar el marcador")) {
+            if (editMarker(table, editor, positioned.marker(), positioned.measureIndex(),
+                    Texts.get("edit_dialogs.MarkersTableDialog.editTitle"))) {
                 model.refresh(editor.score());
             }
         });
@@ -94,7 +98,7 @@ public final class MarkersTableDialog {
                 editor.setMarker(marker);
                 return true;
             } catch (IllegalArgumentException invalidName) {
-                JOptionPane.showMessageDialog(parent, "El marcador necesita un nombre.");
+                JOptionPane.showMessageDialog(parent, Texts.get("edit_dialogs.MarkersDialog.nameRequired"));
             }
         }
         return false;
