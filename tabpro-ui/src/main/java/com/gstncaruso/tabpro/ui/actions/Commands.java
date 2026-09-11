@@ -460,7 +460,7 @@ public final class Commands {
         define("view.toolBars.effects", Texts.get("menus.view.toolBars.effects"), view::toggleEffectsToolBar)
                 .checkedByDefault();
         for (String theme : themes) {
-            define("view.theme." + theme, theme, () -> view.useTheme(theme));
+            define("view.theme." + theme, Texts.get("window.Theme." + theme), () -> view.useTheme(theme));
         }
         define("options.midiSetup", Texts.get("menus.options.midiSetup"), dialogs::midiSetup);
         define("options.preferences", Texts.get("menus.options.preferences"), dialogs::preferences)

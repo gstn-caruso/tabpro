@@ -105,6 +105,21 @@ class CommandsTest {
     }
 
     @Test
+    void aThemeCommandShowsItsLocalizedLabelRatherThanTheStoredIdentifier() {
+        Commands withThemes = new Commands(
+                editor, record(Ports.Document.class), record(Ports.Dialogs.class),
+                record(Ports.Playback.class), record(Ports.View.class), List.of("dark"));
+
+        assertEquals(Texts.get("window.Theme.dark"), withThemes.get("view.theme.dark").label());
+    }
+
+    @Test
+    void theThemeLabelsAreAlsoAvailableInEnglish() {
+        assertEquals("Dark", Texts.forLocale(Locale.ENGLISH).text("window.Theme.dark"));
+        assertEquals("Light", Texts.forLocale(Locale.ENGLISH).text("window.Theme.light"));
+    }
+
+    @Test
     void plusShortensTheFigureAndMinusLengthensIt() {
         commands.get("note.value.QUARTER").actionPerformed(event());
 
