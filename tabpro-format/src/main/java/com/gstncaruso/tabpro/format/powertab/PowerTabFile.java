@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format.powertab;
 
+import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
@@ -66,9 +67,9 @@ public final class PowerTabFile {
         try {
             return read(Files.readAllBytes(path));
         } catch (IOException e) {
-            throw new ScoreFileException("no se pudo leer " + path, e);
+            throw ScoreFileException.cannotRead(path, e);
         } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-            throw new ScoreFileException("el archivo " + path + " no se pudo interpretar: " + e.getMessage(), e);
+            throw ScoreFileException.damaged("could not parse " + path + ": " + e.getMessage(), e);
         }
     }
 
@@ -76,7 +77,7 @@ public final class PowerTabFile {
         try {
             return assemble(data);
         } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-            throw new ScoreFileException("el archivo no se pudo interpretar: " + e.getMessage(), e);
+            throw ScoreFileException.damaged("could not parse the file: " + e.getMessage(), e);
         }
     }
 
@@ -90,7 +91,7 @@ public final class PowerTabFile {
         tracks.addAll(tracksOf(guitarScore));
         tracks.addAll(tracksOf(bassScore));
         if (tracks.isEmpty()) {
-            throw new ScoreFileException("el archivo no tiene ninguna guitarra");
+            throw ScoreFileException.nothingToImport("the file has no guitars");
         }
 
         int tempo = tempoOf(guitarScore).orElseGet(() -> tempoOf(bassScore).orElse(DEFAULT_TEMPO));
@@ -104,13 +105,11 @@ public final class PowerTabFile {
         int staffCount = score.systems().get(0).staves().size();
         for (PowerTabSystem system : score.systems()) {
             if (system.staves().size() != staffCount) {
-                throw new ScoreFileException(
-                        "los sistemas de esta partitura no tienen todos la misma cantidad de pentagramas:"
-                                + " no soportamos esa diferencia");
+                throw ScoreFileException.unsupportedContent(
+                        ScoreFeature.UNEVEN_STAFF_COUNTS, "the systems do not all have the same number of staves");
             }
             if (system.rhythmSlashCount() > 0) {
-                throw new ScoreFileException(
-                        "esta partitura usa barras de ritmo (rhythm slash), que todavia no soportamos");
+                throw ScoreFileException.unsupportedContent(ScoreFeature.RHYTHM_SLASHES, "rhythm slashes");
             }
         }
 
@@ -133,9 +132,8 @@ public final class PowerTabFile {
                 continue;
             }
             if (guitarOfStaff[staff] != -1 && guitarOfStaff[staff] != guitar) {
-                throw new ScoreFileException(
-                        "esta partitura reasigna el pentagrama " + staff + " a otra guitarra a mitad de la pieza,"
-                                + " algo que todavia no soportamos");
+                throw ScoreFileException.unsupportedContent(
+                        ScoreFeature.STAFF_GUITAR_CHANGES, "staff " + staff + " changes guitar partway through");
             }
             guitarOfStaff[staff] = guitar;
         }
@@ -298,9 +296,8 @@ public final class PowerTabFile {
             for (List<PowerTabPosition> voice : staff.voices()) {
                 for (PowerTabPosition position : voice) {
                     if (position.hasMultibarRest()) {
-                        throw new ScoreFileException(
-                                "esta partitura usa un silencio de varios compases comprimido (multibar rest),"
-                                        + " que todavia no soportamos");
+                        throw ScoreFileException.unsupportedContent(
+                                ScoreFeature.MULTIBAR_RESTS, "compressed multibar rest");
                     }
                     lastPosition = Math.max(lastPosition, position.index());
                 }
@@ -313,7 +310,7 @@ public final class PowerTabFile {
         return barlines.stream()
                 .filter(barline -> barline.position() == position)
                 .findFirst()
-                .orElseThrow(() -> new ScoreFileException("archivo PowerTab corrupto: no hay barra en la posicion " + position));
+                .orElseThrow(() -> ScoreFileException.damaged("corrupt PowerTab file: no bar at position " + position));
     }
 
     private static ScoreInfo infoOf(PowerTabHeader header) {

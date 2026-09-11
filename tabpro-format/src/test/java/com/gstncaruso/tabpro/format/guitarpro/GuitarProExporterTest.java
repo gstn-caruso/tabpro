@@ -2,8 +2,13 @@ package com.gstncaruso.tabpro.format.guitarpro;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.files.ExportWarning;
+import com.gstncaruso.tabpro.core.files.ExportWarning.Loss;
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -29,8 +34,10 @@ import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.HarmonicType;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.SlideType;
+import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class GuitarProExporterTest {
 
@@ -39,6 +46,17 @@ class GuitarProExporterTest {
 
     private Score exportAndReread(Score score) {
         return files.read(exporter.write(score));
+    }
+
+    @Test
+    void aFileThatCannotBeWrittenIsReportedWithItsPath(@TempDir Path folder) {
+        Path path = folder.resolve("missing-folder").resolve("song.gp4");
+
+        ScoreFileException failure =
+                assertThrows(ScoreFileException.class, () -> exporter.write(Score.blank(), path));
+
+        assertEquals(ScoreFileProblem.CANNOT_WRITE, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
     }
 
     @Test
@@ -207,9 +225,9 @@ class GuitarProExporterTest {
         Track track = Track.standardGuitar("Guitar").withMeasure(0, withSecondVoice);
         Score original = new Score("With second voice", 120, List.of(track));
 
-        List<String> warnings = exporter.warningsFor(original);
+        var warnings = exporter.warningsFor(original);
 
-        assertTrue(warnings.stream().anyMatch(w -> w.contains("segunda voz")));
+        assertTrue(warnings.contains(ExportWarning.of(Loss.SECOND_VOICE)));
 
         Score reread = exportAndReread(original);
         assertFalse(reread.track(0).measure(0).usesTwoVoices());
@@ -233,12 +251,21 @@ class GuitarProExporterTest {
         Score original = new Score(ScoreInfo.titled("Title").withMusicAuthor("Composer"), 120,
                 List.of(Track.standardGuitar("Guitar").withMeasure(0, aNote(6, 0))), com.gstncaruso.tabpro.core.model.Lyrics.none());
 
-        List<String> warnings = exporter.warningsFor(original);
+        var warnings = exporter.warningsFor(original);
 
-        assertTrue(warnings.stream().anyMatch(w -> w.contains("autor de la música")));
+        assertTrue(warnings.contains(ExportWarning.of(Loss.MUSIC_AUTHOR, "Composer")));
 
         Score reread = exportAndReread(original);
         assertEquals("", reread.info().musicAuthor());
+    }
+
+    @Test
+    void warnsThatATrackOnAnotherMidiPortIsMovedToTheFirst() {
+        Track onPortTwo = Track.standardGuitar("Lead").withMeasure(0, aNote(6, 0))
+                .withChannel(Track.standardGuitar("Lead").channel().withPort(2));
+        Score original = new Score("Ports", 120, List.of(onPortTwo));
+
+        assertEquals(List.of(ExportWarning.of(Loss.MIDI_PORT, "Lead", 2)), exporter.warningsFor(original));
     }
 
     @Test

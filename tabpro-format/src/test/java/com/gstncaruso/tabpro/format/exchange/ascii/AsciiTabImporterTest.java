@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -11,8 +12,10 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class AsciiTabImporterTest {
 
@@ -93,7 +96,21 @@ class AsciiTabImporterTest {
 
     @Test
     void rejectsATextWithoutAnyTab() {
-        assertThrows(ScoreFileException.class, () -> importer.importScore("no tab here", AsciiTabImportOptions.standard()));
+        ScoreFileException failure = assertThrows(
+                ScoreFileException.class, () -> importer.importScore("no tab here", AsciiTabImportOptions.standard()));
+
+        assertEquals(ScoreFileProblem.NOTHING_TO_IMPORT, failure.problem());
+    }
+
+    @Test
+    void aMissingFileIsReportedWithItsPath(@TempDir Path folder) {
+        Path path = folder.resolve("missing.tab");
+
+        ScoreFileException failure = assertThrows(
+                ScoreFileException.class, () -> importer.importScore(path, AsciiTabImportOptions.standard()));
+
+        assertEquals(ScoreFileProblem.CANNOT_READ, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
     }
 
     @Test
@@ -133,8 +150,10 @@ class AsciiTabImporterTest {
     @Test
     void rejectsATextWithoutAnyTabWhenImportingOntoATrack() {
         Track existing = Track.standardGuitar("Active guitar");
-        assertThrows(ScoreFileException.class,
+        ScoreFileException failure = assertThrows(ScoreFileException.class,
                 () -> importer.importInto(existing, "no tab here", AsciiTabImportOptions.standard()));
+
+        assertEquals(ScoreFileProblem.NOTHING_TO_IMPORT, failure.problem());
     }
 
     private static String block(int stringCount, String firstStringContent) {

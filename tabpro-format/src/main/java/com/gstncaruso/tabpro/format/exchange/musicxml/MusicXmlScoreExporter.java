@@ -23,7 +23,7 @@ public final class MusicXmlScoreExporter {
         try {
             Files.writeString(path, toXml(score), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new com.gstncaruso.tabpro.core.files.ScoreFileException("no se pudo escribir " + path, e);
+            throw com.gstncaruso.tabpro.core.files.ScoreFileException.cannotWrite(path, e);
         }
     }
 

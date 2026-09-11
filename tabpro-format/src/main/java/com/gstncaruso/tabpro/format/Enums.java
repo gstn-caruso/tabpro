@@ -14,14 +14,14 @@ final class Enums {
         try {
             return Enum.valueOf(type, name);
         } catch (IllegalArgumentException e) {
-            throw new ScoreFileException("valor desconocido para " + type.getSimpleName() + ": " + name, e);
+            throw ScoreFileException.damaged("unknown value for " + type.getSimpleName() + ": " + name, e);
         }
     }
 
     static <E extends Enum<E>> E required(Class<E> type, String name) {
         E value = read(type, name, null);
         if (value == null) {
-            throw new ScoreFileException("falta un valor de " + type.getSimpleName());
+            throw ScoreFileException.damaged("missing value of " + type.getSimpleName());
         }
         return value;
     }

@@ -13,17 +13,17 @@ public interface ScoreExchange {
     ScoreExchange NONE = new ScoreExchange() {
         @Override
         public Score importMidi(Path path) {
-            throw notSupported("la importación de MIDI");
+            throw notSupported(ScoreOperation.IMPORT_MIDI);
         }
 
         @Override
         public void exportMidi(Score score, Path path) {
-            throw notSupported("la exportación a MIDI");
+            throw notSupported(ScoreOperation.EXPORT_MIDI);
         }
 
         @Override
         public List<MidiTrackInfo> midiTracksIn(Path path) {
-            throw notSupported("la importación de MIDI");
+            throw notSupported(ScoreOperation.IMPORT_MIDI);
         }
 
         @Override
@@ -31,90 +31,90 @@ public interface ScoreExchange {
                 Path path, List<Integer> selectedMidiTrackIndices, boolean transposeDownOneOctave,
                 Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
                 boolean useTwoChannelsPerTrack) {
-            throw notSupported("la importación de MIDI");
+            throw notSupported(ScoreOperation.IMPORT_MIDI);
         }
 
         @Override
         public Track importMidiInto(
                 Track target, Path path, List<Integer> midiTrackIndices, boolean transposeDownOneOctave,
                 Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize) {
-            throw notSupported("la importación de MIDI");
+            throw notSupported(ScoreOperation.IMPORT_MIDI);
         }
 
         @Override
         public Score importMidiTitleAndTimeSignatures(Score target, Path path) {
-            throw notSupported("la importación de MIDI");
+            throw notSupported(ScoreOperation.IMPORT_MIDI);
         }
 
         @Override
         public void exportWave(Score score, Path path, AudioQuality quality) {
-            throw notSupported("la exportación a WAVE");
+            throw notSupported(ScoreOperation.EXPORT_WAVE);
         }
 
         @Override
         public Timeline midiTrackTimeline(Path path, List<Integer> midiTrackIndices) {
-            throw notSupported("la importación de MIDI");
+            throw notSupported(ScoreOperation.IMPORT_MIDI);
         }
 
         @Override
         public Score importAscii(Path path) {
-            throw notSupported("la importación de tablatura ASCII");
+            throw notSupported(ScoreOperation.IMPORT_ASCII);
         }
 
         @Override
         public void exportAscii(Score score, Path path) {
-            throw notSupported("la exportación a tablatura ASCII");
+            throw notSupported(ScoreOperation.EXPORT_ASCII);
         }
 
         @Override
         public Track importAsciiInto(
                 Track target, String text, Optional<NoteValue> fixedRhythm, int intervalsPerQuarterNote) {
-            throw notSupported("la importación de tablatura ASCII");
+            throw notSupported(ScoreOperation.IMPORT_ASCII);
         }
 
         @Override
         public String previewAscii(Track track, int columnsPerLine) {
-            throw notSupported("la exportación a tablatura ASCII");
+            throw notSupported(ScoreOperation.EXPORT_ASCII);
         }
 
         @Override
         public void exportAscii(Track track, Path path, int columnsPerLine) {
-            throw notSupported("la exportación a tablatura ASCII");
+            throw notSupported(ScoreOperation.EXPORT_ASCII);
         }
 
         @Override
         public Score importMusicXml(Path path) {
-            throw notSupported("la importación de MusicXML");
+            throw notSupported(ScoreOperation.IMPORT_MUSIC_XML);
         }
 
         @Override
         public void exportMusicXml(Score score, Path path) {
-            throw notSupported("la exportación a MusicXML");
+            throw notSupported(ScoreOperation.EXPORT_MUSIC_XML);
         }
 
         @Override
         public Score importGuitarPro(Path path) {
-            throw notSupported("la apertura de archivos de Guitar Pro");
+            throw notSupported(ScoreOperation.OPEN_GUITAR_PRO);
         }
 
         @Override
         public Score importTabEdit(Path path) {
-            throw notSupported("la apertura de archivos de TablEdit");
+            throw notSupported(ScoreOperation.OPEN_TAB_EDIT);
         }
 
         @Override
         public void exportGuitarPro(Score score, Path path) {
-            throw notSupported("la exportación a Guitar Pro");
+            throw notSupported(ScoreOperation.EXPORT_GUITAR_PRO);
         }
 
         @Override
-        public List<String> guitarProExportWarnings(Score score) {
-            throw notSupported("la exportación a Guitar Pro");
+        public List<ExportWarning> guitarProExportWarnings(Score score) {
+            throw notSupported(ScoreOperation.EXPORT_GUITAR_PRO);
         }
 
         @Override
         public Score importPowerTab(Path path) {
-            throw notSupported("la importación de archivos de PowerTab");
+            throw notSupported(ScoreOperation.IMPORT_POWER_TAB);
         }
     };
 
@@ -159,11 +159,11 @@ public interface ScoreExchange {
 
     void exportGuitarPro(Score score, Path path);
 
-    List<String> guitarProExportWarnings(Score score);
+    List<ExportWarning> guitarProExportWarnings(Score score);
 
     Score importPowerTab(Path path);
 
-    static ScoreFileException notSupported(String what) {
-        return new ScoreFileException(what + " todavía no está disponible.");
+    static ScoreFileException notSupported(ScoreOperation operation) {
+        return ScoreFileException.notSupported(operation);
     }
 }

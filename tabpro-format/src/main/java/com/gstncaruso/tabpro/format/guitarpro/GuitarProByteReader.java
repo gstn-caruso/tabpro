@@ -128,10 +128,10 @@ final class GuitarProByteReader {
 
     private void require(int byteCount) {
         if (byteCount < 0 || position + byteCount > data.length) {
-            throw new ScoreFileException(
-                    "archivo Guitar Pro truncado: se esperaban " + byteCount
-                            + " bytes en la posicion " + position
-                            + " pero solo quedan " + (data.length - position));
+            throw ScoreFileException.damaged(
+                    "truncated Guitar Pro file: expected " + byteCount
+                            + " bytes at position " + position
+                            + " but only " + (data.length - position) + " remain");
         }
     }
 }

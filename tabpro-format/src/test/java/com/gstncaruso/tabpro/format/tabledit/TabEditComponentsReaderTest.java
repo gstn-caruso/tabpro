@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
@@ -72,7 +73,8 @@ class TabEditComponentsReaderTest {
         ScoreFileException exception = assertThrows(ScoreFileException.class,
                 () -> reader.read(new TabEditByteReader(writer.bytes()), ONE_MEASURE_44, ONE_TRACK_SIX_STRINGS));
 
-        assertTrue(exception.getMessage().contains("0x60") || exception.getMessage().contains("desconocido"));
+        assertEquals(ScoreFileProblem.DAMAGED, exception.problem());
+        assertEquals("unknown TablEdit component: type 0x60", exception.getMessage());
     }
 
     @Test
@@ -81,8 +83,10 @@ class TabEditComponentsReaderTest {
         writeNote(writer, 0, 3, 6);
         writer.writeInt(0);
 
-        assertThrows(ScoreFileException.class,
+        ScoreFileException exception = assertThrows(ScoreFileException.class,
                 () -> reader.read(new TabEditByteReader(writer.bytes()), ONE_MEASURE_44, ONE_TRACK_SIX_STRINGS));
+
+        assertEquals(ScoreFileProblem.DAMAGED, exception.problem());
     }
 
     private static void writeNote(TabEditFileWriter writer, int location, int fret, int durationCode) {

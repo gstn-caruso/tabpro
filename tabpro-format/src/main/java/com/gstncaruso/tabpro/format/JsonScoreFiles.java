@@ -21,13 +21,13 @@ public final class JsonScoreFiles implements ScoreFiles {
             String json = Files.readString(path);
             ScoreDto dto = gson.fromJson(json, ScoreDto.class);
             if (dto == null) {
-                throw new ScoreFileException("el archivo " + path + " esta vacio");
+                throw ScoreFileException.damaged("empty file: " + path);
             }
             return dto.toScore();
         } catch (IOException e) {
-            throw new ScoreFileException("no se pudo leer " + path, e);
+            throw ScoreFileException.cannotRead(path, e);
         } catch (JsonParseException e) {
-            throw new ScoreFileException("el archivo " + path + " no contiene JSON valido", e);
+            throw ScoreFileException.notRecognized("tabpro", "not valid JSON: " + path, e);
         }
     }
 
@@ -36,7 +36,7 @@ public final class JsonScoreFiles implements ScoreFiles {
         try {
             Files.writeString(path, gson.toJson(ScoreDto.from(score)));
         } catch (IOException e) {
-            throw new ScoreFileException("no se pudo escribir " + path, e);
+            throw ScoreFileException.cannotWrite(path, e);
         }
     }
 }

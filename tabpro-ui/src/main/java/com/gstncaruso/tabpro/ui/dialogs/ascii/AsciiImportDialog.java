@@ -5,6 +5,8 @@ import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.dialogs.style.ErrorTexts;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.awt.print.PrinterException;
 import java.io.IOException;
@@ -34,7 +36,7 @@ public final class AsciiImportDialog {
             editor.apply(score -> score.mappingTrack(
                     trackIndex, track -> exchange.importAsciiInto(track, text, fixedRhythm, intervalsPerQuarterNote)));
         } catch (ScoreFileException e) {
-            showError(parent, e.getMessage());
+            showError(parent, ErrorTexts.of(e));
         }
     }
 
@@ -46,7 +48,7 @@ public final class AsciiImportDialog {
         try {
             panel.setText(java.nio.file.Files.readString(chooser.getSelectedFile().toPath()));
         } catch (IOException e) {
-            showError(parent, "No se pudo leer el archivo: " + e.getMessage());
+            showError(parent, Texts.get("window.error.readingTheFile", e.getMessage()));
         }
     }
 
@@ -54,7 +56,7 @@ public final class AsciiImportDialog {
         try {
             AsciiPrinting.print(text, "tabpro");
         } catch (PrinterException e) {
-            showError(parent, "No se pudo imprimir: " + e.getMessage());
+            showError(parent, Texts.get("window.error.printing", e.getMessage()));
         }
     }
 

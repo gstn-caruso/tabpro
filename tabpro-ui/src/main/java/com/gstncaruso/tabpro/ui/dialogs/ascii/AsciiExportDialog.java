@@ -4,6 +4,8 @@ import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.dialogs.style.ErrorTexts;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.awt.print.PrinterException;
 import java.nio.file.Path;
@@ -38,7 +40,7 @@ public final class AsciiExportDialog {
         try {
             exchange.exportAscii(track, withTabExtension(chooser.getSelectedFile().toPath()), columnsPerLine);
         } catch (ScoreFileException e) {
-            showError(parent, e.getMessage());
+            showError(parent, ErrorTexts.of(e));
         }
     }
 
@@ -51,7 +53,7 @@ public final class AsciiExportDialog {
         try {
             AsciiPrinting.print(text, "tabpro");
         } catch (PrinterException e) {
-            showError(parent, "No se pudo imprimir: " + e.getMessage());
+            showError(parent, Texts.get("window.error.printing", e.getMessage()));
         }
     }
 

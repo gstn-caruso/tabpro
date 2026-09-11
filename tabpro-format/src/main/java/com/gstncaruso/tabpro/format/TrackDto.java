@@ -84,10 +84,10 @@ public record TrackDto(
 
     public Track toTrack(int index) {
         if (tuning == null) {
-            throw new ScoreFileException("falta el campo tuning");
+            throw ScoreFileException.damaged("missing field: tuning");
         }
         if (measures == null) {
-            throw new ScoreFileException("falta el campo measures");
+            throw ScoreFileException.damaged("missing field: measures");
         }
         List<Pitch> pitches = tuning.stream().map(Pitch::new).toList();
         List<Measure> domainMeasures = measures.stream().map(MeasureDto::toMeasure).toList();
@@ -153,8 +153,8 @@ public record TrackDto(
                 .flatMap(beat -> beat.notes().stream())
                 .anyMatch(note -> note.string() > stringCount);
         if (beyondTuning) {
-            throw new ScoreFileException(
-                    "una nota referencia una cuerda fuera de la afinacion de " + stringCount + " cuerdas");
+            throw ScoreFileException.damaged(
+                    "a note refers to a string outside the " + stringCount + "-string tuning");
         }
     }
 }

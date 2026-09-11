@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -193,7 +194,10 @@ class ScoreDtoTest {
         ScoreDto dto = new ScoreDto(
                 ScoreDto.CURRENT_FORMAT, "Test", null, null, null, null, null, null, null, null, null, 120, null, null);
 
-        assertThrows(ScoreFileException.class, dto::toScore);
+        ScoreFileException failure = assertThrows(ScoreFileException.class, dto::toScore);
+
+        assertEquals(ScoreFileProblem.DAMAGED, failure.problem());
+        assertEquals("missing field: tracks", failure.getMessage());
     }
 
     @Test
@@ -205,6 +209,7 @@ class ScoreDtoTest {
 
         ScoreFileException thrown = assertThrows(ScoreFileException.class, dto::toScore);
 
+        assertEquals(ScoreFileProblem.DAMAGED, thrown.problem());
         assertInstanceOf(IllegalArgumentException.class, thrown.getCause());
     }
 

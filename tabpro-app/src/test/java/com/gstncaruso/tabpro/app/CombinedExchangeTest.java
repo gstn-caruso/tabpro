@@ -3,9 +3,9 @@ package com.gstncaruso.tabpro.app;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.files.AudioQuality;
+import com.gstncaruso.tabpro.core.files.ExportWarning;
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
-import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
@@ -142,7 +142,7 @@ class CombinedExchangeTest {
             }
 
             @Override
-            public List<String> guitarProExportWarnings(Score score) {
+            public List<ExportWarning> guitarProExportWarnings(Score score) {
                 throw irrelevantForThisTest();
             }
 
@@ -252,7 +252,7 @@ class CombinedExchangeTest {
             }
 
             @Override
-            public List<String> guitarProExportWarnings(Score score) {
+            public List<ExportWarning> guitarProExportWarnings(Score score) {
                 throw irrelevantForThisTest();
             }
 
@@ -263,7 +263,7 @@ class CombinedExchangeTest {
         };
     }
 
-    private static ScoreFileException irrelevantForThisTest() {
-        return ScoreExchange.notSupported("un método que este test no ejercita");
+    private static UnsupportedOperationException irrelevantForThisTest() {
+        return new UnsupportedOperationException("a method this test does not exercise");
     }
 }

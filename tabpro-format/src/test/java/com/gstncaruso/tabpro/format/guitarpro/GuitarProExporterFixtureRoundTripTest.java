@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.files.ExportWarning;
+import com.gstncaruso.tabpro.core.files.ExportWarning.Loss;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.PercussionKit;
@@ -90,7 +92,7 @@ class GuitarProExporterFixtureRoundTripTest {
         Score original = readFixture("tabpro-features", "gp5");
         assertTrue(original.track(0).measure(0).usesTwoVoices(), "the source fixture carries a second voice");
 
-        assertTrue(exporter.warningsFor(original).stream().anyMatch(w -> w.contains("segunda voz")));
+        assertTrue(exporter.warningsFor(original).contains(ExportWarning.of(Loss.SECOND_VOICE)));
 
         Score reread = roundTrip(original);
 

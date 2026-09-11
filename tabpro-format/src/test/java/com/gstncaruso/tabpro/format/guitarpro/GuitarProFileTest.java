@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.PercussionKit;
@@ -99,7 +100,20 @@ class GuitarProFileTest {
         Path path = folder.resolve("broken.gp5");
         Files.writeString(path, "this is nowhere close to a Guitar Pro file");
 
-        assertThrows(ScoreFileException.class, () -> files.read(path));
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> files.read(path));
+
+        assertEquals(ScoreFileProblem.NOT_RECOGNIZED, failure.problem());
+        assertEquals(List.of("Guitar Pro"), failure.arguments());
+    }
+
+    @Test
+    void aMissingFileIsReportedWithItsPath(@TempDir Path folder) {
+        Path path = folder.resolve("missing.gp5");
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> files.read(path));
+
+        assertEquals(ScoreFileProblem.CANNOT_READ, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
     }
 
     @Test
@@ -108,7 +122,9 @@ class GuitarProFileTest {
         byte[] whole = Files.readAllBytes(fixture("gp5"));
         Files.write(path, java.util.Arrays.copyOf(whole, whole.length / 2));
 
-        assertThrows(ScoreFileException.class, () -> files.read(path));
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> files.read(path));
+
+        assertEquals(ScoreFileProblem.DAMAGED, failure.problem());
     }
 
     @Test

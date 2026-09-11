@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.ScoreColor;
 import org.junit.jupiter.api.Test;
 
@@ -102,6 +103,7 @@ class GuitarProByteReaderTest {
 
         ScoreFileException exception = assertThrows(ScoreFileException.class, reader::readInt);
 
-        assertTrue(exception.getMessage().contains("truncado"));
+        assertEquals(ScoreFileProblem.DAMAGED, exception.problem());
+        assertEquals("truncated Guitar Pro file: expected 4 bytes at position 0 but only 2 remain", exception.getMessage());
     }
 }

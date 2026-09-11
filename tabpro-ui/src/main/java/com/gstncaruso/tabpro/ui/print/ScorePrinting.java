@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.print;
 
+import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.page.PageMetrics;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
@@ -14,7 +15,6 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
 
@@ -54,7 +54,7 @@ public final class ScorePrinting {
     public static void exportImage(Score score, PageSetup setup, Path path, ViewMode viewMode, Zoom zoom) {
         String format = formatOf(path);
         if (format.equals("bmp") && viewMode != ViewMode.PAGE) {
-            throw new ImageExportException("La exportación a BMP sólo está disponible en modo Página.");
+            throw ImageExportException.bmpOnlyInPageMode();
         }
         writeImage(ScoreSheets.render(score, viewMode, zoom, setup), format, path);
     }
@@ -68,7 +68,7 @@ public final class ScorePrinting {
             try (java.io.OutputStream out = java.nio.file.Files.newOutputStream(path)) {
                 BmpDocument.writeTo(image, out);
             } catch (IOException e) {
-                throw new UncheckedIOException("no se pudo escribir " + path, e);
+                throw ScoreFileException.cannotWrite(path, e);
             }
             return;
         }
@@ -76,12 +76,10 @@ public final class ScorePrinting {
         try {
             written = ImageIO.write(image, format, path.toFile());
         } catch (IOException e) {
-            throw new UncheckedIOException("no se pudo escribir " + path, e);
+            throw ScoreFileException.cannotWrite(path, e);
         }
         if (!written) {
-            throw new ImageExportException(
-                    "No se pudo exportar la imagen en formato " + format.toUpperCase(java.util.Locale.ROOT)
-                            + ": ningún códec de imagen instalado sabe codificarla en ese formato.");
+            throw ImageExportException.noImageWriterFor(format);
         }
     }
 
@@ -92,7 +90,7 @@ public final class ScorePrinting {
         try (java.io.OutputStream out = java.nio.file.Files.newOutputStream(path)) {
             pdf.writeTo(out);
         } catch (IOException e) {
-            throw new UncheckedIOException("no se pudo escribir " + path, e);
+            throw ScoreFileException.cannotWrite(path, e);
         }
     }
 

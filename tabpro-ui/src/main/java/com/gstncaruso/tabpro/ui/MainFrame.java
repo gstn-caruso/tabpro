@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.AudioQuality;
+import com.gstncaruso.tabpro.core.files.ExportWarning;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFileFormat;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
@@ -18,6 +19,7 @@ import com.gstncaruso.tabpro.ui.harmony.ScalesDialog;
 import com.gstncaruso.tabpro.ui.dialogs.ascii.AsciiExportDialog;
 import com.gstncaruso.tabpro.ui.dialogs.ascii.AsciiImportDialog;
 import com.gstncaruso.tabpro.ui.dialogs.effects.NoteEffectsDialog;
+import com.gstncaruso.tabpro.ui.dialogs.style.ErrorTexts;
 import com.gstncaruso.tabpro.ui.dialogs.help.HelpDialog;
 import com.gstncaruso.tabpro.ui.dialogs.info.ScoreInfoDialog;
 import com.gstncaruso.tabpro.ui.dialogs.instrument.InstrumentDialog;
@@ -181,7 +183,7 @@ public final class MainFrame extends JFrame {
         boolean effectsToolBarVisible = preferences.effectsToolBarVisible();
         toolBars.setEffectsToolBarVisible(effectsToolBarVisible);
         commands.get("view.toolBars.effects").putValue(javax.swing.Action.SELECTED_KEY, effectsToolBarVisible);
-        JLabel tempoLabel = new JLabel("Tempo ");
+        JLabel tempoLabel = new JLabel(Texts.get("window.MainFrame.tempo") + " ");
         tempoLabel.setForeground(Palette.text());
         toolBars.addToSoundRow(tempoLabel);
         toolBars.addToSoundRow(tempoSpinner);
@@ -240,7 +242,7 @@ public final class MainFrame extends JFrame {
         document.pendingRecovery().ifPresent(recovery -> {
             int answer = JOptionPane.showConfirmDialog(
                     this,
-                    "Quedó una partitura sin guardar de la última sesión. ¿Recuperarla?",
+                    Texts.get("window.MainFrame.recoverUnsavedScore"),
                     "tabpro",
                     JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) {
@@ -363,7 +365,7 @@ public final class MainFrame extends JFrame {
     }
 
     private void showError(ScoreFileException e) {
-        JOptionPane.showMessageDialog(this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, ErrorTexts.of(e), "tabpro", JOptionPane.ERROR_MESSAGE);
     }
 
     private static Path withExtension(File file, String extension) {
@@ -381,12 +383,12 @@ public final class MainFrame extends JFrame {
     }
 
     private FileNameExtensionFilter tabproFilter() {
-        return new FileNameExtensionFilter("Partituras tabpro (*.tabpro)", "tabpro");
+        return new FileNameExtensionFilter(Texts.get("window.MainFrame.tabproFilter"), "tabpro");
     }
 
     private FileNameExtensionFilter openableScoreFilter() {
         return new FileNameExtensionFilter(
-                "Partituras (*.tabpro, *.gp3, *.gp4, *.gp5, *.gtp, *.tef, *.ptb)",
+                Texts.get("window.MainFrame.openableScoresFilter"),
                 "tabpro", "gp3", "gp4", "gp5", "gtp", "tef", "ptb");
     }
 
@@ -478,7 +480,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void importMidi() {
             JFileChooser chooser = new JFileChooser();
-            chooser.setFileFilter(new FileNameExtensionFilter("Archivos MIDI (*.mid)", "mid", "midi"));
+            chooser.setFileFilter(new FileNameExtensionFilter(Texts.get("window.MainFrame.midiFilter"), "mid", "midi"));
             if (chooser.showOpenDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
                 return;
             }
@@ -504,29 +506,31 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void importGuitarPro() {
-            importWith(exchange::importGuitarPro, new FileNameExtensionFilter("Partituras de Guitar Pro", "gp3", "gp4", "gp5", "gtp"));
+            importWith(exchange::importGuitarPro, new FileNameExtensionFilter(
+                    Texts.get("window.MainFrame.guitarProFilter"), "gp3", "gp4", "gp5", "gtp"));
         }
 
         @Override
         public void importTabEdit() {
-            importWith(exchange::importTabEdit, new FileNameExtensionFilter("Archivos de TablEdit (*.tef)", "tef"));
+            importWith(exchange::importTabEdit, new FileNameExtensionFilter(Texts.get("window.MainFrame.tabEditFilter"), "tef"));
         }
 
         @Override
         public void importPowerTab() {
-            importWith(exchange::importPowerTab, new FileNameExtensionFilter("Partituras de PowerTab", "ptb"));
+            importWith(exchange::importPowerTab, new FileNameExtensionFilter(Texts.get("window.MainFrame.powerTabFilter"), "ptb"));
         }
 
         @Override
         public void exportMidi() {
-            exportWith(exchange::exportMidi, new FileNameExtensionFilter("Archivos MIDI (*.mid)", "mid"), ".mid");
+            exportWith(
+                    exchange::exportMidi, new FileNameExtensionFilter(Texts.get("window.MainFrame.midiFilter"), "mid"), ".mid");
         }
 
         @Override
         public void exportWave() {
             WaveExportDialog.ask(MainFrame.this, AudioQuality.standard()).ifPresent(quality -> {
                 JFileChooser chooser = new JFileChooser();
-                chooser.setFileFilter(new FileNameExtensionFilter("Audio WAVE (*.wav)", "wav"));
+                chooser.setFileFilter(new FileNameExtensionFilter(Texts.get("window.MainFrame.waveFilter"), "wav"));
                 if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
                     return;
                 }
@@ -558,15 +562,15 @@ public final class MainFrame extends JFrame {
         }
 
         private boolean confirmGuitarProLosses() {
-            java.util.List<String> warnings = exchange.guitarProExportWarnings(editor.score());
+            java.util.List<ExportWarning> warnings = exchange.guitarProExportWarnings(editor.score());
             if (warnings.isEmpty()) {
                 return true;
             }
-            String detail = warnings.stream().map(warning -> "- " + warning)
+            String detail = warnings.stream().map(warning -> "- " + ErrorTexts.of(warning))
                     .collect(java.util.stream.Collectors.joining("\n"));
             int answer = JOptionPane.showConfirmDialog(
                     MainFrame.this,
-                    "Al exportar a Guitar Pro 4 se va a perder:\n\n" + detail + "\n\n¿Exportar de todos modos?",
+                    Texts.get("window.MainFrame.exportGuitarProAnyway", detail),
                     "tabpro",
                     JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.WARNING_MESSAGE);
@@ -584,9 +588,8 @@ public final class MainFrame extends JFrame {
                 ScorePrinting.exportPdf(
                         editor.score(), pageSetup, ScorePrinting.withPdfExtension(chooser.getSelectedFile()));
                 backToTheScore();
-            } catch (java.io.UncheckedIOException e) {
-                JOptionPane.showMessageDialog(
-                        MainFrame.this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
+            } catch (ScoreFileException e) {
+                showError(e);
             }
         }
 
@@ -594,7 +597,8 @@ public final class MainFrame extends JFrame {
         public void exportImage() {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Imagen (*.png, *.jpg, *.bmp)", "png", "jpg", "jpeg", "bmp"));
+                    new FileNameExtensionFilter(
+                            Texts.get("window.MainFrame.imageFilter"), "png", "jpg", "jpeg", "bmp"));
             if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
                 return;
             }
@@ -603,9 +607,11 @@ public final class MainFrame extends JFrame {
                         editor.score(), pageSetup, ScorePrinting.withImageExtension(chooser.getSelectedFile()),
                         canvas.viewMode(), canvas.zoom());
                 backToTheScore();
-            } catch (java.io.UncheckedIOException | ImageExportException e) {
+            } catch (ScoreFileException e) {
+                showError(e);
+            } catch (ImageExportException e) {
                 JOptionPane.showMessageDialog(
-                        MainFrame.this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
+                        MainFrame.this, ErrorTexts.of(e), "tabpro", JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -621,7 +627,7 @@ public final class MainFrame extends JFrame {
             } catch (java.awt.print.PrinterException e) {
                 JOptionPane.showMessageDialog(
                         MainFrame.this,
-                        "No se pudo imprimir: " + e.getMessage(),
+                        Texts.get("window.error.printing", e.getMessage()),
                         "tabpro",
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -677,7 +683,7 @@ public final class MainFrame extends JFrame {
             }
             int answer = JOptionPane.showConfirmDialog(
                     MainFrame.this,
-                    "La partitura tiene cambios sin guardar. ¿Guardarlos?",
+                    Texts.get("window.MainFrame.saveUnsavedChanges"),
                     "tabpro",
                     JOptionPane.YES_NO_CANCEL_OPTION);
             if (answer == JOptionPane.CANCEL_OPTION) {
@@ -738,7 +744,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void tempo() {
             String answer = JOptionPane.showInputDialog(
-                    MainFrame.this, "Tempo en negras por minuto", editor.score().tempo());
+                    MainFrame.this, Texts.get("window.MainFrame.tempoPrompt"), editor.score().tempo());
             if (answer == null) {
                 return;
             }
@@ -758,7 +764,7 @@ public final class MainFrame extends JFrame {
             if (devices.inputs().isEmpty()) {
                 JOptionPane.showMessageDialog(
                         MainFrame.this,
-                        "No hay ningún instrumento MIDI conectado.",
+                        Texts.get("window.MainFrame.noMidiInstrument"),
                         "tabpro",
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -784,7 +790,8 @@ public final class MainFrame extends JFrame {
 
         private void showTempoError() {
             JOptionPane.showMessageDialog(
-                    MainFrame.this, "El tempo se escribe con un número.", "tabpro", JOptionPane.ERROR_MESSAGE);
+                    MainFrame.this, Texts.get("window.MainFrame.tempoMustBeANumber"), "tabpro",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -887,7 +894,7 @@ public final class MainFrame extends JFrame {
             if (!PercussionAssistant.appliesTo(editor.currentTrack())) {
                 JOptionPane.showMessageDialog(
                         MainFrame.this,
-                        "El asistente de percusión sólo sirve en una pista de percusión.",
+                        Texts.get("window.MainFrame.percussionAssistantNeedsAPercussionTrack"),
                         "tabpro",
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -895,7 +902,7 @@ public final class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(
                     MainFrame.this,
                     new PercussionAssistant(editor, player),
-                    "Asistente de percusión",
+                    Texts.get("window.MainFrame.percussionAssistantTitle"),
                     JOptionPane.PLAIN_MESSAGE);
             backToTheScore();
         }
@@ -1139,7 +1146,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void text() {
             String written = JOptionPane.showInputDialog(
-                    MainFrame.this, "Texto sobre la tablatura",
+                    MainFrame.this, Texts.get("window.MainFrame.textPrompt"),
                     editor.currentBeat().effects().text().orElse(""));
             if (written != null) {
                 editor.setText(written);
@@ -1278,8 +1285,8 @@ public final class MainFrame extends JFrame {
         public void about() {
             JOptionPane.showMessageDialog(
                     MainFrame.this,
-                    "tabpro — clon libre de Guitar Pro 5.",
-                    "Acerca de tabpro",
+                    Texts.get("window.MainFrame.aboutMessage"),
+                    Texts.get("window.MainFrame.aboutTitle"),
                     JOptionPane.INFORMATION_MESSAGE);
         }
 

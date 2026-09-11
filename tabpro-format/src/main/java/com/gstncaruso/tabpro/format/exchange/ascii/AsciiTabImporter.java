@@ -26,14 +26,14 @@ public final class AsciiTabImporter {
         try {
             return importScore(Files.readString(path), options);
         } catch (IOException e) {
-            throw new ScoreFileException("no se pudo leer " + path, e);
+            throw ScoreFileException.cannotRead(path, e);
         }
     }
 
     public Score importScore(String text, AsciiTabImportOptions options) {
         List<List<String>> blocks = AsciiTabBlocks.blocksIn(text);
         if (blocks.isEmpty()) {
-            throw new ScoreFileException("el texto no tiene ninguna tablatura reconocible");
+            throw ScoreFileException.nothingToImport("the text has no recognizable tablature");
         }
         try {
             List<List<List<String>>> tracks = groupIntoTracks(blocks);
@@ -43,20 +43,20 @@ public final class AsciiTabImporter {
             }
             return new Score("", 120, result);
         } catch (IllegalArgumentException e) {
-            throw new ScoreFileException("la tablatura no se pudo interpretar: " + e.getMessage(), e);
+            throw ScoreFileException.damaged("could not parse the tablature: " + e.getMessage(), e);
         }
     }
 
     public Track importInto(Track target, String text, AsciiTabImportOptions options) {
         List<List<String>> blocks = AsciiTabBlocks.blocksIn(text);
         if (blocks.isEmpty()) {
-            throw new ScoreFileException("el texto no tiene ninguna tablatura reconocible");
+            throw ScoreFileException.nothingToImport("the text has no recognizable tablature");
         }
         try {
             List<List<String>> firstGroup = groupIntoTracks(blocks).getFirst();
             return target.withMeasures(measuresFrom(firstGroup, options));
         } catch (IllegalArgumentException e) {
-            throw new ScoreFileException("la tablatura no se pudo interpretar: " + e.getMessage(), e);
+            throw ScoreFileException.damaged("could not parse the tablature: " + e.getMessage(), e);
         }
     }
 

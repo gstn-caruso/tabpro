@@ -25,7 +25,7 @@ enum GuitarProVersion {
     static GuitarProVersion parse(String header) {
         Matcher matcher = HEADER_PATTERN.matcher(header.strip());
         if (!matcher.matches()) {
-            throw new ScoreFileException("no es un archivo Guitar Pro reconocido: \"" + header + "\"");
+            throw ScoreFileException.notRecognized("Guitar Pro", "not a Guitar Pro header: \"" + header + "\"");
         }
         int major = Integer.parseInt(matcher.group(1));
         int minorVersion = Integer.parseInt(matcher.group(2));
@@ -33,8 +33,8 @@ enum GuitarProVersion {
             case 3 -> GP3;
             case 4 -> GP4;
             case 5 -> minorVersion >= 10 ? GP5_10 : GP5_00;
-            default -> throw new ScoreFileException(
-                    "version de Guitar Pro no soportada: \"" + header + "\"");
+            default -> throw ScoreFileException.unsupportedVersion(
+                    "Guitar Pro", matcher.group(1) + "." + matcher.group(2));
         };
     }
 

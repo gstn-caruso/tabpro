@@ -14,6 +14,7 @@ import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties;
 import com.gstncaruso.tabpro.ui.dialogs.info.NewScoreDefaults;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -275,7 +276,7 @@ class ScoreDocumentTest {
         public Score load(Path path) {
             Score score = scores.get(path);
             if (score == null) {
-                throw new ScoreFileException("no existe " + path);
+                throw ScoreFileException.cannotRead(path, new NoSuchFileException(path.toString()));
             }
             return score;
         }

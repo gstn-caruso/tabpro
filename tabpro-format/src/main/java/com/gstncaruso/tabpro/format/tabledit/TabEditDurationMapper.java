@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format.tabledit;
 
+import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.NoteValue;
@@ -35,12 +36,11 @@ final class TabEditDurationMapper {
             return new Duration(NoteValue.WHOLE, true);
         }
         if (isDoubleDotted(code)) {
-            throw new ScoreFileException(
-                    "esta partitura usa una figura con doble puntillo (codigo " + code
-                            + " de TablEdit), que tabpro no puede representar todavia.");
+            throw ScoreFileException.unsupportedContent(
+                    ScoreFeature.DOUBLE_DOTTED_NOTES, "double-dotted TablEdit note value, code " + code);
         }
         if (code < 0 || code > 18) {
-            throw new ScoreFileException("codigo de figura de TablEdit fuera de rango: " + code);
+            throw ScoreFileException.damaged("TablEdit note value code out of range: " + code);
         }
 
         int level = code / 3;

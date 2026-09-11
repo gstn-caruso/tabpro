@@ -41,9 +41,9 @@ public final class MusicXmlScoreImporter {
         try {
             return importScore(readDocument(path));
         } catch (IOException e) {
-            throw new ScoreFileException("no se pudo leer " + path, e);
+            throw ScoreFileException.cannotRead(path, e);
         } catch (ParserConfigurationException | SAXException e) {
-            throw new ScoreFileException("el archivo " + path + " no es MusicXML válido", e);
+            throw ScoreFileException.notRecognized("MusicXML", "invalid MusicXML: " + path, e);
         }
     }
 
@@ -61,7 +61,7 @@ public final class MusicXmlScoreImporter {
     Score importScore(Document document) {
         List<Element> parts = elementsNamed(document.getDocumentElement(), "part");
         if (parts.isEmpty()) {
-            throw new ScoreFileException("el archivo no tiene ninguna parte");
+            throw ScoreFileException.nothingToImport("the file has no parts");
         }
         Map<String, String> partNames = partNames(document);
         List<Track> tracks = new ArrayList<>();

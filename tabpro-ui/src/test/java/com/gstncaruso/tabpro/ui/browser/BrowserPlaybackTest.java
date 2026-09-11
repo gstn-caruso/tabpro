@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -119,7 +120,7 @@ class BrowserPlaybackTest {
         public Score load(Path path) {
             Score score = scores.get(path);
             if (score == null) {
-                throw new ScoreFileException("no existe " + path);
+                throw ScoreFileException.cannotRead(path, new NoSuchFileException(path.toString()));
             }
             return score;
         }

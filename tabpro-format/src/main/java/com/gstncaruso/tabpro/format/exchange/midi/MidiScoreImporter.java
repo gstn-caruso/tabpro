@@ -76,7 +76,7 @@ public final class MidiScoreImporter {
             Optional<NoteValue> chordPositionQuantize, Optional<NoteValue> noteDurationQuantize,
             boolean useTwoChannelsPerTrack) {
         if (raws.isEmpty()) {
-            throw new ScoreFileException("el archivo " + path + " no tiene pistas con notas para importar");
+            throw ScoreFileException.nothingToImport("no tracks with notes in " + path);
         }
         List<Track> tracks = raws.stream()
                 .map(raw -> quickTrack(
@@ -155,16 +155,16 @@ public final class MidiScoreImporter {
             Sequence sequence = MidiSystem.getSequence(path.toFile());
             return MidiFileParser.parse(sequence);
         } catch (InvalidMidiDataException e) {
-            throw new ScoreFileException("el archivo " + path + " no es un MIDI valido", e);
+            throw ScoreFileException.notRecognized("MIDI", "invalid MIDI data: " + path, e);
         } catch (IOException e) {
-            throw new ScoreFileException("no se pudo leer " + path, e);
+            throw ScoreFileException.cannotRead(path, e);
         }
     }
 
     private static List<RawMidiTrack> tracksAt(ParsedMidiFile file, List<Integer> midiTrackIndices) {
         List<RawMidiTrack> raws = midiTrackIndices.stream().map(index -> trackAt(file, index)).toList();
         if (raws.isEmpty()) {
-            throw new ScoreFileException("no se eligio ninguna pista del archivo MIDI para importar");
+            throw ScoreFileException.nothingToImport("no MIDI track was chosen");
         }
         return raws;
     }
@@ -173,7 +173,7 @@ public final class MidiScoreImporter {
         return file.tracks().stream()
                 .filter(raw -> raw.index() == midiTrackIndex)
                 .findFirst()
-                .orElseThrow(() -> new ScoreFileException("el archivo MIDI no tiene notas en la pista " + midiTrackIndex));
+                .orElseThrow(() -> ScoreFileException.nothingToImport("MIDI track " + midiTrackIndex + " has no notes"));
     }
 
     private static RawMidiTrack merge(List<RawMidiTrack> raws) {

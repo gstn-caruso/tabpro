@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -78,7 +80,19 @@ class TabEditFileTest {
         byte[] whole = minimalScore().bytes();
         Files.write(path, java.util.Arrays.copyOf(whole, whole.length / 2));
 
-        assertThrows(ScoreFileException.class, () -> file.read(path));
+        ScoreFileException exception = assertThrows(ScoreFileException.class, () -> file.read(path));
+
+        assertEquals(ScoreFileProblem.DAMAGED, exception.problem());
+    }
+
+    @Test
+    void aMissingFileIsReportedWithItsPath(@TempDir Path folder) {
+        Path path = folder.resolve("missing.tef");
+
+        ScoreFileException exception = assertThrows(ScoreFileException.class, () -> file.read(path));
+
+        assertEquals(ScoreFileProblem.CANNOT_READ, exception.problem());
+        assertEquals(List.of(path), exception.arguments());
     }
 
     @Test
@@ -87,7 +101,8 @@ class TabEditFileTest {
 
         ScoreFileException exception = assertThrows(ScoreFileException.class, () -> file.read(bytes));
 
-        assertTrue(exception.getMessage().contains("percusi"));
+        assertEquals(ScoreFileProblem.UNSUPPORTED_CONTENT, exception.problem());
+        assertEquals(List.of(ScoreFeature.TAB_EDIT_PERCUSSION_TRACKS), exception.arguments());
     }
 
     private static TabEditFileWriter minimalScore() {

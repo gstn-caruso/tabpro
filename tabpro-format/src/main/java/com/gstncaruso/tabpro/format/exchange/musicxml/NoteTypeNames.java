@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format.exchange.musicxml;
 
+import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 
@@ -30,7 +31,8 @@ final class NoteTypeNames {
             case "16th" -> NoteValue.SIXTEENTH;
             case "32nd" -> NoteValue.THIRTY_SECOND;
             case "64th" -> NoteValue.SIXTY_FOURTH;
-            default -> throw new ScoreFileException("figura de MusicXML no soportada: " + type);
+            default -> throw ScoreFileException.unsupportedContent(
+                    ScoreFeature.EXTREME_NOTE_VALUES, "unsupported MusicXML note type: " + type);
         };
     }
 }

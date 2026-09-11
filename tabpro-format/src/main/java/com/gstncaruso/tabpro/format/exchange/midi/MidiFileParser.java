@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format.exchange.midi;
 
+import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -43,7 +44,7 @@ final class MidiFileParser {
 
     static ParsedMidiFile parse(Sequence sequence) {
         if (sequence.getDivisionType() != Sequence.PPQ) {
-            throw new ScoreFileException("no se soportan archivos MIDI con codigo de tiempo SMPTE");
+            throw ScoreFileException.unsupportedContent(ScoreFeature.SMPTE_TIME_CODE, "SMPTE timed MIDI file");
         }
         double ticksRatio = Duration.TICKS_PER_QUARTER / (double) sequence.getResolution();
 

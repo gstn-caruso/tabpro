@@ -68,7 +68,7 @@ public record BeatDto(
 
     public Beat toBeat() {
         if (notes == null) {
-            throw new ScoreFileException("falta el campo notes");
+            throw ScoreFileException.damaged("missing field: notes");
         }
         List<Note> domainNotes = notes.stream().map(NoteDto::toNote).toList();
         return new Beat(toDuration(), domainNotes, toEffects());
@@ -109,7 +109,7 @@ public record BeatDto(
         return Arrays.stream(NoteValue.values())
                 .filter(candidate -> candidate.denominator() == denominator)
                 .findFirst()
-                .orElseThrow(() -> new ScoreFileException("value no es un denominador de figura valido: " + denominator));
+                .orElseThrow(() -> ScoreFileException.damaged("not a note value denominator: " + denominator));
     }
 
     public record ParameterChangeDto(

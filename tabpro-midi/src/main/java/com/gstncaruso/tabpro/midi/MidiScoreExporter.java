@@ -48,7 +48,7 @@ public final class MidiScoreExporter {
         try {
             MidiSystem.write(toSequence(score), SEQUENCE_FORMAT, path.toFile());
         } catch (IOException e) {
-            throw new ScoreFileException("no se pudo escribir " + path, e);
+            throw ScoreFileException.cannotWrite(path, e);
         }
     }
 

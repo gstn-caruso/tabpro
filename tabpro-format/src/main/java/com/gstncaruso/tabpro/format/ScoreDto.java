@@ -54,10 +54,10 @@ public record ScoreDto(
 
     public Score toScore() {
         if (format < OLDEST_READABLE_FORMAT || format > CURRENT_FORMAT) {
-            throw new ScoreFileException("version de formato no soportada: " + format);
+            throw ScoreFileException.unsupportedVersion("tabpro", String.valueOf(format));
         }
         if (tracks == null) {
-            throw new ScoreFileException("falta el campo tracks");
+            throw ScoreFileException.damaged("missing field: tracks");
         }
         try {
             List<Track> domainTracks = IntStream.range(0, tracks.size())
@@ -68,7 +68,7 @@ public record ScoreDto(
             }
             return new Score(toInfo(), tempo, domainTracks, toLyrics());
         } catch (IllegalArgumentException e) {
-            throw new ScoreFileException("la partitura no cumple sus invariantes: " + e.getMessage(), e);
+            throw ScoreFileException.damaged("the score breaks its invariants: " + e.getMessage(), e);
         }
     }
 
