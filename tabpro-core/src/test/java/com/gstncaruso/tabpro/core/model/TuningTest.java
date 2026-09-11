@@ -83,6 +83,31 @@ class TuningTest {
     }
 
     @Test
+    void editingAStringMakesTheTuningCustom() {
+        assertEquals(new TuningName.Custom(), Tuning.standard().withStringPitch(1, new Pitch(65)).name());
+    }
+
+    @Test
+    void changingTheStringCountMakesTheTuningCustom() {
+        assertEquals(new TuningName.Custom(), Tuning.standard().withStringCount(7).name());
+    }
+
+    @Test
+    void aTuningBuiltFromPitchesAloneIsCustom() {
+        assertEquals(new TuningName.Custom(), new Tuning(List.of(new Pitch(40))).name());
+    }
+
+    @Test
+    void aTuningBuiltWithANameKeepsThatName() {
+        assertEquals(new TuningName.UserNamed("Mi afinación"), Tuning.of("Mi afinación", 64).name());
+    }
+
+    @Test
+    void transposingATuningKeepsItsName() {
+        assertEquals(new TuningName.UserNamed("Mi afinación"), Tuning.of("Mi afinación", 64).transposed(-1).name());
+    }
+
+    @Test
     void rejectsATuningWithoutStrings() {
         assertThrows(IllegalArgumentException.class, () -> new Tuning(List.of()));
     }

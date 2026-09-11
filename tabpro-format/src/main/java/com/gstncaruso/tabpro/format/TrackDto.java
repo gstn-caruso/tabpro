@@ -63,7 +63,7 @@ public record TrackDto(
                 sound.effectChannel(),
                 sound.muted(),
                 sound.solo(),
-                track.tuning().name(),
+                StoredTuningName.of(track.tuning().name()),
                 track.tuning().strings().stream().map(Pitch::midiNumber).toList(),
                 settings.color().packed(),
                 settings.capo(),
@@ -92,7 +92,9 @@ public record TrackDto(
         List<Pitch> pitches = tuning.stream().map(Pitch::new).toList();
         List<Measure> domainMeasures = measures.stream().map(MeasureDto::toMeasure).toList();
         requireNotesWithinTuning(domainMeasures, pitches.size());
-        Tuning readTuning = tuningName == null ? TuningLibrary.identify(pitches) : new Tuning(tuningName, pitches);
+        Tuning readTuning = tuningName == null
+                ? TuningLibrary.identify(pitches)
+                : new Tuning(StoredTuningName.read(tuningName), pitches);
         return new Track(name, readTuning, toChannel(), toSettings(index), domainMeasures);
     }
 
