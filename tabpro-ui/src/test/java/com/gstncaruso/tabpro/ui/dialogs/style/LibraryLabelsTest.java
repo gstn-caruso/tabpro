@@ -30,8 +30,14 @@ class LibraryLabelsTest {
             "Open Dsus4", "Open Em", "Open Gm", "Open G6", "Open Gsus4", "Open Am", "Open F", "Nashville",
             "Guitarra de 7 cuerdas", "Guitarra de 7 cuerdas Drop A");
 
+    private static final List<String> TODAYS_SPANISH_BASS_TUNING_NAMES = List.of(
+            "Bajo estándar", "Bajo Drop D", "Bajo medio tono abajo", "Bajo un tono abajo", "Bajo de 5 cuerdas",
+            "Bajo de 6 cuerdas");
+
     static Stream<Arguments> libraryTuningsWithTodaysSpanishName() {
-        return pairedInOrder(TuningLibrary.guitars(), TODAYS_SPANISH_GUITAR_TUNING_NAMES);
+        return Stream.concat(
+                pairedInOrder(TuningLibrary.guitars(), TODAYS_SPANISH_GUITAR_TUNING_NAMES),
+                pairedInOrder(TuningLibrary.basses(), TODAYS_SPANISH_BASS_TUNING_NAMES));
     }
 
     @ParameterizedTest(name = "{1}")

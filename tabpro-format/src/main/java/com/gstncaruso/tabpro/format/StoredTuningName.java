@@ -37,6 +37,12 @@ final class StoredTuningName {
             entry("guitar.nashville", "Nashville"),
             entry("guitar.sevenString", "Guitarra de 7 cuerdas"),
             entry("guitar.sevenStringDropA", "Guitarra de 7 cuerdas Drop A"),
+            entry("bass.standard", "Bajo estándar"),
+            entry("bass.dropD", "Bajo Drop D"),
+            entry("bass.halfStepDown", "Bajo medio tono abajo"),
+            entry("bass.wholeStepDown", "Bajo un tono abajo"),
+            entry("bass.fiveString", "Bajo de 5 cuerdas"),
+            entry("bass.sixString", "Bajo de 6 cuerdas"),
             entry("percussion", "Percusión"));
 
     private static final Map<String, String> LIBRARY_IDS_BY_STORED_NAME = STORED_NAMES_BY_LIBRARY_ID.entrySet()

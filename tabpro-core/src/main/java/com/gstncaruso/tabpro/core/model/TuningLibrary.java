@@ -12,7 +12,7 @@ public final class TuningLibrary {
     }
 
     public static Tuning standardBass() {
-        return Tuning.of("Bajo estándar", 43, 38, 33, 28);
+        return Tuning.fromLibrary("bass.standard", 43, 38, 33, 28);
     }
 
     public static List<Tuning> guitars() {
@@ -48,11 +48,11 @@ public final class TuningLibrary {
     public static List<Tuning> basses() {
         return List.of(
                 standardBass(),
-                Tuning.of("Bajo Drop D", 43, 38, 33, 26),
-                Tuning.of("Bajo medio tono abajo", 42, 37, 32, 27),
-                Tuning.of("Bajo un tono abajo", 41, 36, 31, 26),
-                Tuning.of("Bajo de 5 cuerdas", 43, 38, 33, 28, 23),
-                Tuning.of("Bajo de 6 cuerdas", 48, 43, 38, 33, 28, 23));
+                Tuning.fromLibrary("bass.dropD", 43, 38, 33, 26),
+                Tuning.fromLibrary("bass.halfStepDown", 42, 37, 32, 27),
+                Tuning.fromLibrary("bass.wholeStepDown", 41, 36, 31, 26),
+                Tuning.fromLibrary("bass.fiveString", 43, 38, 33, 28, 23),
+                Tuning.fromLibrary("bass.sixString", 48, 43, 38, 33, 28, 23));
     }
 
     public static List<Tuning> otherStringInstruments() {
