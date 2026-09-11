@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.editing.Selection;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.tab.FretContextMenu;
 import com.gstncaruso.tabpro.ui.tab.FretDigits;
@@ -71,8 +72,8 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
         setBackground(ScoreColors.BACKGROUND);
-        setToolTipText("Partitura");
-        getAccessibleContext().setAccessibleName("Partitura");
+        setToolTipText(Texts.get("views.ScoreCanvas.name"));
+        getAccessibleContext().setAccessibleName(Texts.get("views.ScoreCanvas.name"));
         this.cursorArea = currentCursorArea();
         editor.addListener(EdtEditorListener.onEdt(new EditorListener() {
             @Override
