@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -56,8 +57,8 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
         this.cursorCellArea = cellBounds(editor.cursor().track(), editor.cursor().measure());
         setOpaque(true);
         setBackground(ScoreColors.SURFACE);
-        setToolTipText("Grilla de compases");
-        getAccessibleContext().setAccessibleName("Grilla de compases");
+        setToolTipText(Texts.get("views.MeasureGrid.name"));
+        getAccessibleContext().setAccessibleName(Texts.get("views.MeasureGrid.name"));
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
