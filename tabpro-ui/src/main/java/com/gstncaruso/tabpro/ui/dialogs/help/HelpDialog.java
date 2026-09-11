@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.help;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -26,7 +27,7 @@ public final class HelpDialog {
         scrolling.setBorder(BorderFactory.createEmptyBorder());
         scrolling.getVerticalScrollBar().setUnitIncrement(16);
         scrolling.setPreferredSize(new Dimension(420, VISIBLE_HEIGHT));
-        DialogShell.show(parent, "Ayuda de tabpro", scrolling);
+        DialogShell.show(parent, Texts.get("edit_dialogs.HelpDialog.title"), scrolling);
     }
 
     private static JComponent shortcutsOf(Commands commands) {
