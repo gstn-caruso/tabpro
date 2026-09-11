@@ -14,7 +14,7 @@ public final class Texts {
     private static final ResourceBundle.Control NO_FALLBACK =
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES);
 
-    private static final Texts PROCESS_TEXTS = new Texts(Locale.forLanguageTag("es"));
+    private static volatile Texts processTexts = new Texts(Locale.forLanguageTag("es"));
 
     private final Locale locale;
 
@@ -26,8 +26,12 @@ public final class Texts {
         return new Texts(locale);
     }
 
+    public static void install(Locale locale) {
+        processTexts = new Texts(locale);
+    }
+
     public static String get(String key, Object... arguments) {
-        return PROCESS_TEXTS.text(key, arguments);
+        return processTexts.text(key, arguments);
     }
 
     public String text(String key, Object... arguments) {
