@@ -36,13 +36,14 @@ public final class NotationExchange implements ScoreExchange {
     private final GuitarProFile guitarPro;
     private final TabEditFile tabEdit;
     private final GuitarProExporter guitarProExporter = new GuitarProExporter();
-    private final PowerTabFile powerTab = new PowerTabFile();
+    private final PowerTabFile powerTab;
     private final MusicXmlScoreImporter musicXmlImporter = new MusicXmlScoreImporter();
     private final MusicXmlScoreExporter musicXmlExporter = new MusicXmlScoreExporter();
 
     public NotationExchange(DefaultNames names) {
         this.guitarPro = new GuitarProFile(names);
         this.tabEdit = new TabEditFile(names);
+        this.powerTab = new PowerTabFile(names);
     }
 
     @Override
