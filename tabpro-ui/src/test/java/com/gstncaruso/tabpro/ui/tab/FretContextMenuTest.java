@@ -57,6 +57,13 @@ class FretContextMenuTest {
         assertEquals(true, itemAt(menu, 0).getText().contains(PercussionKit.nameOf(firstSound).orElseThrow()));
     }
 
+    @Test
+    void aPercussionSoundItemShowsItsNumberAndItsSpanishName() {
+        JPopupMenu menu = FretContextMenu.forTrack(Track.percussion("Bateria"), number -> { });
+
+        assertEquals("35 – Bombo acústico", itemAt(menu, 0).getText());
+    }
+
     private static JMenuItem itemAt(JPopupMenu menu, int index) {
         return (JMenuItem) menu.getComponent(index);
     }
