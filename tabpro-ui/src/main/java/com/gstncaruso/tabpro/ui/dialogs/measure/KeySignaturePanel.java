@@ -15,7 +15,7 @@ public final class KeySignaturePanel extends FormPanel {
 
     public KeySignaturePanel(KeySignature initial) {
         keySignature.setRenderer((list, value, index, isSelected, hasFocus) ->
-                new javax.swing.JLabel(value == null ? "" : value.name() + " (" + Labels.of(value.mode()) + ")"));
+                new javax.swing.JLabel(value == null ? "" : Labels.of(value) + " (" + Labels.of(value.mode()) + ")"));
         addRow(Texts.get("edit_dialogs.MeasurePropertiesDialog.keySignature"), keySignature);
         apply(initial);
     }
