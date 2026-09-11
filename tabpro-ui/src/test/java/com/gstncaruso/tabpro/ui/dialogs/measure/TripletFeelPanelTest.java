@@ -4,9 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class TripletFeelPanelTest {
+
+    @Test
+    void theTripletFeelFieldIsAvailableInEnglish() {
+        assertEquals("Triplet feel",
+                Texts.forLocale(Locale.ENGLISH).text("edit_dialogs.MeasurePropertiesDialog.tripletFeel"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
