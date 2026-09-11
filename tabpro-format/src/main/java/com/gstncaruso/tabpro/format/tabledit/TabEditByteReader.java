@@ -103,10 +103,10 @@ final class TabEditByteReader {
 
     private void require(int byteCount) {
         if (byteCount < 0 || position + byteCount > data.length) {
-            throw new ScoreFileException(
-                    "archivo de TablEdit truncado: se esperaban " + byteCount
-                            + " bytes en la posicion " + position
-                            + " pero solo quedan " + (data.length - position));
+            throw ScoreFileException.damaged(
+                    "truncated TablEdit file: expected " + byteCount
+                            + " bytes at position " + position
+                            + " but only " + (data.length - position) + " remain");
         }
     }
 }

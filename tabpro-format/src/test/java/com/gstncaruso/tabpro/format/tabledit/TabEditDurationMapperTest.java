@@ -5,7 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
+import java.util.List;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Tuplet;
@@ -64,11 +67,15 @@ class TabEditDurationMapperTest {
         ScoreFileException exception =
                 assertThrows(ScoreFileException.class, () -> TabEditDurationMapper.toDuration(code));
 
-        assertTrue(exception.getMessage().contains("doble puntillo"));
+        assertEquals(ScoreFileProblem.UNSUPPORTED_CONTENT, exception.problem());
+        assertEquals(List.of(ScoreFeature.DOUBLE_DOTTED_NOTES), exception.arguments());
     }
 
     @Test
     void anOutOfRangeCodeIsAlsoReported() {
-        assertThrows(ScoreFileException.class, () -> TabEditDurationMapper.toDuration(99));
+        ScoreFileException exception =
+                assertThrows(ScoreFileException.class, () -> TabEditDurationMapper.toDuration(99));
+
+        assertEquals(ScoreFileProblem.DAMAGED, exception.problem());
     }
 }

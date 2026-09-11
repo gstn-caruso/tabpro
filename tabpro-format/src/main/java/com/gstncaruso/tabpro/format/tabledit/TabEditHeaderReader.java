@@ -56,9 +56,8 @@ final class TabEditHeaderReader {
                 && header[OFFSET_FORMAT_HI] == 10) {
             return;
         }
-        throw new ScoreFileException(
-                "el archivo no se reconoce como TablEdit (formato TEF3): puede ser un TEF v2"
-                        + " (anterior a la version 3.00 de TablEdit, que no soportamos) u otro archivo.");
+        throw ScoreFileException.notRecognized(
+                "TablEdit", "not a TEF3 header: it may be a TEF v2 file, older than TablEdit 3.00, or another file");
     }
 
     private static boolean allZero(byte[] bytes, int offset, int length) {

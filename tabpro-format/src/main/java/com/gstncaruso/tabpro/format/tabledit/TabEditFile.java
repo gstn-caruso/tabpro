@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format.tabledit;
 
+import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Measure;
@@ -48,9 +49,9 @@ public final class TabEditFile {
         try {
             return read(Files.readAllBytes(path));
         } catch (IOException e) {
-            throw new ScoreFileException("no se pudo leer " + path, e);
+            throw ScoreFileException.cannotRead(path, e);
         } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-            throw new ScoreFileException("el archivo " + path + " no se pudo interpretar: " + e.getMessage(), e);
+            throw ScoreFileException.damaged("could not parse " + path + ": " + e.getMessage(), e);
         }
     }
 
@@ -107,9 +108,8 @@ public final class TabEditFile {
     private static void requireNoPercussionTracks(List<TabEditTrackHeader> trackHeaders) {
         for (TabEditTrackHeader header : trackHeaders) {
             if (header.percussion()) {
-                throw new ScoreFileException(
-                        "esta partitura tiene una pista de percusion de TablEdit ('" + header.name()
-                                + "'), y el mapeo de sonidos de bateria de TablEdit todavia no esta soportado.");
+                throw ScoreFileException.unsupportedContent(
+                        ScoreFeature.TAB_EDIT_PERCUSSION_TRACKS, "TablEdit percussion track: " + header.name());
             }
         }
     }
@@ -131,7 +131,7 @@ public final class TabEditFile {
             tracks.add(trackOf(trackHeaders.get(index), trackMeasures, index));
         }
         if (tracks.isEmpty()) {
-            throw new ScoreFileException("el archivo no tiene ninguna pista");
+            throw ScoreFileException.nothingToImport("the file has no tracks");
         }
 
         ScoreInfo info = ScoreInfo.empty()

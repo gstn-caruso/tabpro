@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class TabEditHeaderReaderTest {
@@ -57,14 +59,17 @@ class TabEditHeaderReaderTest {
 
         ScoreFileException exception = assertThrows(ScoreFileException.class, () -> reader.read(input));
 
-        assertTrue(exception.getMessage().contains("TablEdit"));
+        assertEquals(ScoreFileProblem.NOT_RECOGNIZED, exception.problem());
+        assertEquals(List.of("TablEdit"), exception.arguments());
     }
 
     @Test
     void aTooShortFileFailsWithAClearMessage() {
         TabEditByteReader input = new TabEditByteReader(new byte[10]);
 
-        assertThrows(ScoreFileException.class, () -> reader.read(input));
+        ScoreFileException exception = assertThrows(ScoreFileException.class, () -> reader.read(input));
+
+        assertEquals(ScoreFileProblem.DAMAGED, exception.problem());
     }
 
     private static void writeIntAt(byte[] bytes, int offset, int value) {

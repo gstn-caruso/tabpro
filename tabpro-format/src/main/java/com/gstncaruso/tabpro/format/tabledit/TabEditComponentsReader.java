@@ -58,18 +58,16 @@ final class TabEditComponentsReader {
                 }
                 events.add(noteEventOf(position, fields));
             } else {
-                throw new ScoreFileException(
-                        String.format("componente de TablEdit desconocido: tipo 0x%02X", type));
+                throw ScoreFileException.damaged(String.format("unknown TablEdit component: type 0x%02X", type));
             }
         }
 
         if (input.remaining() != FOOTER_SIZE) {
-            throw new ScoreFileException(
-                    "el pie del archivo de TablEdit no tiene el tamano esperado: quedan "
-                            + input.remaining() + " bytes sueltos.");
+            throw ScoreFileException.damaged(
+                    "unexpected TablEdit footer size: " + input.remaining() + " bytes left");
         }
         if (input.readInt() != EXPECTED_FOOTER) {
-            throw new ScoreFileException("el pie del archivo de TablEdit no es el esperado.");
+            throw ScoreFileException.damaged("unexpected TablEdit footer");
         }
 
         return events;
