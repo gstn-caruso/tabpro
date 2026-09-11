@@ -50,6 +50,16 @@ class LibraryLabelsTest {
             "Superlocrio (alterada)", "Be-bop dominante", "Aumentada", "Blues mayor", "Árabe", "Balinesa",
             "Bizantina", "Húngara mayor", "Javanesa", "Kumoi", "Oriental", "Persa", "Pelog", "Armónicos (Overtone)");
 
+    private static final List<String> TODAYS_SPANISH_PERCUSSION_SOUND_NAMES = List.of(
+            "Bombo acústico", "Bombo", "Aro de caja", "Caja acústica", "Palmas", "Caja eléctrica",
+            "Tom de piso grave", "Hi-hat cerrado", "Tom de piso agudo", "Hi-hat con pedal", "Tom grave",
+            "Hi-hat abierto", "Tom medio grave", "Tom medio agudo", "Crash 1", "Tom agudo", "Ride 1",
+            "Platillo chino", "Campana del ride", "Pandereta", "Splash", "Cencerro", "Crash 2", "Vibraslap",
+            "Ride 2", "Bongo agudo", "Bongo grave", "Conga aguda apagada", "Conga aguda abierta", "Conga grave",
+            "Timbal agudo", "Timbal grave", "Agogo agudo", "Agogo grave", "Cabasa", "Maracas", "Silbato corto",
+            "Silbato largo", "Guiro corto", "Guiro largo", "Claves", "Cajita china aguda", "Cajita china grave",
+            "Cuica apagada", "Cuica abierta", "Triangulo apagado", "Triangulo abierto");
+
     static Stream<Arguments> libraryTuningsWithTodaysSpanishName() {
         return Stream.of(
                         pairedInOrder(TuningLibrary.guitars(), TODAYS_SPANISH_GUITAR_TUNING_NAMES),
@@ -114,6 +124,27 @@ class LibraryLabelsTest {
     @Test
     void theMajorScaleIsNamedMajorIonianInEnglish() {
         assertEquals("Major (Ionian)", ENGLISH.text("library.scale." + ScaleLibrary.major().id()));
+    }
+
+    static Stream<Arguments> percussionSoundsWithTodaysSpanishName() {
+        return pairedInOrder(PercussionKit.sounds(), TODAYS_SPANISH_PERCUSSION_SOUND_NAMES);
+    }
+
+    @ParameterizedTest(name = "{0} {1}")
+    @MethodSource("percussionSoundsWithTodaysSpanishName")
+    void everyPercussionSoundKeepsTodaysSpanishNameAndHasAnEnglishName(int sound, String todaysSpanishName) {
+        String key = "library.percussion." + sound;
+
+        assertEquals(todaysSpanishName, SPANISH.text(key));
+        assertFalse(ENGLISH.text(key).isBlank());
+    }
+
+    @Test
+    void percussionSoundsAreNamedInEnglishAfterTheGeneralMidiPercussionKeyMap() {
+        assertEquals("Acoustic Bass Drum", ENGLISH.text("library.percussion.35"));
+        assertEquals("Acoustic Snare", ENGLISH.text("library.percussion.38"));
+        assertEquals("Closed Hi Hat", ENGLISH.text("library.percussion.42"));
+        assertEquals("Open Triangle", ENGLISH.text("library.percussion.81"));
     }
 
     private static String libraryIdOf(Tuning tuning) {
