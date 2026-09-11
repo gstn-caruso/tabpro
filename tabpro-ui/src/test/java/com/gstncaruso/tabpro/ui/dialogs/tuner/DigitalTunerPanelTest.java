@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Graphics2D;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class DigitalTunerPanelTest {
@@ -16,6 +18,14 @@ class DigitalTunerPanelTest {
     @Test
     void hasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new DigitalTunerPanel(new Pitch(64)));
+    }
+
+    @Test
+    void theTitleAndDeviationDescriptionAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Digital Tuner", english.text("score_dialogs.DigitalTunerPanel.title"));
+        assertEquals("12 cents flat", english.text("score_dialogs.DigitalTunerPanel.deviation", 12, "flat"));
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.notation.PitchName;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.GridLayout;
 import java.util.HashMap;
 import java.util.List;
@@ -30,11 +31,12 @@ public final class MidiTunerPanel extends JPanel {
 
         for (int string = 1; string <= tuning.stringCount(); string++) {
             int fixedString = string;
-            add(new JLabel("Cuerda " + string));
+            add(new JLabel(Texts.get("score_dialogs.shared.string", string)));
             add(new JLabel(PitchName.of(tuning.pitchOfString(string)).textWithOctave()));
-            JToggleButton listen = new JToggleButton("Escuchar en bucle");
+            JToggleButton listen = new JToggleButton(Texts.get("score_dialogs.MidiTunerPanel.listenOnLoop"));
             listen.setFocusPainted(false);
-            listen.getAccessibleContext().setAccessibleName("Escuchar cuerda " + string + " en bucle");
+            listen.getAccessibleContext().setAccessibleName(
+                    Texts.get("score_dialogs.MidiTunerPanel.listenToStringOnLoop", string));
             listen.addActionListener(event -> {
                 if (listen.isSelected()) {
                     startLoop(fixedString);

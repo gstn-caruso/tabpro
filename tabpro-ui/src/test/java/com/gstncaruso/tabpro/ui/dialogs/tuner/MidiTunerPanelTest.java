@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.dialogs.RecordingPlayer;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +16,14 @@ class MidiTunerPanelTest {
 
     private final RecordingPlayer player = new RecordingPlayer();
     private final MidiTunerPanel panel = new MidiTunerPanel(Tuning.standard(), 25, player);
+
+    @Test
+    void theListenOnLoopButtonIsAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Listen on Loop", english.text("score_dialogs.MidiTunerPanel.listenOnLoop"));
+        assertEquals("Listen to string 3 on loop", english.text("score_dialogs.MidiTunerPanel.listenToStringOnLoop", 3));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
