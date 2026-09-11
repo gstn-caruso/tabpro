@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Language;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.util.Locale;
@@ -153,5 +154,29 @@ class PreferencesPanelTest {
         PreferencesPanel panel = new PreferencesPanel(preferences);
 
         assertTrue(panel.toPreferences().animationsDisabled());
+    }
+
+    @Test
+    void choosingEnglishStoresEnglishAsTheInterfaceLanguage() {
+        PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
+
+        languageCombo(panel).setSelectedItem(Language.ENGLISH);
+
+        assertEquals(Language.ENGLISH, panel.toPreferences().interfaceLanguage());
+    }
+
+    private static JComboBox<?> languageCombo(Component component) {
+        if (component instanceof JComboBox<?> combo && combo.getItemCount() > 0 && combo.getItemAt(0) instanceof Language) {
+            return combo;
+        }
+        if (component instanceof java.awt.Container parent) {
+            for (Component child : parent.getComponents()) {
+                JComboBox<?> found = languageCombo(child);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 }
