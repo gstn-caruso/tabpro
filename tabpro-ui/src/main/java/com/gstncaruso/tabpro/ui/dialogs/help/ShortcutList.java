@@ -11,13 +11,13 @@ import java.util.Map;
 public final class ShortcutList {
 
     private static final List<Section> SECTIONS = List.of(
-            new Section(Texts.get("edit_dialogs.ShortcutList.editing"),
+            new Section("edit_dialogs.ShortcutList.editing",
                     List.of("edit.", "bar.", "note.", "track.", "marker.insert", "marker.list")),
-            new Section(Texts.get("edit_dialogs.ShortcutList.effects"), List.of("effect.")),
-            new Section(Texts.get("edit_dialogs.ShortcutList.navigation"),
+            new Section("edit_dialogs.ShortcutList.effects", List.of("effect.")),
+            new Section("edit_dialogs.ShortcutList.navigation",
                     List.of("nav.", "marker.previous", "marker.next")),
-            new Section(Texts.get("edit_dialogs.ShortcutList.sound"), List.of("sound.")),
-            new Section(Texts.get("edit_dialogs.ShortcutList.miscellaneous"),
+            new Section("edit_dialogs.ShortcutList.sound", List.of("sound.")),
+            new Section("edit_dialogs.ShortcutList.miscellaneous",
                     List.of("file.", "tool.", "view.", "options.", "help.")));
 
     private ShortcutList() {
@@ -28,7 +28,7 @@ public final class ShortcutList {
         for (Section section : SECTIONS) {
             List<Entry> entries = entriesOf(commands.all(), section);
             if (!entries.isEmpty()) {
-                groups.add(new Group(section.title(), entries));
+                groups.add(new Group(Texts.get(section.titleKey()), entries));
             }
         }
         return List.copyOf(groups);
@@ -43,7 +43,7 @@ public final class ShortcutList {
                 .toList();
     }
 
-    private record Section(String title, List<String> prefixes) {
+    private record Section(String titleKey, List<String> prefixes) {
 
         boolean covers(String commandName) {
             return prefixes.stream().anyMatch(commandName::startsWith);

@@ -4,18 +4,18 @@ import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.Optional;
 
 public enum ToggleChoice {
-    NO_CHANGE(Texts.get("score_dialogs.shared.noChange")),
-    ON(Texts.get("score_dialogs.ToggleChoice.on")),
-    OFF(Texts.get("score_dialogs.ToggleChoice.off"));
+    NO_CHANGE("score_dialogs.shared.noChange"),
+    ON("score_dialogs.ToggleChoice.on"),
+    OFF("score_dialogs.ToggleChoice.off");
 
-    private final String label;
+    private final String labelKey;
 
-    ToggleChoice(String label) {
-        this.label = label;
+    ToggleChoice(String labelKey) {
+        this.labelKey = labelKey;
     }
 
     public String label() {
-        return label;
+        return Texts.get(labelKey);
     }
 
     public Optional<Boolean> asChange() {

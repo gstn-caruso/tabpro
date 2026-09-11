@@ -12,8 +12,6 @@ import javax.swing.JComponent;
 
 public final class FingeringDialog {
 
-    private static final String NONE = Texts.get("edit_dialogs.FingeringDialog.none");
-
     private FingeringDialog() {
     }
 
@@ -59,12 +57,13 @@ public final class FingeringDialog {
 
     private static JComboBox<Object> fingers(
             Optional<Finger> selected, java.util.function.Function<Finger, String> symbol) {
+        String none = Texts.get("edit_dialogs.FingeringDialog.none");
         JComboBox<Object> combo = new JComboBox<>();
-        combo.addItem(NONE);
+        combo.addItem(none);
         for (Finger finger : Finger.values()) {
             combo.addItem(finger);
         }
-        combo.setSelectedItem(selected.map(Object.class::cast).orElse(NONE));
+        combo.setSelectedItem(selected.map(Object.class::cast).orElse(none));
         combo.setRenderer(new javax.swing.DefaultListCellRenderer() {
 
             @Override
