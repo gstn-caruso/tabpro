@@ -46,6 +46,40 @@ class TextReadAtClassLoadIsFlaggedTest {
         assertTrue(ClassLoadTextScan.filesReadingTextAtClassLoad(root).isEmpty());
     }
 
+    @Test
+    void enumConstantsBuiltFromTextsAreFlaggedButConstantsThatKeepAKeyAreNot(@TempDir Path root) throws IOException {
+        Path culprit = write(root, "CachedChoice.java", """
+                enum CachedChoice {
+                    ON(Texts.get("area.CachedChoice.on")),
+                    OFF(Texts.get("area.CachedChoice.off"));
+
+                    private final String label;
+
+                    CachedChoice(String label) {
+                        this.label = label;
+                    }
+                }
+                """);
+        write(root, "KeyedChoice.java", """
+                enum KeyedChoice {
+                    ON("area.KeyedChoice.on"),
+                    OFF("area.KeyedChoice.off");
+
+                    private final String labelKey;
+
+                    KeyedChoice(String labelKey) {
+                        this.labelKey = labelKey;
+                    }
+
+                    String label() {
+                        return Texts.get(labelKey);
+                    }
+                }
+                """);
+
+        assertEquals(List.of(culprit), ClassLoadTextScan.filesReadingTextAtClassLoad(root));
+    }
+
     private static Path write(Path root, String fileName, String content) throws IOException {
         Path file = root.resolve(fileName);
         Files.writeString(file, content);

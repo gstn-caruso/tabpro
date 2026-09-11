@@ -12,6 +12,8 @@ final class ClassLoadTextScan {
 
     private static final Pattern STATIC_FINAL_FIELD_READING_TEXTS =
             Pattern.compile("\\bstatic\\s+final\\b[^;{(]*=[^;]*\\bTexts\\.get\\(");
+    private static final Pattern ENUM_CONSTANTS_READING_TEXTS =
+            Pattern.compile("\\benum\\s+\\w+[^{]*\\{[^;}]*\\bTexts\\.get\\(");
 
     private ClassLoadTextScan() {
     }
@@ -28,6 +30,8 @@ final class ClassLoadTextScan {
     }
 
     private static boolean readsTextAtClassLoad(Path file) {
-        return STATIC_FINAL_FIELD_READING_TEXTS.matcher(JavaSources.withoutComments(JavaSources.read(file))).find();
+        String code = JavaSources.withoutComments(JavaSources.read(file));
+        return STATIC_FINAL_FIELD_READING_TEXTS.matcher(code).find()
+                || ENUM_CONSTANTS_READING_TEXTS.matcher(code).find();
     }
 }
