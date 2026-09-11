@@ -83,17 +83,17 @@ public final class SoundFontSynthesizer implements AutoCloseable {
         switchTo(active ? loadedBank : defaultBank);
     }
 
-    public String status() {
+    public SoundFontStatus status() {
         if (active) {
-            return "Sonando con " + fileName();
+            return SoundFontStatus.playing(fileName());
         }
         if (loadedBank != null) {
-            return "Banco de sonido desactivado (" + fileName() + "): suena el sintetizador interno del JDK";
+            return SoundFontStatus.disabled(fileName());
         }
         if (file.isPresent()) {
-            return "No se pudo cargar " + fileName() + ": suena el sintetizador interno del JDK";
+            return SoundFontStatus.failed(fileName());
         }
-        return "Sin ningun banco de sonido: suena el sintetizador interno del JDK";
+        return SoundFontStatus.none();
     }
 
     @Override

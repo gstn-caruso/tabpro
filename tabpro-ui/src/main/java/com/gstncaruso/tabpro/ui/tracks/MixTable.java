@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.tracks;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Instruments;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import java.awt.BorderLayout;
@@ -48,11 +49,11 @@ public final class MixTable extends JPanel {
     public static final int WIDTH =
             COLUMN_WIDTHS.stream().mapToInt(Integer::intValue).sum() + COLUMN_WIDTHS.size() * COLUMN_GAP + 16;
 
-    private static final Map<MixParameter, String> ABBREVIATED_LABELS = Map.of(
-            MixParameter.CHORUS, "Cho",
-            MixParameter.REVERB, "Rev",
-            MixParameter.PHASER, "Pha",
-            MixParameter.TREMOLO, "Tre");
+    private static final Map<MixParameter, String> ABBREVIATION_KEYS = Map.of(
+            MixParameter.CHORUS, "views.MixTable.chorusAbbreviation",
+            MixParameter.REVERB, "views.MixTable.reverbAbbreviation",
+            MixParameter.PHASER, "views.MixTable.phaserAbbreviation",
+            MixParameter.TREMOLO, "views.MixTable.tremoloAbbreviation");
 
     private final Editor editor;
     private final MixTableModel model;
@@ -133,18 +134,18 @@ public final class MixTable extends JPanel {
 
         header.add(reduceRestoreButtons());
         addTitle(header, "", VISIBLE_WIDTH - REDUCE_BUTTON_WIDTH * 2 + NUMBER_WIDTH);
-        addTitle(header, "S", TOGGLE_WIDTH);
-        addTitle(header, "M", TOGGLE_WIDTH);
-        addTitle(header, "Nombre", NAME_WIDTH);
-        addTitle(header, "Puerto", PORT_WIDTH);
-        addTitle(header, "Ch", CHANNEL_WIDTH);
-        addTitle(header, "Ch2", CHANNEL_WIDTH);
-        addTitle(header, "Instrumento", INSTRUMENT_WIDTH);
+        addTitle(header, Texts.get("views.MixTable.soloColumn"), TOGGLE_WIDTH);
+        addTitle(header, Texts.get("views.MixTable.muteColumn"), TOGGLE_WIDTH);
+        addTitle(header, Texts.get("views.MixTable.nameColumn"), NAME_WIDTH);
+        addTitle(header, Texts.get("views.MixTable.portColumn"), PORT_WIDTH);
+        addTitle(header, Texts.get("views.MixTable.channelColumn"), CHANNEL_WIDTH);
+        addTitle(header, Texts.get("views.MixTable.channel2Column"), CHANNEL_WIDTH);
+        addTitle(header, Texts.get("views.MixTable.instrumentColumn"), INSTRUMENT_WIDTH);
         addTitle(header, MixParameter.VOLUME.label(), LEVEL_WIDTH);
         addTitle(header, MixParameter.PAN.label(), LEVEL_WIDTH);
         for (MixParameter parameter : List.of(
                 MixParameter.CHORUS, MixParameter.REVERB, MixParameter.PHASER, MixParameter.TREMOLO)) {
-            addTitle(header, ABBREVIATED_LABELS.get(parameter), PARAMETER_WIDTH);
+            addTitle(header, Texts.get(ABBREVIATION_KEYS.get(parameter)), PARAMETER_WIDTH);
         }
         return header;
     }
@@ -153,8 +154,8 @@ public final class MixTable extends JPanel {
         JPanel buttons = new JPanel();
         buttons.setOpaque(false);
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        reduceButton = flatButton("−", "Reducir todos los parametros", model::reduceAllParameters);
-        restoreButton = flatButton("+", "Restaurar todos los parametros", model::restoreAllParameters);
+        reduceButton = flatButton("−", Texts.get("views.MixTable.reduceAll"), model::reduceAllParameters);
+        restoreButton = flatButton("+", Texts.get("views.MixTable.restoreAll"), model::restoreAllParameters);
         buttons.add(reduceButton);
         buttons.add(restoreButton);
         buttons.add(Box.createHorizontalStrut(COLUMN_GAP));

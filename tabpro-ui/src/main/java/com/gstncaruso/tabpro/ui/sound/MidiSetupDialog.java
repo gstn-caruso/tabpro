@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.ui.actions.Ports;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,7 +27,6 @@ public final class MidiSetupDialog {
 
     private static final int PORT_COUNT = Ports.PORT_COUNT;
     private static final String GENERAL_MIDI_LABEL = "General MIDI";
-    private static final String NO_SOUND_FONT_LABEL = "Sintetizador interno del JDK";
 
     private MidiSetupDialog() {
     }
@@ -53,7 +53,7 @@ public final class MidiSetupDialog {
     public static Optional<Setup> ask(Component parent, Ports.Devices devices, Setup current) {
         Fields fields = buildPanel(devices, current);
 
-        boolean accepted = DialogShell.ask(parent, "Configuración MIDI", fields.panel());
+        boolean accepted = DialogShell.ask(parent, Texts.get("views.MidiSetupDialog.title"), fields.panel());
         if (!accepted) {
             return Optional.empty();
         }
@@ -80,15 +80,15 @@ public final class MidiSetupDialog {
         panel.addSideBySide(portSections.get(0), portSections.get(1));
         panel.addSideBySide(portSections.get(2), portSections.get(3));
 
-        panel.addSection("Entrada MIDI");
+        panel.addSection(Texts.get("views.MidiSetupDialog.midiInput"));
         JComboBox<String> inputs = comboOf(devices.inputs(), current.input());
-        panel.addRow("Entrada de notas", inputs);
+        panel.addRow(Texts.get("views.MidiSetupDialog.noteInput"), inputs);
         JSpinner sensitivity = new JSpinner(new SpinnerNumberModel(current.sensitivityMillis(), 1, 2000, 5));
-        panel.addRow("Sensibilidad (ms)", sensitivity);
+        panel.addRow(Texts.get("views.MidiSetupDialog.sensitivity"), sensitivity);
         JComboBox<StringAssignment> assignment = new JComboBox<>(StringAssignment.values());
         assignment.setSelectedItem(current.strings());
         assignment.setRenderer(labelledBy(StringAssignment::label));
-        panel.addRow("Cuerdas al capturar", assignment);
+        panel.addRow(Texts.get("views.MidiSetupDialog.stringsWhileCapturing"), assignment);
 
         return new Fields(panel, soundFont, rows, inputs, sensitivity, assignment);
     }
@@ -113,12 +113,12 @@ public final class MidiSetupDialog {
         SoundFontRow(String currentFile, boolean currentlyActive) {
             file = currentFile;
             updateLabel();
-            active = new JCheckBox("Banco activo (F2)", currentlyActive);
+            active = new JCheckBox(Texts.get("views.MidiSetupDialog.soundFontActive"), currentlyActive);
 
-            loadButton = DialogStyle.flatButton("Cargar banco…");
+            loadButton = DialogStyle.flatButton(Texts.get("views.MidiSetupDialog.loadBank"));
             loadButton.addActionListener(event -> choose(loadButton));
 
-            clearButton = DialogStyle.flatButton("Quitar");
+            clearButton = DialogStyle.flatButton(Texts.get("views.MidiSetupDialog.remove"));
             clearButton.addActionListener(event -> {
                 file = "";
                 updateLabel();
@@ -126,11 +126,11 @@ public final class MidiSetupDialog {
         }
 
         void addTo(FormPanel panel) {
-            panel.addSection("Banco de sonido (SoundFont)");
+            panel.addSection(Texts.get("views.MidiSetupDialog.soundFontSection"));
             JPanel buttons = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, DialogStyle.GAP_S, 0));
             buttons.add(loadButton);
             buttons.add(clearButton);
-            panel.addRow("Archivo", fileLabel, buttons);
+            panel.addRow(Texts.get("views.MidiSetupDialog.file"), fileLabel, buttons);
             panel.addRow("", active);
         }
 
@@ -144,7 +144,8 @@ public final class MidiSetupDialog {
 
         private void choose(Component parent) {
             JFileChooser chooser = new JFileChooser();
-            chooser.setFileFilter(new FileNameExtensionFilter("Bancos SoundFont (.sf2, .dls)", "sf2", "dls"));
+            chooser.setFileFilter(
+                    new FileNameExtensionFilter(Texts.get("views.MidiSetupDialog.soundFontFilter"), "sf2", "dls"));
             if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
                 return;
             }
@@ -154,7 +155,9 @@ public final class MidiSetupDialog {
         }
 
         private void updateLabel() {
-            fileLabel.setText(file.isBlank() ? NO_SOUND_FONT_LABEL : Path.of(file).getFileName().toString());
+            fileLabel.setText(file.isBlank()
+                    ? Texts.get("views.MidiSetupDialog.internalSynthesizer")
+                    : Path.of(file).getFileName().toString());
         }
     }
 
@@ -172,17 +175,18 @@ public final class MidiSetupDialog {
         PortRow(Ports.Devices devices, int port, PortSetup current) {
             this.port = port;
             device = comboOf(devices.outputs(), current.device());
-            limitPitchVariation = new JCheckBox("Limit Pitch Variation", current.limitPitchVariation());
+            limitPitchVariation =
+                    new JCheckBox(Texts.get("views.MidiSetupDialog.limitPitchVariation"), current.limitPitchVariation());
             patchPath = current.patchPath();
             updatePatchLabel();
 
-            testButton = DialogStyle.flatButton("Probar");
+            testButton = DialogStyle.flatButton(Texts.get("views.MidiSetupDialog.test"));
             testButton.addActionListener(event -> devices.playTestNote(selectionOf(device)));
 
-            loadPatchButton = DialogStyle.flatButton("Cargar patch…");
+            loadPatchButton = DialogStyle.flatButton(Texts.get("views.MidiSetupDialog.loadPatch"));
             loadPatchButton.addActionListener(event -> choosein(loadPatchButton));
 
-            clearPatchButton = DialogStyle.flatButton("Quitar");
+            clearPatchButton = DialogStyle.flatButton(Texts.get("views.MidiSetupDialog.remove"));
             clearPatchButton.addActionListener(event -> {
                 patchPath = "";
                 updatePatchLabel();
@@ -190,12 +194,12 @@ public final class MidiSetupDialog {
         }
 
         FormPanel.Section addTo(FormPanel panel) {
-            FormPanel.Section section = panel.newDetachedSection("Puerto " + port);
-            section.addRow("Dispositivo", device, testButton);
+            FormPanel.Section section = panel.newDetachedSection(Texts.get("views.MidiSetupDialog.port", port));
+            section.addRow(Texts.get("views.MidiSetupDialog.device"), device, testButton);
             JPanel patchButtons = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, DialogStyle.GAP_S, 0));
             patchButtons.add(loadPatchButton);
             patchButtons.add(clearPatchButton);
-            section.addRow("Patch de instrumentos", patchLabel, patchButtons);
+            section.addRow(Texts.get("views.MidiSetupDialog.instrumentPatch"), patchLabel, patchButtons);
             section.addRow("", limitPitchVariation);
             return section;
         }
@@ -212,7 +216,8 @@ public final class MidiSetupDialog {
             Path chosen = chooser.getSelectedFile().toPath();
             if (!isReadable(chosen)) {
                 JOptionPane.showMessageDialog(
-                        parent, "No se pudo leer el patch elegido.", "Configuración MIDI", JOptionPane.ERROR_MESSAGE);
+                        parent, Texts.get("views.MidiSetupDialog.patchUnreadable"),
+                        Texts.get("views.MidiSetupDialog.title"), JOptionPane.ERROR_MESSAGE);
                 return;
             }
             patchPath = chosen.toString();

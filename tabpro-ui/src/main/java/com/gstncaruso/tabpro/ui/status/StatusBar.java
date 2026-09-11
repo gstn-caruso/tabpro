@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.status;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.ui.EdtEditorListener;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.Pagination;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
@@ -39,16 +40,16 @@ public final class StatusBar extends JPanel {
         JPanel left = new JPanel();
         left.setOpaque(false);
         left.setLayout(new BoxLayout(left, BoxLayout.X_AXIS));
-        left.add(sunkenPanel(page, "Página"));
-        left.add(sunkenPanel(position, "Posición"));
-        left.add(sunkenPanel(completeness, "Estado del compás"));
-        left.add(sunkenPanel(trackName, "Pista"));
-        left.add(sunkenPanel(duration, "Duración del compás"));
+        left.add(sunkenPanel(page, Texts.get("views.StatusBar.page")));
+        left.add(sunkenPanel(position, Texts.get("views.StatusBar.position")));
+        left.add(sunkenPanel(completeness, Texts.get("views.StatusBar.measureStatus")));
+        left.add(sunkenPanel(trackName, Texts.get("views.StatusBar.track")));
+        left.add(sunkenPanel(duration, Texts.get("views.StatusBar.measureDuration")));
 
         styled(credits).setHorizontalAlignment(SwingConstants.CENTER);
 
         add(left, BorderLayout.WEST);
-        add(sunkenPanel(credits, "Título y autor"), BorderLayout.CENTER);
+        add(sunkenPanel(credits, Texts.get("views.StatusBar.titleAndAuthor")), BorderLayout.CENTER);
 
         refresh();
         editor.addListener(EdtEditorListener.onEdt(this::refresh));
@@ -80,9 +81,10 @@ public final class StatusBar extends JPanel {
 
     public void refresh() {
         StatusInfo info = StatusInfo.of(editor, pagination.get());
-        page.setText("Pág. " + info.pageNumber() + "/" + info.pageCount());
+        page.setText(Texts.get("views.StatusBar.pageText",
+                String.valueOf(info.pageNumber()), String.valueOf(info.pageCount())));
         position.setText(String.format("%03d : %03d", info.measureNumber(), info.measureCount()));
-        completeness.setText("Compás " + info.completeness().label());
+        completeness.setText(Texts.get("views.StatusBar.measureText", info.completeness().label()));
         completeness.setForeground(
                 info.completeness() == MeasureCompleteness.COMPLETE ? ScoreColors.LABEL : ScoreColors.WARNING);
         trackName.setText(info.trackName());

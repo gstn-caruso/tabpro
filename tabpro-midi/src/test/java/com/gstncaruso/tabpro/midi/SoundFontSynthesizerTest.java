@@ -48,7 +48,7 @@ class SoundFontSynthesizerTest {
 
         assertFalse(bank.active());
         assertTrue(bank.file().isEmpty(), "a bank that failed to load cannot stay active");
-        assertTrue(bank.status().contains("invalid.sf2"), "the status has to name the file that failed");
+        assertEquals(Optional.of("invalid.sf2"), bank.status().fileName(), "the status has to name the file that failed");
     }
 
     @Test

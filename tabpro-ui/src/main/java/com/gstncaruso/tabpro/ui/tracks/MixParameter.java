@@ -3,28 +3,27 @@ package com.gstncaruso.tabpro.ui.tracks;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.function.ToIntFunction;
 
 public enum MixParameter {
-    VOLUME("Volumen", Channel::volume, Editor::setVolume),
-    PAN("Paneo", Channel::pan, Editor::setPan),
-    CHORUS("Chorus", Channel::chorus, Editor::setChorus),
-    REVERB("Reverb", Channel::reverb, Editor::setReverb),
-    PHASER("Phaser", Channel::phaser, Editor::setPhaser),
-    TREMOLO("Trémolo", Channel::tremolo, Editor::setTremolo);
+    VOLUME(Channel::volume, Editor::setVolume),
+    PAN(Channel::pan, Editor::setPan),
+    CHORUS(Channel::chorus, Editor::setChorus),
+    REVERB(Channel::reverb, Editor::setReverb),
+    PHASER(Channel::phaser, Editor::setPhaser),
+    TREMOLO(Channel::tremolo, Editor::setTremolo);
 
-    private final String label;
     private final ToIntFunction<Channel> reader;
     private final Setter setter;
 
-    MixParameter(String label, ToIntFunction<Channel> reader, Setter setter) {
-        this.label = label;
+    MixParameter(ToIntFunction<Channel> reader, Setter setter) {
         this.reader = reader;
         this.setter = setter;
     }
 
     public String label() {
-        return label;
+        return Texts.get("views.MixParameter." + name());
     }
 
     public int valueOf(Track track) {

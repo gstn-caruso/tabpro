@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -41,8 +42,8 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
         this.editor = editor;
         setOpaque(true);
         setBackground(ScoreColors.SURFACE);
-        setToolTipText("Zona de marcadores");
-        getAccessibleContext().setAccessibleName("Zona de marcadores");
+        setToolTipText(Texts.get("views.MarkerZone.name"));
+        getAccessibleContext().setAccessibleName(Texts.get("views.MarkerZone.name"));
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -195,7 +196,7 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     }
 
     private String promptForMarkerName(String initial) {
-        return JOptionPane.showInputDialog(this, "Nombre del marcador", initial);
+        return JOptionPane.showInputDialog(this, Texts.get("views.MarkerZone.markerNamePrompt"), initial);
     }
 
     private void moveEditorTo(int measureIndex) {

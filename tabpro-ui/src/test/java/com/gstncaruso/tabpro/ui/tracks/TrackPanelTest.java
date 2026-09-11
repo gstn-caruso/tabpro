@@ -11,12 +11,22 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.AwaitEdt;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class TrackPanelTest {
+
+    @Test
+    void theDefaultTrackNamesAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Guitar", english.text("views.TrackPanel.defaultGuitarName"));
+        assertEquals("Bass", english.text("views.TrackPanel.defaultBassName"));
+    }
 
     @Test
     void movingTheCursorSkipsTheHeavyGlobalViewRefresh() throws Exception {

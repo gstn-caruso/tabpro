@@ -7,17 +7,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
+import java.util.Locale;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class MarkerZoneTest {
+
+    @Test
+    void theAccessibleNameIsAvailableInEnglish() {
+        assertEquals("Marker Zone", Texts.forLocale(Locale.ENGLISH).text("views.MarkerZone.name"));
+    }
 
     @Test
     void paintsTheMarkerNameInWarningRedInsteadOfItsOwnColor() {

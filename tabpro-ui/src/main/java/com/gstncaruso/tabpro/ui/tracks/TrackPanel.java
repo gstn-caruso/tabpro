@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.editing.EditorChange;
 import com.gstncaruso.tabpro.core.editing.EditorListener;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.EdtEditorListener;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
 import java.awt.BorderLayout;
@@ -77,17 +78,18 @@ public final class TrackPanel extends JPanel {
     }
 
     public void addGuitar() {
-        editor.addTrack(Track.standardGuitar(freshName("Guitarra")));
+        editor.addTrack(Track.standardGuitar(freshName(Texts.get("views.TrackPanel.defaultGuitarName"))));
     }
 
     public void addBass() {
-        editor.addTrack(Track.standardBass(freshName("Bajo")));
+        editor.addTrack(Track.standardBass(freshName(Texts.get("views.TrackPanel.defaultBassName"))));
     }
 
     public void removeSelectedTrack() {
         if (editor.score().trackCount() == 1) {
             JOptionPane.showMessageDialog(
-                    this, "Una partitura necesita al menos una pista.", "tabpro", JOptionPane.INFORMATION_MESSAGE);
+                    this, Texts.get("views.TrackPanel.needsAtLeastOneTrack"),
+                    Texts.get("views.TrackPanel.dialogTitle"), JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         editor.removeCurrentTrack();
@@ -99,7 +101,7 @@ public final class TrackPanel extends JPanel {
 
     static void renameTrack(JComponent parent, Editor editor, int trackIndex) {
         String current = editor.score().track(trackIndex).name();
-        String chosen = JOptionPane.showInputDialog(parent, "Nombre de la pista", current);
+        String chosen = JOptionPane.showInputDialog(parent, Texts.get("views.TrackPanel.renameTrackPrompt"), current);
         if (chosen != null && !chosen.isBlank()) {
             editor.renameTrack(trackIndex, chosen.trim());
         }

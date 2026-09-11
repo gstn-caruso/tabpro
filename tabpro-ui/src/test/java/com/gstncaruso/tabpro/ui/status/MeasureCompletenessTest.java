@@ -7,10 +7,21 @@ import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class MeasureCompletenessTest {
+
+    @Test
+    void everyCaseHasAReadableLabelInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("complete", english.text("views.MeasureCompleteness.COMPLETE"));
+        assertEquals("short", english.text("views.MeasureCompleteness.TOO_SHORT"));
+        assertEquals("long", english.text("views.MeasureCompleteness.TOO_LONG"));
+    }
 
     @Test
     void aFreshMeasureWithOnlyAQuarterRestIsTooShortForFourFour() {

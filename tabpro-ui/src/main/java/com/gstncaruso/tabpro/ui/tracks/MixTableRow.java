@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.DrumKits;
 import com.gstncaruso.tabpro.core.model.Instruments;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -44,8 +45,8 @@ public final class MixTableRow extends JPanel {
     private final LevelSlider panSlider =
             new LevelSlider(0, Channel.MAX, Channel.CENTER_PAN, ScoreColors.PAN_LEVEL, ScoreColors.PAN_LEVEL);
     private final List<ParameterCell> parameterCells = new ArrayList<>();
-    private final JToggleButton mute = new JToggleButton("M");
-    private final JToggleButton solo = new JToggleButton("S");
+    private final JToggleButton mute = new JToggleButton(Texts.get("views.MixTableRow.muteButton"));
+    private final JToggleButton solo = new JToggleButton(Texts.get("views.MixTableRow.soloButton"));
     private boolean syncing;
     private boolean instrumentComboShowsDrumKits;
 
@@ -66,7 +67,7 @@ public final class MixTableRow extends JPanel {
 
         visible.setOpaque(false);
         visible.setFocusable(false);
-        visible.setToolTipText("Visible en la vista multipista");
+        visible.setToolTipText(Texts.get("views.MixTableRow.visibleInMultitrackView"));
         visible.addActionListener(e -> model.setVisibleInMultitrackView(trackIndex, visible.isSelected()));
         addColumn(visible, MixTable.VISIBLE_WIDTH);
 
@@ -80,11 +81,11 @@ public final class MixTableRow extends JPanel {
         spinner(port, () -> editor.setPort(trackIndex, (Integer) port.getValue()));
         addColumn(port, MixTable.PORT_WIDTH);
 
-        channel.setToolTipText("Canal MIDI de la pista");
+        channel.setToolTipText(Texts.get("views.MixTableRow.midiChannelTooltip"));
         spinner(channel, () -> editor.setChannelNumber(trackIndex, (Integer) channel.getValue()));
         addColumn(channel, MixTable.CHANNEL_WIDTH);
 
-        effectChannel.setToolTipText("Canal MIDI donde suenan los efectos de la pista");
+        effectChannel.setToolTipText(Texts.get("views.MixTableRow.effectsChannelTooltip"));
         spinner(effectChannel, () -> editor.setEffectChannel(trackIndex, (Integer) effectChannel.getValue()));
         addColumn(effectChannel, MixTable.CHANNEL_WIDTH);
 
@@ -141,17 +142,20 @@ public final class MixTableRow extends JPanel {
     }
 
     private void refreshAccessibleNames(String trackName) {
-        visible.getAccessibleContext().setAccessibleName("Mostrar pista " + trackName);
-        mute.getAccessibleContext().setAccessibleName("Silenciar " + trackName);
-        solo.getAccessibleContext().setAccessibleName("Solo " + trackName);
-        port.getAccessibleContext().setAccessibleName("Puerto de " + trackName);
-        port.setToolTipText("Puerto de " + trackName);
-        channel.getAccessibleContext().setAccessibleName("Canal MIDI de " + trackName);
-        effectChannel.getAccessibleContext().setAccessibleName("Canal de efectos de " + trackName);
-        instrument.getAccessibleContext().setAccessibleName("Instrumento de " + trackName);
-        instrument.setToolTipText("Instrumento de " + trackName);
-        volumeSlider.getAccessibleContext().setAccessibleName(MixParameter.VOLUME.label() + " de " + trackName);
-        panSlider.getAccessibleContext().setAccessibleName(MixParameter.PAN.label() + " de " + trackName);
+        visible.getAccessibleContext().setAccessibleName(Texts.get("views.MixTableRow.showTrack", trackName));
+        mute.getAccessibleContext().setAccessibleName(Texts.get("views.MixTableRow.muteTrack", trackName));
+        solo.getAccessibleContext().setAccessibleName(Texts.get("views.MixTableRow.soloTrack", trackName));
+        port.getAccessibleContext().setAccessibleName(Texts.get("views.MixTableRow.port", trackName));
+        port.setToolTipText(Texts.get("views.MixTableRow.port", trackName));
+        channel.getAccessibleContext().setAccessibleName(Texts.get("views.MixTableRow.channel", trackName));
+        effectChannel.getAccessibleContext().setAccessibleName(
+                Texts.get("views.MixTableRow.effectChannel", trackName));
+        instrument.getAccessibleContext().setAccessibleName(Texts.get("views.MixTableRow.instrument", trackName));
+        instrument.setToolTipText(Texts.get("views.MixTableRow.instrument", trackName));
+        volumeSlider.getAccessibleContext().setAccessibleName(
+                Texts.get("views.MixTableRow.parameterOfTrack", MixParameter.VOLUME.label(), trackName));
+        panSlider.getAccessibleContext().setAccessibleName(
+                Texts.get("views.MixTableRow.parameterOfTrack", MixParameter.PAN.label(), trackName));
     }
 
     private void levelSlider(LevelSlider slider, MixParameter parameter) {

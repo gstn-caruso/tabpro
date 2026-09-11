@@ -1,5 +1,7 @@
 package com.gstncaruso.tabpro.ui.actions;
 
+import java.util.Optional;
+
 public final class Ports {
 
     public static final int PORT_COUNT = 4;
@@ -173,6 +175,37 @@ public final class Ports {
         void useTheme(String name);
     }
 
+    public record SoundBankStatus(Kind kind, Optional<String> fileName) {
+
+        public enum Kind {
+            NONE, CHOSEN, DISABLED, PLAYING, FAILED, UNAVAILABLE
+        }
+
+        public static SoundBankStatus none() {
+            return new SoundBankStatus(Kind.NONE, Optional.empty());
+        }
+
+        public static SoundBankStatus unavailable() {
+            return new SoundBankStatus(Kind.UNAVAILABLE, Optional.empty());
+        }
+
+        public static SoundBankStatus chosen(String fileName) {
+            return new SoundBankStatus(Kind.CHOSEN, Optional.of(fileName));
+        }
+
+        public static SoundBankStatus disabled(String fileName) {
+            return new SoundBankStatus(Kind.DISABLED, Optional.of(fileName));
+        }
+
+        public static SoundBankStatus playing(String fileName) {
+            return new SoundBankStatus(Kind.PLAYING, Optional.of(fileName));
+        }
+
+        public static SoundBankStatus failed(String fileName) {
+            return new SoundBankStatus(Kind.FAILED, Optional.of(fileName));
+        }
+    }
+
     public interface Devices {
 
         Devices NONE = new Devices() {
@@ -259,8 +292,8 @@ public final class Ports {
             }
 
             @Override
-            public String soundFontStatus() {
-                return "MIDI no disponible";
+            public SoundBankStatus soundFontStatus() {
+                return SoundBankStatus.unavailable();
             }
         };
 
@@ -300,7 +333,7 @@ public final class Ports {
 
         void toggleSoundFont();
 
-        String soundFontStatus();
+        SoundBankStatus soundFontStatus();
     }
 
     public interface Microphone {

@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.VoicePart;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -20,6 +21,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.OptionalInt;
 import javax.swing.JComponent;
@@ -30,6 +32,11 @@ class KeyboardViewTest {
 
     private static final int WIDTH = 900;
     private static final int HEIGHT = 92;
+
+    @Test
+    void theAccessibleNameIsAvailableInEnglish() {
+        assertEquals("Keyboard", Texts.forLocale(Locale.ENGLISH).text("views.KeyboardView.name"));
+    }
 
     @Test
     void tellsTheWhiteKeysFromTheBlackOnes() {

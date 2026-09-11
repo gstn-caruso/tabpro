@@ -6,18 +6,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.Locale;
 import java.util.Optional;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
 
 class MeasureGridTest {
+
+    @Test
+    void theAccessibleNameIsAvailableInEnglish() {
+        assertEquals("Bar Grid", Texts.forLocale(Locale.ENGLISH).text("views.MeasureGrid.name"));
+    }
 
     @Test
     void aCellSitsUnderItsMeasureAndBesideItsTrack() {

@@ -4,9 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class MixParameterTest {
+
+    @Test
+    void everyLabelIsAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Volume", english.text("views.MixParameter.VOLUME"));
+        assertEquals("Panoramic", english.text("views.MixParameter.PAN"));
+        assertEquals("Tremolo", english.text("views.MixParameter.TREMOLO"));
+    }
 
     @Test
     void readsTheCurrentValueOfEveryKnob() {

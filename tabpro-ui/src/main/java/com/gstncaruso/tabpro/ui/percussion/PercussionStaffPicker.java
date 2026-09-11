@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.percussion;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.instruments.InstrumentColors;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BasicStroke;
@@ -55,8 +56,8 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setPreferredSize(new Dimension(0, PREFERRED_HEIGHT));
         setMinimumSize(new Dimension(0, PREFERRED_HEIGHT));
-        setToolTipText("Pentagrama de percusión");
-        getAccessibleContext().setAccessibleName("Pentagrama de percusión");
+        setToolTipText(Texts.get("views.PercussionStaffPicker.staff"));
+        getAccessibleContext().setAccessibleName(Texts.get("views.PercussionStaffPicker.staff"));
         trackTheMouse();
         installClicking(onPlay, onAdd);
         installKeyboardShortcuts(onPlay, onAdd);

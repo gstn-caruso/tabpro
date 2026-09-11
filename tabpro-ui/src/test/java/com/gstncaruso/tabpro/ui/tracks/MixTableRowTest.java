@@ -10,18 +10,30 @@ import com.gstncaruso.tabpro.core.model.DrumKits;
 import com.gstncaruso.tabpro.core.model.Instruments;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import org.junit.jupiter.api.Test;
 
 class MixTableRowTest {
+
+    @Test
+    void theAccessibleNameTemplatesAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Show Track Bass", english.text("views.MixTableRow.showTrack", "Bass"));
+        assertEquals("Mute Bass", english.text("views.MixTableRow.muteTrack", "Bass"));
+        assertEquals("Solo Bass", english.text("views.MixTableRow.soloTrack", "Bass"));
+        assertEquals("Volume for Bass", english.text("views.MixTableRow.parameterOfTrack", "Volume", "Bass"));
+    }
 
     @Test
     void clickingTheNumberSelectsThatTrack() {

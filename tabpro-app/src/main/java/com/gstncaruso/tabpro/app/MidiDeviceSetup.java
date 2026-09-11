@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.midi.MidiDevices;
 import com.gstncaruso.tabpro.midi.MidiPlayer;
 import com.gstncaruso.tabpro.midi.MidiTestTone;
 import com.gstncaruso.tabpro.midi.SoundFontBank;
+import com.gstncaruso.tabpro.midi.SoundFontStatus;
 import com.gstncaruso.tabpro.midi.SoundFonts;
 import com.gstncaruso.tabpro.ui.actions.Ports;
 import java.nio.file.Path;
@@ -151,8 +152,16 @@ final class MidiDeviceSetup implements Ports.Devices {
     }
 
     @Override
-    public String soundFontStatus() {
-        return soundBank.status();
+    public Ports.SoundBankStatus soundFontStatus() {
+        SoundFontStatus status = soundBank.status();
+        Optional<String> fileName = status.fileName();
+        return switch (status.kind()) {
+            case NONE -> Ports.SoundBankStatus.none();
+            case CHOSEN -> Ports.SoundBankStatus.chosen(fileName.orElseThrow());
+            case DISABLED -> Ports.SoundBankStatus.disabled(fileName.orElseThrow());
+            case PLAYING -> Ports.SoundBankStatus.playing(fileName.orElseThrow());
+            case FAILED -> Ports.SoundBankStatus.failed(fileName.orElseThrow());
+        };
     }
 
     private static MidiCapture.CapturedNotes asCapturedNotes(Ports.CapturedNote listener) {

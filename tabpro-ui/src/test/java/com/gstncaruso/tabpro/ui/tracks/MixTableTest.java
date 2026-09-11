@@ -8,10 +8,22 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import javax.swing.JLabel;
 import org.junit.jupiter.api.Test;
 
 class MixTableTest {
+
+    @Test
+    void theColumnTitlesAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Name", english.text("views.MixTable.nameColumn"));
+        assertEquals("Port", english.text("views.MixTable.portColumn"));
+        assertEquals("Instrument", english.text("views.MixTable.instrumentColumn"));
+        assertEquals("Reduce All Parameters", english.text("views.MixTable.reduceAll"));
+    }
 
     @Test
     void everyControlOfTheMixTableHasAnAccessibleNameAndTooltip() {

@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.MainFrame;
+import com.gstncaruso.tabpro.ui.actions.Ports;
 import com.gstncaruso.tabpro.ui.print.Printing;
 import com.gstncaruso.tabpro.ui.print.SystemPrinting;
 import java.awt.AWTEvent;
@@ -238,8 +239,8 @@ final class AuditSupport {
         }
 
         @Override
-        public String soundFontStatus() {
-            return "";
+        public Ports.SoundBankStatus soundFontStatus() {
+            return Ports.SoundBankStatus.none();
         }
 
         int toggleCount() {

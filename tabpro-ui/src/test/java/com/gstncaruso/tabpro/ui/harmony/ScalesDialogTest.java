@@ -10,15 +10,28 @@ import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
 import com.gstncaruso.tabpro.core.harmony.ScaleMatch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JList;
 import org.junit.jupiter.api.Test;
 
 class ScalesDialogTest {
+
+    @Test
+    void theFieldsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Scales", english.text("views.ScalesDialog.title"));
+        assertEquals("Tonality", english.text("views.ScalesDialog.tonality"));
+        assertEquals("Scale", english.text("views.ScalesDialog.scale"));
+        assertEquals("Find!", english.text("views.ScalesDialog.find"));
+        assertEquals("Scales Found", english.text("views.ScalesDialog.matchesFound"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {

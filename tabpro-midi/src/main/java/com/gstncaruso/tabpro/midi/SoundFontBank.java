@@ -65,21 +65,21 @@ public final class SoundFontBank implements AutoCloseable {
         return file;
     }
 
-    public String status() {
+    public SoundFontStatus status() {
         if (file.isEmpty()) {
-            return "Sin ningún banco de sonido: suena el sintetizador interno del JDK";
+            return SoundFontStatus.none();
         }
         String name = file.get().getFileName().toString();
         if (!active) {
-            return "Banco de sonido desactivado (" + name + "): suena el sintetizador interno del JDK";
+            return SoundFontStatus.disabled(name);
         }
         if (synthesizersByPort.values().stream().anyMatch(synth -> synth.file().isPresent())) {
-            return "Sonando con " + name;
+            return SoundFontStatus.playing(name);
         }
         if (anyPortTried) {
-            return "No se pudo cargar " + name + ": suena el sintetizador interno del JDK";
+            return SoundFontStatus.failed(name);
         }
-        return "Banco elegido: " + name + " (se aplica al reproducir)";
+        return SoundFontStatus.chosen(name);
     }
 
     /**

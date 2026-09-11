@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.percussion;
 
 import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -27,8 +28,8 @@ public final class PercussionSoundPalette extends JPanel {
         setOpaque(false);
 
         list = new JList<>(PercussionKit.sounds().toArray(new Integer[0]));
-        list.getAccessibleContext().setAccessibleName("Sonidos de percusión");
-        list.setToolTipText("Sonidos de percusión");
+        list.getAccessibleContext().setAccessibleName(Texts.get("views.PercussionSoundPalette.sounds"));
+        list.setToolTipText(Texts.get("views.PercussionSoundPalette.sounds"));
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setBackground(ScoreColors.SURFACE);
         list.setForeground(ScoreColors.INK);

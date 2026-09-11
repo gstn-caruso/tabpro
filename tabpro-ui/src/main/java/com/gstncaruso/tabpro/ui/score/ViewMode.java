@@ -1,25 +1,25 @@
 package com.gstncaruso.tabpro.ui.score;
 
-public enum ViewMode {
-    PAGE("Página", true, true, false),
-    PARCHMENT("Pergamino", true, false, false),
-    SCREEN_VERTICAL("Pantalla vertical", false, false, false),
-    SCREEN_HORIZONTAL("Pantalla horizontal", false, false, true);
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 
-    private final String label;
+public enum ViewMode {
+    PAGE(true, true, false),
+    PARCHMENT(true, false, false),
+    SCREEN_VERTICAL(false, false, false),
+    SCREEN_HORIZONTAL(false, false, true);
+
     private final boolean showsPaper;
     private final boolean paginates;
     private final boolean scrollsHorizontally;
 
-    ViewMode(String label, boolean showsPaper, boolean paginates, boolean scrollsHorizontally) {
-        this.label = label;
+    ViewMode(boolean showsPaper, boolean paginates, boolean scrollsHorizontally) {
         this.showsPaper = showsPaper;
         this.paginates = paginates;
         this.scrollsHorizontally = scrollsHorizontally;
     }
 
     public String label() {
-        return label;
+        return Texts.get("views.ViewMode." + name());
     }
 
     public boolean showsPaper() {
