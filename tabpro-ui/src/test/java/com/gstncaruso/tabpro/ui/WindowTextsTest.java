@@ -16,6 +16,23 @@ class WindowTextsTest {
 
     static Stream<Arguments> textsInBothLanguages() {
         return Stream.of(
+                Arguments.of("window.MainFrame.guitarProFilter", new Object[] {},
+                        "Partituras de Guitar Pro", "Guitar Pro Files"),
+                Arguments.of("window.MainFrame.imageFilter", new Object[] {},
+                        "Imagen (*.png, *.jpg, *.bmp)", "Image (*.png, *.jpg, *.bmp)"),
+                Arguments.of("window.MainFrame.midiFilter", new Object[] {},
+                        "Archivos MIDI (*.mid)", "MIDI Files (*.mid)"),
+                Arguments.of("window.MainFrame.openableScoresFilter", new Object[] {},
+                        "Partituras (*.tabpro, *.gp3, *.gp4, *.gp5, *.gtp, *.tef, *.ptb)",
+                        "Scores (*.tabpro, *.gp3, *.gp4, *.gp5, *.gtp, *.tef, *.ptb)"),
+                Arguments.of("window.MainFrame.powerTabFilter", new Object[] {},
+                        "Partituras de PowerTab", "PowerTab Files"),
+                Arguments.of("window.MainFrame.tabEditFilter", new Object[] {},
+                        "Archivos de TablEdit (*.tef)", "TablEdit Files (*.tef)"),
+                Arguments.of("window.MainFrame.tabproFilter", new Object[] {},
+                        "Partituras tabpro (*.tabpro)", "tabpro Scores (*.tabpro)"),
+                Arguments.of("window.MainFrame.waveFilter", new Object[] {},
+                        "Audio WAVE (*.wav)", "WAVE Audio (*.wav)"),
                 Arguments.of("window.MainFrame.exportGuitarProAnyway", new Object[] {"- a loss"},
                         "Al exportar a Guitar Pro 4 se va a perder:\n\n- a loss\n\n¿Exportar de todos modos?",
                         "Exporting to Guitar Pro 4 will lose:\n\n- a loss\n\nExport anyway?"),

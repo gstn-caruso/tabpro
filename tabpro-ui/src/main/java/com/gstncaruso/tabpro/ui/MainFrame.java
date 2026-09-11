@@ -383,12 +383,12 @@ public final class MainFrame extends JFrame {
     }
 
     private FileNameExtensionFilter tabproFilter() {
-        return new FileNameExtensionFilter("Partituras tabpro (*.tabpro)", "tabpro");
+        return new FileNameExtensionFilter(Texts.get("window.MainFrame.tabproFilter"), "tabpro");
     }
 
     private FileNameExtensionFilter openableScoreFilter() {
         return new FileNameExtensionFilter(
-                "Partituras (*.tabpro, *.gp3, *.gp4, *.gp5, *.gtp, *.tef, *.ptb)",
+                Texts.get("window.MainFrame.openableScoresFilter"),
                 "tabpro", "gp3", "gp4", "gp5", "gtp", "tef", "ptb");
     }
 
@@ -480,7 +480,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void importMidi() {
             JFileChooser chooser = new JFileChooser();
-            chooser.setFileFilter(new FileNameExtensionFilter("Archivos MIDI (*.mid)", "mid", "midi"));
+            chooser.setFileFilter(new FileNameExtensionFilter(Texts.get("window.MainFrame.midiFilter"), "mid", "midi"));
             if (chooser.showOpenDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
                 return;
             }
@@ -506,29 +506,31 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void importGuitarPro() {
-            importWith(exchange::importGuitarPro, new FileNameExtensionFilter("Partituras de Guitar Pro", "gp3", "gp4", "gp5", "gtp"));
+            importWith(exchange::importGuitarPro, new FileNameExtensionFilter(
+                    Texts.get("window.MainFrame.guitarProFilter"), "gp3", "gp4", "gp5", "gtp"));
         }
 
         @Override
         public void importTabEdit() {
-            importWith(exchange::importTabEdit, new FileNameExtensionFilter("Archivos de TablEdit (*.tef)", "tef"));
+            importWith(exchange::importTabEdit, new FileNameExtensionFilter(Texts.get("window.MainFrame.tabEditFilter"), "tef"));
         }
 
         @Override
         public void importPowerTab() {
-            importWith(exchange::importPowerTab, new FileNameExtensionFilter("Partituras de PowerTab", "ptb"));
+            importWith(exchange::importPowerTab, new FileNameExtensionFilter(Texts.get("window.MainFrame.powerTabFilter"), "ptb"));
         }
 
         @Override
         public void exportMidi() {
-            exportWith(exchange::exportMidi, new FileNameExtensionFilter("Archivos MIDI (*.mid)", "mid"), ".mid");
+            exportWith(
+                    exchange::exportMidi, new FileNameExtensionFilter(Texts.get("window.MainFrame.midiFilter"), "mid"), ".mid");
         }
 
         @Override
         public void exportWave() {
             WaveExportDialog.ask(MainFrame.this, AudioQuality.standard()).ifPresent(quality -> {
                 JFileChooser chooser = new JFileChooser();
-                chooser.setFileFilter(new FileNameExtensionFilter("Audio WAVE (*.wav)", "wav"));
+                chooser.setFileFilter(new FileNameExtensionFilter(Texts.get("window.MainFrame.waveFilter"), "wav"));
                 if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
                     return;
                 }
@@ -595,7 +597,8 @@ public final class MainFrame extends JFrame {
         public void exportImage() {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileFilter(
-                    new FileNameExtensionFilter("Imagen (*.png, *.jpg, *.bmp)", "png", "jpg", "jpeg", "bmp"));
+                    new FileNameExtensionFilter(
+                            Texts.get("window.MainFrame.imageFilter"), "png", "jpg", "jpeg", "bmp"));
             if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
                 return;
             }
