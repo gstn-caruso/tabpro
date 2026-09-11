@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
@@ -22,12 +23,12 @@ class EditorNotationTest {
 
     @Test
     void enterAddsInStandardNotationButAdvancesInTablature() {
-        Editor tabEditor = new Editor(Score.blank());
+        Editor tabEditor = new Editor(Score.blank(new TestDefaultNames()));
         tabEditor.enter();
         assertEquals(1, tabEditor.cursor().beat(), "in tablature, Enter has to advance to the next note");
         assertTrue(tabEditor.score().track(0).measure(0).beat(0).isRest(), "in tablature, Enter does not add anything");
 
-        Editor staffEditor = new Editor(Score.blank());
+        Editor staffEditor = new Editor(Score.blank(new TestDefaultNames()));
         staffEditor.toggleNotation();
         staffEditor.enter();
         assertEquals(0, staffEditor.cursor().beat(), "in standard notation, Enter does not advance: it adds the note right there");
@@ -36,7 +37,7 @@ class EditorNotationTest {
 
     @Test
     void enterInStandardNotationAddsTheNoteAtTheStringsOpenPitchWhenTheBeatIsSilent() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveTo(0, 0, 3);
         editor.toggleNotation();
 
@@ -50,7 +51,7 @@ class EditorNotationTest {
 
     @Test
     void enterDoesNothingInStandardNotationWhenNoStringCanReachTheCursorsPitch() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.setFret(50);
         editor.toggleNotation();
         boolean couldUndoBefore = editor.canUndo();
@@ -79,12 +80,12 @@ class EditorNotationTest {
 
     @Test
     void arrowsMoveByStringInTablatureAndByStaffDegreeInStandardNotation() {
-        Editor tabEditor = new Editor(Score.blank());
+        Editor tabEditor = new Editor(Score.blank(new TestDefaultNames()));
         tabEditor.moveTo(0, 0, 3);
         tabEditor.moveUp();
         assertEquals(2, tabEditor.cursor().string(), "in tablature, up has to go to the previous string");
 
-        Editor staffEditor = new Editor(Score.blank());
+        Editor staffEditor = new Editor(Score.blank(new TestDefaultNames()));
         staffEditor.moveTo(0, 0, 3);
         staffEditor.toggleNotation();
         staffEditor.moveUp();
@@ -96,7 +97,7 @@ class EditorNotationTest {
 
     @Test
     void arrowsStayPutInStandardNotationWhenNoStringCanReachTheNextDegree() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveTo(0, 0, 6);
         editor.toggleNotation();
 
@@ -107,7 +108,7 @@ class EditorNotationTest {
 
     @Test
     void enteringAfterMovingUpThreeStaffDegreesAddsTheNoteExactlyThreeDegreesAbove() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveTo(0, 0, 6);
         Tuning tuning = editor.currentTrack().tuning();
         Clef clef = Clef.forTuning(tuning);
@@ -128,7 +129,7 @@ class EditorNotationTest {
 
     @Test
     void enteringAfterMovingDownThreeStaffDegreesAddsTheNoteExactlyThreeDegreesBelow() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveTo(0, 0, 1);
         Tuning tuning = editor.currentTrack().tuning();
         Clef clef = Clef.forTuning(tuning);
@@ -149,7 +150,7 @@ class EditorNotationTest {
 
     @Test
     void tablatureNavigationNeverTouchesThePointerThatDrivesTheStaff() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveTo(0, 0, 1);
 
         editor.moveDown();
@@ -169,6 +170,6 @@ class EditorNotationTest {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(
                 beat, Beat.rest(Duration.quarter()), Beat.rest(Duration.quarter()), Beat.rest(Duration.quarter())));
         Track track = Track.standardGuitar("Test").withMeasure(0, measure);
-        return new Editor(Score.blank().withTrack(0, track));
+        return new Editor(Score.blank(new TestDefaultNames()).withTrack(0, track));
     }
 }

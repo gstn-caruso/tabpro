@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
@@ -25,7 +26,7 @@ class EditorTuningTest {
         Tuning banjoOpenG = Tuning.of("Banjo Open G", 62, 59, 55, 50, 67);
         Track banjo = new Track("Banjo", banjoOpenG, Channel.playing(Track.GUITAR_PROGRAM),
                 List.of(Measure.empty(TimeSignature.fourFour(), Duration.quarter())));
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.addTrack(banjo);
         moveDown(editor, 4);
         editor.setFret(0);
@@ -38,7 +39,7 @@ class EditorTuningTest {
 
     @Test
     void relocatesAChordThatFitsWhenAGuitarBecomesABass() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         moveDown(editor, 3);
         editor.setFret(0);
         editor.moveDown();
@@ -60,7 +61,7 @@ class EditorTuningTest {
 
     @Test
     void dropsANoteThatIsTooLowForTheNewTuning() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         moveDown(editor, 5);
         editor.setFret(0);
 
@@ -71,7 +72,7 @@ class EditorTuningTest {
 
     @Test
     void dropsANoteThatIsTooHighForTheNewTuning() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.setFret(20);
 
         editor.setTuning(0, Tuning.standardBass());
@@ -82,7 +83,7 @@ class EditorTuningTest {
 
     @Test
     void preservesThePitchWhenTheTuningChangesButTheStringCountDoesNot() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         moveDown(editor, 5);
         editor.setFret(0);
 
@@ -95,7 +96,7 @@ class EditorTuningTest {
 
     @Test
     void retuningAnEmptyTrackDoesNotExplode() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 
         editor.setTuning(0, Tuning.standardBass());
 
@@ -105,7 +106,7 @@ class EditorTuningTest {
 
     @Test
     void undoingARetuneRestoresBothTheTuningAndTheDiscardedNotes() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         moveDown(editor, 5);
         editor.setFret(40);
         Score before = editor.score();
@@ -118,7 +119,7 @@ class EditorTuningTest {
 
     @Test
     void pullsTheCursorBackToAStringThatStillExistsAfterShrinkingTheTuning() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         moveDown(editor, 5);
         assertEquals(6, editor.cursor().string());
 

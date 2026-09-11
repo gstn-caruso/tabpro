@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import java.util.List;
@@ -20,20 +21,20 @@ class EditorEditingTest {
 
     @Test
     void startsAtTheFirstBeatOfTheFirstMeasureOnStringOne() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
     }
 
     @Test
     void startsWithTheGivenScore() {
-        Score score = Score.blank().withTitle("My song");
+        Score score = Score.blank(new TestDefaultNames()).withTitle("My song");
         Editor editor = new Editor(score);
         assertEquals(score, editor.score());
     }
 
     @Test
     void writesAFretOnTheCursorString() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.setFret(5);
         Optional<Note> note = editor.currentBeat().noteOn(1);
         assertEquals(Optional.of(new Note(1, 5)), note);
@@ -41,7 +42,7 @@ class EditorEditingTest {
 
     @Test
     void overwritesTheFretOnTheSameString() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.setFret(5);
         editor.setFret(7);
         assertEquals(Optional.of(new Note(1, 7)), editor.currentBeat().noteOn(1));
@@ -49,7 +50,7 @@ class EditorEditingTest {
 
     @Test
     void keepsNotesOnOtherStringsOfTheBeat() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.setFret(5);
         editor.moveDown();
         editor.setFret(3);
@@ -59,7 +60,7 @@ class EditorEditingTest {
 
     @Test
     void clearsTheNoteUnderTheCursor() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.setFret(5);
         editor.clearNote();
         assertTrue(editor.currentBeat().noteOn(1).isEmpty());
@@ -67,14 +68,14 @@ class EditorEditingTest {
 
     @Test
     void clearingAnEmptyCellDoesNotCreateAnUndoStep() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.clearNote();
         assertFalse(editor.canUndo());
     }
 
     @Test
     void turnsTheBeatIntoARest() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.setFret(5);
         editor.clearBeat();
         assertTrue(editor.currentBeat().isRest());
@@ -83,21 +84,21 @@ class EditorEditingTest {
 
     @Test
     void lengthensTheCursorBeat() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.lengthenDuration();
         assertEquals(Duration.quarter().longer(), editor.currentBeat().duration());
     }
 
     @Test
     void shortensTheCursorBeat() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.shortenDuration();
         assertEquals(Duration.quarter().shorter(), editor.currentBeat().duration());
     }
 
     @Test
     void togglesTheDotOfTheCursorBeat() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.toggleDot();
         assertTrue(editor.currentBeat().duration().dotted());
         editor.toggleDot();
@@ -120,7 +121,7 @@ class EditorEditingTest {
 
     @Test
     void theDefaultNoteValueStartsAtAQuarter() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         assertEquals(NoteValue.QUARTER, editor.defaultNoteValue());
     }
 
@@ -213,21 +214,21 @@ class EditorEditingTest {
 
     @Test
     void changesTheTempo() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.setTempo(140);
         assertEquals(140, editor.score().tempo());
     }
 
     @Test
     void changesTheTitle() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.setTitle("My song");
         assertEquals("My song", editor.score().title());
     }
 
     private Editor editorWithMeasure(Measure measure) {
         Track track = Track.standardGuitar("Test").withMeasure(0, measure);
-        return new Editor(Score.blank().withTrack(0, track));
+        return new Editor(Score.blank(new TestDefaultNames()).withTrack(0, track));
     }
 
     private Editor editorWithMeasures(Measure... measures) {
@@ -236,6 +237,6 @@ class EditorEditingTest {
         for (int i = 1; i < measures.length; i++) {
             track = track.withMeasureInsertedAt(i, measures[i]);
         }
-        return new Editor(Score.blank().withTrack(0, track));
+        return new Editor(Score.blank(new TestDefaultNames()).withTrack(0, track));
     }
 }

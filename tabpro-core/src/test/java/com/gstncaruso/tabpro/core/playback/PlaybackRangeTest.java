@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +59,7 @@ class PlaybackRangeTest {
     }
 
     private Score scoreWithMeasures(int count) {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         for (int i = 1; i < count; i++) {
             score = score.withMeasureInsertedInEveryTrackAt(i);
         }

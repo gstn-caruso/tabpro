@@ -11,6 +11,7 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Voice;
@@ -285,7 +286,7 @@ class TrackRendererEffectsTest {
                         Beat.of(eighth, new Note(1, 0)), Beat.of(eighth, new Note(1, 1)))),
                         Voice.unused()));
         Track track = Track.standardGuitar("Guitar").withMeasure(0, measure);
-        Score score = Score.blank().withTrack(0, track);
+        Score score = Score.blank(new TestDefaultNames()).withTrack(0, track);
 
         List<ScheduledNote> notes = notesOf(score);
 
@@ -300,6 +301,6 @@ class TrackRendererEffectsTest {
     private Score scoreWithLeadBeats(Beat... beatsInOrder) {
         Measure measure = new Measure(TimeSignature.fourFour(), List.of(beatsInOrder));
         Track track = Track.standardGuitar("Guitar").withMeasure(0, measure);
-        return Score.blank().withTrack(0, track);
+        return Score.blank(new TestDefaultNames()).withTrack(0, track);
     }
 }

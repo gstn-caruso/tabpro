@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import java.util.List;
@@ -29,7 +30,7 @@ class EditorCursorTest {
 
     @Test
     void movingRightAtTheEndOfAnIncompleteMeasureAppendsARest() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveRight();
         assertEquals(new Cursor(0, 0, 1, 1), editor.cursor());
         assertTrue(editor.currentBeat().isRest());
@@ -86,21 +87,21 @@ class EditorCursorTest {
 
     @Test
     void movingLeftAtTheStartOfTheScoreStaysPut() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveLeft();
         assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
     }
 
     @Test
     void movesDownToTheNextString() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveDown();
         assertEquals(new Cursor(0, 0, 0, 2), editor.cursor());
     }
 
     @Test
     void movingDownOnTheLastStringStaysPut() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         int lastString = editor.score().track(0).tuning().stringCount();
         editor.moveTo(0, 0, lastString);
         editor.moveDown();
@@ -109,7 +110,7 @@ class EditorCursorTest {
 
     @Test
     void movesUpToThePreviousString() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveTo(0, 0, 3);
         editor.moveUp();
         assertEquals(new Cursor(0, 0, 0, 2), editor.cursor());
@@ -117,7 +118,7 @@ class EditorCursorTest {
 
     @Test
     void movingUpOnStringOneStaysPut() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveUp();
         assertEquals(new Cursor(0, 0, 0, 1), editor.cursor());
     }
@@ -143,20 +144,20 @@ class EditorCursorTest {
 
     @Test
     void movesToAnArbitraryPosition() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         editor.moveTo(0, 0, 3);
         assertEquals(new Cursor(0, 0, 0, 3), editor.cursor());
     }
 
     @Test
     void rejectsAnInvalidPosition() {
-        Editor editor = new Editor(Score.blank());
+        Editor editor = new Editor(Score.blank(new TestDefaultNames()));
         assertThrows(IllegalArgumentException.class, () -> editor.moveTo(5, 0, 1));
     }
 
     private Editor editorWithMeasure(Measure measure) {
         Track track = Track.standardGuitar("Test").withMeasure(0, measure);
-        return new Editor(Score.blank().withTrack(0, track));
+        return new Editor(Score.blank(new TestDefaultNames()).withTrack(0, track));
     }
 
     private Editor editorWithMeasures(Measure... measures) {
@@ -165,6 +166,6 @@ class EditorCursorTest {
         for (int i = 1; i < measures.length; i++) {
             track = track.withMeasureInsertedAt(i, measures[i]);
         }
-        return new Editor(Score.blank().withTrack(0, track));
+        return new Editor(Score.blank(new TestDefaultNames()).withTrack(0, track));
     }
 }

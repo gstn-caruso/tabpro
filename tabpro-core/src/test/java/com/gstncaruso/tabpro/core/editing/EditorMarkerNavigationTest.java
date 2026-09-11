@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.TestDefaultNames;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
@@ -65,7 +66,7 @@ class EditorMarkerNavigationTest {
 
     @Test
     void aScoreWithoutMarkersDoesNotMoveTheCursor() {
-        Editor plain = new Editor(Score.blank());
+        Editor plain = new Editor(Score.blank(new TestDefaultNames()));
 
         plain.moveToNextMarker();
         plain.moveToPreviousMarker();

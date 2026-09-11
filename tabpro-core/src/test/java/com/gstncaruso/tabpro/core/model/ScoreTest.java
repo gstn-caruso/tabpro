@@ -14,11 +14,11 @@ class ScoreTest {
 
     @Test
     void aBlankScoreHasOneGuitarTrackAndTempo120() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         assertEquals("", score.title());
         assertEquals(120, score.tempo());
         assertEquals(1, score.tracks().size());
-        assertEquals(Track.standardGuitar("Guitarra"), score.track(0));
+        assertEquals(Track.standardGuitar("Test Guitar"), score.track(0));
     }
 
     @Test
@@ -30,7 +30,7 @@ class ScoreTest {
 
     @Test
     void replacesATrack() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         Track newTrack = Track.standardGuitar("Bass");
         Score replaced = score.withTrack(0, newTrack);
         assertEquals(newTrack, replaced.track(0));
@@ -38,21 +38,21 @@ class ScoreTest {
 
     @Test
     void changesTempo() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         Score changed = score.withTempo(140);
         assertEquals(140, changed.tempo());
     }
 
     @Test
     void changesTitle() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         Score changed = score.withTitle("My song");
         assertEquals("My song", changed.title());
     }
 
     @Test
     void addsATrackAtTheEnd() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         Track bass = Track.standardBass("Bass");
 
         Score grown = score.withTrackAdded(bass);
@@ -63,7 +63,7 @@ class ScoreTest {
 
     @Test
     void removesATrack() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
+        Score score = Score.blank(new TestDefaultNames()).withTrackAdded(Track.standardBass("Bass"));
 
         Score shrunk = score.withoutTrackAt(0);
 
@@ -73,7 +73,7 @@ class ScoreTest {
 
     @Test
     void refusesToRemoveTheLastTrack() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
 
         assertThrows(IllegalStateException.class, () -> score.withoutTrackAt(0));
     }
@@ -91,7 +91,7 @@ class ScoreTest {
 
     @Test
     void everyUnmutedTrackIsAudibleWhenNobodyPlaysSolo() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
+        Score score = Score.blank(new TestDefaultNames()).withTrackAdded(Track.standardBass("Bass"));
 
         assertTrue(score.isAudible(0));
         assertTrue(score.isAudible(1));
@@ -99,7 +99,7 @@ class ScoreTest {
 
     @Test
     void aMutedTrackIsNotAudible() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
+        Score score = Score.blank(new TestDefaultNames()).withTrackAdded(Track.standardBass("Bass"));
 
         Score muted = score.withTrack(0, score.track(0).withChannel(score.track(0).channel().toggledMute()));
 
@@ -109,7 +109,7 @@ class ScoreTest {
 
     @Test
     void onlySoloTracksAreAudibleWhenSomebodyPlaysSolo() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
+        Score score = Score.blank(new TestDefaultNames()).withTrackAdded(Track.standardBass("Bass"));
 
         Score soloed = score.withTrack(1, score.track(1).withChannel(score.track(1).channel().toggledSolo()));
 
@@ -119,7 +119,7 @@ class ScoreTest {
 
     @Test
     void aMutedTrackStaysSilentEvenWhileItPlaysSolo() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         Channel mutedSolo = score.track(0).channel().toggledSolo().toggledMute();
 
         Score confused = score.withTrack(0, score.track(0).withChannel(mutedSolo));
@@ -129,7 +129,7 @@ class ScoreTest {
 
     @Test
     void insertsAMeasureInEveryTrackSoTheyStayAligned() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
+        Score score = Score.blank(new TestDefaultNames()).withTrackAdded(Track.standardBass("Bass"));
 
         Score grown = score.withMeasureInsertedInEveryTrackAt(0);
 
@@ -152,7 +152,7 @@ class ScoreTest {
 
     @Test
     void appendsAMeasureToEveryTrackWhenInsertingPastTheEnd() {
-        Score score = Score.blank().withTrackAdded(Track.standardBass("Bass"));
+        Score score = Score.blank(new TestDefaultNames()).withTrackAdded(Track.standardBass("Bass"));
 
         Score grown = score.withMeasureInsertedInEveryTrackAt(score.measureCount());
 
@@ -162,7 +162,7 @@ class ScoreTest {
 
     @Test
     void removesAMeasureFromEveryTrack() {
-        Score score = Score.blank()
+        Score score = Score.blank(new TestDefaultNames())
                 .withTrackAdded(Track.standardBass("Bass"))
                 .withMeasureInsertedInEveryTrackAt(0);
 
@@ -197,14 +197,14 @@ class ScoreTest {
 
     @Test
     void hasNoMarkerInEffectWhenTheScoreHasNone() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
 
         assertTrue(score.measureOfMarkerInEffectAt(0).isEmpty());
     }
 
     @Test
     void theMarkerInEffectIsTheOneOnTheSameMeasure() {
-        Score score = Score.blank().withAttributesInEveryTrackAt(
+        Score score = Score.blank(new TestDefaultNames()).withAttributesInEveryTrackAt(
                 0, MeasureAttributes.plain().withMarker(Marker.named("Intro")));
 
         assertEquals(0, score.measureOfMarkerInEffectAt(0).getAsInt());
@@ -212,7 +212,7 @@ class ScoreTest {
 
     @Test
     void theMarkerInEffectOnAMeasureWithoutOneIsTheClosestBeforeItAndNeverOneAfter() {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         for (int i = 1; i < 5; i++) {
             score = score.withMeasureInsertedInEveryTrackAt(i);
         }
