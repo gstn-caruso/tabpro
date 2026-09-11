@@ -364,46 +364,52 @@ the fifth, in progress, the dialogs.
 | I · the PDF and the image encode each sheet in one block (90% of export time) | `perf/el-pdf-y-la-imagen-codifican-cada-hoja-en-bloque` | — | in progress |
 | G · «Forzar barras horizontales» (requires slanted beams, a large rendering piece) | — | — | noted |
 
-Lo que queda anotado para después: digitación de mano derecha como botón
-aparte (el diálogo único ya cubre las dos manos), tres íconos de la captura de
-GP5 que no se distinguen, `doubleBar` y `tuplet` en Java2D por ser sub-píxel en
-Bravura, los valores predefinidos del combo de zoom (el manual no los lista), y
-la fuente del dígito de traste, que la resolución del manual no permite afirmar.
+What is left noted for later: right-hand fingering as a separate button (the
+single dialog already covers both hands), three icons in the GP5 screenshot
+that cannot be told apart, `doubleBar` and `tuplet` in Java2D for being
+sub-pixel in Bravura, the zoom combo's preset values (the manual does not
+list them), and the fret digit's font, which the manual's resolution does
+not let us confirm.
 
-**Estado (2026-09-11):** 77 PRs de la etapa (#112–#189) en `main`, CI verde,
-~5750 tests contando los parametrizados. Siete auditorías con oráculo externo:
-uso real, ventana, partitura, corpus real, diálogos, pasada fresca y
-rendimiento (en cierre). Tres auditorías hechas, todas con oráculo externo: uso
-real de los 15 capítulos del manual (harness que corre en el CI bajo Xvfb),
-visual zona por zona y de la partitura contra las capturas del manual, medidas
-en píxeles. Lo que las tres encontraron está cerrado o anotado arriba.
+**Status (2026-09-11):** 77 PRs from this stage (#112–#189) on `main`,
+green CI, ~5750 tests counting the parameterized ones. Seven audits with an
+outside oracle: real use, window, score, real corpus, dialogs, fresh pass
+and performance (closing out). Three audits done, all with an outside
+oracle: real use of the manual's 15 chapters (harness that runs on CI under
+Xvfb), zone-by-zone visual and score audits against the manual's
+screenshots, measured in pixels. What the three of them found is closed or
+noted above.
 
-**Lo que enseñó la sexta tanda:** una pasada fresca después de una tanda grande
-encuentra regresiones que ninguna auditoría anterior podía ver (la mesa nueva
-escondía los dígitos, las cajas de grupo enterraron botones); el `JOptionPane`
-saca sus botones del locale de la JVM y el runner no tiene español; y la suite
-en una sola JVM en paralelo castiga a cualquier componente que mida contra
-`UIManager` en su layout.
+**What the sixth batch taught us:** a fresh pass after a big batch finds
+regressions no earlier audit could see (the new table hid the digits, the
+group boxes buried buttons); `JOptionPane` pulls its button labels from the
+JVM locale and the runner has no Spanish; and the suite running in a
+single JVM in parallel punishes any component that measures itself against
+`UIManager` during layout.
 
-**Lo que enseñó la quinta tanda:** un worker que termina sin cambios pierde su
-worktree, y retomado por mensaje trabaja en el checkout principal: se lanza uno
-nuevo. Un worker se negó con razón a implementar las dinámicas escritas porque
-el manual dice lo contrario: el oráculo manda sobre el brief. Dos PRs se lastimaron por comandos encadenados sin condición: uno se mergeó con
-el CI rojo y a otro se le borró la branch remota con el CI rojo (GitHub cierra
-el PR). El merge y el borrado se gatean con el exit code de `gh pr checks` y
-con el estado MERGED. Y dos ramas que borran o renombran un color compartido
-(`KNOB_BODY`) chocan semánticamente aunque git no vea conflicto: el CI del PR
-es el que lo dice, y por eso se mira antes de mergear.
+**What the fifth batch taught us:** a worker that finishes with no changes
+loses its worktree, and if resumed by message it works in the main
+checkout: launch a new one instead. A worker rightly refused to implement
+the written dynamics because the manual says the opposite: the oracle
+outranks the brief. Two PRs got hurt by chained commands with no condition:
+one got merged with CI red, and another had its remote branch deleted with
+CI red (GitHub closes the PR). Merging and deleting are now gated on
+`gh pr checks`'s exit code and on the MERGED state. And two branches that
+deleted or renamed a shared color (`KNOB_BODY`) collided semantically even
+though git saw no conflict: the PR's CI is what tells you, which is why it
+gets checked before merging.
 
-**Lo que enseñó la primera tanda:** el `AcceleratorGuard` de la etapa anterior era él
-mismo una interfaz que mentía: ponía una acción vacía en vez de sacarle la tecla
-al `JScrollPane`, y su test verificaba que el scroll ya no la atendiera, no que
-el atajo funcionara después. La auditoría de uso real lo encontró porque despacha
-la tecla de verdad. `jsvg` resuelve `currentColor` desde `Graphics2D.getColor()`
-al renderizar, no desde el componente. Un conmutable que no lee el estado real al
-construirse miente igual que una preferencia sin lector. Y una captura del
-`MainFrame` sin `Theme.install()` muestra Metal, no la app: el harness construye
-la ventana sin tema y hay que instalarlo como hace `App.main()`.
+**What the first batch taught us:** the previous stage's `AcceleratorGuard`
+was itself a lying interface: it installed an empty action instead of
+stripping the key off the `JScrollPane`, and its test verified that the
+scroll no longer handled it, not that the shortcut worked afterward. The
+real-use audit found it because it dispatches the actual key. `jsvg`
+resolves `currentColor` from `Graphics2D.getColor()` at render time, not
+from the component. A toggle that does not read the real state when it is
+built lies just the same as a preference with no reader. And a `MainFrame`
+screenshot with no `Theme.install()` shows Metal, not the app: the harness
+builds the window with no theme, and it has to be installed the way
+`App.main()` does.
 
 ## Stage: English codebase and i18n (started 2026-09-10)
 
