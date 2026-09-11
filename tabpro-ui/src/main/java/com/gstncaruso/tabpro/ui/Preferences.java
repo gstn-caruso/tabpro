@@ -153,7 +153,11 @@ public final class Preferences {
     }
 
     public Language interfaceLanguage() {
-        return Language.valueOf(stored.get(INTERFACE_LANGUAGE, Language.AUTOMATIC.name()));
+        String storedName = stored.get(INTERFACE_LANGUAGE, Language.AUTOMATIC.name());
+        return Arrays.stream(Language.values())
+                .filter(language -> language.name().equals(storedName))
+                .findFirst()
+                .orElse(Language.AUTOMATIC);
     }
 
     public void setInterfaceLanguage(Language language) {

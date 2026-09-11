@@ -179,4 +179,11 @@ class PreferencesTest {
         assertEquals(Language.ENGLISH, preferences.interfaceLanguage());
         assertEquals("ENGLISH", node.get("interfaceLanguage", null));
     }
+
+    @Test
+    void anUnknownStoredInterfaceLanguageFallsBackToAutomatic() {
+        node.put("interfaceLanguage", "KLINGON");
+
+        assertEquals(Language.AUTOMATIC, preferences.interfaceLanguage());
+    }
 }
