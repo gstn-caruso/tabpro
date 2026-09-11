@@ -267,7 +267,7 @@ class MidiPlayerTest {
 
     @Test
     void seekingReachesEverySequencerNotJustThePrimaryPort() {
-        player = new MidiPlayer(sequencer, port -> silentReceiver(), MidiPlayerTest::unconnectedSequencer);
+        player = new MidiPlayer(sequencer, port -> silentReceiver(), FakeSequencer::new);
         TrackTimeline onPortOne = new TrackTimeline(25, 100, 64, false, 1,
                 List.of(new ScheduledNote(0, 4L * Duration.TICKS_PER_QUARTER, new Pitch(60))),
                 List.of(new ScheduledBeat(0, 0, 0)), List.of());
