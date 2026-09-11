@@ -8,8 +8,10 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class ShortcutListTest {
@@ -17,6 +19,14 @@ class ShortcutListTest {
     private final Commands commands = new Commands(
             new Editor(Score.blank()), record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
+
+    @Test
+    void theEditingAndEffectsGroupTitlesAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Editing", english.text("edit_dialogs.ShortcutList.editing"));
+        assertEquals("Effects", english.text("edit_dialogs.ShortcutList.effects"));
+    }
 
     @Test
     void groupsTheShortcutsTheWayTheManualDoes() {
