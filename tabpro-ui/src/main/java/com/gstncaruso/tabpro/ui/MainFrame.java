@@ -607,7 +607,7 @@ public final class MainFrame extends JFrame {
                 showError(e);
             } catch (ImageExportException e) {
                 JOptionPane.showMessageDialog(
-                        MainFrame.this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
+                        MainFrame.this, ErrorTexts.of(e), "tabpro", JOptionPane.ERROR_MESSAGE);
             }
         }
 

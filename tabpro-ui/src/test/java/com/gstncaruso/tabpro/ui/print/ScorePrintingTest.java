@@ -121,6 +121,7 @@ class ScorePrintingTest {
                 () -> ScorePrinting.exportImage(score, A4, path, ViewMode.SCREEN_VERTICAL, Zoom.whole()));
 
         assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("bmp"));
+        assertEquals(ImageExportProblem.BMP_ONLY_IN_PAGE_MODE, error.problem());
         assertFalse(Files.exists(path), "no half-written file can be left behind");
     }
 
@@ -181,6 +182,8 @@ class ScorePrintingTest {
 
         assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("bmp"),
                 "the message has to say which format failed");
+        assertEquals(ImageExportProblem.NO_IMAGE_WRITER, error.problem());
+        assertEquals(List.of("BMP"), error.arguments());
         assertFalse(Files.exists(path), "if ImageIO could not write anything, no file can be left behind");
     }
 
@@ -194,6 +197,8 @@ class ScorePrintingTest {
 
         assertTrue(error.getMessage().toLowerCase(java.util.Locale.ROOT).contains("jpg"),
                 "the message has to say which format failed");
+        assertEquals(ImageExportProblem.NO_IMAGE_WRITER, error.problem());
+        assertEquals(List.of("JPG"), error.arguments());
         assertFalse(Files.exists(path), "if ImageIO could not write anything, no file can be left behind");
     }
 

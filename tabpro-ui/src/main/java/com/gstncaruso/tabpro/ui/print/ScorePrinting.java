@@ -54,7 +54,7 @@ public final class ScorePrinting {
     public static void exportImage(Score score, PageSetup setup, Path path, ViewMode viewMode, Zoom zoom) {
         String format = formatOf(path);
         if (format.equals("bmp") && viewMode != ViewMode.PAGE) {
-            throw new ImageExportException("La exportación a BMP sólo está disponible en modo Página.");
+            throw ImageExportException.bmpOnlyInPageMode();
         }
         writeImage(ScoreSheets.render(score, viewMode, zoom, setup), format, path);
     }
@@ -79,9 +79,7 @@ public final class ScorePrinting {
             throw ScoreFileException.cannotWrite(path, e);
         }
         if (!written) {
-            throw new ImageExportException(
-                    "No se pudo exportar la imagen en formato " + format.toUpperCase(java.util.Locale.ROOT)
-                            + ": ningún códec de imagen instalado sabe codificarla en ese formato.");
+            throw ImageExportException.noImageWriterFor(format);
         }
     }
 

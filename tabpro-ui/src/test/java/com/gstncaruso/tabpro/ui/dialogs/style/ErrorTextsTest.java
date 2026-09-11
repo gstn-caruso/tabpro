@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreOperation;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.print.ImageExportException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
@@ -86,6 +87,30 @@ class ErrorTextsTest {
     @MethodSource
     void everyUnsupportedOperationReadsAsTodaysSpanishSentence(ScoreOperation operation, String spanish) {
         assertEquals(spanish, ErrorTexts.of(ScoreFileException.notSupported(operation), SPANISH));
+    }
+
+    static Stream<Arguments> everyImageExportProblemInBothLanguages() {
+        return Stream.of(
+                Arguments.of(ImageExportException.bmpOnlyInPageMode(),
+                        "La exportación a BMP sólo está disponible en modo Página.",
+                        "BMP export is only available in Page mode."),
+                Arguments.of(ImageExportException.noImageWriterFor("jpg"),
+                        "No se pudo exportar la imagen en formato JPG: ningún códec de imagen instalado sabe codificarla"
+                                + " en ese formato.",
+                        "Could not export the image as JPG: no installed image codec can encode that format."));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void everyImageExportProblemInBothLanguages(ImageExportException failure, String spanish, String english) {
+        assertEquals(spanish, ErrorTexts.of(failure, SPANISH));
+        assertEquals(english, ErrorTexts.of(failure, ENGLISH));
+    }
+
+    @Test
+    void theProcessLanguageRendersTheSpanishImageExportSentence() {
+        assertEquals("La exportación a BMP sólo está disponible en modo Página.",
+                ErrorTexts.of(ImageExportException.bmpOnlyInPageMode()));
     }
 
     @Test
