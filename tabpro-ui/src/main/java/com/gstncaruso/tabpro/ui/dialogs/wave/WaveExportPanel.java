@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.wave;
 
 import com.gstncaruso.tabpro.core.files.AudioQuality;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.GridLayout;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -16,8 +17,8 @@ public final class WaveExportPanel extends JPanel {
 
     private final JComboBox<Integer> sampleRate = new JComboBox<>(SAMPLE_RATES);
     private final JComboBox<Integer> bitDepth = new JComboBox<>(BIT_DEPTHS);
-    private final JRadioButton mono = new JRadioButton("Mono");
-    private final JRadioButton stereo = new JRadioButton("Estéreo");
+    private final JRadioButton mono = new JRadioButton(Texts.get("score_dialogs.WaveExportPanel.mono"));
+    private final JRadioButton stereo = new JRadioButton(Texts.get("score_dialogs.WaveExportPanel.stereo"));
 
     public WaveExportPanel(AudioQuality defaults) {
         super(new GridLayout(0, 2, 8, 6));
@@ -29,9 +30,9 @@ public final class WaveExportPanel extends JPanel {
         channels.add(stereo);
         (defaults.channels() == 1 ? mono : stereo).setSelected(true);
 
-        JLabel sampleRateLabel = new JLabel("Frecuencia de muestreo");
+        JLabel sampleRateLabel = new JLabel(Texts.get("score_dialogs.WaveExportPanel.sampleRate"));
         sampleRateLabel.setLabelFor(sampleRate);
-        JLabel bitDepthLabel = new JLabel("Profundidad de bits");
+        JLabel bitDepthLabel = new JLabel(Texts.get("score_dialogs.WaveExportPanel.bitDepth"));
         bitDepthLabel.setLabelFor(bitDepth);
 
         add(sampleRateLabel);
