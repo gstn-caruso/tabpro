@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.markers;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public final class MarkerList {
     public record Positioned(int measureIndex, Marker marker) {
 
         public String label() {
-            return "Compás " + (measureIndex + 1) + ": " + marker.name();
+            return Texts.get("edit_dialogs.MarkerList.label", String.valueOf(measureIndex + 1), marker.name());
         }
     }
 }
