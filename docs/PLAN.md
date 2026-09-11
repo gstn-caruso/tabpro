@@ -279,90 +279,90 @@ is sought (the manual, its screenshots, real files); the first three were
 real use, the window's look and the score's look; the fourth, the corpus;
 the fifth, in progress, the dialogs.
 
-### Estado
+### Status
 
-| Ítem | Branch | PR | Estado |
+| Item | Branch | PR | State |
 |---|---|---|---|
-| Plan de la etapa y actualizaciones | `docs/plan-etapa-visual`, `docs/estado-etapa-visual` | #112, #120 | mergeado |
-| A · auditoría de uso real, 15 de 15 capítulos (47 OK / 7 MIENTE / 1 AUSENTE; Print e Import/Export todo OK) | `docs/auditoria-uso-real`, `docs/auditoria-uso-real-print-e-import-export` | #114, #129 | mergeado |
-| A · el CI corre el harness bajo Xvfb | `ci/harness-con-display` | #117 | mergeado |
-| A · fix: la configuración del metrónomo se abre desde Sonido (hallazgo 6) | `fix/configuracion-del-metronomo-alcanzable` | #119 | mergeado |
-| A · fix: los siete atajos que Swing interceptaba (hallazgos 1–5) | `fix/atajos-que-swing-interceptaba` | #121 | mergeado |
-| B1 · íconos genéricos desde Tabler (`SvgIcon` + `jsvg`) | `feat/iconos-tabler` | #113 | mergeado |
-| B3 · símbolos musicales desde Bravura (`GlyphIcon`) | `feat/iconos-bravura` | #118 | mergeado |
-| B4 · barras con el orden y los grupos de GP5, efectos abajo de la partitura | `feat/barras-como-gp5` | #127 | mergeado |
-| B4 · dinámicas ppp…fff y banco de sonidos como botones | `feat/dinamicas-y-banco-de-sonidos-en-las-barras` | #132 | mergeado |
-| B4 · las barras fijan sus colores desde la paleta, con o sin tema | `fix/barras-superiores-apagadas` | #133 | mergeado |
-| B4 · selector de pista por número (fila 1) | `feat/selector-de-pista-por-numero` | — | en curso |
-| C1 · nombre accesible y tooltip en todo control (`AccessibilityWalker`) | `feat/nombres-accesibles` | #115 | mergeado |
-| C1 · siete diálogos separables para el recorredor | `refactor/dialogos-separables-para-el-recorredor` | #128 | mergeado |
-| C2 · mnemónicos Alt+letra en menús y formularios | `feat/mnemonicos` | #124 | mergeado |
-| C3 · teclado y foco visible en perilla, diapasón, teclado y grilla | `feat/teclado-en-los-componentes-custom` | #122 | mergeado |
-| C3 · marcadores, percusión, bends y afinador por teclado; Ctrl+F6 cede el foco | `feat/teclado-en-los-custom-menores-y-salida-de-foco` | #125 | mergeado |
-| C3 · el test de Ctrl+F6 inyecta la travesía de foco | `test/ctrl-f6-sin-el-focus-manager-global` | #130 | mergeado |
-| C4 · contraste WCAG AA en las dos paletas, con tests | `fix/contraste-wcag` | #116 | mergeado |
-| C4 · contraste en la mesa de mezcla y los cuatro mástiles | `fix/contraste-en-la-mesa-y-los-mastiles` | #126 | mergeado |
-| C5 · Preferencias > Accesibilidad (letra, alto contraste, sin animaciones) | `feat/preferencias-de-accesibilidad` | #123 | mergeado |
-| D · README y capturas con el tema real | `docs/readme-y-capturas-de-la-etapa-visual` | #131 | mergeado |
-| B4 · selector de pista por número (fila 1) | `feat/selector-de-pista-por-numero` | #136 | mergeado |
-| B4 · combo de zoom editable con el porcentaje | `feat/combo-de-zoom-como-gp5` | #140 | mergeado |
-| B4 · editar el marcador del cursor desde menú y barra | `feat/editar-el-marcador-del-cursor` | #144 | mergeado |
-| C4 · la cejilla en la paleta de cada mástil | `fix/la-cejilla-cumple-el-contraste-en-cada-mastil` | #135 | mergeado |
-| A · impresión verificable hasta el `PrinterJob` (costura `Printing`) | `refactor/impresion-con-costura-para-el-printer-job` | #137 | mergeado |
-| D · auditoría visual zona por zona contra la captura de GP5 (diez diferencias medidas) | — | — | hecha, no se commitea |
-| D · diapasón con veta y trastes metálicos, teclado con punto y bisel | `feat/diapason-y-teclado-como-gp5` | #138 | mergeado |
-| D · barra de estado con los seis paneles hundidos de GP5 | `feat/barra-de-estado-como-gp5` | #139 | mergeado |
-| D · mesa de mezcla con deslizadores, números planos y columnas de GP5 | `feat/mesa-de-mezcla-como-gp5` | #141 | mergeado |
-| D · vista global con regla de compases, marcadores en rojo y cabecera 1,3× | `feat/vista-global-como-gp5` | #142 | mergeado |
-| D · bandas de título con ✕ en diapasón y teclado | `feat/paneles-de-diapason-y-teclado-con-titulo` | #143 | mergeado |
-| D · README y capturas de la segunda tanda, sobre el `main` final | `docs/readme-y-capturas-de-la-segunda-tanda` | #152 | mergeado |
-| D · el combo de zoom conserva su ancho | `fix/el-combo-de-zoom-no-se-estira` | #146 | mergeado |
-| E · auditoría de la partitura contra los ejemplos de notación del manual (diez ítems medidos) | — | — | hecha, no se commitea |
-| E · nombres de cuerda apagados por defecto, como GP5 | `feat/nombres-de-cuerda-opcionales-por-pista` | #147 | mergeado |
-| E · tempo inicial escrito, tempo y números de compás en rojo | `feat/tempo-inicial-y-numeros-de-compas-como-gp5` | #148 | mergeado |
-| E · brecha pentagrama–tab medida (36 px) | `feat/brecha-pentagrama-tab-como-gp5` | #149 | mergeado |
-| E · selección amarilla y cuadrado de color del marcador | `feat/seleccion-amarilla-y-marcador-con-color-como-gp5` | #150 | mergeado |
-| E · el cuadrado del marcador no pisa el nombre de pista | `fix/el-cuadrado-del-marcador-no-pisa-el-nombre-de-pista` | #151 | mergeado |
-| E · dinámicas escritas bajo la nota | — | — | **no aplica**: el manual dice que GP5 no las muestra en la partitura; el modo F11 ya existe |
-| B4 · botón de digitación de mano derecha | `feat/boton-de-digitacion-de-mano-derecha` | #154 | mergeado |
-| F · auditoría de robustez con el corpus real (71 archivos: 68 abren, 68 pasan render, export y reapertura) | `docs/auditoria-corpus` | #155 | mergeado |
-| F · fix: la partitura recibe las notificaciones del `Editor` en el EDT y no scrollea con viewport 0×0 | `fix/las-notificaciones-del-editor-llegan-por-el-edt` | #156 | mergeado |
-| F · todos los componentes Swing escuchan al `Editor` por el adaptador del EDT | `refactor/todos-los-componentes-escuchan-al-editor-por-el-edt` | #158 | mergeado |
-| G · auditoría visual de los diálogos contra las capturas del manual (quince ítems) | — | — | hecha, no se commitea |
-| G · «Documento centrado» al imprimir | `feat/documento-centrado-al-imprimir` | #159 | mergeado |
-| G · letra en cinco pestañas con área multilínea | `feat/letra-multilinea-como-gp5` | #160 | mergeado |
-| G · combos y listas con etiquetas en castellano (`Labels`, oráculo en el recorredor) | `fix/los-combos-muestran-etiquetas-legibles` | #161 | mergeado |
-| G · secciones de formulario como cajas de grupo con título | `feat/cajas-de-grupo-con-titulo-en-los-formularios` | #162 | mergeado |
-| G · lista de marcadores como tabla de gestión | `feat/lista-de-marcadores-con-tabla-como-gp5` | #163 | mergeado |
-| G · propiedades de pista en dos columnas, «Forzar canales 11 a 16» y estilos de diagramas | `feat/propiedades-de-pista-como-gp5` | #164 | mergeado |
-| G · asistente de percusión en grilla de cuatro columnas | `feat/asistente-de-percusion-en-grilla-como-gp5` | #165 | mergeado |
-| F · el harness falla limpio en vez de colgar la suite | `test/el-harness-falla-limpio-en-vez-de-colgarse` | #166 | mergeado |
-| G · el oráculo de combos no exime renderers propios; Orientación y Papel con etiquetas | `fix/el-oraculo-de-combos-no-exime-renderers-propios` | #168 | mergeado |
-| G · constructor de acordes: inversión separada del bajo, posiciones y cejilla con radios | `feat/constructor-de-acordes-como-gp5` | #169 | mergeado |
-| G · importar MIDI con escucha previa, marcar todas y cuantización por radios con efecto real | `feat/importar-midi-como-gp5` | #170 | mergeado |
-| G · herramienta de escalas con listas, diagrama de grados y escuchar | `feat/herramienta-de-escalas-como-gp5` | #171 | mergeado |
-| F · `ScoreDocumentTest` sin las Preferences reales; tests de Preferences serializados | `test/metronomo-y-documento-sin-flakiness` | #172 | mergeado |
-| G · separar «Tipo» de acorde en extensión, alteraciones y «add» (toca nombrado, diagramas y formatos GP) | — | — | anotado, pieza grande |
-| G · botones de ayuda «?» y «Aplicar» en los diálogos | — | — | descartado: no hay ayuda que mostrar |
-| H · auditoría visual fresca de toda la app tras los 61 PRs (diez hallazgos, más quince de la sub-auditoría de ventana) | — | — | hecha, no se commitea |
-| H · barras de unión inclinadas, con «Forzar barras horizontales» por pista | `feat/barras-de-union-inclinadas-como-gp5` | #174 | mergeado |
-| H · la vista previa ASCII se verifica con el diálogo real (era artefacto del fixture) | `fix/la-vista-previa-ascii-muestra-la-tablatura` | #175 | mergeado |
-| H · mover el cursor limpia la selección, Shift extiende, Ctrl+A se pinta | `fix/la-seleccion-se-limpia-al-mover-el-cursor` | #176 | mergeado |
-| H · la mesa muestra puerto y canal con dos dígitos y el instrumento entero | `fix/la-mesa-muestra-los-canales-y-el-instrumento-enteros` | #177 | mergeado |
-| H · textos de efecto sin pisar el traste, marcador de 8×12, staccato opuesto a la plica | `fix/textos-de-efecto-marcador-y-staccato-como-gp5` | #178 | mergeado |
-| H · diapasón y teclado cerrados por defecto con estado recordado; Escalas con Do mayor | `fix/valores-iniciales-como-gp5` | #179 | mergeado |
-| H · tildes y eñes en 107 literales de 47 archivos, con guardián | `fix/tildes-en-los-textos-de-la-interfaz` | #180 | mergeado |
-| F · la grilla de percusión fija su tamaño de celda (flaky bajo la suite paralela) | `test/la-grilla-de-percusion-sin-flakiness` | #181 | mergeado |
-| H · ningún diálogo supera la pantalla; Configurar página y MIDI enteros; MIDI sin `JOptionPane` dependiente del locale | `fix/configurar-pagina-y-midi-entran-en-pantalla` | #182 | mergeado |
-| H · palanca con sus seis tipos y códigos GP5 exactos; opciones de let ring/palm mute/dinámica con título y foco propios | `fix/palanca-con-sus-tipos-y-opciones-por-pestana` | #183 | mergeado |
-| F · guardián: todo test que mute el look and feel lleva `@Isolated` | `test/los-tests-que-instalan-un-tema-corren-aislados` | #184 | mergeado |
-| F · red de humo permanente: cada fixture del repo se abre, renderiza, exporta y reabre en cada CI | `test/humo-permanente-sobre-los-fixtures` | #186 | mergeado |
-| I · auditoría de rendimiento con partituras de 100/300/600 compases (cinco hotspots medidos) | — | — | hecha, no se commitea |
-| I · la partitura pinta sólo hojas y sistemas a la vista; layout memoizado (modo Página: 28 s → 10 ms) | `perf/la-partitura-pinta-solo-lo-visible` | #187 | mergeado |
-| I · mover el cursor repinta sólo su zona; el `Editor` avisa qué cambió (407 ms → 19 ms por flecha) | `perf/mover-el-cursor-repinta-solo-lo-que-cambio` | #188 | mergeado |
-| I · cada hoja itera sólo sus compases; acordes bajo el título cacheados | `perf/el-export-pinta-solo-los-compases-de-cada-hoja` | #189 | mergeado |
-| I · el PDF y la imagen codifican cada hoja en bloque (el 90 % del tiempo de export) | `perf/el-pdf-y-la-imagen-codifican-cada-hoja-en-bloque` | — | en curso |
-| G · «Forzar barras horizontales» (pide barras inclinadas, pieza grande de render) | — | — | anotado |
+| Stage plan and updates | `docs/plan-etapa-visual`, `docs/estado-etapa-visual` | #112, #120 | merged |
+| A · real-use audit, 15 of 15 chapters (47 OK / 7 LIES / 1 MISSING; Print and Import/Export all OK) | `docs/auditoria-uso-real`, `docs/auditoria-uso-real-print-e-import-export` | #114, #129 | merged |
+| A · CI runs the harness under Xvfb | `ci/harness-con-display` | #117 | merged |
+| A · fix: metronome settings open from Sound (finding 6) | `fix/configuracion-del-metronomo-alcanzable` | #119 | merged |
+| A · fix: the seven shortcuts Swing was intercepting (findings 1–5) | `fix/atajos-que-swing-interceptaba` | #121 | merged |
+| B1 · generic icons from Tabler (`SvgIcon` + `jsvg`) | `feat/iconos-tabler` | #113 | merged |
+| B3 · musical symbols from Bravura (`GlyphIcon`) | `feat/iconos-bravura` | #118 | merged |
+| B4 · toolbars with GP5's order and groups, effects below the score | `feat/barras-como-gp5` | #127 | merged |
+| B4 · ppp…fff dynamics and sound bank as buttons | `feat/dinamicas-y-banco-de-sonidos-en-las-barras` | #132 | merged |
+| B4 · toolbars set their colors from the palette, with or without a theme | `fix/barras-superiores-apagadas` | #133 | merged |
+| B4 · track selector by number (row 1) | `feat/selector-de-pista-por-numero` | — | in progress |
+| C1 · accessible name and tooltip on every control (`AccessibilityWalker`) | `feat/nombres-accesibles` | #115 | merged |
+| C1 · seven dialogs made separable for the walker | `refactor/dialogos-separables-para-el-recorredor` | #128 | merged |
+| C2 · Alt+letter mnemonics in menus and dialogs | `feat/mnemonicos` | #124 | merged |
+| C3 · keyboard and visible focus on the knob, fretboard, keyboard and grid | `feat/teclado-en-los-componentes-custom` | #122 | merged |
+| C3 · markers, percussion, bends and tuner by keyboard; Ctrl+F6 hands off focus | `feat/teclado-en-los-custom-menores-y-salida-de-foco` | #125 | merged |
+| C3 · the Ctrl+F6 test injects the focus traversal | `test/ctrl-f6-sin-el-focus-manager-global` | #130 | merged |
+| C4 · WCAG AA contrast in both palettes, with tests | `fix/contraste-wcag` | #116 | merged |
+| C4 · contrast in the mix table and the four fretboards | `fix/contraste-en-la-mesa-y-los-mastiles` | #126 | merged |
+| C5 · Preferences > Accessibility (font, high contrast, no animations) | `feat/preferencias-de-accesibilidad` | #123 | merged |
+| D · README and screenshots with the real theme | `docs/readme-y-capturas-de-la-etapa-visual` | #131 | merged |
+| B4 · track selector by number (row 1) | `feat/selector-de-pista-por-numero` | #136 | merged |
+| B4 · editable zoom combo with the percentage | `feat/combo-de-zoom-como-gp5` | #140 | merged |
+| B4 · edit the cursor's marker from menu and toolbar | `feat/editar-el-marcador-del-cursor` | #144 | merged |
+| C4 · the barre in every fretboard's palette | `fix/la-cejilla-cumple-el-contraste-en-cada-mastil` | #135 | merged |
+| A · printing verifiable up to the `PrinterJob` (`Printing` seam) | `refactor/impresion-con-costura-para-el-printer-job` | #137 | merged |
+| D · zone-by-zone visual audit against the GP5 screenshot (ten differences measured) | — | — | done, not committed |
+| D · fretboard with wood grain and metal frets, keyboard with dot and bevel | `feat/diapason-y-teclado-como-gp5` | #138 | merged |
+| D · status bar with GP5's six recessed panels | `feat/barra-de-estado-como-gp5` | #139 | merged |
+| D · mix table with sliders, plain numbers and GP5's columns | `feat/mesa-de-mezcla-como-gp5` | #141 | merged |
+| D · global view with bar ruler, markers in red and a 1.3× header | `feat/vista-global-como-gp5` | #142 | merged |
+| D · title bars with ✕ on the fretboard and the keyboard | `feat/paneles-de-diapason-y-teclado-con-titulo` | #143 | merged |
+| D · README and screenshots for the second batch, on the final `main` | `docs/readme-y-capturas-de-la-segunda-tanda` | #152 | merged |
+| D · the zoom combo keeps its width | `fix/el-combo-de-zoom-no-se-estira` | #146 | merged |
+| E · score audit against the manual's notation examples (ten items measured) | — | — | done, not committed |
+| E · string names off by default, like GP5 | `feat/nombres-de-cuerda-opcionales-por-pista` | #147 | merged |
+| E · initial tempo written out, tempo and bar numbers in red | `feat/tempo-inicial-y-numeros-de-compas-como-gp5` | #148 | merged |
+| E · staff–tab gap measured (36 px) | `feat/brecha-pentagrama-tab-como-gp5` | #149 | merged |
+| E · yellow selection and colored marker square | `feat/seleccion-amarilla-y-marcador-con-color-como-gp5` | #150 | merged |
+| E · the marker square no longer overlaps the track name | `fix/el-cuadrado-del-marcador-no-pisa-el-nombre-de-pista` | #151 | merged |
+| E · dynamics written under the note | — | — | **not applicable**: the manual says GP5 does not show them on the score; F11 mode already exists |
+| B4 · right-hand fingering button | `feat/boton-de-digitacion-de-mano-derecha` | #154 | merged |
+| F · robustness audit with the real corpus (71 files: 68 open, 68 pass render, export and reopen) | `docs/auditoria-corpus` | #155 | merged |
+| F · fix: the score receives `Editor` notifications on the EDT and no longer scrolls with a 0×0 viewport | `fix/las-notificaciones-del-editor-llegan-por-el-edt` | #156 | merged |
+| F · every Swing component listens to the `Editor` through the EDT adapter | `refactor/todos-los-componentes-escuchan-al-editor-por-el-edt` | #158 | merged |
+| G · visual audit of the dialogs against the manual's screenshots (fifteen items) | — | — | done, not committed |
+| G · «Documento centrado» (Center on Page) when printing | `feat/documento-centrado-al-imprimir` | #159 | merged |
+| G · lyrics in five tabs with a multi-line area | `feat/letra-multilinea-como-gp5` | #160 | merged |
+| G · combos and lists show Spanish labels (`Labels`, oracle in the walker) | `fix/los-combos-muestran-etiquetas-legibles` | #161 | merged |
+| G · form sections as titled group boxes | `feat/cajas-de-grupo-con-titulo-en-los-formularios` | #162 | merged |
+| G · marker list as a management table | `feat/lista-de-marcadores-con-tabla-como-gp5` | #163 | merged |
+| G · track properties in two columns, «Forzar canales 11 a 16» (Force channels 11 to 16) and diagram styles | `feat/propiedades-de-pista-como-gp5` | #164 | merged |
+| G · percussion assistant in a four-column grid | `feat/asistente-de-percusion-en-grilla-como-gp5` | #165 | merged |
+| F · the harness fails clean instead of hanging the suite | `test/el-harness-falla-limpio-en-vez-de-colgarse` | #166 | merged |
+| G · the combo oracle no longer exempts custom renderers; Orientation and Paper get labels | `fix/el-oraculo-de-combos-no-exime-renderers-propios` | #168 | merged |
+| G · chord builder: inversion split from the bass, positions and barre with radio buttons | `feat/constructor-de-acordes-como-gp5` | #169 | merged |
+| G · import MIDI with preview, select-all and quantization radio buttons with a real effect | `feat/importar-midi-como-gp5` | #170 | merged |
+| G · scale tool with lists, a degree diagram and listen | `feat/herramienta-de-escalas-como-gp5` | #171 | merged |
+| F · `ScoreDocumentTest` without the real Preferences; Preferences tests serialized | `test/metronomo-y-documento-sin-flakiness` | #172 | merged |
+| G · split chord «Tipo» (Type) into extension, alterations and «add» (touches naming, diagrams and GP formats) | — | — | noted, large piece |
+| G · «?» help and «Aplicar» (Apply) buttons in dialogs | — | — | dropped: no help to show |
+| H · fresh visual audit of the whole app after 61 PRs (ten findings, plus fifteen from the window sub-audit) | — | — | done, not committed |
+| H · slanted beams, with «Forzar barras horizontales» (Force horizontal beams) per track | `feat/barras-de-union-inclinadas-como-gp5` | #174 | merged |
+| H · the ASCII preview is verified with the real dialog (it was a fixture artifact) | `fix/la-vista-previa-ascii-muestra-la-tablatura` | #175 | merged |
+| H · moving the cursor clears the selection, Shift extends it, Ctrl+A paints it | `fix/la-seleccion-se-limpia-al-mover-el-cursor` | #176 | merged |
+| H · the table shows port and channel with two digits and the full instrument name | `fix/la-mesa-muestra-los-canales-y-el-instrumento-enteros` | #177 | merged |
+| H · effect texts no longer overlap the fret, 8×12 marker, staccato opposite the stem | `fix/textos-de-efecto-marcador-y-staccato-como-gp5` | #178 | merged |
+| H · fretboard and keyboard closed by default with remembered state; Scales defaults to C major | `fix/valores-iniciales-como-gp5` | #179 | merged |
+| H · accents and ñ restored in 107 literals across 47 files, with a guardian | `fix/tildes-en-los-textos-de-la-interfaz` | #180 | merged |
+| F · the percussion grid fixes its cell size (flaky under the parallel suite) | `test/la-grilla-de-percusion-sin-flakiness` | #181 | merged |
+| H · no dialog exceeds the screen; Page Setup and MIDI shown in full; MIDI drops the locale-dependent `JOptionPane` | `fix/configurar-pagina-y-midi-entran-en-pantalla` | #182 | merged |
+| H · tremolo bar with its six types and exact GP5 codes; let ring/palm mute/dynamics options get their own title and focus | `fix/palanca-con-sus-tipos-y-opciones-por-pestana` | #183 | merged |
+| F · guardian: every test that mutates the look and feel carries `@Isolated` | `test/los-tests-que-instalan-un-tema-corren-aislados` | #184 | merged |
+| F · permanent smoke net: every repo fixture opens, renders, exports and reopens on every CI run | `test/humo-permanente-sobre-los-fixtures` | #186 | merged |
+| I · performance audit with 100/300/600-bar scores (five hotspots measured) | — | — | done, not committed |
+| I · the score paints only visible sheets and systems; layout memoized (Page mode: 28 s → 10 ms) | `perf/la-partitura-pinta-solo-lo-visible` | #187 | merged |
+| I · moving the cursor repaints only its zone; the `Editor` reports what changed (407 ms → 19 ms per arrow key) | `perf/mover-el-cursor-repinta-solo-lo-que-cambio` | #188 | merged |
+| I · each sheet iterates only its own bars; chords under the title get cached | `perf/el-export-pinta-solo-los-compases-de-cada-hoja` | #189 | merged |
+| I · the PDF and the image encode each sheet in one block (90% of export time) | `perf/el-pdf-y-la-imagen-codifican-cada-hoja-en-bloque` | — | in progress |
+| G · «Forzar barras horizontales» (requires slanted beams, a large rendering piece) | — | — | noted |
 
 Lo que queda anotado para después: digitación de mano derecha como botón
 aparte (el diálogo único ya cubre las dos manos), tres íconos de la captura de
