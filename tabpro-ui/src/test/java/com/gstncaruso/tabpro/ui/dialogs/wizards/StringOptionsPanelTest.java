@@ -6,10 +6,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class StringOptionsPanelTest {
+
+    @Test
+    void theLetRingAndPalmMuteLabelsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Let Ring", english.text("score_dialogs.StringOptionsPanel.letRing"));
+        assertEquals("Palm Mute", english.text("score_dialogs.StringOptionsPanel.palmMute"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {

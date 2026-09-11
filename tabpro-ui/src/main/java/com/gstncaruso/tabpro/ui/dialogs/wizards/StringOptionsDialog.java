@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.util.Set;
 
@@ -32,7 +33,8 @@ public final class StringOptionsDialog {
     private static void open(Component parent, Editor editor, Option option) {
         StringOptionsPanel panel = new StringOptionsPanel(editor.currentTrack().stringCount(), editor.currentTrack().measureCount());
 
-        boolean accepted = DialogShell.ask(parent, titleFor(option), panel, "Aplicar", panel.comboFor(option));
+        boolean accepted =
+                DialogShell.ask(parent, titleFor(option), panel, Texts.get("score_dialogs.shared.apply"), panel.comboFor(option));
         if (!accepted) {
             return;
         }
@@ -45,9 +47,9 @@ public final class StringOptionsDialog {
 
     static String titleFor(Option option) {
         return switch (option) {
-            case LET_RING -> "Opciones de let ring";
-            case PALM_MUTE -> "Opciones de palm mute";
-            case DYNAMIC -> "Opciones de dinámica";
+            case LET_RING -> Texts.get("score_dialogs.StringOptionsDialog.letRingTitle");
+            case PALM_MUTE -> Texts.get("score_dialogs.StringOptionsDialog.palmMuteTitle");
+            case DYNAMIC -> Texts.get("score_dialogs.StringOptionsDialog.dynamicTitle");
         };
     }
 

@@ -41,7 +41,7 @@ public final class TuningEditorPanel extends JPanel {
 
         JPanel top = new JPanel(new BorderLayout(DialogStyle.GAP_S, 0));
         top.setOpaque(false);
-        top.add(labeled(Texts.get("score_dialogs.TuningEditorPanel.strings"), stringCount), BorderLayout.WEST);
+        top.add(labeled(Texts.get("score_dialogs.shared.strings"), stringCount), BorderLayout.WEST);
         top.add(familyButtons(), BorderLayout.CENTER);
         add(top, BorderLayout.NORTH);
         library.setRenderer(new LabeledListCellRenderer());

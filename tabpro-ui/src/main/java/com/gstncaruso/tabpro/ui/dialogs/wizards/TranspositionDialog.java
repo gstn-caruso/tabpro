@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.wizards;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.editing.wizards.Transposition;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 
 public final class TranspositionDialog {
@@ -13,7 +14,8 @@ public final class TranspositionDialog {
     public static void show(Component parent, Editor editor) {
         TranspositionPanel panel = new TranspositionPanel();
 
-        boolean accepted = DialogShell.ask(parent, "Transponer", panel, "Transponer");
+        boolean accepted = DialogShell.ask(
+                parent, Texts.get("score_dialogs.shared.transpose"), panel, Texts.get("score_dialogs.shared.transpose"));
         if (!accepted) {
             return;
         }

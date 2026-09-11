@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.wizards;
 
 import com.gstncaruso.tabpro.core.editing.wizards.BarDurationCheck;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 
 public final class BarDurationReport {
 
@@ -8,7 +9,10 @@ public final class BarDurationReport {
     }
 
     public static String describe(BarDurationCheck.Finding finding) {
-        String problem = finding.tooShort() ? "le faltan pulsos" : "le sobran pulsos";
-        return "Pista " + (finding.trackIndex() + 1) + ", compás " + (finding.measureIndex() + 1) + ": " + problem;
+        String problem = finding.tooShort()
+                ? Texts.get("score_dialogs.BarDurationReport.tooShort")
+                : Texts.get("score_dialogs.BarDurationReport.tooLong");
+        return Texts.get(
+                "score_dialogs.BarDurationReport.finding", finding.trackIndex() + 1, finding.measureIndex() + 1, problem);
     }
 }

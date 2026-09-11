@@ -4,9 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.wizards.BarDurationCheck;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class BarDurationReportTest {
+
+    @Test
+    void theTooShortAndTooLongDescriptionsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("missing beats", english.text("score_dialogs.BarDurationReport.tooShort"));
+        assertEquals("extra beats", english.text("score_dialogs.BarDurationReport.tooLong"));
+        assertEquals("Track 1, bar 3: missing beats", english.text("score_dialogs.BarDurationReport.finding", 1, 3, "missing beats"));
+    }
 
     @Test
     void describesATooShortMeasure() {

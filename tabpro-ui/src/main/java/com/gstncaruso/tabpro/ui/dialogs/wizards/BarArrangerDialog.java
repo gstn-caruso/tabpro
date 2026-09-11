@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.editing.wizards.BarArranger;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import javax.swing.JLabel;
@@ -17,7 +18,9 @@ public final class BarArrangerDialog {
     public static void show(Component parent, Editor editor) {
         Fields fields = buildFields();
 
-        boolean accepted = DialogShell.ask(parent, "Organizador de compases", fields.content(), "Organizar");
+        boolean accepted = DialogShell.ask(
+                parent, Texts.get("score_dialogs.BarArrangerDialog.title"), fields.content(),
+                Texts.get("score_dialogs.BarArrangerDialog.accept"));
         if (!accepted) {
             return;
         }
@@ -30,8 +33,7 @@ public final class BarArrangerDialog {
     static Fields buildFields() {
         JPanel content = new JPanel(new BorderLayout(0, DialogStyle.GAP_S));
         DialogStyle.padded(content);
-        content.add(new JLabel("<html>Reacomoda los beats para que cada compás sume<br>"
-                + "exactamente lo que pide su medida.</html>"), BorderLayout.NORTH);
+        content.add(new JLabel(Texts.get("score_dialogs.BarArrangerDialog.description")), BorderLayout.NORTH);
         TrackScopePanel scope = new TrackScopePanel();
         content.add(scope, BorderLayout.CENTER);
 
