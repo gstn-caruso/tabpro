@@ -25,6 +25,7 @@ public final class Preferences {
     private static final String EFFECTS_TOOL_BAR_VISIBLE = "effectsToolBarVisible";
     private static final String FRETBOARD_VISIBLE = "fretboardVisible";
     private static final String KEYBOARD_VISIBLE = "keyboardVisible";
+    private static final String INTERFACE_LANGUAGE = "interfaceLanguage";
     private static final String SEPARATOR = "\n";
 
     private final java.util.prefs.Preferences stored;
@@ -152,6 +153,10 @@ public final class Preferences {
     }
 
     public Language interfaceLanguage() {
-        return Language.AUTOMATIC;
+        return Language.valueOf(stored.get(INTERFACE_LANGUAGE, Language.AUTOMATIC.name()));
+    }
+
+    public void setInterfaceLanguage(Language language) {
+        stored.put(INTERFACE_LANGUAGE, language.name());
     }
 }

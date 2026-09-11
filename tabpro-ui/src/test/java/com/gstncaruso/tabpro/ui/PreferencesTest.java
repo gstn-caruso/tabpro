@@ -171,4 +171,12 @@ class PreferencesTest {
     void theInterfaceLanguageStartsAutomatic() {
         assertEquals(Language.AUTOMATIC, preferences.interfaceLanguage());
     }
+
+    @Test
+    void remembersTheChosenInterfaceLanguageByItsName() {
+        preferences.setInterfaceLanguage(Language.ENGLISH);
+
+        assertEquals(Language.ENGLISH, preferences.interfaceLanguage());
+        assertEquals("ENGLISH", node.get("interfaceLanguage", null));
+    }
 }
