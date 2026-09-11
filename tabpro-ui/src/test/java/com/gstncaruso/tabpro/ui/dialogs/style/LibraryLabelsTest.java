@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.gstncaruso.tabpro.core.harmony.Scale;
+import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
 import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Tuning;
@@ -37,6 +39,16 @@ class LibraryLabelsTest {
     private static final List<String> TODAYS_SPANISH_OTHER_INSTRUMENT_TUNING_NAMES = List.of(
             "Banjo Open G", "Banjo Open D", "Banjo Drop C", "Banjo Sol menor", "Banjo Sol modal", "Mandolina",
             "Ukelele en Do", "Ukelele en Sol", "Violín", "Viola", "Violoncello");
+
+    private static final List<String> TODAYS_SPANISH_SCALE_NAMES = List.of(
+            "Mayor (Jónico)", "Dórico", "Frigio", "Lidio", "Mixolidio", "Menor natural (Eólico)", "Locrio",
+            "Menor armónica", "Menor melódica", "Pentatónica mayor", "Pentatónica menor", "Blues", "Tonos enteros",
+            "Cromática", "Disminuida (tono-semitono)", "Disminuida dominante (semitono-tono)", "Menor húngara",
+            "Española (frigia dominante)", "Napolitana menor", "Napolitana mayor", "Enigmática", "Hirajoshi",
+            "In Sen", "Iwato", "China", "Egipcia", "Locrio natural 6", "Mayor #5 (Jónico aumentado)", "Dórico #4",
+            "Lidio #2", "Dórico b2", "Lidio aumentado", "Lidio b7", "Mixolidio b6", "Locrio #2",
+            "Superlocrio (alterada)", "Be-bop dominante", "Aumentada", "Blues mayor", "Árabe", "Balinesa",
+            "Bizantina", "Húngara mayor", "Javanesa", "Kumoi", "Oriental", "Persa", "Pelog", "Armónicos (Overtone)");
 
     static Stream<Arguments> libraryTuningsWithTodaysSpanishName() {
         return Stream.of(
@@ -83,6 +95,25 @@ class LibraryLabelsTest {
     @Test
     void aTuningNamedByTheUserIsLabeledWithThatNameAsTyped() {
         assertEquals("Mi afinación (DADGAD)", Labels.of(Tuning.of("Mi afinación", 62, 57, 55, 50, 45, 38)));
+    }
+
+    static Stream<Arguments> libraryScalesWithTodaysSpanishName() {
+        return pairedInOrder(ScaleLibrary.all(), TODAYS_SPANISH_SCALE_NAMES);
+    }
+
+    @ParameterizedTest(name = "{1}")
+    @MethodSource("libraryScalesWithTodaysSpanishName")
+    void everyLibraryScaleKeepsTodaysSpanishNameAndHasAnEnglishName(Scale scale, String todaysSpanishName) {
+        String key = "library.scale." + scale.id();
+
+        assertEquals(todaysSpanishName, SPANISH.text(key));
+        assertEquals(todaysSpanishName, Labels.of(scale));
+        assertFalse(ENGLISH.text(key).isBlank());
+    }
+
+    @Test
+    void theMajorScaleIsNamedMajorIonianInEnglish() {
+        assertEquals("Major (Ionian)", ENGLISH.text("library.scale." + ScaleLibrary.major().id()));
     }
 
     private static String libraryIdOf(Tuning tuning) {

@@ -12,208 +12,208 @@ public final class ScaleLibrary {
     }
 
     public static Scale major() {
-        return sevenNotes("Mayor (Jónico)", List.of(0, 2, 4, 5, 7, 9, 11));
+        return sevenNotes("major", List.of(0, 2, 4, 5, 7, 9, 11));
     }
 
     public static Scale dorian() {
-        return sevenNotes("Dórico", List.of(0, 2, 3, 5, 7, 9, 10));
+        return sevenNotes("dorian", List.of(0, 2, 3, 5, 7, 9, 10));
     }
 
     public static Scale phrygian() {
-        return sevenNotes("Frigio", List.of(0, 1, 3, 5, 7, 8, 10));
+        return sevenNotes("phrygian", List.of(0, 1, 3, 5, 7, 8, 10));
     }
 
     public static Scale lydian() {
-        return sevenNotes("Lidio", List.of(0, 2, 4, 6, 7, 9, 11));
+        return sevenNotes("lydian", List.of(0, 2, 4, 6, 7, 9, 11));
     }
 
     public static Scale mixolydian() {
-        return sevenNotes("Mixolidio", List.of(0, 2, 4, 5, 7, 9, 10));
+        return sevenNotes("mixolydian", List.of(0, 2, 4, 5, 7, 9, 10));
     }
 
     public static Scale naturalMinor() {
-        return sevenNotes("Menor natural (Eólico)", List.of(0, 2, 3, 5, 7, 8, 10));
+        return sevenNotes("naturalMinor", List.of(0, 2, 3, 5, 7, 8, 10));
     }
 
     public static Scale locrian() {
-        return sevenNotes("Locrio", List.of(0, 1, 3, 5, 6, 8, 10));
+        return sevenNotes("locrian", List.of(0, 1, 3, 5, 6, 8, 10));
     }
 
     public static Scale harmonicMinor() {
-        return sevenNotes("Menor armónica", List.of(0, 2, 3, 5, 7, 8, 11));
+        return sevenNotes("harmonicMinor", List.of(0, 2, 3, 5, 7, 8, 11));
     }
 
     public static Scale melodicMinor() {
-        return sevenNotes("Menor melódica", List.of(0, 2, 3, 5, 7, 9, 11));
+        return sevenNotes("melodicMinor", List.of(0, 2, 3, 5, 7, 9, 11));
     }
 
     public static Scale majorPentatonic() {
-        return new Scale("Pentatónica mayor", List.of(0, 2, 4, 7, 9), List.of(0, 1, 2, 4, 5));
+        return new Scale("majorPentatonic", List.of(0, 2, 4, 7, 9), List.of(0, 1, 2, 4, 5));
     }
 
     public static Scale minorPentatonic() {
-        return new Scale("Pentatónica menor", List.of(0, 3, 5, 7, 10), List.of(0, 2, 3, 4, 6));
+        return new Scale("minorPentatonic", List.of(0, 3, 5, 7, 10), List.of(0, 2, 3, 4, 6));
     }
 
     public static Scale blues() {
-        return new Scale("Blues", List.of(0, 3, 5, 6, 7, 10), List.of(0, 2, 3, 4, 4, 6));
+        return new Scale("blues", List.of(0, 3, 5, 6, 7, 10), List.of(0, 2, 3, 4, 4, 6));
     }
 
     public static Scale wholeTone() {
-        return new Scale("Tonos enteros", List.of(0, 2, 4, 6, 8, 10), List.of(0, 1, 2, 3, 4, 5));
+        return new Scale("wholeTone", List.of(0, 2, 4, 6, 8, 10), List.of(0, 1, 2, 3, 4, 5));
     }
 
     public static Scale chromatic() {
         return new Scale(
-                "Cromática",
+                "chromatic",
                 List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
                 List.of(0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6));
     }
 
     public static Scale diminishedWholeHalf() {
         return new Scale(
-                "Disminuida (tono-semitono)",
+                "diminishedWholeHalf",
                 List.of(0, 2, 3, 5, 6, 8, 9, 11),
                 List.of(0, 1, 2, 3, 4, 5, 5, 6));
     }
 
     public static Scale diminishedHalfWhole() {
         return new Scale(
-                "Disminuida dominante (semitono-tono)",
+                "diminishedHalfWhole",
                 List.of(0, 1, 3, 4, 6, 7, 9, 10),
                 List.of(0, 1, 2, 2, 3, 4, 5, 6));
     }
 
     public static Scale hungarianMinor() {
-        return sevenNotes("Menor húngara", List.of(0, 2, 3, 6, 7, 8, 11));
+        return sevenNotes("hungarianMinor", List.of(0, 2, 3, 6, 7, 8, 11));
     }
 
     public static Scale phrygianDominant() {
-        return sevenNotes("Española (frigia dominante)", List.of(0, 1, 4, 5, 7, 8, 10));
+        return sevenNotes("phrygianDominant", List.of(0, 1, 4, 5, 7, 8, 10));
     }
 
     public static Scale neapolitanMinor() {
-        return sevenNotes("Napolitana menor", List.of(0, 1, 3, 5, 7, 8, 11));
+        return sevenNotes("neapolitanMinor", List.of(0, 1, 3, 5, 7, 8, 11));
     }
 
     public static Scale neapolitanMajor() {
-        return sevenNotes("Napolitana mayor", List.of(0, 1, 3, 5, 7, 9, 11));
+        return sevenNotes("neapolitanMajor", List.of(0, 1, 3, 5, 7, 9, 11));
     }
 
     public static Scale enigmatic() {
-        return sevenNotes("Enigmática", List.of(0, 1, 4, 6, 8, 10, 11));
+        return sevenNotes("enigmatic", List.of(0, 1, 4, 6, 8, 10, 11));
     }
 
     public static Scale hirajoshi() {
-        return new Scale("Hirajoshi", List.of(0, 2, 3, 7, 8), List.of(0, 1, 2, 4, 5));
+        return new Scale("hirajoshi", List.of(0, 2, 3, 7, 8), List.of(0, 1, 2, 4, 5));
     }
 
     public static Scale inSen() {
-        return new Scale("In Sen", List.of(0, 1, 5, 7, 10), List.of(0, 1, 3, 4, 6));
+        return new Scale("inSen", List.of(0, 1, 5, 7, 10), List.of(0, 1, 3, 4, 6));
     }
 
     public static Scale iwato() {
-        return new Scale("Iwato", List.of(0, 1, 5, 6, 10), List.of(0, 1, 3, 4, 6));
+        return new Scale("iwato", List.of(0, 1, 5, 6, 10), List.of(0, 1, 3, 4, 6));
     }
 
     public static Scale chinese() {
-        return new Scale("China", List.of(0, 4, 6, 7, 11), List.of(0, 2, 3, 4, 6));
+        return new Scale("chinese", List.of(0, 4, 6, 7, 11), List.of(0, 2, 3, 4, 6));
     }
 
     public static Scale egyptian() {
-        return new Scale("Egipcia", List.of(0, 2, 5, 7, 10), List.of(0, 1, 3, 4, 6));
+        return new Scale("egyptian", List.of(0, 2, 5, 7, 10), List.of(0, 1, 3, 4, 6));
     }
 
     public static Scale locrianNatural6() {
-        return sevenNotes("Locrio natural 6", List.of(0, 1, 3, 5, 6, 9, 10));
+        return sevenNotes("locrianNatural6", List.of(0, 1, 3, 5, 6, 9, 10));
     }
 
     public static Scale majorSharpFive() {
-        return sevenNotes("Mayor #5 (Jónico aumentado)", List.of(0, 2, 4, 5, 8, 9, 11));
+        return sevenNotes("majorSharpFive", List.of(0, 2, 4, 5, 8, 9, 11));
     }
 
     public static Scale dorianSharpFour() {
-        return sevenNotes("Dórico #4", List.of(0, 2, 3, 6, 7, 9, 10));
+        return sevenNotes("dorianSharpFour", List.of(0, 2, 3, 6, 7, 9, 10));
     }
 
     public static Scale lydianSharpTwo() {
-        return sevenNotes("Lidio #2", List.of(0, 3, 4, 6, 7, 9, 11));
+        return sevenNotes("lydianSharpTwo", List.of(0, 3, 4, 6, 7, 9, 11));
     }
 
     public static Scale dorianFlatTwo() {
-        return sevenNotes("Dórico b2", List.of(0, 1, 3, 5, 7, 9, 10));
+        return sevenNotes("dorianFlatTwo", List.of(0, 1, 3, 5, 7, 9, 10));
     }
 
     public static Scale lydianAugmented() {
-        return sevenNotes("Lidio aumentado", List.of(0, 2, 4, 6, 8, 9, 11));
+        return sevenNotes("lydianAugmented", List.of(0, 2, 4, 6, 8, 9, 11));
     }
 
     public static Scale lydianDominant() {
-        return sevenNotes("Lidio b7", List.of(0, 2, 4, 6, 7, 9, 10));
+        return sevenNotes("lydianDominant", List.of(0, 2, 4, 6, 7, 9, 10));
     }
 
     public static Scale mixolydianFlatSix() {
-        return sevenNotes("Mixolidio b6", List.of(0, 2, 4, 5, 7, 8, 10));
+        return sevenNotes("mixolydianFlatSix", List.of(0, 2, 4, 5, 7, 8, 10));
     }
 
     public static Scale locrianSharpTwo() {
-        return sevenNotes("Locrio #2", List.of(0, 2, 3, 5, 6, 8, 10));
+        return sevenNotes("locrianSharpTwo", List.of(0, 2, 3, 5, 6, 8, 10));
     }
 
     public static Scale superLocrian() {
-        return sevenNotes("Superlocrio (alterada)", List.of(0, 1, 3, 4, 6, 8, 10));
+        return sevenNotes("superLocrian", List.of(0, 1, 3, 4, 6, 8, 10));
     }
 
     public static Scale bebopDominant() {
-        return new Scale("Be-bop dominante", List.of(0, 2, 4, 5, 7, 9, 10, 11), List.of(0, 1, 2, 3, 4, 5, 6, 6));
+        return new Scale("bebopDominant", List.of(0, 2, 4, 5, 7, 9, 10, 11), List.of(0, 1, 2, 3, 4, 5, 6, 6));
     }
 
     public static Scale augmented() {
-        return new Scale("Aumentada", List.of(0, 3, 4, 7, 8, 11), List.of(0, 1, 2, 4, 5, 6));
+        return new Scale("augmented", List.of(0, 3, 4, 7, 8, 11), List.of(0, 1, 2, 4, 5, 6));
     }
 
     public static Scale bluesMajor() {
-        return new Scale("Blues mayor", List.of(0, 2, 3, 4, 7, 9), List.of(0, 1, 2, 2, 4, 5));
+        return new Scale("bluesMajor", List.of(0, 2, 3, 4, 7, 9), List.of(0, 1, 2, 2, 4, 5));
     }
 
     public static Scale arabian() {
-        return sevenNotes("Árabe", List.of(0, 2, 4, 5, 6, 8, 10));
+        return sevenNotes("arabian", List.of(0, 2, 4, 5, 6, 8, 10));
     }
 
     public static Scale balinese() {
-        return new Scale("Balinesa", List.of(0, 1, 3, 7, 8), List.of(0, 1, 2, 4, 5));
+        return new Scale("balinese", List.of(0, 1, 3, 7, 8), List.of(0, 1, 2, 4, 5));
     }
 
     public static Scale byzantine() {
-        return sevenNotes("Bizantina", List.of(0, 1, 4, 5, 7, 8, 11));
+        return sevenNotes("byzantine", List.of(0, 1, 4, 5, 7, 8, 11));
     }
 
     public static Scale hungarianMajor() {
-        return sevenNotes("Húngara mayor", List.of(0, 3, 4, 6, 7, 9, 10));
+        return sevenNotes("hungarianMajor", List.of(0, 3, 4, 6, 7, 9, 10));
     }
 
     public static Scale javanese() {
-        return sevenNotes("Javanesa", List.of(0, 1, 3, 5, 7, 9, 10));
+        return sevenNotes("javanese", List.of(0, 1, 3, 5, 7, 9, 10));
     }
 
     public static Scale kumoi() {
-        return new Scale("Kumoi", List.of(0, 2, 3, 7, 9), List.of(0, 1, 2, 4, 5));
+        return new Scale("kumoi", List.of(0, 2, 3, 7, 9), List.of(0, 1, 2, 4, 5));
     }
 
     public static Scale oriental() {
-        return sevenNotes("Oriental", List.of(0, 1, 4, 5, 6, 9, 10));
+        return sevenNotes("oriental", List.of(0, 1, 4, 5, 6, 9, 10));
     }
 
     public static Scale persian() {
-        return sevenNotes("Persa", List.of(0, 1, 4, 5, 6, 8, 11));
+        return sevenNotes("persian", List.of(0, 1, 4, 5, 6, 8, 11));
     }
 
     public static Scale pelog() {
-        return new Scale("Pelog", List.of(0, 1, 3, 7, 8), List.of(0, 1, 2, 4, 5));
+        return new Scale("pelog", List.of(0, 1, 3, 7, 8), List.of(0, 1, 2, 4, 5));
     }
 
     public static Scale overtone() {
-        return sevenNotes("Armónicos (Overtone)", List.of(0, 2, 4, 6, 7, 9, 10));
+        return sevenNotes("overtone", List.of(0, 2, 4, 6, 7, 9, 10));
     }
 
     public static List<Scale> all() {
