@@ -21,4 +21,13 @@ class LanguageTest {
     void automaticPicksEnglishWhenTheSystemSpeaksAnyOtherLanguage(String systemLanguageTag) {
         assertEquals(Locale.ENGLISH, Language.AUTOMATIC.resolve(Locale.forLanguageTag(systemLanguageTag)));
     }
+
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"es-AR", "en-US", "pt-BR"})
+    void anExplicitChoiceIgnoresTheSystemLanguage(String systemLanguageTag) {
+        Locale system = Locale.forLanguageTag(systemLanguageTag);
+
+        assertEquals(SPANISH, Language.SPANISH.resolve(system));
+        assertEquals(Locale.ENGLISH, Language.ENGLISH.resolve(system));
+    }
 }
