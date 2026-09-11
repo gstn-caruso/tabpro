@@ -39,7 +39,7 @@ class JsonScoreFilesTest {
 
     @Test
     void savesAndLoadsTheSameScore(@TempDir Path tempDir) {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         Path path = tempDir.resolve("score.tabpro");
 
         scoreFiles.save(score, path);
@@ -50,7 +50,7 @@ class JsonScoreFilesTest {
 
     @Test
     void writesTheFormatVersionFirst(@TempDir Path tempDir) throws IOException {
-        Score score = Score.blank();
+        Score score = Score.blank(new TestDefaultNames());
         Path path = tempDir.resolve("score.tabpro");
 
         scoreFiles.save(score, path);
@@ -194,7 +194,7 @@ class JsonScoreFilesTest {
         Path path = tempDir.resolve("missing-folder").resolve("score.tabpro");
 
         ScoreFileException failure =
-                assertThrows(ScoreFileException.class, () -> scoreFiles.save(Score.blank(), path));
+                assertThrows(ScoreFileException.class, () -> scoreFiles.save(Score.blank(new TestDefaultNames()), path));
 
         assertEquals(ScoreFileProblem.CANNOT_WRITE, failure.problem());
         assertEquals(List.of(path), failure.arguments());
@@ -296,7 +296,7 @@ class JsonScoreFilesTest {
 
     @Test
     void keepsTheTwoChannelsOfATrackAcrossASave(@TempDir Path tempDir) {
-        Score score = Score.blank().mappingTrack(0, track ->
+        Score score = Score.blank(new TestDefaultNames()).mappingTrack(0, track ->
                 track.withChannel(track.channel().withNumber(3).withEffectChannel(11)));
         Path path = tempDir.resolve("score.tabpro");
 

@@ -149,7 +149,7 @@ class MidiScoreImporterTest {
     @Test
     void quickImportFallsBackToTheFileNameWhenThereIsNoTrackName(@TempDir Path tempDir) throws Exception {
         Path path = tempDir.resolve("no-name.mid");
-        javax.sound.midi.Sequence sequence = PlainMidiWriter.sequenceOf(Score.blank());
+        javax.sound.midi.Sequence sequence = PlainMidiWriter.sequenceOf(Score.blank(new TestDefaultNames()));
         removeTrackNameEvents(sequence);
         javax.sound.midi.MidiSystem.write(sequence, 1, path.toFile());
 
@@ -339,7 +339,7 @@ class MidiScoreImporterTest {
     @Test
     void importingTitleAndTimeSignaturesFallsBackToTheFileNameWhenThereIsNoTrackName(@TempDir Path tempDir) throws Exception {
         Path path = tempDir.resolve("no-name-2.mid");
-        javax.sound.midi.Sequence sequence = PlainMidiWriter.sequenceOf(Score.blank());
+        javax.sound.midi.Sequence sequence = PlainMidiWriter.sequenceOf(Score.blank(new TestDefaultNames()));
         removeTrackNameEvents(sequence);
         javax.sound.midi.MidiSystem.write(sequence, 1, path.toFile());
         Score target = new Score("Original", 120, List.of(Track.standardGuitar("Track")));
@@ -433,7 +433,7 @@ class MidiScoreImporterTest {
 
     @Test
     void importingTitleAndTimeSignaturesRejectsAFileThatDoesNotExist() {
-        Score target = Score.blank();
+        Score target = Score.blank(new TestDefaultNames());
         ScoreFileException failure = assertThrows(
                 ScoreFileException.class, () -> importer.importTitleAndTimeSignatures(target, Path.of("does-not-exist.mid")));
 

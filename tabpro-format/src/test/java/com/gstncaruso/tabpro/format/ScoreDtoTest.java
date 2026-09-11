@@ -50,7 +50,7 @@ class ScoreDtoTest {
 
     @Test
     void roundTripsABlankScore() {
-        assertRoundTrips(Score.blank());
+        assertRoundTrips(Score.blank(new TestDefaultNames()));
     }
 
     @Test
