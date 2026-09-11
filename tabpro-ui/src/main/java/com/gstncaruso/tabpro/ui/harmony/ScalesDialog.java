@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.harmony.ScaleMatch;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.awt.BorderLayout;
@@ -141,7 +142,7 @@ public final class ScalesDialog {
                         JList<?> owner, Object value, int index, boolean selected, boolean focused) {
                     super.getListCellRendererComponent(owner, value, index, selected, focused);
                     if (value instanceof ScaleMatch match) {
-                        setText(match.tonic().name() + " " + match.scale().name()
+                        setText(match.tonic().name() + " " + Labels.of(match.scale())
                                 + "   [" + match.incidentNotes() + "]");
                     }
                     return this;

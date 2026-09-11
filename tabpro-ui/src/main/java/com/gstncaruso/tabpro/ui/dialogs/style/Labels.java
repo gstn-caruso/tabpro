@@ -23,7 +23,7 @@ public final class Labels {
             case ChordType chordType -> chordTypeLabel(chordType);
             case PitchClass pitchClass ->
                     Texts.get("domain.PitchClass.format", pitchClass.name(), pitchClass.solfegeName());
-            case Scale scale -> scale.name();
+            case Scale scale -> scale.id();
             case Tuning tuning -> tuningNameLabel(tuning.name()) + " (" + stringLetters(tuning) + ")";
             case Dynamic dynamic -> dynamic.symbol();
             case PaperFormat paperFormat -> paperFormatLabelWithDimensions(paperFormat);

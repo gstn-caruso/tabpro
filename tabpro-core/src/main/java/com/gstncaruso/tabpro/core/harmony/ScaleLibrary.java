@@ -7,8 +7,8 @@ public final class ScaleLibrary {
     private ScaleLibrary() {
     }
 
-    private static Scale sevenNotes(String name, List<Integer> semitones) {
-        return new Scale(name, semitones, List.of(0, 1, 2, 3, 4, 5, 6));
+    private static Scale sevenNotes(String id, List<Integer> semitones) {
+        return new Scale(id, semitones, List.of(0, 1, 2, 3, 4, 5, 6));
     }
 
     public static Scale major() {

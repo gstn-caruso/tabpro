@@ -3,7 +3,7 @@ package com.gstncaruso.tabpro.core.harmony;
 import java.util.ArrayList;
 import java.util.List;
 
-public record Scale(String name, List<Integer> semitones, List<Integer> letterSteps) {
+public record Scale(String id, List<Integer> semitones, List<Integer> letterSteps) {
 
     public Scale {
         if (semitones.isEmpty()) {
@@ -28,7 +28,7 @@ public record Scale(String name, List<Integer> semitones, List<Integer> letterSt
             PitchClass note = tonic.steppedBy(letterStep, semitoneOffset);
             Interval interval = Interval.matching(letterStep, semitoneOffset)
                     .orElseThrow(() -> new IllegalStateException(
-                            "the scale " + name + " has a degree with no known interval: " + letterStep + "/" + semitoneOffset));
+                            "the scale " + id + " has a degree with no known interval: " + letterStep + "/" + semitoneOffset));
             notes.add(new ScaleTone(note, interval, i + 1));
         }
         return notes;

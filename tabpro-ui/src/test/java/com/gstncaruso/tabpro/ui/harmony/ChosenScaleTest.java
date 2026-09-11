@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +47,7 @@ class ChosenScaleTest {
 
     private static Scale major() {
         return ScaleLibrary.all().stream()
-                .filter(scale -> scale.name().toLowerCase(java.util.Locale.ROOT).startsWith("mayor"))
+                .filter(scale -> Labels.of(scale).toLowerCase(java.util.Locale.ROOT).startsWith("mayor"))
                 .findFirst()
                 .orElseThrow();
     }

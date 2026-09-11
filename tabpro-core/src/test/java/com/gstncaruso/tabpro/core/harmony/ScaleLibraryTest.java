@@ -89,7 +89,7 @@ class ScaleLibraryTest {
     void everyScaleIsSpelledWithoutRepeatingOrSkippingLetters() {
         for (Scale scale : ScaleLibrary.all()) {
             List<ScaleTone> notes = scale.notesFrom(PitchClass.of("C"));
-            assertEquals(scale.degreeCount(), notes.size(), scale.name());
+            assertEquals(scale.degreeCount(), notes.size(), scale.id());
         }
     }
 
