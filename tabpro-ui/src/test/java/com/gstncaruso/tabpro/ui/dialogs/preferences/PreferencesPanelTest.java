@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.i18n.Language;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
+import java.util.List;
 import java.util.Locale;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -163,6 +164,54 @@ class PreferencesPanelTest {
         languageCombo(panel).setSelectedItem(Language.ENGLISH);
 
         assertEquals(Language.ENGLISH, panel.toPreferences().interfaceLanguage());
+    }
+
+    @Test
+    void theRestartNoteIsVisibleNextToTheLanguage() {
+        PreferencesPanel panel = new PreferencesPanel(Preferences.defaults());
+
+        JLabel note = labelSaying(panel, "Se aplica al reiniciar tabpro");
+
+        assertTrue(note.isVisible());
+        assertEquals("Takes effect after restarting tabpro",
+                Texts.forLocale(Locale.ENGLISH).text("score_dialogs.PreferencesPanel.languageRestartNote"));
+    }
+
+    @Test
+    void eachLanguageIsNamedInItselfWhileAutomaticFollowsTheInterface() {
+        JComboBox<?> combo = languageCombo(new PreferencesPanel(Preferences.defaults()));
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals(List.of("Automático", "Español", "English"), renderedItems(combo));
+        assertEquals("Automatic", english.text("score_dialogs.PreferencesPanel.languageAutomatic"));
+        assertEquals("Español", english.text("score_dialogs.PreferencesPanel.languageSpanish"));
+        assertEquals("English", english.text("score_dialogs.PreferencesPanel.languageEnglish"));
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static List<String> renderedItems(JComboBox combo) {
+        List<String> rendered = new java.util.ArrayList<>();
+        for (int index = 0; index < combo.getItemCount(); index++) {
+            Component cell = combo.getRenderer()
+                    .getListCellRendererComponent(new JList<>(), combo.getItemAt(index), index, false, false);
+            rendered.add(((JLabel) cell).getText());
+        }
+        return rendered;
+    }
+
+    private static JLabel labelSaying(java.awt.Container container, String text) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof JLabel label && text.equals(label.getText())) {
+                return label;
+            }
+            if (component instanceof java.awt.Container child) {
+                JLabel found = labelSaying(child, text);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 
     private static JComboBox<?> languageCombo(Component component) {

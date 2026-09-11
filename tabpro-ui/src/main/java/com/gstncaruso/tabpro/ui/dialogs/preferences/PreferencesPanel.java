@@ -9,6 +9,7 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -27,6 +28,7 @@ public final class PreferencesPanel extends FormPanel {
     private final JCheckBox highContrast = new JCheckBox(Texts.get("score_dialogs.PreferencesPanel.highContrast"));
     private final JCheckBox disableAnimations = new JCheckBox(Texts.get("score_dialogs.PreferencesPanel.disableAnimations"));
     private final JComboBox<Language> interfaceLanguage = new JComboBox<>(Language.values());
+    private final JLabel languageRestartNote = new JLabel(Texts.get("score_dialogs.PreferencesPanel.languageRestartNote"));
 
     public PreferencesPanel(Preferences initial) {
         defaultNoteValue.setRenderer(new LabeledListCellRenderer());
@@ -37,7 +39,7 @@ public final class PreferencesPanel extends FormPanel {
         addFullWidthRow(forceMultitrack);
         addRow(Texts.get("score_dialogs.PreferencesPanel.autosaveEvery"), autosaveEvery);
         interfaceLanguage.setRenderer(new LanguageNameRenderer());
-        addRow(Texts.get("score_dialogs.PreferencesPanel.language"), interfaceLanguage);
+        addRow(Texts.get("score_dialogs.PreferencesPanel.language"), interfaceLanguage, languageRestartNote);
         addSection(Texts.get("score_dialogs.PreferencesPanel.accessibility"));
         addRow(Texts.get("score_dialogs.PreferencesPanel.interfaceFontSize"), interfaceFontSize);
         addFullWidthRow(highContrast);
