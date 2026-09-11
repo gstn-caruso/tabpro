@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.midi;
 
 import com.gstncaruso.tabpro.core.files.AudioQuality;
+import com.gstncaruso.tabpro.core.files.ExportWarning;
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreOperation;
@@ -117,7 +118,7 @@ public final class SoundExchange implements ScoreExchange {
     }
 
     @Override
-    public List<String> guitarProExportWarnings(Score score) {
+    public List<ExportWarning> guitarProExportWarnings(Score score) {
         throw ScoreExchange.notSupported(ScoreOperation.EXPORT_GUITAR_PRO);
     }
 

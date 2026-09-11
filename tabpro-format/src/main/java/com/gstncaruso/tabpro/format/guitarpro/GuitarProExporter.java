@@ -1,5 +1,7 @@
 package com.gstncaruso.tabpro.format.guitarpro;
 
+import com.gstncaruso.tabpro.core.files.ExportWarning;
+import com.gstncaruso.tabpro.core.files.ExportWarning.Loss;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
@@ -92,40 +94,34 @@ public final class GuitarProExporter {
         }
     }
 
-    public List<String> warningsFor(Score score) {
-        List<String> warnings = new ArrayList<>();
+    public List<ExportWarning> warningsFor(Score score) {
+        List<ExportWarning> warnings = new ArrayList<>();
         if (!score.info().musicAuthor().isBlank()) {
-            warnings.add("El autor de la música ('" + score.info().musicAuthor()
-                    + "') se pierde: Guitar Pro 4 no tiene un campo propio para él.");
+            warnings.add(ExportWarning.of(Loss.MUSIC_AUTHOR, score.info().musicAuthor()));
         }
         if (anyMeasure(score, measure -> measure.usesTwoVoices())) {
-            warnings.add("La segunda voz de los compases se pierde: Guitar Pro 4 admite una sola voz por compás.");
+            warnings.add(ExportWarning.of(Loss.SECOND_VOICE));
         }
         if (tripletFeelVaries(score)) {
-            warnings.add("El 'triplet feel' cambia entre compases; Guitar Pro 4 admite uno solo para toda la "
-                    + "partitura (se exporta el del primer compás).");
+            warnings.add(ExportWarning.of(Loss.TRIPLET_FEEL_CHANGES));
         }
         for (Track track : score.tracks()) {
             if (!track.settings().display().equals(TrackDisplay.standard())) {
-                warnings.add("La pista '" + track.name()
-                        + "' tiene una configuración de vista (pentagrama, tablatura o diagramas) que Guitar Pro 4 "
-                        + "no guarda: vuelve a mostrarse con los valores por defecto.");
+                warnings.add(ExportWarning.of(Loss.TRACK_DISPLAY, track.name()));
             }
             if (track.channel().port() != 1) {
-                warnings.add("La pista '" + track.name() + "' usa el puerto MIDI " + track.channel().port()
-                        + "; Guitar Pro 4 solo admite el puerto 1.");
+                warnings.add(ExportWarning.of(Loss.MIDI_PORT, track.name(), track.channel().port()));
             }
         }
         if (anyBeat(score, beat -> beat.effects().wideVibrato())) {
-            warnings.add("El vibrato ancho de algún compás se pierde: solo existe en Guitar Pro 3.");
+            warnings.add(ExportWarning.of(Loss.WIDE_VIBRATO));
         }
         if (anyBeat(score, beat -> beat.effects().chord().isPresent() && !beat.effects().chord().get().shown())) {
-            warnings.add("Algún acorde marcado para mostrar solo el nombre va a mostrarse con el diagrama completo.");
+            warnings.add(ExportWarning.of(Loss.CHORD_NAME_ONLY));
         }
         if (anyNote(score, note -> note.effects().grace().isPresent()
                 && (note.effects().grace().get().onBeat() || note.effects().grace().get().dead()))) {
-            warnings.add("Alguna nota de adorno usa 'en el tiempo' o 'nota muerta': esos datos no existen en "
-                    + "Guitar Pro 4.");
+            warnings.add(ExportWarning.of(Loss.GRACE_NOTE_ON_BEAT_OR_DEAD));
         }
         return warnings;
     }

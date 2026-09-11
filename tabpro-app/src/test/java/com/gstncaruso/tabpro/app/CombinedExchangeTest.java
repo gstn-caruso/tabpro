@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.app;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.files.AudioQuality;
+import com.gstncaruso.tabpro.core.files.ExportWarning;
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.model.NoteValue;
@@ -141,7 +142,7 @@ class CombinedExchangeTest {
             }
 
             @Override
-            public List<String> guitarProExportWarnings(Score score) {
+            public List<ExportWarning> guitarProExportWarnings(Score score) {
                 throw irrelevantForThisTest();
             }
 
@@ -251,7 +252,7 @@ class CombinedExchangeTest {
             }
 
             @Override
-            public List<String> guitarProExportWarnings(Score score) {
+            public List<ExportWarning> guitarProExportWarnings(Score score) {
                 throw irrelevantForThisTest();
             }
 

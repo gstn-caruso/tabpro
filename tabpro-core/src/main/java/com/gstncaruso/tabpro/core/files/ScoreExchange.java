@@ -108,7 +108,7 @@ public interface ScoreExchange {
         }
 
         @Override
-        public List<String> guitarProExportWarnings(Score score) {
+        public List<ExportWarning> guitarProExportWarnings(Score score) {
             throw notSupported(ScoreOperation.EXPORT_GUITAR_PRO);
         }
 
@@ -159,7 +159,7 @@ public interface ScoreExchange {
 
     void exportGuitarPro(Score score, Path path);
 
-    List<String> guitarProExportWarnings(Score score);
+    List<ExportWarning> guitarProExportWarnings(Score score);
 
     Score importPowerTab(Path path);
 

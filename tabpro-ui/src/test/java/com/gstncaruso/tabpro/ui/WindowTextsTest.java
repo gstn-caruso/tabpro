@@ -16,6 +16,9 @@ class WindowTextsTest {
 
     static Stream<Arguments> textsInBothLanguages() {
         return Stream.of(
+                Arguments.of("window.MainFrame.exportGuitarProAnyway", new Object[] {"- a loss"},
+                        "Al exportar a Guitar Pro 4 se va a perder:\n\n- a loss\n\n¿Exportar de todos modos?",
+                        "Exporting to Guitar Pro 4 will lose:\n\n- a loss\n\nExport anyway?"),
                 Arguments.of("window.error.printing", new Object[] {"no printer"},
                         "No se pudo imprimir: no printer", "Could not print: no printer"),
                 Arguments.of("window.error.readingTheFile", new Object[] {"song.txt"},
