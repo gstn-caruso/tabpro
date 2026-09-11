@@ -14,6 +14,8 @@ import com.gstncaruso.tabpro.core.model.Track;
 import java.awt.Rectangle;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class PercussionNoteheadPaintingTest {
 
@@ -37,6 +39,25 @@ class PercussionNoteheadPaintingTest {
     @Test
     void anythingElseGetsTheOrdinaryBlackNoteheadGlyph() {
         assertGlyphAt(ACOUSTIC_SNARE, MusicFont.noteheadBlack());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {42, 44, 46, 49, 51, 52, 53, 57, 59, 71, 72})
+    void everyHiHatCrashRideChineseCymbalRideBellAndWhistleGetsTheXBlackNoteheadGlyph(int sound) {
+        assertGlyphAt(sound, MusicFont.noteheadXBlack());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {54, 56, 58, 67, 68, 69, 70, 73, 74, 75, 78, 79, 80, 81})
+    void everyTambourineCowbellVibraslapAgogoCabasaMaracasGuiroClavesCuicaAndTriangleGetsTheDiamondBlackNoteheadGlyph(
+            int sound) {
+        assertGlyphAt(sound, MusicFont.noteheadDiamondBlack());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {35, 36, 37, 38, 39, 40, 41, 43, 45, 47, 48, 50, 55, 60, 61, 62, 63, 64, 65, 66, 76, 77})
+    void everyOtherGeneralMidiSoundGetsTheOrdinaryBlackNoteheadGlyph(int sound) {
+        assertGlyphAt(sound, MusicFont.noteheadBlack());
     }
 
     private static void assertGlyphAt(int sound, String glyph) {
