@@ -1,3 +1,9 @@
+## [0.60.0](https://github.com/gstn-caruso/tabpro/compare/v0.59.5...v0.60.0) (2026-09-11)
+
+### Features
+
+* interface in Spanish and English, chosen from the system language or in Preferences ([#232](https://github.com/gstn-caruso/tabpro/issues/232)) ([01a9766](https://github.com/gstn-caruso/tabpro/commit/01a976681cedd7cab89fcf3953cb50eefb6d1efe))
+
 ## [0.59.5](https://github.com/gstn-caruso/tabpro/compare/v0.59.4...v0.59.5) (2026-09-10)
 
 ### Performance Improvements

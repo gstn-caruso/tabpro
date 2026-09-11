@@ -188,7 +188,7 @@ the next one by itself.
 [release](https://github.com/gstn-caruso/tabpro/releases) and install it:
 
 ```sh
-sudo apt install ./tabpro_0.59.5_all.deb
+sudo apt install ./tabpro_0.60.0_all.deb
 tabpro
 ```
 
@@ -200,7 +200,7 @@ environment (`openjdk-25-jre`); the *headless* variant is not enough.
 **Any system with Java 25:**
 
 ```sh
-java -jar tabpro-app-0.59.5.jar [file]
+java -jar tabpro-app-0.60.0.jar [file]
 ```
 
 ## Keyboard Shortcuts
