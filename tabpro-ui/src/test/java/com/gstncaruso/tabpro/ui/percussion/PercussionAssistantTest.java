@@ -10,14 +10,28 @@ import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.util.Locale;
 import javax.swing.JList;
 import org.junit.jupiter.api.Test;
 
 class PercussionAssistantTest {
+
+    @Test
+    void theZonesAndWarningAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Sounds", english.text("views.PercussionAssistant.soundsZone"));
+        assertEquals("Percussion Staff", english.text("views.PercussionAssistant.staffZone"));
+        assertEquals("Use electric sound when available",
+                english.text("views.PercussionAssistant.useElectricSound"));
+        assertEquals("Sounds outside the 35–82 range may not play on every sound card.",
+                english.text("views.PercussionAssistant.rangeWarning", 35, 82));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {

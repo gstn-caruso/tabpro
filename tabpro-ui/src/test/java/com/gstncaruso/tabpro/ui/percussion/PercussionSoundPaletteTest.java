@@ -4,16 +4,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.JList;
 import org.junit.jupiter.api.Test;
 
 class PercussionSoundPaletteTest {
+
+    @Test
+    void theAccessibleNameIsAvailableInEnglish() {
+        assertEquals("Percussion Sounds", Texts.forLocale(Locale.ENGLISH).text("views.PercussionSoundPalette.sounds"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {

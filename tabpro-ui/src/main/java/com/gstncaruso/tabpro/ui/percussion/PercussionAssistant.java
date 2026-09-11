@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.playback.Player;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.instruments.InstrumentEditing;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import java.awt.BorderLayout;
@@ -33,7 +34,7 @@ public final class PercussionAssistant extends JPanel {
 
         InstrumentEditing editing = new InstrumentEditing(editor, player);
 
-        electric = new JCheckBox("Usar el sonido eléctrico cuando esté disponible");
+        electric = new JCheckBox(Texts.get("views.PercussionAssistant.useElectricSound"));
         electric.setOpaque(false);
         electric.setForeground(ScoreColors.LABEL);
         electric.setFont(electric.getFont().deriveFont(11f));
@@ -47,8 +48,8 @@ public final class PercussionAssistant extends JPanel {
                 line -> editing.pressFret(new Note(line.number(), line.soundToUse(electric.isSelected()))));
         electric.addActionListener(e -> staff.setPreferElectric(electric.isSelected()));
 
-        JPanel zone1 = zone("Sonidos", scrollable(palette));
-        JPanel zone2 = zone("Pentagrama de percusión", withCheckbox(staff, electric));
+        JPanel zone1 = zone(Texts.get("views.PercussionAssistant.soundsZone"), scrollable(palette));
+        JPanel zone2 = zone(Texts.get("views.PercussionAssistant.staffZone"), withCheckbox(staff, electric));
 
         JPanel body = new JPanel();
         body.setOpaque(false);
@@ -115,8 +116,8 @@ public final class PercussionAssistant extends JPanel {
     }
 
     private JLabel warningLabel() {
-        String text = "Los sonidos fuera del rango " + PercussionKit.LOWEST_SOUND + "–"
-                + PercussionKit.HIGHEST_SOUND + " pueden no sonar en todas las placas de sonido.";
+        String text = Texts.get(
+                "views.PercussionAssistant.rangeWarning", PercussionKit.LOWEST_SOUND, PercussionKit.HIGHEST_SOUND);
         JLabel warning = new JLabel("<html>" + text + "</html>");
         warning.setForeground(ScoreColors.WARNING);
         warning.setFont(warning.getFont().deriveFont(10f));

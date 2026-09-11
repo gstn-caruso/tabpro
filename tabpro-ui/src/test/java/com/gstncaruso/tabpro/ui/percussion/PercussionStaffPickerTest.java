@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
@@ -11,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
@@ -19,6 +21,11 @@ import org.junit.jupiter.api.Test;
 class PercussionStaffPickerTest {
 
     private static final int WIDTH = 200;
+
+    @Test
+    void theAccessibleNameIsAvailableInEnglish() {
+        assertEquals("Percussion Staff", Texts.forLocale(Locale.ENGLISH).text("views.PercussionStaffPicker.staff"));
+    }
 
     @Test
     void hasAnAccessibleNameAndTooltip() {
