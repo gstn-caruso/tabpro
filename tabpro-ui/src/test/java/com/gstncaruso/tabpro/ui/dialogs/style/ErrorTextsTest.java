@@ -3,6 +3,8 @@ package com.gstncaruso.tabpro.ui.dialogs.style;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import com.gstncaruso.tabpro.core.files.ExportWarning;
+import com.gstncaruso.tabpro.core.files.ExportWarning.Loss;
 import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreOperation;
@@ -111,6 +113,52 @@ class ErrorTextsTest {
     void theProcessLanguageRendersTheSpanishImageExportSentence() {
         assertEquals("La exportación a BMP sólo está disponible en modo Página.",
                 ErrorTexts.of(ImageExportException.bmpOnlyInPageMode()));
+    }
+
+    static Stream<Arguments> everyGuitarProExportLossInBothLanguages() {
+        return Stream.of(
+                Arguments.of(ExportWarning.of(Loss.MUSIC_AUTHOR, "Composer"),
+                        "El autor de la música ('Composer') se pierde: Guitar Pro 4 no tiene un campo propio para él.",
+                        "The music author ('Composer') is lost: Guitar Pro 4 has no field for it."),
+                Arguments.of(ExportWarning.of(Loss.SECOND_VOICE),
+                        "La segunda voz de los compases se pierde: Guitar Pro 4 admite una sola voz por compás.",
+                        "The second voice of the bars is lost: Guitar Pro 4 allows a single voice per bar."),
+                Arguments.of(ExportWarning.of(Loss.TRIPLET_FEEL_CHANGES),
+                        "El 'triplet feel' cambia entre compases; Guitar Pro 4 admite uno solo para toda la "
+                                + "partitura (se exporta el del primer compás).",
+                        "The Triplet Feel changes between bars; Guitar Pro 4 allows only one for the whole score "
+                                + "(the first bar's is exported)."),
+                Arguments.of(ExportWarning.of(Loss.TRACK_DISPLAY, "Lead"),
+                        "La pista 'Lead' tiene una configuración de vista (pentagrama, tablatura o diagramas) que "
+                                + "Guitar Pro 4 no guarda: vuelve a mostrarse con los valores por defecto.",
+                        "Track 'Lead' has display settings (standard notation, tablature or diagrams) that "
+                                + "Guitar Pro 4 does not store: they return to their defaults."),
+                Arguments.of(ExportWarning.of(Loss.MIDI_PORT, "Lead", 2),
+                        "La pista 'Lead' usa el puerto MIDI 2; Guitar Pro 4 solo admite el puerto 1.",
+                        "Track 'Lead' uses MIDI port 2; Guitar Pro 4 only allows port 1."),
+                Arguments.of(ExportWarning.of(Loss.WIDE_VIBRATO),
+                        "El vibrato ancho de algún compás se pierde: solo existe en Guitar Pro 3.",
+                        "The Wide Vibrato of some bar is lost: it only exists in Guitar Pro 3."),
+                Arguments.of(ExportWarning.of(Loss.CHORD_NAME_ONLY),
+                        "Algún acorde marcado para mostrar solo el nombre va a mostrarse con el diagrama completo.",
+                        "A chord set to show only its name will show the full diagram."),
+                Arguments.of(ExportWarning.of(Loss.GRACE_NOTE_ON_BEAT_OR_DEAD),
+                        "Alguna nota de adorno usa 'en el tiempo' o 'nota muerta': esos datos no existen en "
+                                + "Guitar Pro 4.",
+                        "A grace note uses 'on the beat' or 'dead note': Guitar Pro 4 has no such data."));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void everyGuitarProExportLossInBothLanguages(ExportWarning warning, String spanish, String english) {
+        assertEquals(spanish, ErrorTexts.of(warning, SPANISH));
+        assertEquals(english, ErrorTexts.of(warning, ENGLISH));
+    }
+
+    @Test
+    void theProcessLanguageRendersTheSpanishLossSentence() {
+        assertEquals("La segunda voz de los compases se pierde: Guitar Pro 4 admite una sola voz por compás.",
+                ErrorTexts.of(ExportWarning.of(Loss.SECOND_VOICE)));
     }
 
     @Test

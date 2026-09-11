@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.dialogs.style;
 
+import com.gstncaruso.tabpro.core.files.ExportWarning;
 import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
@@ -28,6 +29,14 @@ public final class ErrorTexts {
         return render(failure, texts::text);
     }
 
+    public static String of(ExportWarning warning) {
+        return render(warning, Texts::get);
+    }
+
+    static String of(ExportWarning warning, Texts texts) {
+        return render(warning, texts::text);
+    }
+
     private static String render(ScoreFileException failure, TextSource texts) {
         Object[] arguments = failure.arguments().stream().map(argument -> localized(argument, texts)).toArray();
         String sentence = texts.text("window.error." + failure.problem().name(), arguments);
@@ -36,6 +45,10 @@ public final class ErrorTexts {
 
     private static String render(ImageExportException failure, TextSource texts) {
         return texts.text("window.imageExportError." + failure.problem().name(), failure.arguments().toArray());
+    }
+
+    private static String render(ExportWarning warning, TextSource texts) {
+        return texts.text("window.exportWarning." + warning.loss().name(), warning.arguments().toArray());
     }
 
     private static Object localized(Object argument, TextSource texts) {
