@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.preferences;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
+import com.gstncaruso.tabpro.ui.i18n.Language;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -22,6 +23,7 @@ public final class PreferencesPanel extends FormPanel {
     private final JSpinner interfaceFontSize = new JSpinner(new SpinnerNumberModel(12, 10, 20, 1));
     private final JCheckBox highContrast = new JCheckBox(Texts.get("score_dialogs.PreferencesPanel.highContrast"));
     private final JCheckBox disableAnimations = new JCheckBox(Texts.get("score_dialogs.PreferencesPanel.disableAnimations"));
+    private Language interfaceLanguage;
 
     public PreferencesPanel(Preferences initial) {
         defaultNoteValue.setRenderer(new LabeledListCellRenderer());
@@ -48,6 +50,7 @@ public final class PreferencesPanel extends FormPanel {
         interfaceFontSize.setValue(preferences.interfaceFontSize());
         highContrast.setSelected(preferences.highContrastEnabled());
         disableAnimations.setSelected(preferences.animationsDisabled());
+        interfaceLanguage = preferences.interfaceLanguage();
     }
 
     public Preferences toPreferences() {
@@ -60,6 +63,7 @@ public final class PreferencesPanel extends FormPanel {
                 forceMultitrack.isSelected(),
                 (Integer) interfaceFontSize.getValue(),
                 highContrast.isSelected(),
-                disableAnimations.isSelected());
+                disableAnimations.isSelected(),
+                interfaceLanguage);
     }
 }
