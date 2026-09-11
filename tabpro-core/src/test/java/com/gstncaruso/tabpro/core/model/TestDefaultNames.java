@@ -26,4 +26,9 @@ public final class TestDefaultNames implements DefaultNames {
     public String chord() {
         return "Test Chord";
     }
+
+    @Override
+    public String marker() {
+        return "Test Marker";
+    }
 }

@@ -11,4 +11,6 @@ public interface DefaultNames {
     String percussionTrack();
 
     String chord();
+
+    String marker();
 }

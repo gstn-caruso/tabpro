@@ -39,6 +39,11 @@ public final class TextsDefaultNames implements DefaultNames {
         return texts.text("defaults.chord");
     }
 
+    @Override
+    public String marker() {
+        return texts.text("defaults.marker");
+    }
+
     interface TextSource {
         String text(String key, Object... arguments);
     }
