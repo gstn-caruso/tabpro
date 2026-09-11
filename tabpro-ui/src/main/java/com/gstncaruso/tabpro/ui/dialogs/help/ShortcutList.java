@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.dialogs.help;
 
 import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -10,11 +11,14 @@ import java.util.Map;
 public final class ShortcutList {
 
     private static final List<Section> SECTIONS = List.of(
-            new Section("Edición", List.of("edit.", "bar.", "note.", "track.", "marker.insert", "marker.list")),
-            new Section("Efectos", List.of("effect.")),
-            new Section("Navegación", List.of("nav.", "marker.previous", "marker.next")),
-            new Section("Sonido", List.of("sound.")),
-            new Section("Varios", List.of("file.", "tool.", "view.", "options.", "help.")));
+            new Section(Texts.get("edit_dialogs.ShortcutList.editing"),
+                    List.of("edit.", "bar.", "note.", "track.", "marker.insert", "marker.list")),
+            new Section(Texts.get("edit_dialogs.ShortcutList.effects"), List.of("effect.")),
+            new Section(Texts.get("edit_dialogs.ShortcutList.navigation"),
+                    List.of("nav.", "marker.previous", "marker.next")),
+            new Section(Texts.get("edit_dialogs.ShortcutList.sound"), List.of("sound.")),
+            new Section(Texts.get("edit_dialogs.ShortcutList.miscellaneous"),
+                    List.of("file.", "tool.", "view.", "options.", "help.")));
 
     private ShortcutList() {
     }
