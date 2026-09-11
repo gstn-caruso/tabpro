@@ -1019,7 +1019,8 @@ public final class MainFrame extends JFrame {
                     .withForceMultitrackInHorizontalMode(preferences.forceMultitrackInHorizontalMode())
                     .withInterfaceFontSize(preferences.interfaceFontSize())
                     .withHighContrastEnabled(preferences.highContrastEnabled())
-                    .withAnimationsDisabled(preferences.animationsDisabled());
+                    .withAnimationsDisabled(preferences.animationsDisabled())
+                    .withInterfaceLanguage(preferences.interfaceLanguage());
             PreferencesDialog.ask(MainFrame.this, current).ifPresent(updated -> {
                 editingPreferences = updated;
                 preferences.setDefaultNoteValue(updated.defaultNoteValue());
