@@ -38,7 +38,7 @@ public final class PrintPanel extends FormPanel {
         addFullWidthRow(aRange);
         addRow(Texts.get("score_dialogs.PrintPanel.fromSheet"), fromSheet);
         addRow(Texts.get("score_dialogs.PrintPanel.toSheet"), toSheet);
-        addSection(Texts.get("score_dialogs.PrintPanel.position"));
+        addSection(Texts.get("score_dialogs.shared.position"));
         addRow(Texts.get("score_dialogs.PrintPanel.scalePercent"), scalePercent);
         addFullWidthRow(fitToPage);
         addFullWidthRow(centeredDocument);
