@@ -131,148 +131,153 @@ catalog).
   was added so that a declared shortcut that never hung off any menu (the
   other way to end up dead) would not go unnoticed either.
 
-## Los huecos de esta sesión
+## This Session's Gaps
 
-Todos cerrados salvo el último.
+All closed except the last one.
 
-| Hueco | Estado |
+| Gap | Status |
 |---|---|
-| Exportar imagen en BMP (+ restricción a modo Página) | ✅ #45 |
-| La exportación de imagen falla ruidosamente si `ImageIO` no escribe | ✅ #49 |
-| El lector de GP descartaba las direcciones musicales | ✅ #50 |
-| Exportar a WAVE | ✅ #51 |
-| `MidiScoreExporter` escribía un solo tempo | ✅ #52 |
-| El lector declara el orden de los casilleros de direcciones | ✅ #54 |
-| Diálogos de importación (escuchar pistas, precisión, espaciado ASCII) | ✅ #57 |
-| El exportador de sonido se muda a `tabpro-midi` | ✅ #58 |
-| Importar TablEdit | ✅ #62 |
-| La importación de TablEdit vuelve a llegar al importador | ✅ #64 |
-| **Cuatro bugs del lector de Guitar Pro** | ✅ #69 |
-| El puerto de intercambio sin `default` que tiran | ✅ #70 |
-| El `.mid` exportado suena como la partitura | ✅ #60 |
-| Exportar al formato de Guitar Pro | ✅ #74 |
-| El cursor de edición como línea roja | ✅ #76 |
-| Importar PowerTab | ✅ #77 |
-| Banco de sonidos SoundFont (+ F2) | ✅ #71 |
-| Import MIDI: casilla "2 canales por pista" | ✅ hecho, esperando el arreglo de `effectChannelNextTo` |
-| El lector de GP descarta el byte de wah | 🔜 en curso |
+| Export image as BMP (+ restrict to Page mode) | ✅ #45 |
+| Image export fails loudly if `ImageIO` does not write | ✅ #49 |
+| The GP reader dropped musical directions | ✅ #50 |
+| Export to WAVE | ✅ #51 |
+| `MidiScoreExporter` wrote a single tempo | ✅ #52 |
+| The reader declares the order of the direction slots | ✅ #54 |
+| Import dialogs (listen to tracks, precision, ASCII spacing) | ✅ #57 |
+| The sound exporter moves to `tabpro-midi` | ✅ #58 |
+| Import TablEdit | ✅ #62 |
+| The TablEdit import reaches the importer again | ✅ #64 |
+| **Four bugs in the Guitar Pro reader** | ✅ #69 |
+| The exchange port with a throwing `default` | ✅ #70 |
+| The exported `.mid` sounds like the score | ✅ #60 |
+| Export to the Guitar Pro format | ✅ #74 |
+| The editing cursor as a red line | ✅ #76 |
+| Import PowerTab | ✅ #77 |
+| SoundFont sound bank (+ F2) | ✅ #71 |
+| MIDI import: "2 channels per track" checkbox | ✅ done, waiting on the `effectChannelNextTo` fix |
+| The GP reader drops the wah byte | 🔜 in progress |
 
-## Lo más importante que se aprendió
+## The Most Important Lesson Learned
 
-**El oráculo estaba adentro del sistema que queríamos verificar.** El mismo error
-apareció cinco veces en un día, en cinco disfraces:
+**The oracle was inside the system we wanted to verify.** The same error
+showed up five times in one day, in five disguises:
 
-1. **El lector de Guitar Pro leía mal los archivos reales.** El escritor nuevo de
-   `.gp4` pasaba todos sus round-trips contra nuestro propio lector. Contra
-   **PyGuitarPro** y `.gp4` auténticos: **siete de siete archivos generados no
-   abrían**, y de seis bugs, **cuatro eran del lector que ya estaba en
-   producción**. Tres de dieciséis archivos auténticos ni siquiera abrían en
-   tabpro. Pasaba porque lector y escritor comparten las mismas suposiciones — y
-   los fixtures del repo los generábamos nosotros con ese mismo lector.
-2. **El dry-run de semantic-release** verificaba que la configuración cargara, no
-   que las notas se pudieran generar: sin token se frena antes de ese paso.
-3. **El CI sin placa de sonido es el usuario real.** Un puerto MIDI que no abría
-   se llevaba puesta la reproducción entera. Y exportar a WAVE reventaba con una
-   excepción sin manejar en cualquier máquina sin audio — el render pedía una
-   línea que un render *offline* no necesita.
-4. **Probar el banco de sonidos en una máquina que lo tiene instalado.** Saltear
-   un camino con `Assumptions` no es probarlo.
-5. **Los tests probaban la pieza, no el camino del usuario.** `importTabEdit`
-   estaba implementado, testeado y era **inalcanzable**: nadie había escrito la
-   línea que lo delega, y el usuario elegía su archivo para recibir "no
-   disponible".
+1. **The Guitar Pro reader misread real files.** The new `.gp4` writer
+   passed every round-trip against our own reader. Against **PyGuitarPro**
+   and authentic `.gp4` files: **seven out of seven generated files would
+   not open**, and of six bugs, **four were in the reader already in
+   production**. Three of sixteen authentic files did not even open in
+   tabpro. It happened because reader and writer share the same assumptions
+   — and we generated the repo's fixtures ourselves with that same reader.
+2. **semantic-release's dry-run** verified that the configuration loaded,
+   not that the notes could be generated: without a token it stops before
+   that step.
+3. **CI with no sound card is the real user.** A MIDI port that failed to
+   open took the entire playback down with it. And exporting to WAVE blew
+   up with an unhandled exception on any machine without audio — the render
+   asked for a line that an *offline* render does not need.
+4. **Test the sound bank on a machine that actually has one installed.**
+   Skipping a path with `Assumptions` is not testing it.
+5. **The tests tested the piece, not the user's path.** `importTabEdit` was
+   implemented, tested and **unreachable**: nobody had written the line
+   that delegates to it, and the user picked their file only to get "not
+   available".
 
-### Las reglas que quedan
+### The Rules That Remain
 
-- **Un round-trip contra nuestro propio lector prueba consistencia interna, no
-  compatibilidad.** La única verificación que significa algo para un formato
-  binario es contra un archivo auténtico o contra otra implementación.
-- **La diferencia de entorno no dice de qué lado está el error.** Dice que hay
-  una suposición sobre la máquina metida en algún lado. La pregunta que los
-  separa: *¿qué querría que pasara en la máquina del usuario?*
-- **Un `default` que tira convierte un error de compilación en uno de runtime**, y
-  hace que "no lo soporto" y "me lo olvidé" se vean iguales en el código.
-- **Cuando dos features distintas se tuercen en el mismo punto, el punto está mal
-  puesto.**
-- **Un test que no puede fallar es basura**; uno que tapa un agujero que el
-  diseño podría cerrar es una curita.
+- **A round-trip against our own reader proves internal consistency, not
+  compatibility.** The only verification that means anything for a binary
+  format is against an authentic file or another implementation.
+- **An environment difference does not say which side the bug is on.** It
+  says there is an assumption about the machine buried somewhere. The
+  question that tells them apart: *what would I want to happen on the
+  user's machine?*
+- **A `default` that throws turns a compile-time error into a runtime one**,
+  and makes "I don't support this" and "I forgot about this" look the same
+  in the code.
+- **When two different features twist at the same point, the point is in
+  the wrong place.**
+- **A test that cannot fail is garbage**; one that patches a hole the
+  design could close instead is a band-aid.
 
-### Cuando el bug ya salió del programa
+### When the Bug Already Shipped
 
-Dos bugs llegaron a los archivos de la gente, y **piden cosas distintas**. La
-pregunta no es "¿el bug llegó a los archivos?" sino **"¿el dato correcto todavía
-es derivable de lo que quedó guardado?"**
+Two bugs reached people's files, and **they call for different things**.
+The question is not "did the bug reach the files?" but **"is the correct
+data still derivable from what was saved?"**
 
-- **Los bends destruyeron el dato.** Un bend leído a la mitad es indistinguible
-  de uno legítimo de esa profundidad. No hay migración posible: va nota en el
-  release pidiendo reimportar el original.
-- **Los canales no perdieron nada.** El canal real era una función determinística
-  del orden de las pistas, así que el programa lo recalcula al abrir y el usuario
-  no se entera. No va en la nota del release.
+- **The bends destroyed the data.** A bend read at half depth is
+  indistinguishable from a legitimate one of that depth. No migration is
+  possible: a release note goes out asking users to re-import the original.
+- **The channels lost nothing.** The real channel was a deterministic
+  function of track order, so the program recomputes it on open and the
+  user never notices. It does not go in the release note.
 
 ---
 
-## Etapa: se ve y se usa como Guitar Pro 5 (arrancó el 2026-09-10)
+## Stage: Looks and Behaves Like Guitar Pro 5 (started 2026-09-10)
 
-Objetivo declarado por Gastón: **un programa lo más parecido posible a Guitar
-Pro 5.2** (abandonware), con el manual como guía de producto. Tres frentes: lo
-que el manual describe y todavía no funciona *al usarlo*, el aspecto visual
-(barras e íconos) y la accesibilidad, que hoy es cero.
+Goal stated by Gastón: **a program as close as possible to Guitar Pro 5.2**
+(abandonware), with the manual as the product guide. Three fronts: what the
+manual describes that still does not work *when you use it*, the visual
+look (toolbars and icons), and accessibility, which today is zero.
 
-### Decisiones (2026-09-10)
+### Decisions (2026-09-10)
 
-- **Estética:** disposición, tamaños y semántica de barras e íconos se miden de
-  las capturas del manual (`pdfimages`, ver la nota de tipografía); se mantiene
-  FlatLaf Darcula. No se copia el tema claro de Windows.
-- **Íconos:** las acciones genéricas (archivo, edición, zoom, transporte, vista)
-  salen de **Tabler Icons** (MIT, SVG) dibujadas con `jsvg` 2.1.0 directo
-  (la librería que FlatLaf usa por debajo; `flatlaf-extras` se descartó porque
-  arrastra FlatLaf a `tabpro-ui`, y FlatLaf vive sólo en `tabpro-app`). Los
-  símbolos musicales salen de **Bravura**, que ya está en el repo. Los efectos
-  sin glifo SMuFL (P.M., let ring, tapping…) van como texto abreviado, como en
-  GP5. Se commitean sólo los SVG que se usan, con su licencia al lado.
-- **Accesibilidad, los cuatro frentes:** teclado completo (mnemónicos, orden de
-  tabulación, foco visible, ningún control sólo alcanzable con el mouse); lector
-  de pantalla (nombre y descripción accesible en cada control); contraste y
-  tamaño (WCAG AA sobre el tema oscuro, tooltip en todo ícono, escala de la UI);
-  y una sección **Accesibilidad** en Preferencias (tamaño de fuente, alto
-  contraste, sin animaciones). Cada preferencia nace con su lector y su test:
-  la regla de la etapa anterior sigue vigente.
-- **Cómo se encuentra lo que falla:** una auditoría de **uso real** — cada
-  acción del manual ejercitada por el camino del usuario (menú, atajo, botón,
-  diálogo) verificando el efecto observable — y no otra lectura estática del
-  código. Informe en `docs/audit-real-use.md`, harness bajo el tag
-  `integracion`.
-- **Flujo:** autónomo (DIY) y en loop. El principal planifica, briefea, abre el
-  PR, espera el CI y mergea. El agente `worker` (`~/.claude/agents/worker.md`:
-  sonnet, worktree propio, TDD + TCR, push en cada verde, sin PR) escribe el
-  código. Una feature branch por cambio, un PR por tipo de cambio.
+- **Look:** the layout, sizes and semantics of toolbars and icons are
+  measured from the manual's screenshots (`pdfimages`, see the typography
+  note); FlatLaf Darcula stays. Windows' light theme is not copied.
+- **Icons:** generic actions (file, edit, zoom, transport, view) come from
+  **Tabler Icons** (MIT, SVG) drawn directly with `jsvg` 2.1.0 (the library
+  FlatLaf uses underneath; `flatlaf-extras` was dropped because it drags
+  FlatLaf into `tabpro-ui`, and FlatLaf only lives in `tabpro-app`). Musical
+  symbols come from **Bravura**, already in the repo. Effects with no SMuFL
+  glyph (P.M., let ring, tapping…) go as abbreviated text, like in GP5.
+  Only the SVGs actually used get committed, with their license alongside.
+- **Accessibility, the four fronts:** full keyboard support (mnemonics, tab
+  order, visible focus, no control reachable only with the mouse); screen
+  reader (accessible name and description on every control); contrast and
+  size (WCAG AA over the dark theme, a tooltip on every icon, UI scale);
+  and an **Accessibility** section in Preferences (font size, high
+  contrast, no animations). Every preference is born with its reader and
+  its test: the previous stage's rule still holds.
+- **How failures get found:** a **real-use** audit — every manual action
+  exercised through the user's path (menu, shortcut, button, dialog),
+  checking the observable effect — instead of another static reading of
+  the code. Report in `docs/audit-real-use.md`, harness under the
+  `integracion` tag.
+- **Flow:** autonomous (DIY) and looping. The main agent plans, briefs,
+  opens the PR, waits for CI and merges. The `worker` agent
+  (`~/.claude/agents/worker.md`: sonnet, its own worktree, TDD + TCR, push
+  on every green, no PR) writes the code. One feature branch per change,
+  one PR per change type.
 
-### Frentes y orden
+### Fronts and Order
 
-| # | Frente | Cortes en PR |
+| # | Front | PR Slices |
 |---|---|---|
-| A | Auditoría de uso real | el informe y el harness; después un `fix/` por hallazgo, los MIENTE primero |
-| B | Íconos | B1 puerto `IconSet` + `flatlaf-extras` + primeros SVG · B2 barras genéricas a Tabler · B3 figuras, claves y efectos a Bravura · B4 barras agrupadas y ordenadas como la "Main Screen" del manual · B5 color por tema, estado deshabilitado y HiDPI |
-| C | Accesibilidad | C1 test que recorre el árbol de componentes y exige tooltip y nombre accesible en cada control sin texto · C2 mnemónicos en menús y diálogos con test de no-colisión · C3 teclado en los componentes custom (perillas, diapasón, piano, grilla) y foco visible · C4 test de contraste WCAG AA sobre la paleta · C5 sección Accesibilidad en Preferencias |
-| D | Lo visual que salga de la auditoría | barra de estado, mesa de mezcla, vista global: medidos contra las capturas |
+| A | Real-use audit | the report and the harness; then one `fix/` per finding, the LIES first |
+| B | Icons | B1 `IconSet` port + `flatlaf-extras` + first SVGs · B2 generic toolbars to Tabler · B3 note values, clefs and effects to Bravura · B4 toolbars grouped and ordered like the manual's "Main Screen" · B5 color per theme, disabled state and HiDPI |
+| C | Accessibility | C1 a test that walks the component tree and requires a tooltip and accessible name on every textless control · C2 mnemonics in menus and dialogs with a no-collision test · C3 keyboard on the custom components (knobs, fretboard, piano, grid) and visible focus · C4 WCAG AA contrast test on the palette · C5 Accessibility section in Preferences |
+| D | Whatever the audit surfaces visually | status bar, mix table, global view: measured against the screenshots |
 
-Los inventarios que alimentan B y C (íconos actuales contra barras de GP5;
-componentes sin tooltip, nombre accesible ni teclado; paleta) se generan con
-agentes de un solo pase y no se commitean: lo que vale de ellos entra en el
-PR que lo usa.
+The inventories that feed B and C (current icons against GP5's toolbars;
+components with no tooltip, accessible name or keyboard; the palette) are
+generated with single-pass agents and are not committed: whatever from
+them is worth keeping goes into the PR that uses it.
 
-### Cómo retomar sin contexto
+### How to Resume Without Context
 
-El loop es: elegir el siguiente corte de esta tabla (o el próximo hallazgo de la
-última auditoría en `docs/`) → briefear un `worker` (`~/.claude/agents/worker.md`)
-con objetivo, branch, decisiones cerradas, criterio de terminado y trailer →
-mirar el PNG que el worker deja en el scratchpad → abrir el PR con qué y por qué
-→ `gh pr checks` verde → `gh pr merge --squash` → borrar la branch remota sólo si
-el PR figura MERGED → actualizar esta tabla. Cuando una auditoría se agota, se
-busca un oráculo nuevo del lado de afuera (el manual, sus capturas, archivos
-reales); las tres primeras fueron uso real, visual de la ventana y de la
-partitura; la cuarta, el corpus; la quinta, en curso, los diálogos.
+The loop is: pick the next slice from this table (or the next finding from
+the latest audit in `docs/`) → brief a `worker`
+(`~/.claude/agents/worker.md`) with the goal, branch, closed decisions,
+completion criteria and trailer → look at the PNG the worker leaves in the
+scratchpad → open the PR stating what and why → `gh pr checks` green →
+`gh pr merge --squash` → delete the remote branch only if the PR shows
+MERGED → update this table. When an audit runs dry, a new outside oracle
+is sought (the manual, its screenshots, real files); the first three were
+real use, the window's look and the score's look; the fourth, the corpus;
+the fifth, in progress, the dialogs.
 
 ### Estado
 
