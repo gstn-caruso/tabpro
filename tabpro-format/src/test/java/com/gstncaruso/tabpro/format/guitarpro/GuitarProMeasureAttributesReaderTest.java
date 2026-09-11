@@ -2,8 +2,10 @@ package com.gstncaruso.tabpro.format.guitarpro;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.gstncaruso.tabpro.core.model.ScoreColor;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
+import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.core.model.bars.TripletFeel;
 import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.util.List;
@@ -13,6 +15,7 @@ class GuitarProMeasureAttributesReaderTest {
 
     private static final int HAS_ALTERNATE_ENDINGS = 0x10;
     private static final int OPENS_REPEAT = 0x04;
+    private static final int HAS_MARKER = 0x20;
 
     private final GuitarProMeasureAttributesReader reader = new GuitarProMeasureAttributesReader(
             TimeSignature.fourFour(), KeySignature.cMajor(), TripletFeel.NONE, new TestDefaultNames());
@@ -44,6 +47,21 @@ class GuitarProMeasureAttributesReaderTest {
     @Test
     void gp5WritesTheRoundsAsAMaskOfBits() {
         assertEquals(List.of(1, 3), gp5EndingsOf(0x05));
+    }
+
+    @Test
+    void aMarkerWithoutANameTakesTheDefaultMarkerName() {
+        GuitarProFileWriter written = new GuitarProFileWriter()
+                .writeUnsignedByte(HAS_MARKER)
+                .writeLengthPrefixedString("")
+                .writeColor(new ScoreColor(255, 0, 0));
+
+        Marker marker = reader.read(new GuitarProByteReader(written.bytes()), GuitarProVersion.GP4, true)
+                .attributes()
+                .marker()
+                .orElseThrow();
+
+        assertEquals("Test Marker", marker.name());
     }
 
     private List<Integer> endingsOf(int written, GuitarProVersion version) {

@@ -129,7 +129,7 @@ final class GuitarProMeasureAttributesReader {
         }
         String name = reader.readLengthPrefixedString();
         ScoreColor color = reader.readColor();
-        return new Marker(name.isBlank() ? "Marcador" : name, color);
+        return new Marker(name.isBlank() ? names.marker() : name, color);
     }
 
     private KeySignature readKeySignature(GuitarProByteReader reader, int flags) {
