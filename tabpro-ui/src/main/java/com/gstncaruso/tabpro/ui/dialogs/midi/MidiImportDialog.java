@@ -12,6 +12,7 @@ import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.ErrorTexts;
 import com.gstncaruso.tabpro.ui.dialogs.track.AddTrackDialog;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -51,11 +52,13 @@ public final class MidiImportDialog {
             return;
         }
 
-        JButton openAnother = DialogStyle.flatButton("Abrir otro archivo…");
-        JButton quickImport = DialogStyle.flatButton("Import rápido (reemplaza la partitura)");
-        JButton titleAndTimeSignatures = DialogStyle.flatButton("Importar título y cambios de compás");
-        JButton addTrack = DialogStyle.flatButton("Agregar una pista");
-        JButton importOntoCurrent = DialogStyle.flatButton("Importar sobre la pista actual");
+        JButton openAnother = DialogStyle.flatButton(Texts.get("score_dialogs.MidiImportDialog.openAnotherFile"));
+        JButton quickImport = DialogStyle.flatButton(Texts.get("score_dialogs.MidiImportDialog.quickImport"));
+        JButton titleAndTimeSignatures =
+                DialogStyle.flatButton(Texts.get("score_dialogs.MidiImportDialog.importTitleAndTimeSignatures"));
+        JButton addTrack = DialogStyle.flatButton(Texts.get("score_dialogs.shared.addTrack"));
+        JButton importOntoCurrent =
+                DialogStyle.flatButton(Texts.get("score_dialogs.MidiImportDialog.importOntoCurrentTrack"));
 
         JPanel top = flowOf(openAnother);
         JPanel stepByStep = flowOf(titleAndTimeSignatures, addTrack, importOntoCurrent);
@@ -124,14 +127,15 @@ public final class MidiImportDialog {
             }
         }));
 
-        DialogShell.show(parent, "Importar MIDI", content);
+        DialogShell.show(parent, Texts.get("score_dialogs.MidiImportDialog.title"), content);
     }
 
     private static void withSelection(Component parent, MidiImportPanel panel, Consumer<List<Integer>> action) {
         List<Integer> selected = panel.selectedTrackIndices();
         if (selected.isEmpty()) {
             JOptionPane.showMessageDialog(
-                    parent, "Elegí al menos una pista de la lista para importar.", "tabpro", JOptionPane.INFORMATION_MESSAGE);
+                    parent, Texts.get("score_dialogs.MidiImportDialog.selectAtLeastOneTrack"), "tabpro",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         action.accept(selected);
@@ -146,7 +150,7 @@ public final class MidiImportDialog {
     }
 
     private static FileNameExtensionFilter midiFilter() {
-        return new FileNameExtensionFilter("Archivos MIDI (*.mid)", "mid", "midi");
+        return new FileNameExtensionFilter(Texts.get("score_dialogs.MidiImportDialog.fileFilter"), "mid", "midi");
     }
 
     private static void showError(Component parent, ScoreFileException e) {

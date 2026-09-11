@@ -9,7 +9,9 @@ import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class MidiImportPanelTest {
@@ -19,6 +21,14 @@ class MidiImportPanelTest {
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(panel(List.of(track(0, "Guitarra"))));
+    }
+
+    @Test
+    void theTransposeCheckboxAndPercussionSuffixAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Transpose Down One Octave", english.text("score_dialogs.MidiImportPanel.transpose"));
+        assertEquals("Drums (percussion)", english.text("score_dialogs.MidiImportPanel.percussionTrack", "Drums"));
     }
 
     @Test

@@ -8,6 +8,8 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -45,13 +47,17 @@ public final class MidiImportPanel extends JPanel {
     };
 
     private final JList<MidiTrackInfo> trackList = new JList<>();
-    private final JCheckBox transpose = new JCheckBox("Transportar una octava para abajo");
-    private final JCheckBox twoChannelsPerTrack = new JCheckBox("Usar 2 canales por pista", true);
+    private final JCheckBox transpose = new JCheckBox(Texts.get("score_dialogs.MidiImportPanel.transpose"));
+    private final JCheckBox twoChannelsPerTrack =
+            new JCheckBox(Texts.get("score_dialogs.MidiImportPanel.twoChannelsPerTrack"), true);
     private final QuantizeGroup chordPositionQuantizeGroup = new QuantizeGroup();
     private final QuantizeGroup noteDurationQuantizeGroup = new QuantizeGroup();
-    private final JButton selectAll = iconButton(Icons.selectAllTracks(), "Marcar todas las pistas");
-    private final JButton listen = iconButton(Icons.play(), "Escuchar la pista elegida");
-    private final JButton stopListening = iconButton(Icons.stop(), "Detener la reproducción");
+    private final JButton selectAll =
+            iconButton(Icons.selectAllTracks(), Texts.get("score_dialogs.MidiImportPanel.selectAllTracks"));
+    private final JButton listen =
+            iconButton(Icons.play(), Texts.get("score_dialogs.MidiImportPanel.listenToSelectedTrack"));
+    private final JButton stopListening =
+            iconButton(Icons.stop(), Texts.get("score_dialogs.MidiImportPanel.stopPlayback"));
     private final Player player;
     private final Function<List<Integer>, Timeline> trackTimeline;
 
@@ -62,8 +68,8 @@ public final class MidiImportPanel extends JPanel {
         DialogStyle.padded(this);
         trackList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         trackList.setCellRenderer(trackLabels());
-        trackList.getAccessibleContext().setAccessibleName("Pistas del archivo MIDI");
-        trackList.setToolTipText("Pistas del archivo MIDI");
+        trackList.getAccessibleContext().setAccessibleName(Texts.get("score_dialogs.MidiImportPanel.midiFileTracks"));
+        trackList.setToolTipText(Texts.get("score_dialogs.MidiImportPanel.midiFileTracks"));
         showTracks(tracks);
         selectAll.addActionListener(event -> selectAllTracks());
         listen.addActionListener(event -> listen());
@@ -74,9 +80,9 @@ public final class MidiImportPanel extends JPanel {
         checkboxes.add(twoChannelsPerTrack);
 
         FormPanel quantization = new FormPanel()
-                .addSection("Cuantización de posición de acorde")
+                .addSection(Texts.get("score_dialogs.MidiImportPanel.chordPositionQuantization"))
                 .addFullWidthRow(chordPositionQuantizeGroup.asRow())
-                .addSection("Cuantización de duración de nota")
+                .addSection(Texts.get("score_dialogs.MidiImportPanel.noteDurationQuantization"))
                 .addFullWidthRow(noteDurationQuantizeGroup.asRow());
 
         JPanel bottom = new JPanel(new BorderLayout());
@@ -158,18 +164,6 @@ public final class MidiImportPanel extends JPanel {
         noteDurationQuantizeGroup.choose(value);
     }
 
-    private static String figureName(NoteValue value) {
-        return switch (value) {
-            case WHOLE -> "Redonda";
-            case HALF -> "Blanca";
-            case QUARTER -> "Negra";
-            case EIGHTH -> "Corchea";
-            case SIXTEENTH -> "Semicorchea";
-            case THIRTY_SECOND -> "Fusa";
-            case SIXTY_FOURTH -> "Semifusa";
-        };
-    }
-
     private static DefaultListCellRenderer trackLabels() {
         return new DefaultListCellRenderer() {
 
@@ -178,7 +172,9 @@ public final class MidiImportPanel extends JPanel {
                     JList<?> list, Object value, int index, boolean selected, boolean focused) {
                 super.getListCellRendererComponent(list, value, index, selected, focused);
                 if (value instanceof MidiTrackInfo summary) {
-                    setText(summary.percussion() ? summary.name() + " (percusión)" : summary.name());
+                    setText(summary.percussion()
+                            ? Texts.get("score_dialogs.MidiImportPanel.percussionTrack", summary.name())
+                            : summary.name());
                 }
                 return this;
             }
@@ -192,7 +188,7 @@ public final class MidiImportPanel extends JPanel {
         QuantizeGroup() {
             ButtonGroup group = new ButtonGroup();
             for (NoteValue value : QUANTIZE_CHOICES) {
-                JRadioButton radio = new JRadioButton(figureName(value));
+                JRadioButton radio = new JRadioButton(Labels.of(value));
                 group.add(radio);
                 radios.put(value, radio);
             }
