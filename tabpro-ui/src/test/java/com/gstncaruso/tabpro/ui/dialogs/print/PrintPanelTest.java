@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.print.PrintSettings;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +16,14 @@ class PrintPanelTest {
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new PrintPanel(10));
+    }
+
+    @Test
+    void theEntireScoreOptionAndFitToPageCheckboxAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Entire Score", english.text("score_dialogs.PrintPanel.everything"));
+        assertEquals("Fit to Page", english.text("score_dialogs.PrintPanel.fitToPage"));
     }
 
     private static final int SEVEN_SHEETS = 7;

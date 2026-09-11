@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.dialogs.print;
 
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.print.PrintSettings;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -13,15 +14,15 @@ import javax.swing.SpinnerNumberModel;
 public final class PrintPanel extends FormPanel {
 
     private final int sheetCount;
-    private final JRadioButton everything = new JRadioButton("Toda la partitura", true);
-    private final JRadioButton aRange = new JRadioButton("Páginas");
+    private final JRadioButton everything = new JRadioButton(Texts.get("score_dialogs.PrintPanel.everything"), true);
+    private final JRadioButton aRange = new JRadioButton(Texts.get("score_dialogs.PrintPanel.aRange"));
     private final JSpinner fromSheet;
     private final JSpinner toSheet;
     private final JSpinner scalePercent = new JSpinner(new SpinnerNumberModel(
             100, PrintSettings.MIN_SCALE_PERCENT, PrintSettings.MAX_SCALE_PERCENT, 5));
-    private final JCheckBox fitToPage = new JCheckBox("Ajustar a la hoja");
-    private final JCheckBox centeredDocument = new JCheckBox("Documento centrado");
-    private final JButton configureButton = DialogStyle.flatButton("Configurar…");
+    private final JCheckBox fitToPage = new JCheckBox(Texts.get("score_dialogs.PrintPanel.fitToPage"));
+    private final JCheckBox centeredDocument = new JCheckBox(Texts.get("score_dialogs.PrintPanel.centeredDocument"));
+    private final JButton configureButton = DialogStyle.flatButton(Texts.get("score_dialogs.PrintPanel.configure"));
 
     public PrintPanel(int sheetCount) {
         this.sheetCount = Math.max(1, sheetCount);
@@ -32,13 +33,13 @@ public final class PrintPanel extends FormPanel {
         whatToPrint.add(everything);
         whatToPrint.add(aRange);
 
-        addSection("Imprimir");
+        addSection(Texts.get("score_dialogs.shared.print"));
         addFullWidthRow(everything);
         addFullWidthRow(aRange);
-        addRow("Desde la página", fromSheet);
-        addRow("Hasta la página", toSheet);
-        addSection("Posición");
-        addRow("Escala (%)", scalePercent);
+        addRow(Texts.get("score_dialogs.PrintPanel.fromSheet"), fromSheet);
+        addRow(Texts.get("score_dialogs.PrintPanel.toSheet"), toSheet);
+        addSection(Texts.get("score_dialogs.PrintPanel.position"));
+        addRow(Texts.get("score_dialogs.PrintPanel.scalePercent"), scalePercent);
         addFullWidthRow(fitToPage);
         addFullWidthRow(centeredDocument);
         addFullWidthRow(configureButton);
