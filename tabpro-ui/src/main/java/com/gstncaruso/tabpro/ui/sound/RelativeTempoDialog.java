@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.sound;
 
 import com.gstncaruso.tabpro.core.playback.RelativeTempo;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.Hashtable;
@@ -25,12 +26,13 @@ public final class RelativeTempoDialog {
 
         JPanel panel = new JPanel(new BorderLayout(8, 8));
         panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        panel.add(new JLabel("Velocidad de reproducción"), BorderLayout.NORTH);
+        panel.add(new JLabel(Texts.get("views.RelativeTempoDialog.playbackSpeed")), BorderLayout.NORTH);
         panel.add(slider, BorderLayout.CENTER);
         panel.add(factor, BorderLayout.SOUTH);
 
         int answer = JOptionPane.showConfirmDialog(
-                parent, panel, "Tempo relativo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                parent, panel, Texts.get("views.RelativeTempoDialog.title"),
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (answer != JOptionPane.OK_OPTION) {
             return Optional.empty();
         }

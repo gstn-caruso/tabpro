@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.playback.LoopRange;
 import com.gstncaruso.tabpro.core.playback.RelativeTempo;
 import com.gstncaruso.tabpro.core.playback.SpeedTrainer;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.util.Optional;
@@ -32,8 +33,8 @@ public final class LoopDialog {
 
         JSpinner from = new JSpinner(new SpinnerNumberModel(fromDefault, 1, lastMeasure, 1));
         JSpinner to = new JSpinner(new SpinnerNumberModel(toDefault, 1, lastMeasure, 1));
-        JRadioButton simple = new JRadioButton("Loop simple", true);
-        JRadioButton trainer = new JRadioButton("Entrenador de velocidad");
+        JRadioButton simple = new JRadioButton(Texts.get("views.LoopDialog.simpleLoop"), true);
+        JRadioButton trainer = new JRadioButton(Texts.get("views.LoopDialog.speedTrainer"));
         ButtonGroup mode = new ButtonGroup();
         mode.add(simple);
         mode.add(trainer);
@@ -45,23 +46,23 @@ public final class LoopDialog {
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 8, 6));
         panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        panel.add(new JLabel("Desde el compás"));
+        panel.add(new JLabel(Texts.get("views.LoopDialog.fromBar")));
         panel.add(from);
-        panel.add(new JLabel("Hasta el compás"));
+        panel.add(new JLabel(Texts.get("views.LoopDialog.toBar")));
         panel.add(to);
         panel.add(simple);
         panel.add(new JLabel(" "));
         panel.add(trainer);
         panel.add(new JLabel(" "));
-        panel.add(new JLabel("Tempo inicial"));
+        panel.add(new JLabel(Texts.get("views.LoopDialog.initialTempo")));
         panel.add(startTempo);
-        panel.add(new JLabel("Tempo final"));
+        panel.add(new JLabel(Texts.get("views.LoopDialog.finalTempo")));
         panel.add(endTempo);
-        panel.add(new JLabel("Incremento por vuelta"));
+        panel.add(new JLabel(Texts.get("views.LoopDialog.increasePerLoop")));
         panel.add(increment);
 
         int answer = JOptionPane.showConfirmDialog(
-                parent, panel, "Loop / Entrenador de velocidad",
+                parent, panel, Texts.get("views.LoopDialog.title"),
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (answer != JOptionPane.OK_OPTION) {
             return Optional.empty();
