@@ -14,11 +14,13 @@ import com.gstncaruso.tabpro.midi.SoundExchange;
 import com.gstncaruso.tabpro.midi.SoundFontBank;
 import com.gstncaruso.tabpro.midi.WaveRenderer;
 import com.gstncaruso.tabpro.ui.MainFrame;
+import com.gstncaruso.tabpro.ui.Preferences;
 import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.print.SystemPrinting;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Optional;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -29,6 +31,7 @@ import javax.swing.SwingUtilities;
 public class App {
 
     public static void main(String[] args) {
+        new InterfaceLanguageStartup(Locale.getDefault(), new Preferences()).install();
         Theme theme = Theme.install();
         TextsDefaultNames defaultNames = new TextsDefaultNames();
         Editor editor = new Editor(Score.blank(defaultNames), new SystemClipboardStorage());
