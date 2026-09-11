@@ -176,11 +176,11 @@ public final class Commands {
         define("track.add", Texts.get("menus.track.add"), dialogs::addTrack)
                 .withAccelerator("ctrl shift INSERT").withIcon(Icons.addTrack());
         define("track.addGuitar", Texts.get("menus.track.addGuitar"),
-                () -> editor.addTrack(Track.standardGuitar("Guitarra")));
+                () -> editor.addTrack(Track.standardGuitar(Texts.get("defaults.guitarTrack"))));
         define("track.addBass", Texts.get("menus.track.addBass"),
-                () -> editor.addTrack(Track.standardBass("Bajo")));
+                () -> editor.addTrack(Track.standardBass(Texts.get("defaults.bassTrack"))));
         define("track.addPercussion", Texts.get("menus.track.addPercussion"),
-                () -> editor.addTrack(Track.percussion("Batería")));
+                () -> editor.addTrack(Track.percussion(Texts.get("defaults.percussionTrack"))));
         define("track.delete", Texts.get("menus.track.delete"), editor::removeCurrentTrack)
                 .withAccelerator("ctrl shift DELETE").withIcon(Icons.trackDelete());
         define("track.moveUp", Texts.get("menus.track.moveUp"), () -> editor.moveCurrentTrack(-1))

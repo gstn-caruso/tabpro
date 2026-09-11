@@ -79,6 +79,32 @@ class CommandsTest {
     }
 
     @Test
+    void addingAGuitarTrackNamesItFromTheDefaultsBundle() {
+        commands.get("track.addGuitar").actionPerformed(event());
+
+        assertEquals(Texts.get("defaults.guitarTrack"), editor.currentTrack().name());
+    }
+
+    @Test
+    void addingABassTrackNamesItFromTheDefaultsBundle() {
+        commands.get("track.addBass").actionPerformed(event());
+
+        assertEquals(Texts.get("defaults.bassTrack"), editor.currentTrack().name());
+    }
+
+    @Test
+    void addingAPercussionTrackNamesItFromTheDefaultsBundle() {
+        commands.get("track.addPercussion").actionPerformed(event());
+
+        assertEquals(Texts.get("defaults.percussionTrack"), editor.currentTrack().name());
+    }
+
+    @Test
+    void theBassTrackDefaultNameIsAlsoAvailableInEnglish() {
+        assertEquals("Bass", Texts.forLocale(Locale.ENGLISH).text("defaults.bassTrack"));
+    }
+
+    @Test
     void plusShortensTheFigureAndMinusLengthensIt() {
         commands.get("note.value.QUARTER").actionPerformed(event());
 
