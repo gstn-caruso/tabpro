@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.dialogs.measure;
 
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -14,8 +15,8 @@ public final class TimeSignaturePanel extends FormPanel {
     private final JComboBox<Integer> beatUnit = new JComboBox<>(BEAT_UNITS);
 
     public TimeSignaturePanel(TimeSignature initial) {
-        addRow("Pulsos por compás", beats);
-        addRow("Figura que vale un pulso", beatUnit);
+        addRow(Texts.get("edit_dialogs.TimeSignaturePanel.beats"), beats);
+        addRow(Texts.get("edit_dialogs.TimeSignaturePanel.beatUnit"), beatUnit);
         apply(initial);
     }
 
