@@ -37,7 +37,7 @@ public final class NotationExchange implements ScoreExchange {
     private final TabEditFile tabEdit;
     private final GuitarProExporter guitarProExporter = new GuitarProExporter();
     private final PowerTabFile powerTab;
-    private final MusicXmlScoreImporter musicXmlImporter = new MusicXmlScoreImporter();
+    private final MusicXmlScoreImporter musicXmlImporter;
     private final MusicXmlScoreExporter musicXmlExporter = new MusicXmlScoreExporter();
 
     public NotationExchange(DefaultNames names) {
@@ -46,6 +46,7 @@ public final class NotationExchange implements ScoreExchange {
         this.powerTab = new PowerTabFile(names);
         this.asciiImporter = new AsciiTabImporter(names);
         this.midiImporter = new MidiScoreImporter(names);
+        this.musicXmlImporter = new MusicXmlScoreImporter(names);
     }
 
     @Override

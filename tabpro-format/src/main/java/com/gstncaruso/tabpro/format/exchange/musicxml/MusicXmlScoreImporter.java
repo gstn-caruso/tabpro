@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.format.exchange.musicxml;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -37,6 +38,12 @@ public final class MusicXmlScoreImporter {
 
     private static final int DEFAULT_TEMPO = 120;
 
+    private final DefaultNames names;
+
+    public MusicXmlScoreImporter(DefaultNames names) {
+        this.names = names;
+    }
+
     public Score importScore(Path path) {
         try {
             return importScore(readDocument(path));
@@ -66,7 +73,7 @@ public final class MusicXmlScoreImporter {
         Map<String, String> partNames = partNames(document);
         List<Track> tracks = new ArrayList<>();
         for (Element part : parts) {
-            tracks.add(trackOf(part, partNames.getOrDefault(part.getAttribute("id"), "Pista")));
+            tracks.add(trackOf(part, partNames.getOrDefault(part.getAttribute("id"), names.unnamedTrack())));
         }
         return new Score(infoOf(document), DEFAULT_TEMPO, tracks,
                 com.gstncaruso.tabpro.core.model.Lyrics.none());
@@ -86,12 +93,12 @@ public final class MusicXmlScoreImporter {
         return textOf(document.getDocumentElement(), "rights").map(info::withCopyright).orElse(info);
     }
 
-    private static Map<String, String> partNames(Document document) {
-        Map<String, String> names = new LinkedHashMap<>();
+    private Map<String, String> partNames(Document document) {
+        Map<String, String> partNames = new LinkedHashMap<>();
         for (Element part : elementsNamed(document.getDocumentElement(), "score-part")) {
-            names.put(part.getAttribute("id"), textOf(part, "part-name").orElse("Pista"));
+            partNames.put(part.getAttribute("id"), textOf(part, "part-name").orElse(names.unnamedTrack()));
         }
-        return names;
+        return partNames;
     }
 
     private static Track trackOf(Element part, String name) {

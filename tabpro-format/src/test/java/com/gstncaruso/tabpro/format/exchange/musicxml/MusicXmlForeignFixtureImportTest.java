@@ -11,13 +11,14 @@ import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuplet;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class MusicXmlForeignFixtureImportTest {
 
-    private final MusicXmlScoreImporter importer = new MusicXmlScoreImporter();
+    private final MusicXmlScoreImporter importer = new MusicXmlScoreImporter(new TestDefaultNames());
 
     private Score importFixture(String name) {
         try {

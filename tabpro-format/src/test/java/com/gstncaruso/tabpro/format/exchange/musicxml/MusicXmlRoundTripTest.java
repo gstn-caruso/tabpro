@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
@@ -20,16 +21,22 @@ import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.Tuplet;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 class MusicXmlRoundTripTest {
 
+    private final DefaultNames names = new TestDefaultNames();
     private final MusicXmlScoreExporter exporter = new MusicXmlScoreExporter();
-    private final MusicXmlScoreImporter importer = new MusicXmlScoreImporter();
+    private final MusicXmlScoreImporter importer = new MusicXmlScoreImporter(names);
 
     @Test
     void writesTheTitleAndTheAuthors() {
@@ -178,6 +185,18 @@ class MusicXmlRoundTripTest {
         assertEquals(new TimeSignature(4, 4), loaded.timeSignatureOf(0), "measure 1 is still in 4/4");
         assertEquals(new TimeSignature(4, 4), loaded.timeSignatureOf(1), "measure 2 is still in 4/4");
         assertEquals(new TimeSignature(3, 4), loaded.timeSignatureOf(2), "measure 3 changes to 3/4");
+    }
+
+    @Test
+    void namesAnUnnamedPartFromTheInjectedDefaultNames() throws Exception {
+        String xml = "<score-partwise><part-list><score-part id=\"P1\"></score-part></part-list>"
+                + "<part id=\"P1\"></part></score-partwise>";
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+                .parse(new InputSource(new StringReader(xml)));
+
+        Score score = importer.importScore(document);
+
+        assertEquals(names.unnamedTrack(), score.track(0).name());
     }
 
     private static Score scoreWith(Beat... beats) {
