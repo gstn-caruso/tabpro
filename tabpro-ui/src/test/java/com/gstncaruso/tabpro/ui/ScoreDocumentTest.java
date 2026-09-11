@@ -46,6 +46,13 @@ class ScoreDocumentTest {
     }
 
     @Test
+    void theRecoveryFileNameIsALanguageNeutralIdentifier() {
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
+
+        assertEquals("tabpro-recovery" + ScoreDocument.EXTENSION, document.recoveryFile().getFileName().toString());
+    }
+
+    @Test
     void describesAnUntitledDocument() {
         ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
 

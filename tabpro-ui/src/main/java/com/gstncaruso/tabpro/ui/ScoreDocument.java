@@ -98,7 +98,7 @@ public final class ScoreDocument {
     }
 
     public Path recoveryFile() {
-        return Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recuperación" + EXTENSION);
+        return Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recovery" + EXTENSION);
     }
 
     public Optional<Path> pendingRecovery() {
