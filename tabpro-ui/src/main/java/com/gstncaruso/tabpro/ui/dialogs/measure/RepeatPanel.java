@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.measure;
 
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JCheckBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -8,7 +9,7 @@ import javax.swing.SpinnerNumberModel;
 public final class RepeatPanel extends FormPanel {
 
     private final boolean initialRepeatOpen;
-    private final JCheckBox repeatOpen = new JCheckBox("Abre repetición");
+    private final JCheckBox repeatOpen = new JCheckBox(Texts.get("edit_dialogs.RepeatPanel.repeatOpen"));
     private final JSpinner repeatCount = new JSpinner(new SpinnerNumberModel(0, 0, 99, 1));
 
     public RepeatPanel(boolean repeatOpen, int repeatCount) {
@@ -16,7 +17,7 @@ public final class RepeatPanel extends FormPanel {
         this.repeatOpen.setSelected(repeatOpen);
         this.repeatCount.setValue(repeatCount);
         addFullWidthRow(this.repeatOpen);
-        addRow("Cierra después de tantas vueltas (0 = no cierra)", this.repeatCount);
+        addRow(Texts.get("edit_dialogs.RepeatPanel.repeatCount"), this.repeatCount);
     }
 
     public boolean repeatOpenSelected() {
