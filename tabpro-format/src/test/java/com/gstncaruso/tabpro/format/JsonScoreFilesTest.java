@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
+import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Channel;
@@ -150,7 +151,10 @@ class JsonScoreFilesTest {
         Path path = tempDir.resolve("score.tabpro");
         Files.writeString(path, unsupportedContent);
 
-        assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+
+        assertEquals(ScoreFileProblem.UNSUPPORTED_VERSION, failure.problem());
+        assertEquals(List.of("tabpro", "99"), failure.arguments());
     }
 
     @Test
@@ -158,14 +162,69 @@ class JsonScoreFilesTest {
         Path path = tempDir.resolve("score.tabpro");
         Files.writeString(path, "{ this is not valid json");
 
-        assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+
+        assertEquals(ScoreFileProblem.NOT_RECOGNIZED, failure.problem());
+        assertEquals(List.of("tabpro"), failure.arguments());
+    }
+
+    @Test
+    void anEmptyFileIsDamaged(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("score.tabpro");
+        Files.writeString(path, "");
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+
+        assertEquals(ScoreFileProblem.DAMAGED, failure.problem());
+        assertEquals("empty file: " + path, failure.getMessage());
     }
 
     @Test
     void rejectsAMissingFile(@TempDir Path tempDir) {
         Path path = tempDir.resolve("does-not-exist.tabpro");
 
-        assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+
+        assertEquals(ScoreFileProblem.CANNOT_READ, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
+    }
+
+    @Test
+    void aScoreThatCannotBeWrittenIsReportedWithItsPath(@TempDir Path tempDir) {
+        Path path = tempDir.resolve("missing-folder").resolve("score.tabpro");
+
+        ScoreFileException failure =
+                assertThrows(ScoreFileException.class, () -> scoreFiles.save(Score.blank(), path));
+
+        assertEquals(ScoreFileProblem.CANNOT_WRITE, failure.problem());
+        assertEquals(List.of(path), failure.arguments());
+    }
+
+    @Test
+    void anUnknownValueIsDamaged(@TempDir Path tempDir) throws IOException, URISyntaxException {
+        String validContent = Files.readString(Path.of(getClass().getResource("/v1-one-measure.tabpro").toURI()));
+        String withUnknownFeel = validContent.replaceFirst(
+                "\"timeSignature\"", "\"attributes\": { \"tripletFeel\": \"NOT_A_FEEL\" }, \"timeSignature\"");
+        Path path = tempDir.resolve("score.tabpro");
+        Files.writeString(path, withUnknownFeel);
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+
+        assertEquals(ScoreFileProblem.DAMAGED, failure.problem());
+        assertEquals("unknown value for TripletFeel: NOT_A_FEEL", failure.getMessage());
+    }
+
+    @Test
+    void aNoteBeyondTheTuningIsDamaged(@TempDir Path tempDir) throws IOException, URISyntaxException {
+        String validContent = Files.readString(Path.of(getClass().getResource("/v1-one-measure.tabpro").toURI()));
+        String withSeventhString = validContent.replaceFirst("\"string\": 6", "\"string\": 7");
+        Path path = tempDir.resolve("score.tabpro");
+        Files.writeString(path, withSeventhString);
+
+        ScoreFileException failure = assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
+
+        assertEquals(ScoreFileProblem.DAMAGED, failure.problem());
+        assertEquals("a note refers to a string outside the 6-string tuning", failure.getMessage());
     }
 
     @Test
@@ -194,8 +253,8 @@ class JsonScoreFilesTest {
 
         ScoreFileException thrown = assertThrows(ScoreFileException.class, () -> scoreFiles.load(path));
 
-        assertTrue(thrown.getMessage().contains("beats"));
-        assertFalse(thrown.getMessage().contains("vacio"));
+        assertEquals(ScoreFileProblem.DAMAGED, thrown.problem());
+        assertEquals("missing field: beats", thrown.getMessage());
     }
 
     @Test

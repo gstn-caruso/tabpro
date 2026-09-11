@@ -35,7 +35,7 @@ public record MeasureDto(
 
     public Measure toMeasure() {
         if (beats == null) {
-            throw new ScoreFileException("falta el campo beats");
+            throw ScoreFileException.damaged("missing field: beats");
         }
         List<Beat> lead = beats.stream().map(BeatDto::toBeat).toList();
         Voice bass = bassVoice == null
