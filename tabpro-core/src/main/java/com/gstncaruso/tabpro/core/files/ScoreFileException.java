@@ -8,18 +8,6 @@ public class ScoreFileException extends RuntimeException {
     private final ScoreFileProblem problem;
     private final List<Object> arguments;
 
-    public ScoreFileException(String message) {
-        super(message);
-        this.problem = null;
-        this.arguments = List.of();
-    }
-
-    public ScoreFileException(String message, Throwable cause) {
-        super(message, cause);
-        this.problem = null;
-        this.arguments = List.of();
-    }
-
     private ScoreFileException(ScoreFileProblem problem, List<Object> arguments, String detail) {
         super(detail);
         this.problem = problem;
