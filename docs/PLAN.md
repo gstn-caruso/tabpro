@@ -605,9 +605,13 @@ their changes touch the same lines.
 | 4.3 · `domain`: 18 core and 8 ui enums lose `label()`, 154 keys | `refactor/i18n-domain-labels` | #221 | merged |
 | 4.5 · `edit_dialogs`: effects, note, measure, markers, paste, instrument, help, 77 keys | `refactor/i18n-edit-dialogs` | #223 | merged |
 | 4.4 · `library`: `TuningName` (library/user/custom), scale and GM ids, 146 keys; `.tabpro` keeps storing the Spanish tuning name | `refactor/i18n-library-names` | #224 | merged |
-| 4.7 · `views` | `refactor/i18n-views` | — | in progress |
-| 4.8 · `window`, structured `ScoreFileException` problems | `refactor/i18n-window-and-errors` | — | in progress |
-| 4.6, 4.9, 4.10 | — | — | pending (wave D after 4.7 and 4.8, then the switch) |
-| test · deterministic multi-port seek in `MidiPlayerTest` (flaked in the es_ES run) | `test/midi-deterministic-multi-port-seek` | — | in progress |
+| test · deterministic multi-port seek in `MidiPlayerTest` (flaked in the es_ES run) | `test/midi-deterministic-multi-port-seek` | #226 | merged |
+| 4.8 · `window`: `ScoreFileException` carries a `ScoreFileProblem` rendered by `ErrorTexts`, `ExportWarning`, `MainFrame` text | `refactor/i18n-window-and-errors` | #227 | merged |
+| 4.7 · `views`: 182 keys, `SoundFontStatus` as a neutral type | `refactor/i18n-views` | #228 | merged |
+| 4.6 · `score_dialogs`: 41 classes, 170 keys | `refactor/i18n-score-dialogs` | #229 | merged |
+| 4.9 · `defaults`: `DefaultNames` port injected into `Score.blank` and the importers; recovery file keeps offering the legacy name | `refactor/i18n-default-names` | #230 | merged |
+| 4.10 · the switch: `Language` preference, `InterfaceLanguageStartup`, Preferences > Language, English mnemonics and accessibility, guardians against class-load text and Spanish literals in Java | `feat/interface-language` | #232 | merged, released as v0.60.0 |
 | 5 · audits and fixture READMEs in English, renamed `docs/audit-*.md` | `docs/audits-in-english` | #222 | merged |
-| 5 · README and this plan in English | — | — | pending (after 4.10) |
+| 5 · README and this plan in English, `docs/screenshots` | `docs/readme-and-plan-in-english` | #231 | merged |
+
+The stage is closed. Comments went from 6775 lines to about 1100, all external contracts in English. Code, tests, messages, docs and commits are in English. The interface ships in Spanish and English (v0.60.0), verified by launching the built jar under en_US and es_AR. Left for later: English wording that deserves a pass against the manual ("Triplet feel" vs "Triplet Feel", "Measure Properties" vs "Bar Properties"), and README screenshots that still show the Spanish interface.
