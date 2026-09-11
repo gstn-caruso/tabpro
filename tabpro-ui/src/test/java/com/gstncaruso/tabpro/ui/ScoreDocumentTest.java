@@ -72,6 +72,23 @@ class ScoreDocumentTest {
     }
 
     @Test
+    @ResourceLock(REAL_RECOVERY_FILE_LOCK)
+    void discardingALegacyRecoveryRemovesTheLegacyFile() throws IOException {
+        deleteRealRecoveryFiles();
+        Path legacyRecovery = Path.of(System.getProperty("java.io.tmpdir"), "tabpro-recuperación" + ScoreDocument.EXTENSION);
+        Files.createFile(legacyRecovery);
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
+
+        try {
+            document.discardRecovery();
+
+            assertFalse(Files.exists(legacyRecovery));
+        } finally {
+            deleteRealRecoveryFiles();
+        }
+    }
+
+    @Test
     void describesAnUntitledDocument() {
         ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
 

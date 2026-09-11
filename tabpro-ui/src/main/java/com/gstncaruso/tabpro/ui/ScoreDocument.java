@@ -119,6 +119,7 @@ public final class ScoreDocument {
     public void discardRecovery() {
         try {
             Files.deleteIfExists(recoveryFile());
+            Files.deleteIfExists(legacyRecoveryFile());
         } catch (IOException nextRecoveryWillOverwriteIt) {
         }
     }
