@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.harmony.PitchClass;
 import com.gstncaruso.tabpro.core.harmony.Scale;
 import com.gstncaruso.tabpro.core.harmony.ScaleLibrary;
+import com.gstncaruso.tabpro.core.harmony.ScaleMatch;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
@@ -48,6 +49,18 @@ class ScalesDialogTest {
         JList<?> scales = Combos.firstListNamed(panel, "Escala");
 
         assertEquals("Mayor (Jónico)", Combos.renderedTextOfList(scales, ScaleLibrary.major()));
+    }
+
+    @Test
+    void aFoundScaleShowsItsTonicItsSpanishNameAndItsIncidentNotes() {
+        Editor editor = new Editor(Score.blank());
+
+        ScalesDialog.Panel panel = new ScalesDialog.Panel(editor, new RecordingPlayer(), new ChosenScale());
+
+        JList<?> found = Combos.firstListNamed(panel, "Escalas encontradas");
+
+        assertEquals("D Dórico   [2]",
+                Combos.renderedTextOfList(found, new ScaleMatch(PitchClass.of("D"), ScaleLibrary.dorian(), 2)));
     }
 
     @Test
