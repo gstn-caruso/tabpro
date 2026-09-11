@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.Trill;
 import com.gstncaruso.tabpro.core.model.effects.TremoloPicking;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import javax.swing.JTabbedPane;
 
@@ -21,13 +22,13 @@ public final class NoteEffectsDialog {
     private NoteEffectsDialog() {
     }
 
-    public static final String BEND = "Bend";
-    public static final String TREMOLO_BAR = "Palanca";
-    public static final String GRACE_NOTE = "Nota de adorno";
-    public static final String STROKE = "Rasgueo";
-    public static final String TRILL = "Trino";
-    public static final String TREMOLO_PICKING = "Trémolo de púa";
-    public static final String HARMONICS = "Armónicos";
+    public static final String BEND = Texts.get("edit_dialogs.NoteEffectsDialog.bend");
+    public static final String TREMOLO_BAR = Texts.get("edit_dialogs.NoteEffectsDialog.tremoloBar");
+    public static final String GRACE_NOTE = Texts.get("edit_dialogs.NoteEffectsDialog.graceNote");
+    public static final String STROKE = Texts.get("edit_dialogs.NoteEffectsDialog.stroke");
+    public static final String TRILL = Texts.get("edit_dialogs.NoteEffectsDialog.trill");
+    public static final String TREMOLO_PICKING = Texts.get("edit_dialogs.NoteEffectsDialog.tremoloPicking");
+    public static final String HARMONICS = Texts.get("edit_dialogs.NoteEffectsDialog.harmonics");
 
     public static void show(Component parent, Editor editor) {
         show(parent, editor, BEND);
@@ -55,17 +56,17 @@ public final class NoteEffectsDialog {
                 noteEffects.harmonic().isPresent(), new HarmonicPanel(noteEffects.harmonic().orElse(HarmonicType.NATURAL)));
 
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Bend", bendTab);
-        tabs.addTab("Palanca", tremoloBarTab);
-        tabs.addTab("Nota de adorno", graceTab);
-        tabs.addTab("Rasgueo", strokeTab);
-        tabs.addTab("Trino", trillTab);
-        tabs.addTab("Trémolo de púa", tremoloPickingTab);
-        tabs.addTab("Armónicos", harmonicTab);
+        tabs.addTab(BEND, bendTab);
+        tabs.addTab(TREMOLO_BAR, tremoloBarTab);
+        tabs.addTab(GRACE_NOTE, graceTab);
+        tabs.addTab(STROKE, strokeTab);
+        tabs.addTab(TRILL, trillTab);
+        tabs.addTab(TREMOLO_PICKING, tremoloPickingTab);
+        tabs.addTab(HARMONICS, harmonicTab);
 
         selectTab(tabs, openOn);
 
-        boolean accepted = DialogShell.ask(parent, "Efectos de nota", tabs);
+        boolean accepted = DialogShell.ask(parent, Texts.get("edit_dialogs.NoteEffectsDialog.title"), tabs);
         if (!accepted) {
             return;
         }

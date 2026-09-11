@@ -5,9 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class RepeatPanelTest {
+
+    @Test
+    void theRepeatOpenAndRepeatCountFieldsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Repeat Open", english.text("edit_dialogs.RepeatPanel.repeatOpen"));
+        assertEquals("Close After This Many Times (0 = Never)", english.text("edit_dialogs.RepeatPanel.repeatCount"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {

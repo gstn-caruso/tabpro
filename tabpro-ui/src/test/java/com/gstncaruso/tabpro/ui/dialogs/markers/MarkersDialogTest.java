@@ -6,13 +6,23 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.awt.Container;
+import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import org.junit.jupiter.api.Test;
 
 class MarkersDialogTest {
+
+    @Test
+    void theTitleAndSaveButtonAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Markers", english.text("edit_dialogs.MarkersDialog.title"));
+        assertEquals("Save Changes", english.text("edit_dialogs.MarkersDialog.save"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {

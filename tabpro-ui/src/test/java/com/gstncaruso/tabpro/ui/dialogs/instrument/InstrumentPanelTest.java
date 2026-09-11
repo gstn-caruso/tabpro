@@ -5,9 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.InstrumentPatch;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class InstrumentPanelTest {
+
+    @Test
+    void theSearchAndListFieldsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Search Instrument", english.text("edit_dialogs.InstrumentPanel.search"));
+        assertEquals("Instruments", english.text("edit_dialogs.InstrumentPanel.list"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {

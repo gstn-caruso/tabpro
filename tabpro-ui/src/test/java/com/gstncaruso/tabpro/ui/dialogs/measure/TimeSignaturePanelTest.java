@@ -4,9 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class TimeSignaturePanelTest {
+
+    @Test
+    void theBeatsAndBeatUnitFieldsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Beats per Bar", english.text("edit_dialogs.TimeSignaturePanel.beats"));
+        assertEquals("Note Value per Beat", english.text("edit_dialogs.TimeSignaturePanel.beatUnit"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {

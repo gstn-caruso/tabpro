@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.EnumMap;
@@ -24,7 +25,7 @@ public final class ParameterChangeDialog {
         ParameterChange current = editor.currentBeat().effects().parameterChange();
         Fields fields = buildFields(current, editor);
 
-        if (!DialogShell.ask(parent, "Cambio de parámetros", fields.form())) {
+        if (!DialogShell.ask(parent, Texts.get("edit_dialogs.ParameterChangeDialog.title"), fields.form())) {
             return;
         }
         ParameterChange change = ParameterChange.nothing()
@@ -60,8 +61,8 @@ public final class ParameterChangeDialog {
             form.addFullWidthRow(row);
         }
         JSpinner transition = new JSpinner(new SpinnerNumberModel(current.transitionBeats(), 0, 64, 1));
-        JCheckBox everyTrack = new JCheckBox("Aplicar a todas las pistas", current.everyTrack());
-        form.addRow("Transición (beats)", transition);
+        JCheckBox everyTrack = new JCheckBox(Texts.get("edit_dialogs.ParameterChangeDialog.everyTrack"), current.everyTrack());
+        form.addRow(Texts.get("edit_dialogs.ParameterChangeDialog.transitionBeats"), transition);
         form.addFullWidthRow(everyTrack);
 
         return new Fields(form, enabled, values, transition, everyTrack);

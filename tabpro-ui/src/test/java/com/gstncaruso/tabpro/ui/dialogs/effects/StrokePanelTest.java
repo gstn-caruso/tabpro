@@ -6,10 +6,20 @@ import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.effects.Stroke;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class StrokePanelTest {
+
+    @Test
+    void theDirectionAndRasgueadoFieldsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Direction", english.text("edit_dialogs.StrokePanel.direction"));
+        assertEquals("Rasgueado", english.text("edit_dialogs.StrokePanel.rasgueado"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {

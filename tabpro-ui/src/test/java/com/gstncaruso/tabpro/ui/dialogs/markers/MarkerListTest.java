@@ -6,10 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class MarkerListTest {
+
+    @Test
+    void theLabelPatternIsAvailableInEnglish() {
+        assertEquals("Bar 3: Solo",
+                Texts.forLocale(Locale.ENGLISH).text("edit_dialogs.MarkerList.label", "3", "Solo"));
+    }
 
     @Test
     void isEmptyForAFreshScore() {

@@ -3,10 +3,17 @@ package com.gstncaruso.tabpro.ui.dialogs.measure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class AlternateEndingsPanelTest {
+
+    @Test
+    void theTitleIsAvailableInEnglish() {
+        assertEquals("Alternate Endings", Texts.forLocale(Locale.ENGLISH).text("edit_dialogs.AlternateEndingsPanel.title"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {

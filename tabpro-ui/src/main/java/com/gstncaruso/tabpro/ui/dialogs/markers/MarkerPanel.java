@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.markers;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.dialogs.style.ColorSwatchButton;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JTextField;
 
 public final class MarkerPanel extends FormPanel {
@@ -12,8 +13,8 @@ public final class MarkerPanel extends FormPanel {
 
     public MarkerPanel(Marker initial) {
         color = new ColorSwatchButton(initial.color());
-        addRow("Nombre", name);
-        addRow("Color", color);
+        addRow(Texts.get("edit_dialogs.MarkerPanel.name"), name);
+        addRow(Texts.get("edit_dialogs.shared.color"), color);
         apply(initial);
     }
 

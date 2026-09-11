@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.effects.NoteEffects;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -19,14 +20,14 @@ public final class SoundDurationDialog {
                 .orElse(NoteEffects.FULL_SOUND);
         Fields fields = buildFields(current);
 
-        if (DialogShell.ask(parent, "Duración del sonido", fields.form())) {
+        if (DialogShell.ask(parent, Texts.get("edit_dialogs.SoundDurationDialog.title"), fields.form())) {
             editor.setSoundDuration((Integer) fields.percent().getValue());
         }
     }
 
     static Fields buildFields(int current) {
         JSpinner percent = new JSpinner(new SpinnerNumberModel(current, 1, 200, 5));
-        FormPanel form = new FormPanel().addRow("Duración del sonido (%)", percent);
+        FormPanel form = new FormPanel().addRow(Texts.get("edit_dialogs.SoundDurationDialog.percent"), percent);
         return new Fields(form, percent);
     }
 

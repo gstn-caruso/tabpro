@@ -5,9 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.core.model.bars.Mode;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class KeySignaturePanelTest {
+
+    @Test
+    void theKeySignatureFieldIsAvailableInEnglish() {
+        assertEquals("Key Signature",
+                Texts.forLocale(Locale.ENGLISH).text("edit_dialogs.MeasurePropertiesDialog.keySignature"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {

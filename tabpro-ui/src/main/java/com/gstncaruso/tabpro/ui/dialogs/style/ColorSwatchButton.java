@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.dialogs.style;
 
 import com.gstncaruso.tabpro.core.model.ScoreColor;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JButton;
@@ -12,14 +13,14 @@ public final class ColorSwatchButton extends JButton {
 
     public ColorSwatchButton(ScoreColor initial) {
         setPreferredSize(new Dimension(48, 22));
-        getAccessibleContext().setAccessibleName("Color");
-        setToolTipText("Color");
+        getAccessibleContext().setAccessibleName(Texts.get("edit_dialogs.shared.color"));
+        setToolTipText(Texts.get("edit_dialogs.shared.color"));
         apply(initial);
         addActionListener(event -> pickColor());
     }
 
     private void pickColor() {
-        Color chosen = JColorChooser.showDialog(this, "Elegir color", toAwtColor());
+        Color chosen = JColorChooser.showDialog(this, Texts.get("edit_dialogs.ColorSwatchButton.pick"), toAwtColor());
         if (chosen != null) {
             apply(new ScoreColor(chosen.getRed(), chosen.getGreen(), chosen.getBlue()));
         }

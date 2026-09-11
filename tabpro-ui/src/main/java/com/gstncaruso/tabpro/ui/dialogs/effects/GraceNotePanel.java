@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
@@ -15,7 +16,7 @@ import javax.swing.SpinnerNumberModel;
 public final class GraceNotePanel extends FormPanel {
 
     private final JSpinner fret = new JSpinner(new SpinnerNumberModel(0, 0, 99, 1));
-    private final JCheckBox onBeat = new JCheckBox("Sobre el beat (en vez de antes)");
+    private final JCheckBox onBeat = new JCheckBox(Texts.get("edit_dialogs.GraceNotePanel.onBeat"));
     private final JComboBox<NoteValue> duration = new JComboBox<>(NoteValue.values());
     private final JComboBox<Dynamic> dynamic = new JComboBox<>(Dynamic.values());
     private final JComboBox<GraceTransition> transition = new JComboBox<>(GraceTransition.values());
@@ -29,11 +30,11 @@ public final class GraceNotePanel extends FormPanel {
         transition.setRenderer((list, value, index, isSelected, hasFocus) ->
                 new javax.swing.JLabel(value == null ? "" : Labels.of(value)));
 
-        addRow("Traste", fret);
+        addRow(Texts.get("edit_dialogs.GraceNotePanel.fret"), fret);
         addFullWidthRow(onBeat);
-        addRow("Duración", duration);
-        addRow("Dinámica", dynamic);
-        addRow("Transición", transition);
+        addRow(Texts.get("edit_dialogs.shared.duration"), duration);
+        addRow(Texts.get("edit_dialogs.shared.dynamic"), dynamic);
+        addRow(Texts.get("edit_dialogs.GraceNotePanel.transition"), transition);
 
         apply(initial);
     }

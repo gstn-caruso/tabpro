@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -18,7 +19,7 @@ public final class DynamicsDialog {
         Dynamic current = editor.currentNote().map(note -> note.effects().dynamic()).orElse(Dynamic.defaultDynamic());
         Fields fields = buildFields(current);
 
-        if (!DialogShell.ask(parent, "Dinámica", fields.form())) {
+        if (!DialogShell.ask(parent, Texts.get("edit_dialogs.shared.dynamic"), fields.form())) {
             return;
         }
         Dynamic chosen = (Dynamic) fields.dynamics().getSelectedItem();
@@ -33,10 +34,10 @@ public final class DynamicsDialog {
         JComboBox<Dynamic> dynamics = new JComboBox<>(Dynamic.values());
         dynamics.setRenderer(new LabeledListCellRenderer());
         dynamics.setSelectedItem(current);
-        JCheckBox wholeChord = new JCheckBox("Aplicar a todo el acorde");
+        JCheckBox wholeChord = new JCheckBox(Texts.get("edit_dialogs.DynamicsDialog.wholeChord"));
 
         FormPanel form = new FormPanel()
-                .addRow("Dinámica", dynamics)
+                .addRow(Texts.get("edit_dialogs.shared.dynamic"), dynamics)
                 .addRow("", wholeChord);
 
         return new Fields(form, dynamics, wholeChord);

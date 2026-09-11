@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.measure;
 import com.gstncaruso.tabpro.core.model.bars.MeasureAttributes;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JCheckBox;
@@ -20,7 +21,7 @@ public final class AlternateEndingsPanel extends FormPanel {
             passes.add(box);
             row.add(box);
         }
-        addRow("Finales alternativos", row);
+        addRow(Texts.get("edit_dialogs.AlternateEndingsPanel.title"), row);
     }
 
     public void setChecked(int pass, boolean checked) {

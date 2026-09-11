@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.effects.Finger;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.util.Optional;
 import javax.swing.JComboBox;
@@ -11,7 +12,7 @@ import javax.swing.JComponent;
 
 public final class FingeringDialog {
 
-    private static final String NONE = "Sin indicar";
+    private static final String NONE = Texts.get("edit_dialogs.FingeringDialog.none");
 
     private FingeringDialog() {
     }
@@ -29,7 +30,7 @@ public final class FingeringDialog {
         Optional<Finger> right = editor.currentNote().flatMap(note -> note.effects().rightHand());
         Fields fields = buildFields(left, right, initialFocus);
 
-        if (!DialogShell.ask(parent, "Digitación", fields.form(), fields.initialFocus())) {
+        if (!DialogShell.ask(parent, Texts.get("edit_dialogs.FingeringDialog.title"), fields.form(), fields.initialFocus())) {
             return;
         }
         editor.setLeftHandFinger(chosen(fields.leftHand()));
@@ -47,8 +48,8 @@ public final class FingeringDialog {
         JComboBox<Object> rightHand = fingers(right, Finger::rightHandSymbol);
 
         FormPanel form = new FormPanel()
-                .addRow("Mano izquierda", leftHand)
-                .addRow("Mano derecha", rightHand);
+                .addRow(Texts.get("edit_dialogs.FingeringDialog.leftHand"), leftHand)
+                .addRow(Texts.get("edit_dialogs.FingeringDialog.rightHand"), rightHand);
 
         return new Fields(form, leftHand, rightHand, initialFocus == Hand.RIGHT ? rightHand : leftHand);
     }

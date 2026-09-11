@@ -5,9 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class MarkerTableModelTest {
+
+    @Test
+    void theColumnHeadersAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Position", english.text("edit_dialogs.MarkerTableModel.position"));
+        assertEquals("Name", english.text("edit_dialogs.MarkerPanel.name"));
+    }
 
     @Test
     void isEmptyForAFreshScore() {

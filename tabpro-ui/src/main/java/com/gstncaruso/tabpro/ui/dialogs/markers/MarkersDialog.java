@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import javax.swing.DefaultListModel;
@@ -19,11 +20,11 @@ public final class MarkersDialog {
     }
 
     public static void show(Component parent, Editor editor) {
-        DialogShell.show(parent, "Marcadores", buildContent(editor));
+        DialogShell.show(parent, Texts.get("edit_dialogs.MarkersDialog.title"), buildContent(editor));
     }
 
     public static void showEditing(Component parent, Editor editor, int measureIndex) {
-        DialogShell.show(parent, "Marcadores", buildContentEditing(editor, measureIndex));
+        DialogShell.show(parent, Texts.get("edit_dialogs.MarkersDialog.title"), buildContentEditing(editor, measureIndex));
     }
 
     static JPanel buildContent(Editor editor) {
@@ -49,17 +50,17 @@ public final class MarkersDialog {
     }
 
     private static Content build(Editor editor) {
-        MarkerPanel form = new MarkerPanel(Marker.named("Marcador"));
+        MarkerPanel form = new MarkerPanel(Marker.named(Texts.get("edit_dialogs.MarkersDialog.defaultName")));
         DefaultListModel<MarkerList.Positioned> model = new DefaultListModel<>();
         JList<MarkerList.Positioned> list = new JList<>(model);
         list.setCellRenderer((jlist, value, index, isSelected, hasFocus) -> new javax.swing.JLabel(value.label()));
-        list.getAccessibleContext().setAccessibleName("Marcadores");
-        list.setToolTipText("Marcadores");
+        list.getAccessibleContext().setAccessibleName(Texts.get("edit_dialogs.MarkersDialog.title"));
+        list.setToolTipText(Texts.get("edit_dialogs.MarkersDialog.title"));
         refresh(model, editor);
 
-        JButton insert = DialogStyle.flatButton("Insertar aquí");
-        JButton goTo = DialogStyle.flatButton("Ir al compás");
-        JButton save = DialogStyle.flatButton("Guardar cambios");
+        JButton insert = DialogStyle.flatButton(Texts.get("edit_dialogs.MarkersDialog.insert"));
+        JButton goTo = DialogStyle.flatButton(Texts.get("edit_dialogs.MarkersDialog.goToBar"));
+        JButton save = DialogStyle.flatButton(Texts.get("edit_dialogs.MarkersDialog.save"));
 
         insert.addActionListener(event -> withValidName(form, name -> {
             editor.setMarker(form.toMarker());
@@ -102,7 +103,7 @@ public final class MarkersDialog {
         try {
             action.accept(form.toMarker().name());
         } catch (IllegalArgumentException invalidName) {
-            JOptionPane.showMessageDialog(form, "El marcador necesita un nombre.");
+            JOptionPane.showMessageDialog(form, Texts.get("edit_dialogs.MarkersDialog.nameRequired"));
         }
     }
 }

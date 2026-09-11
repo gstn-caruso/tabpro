@@ -7,10 +7,20 @@ import com.gstncaruso.tabpro.core.model.effects.Dynamic;
 import com.gstncaruso.tabpro.core.model.effects.GraceNote;
 import com.gstncaruso.tabpro.core.model.effects.GraceTransition;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class GraceNotePanelTest {
+
+    @Test
+    void theFretAndOnBeatFieldsAreAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Fret", english.text("edit_dialogs.GraceNotePanel.fret"));
+        assertEquals("On the beat (instead of before it)", english.text("edit_dialogs.GraceNotePanel.onBeat"));
+    }
 
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
