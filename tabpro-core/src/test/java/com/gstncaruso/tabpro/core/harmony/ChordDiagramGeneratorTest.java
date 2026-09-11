@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Tuning;
-import com.gstncaruso.tabpro.core.model.TuningLibrary;
 import com.gstncaruso.tabpro.core.model.chords.ChordComplexity;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import java.util.ArrayList;
@@ -97,10 +96,7 @@ class ChordDiagramGeneratorTest {
     @Test
     void generatesDiagramsForAnyTuning() {
         Chord dMajor = Chord.of(PitchClass.of("Re"), ChordType.MAJOR);
-        Tuning dadgad = TuningLibrary.guitars().stream()
-                .filter(t -> t.name().equals("DADGAD"))
-                .findFirst()
-                .orElseThrow();
+        Tuning dadgad = Tuning.of("DADGAD", 62, 57, 55, 50, 45, 38);
 
         List<ChordDiagram> diagrams = ChordDiagramGenerator.generate(dMajor, dadgad);
 

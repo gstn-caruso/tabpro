@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
@@ -17,6 +18,13 @@ class PercussionSoundPaletteTest {
     @Test
     void everyControlHasAnAccessibleNameAndTooltip() {
         AccessibilityAssertions.assertNoViolations(new PercussionSoundPalette(sound -> { }, sound -> { }));
+    }
+
+    @Test
+    void aSoundCellShowsItsNumberAndItsSpanishName() {
+        PercussionSoundPalette palette = new PercussionSoundPalette(sound -> { }, sound -> { });
+
+        assertEquals("35 — Bombo acústico", Combos.renderedTextOfList(palette.soundList(), 35));
     }
 
     @Test

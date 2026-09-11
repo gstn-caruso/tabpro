@@ -8,66 +8,66 @@ public final class TuningLibrary {
     }
 
     public static Tuning standardGuitar() {
-        return Tuning.of("Guitarra estándar", 64, 59, 55, 50, 45, 40);
+        return Tuning.fromLibrary("guitar.standard", 64, 59, 55, 50, 45, 40);
     }
 
     public static Tuning standardBass() {
-        return Tuning.of("Bajo estándar", 43, 38, 33, 28);
+        return Tuning.fromLibrary("bass.standard", 43, 38, 33, 28);
     }
 
     public static List<Tuning> guitars() {
         return List.of(
                 standardGuitar(),
-                Tuning.of("Drop D", 64, 59, 55, 50, 45, 38),
-                Tuning.of("Medio tono abajo", 63, 58, 54, 49, 44, 39),
-                Tuning.of("Un tono abajo", 62, 57, 53, 48, 43, 38),
-                Tuning.of("Drop C", 62, 57, 53, 48, 43, 36),
-                Tuning.of("Open D", 62, 57, 54, 50, 45, 38),
-                Tuning.of("Open G", 62, 59, 55, 50, 43, 38),
-                Tuning.of("Open C", 64, 60, 55, 48, 43, 36),
-                Tuning.of("Open E", 64, 59, 56, 52, 47, 40),
-                Tuning.of("Open A", 64, 61, 57, 52, 45, 40),
-                Tuning.of("DADGAD", 62, 57, 55, 50, 45, 38),
-                Tuning.of("Nuevo estándar", 71, 64, 57, 50, 43, 36),
-                Tuning.of("Open Cm", 63, 60, 55, 48, 43, 36),
-                Tuning.of("Open C6", 64, 57, 55, 48, 43, 36),
-                Tuning.of("Open Dm", 62, 57, 53, 50, 45, 38),
-                Tuning.of("Open D5", 62, 57, 54, 50, 45, 38),
-                Tuning.of("Open Dsus4", 62, 57, 55, 50, 45, 38),
-                Tuning.of("Open Em", 64, 59, 55, 52, 47, 40),
-                Tuning.of("Open Gm", 62, 58, 55, 50, 43, 38),
-                Tuning.of("Open G6", 62, 59, 55, 50, 45, 38),
-                Tuning.of("Open Gsus4", 62, 60, 55, 50, 43, 38),
-                Tuning.of("Open Am", 64, 60, 57, 52, 45, 40),
-                Tuning.of("Open F", 65, 60, 57, 53, 45, 41),
-                Tuning.of("Nashville", 64, 59, 67, 62, 57, 52),
-                Tuning.of("Guitarra de 7 cuerdas", 64, 59, 55, 50, 45, 40, 35),
-                Tuning.of("Guitarra de 7 cuerdas Drop A", 64, 59, 55, 50, 45, 40, 33));
+                Tuning.fromLibrary("guitar.dropD", 64, 59, 55, 50, 45, 38),
+                Tuning.fromLibrary("guitar.halfStepDown", 63, 58, 54, 49, 44, 39),
+                Tuning.fromLibrary("guitar.wholeStepDown", 62, 57, 53, 48, 43, 38),
+                Tuning.fromLibrary("guitar.dropC", 62, 57, 53, 48, 43, 36),
+                Tuning.fromLibrary("guitar.openD", 62, 57, 54, 50, 45, 38),
+                Tuning.fromLibrary("guitar.openG", 62, 59, 55, 50, 43, 38),
+                Tuning.fromLibrary("guitar.openC", 64, 60, 55, 48, 43, 36),
+                Tuning.fromLibrary("guitar.openE", 64, 59, 56, 52, 47, 40),
+                Tuning.fromLibrary("guitar.openA", 64, 61, 57, 52, 45, 40),
+                Tuning.fromLibrary("guitar.dadgad", 62, 57, 55, 50, 45, 38),
+                Tuning.fromLibrary("guitar.newStandard", 71, 64, 57, 50, 43, 36),
+                Tuning.fromLibrary("guitar.openCm", 63, 60, 55, 48, 43, 36),
+                Tuning.fromLibrary("guitar.openC6", 64, 57, 55, 48, 43, 36),
+                Tuning.fromLibrary("guitar.openDm", 62, 57, 53, 50, 45, 38),
+                Tuning.fromLibrary("guitar.openD5", 62, 57, 54, 50, 45, 38),
+                Tuning.fromLibrary("guitar.openDsus4", 62, 57, 55, 50, 45, 38),
+                Tuning.fromLibrary("guitar.openEm", 64, 59, 55, 52, 47, 40),
+                Tuning.fromLibrary("guitar.openGm", 62, 58, 55, 50, 43, 38),
+                Tuning.fromLibrary("guitar.openG6", 62, 59, 55, 50, 45, 38),
+                Tuning.fromLibrary("guitar.openGsus4", 62, 60, 55, 50, 43, 38),
+                Tuning.fromLibrary("guitar.openAm", 64, 60, 57, 52, 45, 40),
+                Tuning.fromLibrary("guitar.openF", 65, 60, 57, 53, 45, 41),
+                Tuning.fromLibrary("guitar.nashville", 64, 59, 67, 62, 57, 52),
+                Tuning.fromLibrary("guitar.sevenString", 64, 59, 55, 50, 45, 40, 35),
+                Tuning.fromLibrary("guitar.sevenStringDropA", 64, 59, 55, 50, 45, 40, 33));
     }
 
     public static List<Tuning> basses() {
         return List.of(
                 standardBass(),
-                Tuning.of("Bajo Drop D", 43, 38, 33, 26),
-                Tuning.of("Bajo medio tono abajo", 42, 37, 32, 27),
-                Tuning.of("Bajo un tono abajo", 41, 36, 31, 26),
-                Tuning.of("Bajo de 5 cuerdas", 43, 38, 33, 28, 23),
-                Tuning.of("Bajo de 6 cuerdas", 48, 43, 38, 33, 28, 23));
+                Tuning.fromLibrary("bass.dropD", 43, 38, 33, 26),
+                Tuning.fromLibrary("bass.halfStepDown", 42, 37, 32, 27),
+                Tuning.fromLibrary("bass.wholeStepDown", 41, 36, 31, 26),
+                Tuning.fromLibrary("bass.fiveString", 43, 38, 33, 28, 23),
+                Tuning.fromLibrary("bass.sixString", 48, 43, 38, 33, 28, 23));
     }
 
     public static List<Tuning> otherStringInstruments() {
         return List.of(
-                Tuning.of("Banjo Open G", 62, 59, 55, 50, 67),
-                Tuning.of("Banjo Open D", 62, 57, 54, 50, 66),
-                Tuning.of("Banjo Drop C", 62, 59, 55, 48, 67),
-                Tuning.of("Banjo Sol menor", 62, 58, 55, 50, 67),
-                Tuning.of("Banjo Sol modal", 62, 57, 55, 50, 67),
-                Tuning.of("Mandolina", 76, 69, 62, 55),
-                Tuning.of("Ukelele en Do", 69, 64, 60, 67),
-                Tuning.of("Ukelele en Sol", 71, 66, 62, 69),
-                Tuning.of("Violín", 76, 69, 62, 55),
-                Tuning.of("Viola", 69, 62, 55, 48),
-                Tuning.of("Violoncello", 57, 50, 43, 36));
+                Tuning.fromLibrary("banjo.openG", 62, 59, 55, 50, 67),
+                Tuning.fromLibrary("banjo.openD", 62, 57, 54, 50, 66),
+                Tuning.fromLibrary("banjo.dropC", 62, 59, 55, 48, 67),
+                Tuning.fromLibrary("banjo.gMinor", 62, 58, 55, 50, 67),
+                Tuning.fromLibrary("banjo.gModal", 62, 57, 55, 50, 67),
+                Tuning.fromLibrary("mandolin.standard", 76, 69, 62, 55),
+                Tuning.fromLibrary("ukulele.c", 69, 64, 60, 67),
+                Tuning.fromLibrary("ukulele.g", 71, 66, 62, 69),
+                Tuning.fromLibrary("violin.standard", 76, 69, 62, 55),
+                Tuning.fromLibrary("viola.standard", 69, 62, 55, 48),
+                Tuning.fromLibrary("cello.standard", 57, 50, 43, 36));
     }
 
     public static List<Tuning> all() {

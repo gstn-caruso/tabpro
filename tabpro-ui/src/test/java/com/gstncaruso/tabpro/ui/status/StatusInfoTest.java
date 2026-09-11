@@ -70,6 +70,34 @@ class StatusInfoTest {
     }
 
     @Test
+    void creditsTheSamePersonForWordsAndMusicOnce() {
+        StatusInfo info = statusOf(ScoreInfo.empty().withTitle("Brothers in Arms")
+                .withMusicAuthor("Mark Knopfler").withLyricsAuthor("Mark Knopfler"));
+
+        assertEquals("Letra y música: Mark Knopfler", info.author());
+    }
+
+    @Test
+    void creditsMusicAndWordsOnTwoLinesWhenDifferentPeopleWroteThem() {
+        StatusInfo info = statusOf(ScoreInfo.empty().withTitle("Your Song")
+                .withMusicAuthor("Elton John").withLyricsAuthor("Bernie Taupin"));
+
+        assertEquals("Música: Elton John\nLetra: Bernie Taupin", info.author());
+    }
+
+    @Test
+    void creditsOnlyTheWordsWhenNoComposerWasCredited() {
+        StatusInfo info = statusOf(ScoreInfo.empty().withTitle("Your Song").withLyricsAuthor("Bernie Taupin"));
+
+        assertEquals("Letra: Bernie Taupin", info.author());
+    }
+
+    private static StatusInfo statusOf(ScoreInfo scoreInfo) {
+        Editor editor = new Editor(new Score(scoreInfo, 120, Score.blank().tracks(), Score.blank().lyrics()));
+        return StatusInfo.of(editor, Pagination.single());
+    }
+
+    @Test
     void fallsBackToTheArtistWhenNoAuthorWasCredited() {
         ScoreInfo scoreInfo = ScoreInfo.empty().withTitle("Sultans of Swing").withArtist("Dire Straits");
         Editor editor = new Editor(new Score(scoreInfo, 120, Score.blank().tracks(), Score.blank().lyrics()));

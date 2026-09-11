@@ -3,6 +3,8 @@ package com.gstncaruso.tabpro.ui.status;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.Pagination;
 
 public record StatusInfo(
@@ -36,12 +38,12 @@ public record StatusInfo(
     }
 
     private static String titleOf(ScoreInfo info) {
-        return info.title().isBlank() ? "Sin título" : info.title();
+        return info.title().isBlank() ? Texts.get("library.score.untitled") : info.title();
     }
 
     private static String authorOf(ScoreInfo info) {
-        if (!info.credits().isBlank()) {
-            return info.credits();
+        if (!Labels.creditsOf(info).isBlank()) {
+            return Labels.creditsOf(info);
         }
         return info.artist();
     }

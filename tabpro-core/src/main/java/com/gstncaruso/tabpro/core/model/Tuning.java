@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public record Tuning(String name, List<Pitch> strings) {
+public record Tuning(TuningName name, List<Pitch> strings) {
 
     public static final int MAX_FRET = 36;
 
@@ -16,15 +16,23 @@ public record Tuning(String name, List<Pitch> strings) {
     }
 
     public Tuning(List<Pitch> strings) {
-        this("Personalizada", strings);
+        this(new TuningName.Custom(), strings);
     }
 
     public static Tuning of(String name, int... midiNumbers) {
+        return new Tuning(new TuningName.UserNamed(name), pitchesOf(midiNumbers));
+    }
+
+    static Tuning fromLibrary(String id, int... midiNumbers) {
+        return new Tuning(new TuningName.Library(id), pitchesOf(midiNumbers));
+    }
+
+    private static List<Pitch> pitchesOf(int... midiNumbers) {
         List<Pitch> pitches = new ArrayList<>();
         for (int midiNumber : midiNumbers) {
             pitches.add(new Pitch(midiNumber));
         }
-        return new Tuning(name, pitches);
+        return pitches;
     }
 
     public static Tuning standard() {
@@ -71,7 +79,7 @@ public record Tuning(String name, List<Pitch> strings) {
     public Tuning withStringPitch(int string, Pitch pitch) {
         List<Pitch> updated = new ArrayList<>(strings);
         updated.set(string - 1, pitch);
-        return new Tuning("Personalizada", updated);
+        return new Tuning(updated);
     }
 
     public Tuning withStringCount(int count) {
@@ -82,7 +90,7 @@ public record Tuning(String name, List<Pitch> strings) {
         while (updated.size() < count) {
             updated.add(updated.getLast().transposed(-5));
         }
-        return new Tuning("Personalizada", updated);
+        return new Tuning(updated);
     }
 
     public Tuning transposed(int semitones) {

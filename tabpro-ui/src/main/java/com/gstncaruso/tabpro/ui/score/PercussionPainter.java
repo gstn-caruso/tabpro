@@ -3,14 +3,18 @@ package com.gstncaruso.tabpro.ui.score;
 import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
-import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.Track;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.util.Set;
 
 final class PercussionPainter {
 
     private static final int RADIUS = 4;
+
+    private static final Set<Integer> SOUNDS_WITH_A_CROSS_NOTEHEAD = Set.of(42, 44, 46, 49, 51, 52, 53, 57, 59, 71, 72);
+    private static final Set<Integer> SOUNDS_WITH_A_DIAMOND_NOTEHEAD =
+            Set.of(54, 56, 58, 67, 68, 69, 70, 73, 74, 75, 78, 79, 80, 81);
 
     private PercussionPainter() {
     }
@@ -49,15 +53,10 @@ final class PercussionPainter {
     }
 
     private static Shape shapeFor(int sound) {
-        String name = PercussionKit.nameOf(sound).orElse("").toLowerCase(java.util.Locale.ROOT);
-        if (name.contains("hi-hat") || name.contains("crash") || name.contains("ride")
-                || name.contains("platillo") || name.contains("campana") || name.contains("silbato")) {
+        if (SOUNDS_WITH_A_CROSS_NOTEHEAD.contains(sound)) {
             return Shape.CROSS;
         }
-        if (name.contains("pandereta") || name.contains("triangulo") || name.contains("cencerro")
-                || name.contains("claves") || name.contains("agogo") || name.contains("cabasa")
-                || name.contains("maracas") || name.contains("guiro") || name.contains("cuica")
-                || name.contains("vibraslap")) {
+        if (SOUNDS_WITH_A_DIAMOND_NOTEHEAD.contains(sound)) {
             return Shape.DIAMOND;
         }
         return Shape.OVAL;

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JMenuItem;
@@ -54,7 +55,14 @@ class FretContextMenuTest {
         JPopupMenu menu = FretContextMenu.forTrack(Track.percussion("Bateria"), number -> { });
 
         int firstSound = PercussionKit.sounds().get(0);
-        assertEquals(true, itemAt(menu, 0).getText().contains(PercussionKit.nameOf(firstSound).orElseThrow()));
+        assertEquals(true, itemAt(menu, 0).getText().contains(Labels.percussionSoundName(firstSound).orElseThrow()));
+    }
+
+    @Test
+    void aPercussionSoundItemShowsItsNumberAndItsSpanishName() {
+        JPopupMenu menu = FretContextMenu.forTrack(Track.percussion("Bateria"), number -> { });
+
+        assertEquals("35 – Bombo acústico", itemAt(menu, 0).getText());
     }
 
     private static JMenuItem itemAt(JPopupMenu menu, int index) {

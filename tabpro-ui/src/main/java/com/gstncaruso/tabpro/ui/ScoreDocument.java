@@ -3,6 +3,8 @@ package com.gstncaruso.tabpro.ui;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,7 +13,7 @@ import java.util.function.Supplier;
 
 public final class ScoreDocument {
 
-    public static final String UNTITLED = "Sin título";
+    public static final String UNTITLED = Texts.get("library.score.untitled");
     public static final String EXTENSION = ".tabpro";
 
     private final Editor editor;
@@ -52,7 +54,7 @@ public final class ScoreDocument {
     }
 
     public String windowTitle() {
-        String heading = editor.score().info().heading();
+        String heading = Labels.headingOf(editor.score().info());
         return displayName() + (hasUnsavedChanges() ? " *" : "") + " — " + heading + " — tabpro";
     }
 

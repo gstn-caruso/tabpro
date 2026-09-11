@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.ui.dialogs.info.DefaultScoreProperties;
@@ -194,6 +195,29 @@ class ScoreDocumentTest {
 
         assertTrue(document.windowTitle().startsWith(ScoreDocument.UNTITLED + " *"));
         assertTrue(document.windowTitle().contains("My song"));
+    }
+
+    @Test
+    void theWindowTitleOfAnUntitledScoreWithoutAnArtistUsesUntitledAsItsHeading() {
+        ScoreDocument document = new ScoreDocument(new Editor(Score.blank()), new FakeScoreFiles(), testPreferences());
+
+        assertEquals("Sin título — Sin título — tabpro", document.windowTitle());
+    }
+
+    @Test
+    void theWindowTitleHeadingJoinsTheTitleAndTheArtistWithADash() {
+        Score score = Score.blank().withInfo(ScoreInfo.titled("Sultans of Swing").withArtist("Dire Straits"));
+        ScoreDocument document = new ScoreDocument(new Editor(score), new FakeScoreFiles(), testPreferences());
+
+        assertEquals("Sin título — Sultans of Swing - Dire Straits — tabpro", document.windowTitle());
+    }
+
+    @Test
+    void theWindowTitleHeadingFallsBackToTheArtistWhenThereIsNoTitle() {
+        Score score = Score.blank().withInfo(ScoreInfo.empty().withArtist("Dire Straits"));
+        ScoreDocument document = new ScoreDocument(new Editor(score), new FakeScoreFiles(), testPreferences());
+
+        assertEquals("Sin título — Dire Straits — tabpro", document.windowTitle());
     }
 
     @Test

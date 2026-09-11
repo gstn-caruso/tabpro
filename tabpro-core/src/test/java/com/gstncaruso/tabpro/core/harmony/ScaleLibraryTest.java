@@ -89,8 +89,16 @@ class ScaleLibraryTest {
     void everyScaleIsSpelledWithoutRepeatingOrSkippingLetters() {
         for (Scale scale : ScaleLibrary.all()) {
             List<ScaleTone> notes = scale.notesFrom(PitchClass.of("C"));
-            assertEquals(scale.degreeCount(), notes.size(), scale.name());
+            assertEquals(scale.degreeCount(), notes.size(), scale.id());
         }
+    }
+
+    @Test
+    void everyScaleHasItsOwnLanguageNeutralId() {
+        List<String> ids = ScaleLibrary.all().stream().map(Scale::id).toList();
+
+        assertTrue(ids.stream().allMatch(id -> id.matches("[a-z][A-Za-z0-9]*")), ids.toString());
+        assertEquals(ids.size(), java.util.Set.copyOf(ids).size());
     }
 
     @Test

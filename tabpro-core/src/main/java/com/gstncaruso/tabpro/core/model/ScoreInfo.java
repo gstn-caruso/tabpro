@@ -35,27 +35,6 @@ public record ScoreInfo(
         return EMPTY.withTitle(title);
     }
 
-    public String heading() {
-        if (title.isBlank()) {
-            return artist.isBlank() ? "Sin título" : artist;
-        }
-        return artist.isBlank() ? title : title + " - " + artist;
-    }
-
-    public String credits() {
-        if (musicAuthor.equals(lyricsAuthor)) {
-            return musicAuthor.isBlank() ? "" : "Letra y música: " + musicAuthor;
-        }
-        StringBuilder credits = new StringBuilder();
-        if (!musicAuthor.isBlank()) {
-            credits.append("Música: ").append(musicAuthor);
-        }
-        if (!lyricsAuthor.isBlank()) {
-            credits.append(credits.isEmpty() ? "" : "\n").append("Letra: ").append(lyricsAuthor);
-        }
-        return credits.toString();
-    }
-
     public ScoreInfo withTitle(String title) {
         return new ScoreInfo(title, subtitle, artist, album, lyricsAuthor, musicAuthor, copyright, transcriber, instructions, notice);
     }
