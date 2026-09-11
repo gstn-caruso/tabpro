@@ -155,6 +155,28 @@ class LibraryLabelsTest {
         assertEquals("Open Triangle", ENGLISH.text("library.percussion.81"));
     }
 
+    @Test
+    void anUntitledScoreIsCalledSinTituloInSpanishAndUntitledInEnglish() {
+        assertEquals("Sin título", SPANISH.text("library.score.untitled"));
+        assertEquals("Untitled", ENGLISH.text("library.score.untitled"));
+    }
+
+    @Test
+    void theScoreHeadingJoinsTitleAndArtistInBothLanguages() {
+        assertEquals("Sultans of Swing - Dire Straits", SPANISH.text("library.score.heading", "Sultans of Swing", "Dire Straits"));
+        assertEquals("Sultans of Swing - Dire Straits", ENGLISH.text("library.score.heading", "Sultans of Swing", "Dire Straits"));
+    }
+
+    @Test
+    void theScoreCreditsNameTheAuthorsInBothLanguages() {
+        assertEquals("Música: Elton John", SPANISH.text("library.score.music", "Elton John"));
+        assertEquals("Letra: Bernie Taupin", SPANISH.text("library.score.words", "Bernie Taupin"));
+        assertEquals("Letra y música: Mark Knopfler", SPANISH.text("library.score.wordsAndMusic", "Mark Knopfler"));
+        assertEquals("Music by Elton John", ENGLISH.text("library.score.music", "Elton John"));
+        assertEquals("Words by Bernie Taupin", ENGLISH.text("library.score.words", "Bernie Taupin"));
+        assertEquals("Words and Music by Mark Knopfler", ENGLISH.text("library.score.wordsAndMusic", "Mark Knopfler"));
+    }
+
     private static String libraryIdOf(Tuning tuning) {
         if (tuning.name() instanceof TuningName.Library(String id)) {
             return id;
