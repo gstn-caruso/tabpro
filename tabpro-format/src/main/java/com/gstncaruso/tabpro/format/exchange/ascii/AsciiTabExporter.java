@@ -42,7 +42,7 @@ public final class AsciiTabExporter {
         try {
             Files.writeString(path, text);
         } catch (IOException e) {
-            throw new ScoreFileException("no se pudo escribir " + path, e);
+            throw ScoreFileException.cannotWrite(path, e);
         }
     }
 
