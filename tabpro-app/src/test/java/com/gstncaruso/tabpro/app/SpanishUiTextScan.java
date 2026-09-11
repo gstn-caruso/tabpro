@@ -5,12 +5,19 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 final class SpanishUiTextScan {
 
     private static final Pattern SPANISH_LETTER_OR_MARK = Pattern.compile("[áéíóúüÁÉÍÓÚÜñÑ¿¡]");
+    private static final Pattern WORD = Pattern.compile("\\p{L}+");
+    private static final Set<String> COMMON_SPANISH_UI_WORDS = Set.of(
+            "abrir", "aceptar", "acorde", "archivo", "ayuda", "bajo", "borrar", "cancelar", "cerrar", "de", "del",
+            "editar", "guardar", "guitarra", "insertar", "las", "los", "marcador", "nota", "nueva", "nuevo", "para",
+            "partitura", "pista", "pistas", "por", "que", "sin", "una");
 
     private SpanishUiTextScan() {
     }
@@ -33,7 +40,13 @@ final class SpanishUiTextScan {
     }
 
     private static boolean looksSpanish(String text) {
-        return SPANISH_LETTER_OR_MARK.matcher(text).find();
+        return SPANISH_LETTER_OR_MARK.matcher(text).find() || hasACommonSpanishUiWord(text);
+    }
+
+    private static boolean hasACommonSpanishUiWord(String text) {
+        return WORD.matcher(text).results()
+                .map(word -> word.group().toLowerCase(Locale.ROOT))
+                .anyMatch(COMMON_SPANISH_UI_WORDS::contains);
     }
 
     record SpanishLiteral(Path file, String text) {

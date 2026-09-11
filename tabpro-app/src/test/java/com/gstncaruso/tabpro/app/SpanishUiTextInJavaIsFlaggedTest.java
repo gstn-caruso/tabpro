@@ -30,6 +30,25 @@ class SpanishUiTextInJavaIsFlaggedTest {
                 SpanishUiTextScan.spanishLiteralsUnder(root));
     }
 
+    @Test
+    void literalsWithACommonSpanishUiWordAreFlaggedButEnglishWordsThatContainThemAreNot(@TempDir Path root)
+            throws IOException {
+        Path file = write(root, "Cell.java", """
+                class Cell {
+                    String track = "Guitarra";
+                    String joined = " de ";
+                    String open = "Abrir";
+                    String english = "Delete the bar";
+                    String key = "defaults.guitarTrack";
+                }
+                """);
+
+        assertEquals(
+                List.of(new SpanishLiteral(file, "Guitarra"), new SpanishLiteral(file, " de "),
+                        new SpanishLiteral(file, "Abrir")),
+                SpanishUiTextScan.spanishLiteralsUnder(root));
+    }
+
     private static Path write(Path root, String fileName, String content) throws IOException {
         Path file = root.resolve(fileName);
         Files.writeString(file, content);
