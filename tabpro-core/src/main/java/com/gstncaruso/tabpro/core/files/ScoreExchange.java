@@ -166,8 +166,4 @@ public interface ScoreExchange {
     static ScoreFileException notSupported(ScoreOperation operation) {
         return ScoreFileException.notSupported(operation);
     }
-
-    static ScoreFileException notSupported(String what) {
-        return new ScoreFileException(what + " todavía no está disponible.");
-    }
 }
