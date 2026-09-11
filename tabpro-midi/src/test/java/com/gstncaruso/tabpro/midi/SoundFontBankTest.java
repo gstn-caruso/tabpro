@@ -61,7 +61,7 @@ class SoundFontBankTest {
     void withoutAnyFileTheStatusSaysSo() {
         bank = new SoundFontBank(Optional.empty(), FakeSynthesizer::new);
 
-        assertEquals("Sin ningún banco de sonido: suena el sintetizador interno del JDK", bank.status());
+        assertEquals(SoundFontStatus.none(), bank.status());
     }
 
     @Test
@@ -114,7 +114,7 @@ class SoundFontBankTest {
             port1.send(new ShortMessage(ShortMessage.NOTE_ON, 0, 60, 100), -1);
             port2.send(new ShortMessage(ShortMessage.NOTE_ON, 1, 61, 100), -1);
         });
-        assertTrue(bank.status().contains("invalid.sf2"));
+        assertEquals(Optional.of("invalid.sf2"), bank.status().fileName());
     }
 
     @Test
@@ -138,7 +138,7 @@ class SoundFontBankTest {
         bank.receiverForPort(1);
 
         assertFalse(bank.active(), "without a synthesizer there is nowhere to load anything, active lies the same as with an invalid file");
-        assertTrue(bank.status().contains("No se pudo cargar"));
+        assertEquals(SoundFontStatus.Kind.FAILED, bank.status().kind());
     }
 
     @Test
@@ -200,7 +200,7 @@ class SoundFontBankTest {
         bank.receiverForPort(2);
 
         assertTrue(bank.active());
-        assertEquals("Sonando con " + real.getFileName(), bank.status());
+        assertEquals(SoundFontStatus.playing(real.getFileName().toString()), bank.status());
     }
 
     @Tag("integration")
