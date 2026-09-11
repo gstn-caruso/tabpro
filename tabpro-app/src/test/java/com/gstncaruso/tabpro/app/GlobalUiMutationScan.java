@@ -18,6 +18,7 @@ final class GlobalUiMutationScan {
     private static final Pattern UPDATES_THE_FLATLAF_UI = Pattern.compile("FlatLaf\\.updateUI\\(");
     private static final Pattern WRITES_TO_UI_MANAGER = Pattern.compile("UIManager\\.put\\(");
     private static final Pattern SWITCHES_THE_LOOK_AND_FEEL = Pattern.compile("UIManager\\.setLookAndFeel\\(");
+    private static final Pattern INSTALLS_THE_INTERFACE_LANGUAGE = Pattern.compile("Texts\\.install\\(");
     private static final Pattern THEME_VARIABLE = Pattern.compile("\\bTheme\\s+(\\w+)\\s*[=;]");
     private static final Pattern ISOLATED = Pattern.compile("@Isolated\\b");
     private static final Pattern DECLARES_A_TEST = Pattern.compile("@(Test|ParameterizedTest)\\b");
@@ -50,6 +51,7 @@ final class GlobalUiMutationScan {
                 || UPDATES_THE_FLATLAF_UI.matcher(code).find()
                 || WRITES_TO_UI_MANAGER.matcher(code).find()
                 || SWITCHES_THE_LOOK_AND_FEEL.matcher(code).find()
+                || INSTALLS_THE_INTERFACE_LANGUAGE.matcher(code).find()
                 || appliesARealTheme(code);
     }
 
