@@ -18,6 +18,7 @@ import com.gstncaruso.tabpro.ui.harmony.ScalesDialog;
 import com.gstncaruso.tabpro.ui.dialogs.ascii.AsciiExportDialog;
 import com.gstncaruso.tabpro.ui.dialogs.ascii.AsciiImportDialog;
 import com.gstncaruso.tabpro.ui.dialogs.effects.NoteEffectsDialog;
+import com.gstncaruso.tabpro.ui.dialogs.style.ErrorTexts;
 import com.gstncaruso.tabpro.ui.dialogs.help.HelpDialog;
 import com.gstncaruso.tabpro.ui.dialogs.info.ScoreInfoDialog;
 import com.gstncaruso.tabpro.ui.dialogs.instrument.InstrumentDialog;
@@ -363,7 +364,7 @@ public final class MainFrame extends JFrame {
     }
 
     private void showError(ScoreFileException e) {
-        JOptionPane.showMessageDialog(this, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, ErrorTexts.of(e), "tabpro", JOptionPane.ERROR_MESSAGE);
     }
 
     private static Path withExtension(File file, String extension) {
@@ -621,7 +622,7 @@ public final class MainFrame extends JFrame {
             } catch (java.awt.print.PrinterException e) {
                 JOptionPane.showMessageDialog(
                         MainFrame.this,
-                        "No se pudo imprimir: " + e.getMessage(),
+                        Texts.get("window.error.printing", e.getMessage()),
                         "tabpro",
                         JOptionPane.ERROR_MESSAGE);
             }

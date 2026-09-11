@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
+import com.gstncaruso.tabpro.ui.dialogs.style.ErrorTexts;
 import com.gstncaruso.tabpro.ui.dialogs.track.AddTrackDialog;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -149,7 +150,7 @@ public final class MidiImportDialog {
     }
 
     private static void showError(Component parent, ScoreFileException e) {
-        JOptionPane.showMessageDialog(parent, e.getMessage(), "tabpro", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(parent, ErrorTexts.of(e), "tabpro", JOptionPane.ERROR_MESSAGE);
     }
 
     private static Timeline timelineOrSilence(Component parent, ScoreExchange exchange, Path path, List<Integer> selected) {
