@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.info;
 import com.gstncaruso.tabpro.core.model.ScoreInfo;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -21,17 +22,17 @@ public final class ScoreInfoPanel extends FormPanel {
     private final JTextArea notice = new JTextArea(3, DialogStyle.TEXT_FIELD_COLUMNS);
 
     public ScoreInfoPanel(ScoreInfo initial) {
-        addRow("Título", title);
-        addRow("Subtítulo", subtitle);
-        addRow("Artista", artist);
-        addRow("Álbum", album);
-        addRow("Autor de la letra", lyricsAuthor);
-        addRow("Autor de la música", musicAuthor);
-        addRow("Copyright", copyright);
-        addRow("Transcriptor", transcriber);
-        addSection("Instrucciones");
+        addRow(Texts.get("score_dialogs.shared.title"), title);
+        addRow(Texts.get("score_dialogs.ScoreInfoPanel.subtitle"), subtitle);
+        addRow(Texts.get("score_dialogs.shared.artist"), artist);
+        addRow(Texts.get("score_dialogs.ScoreInfoPanel.albumName"), album);
+        addRow(Texts.get("score_dialogs.ScoreInfoPanel.lyricsAuthor"), lyricsAuthor);
+        addRow(Texts.get("score_dialogs.ScoreInfoPanel.musicAuthor"), musicAuthor);
+        addRow(Texts.get("score_dialogs.ScoreInfoPanel.copyright"), copyright);
+        addRow(Texts.get("score_dialogs.ScoreInfoPanel.transcriber"), transcriber);
+        addSection(Texts.get("score_dialogs.ScoreInfoPanel.instructions"));
         addFullWidthRow(scrollable(instructions));
-        addSection("Notas");
+        addSection(Texts.get("score_dialogs.ScoreInfoPanel.notice"));
         addFullWidthRow(scrollable(notice));
         apply(initial);
     }

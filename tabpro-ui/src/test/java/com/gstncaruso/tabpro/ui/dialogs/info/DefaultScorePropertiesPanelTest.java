@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.bars.KeySignature;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 class DefaultScorePropertiesPanelTest {
@@ -14,6 +16,13 @@ class DefaultScorePropertiesPanelTest {
         NewScoreDefaults defaults = new NewScoreDefaults(
                 120, new TimeSignature(4, 4), KeySignature.cMajor(), "", "");
         AccessibilityAssertions.assertNoViolations(new DefaultScorePropertiesPanel(defaults));
+    }
+
+    @Test
+    void theTempoLabelIsAvailableInEnglish() {
+        Texts english = Texts.forLocale(Locale.ENGLISH);
+
+        assertEquals("Tempo", english.text("score_dialogs.DefaultScorePropertiesPanel.tempo"));
     }
 
     @Test

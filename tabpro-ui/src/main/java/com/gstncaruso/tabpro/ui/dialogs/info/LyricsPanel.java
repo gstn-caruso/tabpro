@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.model.LyricLine;
 import com.gstncaruso.tabpro.core.model.Lyrics;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.ArrayList;
@@ -22,18 +23,16 @@ public final class LyricsPanel extends FormPanel {
     public LyricsPanel(List<String> trackNames, Lyrics initial) {
         trackChooser = new JComboBox<>(trackNames.toArray(new String[0]));
         trackChooser.setSelectedIndex(clampedTrack(initial.trackIndex(), trackNames.size()));
-        addRow("Pista", trackChooser);
+        addRow(Texts.get("score_dialogs.LyricsPanel.track"), trackChooser);
 
-        addFullWidthRow(new JLabel(
-                "<html>Silabas: separadas con espacio o guion. Un + une dos palabras."
-                        + " Lo que va entre corchetes [así] no se dibuja.</html>"));
+        addFullWidthRow(new JLabel(Texts.get("score_dialogs.LyricsPanel.syllableHint")));
 
         JTabbedPane lineTabs = new JTabbedPane();
         for (int index = 0; index < LyricLine.MAX_LINES; index++) {
             LyricLineRow row = new LyricLineRow(initial.line(index), index + 1);
             row.textArea().addFocusListener(rememberingFocus(row.textArea()));
             lines.add(row);
-            lineTabs.addTab("Línea " + (index + 1), row);
+            lineTabs.addTab(Texts.get("score_dialogs.shared.line", index + 1), row);
         }
         addFullWidthRow(lineTabs);
 
@@ -50,9 +49,9 @@ public final class LyricsPanel extends FormPanel {
     }
 
     private javax.swing.JPanel cutCopyPasteBar() {
-        javax.swing.JButton cut = DialogStyle.flatButton("Cortar");
-        javax.swing.JButton copy = DialogStyle.flatButton("Copiar");
-        javax.swing.JButton paste = DialogStyle.flatButton("Pegar");
+        javax.swing.JButton cut = DialogStyle.flatButton(Texts.get("score_dialogs.LyricsPanel.cut"));
+        javax.swing.JButton copy = DialogStyle.flatButton(Texts.get("score_dialogs.LyricsPanel.copy"));
+        javax.swing.JButton paste = DialogStyle.flatButton(Texts.get("score_dialogs.LyricsPanel.paste"));
         cut.addActionListener(event -> onFocusedField(JTextArea::cut));
         copy.addActionListener(event -> onFocusedField(JTextArea::copy));
         paste.addActionListener(event -> onFocusedField(JTextArea::paste));
