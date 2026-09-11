@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.format.JsonScoreFiles;
 import com.gstncaruso.tabpro.format.exchange.NotationExchange;
 import com.gstncaruso.tabpro.midi.SoundExchange;
 import com.gstncaruso.tabpro.midi.WaveRenderer;
+import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.print.ScoreSheets;
 import com.gstncaruso.tabpro.ui.score.ViewMode;
@@ -35,7 +36,7 @@ class FixtureCorpusSmokeTest {
     private static final Duration MAXIMUM_TIME_PER_FILE = Duration.ofSeconds(30);
 
     private final ScoreExchange exchange = new CombinedExchange(
-            new NotationExchange(),
+            new NotationExchange(new TextsDefaultNames()),
             new SoundExchange(new WaveRenderer(FixtureCorpusSmokeTest::noRealSynthesizerNeeded)));
     private final JsonScoreFiles tabproFiles = new JsonScoreFiles();
 

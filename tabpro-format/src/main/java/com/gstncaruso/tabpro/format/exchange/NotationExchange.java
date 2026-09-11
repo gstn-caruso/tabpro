@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.core.files.ExportWarning;
 import com.gstncaruso.tabpro.core.files.MidiTrackInfo;
 import com.gstncaruso.tabpro.core.files.ScoreExchange;
 import com.gstncaruso.tabpro.core.files.ScoreOperation;
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.NoteValue;
 import com.gstncaruso.tabpro.core.model.Score;
@@ -32,12 +33,16 @@ public final class NotationExchange implements ScoreExchange {
     private final MidiScoreImporter midiImporter = new MidiScoreImporter();
     private final AsciiTabImporter asciiImporter = new AsciiTabImporter();
     private final AsciiTabExporter asciiExporter = new AsciiTabExporter();
-    private final GuitarProFile guitarPro = new GuitarProFile();
+    private final GuitarProFile guitarPro;
     private final TabEditFile tabEdit = new TabEditFile();
     private final GuitarProExporter guitarProExporter = new GuitarProExporter();
     private final PowerTabFile powerTab = new PowerTabFile();
     private final MusicXmlScoreImporter musicXmlImporter = new MusicXmlScoreImporter();
     private final MusicXmlScoreExporter musicXmlExporter = new MusicXmlScoreExporter();
+
+    public NotationExchange(DefaultNames names) {
+        this.guitarPro = new GuitarProFile(names);
+    }
 
     @Override
     public Score importMidi(Path path) {

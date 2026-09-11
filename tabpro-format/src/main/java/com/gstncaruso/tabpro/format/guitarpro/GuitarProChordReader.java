@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format.guitarpro;
 
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.chords.ChordDiagram;
 import com.gstncaruso.tabpro.core.model.effects.Finger;
 import java.util.ArrayList;
@@ -21,6 +22,12 @@ final class GuitarProChordReader {
 
     private static final int STRING_SLOTS = 7;
     private static final int BARRE_SLOTS = 5;
+
+    private final DefaultNames names;
+
+    GuitarProChordReader(DefaultNames names) {
+        this.names = names;
+    }
 
     ChordDiagram read(GuitarProByteReader reader, GuitarProVersion version, int stringCount) {
         ChordDiagram diagram = reader.readBoolean() ? readNewFormat(reader, version) : readOldFormat(reader);
@@ -125,8 +132,8 @@ final class GuitarProChordReader {
                 diagram.shown());
     }
 
-    private static ChordDiagram chordOf(String name, int baseFret, List<Integer> frets, List<Finger> fingering) {
-        String shownName = name == null || name.isBlank() ? "Acorde" : name.strip();
+    private ChordDiagram chordOf(String name, int baseFret, List<Integer> frets, List<Finger> fingering) {
+        String shownName = name == null || name.isBlank() ? names.chord() : name.strip();
         return new ChordDiagram(shownName, Math.max(1, baseFret), frets, fingering, true);
     }
 }

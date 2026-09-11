@@ -19,6 +19,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -34,7 +35,7 @@ class GuitarProFileTest {
     private static final List<Integer> SECOND_MEASURE_FRETS = List.of(3, 5, 7, 9);
     private static final int SCALE_STRING = 5;
 
-    private final GuitarProFile files = new GuitarProFile();
+    private final GuitarProFile files = new GuitarProFile(new TestDefaultNames());
 
     @ParameterizedTest
     @ValueSource(strings = {"gp3", "gp4", "gp5"})

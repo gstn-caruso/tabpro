@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.SoundParameter;
 import com.gstncaruso.tabpro.core.model.effects.StrokeDirection;
 import com.gstncaruso.tabpro.core.model.effects.Wah;
+import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -56,7 +57,7 @@ class GuitarProBeatReaderTest {
     private static final int TIED_NOTE = 2;
     private static final int DEAD_NOTE = 3;
 
-    private final GuitarProBeatReader reader = new GuitarProBeatReader();
+    private final GuitarProBeatReader reader = new GuitarProBeatReader(new TestDefaultNames());
 
     @Test
     void aRestHasNoNotes() {

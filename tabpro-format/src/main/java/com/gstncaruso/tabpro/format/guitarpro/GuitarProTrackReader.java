@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.format.guitarpro;
 
+import com.gstncaruso.tabpro.core.model.DefaultNames;
 import com.gstncaruso.tabpro.core.model.DiagramPlacement;
 import com.gstncaruso.tabpro.core.model.ScoreColor;
 import com.gstncaruso.tabpro.core.model.TrackDisplay;
@@ -18,6 +19,12 @@ final class GuitarProTrackReader {
     private static final int STAFF_SHOWS_TABLATURE = 0x01;
     private static final int STAFF_SHOWS_STANDARD_NOTATION = 0x02;
 
+    private final DefaultNames names;
+
+    GuitarProTrackReader(DefaultNames names) {
+        this.names = names;
+    }
+
     GuitarProTrackHeader read(GuitarProByteReader reader, GuitarProVersion version, int trackNumber) {
         skipByteBeforeTheFlags(reader, version, trackNumber);
         int flags = reader.readUnsignedByte();
@@ -33,7 +40,7 @@ final class GuitarProTrackReader {
         TrackDisplay display = readTrackExtras(reader, version);
 
         return new GuitarProTrackHeader(
-                name.isBlank() ? "Pista" : name, tuning, channelIndex, effectChannelIndex, Math.max(1, fretCount),
+                name.isBlank() ? names.unnamedTrack() : name, tuning, channelIndex, effectChannelIndex, Math.max(1, fretCount),
                 Math.max(0, capo), color, (flags & FLAG_PERCUSSION) != 0, (flags & FLAG_TWELVE_STRING) != 0,
                 (flags & FLAG_BANJO) != 0, display);
     }
