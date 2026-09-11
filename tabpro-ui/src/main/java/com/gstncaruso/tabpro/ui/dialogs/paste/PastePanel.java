@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.dialogs.paste;
 import com.gstncaruso.tabpro.core.editing.PasteOptions;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogStyle;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
@@ -10,8 +11,8 @@ import javax.swing.SpinnerNumberModel;
 
 public final class PastePanel extends FormPanel {
 
-    private final JRadioButton inserting = new JRadioButton("Insertar", true);
-    private final JRadioButton replacing = new JRadioButton("Reemplazar");
+    private final JRadioButton inserting = new JRadioButton(Texts.get("edit_dialogs.PastePanel.insert"), true);
+    private final JRadioButton replacing = new JRadioButton(Texts.get("edit_dialogs.PastePanel.replace"));
     private final JSpinner repetitions = new JSpinner(new SpinnerNumberModel(1, 1, 99, 1));
 
     public PastePanel() {
@@ -24,7 +25,7 @@ public final class PastePanel extends FormPanel {
         modeRow.add(replacing);
 
         addFullWidthRow(modeRow);
-        addRow("Repeticiones", repetitions);
+        addRow(Texts.get("edit_dialogs.PastePanel.repetitions"), repetitions);
     }
 
     public void selectReplacing() {
