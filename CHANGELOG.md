@@ -1,3 +1,9 @@
+## [0.61.0](https://github.com/gstn-caruso/tabpro/compare/v0.60.0...v0.61.0) (2026-10-17)
+
+### Features
+
+* expand tuning presets from GP5 and add demo corpus checks ([#235](https://github.com/gstn-caruso/tabpro/issues/235)) ([75b25a5](https://github.com/gstn-caruso/tabpro/commit/75b25a5ccb2983b597220eb4bb8bedbbdb1f70b2))
+
 ## [0.60.0](https://github.com/gstn-caruso/tabpro/compare/v0.59.5...v0.60.0) (2026-09-11)
 
 ### Features
