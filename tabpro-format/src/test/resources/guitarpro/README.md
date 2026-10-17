@@ -36,16 +36,9 @@ and redistributed with the rest of the project under the MIT license.
 
 ## `gp5-demos.csv`
 
-This file contains only paths, note fingerprints, counts and initial tempos for the 40
-GP5.2 demo scores; it contains no scores. PyGuitarPro 0.11 generated these
-independent expectations. The optional `GuitarProDemoCorpusTest` reads the
-originals from the `tabpro.gp5.demos` system property and checks track/bar/note
-counts, tempo and the note-position fingerprint.
-
-The note fingerprint is SHA-256 of UTF-8 lines in track, measure, voice and
-beat order, with notes sorted by string. Each line is
-`track:measure:voice:beat:string:fret:tie` followed by LF. The four positions
-are zero-based; the string number is one-based and tie is `0` or `1`.
-No-note beats contribute no lines. This covers 16,493 notes; it does not
-check durations, effect curves, rendering or sound.
-</content>
+This file contains paths, track/bar/note counts and initial tempos for the 40
+GP5.2 demo scores, recorded with PyGuitarPro 0.11. The optional
+`GuitarProDemoCorpusTest` reads the originals from the `tabpro.gp5.demos`
+system property and checks those values. The scores remain outside the
+repository. These checks do not compare individual notes, durations,
+effects, rendering or sound.

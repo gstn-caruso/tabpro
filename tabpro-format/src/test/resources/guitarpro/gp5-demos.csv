@@ -1,41 +1,41 @@
-path|tracks|bars|tempo|notes|notes_sha256
-Acoustic/Example 01.gp5|1|3|112|102|ccccf864863587eec3e50067083dd06efe3a9cc2c63b6882bf8989156873a02e
-Acoustic/Example 02.gp5|1|10|156|71|c0a4a4128a9bd78194ee659bd52817b0e1f1c741f5cfa1342ddc3c6f4e10603e
-Acoustic/Example 03.gp5|1|8|120|72|858f462a2901bd4660df31d30c90f5e27571745e5327fcdcbbcc68ef0ac39e04
-Acoustic/Example 04.gp5|1|4|80|64|358e9b79b314a00cff5d23ecfcf09185e4223ef9d1133f62c8f1e76620c80d80
-Acoustic/Example 05.gp5|1|4|132|35|a35aee26507ccba1cff5bb14e91c3dbb87dfc5b05d6e5948950293c3ffa86722
-Acoustic/Example 06.gp5|1|3|98|65|af6b570a24927f61a59a93bb44848fc71069a371e6bf5cef206df962381276e6
-Acoustic/Example 07.gp5|1|4|74|68|c6378a106c9cdc063b1f0c26febb59df163e07b459c7b5d42c74f34eda88c774
-Acoustic/Example 08.gp5|1|5|120|47|59d3de666abd5bbe2db839b11c7b049a5e695808939730709ba6f704b6bf83ca
-Acoustic/Example 09.gp5|1|4|98|43|69edae1c94da6833509aa87002cf850d80393d3c9c31bddb4fc77082f90f2a1d
-Blues/Example 01.gp5|1|2|120|31|83afbd063c738e2777f0f265daba6d822354ae95066a3ca996d893fef28862c5
-Blues/Example 02.gp5|1|13|120|192|93a024c5829d9be97f06d0ee95cca5cf47aa91ffbee0da41f9593175e0b4dd77
-Blues/Example 03.gp5|1|4|120|101|f2dd9696bfcc6b0f772fb1f6ee3a3815b814e96a24c18fc3083b7a163f7d0c38
-Blues/Example 04.gp5|1|29|120|256|cbf00bc86e0250bc28b03865971c2c4c504a57ee551354b25386de8aeb0caab4
-Demo v5.gp5|5|49|165|1923|795309376bebf71fabe12fb6d137a3641a959bb5cc51faea881f7ed3caeb0d1d
-Hard/Example 01.gp5|2|9|120|152|a60716e353921e8b40ba917b82c2b598e5277eb56ebd63434878b16c81b134f8
-Hard/Example 02.gp5|1|4|128|32|6d1f4ceb16d4d93628d4cf2862d1110b433cfd7cf7edecc72a257f380502baf1
-Hard/Example 03.gp5|1|8|120|94|0b722bd53fefa837dc98da05926d75dd4b6f5993069b7ed9d5f5f7e1ccd78079
-Hard/Example 04.gp5|1|6|140|71|73f49f184298a35cf868d1e1aed23a93cd7bf1c25a10d197f4f689598f4d6741
-Hard/Example 05.gp5|1|4|148|63|b818ee32b821c5f3baa0cf6299f283a9f53c3754b055a48d26ebe823cb8a7f6e
-Hard/Example 06.gp5|1|4|120|26|94d974ea80cbaafea8f2f152e7f05aabf43aa588844b6fa52c2b69d658b5183b
-Jazz/Example 01.gp5|2|13|138|358|2c4c1d31bbc731d532eb885317722f3374c38645539324a1adaaa46dcb74eb63
-Jazz/Example 02.gp5|1|24|192|132|9c0c9c81f1e0b1380caae635a19f590f2a78446d71ee0132680e5f36983e1258
-Jazz/Example 03.gp5|1|34|120|339|18cd489f34a3830e4bde77430eb37424f340dc16a3c32dc29e303706e69ef465
-Jingle.gp5|1|5|110|32|d33a767b13fed8b3d4d8e3b846cf98b45c95b8d73fa17556310ebcbbbb0192cc
-RSE/01 - Classic Rock.gp5|4|12|168|547|3ffa0c3fad96d38d288fb33447241c3b9928c2edc0edfcbdcb29469703d36ffb
-RSE/02 - Hard Boogie.gp5|4|9|148|439|6304322e73568e84d8a05cee11ca862349d5227013d05751a88b30a7c8aa5663
-RSE/03 - Pop Rock.gp5|4|16|112|753|d7376f27f2c47c39d1d171e5661c9bbe03eada20a7305f1cad5467ea34f56e8f
-RSE/04 - Space Ballad.gp5|4|22|92|760|56d610f94ce10478657c18fdb999a05fd9a9428c20b30b106063aea221d204fe
-RSE/05 - Funky Rock.gp5|4|14|128|641|7033e3bad31fd70f0ff5bde635f18f7dd460e92d1d5cfbe76cc46cea9f91c055
-RSE/06 - Funky Blues.gp5|4|12|128|497|e634bb76e75f239e050e9eb036d8d906bb9eaa0884adb9c48df14d2d9c6f5264
-RSE/07 - Chicago Blues.gp5|4|13|120|433|d4e787fc629ea6f4c09f879e0de3747a0e95c508a72536c6f26576e77306abd3
-RSE/08 - Blues Rock.gp5|4|13|168|473|4290adf3843abeebf56d999a9c639744a5e30051066b44b7b4a18dee0615bd40
-RSE/09 - Acoustic Blues.gp5|4|12|98|591|621edd24933a92118cadd9b37c9d1de8b3c2b906cb25e10bd4327dabb03764a2
-RSE/10 - Minor Blues Jazz.gp5|4|12|68|722|0affaee62a6579d0fa575dfd744a7fa569ae779c74b923e6707659ede6f9f7ca
-RSE/11 - RSE Demo Complete Score.gp5|4|133|168|5865|e80fa78586ab6008fc3ef165eb35d17c04024c9875d3e3c59ae8e377574ccaf8
-Rock/Example 01.gp5|1|8|120|64|1326445116b47d98308e57338cda78734dc954f9a5abdecd876760639b8c1c25
-Rock/Example 02.gp5|1|6|116|52|9fd32f31a5b1fd0578364baeddbac966411871cd473479d59c5f59cde1f702d1
-Rock/Example 03.gp5|1|2|120|56|547259d27d1a44ffc8c172fe46a956a865f913605f4c6e04040b63be83f45f52
-Rock/Example 04.gp5|1|4|120|32|700aa66492b8132869df4f3b909decbfb94e704b56dbc6a5bd1f0f4e766cb4ef
-Wah-Wah/Example 01.gp5|1|8|96|199|b9c80cbf4860ac1cc252897318f2d05b827e804e97b9ab60071ab73a935296ea
+path|tracks|bars|tempo|notes
+Acoustic/Example 01.gp5|1|3|112|102
+Acoustic/Example 02.gp5|1|10|156|71
+Acoustic/Example 03.gp5|1|8|120|72
+Acoustic/Example 04.gp5|1|4|80|64
+Acoustic/Example 05.gp5|1|4|132|35
+Acoustic/Example 06.gp5|1|3|98|65
+Acoustic/Example 07.gp5|1|4|74|68
+Acoustic/Example 08.gp5|1|5|120|47
+Acoustic/Example 09.gp5|1|4|98|43
+Blues/Example 01.gp5|1|2|120|31
+Blues/Example 02.gp5|1|13|120|192
+Blues/Example 03.gp5|1|4|120|101
+Blues/Example 04.gp5|1|29|120|256
+Demo v5.gp5|5|49|165|1923
+Hard/Example 01.gp5|2|9|120|152
+Hard/Example 02.gp5|1|4|128|32
+Hard/Example 03.gp5|1|8|120|94
+Hard/Example 04.gp5|1|6|140|71
+Hard/Example 05.gp5|1|4|148|63
+Hard/Example 06.gp5|1|4|120|26
+Jazz/Example 01.gp5|2|13|138|358
+Jazz/Example 02.gp5|1|24|192|132
+Jazz/Example 03.gp5|1|34|120|339
+Jingle.gp5|1|5|110|32
+RSE/01 - Classic Rock.gp5|4|12|168|547
+RSE/02 - Hard Boogie.gp5|4|9|148|439
+RSE/03 - Pop Rock.gp5|4|16|112|753
+RSE/04 - Space Ballad.gp5|4|22|92|760
+RSE/05 - Funky Rock.gp5|4|14|128|641
+RSE/06 - Funky Blues.gp5|4|12|128|497
+RSE/07 - Chicago Blues.gp5|4|13|120|433
+RSE/08 - Blues Rock.gp5|4|13|168|473
+RSE/09 - Acoustic Blues.gp5|4|12|98|591
+RSE/10 - Minor Blues Jazz.gp5|4|12|68|722
+RSE/11 - RSE Demo Complete Score.gp5|4|133|168|5865
+Rock/Example 01.gp5|1|8|120|64
+Rock/Example 02.gp5|1|6|116|52
+Rock/Example 03.gp5|1|2|120|56
+Rock/Example 04.gp5|1|4|120|32
+Wah-Wah/Example 01.gp5|1|8|96|199
