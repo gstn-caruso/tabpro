@@ -33,4 +33,12 @@ the first one, and the RSE instrument takes one byte less.
 This is **original content**, generated on purpose to test tabpro's reader.
 It is not material from Guitar Pro or Arobas Music, so it can be versioned
 and redistributed with the rest of the project under the MIT license.
-</content>
+
+## `gp5-demos.csv`
+
+This file contains paths, track/bar/note counts and initial tempos for the 40
+GP5.2 demo scores, recorded with PyGuitarPro 0.11. The optional
+`GuitarProDemoCorpusTest` reads the originals from the `tabpro.gp5.demos`
+system property and checks those values. The scores remain outside the
+repository. These checks do not compare individual notes, durations,
+effects, rendering or sound.

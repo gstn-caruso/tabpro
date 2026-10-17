@@ -72,6 +72,18 @@ the thirty-five `.gp5` files did. The corpus is LGPL, so it is never
 committed; [audit-corpus.md](audit-corpus.md) records a later audit against
 it.
 
+A separate optional suite checks the 40 demo scores shipped with Guitar Pro
+5.2 against counts and tempos recorded by PyGuitarPro. Supply
+your local `Demo Files` directory to include it in the normal verification:
+
+```sh
+mvn verify -Dtabpro.gp5.demos="/path/to/Guitar Pro 5/Demo Files"
+```
+
+The scores stay outside the repository. The
+[fixture README](../tabpro-format/src/test/resources/guitarpro/README.md)
+documents the comparison and its coverage.
+
 ## Workflow
 
 - Every behavior change starts with a failing test.

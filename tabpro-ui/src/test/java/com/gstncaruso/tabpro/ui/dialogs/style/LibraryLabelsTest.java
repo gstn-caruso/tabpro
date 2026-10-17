@@ -28,17 +28,19 @@ class LibraryLabelsTest {
     private static final Texts SPANISH = Texts.forLocale(Locale.forLanguageTag("es"));
 
     private static final List<String> TODAYS_SPANISH_GUITAR_TUNING_NAMES = List.of(
-            "Guitarra estándar", "Drop D", "Medio tono abajo", "Un tono abajo", "Drop C", "Open D", "Open G",
-            "Open C", "Open E", "Open A", "DADGAD", "Nuevo estándar", "Open Cm", "Open C6", "Open Dm", "Open D5",
-            "Open Dsus4", "Open Em", "Open Gm", "Open G6", "Open Gsus4", "Open Am", "Open F", "Nashville",
+            "Guitarra estándar", "Drop D", "Medio tono abajo", "Un tono abajo", "Dos tonos abajo", "Drop C",
+            "Variante de Drop D", "Doble Drop D", "Drop E", "Open D", "Open G",
+            "Open C", "Open E", "Open A", "DADGAD", "Nuevo estándar", "Open Cm", "Open C6", "Open Cmaj7",
+            "Open Dm", "Open D5", "Open D6", "Open Dsus4", "Open Em", "Open Esus11", "Open Gm", "Open G6",
+            "Open Gsus4", "Open Am", "Open F", "Nashville",
             "Guitarra de 7 cuerdas", "Guitarra de 7 cuerdas Drop A");
 
     private static final List<String> TODAYS_SPANISH_BASS_TUNING_NAMES = List.of(
-            "Bajo estándar", "Bajo Drop D", "Bajo medio tono abajo", "Bajo un tono abajo", "Bajo de 5 cuerdas",
+            "Bajo estándar", "Bajo Drop D", "Bajo medio tono abajo", "Bajo un tono abajo", "Dos tonos abajo (bajo)", "Bajo de 5 cuerdas",
             "Bajo de 6 cuerdas");
 
     private static final List<String> TODAYS_SPANISH_OTHER_INSTRUMENT_TUNING_NAMES = List.of(
-            "Banjo Open G", "Banjo Open D", "Banjo Drop C", "Banjo Sol menor", "Banjo Sol modal", "Mandolina",
+            "Banjo Open G", "Banjo Open D", "Banjo Drop C", "Banjo Sol menor", "Banjo Sol modal", "Mandolina", "Laúd / Vihuela",
             "Ukelele en Do", "Ukelele en Sol", "Violín", "Viola", "Violoncello");
 
     private static final List<String> TODAYS_SPANISH_SCALE_NAMES = List.of(
