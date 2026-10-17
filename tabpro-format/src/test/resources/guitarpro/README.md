@@ -42,13 +42,6 @@ independent expectations. The optional `GuitarProDemoCorpusTest` reads the
 originals from the `tabpro.gp5.demos` system property and checks each file's
 identity, track/bar/note counts, tempo and note-position fingerprint.
 
-Regenerate it with PyGuitarPro installed:
-
-```sh
-python3 scripts/gp5-demo-oracle.py "/path/to/Guitar Pro 5/Demo Files" \
-  > tabpro-format/src/test/resources/guitarpro/gp5-demos.csv
-```
-
 The note fingerprint is SHA-256 of UTF-8 lines in track, measure, voice and
 beat order, with notes sorted by string. Each line is
 `track:measure:voice:beat:string:fret:tie` followed by LF. The four positions

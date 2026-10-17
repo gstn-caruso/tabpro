@@ -80,9 +80,9 @@ your local `Demo Files` directory to include it in the normal verification:
 mvn verify -Dtabpro.gp5.demos="/path/to/Guitar Pro 5/Demo Files"
 ```
 
-The scores stay outside the repository. See
-[the distribution audit](audit-gp5-distribution.md) for the oracle, its
-coverage and the tuning corrections derived from the local installation.
+The scores stay outside the repository. The
+[fixture README](../tabpro-format/src/test/resources/guitarpro/README.md)
+documents the comparison and its coverage.
 
 ## Workflow
 
