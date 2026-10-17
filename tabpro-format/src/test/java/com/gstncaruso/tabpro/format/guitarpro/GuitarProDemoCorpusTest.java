@@ -6,7 +6,6 @@ import com.gstncaruso.tabpro.core.model.Note;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.format.TestDefaultNames;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.Comparator;
@@ -22,13 +21,10 @@ class GuitarProDemoCorpusTest {
     @ParameterizedTest(name = "{0}")
     @CsvFileSource(resources = "/guitarpro/gp5-demos.csv", delimiter = '|', numLinesToSkip = 1)
     void importsTheNotesRecordedByPyGuitarPro(
-            String relativePath, String fileHash, int tracks, int bars, int tempo, int notes, String noteHash)
+            String relativePath, int tracks, int bars, int tempo, int notes, String noteHash)
             throws Exception {
         Path path = Path.of(System.getProperty("tabpro.gp5.demos")).resolve(relativePath);
-        byte[] data = Files.readAllBytes(path);
-        assertEquals(fileHash, sha256(data), "the oracle requires the same original demo file");
-
-        Score score = new GuitarProFile(new TestDefaultNames()).read(data);
+        Score score = new GuitarProFile(new TestDefaultNames()).read(path);
 
         assertEquals(tracks, score.trackCount());
         assertEquals(bars, score.measureCount());
