@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.TuningLibrary;
+import com.gstncaruso.tabpro.core.model.TuningName;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,21 +22,40 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class TuningNamesInTabproFilesTest {
 
-    private static final List<String> NAMES_STORED_FOR_THE_LIBRARY_BEFORE_IDS = List.of(
-            "Guitarra estándar", "Drop D", "Medio tono abajo", "Un tono abajo", "Drop C", "Open D", "Open G",
-            "Open C", "Open E", "Open A", "DADGAD", "Nuevo estándar", "Open Cm", "Open C6", "Open Dm", "Open D5",
-            "Open Dsus4", "Open Em", "Open Gm", "Open G6", "Open Gsus4", "Open Am", "Open F", "Nashville",
+    private static final List<String> STORED_LIBRARY_NAMES = List.of(
+            "Guitarra estándar", "Drop D", "Medio tono abajo", "Un tono abajo", "Dos tonos abajo", "Drop C",
+            "Variante de Drop D", "Doble Drop D", "Drop E", "Open D", "Open G",
+            "Open C", "Open E", "Open A", "DADGAD", "Nuevo estándar", "Open Cm", "Open C6", "Open Cmaj7",
+            "Open Dm", "Open D5", "Open D6",
+            "Open Dsus4", "Open Em", "Open Esus11", "Open Gm", "Open G6", "Open Gsus4", "Open Am", "Open F", "Nashville",
             "Guitarra de 7 cuerdas", "Guitarra de 7 cuerdas Drop A",
-            "Bajo estándar", "Bajo Drop D", "Bajo medio tono abajo", "Bajo un tono abajo", "Bajo de 5 cuerdas",
+            "Bajo estándar", "Bajo Drop D", "Bajo medio tono abajo", "Bajo un tono abajo", "Dos tonos abajo (bajo)", "Bajo de 5 cuerdas",
             "Bajo de 6 cuerdas",
-            "Banjo Open G", "Banjo Open D", "Banjo Drop C", "Banjo Sol menor", "Banjo Sol modal", "Mandolina",
+            "Banjo Open G", "Banjo Open D", "Banjo Drop C", "Banjo Sol menor", "Banjo Sol modal", "Mandolina", "Laúd / Vihuela",
             "Ukelele en Do", "Ukelele en Sol", "Violín", "Viola", "Violoncello");
 
     private final ScoreFiles scoreFiles = new JsonScoreFiles();
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "Open D5 | guitar.openD5 | 62,57,54,50,45,38",
+            "Open F | guitar.openF | 65,60,57,53,45,41",
+            "Open G6 | guitar.openG6 | 62,59,55,50,45,38"
+    })
+    void correctingAPresetDoesNotRetuneAnExistingScore(
+            String storedName, String id, String midiNumbers, @TempDir Path tempDir) throws IOException {
+        List<Pitch> savedPitches = Stream.of(midiNumbers.split(","))
+                .map(Integer::parseInt).map(Pitch::new).toList();
+        Path path = fileWithOneTrack(tempDir, "\"" + storedName + "\"", savedPitches);
+
+        assertEquals(new Tuning(new TuningName.Library(id), savedPitches),
+                scoreFiles.load(path).track(0).tuning());
+    }
 
     @Test
     void aFileSavedWithTheStandardGuitarNameInSpanishLoadsTheLibraryStandardGuitar(@TempDir Path tempDir)
@@ -72,13 +92,13 @@ class TuningNamesInTabproFilesTest {
 
     @Test
     void theNamesOldFilesStoredCoverTheWholeLibrary() {
-        assertEquals(TuningLibrary.all().size(), NAMES_STORED_FOR_THE_LIBRARY_BEFORE_IDS.size());
+        assertEquals(TuningLibrary.all().size(), STORED_LIBRARY_NAMES.size());
     }
 
     static Stream<Arguments> libraryTuningsWithTheNameOldFilesStored() {
         List<Tuning> library = TuningLibrary.all();
         return IntStream.range(0, library.size())
-                .mapToObj(index -> Arguments.of(NAMES_STORED_FOR_THE_LIBRARY_BEFORE_IDS.get(index), library.get(index)));
+                .mapToObj(index -> Arguments.of(STORED_LIBRARY_NAMES.get(index), library.get(index)));
     }
 
     @ParameterizedTest(name = "{0}")

@@ -31,6 +31,8 @@ Debian and Ubuntu), and ships in English and Spanish.
 - **Any number of tracks,** each with its own tuning, string count, capo and
   instrument, and two voices per track. Show them all at once or one at a
   time, switching with the numbered track selector on the toolbar.
+- **52 tuning presets:** standard and alternate guitar and bass tunings,
+  plus banjo, mandolin, ukulele, lute, violin, viola and cello.
 - **Retuning keeps your notes.** Change a track's string count and its notes
   move to the new tuning instead of disappearing, so a banjo part becomes a
   guitar part.
