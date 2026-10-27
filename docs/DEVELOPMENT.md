@@ -98,5 +98,6 @@ documents the comparison and its coverage.
   it on GitHub.
 
 Plans and audits live next to this file: [PLAN.md](PLAN.md),
-[audit-manual.md](audit-manual.md), [audit-real-use.md](audit-real-use.md)
-and [audit-corpus.md](audit-corpus.md).
+[audit-manual.md](audit-manual.md), [audit-real-use.md](audit-real-use.md),
+[audit-corpus.md](audit-corpus.md) and the
+[project review and sample GP5 validation](review-project-and-sample-gp5.md).
