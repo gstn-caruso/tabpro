@@ -139,7 +139,7 @@ public final class ToolBars {
         bar.addSeparator();
         add(bar, "marker.insert", "marker.edit", "marker.previous", "marker.next", "marker.list");
         bar.addSeparator();
-        add(bar, "sound.play", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
+        add(bar, "sound.play", "sound.stop", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
                 "sound.loop");
         bar.add(soundFontToggle());
         bar.addSeparator();
@@ -218,13 +218,17 @@ public final class ToolBars {
 
     private static JButton button(Command command) {
         JButton button = new JButton(command);
-        button.setText(null);
+        button.setHideActionText(true);
         button.setForeground(Palette.text());
         button.setFocusable(false);
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setToolTipText(tooltipOf(command));
         button.getAccessibleContext().setAccessibleName(command.label());
+        command.addPropertyChangeListener(event -> {
+            button.setToolTipText(tooltipOf(command));
+            button.getAccessibleContext().setAccessibleName(command.label());
+        });
         button.setPreferredSize(new Dimension(UiSizing.scaled(26), UiSizing.scaled(24)));
         button.setMaximumSize(new Dimension(UiSizing.scaled(26), UiSizing.scaled(24)));
         button.addChangeListener(event -> button.setContentAreaFilled(

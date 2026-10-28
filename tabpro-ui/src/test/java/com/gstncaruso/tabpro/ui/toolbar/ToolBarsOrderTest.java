@@ -50,14 +50,15 @@ class ToolBarsOrderTest {
     }
 
     @Test
-    void theStructureAndSoundRowFollowsGuitarPro5Order() {
+    void givenPlaybackControls_whenBuildingSoundRow_thenStopIsBesidePlay() {
+        // Separar Pausar y Detener es una ampliación explícita del usuario, no del manual GP5.
         assertOrder(toolBars.structureToolBar,
                 "bar.keySignature", "bar.timeSignature", "bar.tripletFeel", SEP,
                 "bar.repeatOpen", "bar.repeatClose", SEP,
                 "bar.doubleBar", SEP,
                 "bar.alternateEndings", "bar.forceLineBreak", "bar.preventLineBreak", SEP,
                 "marker.insert", "marker.edit", "marker.previous", "marker.next", "marker.list", SEP,
-                "sound.play", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
+                "sound.play", "sound.stop", "nav.firstBar", "nav.lastBar", "sound.metronome", "sound.countDown",
                 "sound.loop", "sound.soundFont", SEP,
                 "tool.transpose", SEP,
                 "nav.previousBar", "nav.nextBar", "tool.scales", "tool.tuner", SEP);

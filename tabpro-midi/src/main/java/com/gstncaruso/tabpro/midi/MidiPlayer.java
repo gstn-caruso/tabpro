@@ -35,6 +35,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
     private final Map<Integer, PortOutput> secondaryPorts = new HashMap<>();
     private final Supplier<Sequencer> portSequencers;
     private Receiver defaultReceiver;
+    private boolean paused;
 
     public MidiPlayer(Sequencer sequencer) {
         this(sequencer, port -> defaultSynthesizer());
@@ -66,6 +67,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
             Timeline timeline,
             java.util.List<com.gstncaruso.tabpro.core.playback.MetronomeClick> clicks,
             PlaybackListener listener) {
+        paused = false;
         stopSecondaryPorts();
         open();
         this.listener = listener;
@@ -128,7 +130,26 @@ public final class MidiPlayer implements Player, AutoCloseable {
     }
 
     @Override
+    public void pause() {
+        if (sequencer.isRunning()) {
+            sequencer.stop();
+            paused = true;
+        }
+        secondaryPorts.values().forEach(PortOutput::pause);
+    }
+
+    @Override
+    public void resume() {
+        if (paused) {
+            paused = false;
+            sequencer.start();
+        }
+        secondaryPorts.values().forEach(PortOutput::resume);
+    }
+
+    @Override
     public void stop() {
+        paused = false;
         if (sequencer.isRunning()) {
             sequencer.stop();
         }
@@ -288,6 +309,7 @@ public final class MidiPlayer implements Player, AutoCloseable {
         private final Supplier<Receiver> defaultReceiver;
         private javax.sound.midi.MidiDevice device;
         private boolean wiredToDefault;
+        private boolean paused;
 
         PortOutput(Sequencer sequencer, Supplier<Receiver> defaultReceiver) {
             this.sequencer = sequencer;
@@ -347,7 +369,22 @@ public final class MidiPlayer implements Player, AutoCloseable {
             }
         }
 
+        void pause() {
+            if (!isSilent() && sequencer.isRunning()) {
+                sequencer.stop();
+                paused = true;
+            }
+        }
+
+        void resume() {
+            if (paused) {
+                paused = false;
+                sequencer.start();
+            }
+        }
+
         void stop() {
+            paused = false;
             if (isSilent()) {
                 return;
             }

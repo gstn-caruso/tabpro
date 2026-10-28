@@ -102,6 +102,8 @@ public final class Ports {
     public interface Playback {
         void togglePlay();
 
+        void stop();
+
         void playFromTheBeginning();
 
         void loopAndSpeedTrainer();

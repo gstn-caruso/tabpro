@@ -126,13 +126,34 @@ class TransportTest {
     }
 
     @Test
-    void stoppingHidesThePlayingBeat() {
+    void givenPlaybackAtSecondBeat_whenPauseRequested_thenPlaybackInactiveAndPositionRetained() {
         transport.toggle();
-        player.emitBeat(new BeatPosition(0, 0, 1));
+        BeatPosition secondBeat = new BeatPosition(0, 0, 1);
+        player.emitBeat(secondBeat);
 
         transport.toggle();
 
-        assertEquals(Optional.empty(), transport.playingOn(0));
+        assertFalse(transport.isPlaying());
+        assertEquals(Optional.of(secondBeat), transport.playhead().on(0));
+    }
+
+    @Test
+    void givenPausedPlaybackAtSecondBeat_whenToggled_thenResumesWithoutRestarting() {
+        Transport transport = new Transport(new Editor(twoMeasureScore()), player, Runnable::run);
+        BeatPosition secondBeat = new BeatPosition(0, 0, 1);
+        transport.toggle();
+        player.advanceTo(secondBeat);
+        long secondBeatTick = Duration.quarter().ticks();
+        assertEquals(secondBeatTick, player.currentTick());
+        transport.toggle();
+        assertFalse(transport.isPlaying());
+        assertEquals(Optional.of(secondBeat), transport.playhead().on(0));
+
+        transport.toggle();
+
+        assertTrue(transport.isPlaying());
+        assertEquals(secondBeatTick, player.currentTick(), "resuming must not restart playback at tick zero");
+        assertEquals(Optional.of(secondBeat), transport.playhead().on(0));
     }
 
     @Test
@@ -310,9 +331,10 @@ class TransportTest {
         transport.toggle();
         player.emitBeat(new BeatPosition(0, 0, 0));
 
-        transport.toggle();
+        transport.stop();
 
         assertEquals(java.util.OptionalInt.empty(), transport.currentTempoBpm());
+        assertEquals(Optional.empty(), transport.playingOn(0));
     }
 
     @Test
@@ -448,12 +470,14 @@ class TransportTest {
         private PlaybackListener listener;
         private boolean playing;
         private Long lastSeekTick;
+        private long tick;
 
         @Override
         public void play(Timeline timeline, PlaybackListener listener) {
             this.lastTimeline = timeline;
             this.listener = listener;
             this.playing = true;
+            this.tick = 0;
         }
 
         @Override
@@ -466,6 +490,16 @@ class TransportTest {
         }
 
         @Override
+        public void pause() {
+            playing = false;
+        }
+
+        @Override
+        public void resume() {
+            playing = true;
+        }
+
+        @Override
         public void stop() {
             playing = false;
         }
@@ -473,6 +507,15 @@ class TransportTest {
         @Override
         public boolean isPlaying() {
             return playing;
+        }
+
+        long currentTick() {
+            return tick;
+        }
+
+        void advanceTo(BeatPosition position) {
+            tick = lastTimeline.tickOf(position.measure(), position.beat()).orElseThrow();
+            emitBeat(position);
         }
 
         void emitBeat(BeatPosition position) {

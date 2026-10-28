@@ -277,6 +277,16 @@ final class AuditSupport {
             return playing;
         }
 
+        @Override
+        public void pause() {
+            playing = false;
+        }
+
+        @Override
+        public void resume() {
+            playing = true;
+        }
+
         boolean playCalled() {
             return playCalled;
         }

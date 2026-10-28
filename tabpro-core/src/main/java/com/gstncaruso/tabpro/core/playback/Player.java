@@ -20,6 +20,14 @@ public interface Player {
     default void seekTo(long tick) {
     }
 
+    /** Pauses playback when supported; silent players have nothing to pause. */
+    default void pause() {
+    }
+
+    /** Resumes paused playback when supported; silent players have nothing to resume. */
+    default void resume() {
+    }
+
     void stop();
 
     boolean isPlaying();

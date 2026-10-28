@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.midi;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.model.Beat;
@@ -283,6 +284,47 @@ class MidiPlayerTest {
 
         assertTrue(Math.abs(player.tickPositionOfPort(1) - target) < 100, "the primary port did not jump");
         assertTrue(Math.abs(player.tickPositionOfPort(2) - target) < 100, "the secondary port did not jump");
+    }
+
+    @Test
+    void givenRunningMidiOnTwoPorts_whenPausedAndResumed_thenBothContinueAtSavedTicks() {
+        FakeSequencer primary = new FakeSequencer();
+        FakeSequencer secondary = new FakeSequencer();
+        player = new MidiPlayer(primary, port -> silentReceiver(), () -> secondary);
+        TrackTimeline onPortOne = new TrackTimeline(25, 100, 64, false, 1,
+                List.of(new ScheduledNote(0, 960, new Pitch(60))),
+                List.of(new ScheduledBeat(0, 0, 0)), List.of());
+        TrackTimeline onPortTwo = new TrackTimeline(30, 100, 64, false, 2,
+                List.of(new ScheduledNote(0, 960, new Pitch(64))),
+                List.of(new ScheduledBeat(0, 0, 0)), List.of());
+        Timeline timeline = new Timeline(120, 960, List.of(onPortOne, onPortTwo));
+
+        player.play(timeline, noOpListener());
+        assertTrue(primary.isRunning());
+        assertTrue(secondary.isRunning());
+        var primarySequence = primary.getSequence();
+        var secondarySequence = secondary.getSequence();
+        primary.setTickPosition(123);
+        secondary.setTickPosition(123);
+
+        player.pause();
+
+        assertFalse(primary.isRunning(), "port 1 must be paused");
+        assertFalse(secondary.isRunning(), "port 2 must be paused");
+        // The fakes have no autonomous clock: paused observations never advance their ticks.
+        assertEquals(123, primary.getTickPosition(), "port 1 must retain its paused tick");
+        assertEquals(123, secondary.getTickPosition(), "port 2 must retain its paused tick");
+        assertSame(primarySequence, primary.getSequence());
+        assertSame(secondarySequence, secondary.getSequence());
+
+        player.resume();
+
+        assertTrue(primary.isRunning(), "port 1 must resume");
+        assertTrue(secondary.isRunning(), "port 2 must resume");
+        assertEquals(123, primary.getTickPosition(), "port 1 must not restart at tick zero");
+        assertEquals(123, secondary.getTickPosition(), "port 2 must not restart at tick zero");
+        assertSame(primarySequence, primary.getSequence(), "port 1 must keep its scheduled notes");
+        assertSame(secondarySequence, secondary.getSequence(), "port 2 must keep its scheduled notes");
     }
 
     @Test
