@@ -75,6 +75,7 @@ import com.gstncaruso.tabpro.ui.score.Zoom;
 import com.gstncaruso.tabpro.ui.status.StatusBar;
 import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.theme.ThemeSwitch;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import com.gstncaruso.tabpro.ui.toolbar.ToolBars;
 import com.gstncaruso.tabpro.ui.tracks.TrackPanel;
 import java.awt.BorderLayout;
@@ -280,8 +281,8 @@ public final class MainFrame extends JFrame {
 
     private JSpinner tempoSpinner() {
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(editor.score().tempo(), 20, 400, 1));
-        spinner.setMaximumSize(new Dimension(70, 24));
-        spinner.setPreferredSize(new Dimension(70, 24));
+        spinner.setMaximumSize(new Dimension(UiSizing.scaled(70), UiSizing.scaled(24)));
+        spinner.setPreferredSize(new Dimension(UiSizing.scaled(70), UiSizing.scaled(24)));
         spinner.addChangeListener(event -> editor.setTempo((Integer) spinner.getValue()));
         editor.addListener(EdtEditorListener.onEdt(() -> spinner.setValue(editor.score().tempo())));
         return spinner;
@@ -289,7 +290,8 @@ public final class MainFrame extends JFrame {
 
     private static Dimension windowSize() {
         Dimension screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getSize();
-        return new Dimension(Math.min(1440, screen.width - 60), Math.min(950, screen.height - 60));
+        return new Dimension(Math.min(UiSizing.scaled(1440), screen.width - UiSizing.scaled(60)),
+                Math.min(UiSizing.scaled(950), screen.height - UiSizing.scaled(60)));
     }
 
     private void backToTheScore() {

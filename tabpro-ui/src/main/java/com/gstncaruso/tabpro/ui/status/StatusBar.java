@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.Pagination;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.util.function.Supplier;
@@ -110,7 +111,7 @@ public final class StatusBar extends JPanel {
     }
 
     private JLabel styled(JLabel label) {
-        label.setFont(label.getFont().deriveFont(Font.PLAIN, 11f));
+        label.setFont(label.getFont().deriveFont(Font.PLAIN, (float) UiSizing.scaled(11)));
         label.setForeground(ScoreColors.LABEL);
         return label;
     }

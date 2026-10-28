@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.notation.PitchName;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -67,8 +68,8 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         setOpaque(true);
         setBackground(ScoreColors.SURFACE);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        setPreferredSize(new Dimension(0, PREFERRED_HEIGHT));
-        setMinimumSize(new Dimension(0, PREFERRED_HEIGHT));
+        setPreferredSize(new Dimension(0, UiSizing.scaled(PREFERRED_HEIGHT)));
+        setMinimumSize(new Dimension(0, UiSizing.scaled(PREFERRED_HEIGHT)));
         setToolTipText(Texts.get("views.KeyboardView.name"));
         getAccessibleContext().setAccessibleName(Texts.get("views.KeyboardView.name"));
         trackTheMouse();

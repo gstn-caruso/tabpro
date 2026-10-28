@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Instruments;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -14,6 +15,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntSupplier;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -45,6 +47,7 @@ public final class MixTableRow extends JPanel {
     private final LevelSlider panSlider =
             new LevelSlider(0, Channel.MAX, Channel.CENTER_PAN, ScoreColors.PAN_LEVEL, ScoreColors.PAN_LEVEL);
     private final List<ParameterCell> parameterCells = new ArrayList<>();
+    private final List<Runnable> uiSizing = new ArrayList<>();
     private final JToggleButton mute = new JToggleButton(Texts.get("views.MixTableRow.muteButton"));
     private final JToggleButton solo = new JToggleButton(Texts.get("views.MixTableRow.soloButton"));
     private boolean syncing;
@@ -56,59 +59,78 @@ public final class MixTableRow extends JPanel {
         this.trackIndex = trackIndex;
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setOpaque(true);
-        setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 4, 0, 0, TrackColors.of(trackIndex)),
-                BorderFactory.createEmptyBorder(2, 6, 2, 8)));
-        fixHeight();
+        onUiUpdate(() -> {
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(0, UiSizing.scaled(4), 0, 0, TrackColors.of(trackIndex)),
+                    BorderFactory.createEmptyBorder(UiSizing.scaled(2), UiSizing.scaled(6),
+                            UiSizing.scaled(2), UiSizing.scaled(8))));
+            fixHeight();
+        });
 
-        number.setFont(number.getFont().deriveFont(Font.PLAIN, 10f));
+        onUiUpdate(
+                () -> number.setFont(number.getFont().deriveFont(Font.PLAIN, (float) UiSizing.scaled(10))));
         number.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        addColumn(number, MixTable.NUMBER_WIDTH);
+        addColumn(number, () -> UiSizing.scaled(MixTable.NUMBER_WIDTH));
 
         visible.setOpaque(false);
         visible.setFocusable(false);
         visible.setToolTipText(Texts.get("views.MixTableRow.visibleInMultitrackView"));
         visible.addActionListener(e -> model.setVisibleInMultitrackView(trackIndex, visible.isSelected()));
-        addColumn(visible, MixTable.VISIBLE_WIDTH);
+        addColumn(visible, () -> UiSizing.scaled(MixTable.VISIBLE_WIDTH));
 
         toggle(solo, () -> editor.toggleSolo(trackIndex));
         toggle(mute, () -> editor.toggleMute(trackIndex));
 
         name.setFont(name.getFont().deriveFont(Font.BOLD));
         name.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        addColumn(name, MixTable.NAME_WIDTH);
+        addColumn(name, () -> UiSizing.scaled(MixTable.NAME_WIDTH));
 
         spinner(port, () -> editor.setPort(trackIndex, (Integer) port.getValue()));
-        addColumn(port, MixTable.PORT_WIDTH);
+        addColumn(port, MixTable::portWidth);
 
         channel.setToolTipText(Texts.get("views.MixTableRow.midiChannelTooltip"));
         spinner(channel, () -> editor.setChannelNumber(trackIndex, (Integer) channel.getValue()));
-        addColumn(channel, MixTable.CHANNEL_WIDTH);
+        addColumn(channel, MixTable::channelWidth);
 
         effectChannel.setToolTipText(Texts.get("views.MixTableRow.effectsChannelTooltip"));
         spinner(effectChannel, () -> editor.setEffectChannel(trackIndex, (Integer) effectChannel.getValue()));
-        addColumn(effectChannel, MixTable.CHANNEL_WIDTH);
+        addColumn(effectChannel, MixTable::channelWidth);
 
         instrument.setFocusable(false);
         instrument.addActionListener(e -> pushProgram());
-        addColumn(instrument, MixTable.INSTRUMENT_WIDTH);
+        addColumn(instrument, MixTable::instrumentWidth);
 
         levelSlider(volumeSlider, MixParameter.VOLUME);
-        addColumn(volumeSlider, MixTable.LEVEL_WIDTH);
+        addColumn(volumeSlider, () -> UiSizing.scaled(MixTable.LEVEL_WIDTH));
         levelSlider(panSlider, MixParameter.PAN);
-        addColumn(panSlider, MixTable.LEVEL_WIDTH);
+        addColumn(panSlider, () -> UiSizing.scaled(MixTable.LEVEL_WIDTH));
 
         for (MixParameter parameter : List.of(
                 MixParameter.CHORUS, MixParameter.REVERB, MixParameter.PHASER, MixParameter.TREMOLO)) {
             ParameterCell cell = new ParameterCell(editor, parameter, trackIndex);
             parameterCells.add(cell);
-            addColumn(cell, MixTable.PARAMETER_WIDTH);
+            onUiUpdate(() -> cell.numberField().setFont(
+                    cell.numberField().getFont().deriveFont((float) UiSizing.scaled(10))));
+            addColumn(cell, () -> UiSizing.scaled(MixTable.PARAMETER_WIDTH));
         }
 
         addMouseListener(selectOnClick());
         number.addMouseListener(selectOnClick());
         name.addMouseListener(selectOnClick());
         refresh();
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        if (uiSizing != null) {
+            uiSizing.forEach(Runnable::run);
+        }
+    }
+
+    private void onUiUpdate(Runnable sizing) {
+        uiSizing.add(sizing);
+        sizing.run();
     }
 
     public void refresh() {
@@ -215,10 +237,10 @@ public final class MixTableRow extends JPanel {
     }
 
     private void fixHeight() {
-        Dimension height = new Dimension(Integer.MAX_VALUE, TrackPanel.ROW_HEIGHT);
+        Dimension height = new Dimension(Integer.MAX_VALUE, TrackPanel.rowHeight());
         setMaximumSize(height);
-        setMinimumSize(new Dimension(0, TrackPanel.ROW_HEIGHT));
-        setPreferredSize(new Dimension(MixTable.WIDTH, TrackPanel.ROW_HEIGHT));
+        setMinimumSize(new Dimension(0, TrackPanel.rowHeight()));
+        setPreferredSize(new Dimension(MixTable.width(), TrackPanel.rowHeight()));
     }
 
     private void spinner(JSpinner field, Runnable push) {
@@ -232,14 +254,15 @@ public final class MixTableRow extends JPanel {
 
     private void toggle(JToggleButton button, Runnable push) {
         button.setFocusable(false);
-        button.setFont(button.getFont().deriveFont(Font.BOLD, 10f));
+        onUiUpdate(
+                () -> button.setFont(button.getFont().deriveFont(Font.BOLD, (float) UiSizing.scaled(10))));
         button.setMargin(new java.awt.Insets(0, 0, 0, 0));
         button.addActionListener(e -> {
             if (!syncing) {
                 push.run();
             }
         });
-        addColumn(button, MixTable.TOGGLE_WIDTH);
+        addColumn(button, () -> UiSizing.scaled(MixTable.TOGGLE_WIDTH));
     }
 
     private void pushProgram() {
@@ -263,13 +286,20 @@ public final class MixTableRow extends JPanel {
         instrument.setSelectedIndex(percussion ? DrumKits.indexOf(program) : program);
     }
 
-    private void addColumn(JComponent component, int width) {
-        Dimension size = new Dimension(width, TrackPanel.ROW_HEIGHT - 6);
-        component.setPreferredSize(size);
-        component.setMaximumSize(size);
-        component.setMinimumSize(size);
+    private void addColumn(JComponent component, IntSupplier width) {
+        onUiUpdate(() -> {
+            Dimension size = new Dimension(width.getAsInt(), TrackPanel.rowHeight() - UiSizing.scaled(6));
+            component.setPreferredSize(size);
+            component.setMaximumSize(size);
+            component.setMinimumSize(size);
+        });
         add(component);
-        add(Box.createHorizontalStrut(MixTable.COLUMN_GAP));
+        Box.Filler gap = (Box.Filler) Box.createHorizontalStrut(0);
+        onUiUpdate(() -> gap.changeShape(
+                new Dimension(UiSizing.scaled(MixTable.COLUMN_GAP), 0),
+                new Dimension(UiSizing.scaled(MixTable.COLUMN_GAP), 0),
+                new Dimension(UiSizing.scaled(MixTable.COLUMN_GAP), Short.MAX_VALUE)));
+        add(gap);
     }
 
     private MouseAdapter selectOnClick() {

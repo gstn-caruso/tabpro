@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -157,20 +158,28 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
         cursorCellArea = next;
     }
 
+    static int cellWidth() {
+        return UiSizing.scaled(CELL_WIDTH);
+    }
+
+    private static int numbersHeight() {
+        return TrackPanel.headerHeight() - UiSizing.scaled(MarkerZone.HEIGHT);
+    }
+
     public Rectangle cellBounds(int track, int measure) {
         return new Rectangle(
-                measure * CELL_WIDTH,
-                NUMBERS_HEIGHT + track * TrackPanel.ROW_HEIGHT,
-                CELL_WIDTH,
-                TrackPanel.ROW_HEIGHT);
+                measure * cellWidth(),
+                numbersHeight() + track * TrackPanel.rowHeight(),
+                cellWidth(),
+                TrackPanel.rowHeight());
     }
 
     public Optional<Cell> hitTest(int x, int y) {
         Score score = editor.score();
-        int measure = x / CELL_WIDTH;
-        int track = (y - NUMBERS_HEIGHT) / TrackPanel.ROW_HEIGHT;
+        int measure = x / cellWidth();
+        int track = (y - numbersHeight()) / TrackPanel.rowHeight();
         boolean inside = x >= 0
-                && y >= NUMBERS_HEIGHT
+                && y >= numbersHeight()
                 && measure < score.measureCount()
                 && track >= 0
                 && track < score.trackCount();
@@ -181,8 +190,8 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
     public Dimension getPreferredSize() {
         Score score = editor.score();
         return new Dimension(
-                Math.max(1, score.measureCount()) * CELL_WIDTH,
-                NUMBERS_HEIGHT + score.trackCount() * TrackPanel.ROW_HEIGHT);
+                Math.max(1, score.measureCount()) * cellWidth(),
+                numbersHeight() + score.trackCount() * TrackPanel.rowHeight());
     }
 
     @Override
@@ -210,8 +219,9 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
     private void outlineCaretCell(Graphics2D g) {
         Rectangle cell = cellBounds(caret.track(), caret.measure());
         g.setColor(focusRingColor());
-        g.setStroke(new BasicStroke(2));
-        g.drawRect(cell.x + 1, cell.y + 1, cell.width - 3, cell.height - 3);
+        g.setStroke(new BasicStroke(UiSizing.scaled(2)));
+        g.drawRect(cell.x + UiSizing.scaled(1), cell.y + UiSizing.scaled(1),
+                cell.width - UiSizing.scaled(3), cell.height - UiSizing.scaled(3));
     }
 
     private Color focusRingColor() {
@@ -224,7 +234,7 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
             return;
         }
         g.setColor(PLAYING_TINT);
-        g.fillRect(measure * CELL_WIDTH, 0, CELL_WIDTH, getHeight());
+        g.fillRect(measure * cellWidth(), 0, cellWidth(), getHeight());
     }
 
     private void outlineCursorCell(Graphics2D g, Score score) {
@@ -234,8 +244,9 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
         }
         Rectangle cell = cellBounds(cursor.track(), cursor.measure());
         g.setColor(ScoreColors.INK);
-        g.setStroke(new BasicStroke(1));
-        g.drawRect(cell.x + 1, cell.y + 1, cell.width - 3, cell.height - 3);
+        g.setStroke(new BasicStroke(UiSizing.scaled(1)));
+        g.drawRect(cell.x + UiSizing.scaled(1), cell.y + UiSizing.scaled(1),
+                cell.width - UiSizing.scaled(3), cell.height - UiSizing.scaled(3));
     }
 
     /** Graphics2D paints in the order it is called, so drawing this after the cell fills keeps it on top. */
@@ -244,8 +255,9 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
             return;
         }
         g.setColor(ScoreColors.PLAYING_MEASURE);
-        g.setStroke(new BasicStroke(2));
-        g.drawRect(measure * CELL_WIDTH + 1, 1, CELL_WIDTH - 2, getHeight() - 2);
+        g.setStroke(new BasicStroke(UiSizing.scaled(2)));
+        g.drawRect(measure * cellWidth() + UiSizing.scaled(1), UiSizing.scaled(1),
+                cellWidth() - UiSizing.scaled(2), getHeight() - UiSizing.scaled(2));
     }
 
     private boolean isOutside(Score score, int measure) {
@@ -253,19 +265,20 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
     }
 
     private void paintMeasureNumbers(Graphics2D g, Score score) {
-        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9));
+        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, UiSizing.scaled(9)));
         g.setColor(ScoreColors.MUTED_INK);
         int step = numberStep(score.measureCount(), g.getFontMetrics());
         for (int measure = 0; measure < score.measureCount(); measure++) {
             if (measure == 0 || (measure + 1) % step == 0) {
-                g.drawString(String.valueOf(measure + 1), measure * CELL_WIDTH + 2, NUMBERS_HEIGHT - 2);
+                g.drawString(String.valueOf(measure + 1), measure * cellWidth() + UiSizing.scaled(2),
+                        numbersHeight() - UiSizing.scaled(2));
             }
         }
     }
 
     static int numberStep(int measureCount, FontMetrics metrics) {
         String widestNumber = String.valueOf(measureCount);
-        boolean everyNumberFitsTheCell = metrics.stringWidth(widestNumber) + NUMBER_MARGIN <= CELL_WIDTH;
+        boolean everyNumberFitsTheCell = metrics.stringWidth(widestNumber) + UiSizing.scaled(NUMBER_MARGIN) <= cellWidth();
         return everyNumberFitsTheCell ? 1 : NUMBER_EVERY;
     }
 
@@ -285,11 +298,14 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
                 continue;
             }
             g.setColor(selected ? ScoreColors.SURFACE_HIGHLIGHT : ScoreColors.SURFACE);
-            g.fillRect(cell.x + 1, cell.y + 1, cell.width - 2, cell.height - 2);
+            g.fillRect(cell.x + UiSizing.scaled(1), cell.y + UiSizing.scaled(1),
+                    cell.width - UiSizing.scaled(2), cell.height - UiSizing.scaled(2));
             g.setColor(ScoreColors.BORDER);
-            g.drawRect(cell.x + 1, cell.y + 1, cell.width - 3, cell.height - 3);
+            g.drawRect(cell.x + UiSizing.scaled(1), cell.y + UiSizing.scaled(1),
+                    cell.width - UiSizing.scaled(3), cell.height - UiSizing.scaled(3));
             g.setColor(track.hasNotesIn(measure) ? colorOf(trackIndex) : ScoreColors.EMPTY_MEASURE);
-            g.fillRect(cell.x + 4, cell.y + 4, cell.width - 8, cell.height - 8);
+            g.fillRect(cell.x + UiSizing.scaled(4), cell.y + UiSizing.scaled(4),
+                    cell.width - UiSizing.scaled(8), cell.height - UiSizing.scaled(8));
         }
     }
 

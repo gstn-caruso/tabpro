@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.notation.PitchName;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -66,8 +67,8 @@ public final class FretboardView extends JComponent implements AccessibleControl
         setOpaque(true);
         setBackground(ScoreColors.SURFACE);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        setPreferredSize(new Dimension(0, PREFERRED_HEIGHT));
-        setMinimumSize(new Dimension(0, PREFERRED_HEIGHT));
+        setPreferredSize(new Dimension(0, UiSizing.scaled(PREFERRED_HEIGHT)));
+        setMinimumSize(new Dimension(0, UiSizing.scaled(PREFERRED_HEIGHT)));
         setToolTipText(Texts.get("views.FretboardView.name"));
         getAccessibleContext().setAccessibleName(Texts.get("views.FretboardView.name"));
         trackTheMouse();
@@ -237,7 +238,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
     }
 
     public int stringY(int string) {
-        return TOP_MARGIN + (int) Math.round((string - 1) * stringGap());
+        return UiSizing.scaled(TOP_MARGIN) + (int) Math.round((string - 1) * stringGap());
     }
 
     public Optional<Note> noteAt(int x, int y) {
@@ -246,18 +247,18 @@ public final class FretboardView extends JComponent implements AccessibleControl
     }
 
     private int logicalNutX() {
-        return SIDE_MARGIN + OPEN_COLUMN;
+        return UiSizing.scaled(SIDE_MARGIN) + UiSizing.scaled(OPEN_COLUMN);
     }
 
     private int logicalFretCenterX(int fret) {
         if (fret == 0) {
-            return SIDE_MARGIN + OPEN_COLUMN / 2;
+            return UiSizing.scaled(SIDE_MARGIN) + UiSizing.scaled(OPEN_COLUMN) / 2;
         }
         return (int) Math.round(logicalNutX() + (fret - 0.5) * fretWidth());
     }
 
     private Optional<Integer> stringAt(int y) {
-        int string = (int) Math.round((y - TOP_MARGIN) / stringGap()) + 1;
+        int string = (int) Math.round((y - UiSizing.scaled(TOP_MARGIN)) / stringGap()) + 1;
         if (string < 1 || string > stringCount()) {
             return Optional.empty();
         }
@@ -266,7 +267,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
     }
 
     private Optional<Integer> logicalFretAt(int x) {
-        if (x < SIDE_MARGIN) {
+        if (x < UiSizing.scaled(SIDE_MARGIN)) {
             return Optional.empty();
         }
         if (x < logicalNutX()) {
@@ -277,11 +278,12 @@ public final class FretboardView extends JComponent implements AccessibleControl
     }
 
     private double fretWidth() {
-        return (double) (getWidth() - SIDE_MARGIN - logicalNutX()) / fretCount();
+        return (double) (getWidth() - UiSizing.scaled(SIDE_MARGIN) - logicalNutX()) / fretCount();
     }
 
     private double stringGap() {
-        int usable = getHeight() - TOP_MARGIN - NUMBERS_HEIGHT - TOP_MARGIN;
+        int usable = getHeight() - UiSizing.scaled(TOP_MARGIN)
+                - UiSizing.scaled(NUMBERS_HEIGHT) - UiSizing.scaled(TOP_MARGIN);
         return stringCount() <= 1 ? 0 : (double) usable / (stringCount() - 1);
     }
 
@@ -379,7 +381,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
         int top = stringY(1) - padding;
         int bottom = stringY(stringCount()) + padding;
         int left = logicalNutX();
-        int width = getWidth() - SIDE_MARGIN - logicalNutX();
+        int width = getWidth() - UiSizing.scaled(SIDE_MARGIN) - logicalNutX();
         g.setColor(fretboardType.woodColor());
         g.fillRect(left, top, width, bottom - top);
         paintWoodGrain(g, left, top, width, bottom - top);
@@ -447,15 +449,15 @@ public final class FretboardView extends JComponent implements AccessibleControl
             float thickness = 0.8f + (string - 1) * 0.22f;
             g.setStroke(new BasicStroke(thickness));
             int y = stringY(string);
-            g.drawLine(logicalNutX(), y, getWidth() - SIDE_MARGIN, y);
+            g.drawLine(logicalNutX(), y, getWidth() - UiSizing.scaled(SIDE_MARGIN), y);
         }
     }
 
     private void paintFretNumbers(Graphics2D g) {
         g.setColor(InstrumentColors.FRET_NUMBER);
-        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9));
+        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, UiSizing.scaled(9)));
         FontMetrics metrics = g.getFontMetrics();
-        int y = getHeight() - 4;
+        int y = getHeight() - UiSizing.scaled(4);
         for (int fret : List.of(3, 5, 7, 9, 12, 15, 17, 19, 21, 24)) {
             if (fret > fretCount()) {
                 continue;
@@ -468,7 +470,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
     private void paintMarkedNotes(Graphics2D g) {
         FretMarks marks = currentMarks();
         int radius = Math.max(7, (int) (stringGap() * 0.44));
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 9));
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, UiSizing.scaled(9)));
 
         paintMarks(g, marks.secondary(), MarkKind.SECONDARY, (int) Math.round(radius * 0.8));
         paintMarks(g, marks.primary(), MarkKind.PRIMARY, radius);

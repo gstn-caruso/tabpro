@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -126,14 +127,14 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     }
 
     public int measureAt(int x) {
-        int measure = x / MeasureGrid.CELL_WIDTH;
+        int measure = x / MeasureGrid.cellWidth();
         return Math.max(0, Math.min(measure, Math.max(0, editor.score().measureCount() - 1)));
     }
 
     @Override
     public Dimension getPreferredSize() {
         Score score = editor.score();
-        return new Dimension(Math.max(1, score.measureCount()) * MeasureGrid.CELL_WIDTH, HEIGHT);
+        return new Dimension(Math.max(1, score.measureCount()) * MeasureGrid.cellWidth(), UiSizing.scaled(HEIGHT));
     }
 
     @Override
@@ -143,7 +144,7 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
         g.setColor(ScoreColors.SURFACE);
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 9));
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, UiSizing.scaled(9)));
         for (MarkerSegments.Segment segment : MarkerSegments.of(editor.score())) {
             paintSegment(g, segment);
         }
@@ -153,9 +154,10 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     }
 
     private void paintCaretRing(Graphics2D g) {
-        int x = caret * MeasureGrid.CELL_WIDTH;
+        int x = caret * MeasureGrid.cellWidth();
         g.setColor(focusRingColor());
-        g.drawRect(x + 1, 1, MeasureGrid.CELL_WIDTH - 3, HEIGHT - 3);
+        g.drawRect(x + UiSizing.scaled(1), UiSizing.scaled(1),
+                MeasureGrid.cellWidth() - UiSizing.scaled(3), UiSizing.scaled(HEIGHT) - UiSizing.scaled(3));
     }
 
     private Color focusRingColor() {
@@ -164,10 +166,11 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     }
 
     private void paintSegment(Graphics2D g, MarkerSegments.Segment segment) {
-        int x = segment.fromMeasure() * MeasureGrid.CELL_WIDTH;
-        int width = (segment.toMeasureExclusive() - segment.fromMeasure()) * MeasureGrid.CELL_WIDTH;
+        int x = segment.fromMeasure() * MeasureGrid.cellWidth();
+        int width = (segment.toMeasureExclusive() - segment.fromMeasure()) * MeasureGrid.cellWidth();
         g.setColor(ScoreColors.WARNING);
-        g.drawString(truncated(segment.marker().name(), width - 3, g.getFontMetrics()), x + 3, HEIGHT - 4);
+        g.drawString(truncated(segment.marker().name(), width - UiSizing.scaled(3), g.getFontMetrics()),
+                x + UiSizing.scaled(3), UiSizing.scaled(HEIGHT) - UiSizing.scaled(4));
     }
 
     static String truncated(String name, int maxWidth, FontMetrics metrics) {
