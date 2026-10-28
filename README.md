@@ -71,6 +71,10 @@ Debian and Ubuntu), and ships in English and Spanish.
 - **Effects you can hear:** bends and whammy bar along their curves, slides,
   hammer-ons and pull-offs, trills, tremolo picking, harmonics, delayed
   strums, grace notes, fade in and swing.
+- **Pause and resume:** press `Space` or use the Play/Pause button to pause
+  without losing your playback position, then resume from the same point.
+  Use the Stop button or `Sound > Stop` to end playback, or `Ctrl+Space` to
+  play from the beginning.
 - **Practice tools:** metronome, count-in, loop with speed trainer, relative
   tempo from ×0.25 to ×2, and step-by-step playback.
 - **A playback line follows the music.** Click any bar to jump there without
@@ -107,7 +111,10 @@ Debian and Ubuntu), and ships in English and Spanish.
   its effects, so a bend never detunes the clean notes; a General MIDI
   instrument, or a drum kit on percussion tracks; volume and pan with slider
   and number box; chorus, reverb, phaser and tremolo; mute and solo.
-  Everything stays editable during playback.
+  The controls remain editable during playback, but changing an instrument
+  here does not update the active playback. Stop and start playback again to
+  hear the new instrument; pausing and resuming is not enough. Instrument
+  changes written into the score as mix table changes do play back.
 - **The global view** shows one colored row per track under a bar ruler, with
   markers in red and a small silver square on every empty bar. Click any cell
   to jump there.
@@ -155,7 +162,7 @@ Debian and Ubuntu), and ships in English and Spanish.
 | Guitar Pro 3, 4 and 5 (`.gp3`, `.gp4`, `.gp5`, `.gtp`) | ✓ | `.gp4` |
 | TablEdit (`.tef`) | ✓ | |
 | PowerTab (`.ptb`) | ✓ | |
-| MIDI | ✓ | ✓ |
+| MIDI (`.mid`, `.midi`) | ✓ | ✓ |
 | MusicXML | ✓ | ✓ |
 | ASCII tab | ✓ | ✓ |
 | WAVE | | ✓ |
@@ -169,9 +176,11 @@ Debian and Ubuntu), and ships in English and Spanish.
 - **Guitar Pro files are tested against real ones.** Of the 61 files in
   PyGuitarPro's test suite, 60 open; PyGuitarPro cannot open the remaining one
   either. See [how the formats are verified](docs/DEVELOPMENT.md#guitar-pro-compatibility).
-- **MIDI import** lists the file's tracks so you can import them one by one or
-  merge several into an existing track. **ASCII import** lets you paste and
-  fix the tab before it lands on the active track.
+- **MIDI files** (`.mid` and `.midi`) can be opened with `File > Open` or
+  passed as the file argument on the command line. **MIDI import** lists the
+  file's tracks so you can import them one by one or merge several into an
+  existing track. **ASCII import** lets you paste and fix the tab before it
+  lands on the active track.
 
 > [!NOTE]
 > Guitar Pro scores imported with a tabpro version older than 0.17.1 have
@@ -222,7 +231,7 @@ Press `F1` for the full list.
 
 | Key | Action | Key | Action |
 |---|---|---|---|
-| `Space` | Play / stop | `F9` | Loop / speed trainer |
+| `Space` | Play / pause / resume | `F9` | Loop / speed trainer |
 | `F2` | Sound bank on / off | `F10` | Mix table change |
 | `F5` | Score information | `F11` | Color notes by dynamic |
 | `F6` | Track properties | `F12` | Preferences |
