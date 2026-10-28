@@ -1,3 +1,9 @@
+## [0.61.2](https://github.com/gstn-caruso/tabpro/compare/v0.61.1...v0.61.2) (2026-10-28)
+
+### Bug Fixes
+
+* respect desktop scaling across the interface ([#239](https://github.com/gstn-caruso/tabpro/issues/239)) ([727f917](https://github.com/gstn-caruso/tabpro/commit/727f917c31bbcbf1196e2099d1667f5100219e22))
+
 ## [0.61.1](https://github.com/gstn-caruso/tabpro/compare/v0.61.0...v0.61.1) (2026-10-28)
 
 ### Bug Fixes
