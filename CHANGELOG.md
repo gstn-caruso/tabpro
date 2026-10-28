@@ -1,3 +1,9 @@
+## [0.61.1](https://github.com/gstn-caruso/tabpro/compare/v0.61.0...v0.61.1) (2026-10-28)
+
+### Bug Fixes
+
+* open MIDI scores with the MIDI importer ([#238](https://github.com/gstn-caruso/tabpro/issues/238)) ([29bc546](https://github.com/gstn-caruso/tabpro/commit/29bc54602c9510ef93dbf826f4c30cd3264255ca))
+
 ## [0.61.0](https://github.com/gstn-caruso/tabpro/compare/v0.60.0...v0.61.0) (2026-10-17)
 
 ### Features
