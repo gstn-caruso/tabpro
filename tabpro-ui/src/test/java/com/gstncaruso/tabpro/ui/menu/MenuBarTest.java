@@ -141,7 +141,8 @@ class MenuBarTest {
                 "Nota muerta", "Nota acentuada", "Fade in", "Nota de adorno…", "Armónicos…",
                 "Armónico natural", "Armónico artificial",
                 "Slap", "Pop", "Rasgueo y púa",
-                "Último compás",
+                // Adding Detener exhausts the remaining letters in Sonido before nav.nextNote.
+                "Último compás", "Nota siguiente",
                 "Mesa de mezcla",
                 "pp", "p", "mp", "f", "ff", "fff"), withoutMnemonic);
     }

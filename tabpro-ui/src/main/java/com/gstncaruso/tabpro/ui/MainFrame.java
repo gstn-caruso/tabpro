@@ -180,6 +180,7 @@ public final class MainFrame extends JFrame {
         beatViews.setKeyboardVisible(keyboardVisible);
         commands.get("view.fretboard").setChecked(fretboardVisible);
         commands.get("view.keyboard").setChecked(keyboardVisible);
+        updatePlayCommand();
         toolBars = new ToolBars(editor, commands, canvas);
         boolean effectsToolBarVisible = preferences.effectsToolBarVisible();
         toolBars.setEffectsToolBarVisible(effectsToolBarVisible);
@@ -201,6 +202,7 @@ public final class MainFrame extends JFrame {
             beatViews.showPlayhead(transport.playhead());
             updateTitle();
             updateStepCommandLabels();
+            updatePlayCommand();
         });
         canvas.onClickReposition(hit -> transport.seekTo(hit.measure(), hit.beat()));
         editor.addListener(EdtEditorListener.onEdt(this::updateTitle));
@@ -357,6 +359,16 @@ public final class MainFrame extends JFrame {
         setTitle(transport.currentTempoBpm().isPresent()
                 ? title + " — " + transport.currentTempoBpm().getAsInt() + " BPM"
                 : title);
+    }
+
+    private void updatePlayCommand() {
+        boolean playing = transport.isPlaying();
+        String label = Texts.get(playing ? "menus.sound.pause"
+                : transport.isPaused() ? "menus.sound.resume" : "menus.sound.play");
+        commands.get("sound.play").renameTo(label).describedAs(label).withIcon(playing
+                ? com.gstncaruso.tabpro.ui.icons.Icons.pause()
+                : com.gstncaruso.tabpro.ui.icons.Icons.play());
+        commands.get("sound.stop").setEnabled(playing || transport.isPaused());
     }
 
     private void updateStepCommandLabels() {
@@ -704,6 +716,12 @@ public final class MainFrame extends JFrame {
         @Override
         public void togglePlay() {
             transport.toggle();
+            backToTheScore();
+        }
+
+        @Override
+        public void stop() {
+            transport.stop();
             backToTheScore();
         }
 

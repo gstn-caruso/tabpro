@@ -509,6 +509,10 @@ public final class Icons {
         return svgIcon("player-play");
     }
 
+    public static Icon pause() {
+        return svgIcon("player-pause");
+    }
+
     public static Icon stop() {
         return svgIcon("player-stop");
     }

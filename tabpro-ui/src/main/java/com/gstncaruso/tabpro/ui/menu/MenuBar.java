@@ -222,7 +222,7 @@ public final class MenuBar {
 
     private JMenu soundMenu() {
         JMenu menu = new JMenu(Texts.get("menus.title.sound"));
-        add(menu, "sound.play", "sound.playFromStart", "sound.loop");
+        add(menu, "sound.play", "sound.stop", "sound.playFromStart", "sound.loop");
         menu.addSeparator();
         add(menu, "sound.tempo", "sound.relativeTempo", "sound.metronome", "sound.metronomeSettings",
                 "sound.countDown");

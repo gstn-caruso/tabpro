@@ -386,6 +386,7 @@ public final class Commands {
     private void defineSoundCommands() {
         define("sound.play", Texts.get("menus.sound.play"), playback::togglePlay)
                 .withAccelerator("SPACE").withIcon(Icons.play());
+        define("sound.stop", Texts.get("menus.sound.stop"), playback::stop).withIcon(Icons.stop());
         define("sound.playFromStart", Texts.get("menus.sound.playFromStart"), playback::playFromTheBeginning)
                 .withAccelerator("ctrl SPACE");
         define("sound.loop", Texts.get("menus.sound.loop"), playback::loopAndSpeedTrainer)

@@ -38,6 +38,7 @@ public final class Transport {
     private Optional<SpeedTrainer> speedTrainer = Optional.empty();
     private Optional<LoopRange> loop = Optional.empty();
     private int lap;
+    private boolean paused;
     private Optional<Runnable> previewFinished = Optional.empty();
 
     public Transport(Editor editor, Player player, Consumer<Runnable> uiThread) {
@@ -53,7 +54,15 @@ public final class Transport {
 
     public void toggle() {
         if (player.isPlaying()) {
-            stop();
+            player.pause();
+            paused = true;
+            notifyListeners();
+            return;
+        }
+        if (paused) {
+            paused = false;
+            player.resume();
+            notifyListeners();
             return;
         }
         lap = 0;
@@ -67,6 +76,7 @@ public final class Transport {
     }
 
     public void stop() {
+        paused = false;
         player.stop();
         playhead = Playhead.silent();
         currentTempo = OptionalInt.empty();
@@ -76,6 +86,10 @@ public final class Transport {
 
     public boolean isPlaying() {
         return player.isPlaying();
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 
     public void seekTo(int measure, int beat) {
@@ -277,6 +291,7 @@ public final class Transport {
         @Override
         public void playbackFinished() {
             uiThread.accept(() -> {
+                paused = false;
                 playhead = Playhead.silent();
                 currentTempo = OptionalInt.empty();
                 if (loop.isPresent()) {
