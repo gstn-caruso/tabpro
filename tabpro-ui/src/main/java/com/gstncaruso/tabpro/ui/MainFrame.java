@@ -268,6 +268,7 @@ public final class MainFrame extends JFrame {
                 case GUITAR_PRO -> document.adopt(exchange.importGuitarPro(path));
                 case TAB_EDIT -> document.adopt(exchange.importTabEdit(path));
                 case POWER_TAB -> document.adopt(exchange.importPowerTab(path));
+                case MIDI -> document.adopt(exchange.importMidi(path));
                 case TABPRO -> document.open(path);
             }
             updateTitle();
@@ -389,7 +390,7 @@ public final class MainFrame extends JFrame {
     private FileNameExtensionFilter openableScoreFilter() {
         return new FileNameExtensionFilter(
                 Texts.get("window.MainFrame.openableScoresFilter"),
-                "tabpro", "gp3", "gp4", "gp5", "gtp", "tef", "ptb");
+                "tabpro", "gp3", "gp4", "gp5", "gtp", "tef", "ptb", "mid", "midi");
     }
 
     private final class Document implements Ports.Document {

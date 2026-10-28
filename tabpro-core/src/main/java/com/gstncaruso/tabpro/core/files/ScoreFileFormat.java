@@ -7,7 +7,8 @@ public enum ScoreFileFormat {
     TABPRO,
     GUITAR_PRO,
     TAB_EDIT,
-    POWER_TAB;
+    POWER_TAB,
+    MIDI;
 
     public static ScoreFileFormat of(Path path) {
         String name = path.getFileName().toString().toLowerCase(Locale.ROOT);
@@ -19,6 +20,9 @@ public enum ScoreFileFormat {
         }
         if (name.endsWith(".ptb")) {
             return POWER_TAB;
+        }
+        if (name.endsWith(".mid") || name.endsWith(".midi")) {
+            return MIDI;
         }
         return TABPRO;
     }

@@ -24,6 +24,7 @@ import com.gstncaruso.tabpro.midi.MidiScoreExporter;
 import com.gstncaruso.tabpro.midi.SoundExchange;
 import com.gstncaruso.tabpro.midi.WaveRenderer;
 import com.gstncaruso.tabpro.ui.MainFrame;
+import com.gstncaruso.tabpro.ui.ScoreDocument;
 import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.awt.image.BufferedImage;
 import java.nio.file.Files;
@@ -31,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.imageio.ImageIO;
+import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
@@ -43,6 +45,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -116,6 +119,119 @@ class ImportExportAuditTest {
             assertEquals(3, editor.score().trackCount(), "the same Abrir must recognize a real .gp5");
             assertEquals("Lead Guitar", editor.score().track(0).name());
         } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
+    void givenValidMidiWithOneNote_whenOpenedFromFileMenu_thenNoteIsImportedWithoutNativeDestination(
+            @TempDir Path tempDir) throws Exception {
+        Path midiPath = tempDir.resolve("one-note.mid");
+        Sequence sequence = new Sequence(Sequence.PPQ, 480);
+        javax.sound.midi.Track midiTrack = sequence.createTrack();
+        midiTrack.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, 0, 64, 100), 0));
+        midiTrack.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, 0, 64, 0), 480));
+        MidiSystem.write(sequence, 1, midiPath.toFile());
+
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        try {
+            JMenuItem open = findMenuItem(frame.getJMenuBar(), "Abrir…");
+            assertNotNull(open, "could not find 'Abrir…' in the real menu");
+
+            withDialog(open::doClick, dialog -> {
+                JFileChooser chooser = findComponent(dialog, JFileChooser.class);
+                if (chooser != null) {
+                    chooser.setFileFilter(chooser.getAcceptAllFileFilter());
+                    chooser.setSelectedFile(midiPath.toFile());
+                    chooser.approveSelection();
+                    return;
+                }
+                assertNotNull(findComponent(dialog, JOptionPane.class), "unexpected dialog while opening MIDI");
+                dialog.dispose(); // Let the model assertion report a failed import rather than hanging on its error.
+            });
+
+            Track imported = editor.score().track(0);
+            List<Note> notes = imported.measure(0).beat(0).notes();
+            assertEquals(1, notes.size(), "opening a valid one-note MIDI through Archivo > Abrir must import its note");
+            assertEquals(64, imported.pitchOf(notes.get(0)).midiNumber(), "the imported note must retain its MIDI pitch");
+            assertTrue(frame.getTitle().startsWith(ScoreDocument.untitled() + " * — "),
+                    "an imported MIDI must be unsaved and untitled, without a native destination: " + frame.getTitle());
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
+    void givenMidiFile_whenOpenedWithDefaultFilter_thenNoteIsImported(@TempDir Path tempDir) throws Exception {
+        Path midiPath = tempDir.resolve("one-note.mid");
+        Sequence sequence = new Sequence(Sequence.PPQ, 480);
+        javax.sound.midi.Track midiTrack = sequence.createTrack();
+        midiTrack.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, 0, 64, 100), 0));
+        midiTrack.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, 0, 64, 0), 480));
+        MidiSystem.write(sequence, 1, midiPath.toFile());
+
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        try {
+            JMenuItem open = findMenuItem(frame.getJMenuBar(), "Abrir…");
+            assertNotNull(open, "could not find 'Abrir…' in the real menu");
+
+            withDialog(open::doClick, dialog -> {
+                JFileChooser chooser = findComponent(dialog, JFileChooser.class);
+                if (chooser != null) {
+                    assertTrue(chooser.getFileFilter().accept(midiPath.toFile()),
+                            "the default Abrir filter must allow selecting a .mid file");
+                    chooser.setSelectedFile(midiPath.toFile());
+                    chooser.approveSelection();
+                    return;
+                }
+                assertNotNull(findComponent(dialog, JOptionPane.class), "unexpected dialog while opening MIDI");
+                dialog.dispose();
+            });
+
+            Track imported = editor.score().track(0);
+            List<Note> notes = imported.measure(0).beat(0).notes();
+            assertEquals(1, notes.size(), "opening MIDI with the default filter must import its note");
+            assertEquals(64, imported.pitchOf(notes.get(0)).midiNumber(), "the imported note must retain its MIDI pitch");
+            assertTrue(frame.getTitle().startsWith(ScoreDocument.untitled() + " * — "),
+                    "an imported MIDI must be unsaved and untitled, without a native destination: " + frame.getTitle());
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
+    void givenUppercaseMidiExtension_whenOpenedOnStartup_thenNoteIsImportedWithoutNativeDestination(
+            @TempDir Path tempDir) throws Exception {
+        Path midiPath = tempDir.resolve("one-note.MIDI");
+        Sequence sequence = new Sequence(Sequence.PPQ, 480);
+        javax.sound.midi.Track midiTrack = sequence.createTrack();
+        midiTrack.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, 0, 64, 100), 0));
+        midiTrack.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, 0, 64, 0), 480));
+        MidiSystem.write(sequence, 1, midiPath.toFile());
+
+        Editor editor = blankEditor();
+        MainFrame frame = newFrame(editor);
+        java.awt.event.AWTEventListener closeErrorDialog = event -> {
+            if (event.getID() == java.awt.event.WindowEvent.WINDOW_OPENED
+                    && event.getSource() instanceof javax.swing.JDialog dialog) {
+                dialog.dispose(); // Let the model assertion report a failed import instead of hanging.
+            }
+        };
+        java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
+        toolkit.addAWTEventListener(closeErrorDialog, java.awt.AWTEvent.WINDOW_EVENT_MASK);
+        try {
+            SwingUtilities.invokeAndWait(() -> frame.openOnStartup(midiPath));
+
+            Track imported = editor.score().track(0);
+            List<Note> notes = imported.measure(0).beat(0).notes();
+            assertEquals(1, notes.size(), "opening uppercase .MIDI on startup must import its note");
+            assertEquals(64, imported.pitchOf(notes.get(0)).midiNumber(), "the imported note must retain its MIDI pitch");
+            assertTrue(frame.getTitle().startsWith(ScoreDocument.untitled() + " * — "),
+                    "an imported MIDI must be unsaved and untitled, without a native destination: " + frame.getTitle());
+        } finally {
+            toolkit.removeAWTEventListener(closeErrorDialog);
             AuditSupport.dispose(frame);
         }
     }
