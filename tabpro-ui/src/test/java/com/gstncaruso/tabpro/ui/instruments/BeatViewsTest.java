@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.instruments;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,13 +27,87 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.api.parallel.Isolated;
 
+@Isolated
 class BeatViewsTest {
+
+    @Test
+    void givenDoubleUiScale_whenShowingInstrumentPanels_thenHeadersAndControlsFitScaledViews() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            Object previousScale = UIManager.get("laf.scaleFactor");
+            try {
+                UIManager.put("laf.scaleFactor", 2f);
+                BeatViews views = new BeatViews(
+                        new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
+                views.setSize(2400, views.getPreferredSize().height);
+                layoutTree(views);
+
+                List<Executable> observations = new ArrayList<>();
+                observations.add(() -> assertEquals(184, views.keyboard().getHeight(), "keyboard height at 2x"));
+                observations.add(() -> assertEquals(236, views.fretboard().getHeight(), "fretboard height at 2x"));
+                List<JPanel> headers = opaquePanelsBackedBy(views, ScoreColors.TITLE_BAR);
+                assertEquals(2, headers.size(), "both instruments have a visible header");
+                for (JPanel header : headers) {
+                    observations.add(() -> assertEquals(48, header.getHeight(), "header height at 2x"));
+                    for (Component control : headerContents(header)) {
+                        boolean navigation = control instanceof JButton button
+                                && (Texts.get("views.BeatViews.previousBeat").equals(
+                                        button.getAccessibleContext().getAccessibleName())
+                                    || Texts.get("views.BeatViews.nextBeat").equals(
+                                        button.getAccessibleContext().getAccessibleName()));
+                        if (control instanceof JLabel || control instanceof JComboBox<?> || navigation) {
+                            String description = control instanceof JLabel label ? label.getText()
+                                    : control.getAccessibleContext().getAccessibleName();
+                            observations.add(() -> assertAll(description,
+                                    () -> assertEquals(navigation ? 18f : 20f, control.getFont().getSize2D(),
+                                            "header text follows the UI scale"),
+                                    () -> assertTrue(control.isVisible(), "header control remains visible"),
+                                    () -> assertTrue(control.getWidth() >= control.getPreferredSize().width
+                                                    && control.getHeight() >= control.getPreferredSize().height,
+                                            "header control has room for its content"),
+                                    () -> assertTrue(new Rectangle(control.getParent().getSize())
+                                                    .contains(control.getBounds()),
+                                            "header control stays inside its parent")));
+                        }
+                    }
+                }
+                assertAll(observations);
+            } finally {
+                UIManager.put("laf.scaleFactor", previousScale);
+            }
+        });
+    }
+
+    private static void layoutTree(Container container) {
+        container.doLayout();
+        for (Component child : container.getComponents()) {
+            if (child instanceof Container nested) {
+                layoutTree(nested);
+            }
+        }
+    }
+
+    private static List<Component> headerContents(Container container) {
+        List<Component> found = new ArrayList<>();
+        for (Component child : container.getComponents()) {
+            found.add(child);
+            if (child instanceof Container nested && !(child instanceof JComboBox<?>)) {
+                found.addAll(headerContents(nested));
+            }
+        }
+        return found;
+    }
 
     @Test
     void theZoneTitlesAndControlsAreAvailableInEnglish() {

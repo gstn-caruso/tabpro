@@ -16,6 +16,7 @@ import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -239,7 +240,7 @@ public final class BeatViews extends JPanel {
     private <T> JComboBox<T> comboOf(String name, T[] values, java.util.function.Consumer<T> onChoice) {
         JComboBox<T> combo = new JComboBox<>(values);
         combo.setRenderer(new LabeledListCellRenderer());
-        combo.setFont(combo.getFont().deriveFont(10f));
+        combo.setFont(combo.getFont().deriveFont((float) UiSizing.scaled(10)));
         combo.getAccessibleContext().setAccessibleName(name);
         combo.setToolTipText(name);
         combo.addActionListener(e -> onChoice.accept(combo.getItemAt(combo.getSelectedIndex())));
@@ -252,12 +253,12 @@ public final class BeatViews extends JPanel {
         picker.setOpaque(false);
 
         JComboBox<String> rootCombo = new JComboBox<>(roots);
-        rootCombo.setFont(rootCombo.getFont().deriveFont(10f));
+        rootCombo.setFont(rootCombo.getFont().deriveFont((float) UiSizing.scaled(10)));
         rootCombo.getAccessibleContext().setAccessibleName(Texts.get("views.BeatViews.scaleRootNote"));
         rootCombo.setToolTipText(Texts.get("views.BeatViews.scaleRootNote"));
         JComboBox<ScaleType> typeCombo = new JComboBox<>(ScaleType.values());
         typeCombo.setRenderer(new LabeledListCellRenderer());
-        typeCombo.setFont(typeCombo.getFont().deriveFont(10f));
+        typeCombo.setFont(typeCombo.getFont().deriveFont((float) UiSizing.scaled(10)));
         typeCombo.getAccessibleContext().setAccessibleName(Texts.get("views.BeatViews.scaleType"));
         typeCombo.setToolTipText(Texts.get("views.BeatViews.scaleType"));
 
@@ -294,7 +295,7 @@ public final class BeatViews extends JPanel {
 
     private JButton navButton(String text, String name, Runnable action) {
         JButton button = new JButton(text);
-        button.setFont(button.getFont().deriveFont(9f));
+        button.setFont(button.getFont().deriveFont((float) UiSizing.scaled(9)));
         button.setMargin(new java.awt.Insets(0, 4, 0, 4));
         button.setFocusable(false);
         button.getAccessibleContext().setAccessibleName(name);
@@ -315,11 +316,11 @@ public final class BeatViews extends JPanel {
 
         PanelTitleBar header = new PanelTitleBar(title, toolbar, closeAccessibleName);
         header.onClose(onClose);
-        header.setPreferredSize(new Dimension(0, TITLE_HEIGHT));
+        header.setPreferredSize(new Dimension(0, UiSizing.scaled(TITLE_HEIGHT)));
 
         box.add(header, BorderLayout.NORTH);
         box.add(view, BorderLayout.CENTER);
-        int total = TITLE_HEIGHT + viewHeight;
+        int total = UiSizing.scaled(TITLE_HEIGHT) + UiSizing.scaled(viewHeight);
         box.setPreferredSize(new Dimension(0, total));
         box.setMaximumSize(new Dimension(Integer.MAX_VALUE, total));
         box.setMinimumSize(new Dimension(0, total));

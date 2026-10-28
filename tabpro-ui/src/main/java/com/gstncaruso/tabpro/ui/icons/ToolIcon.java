@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.icons;
 
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -23,7 +24,10 @@ public final class ToolIcon implements Icon {
 
     @Override
     public void paintIcon(Component component, Graphics graphics, int x, int y) {
-        Graphics2D canvas = (Graphics2D) graphics.create(x, y, size, size);
+        int scaledSize = getIconWidth();
+        Graphics2D canvas = (Graphics2D) graphics.create(x, y, scaledSize, scaledSize);
+        double scale = scaledSize / (double) size;
+        canvas.scale(scale, scale);
         canvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         canvas.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         canvas.setColor(component == null ? canvas.getColor() : component.getForeground());
@@ -33,11 +37,11 @@ public final class ToolIcon implements Icon {
 
     @Override
     public int getIconWidth() {
-        return size;
+        return UiSizing.scaled(size);
     }
 
     @Override
     public int getIconHeight() {
-        return size;
+        return UiSizing.scaled(size);
     }
 }

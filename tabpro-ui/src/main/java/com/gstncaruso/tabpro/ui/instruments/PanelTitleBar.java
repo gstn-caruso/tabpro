@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.instruments;
 
 import com.gstncaruso.tabpro.ui.icons.Icons;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import javax.swing.BorderFactory;
@@ -20,7 +21,7 @@ final class PanelTitleBar extends JPanel {
         setBackground(ScoreColors.TITLE_BAR);
 
         JLabel label = new JLabel(title);
-        label.setFont(label.getFont().deriveFont(Font.BOLD, 10f));
+        label.setFont(label.getFont().deriveFont(Font.BOLD, (float) UiSizing.scaled(10)));
         label.setForeground(ScoreColors.TITLE_BAR_INK);
         label.setBorder(BorderFactory.createEmptyBorder(3, 12, 2, 0));
 

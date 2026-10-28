@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.toolbar;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,13 +16,19 @@ import com.gstncaruso.tabpro.ui.score.Zoom;
 import com.gstncaruso.tabpro.ui.score.ZoomHolder;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import javax.swing.AbstractButton;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.api.parallel.Isolated;
 
+@Isolated
 class ToolBarsTest {
 
     private final Editor editor = new Editor(Score.blank(new TextsDefaultNames()));
@@ -29,6 +36,40 @@ class ToolBarsTest {
             editor, record(Ports.Document.class), record(Ports.Dialogs.class),
             record(Ports.Playback.class), record(Ports.View.class));
     private final ToolBars toolBars = new ToolBars(editor, commands, new FakeZoomHolder());
+
+    @Test
+    void givenDoubleUiScale_whenBuildingToolbars_thenButtonsAndIconsRemainProportional() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            Object previousScale = UIManager.get("laf.scaleFactor");
+            try {
+                UIManager.put("laf.scaleFactor", 2f);
+                Commands scaledCommands = new Commands(
+                        editor, record(Ports.Document.class), record(Ports.Dialogs.class),
+                        record(Ports.Playback.class), record(Ports.View.class));
+                ToolBars scaledBars = new ToolBars(editor, scaledCommands, new FakeZoomHolder());
+                List<AbstractButton> buttons = buttonsOf(scaledBars.component());
+
+                // SVG, procedural drawing, musical glyph, and the sound-font toggle.
+                assertAll(List.of("file.new", "bar.insert", "note.value.QUARTER", "sound.soundFont")
+                        .stream().<Executable>map(name -> () -> {
+                            AbstractButton button = buttons.stream()
+                                    .filter(candidate -> candidate.getAction() == scaledCommands.get(name))
+                                    .findFirst().orElseThrow();
+                            assertAll(name,
+                                    () -> assertEquals(new Dimension(52, 48), button.getPreferredSize(),
+                                            "button surface follows the UI scale"),
+                                    () -> assertEquals(new Dimension(52, 48), button.getMaximumSize(),
+                                            "toolbar layout must not cap the scaled button"),
+                                    () -> assertEquals(36, button.getIcon().getIconWidth(),
+                                            "icon width follows the UI scale"),
+                                    () -> assertEquals(36, button.getIcon().getIconHeight(),
+                                            "icon height follows the UI scale"));
+                        }));
+            } finally {
+                UIManager.put("laf.scaleFactor", previousScale);
+            }
+        });
+    }
 
     @Test
     void theFourRowsStartVisible() {

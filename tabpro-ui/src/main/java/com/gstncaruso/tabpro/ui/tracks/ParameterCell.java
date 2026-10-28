@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.tracks;
 import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -23,6 +24,7 @@ public final class ParameterCell extends JPanel {
         setOpaque(false);
         setLayout(new BorderLayout());
 
+        numberField.setFont(numberField.getFont().deriveFont((float) UiSizing.scaled(10)));
         numberField.setFocusable(true);
         numberField.addChangeListener(e -> pushIfNotSyncing((Integer) numberField.getValue()));
 

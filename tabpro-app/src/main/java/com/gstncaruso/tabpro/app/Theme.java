@@ -38,6 +38,7 @@ public final class Theme implements ThemeSwitch {
 
     private String current = DARK;
     private int fontSize = DEFAULT_FONT_SIZE;
+    private Font systemFont;
     private boolean highContrast = false;
 
     public static Theme install() {
@@ -70,6 +71,10 @@ public final class Theme implements ThemeSwitch {
             FlatLightLaf.setup();
         } else {
             FlatDarkLaf.setup();
+        }
+        if (systemFont == null) {
+            Font base = UIManager.getFont("defaultFont");
+            systemFont = base == null ? new Font(Font.SANS_SERIF, Font.PLAIN, DEFAULT_FONT_SIZE) : base;
         }
         current = PALETTES.containsKey(name) ? name : DARK;
         paintActivePalette();
@@ -143,12 +148,16 @@ public final class Theme implements ThemeSwitch {
         UIManager.put("TabbedPane.underlineColor", accent);
         UIManager.put("Slider.thumbColor", accent);
         UIManager.put("Slider.trackValueColor", accent);
-        UIManager.put("defaultFont", interfaceFont());
     }
 
     private Font interfaceFont() {
-        Font base = UIManager.getFont("defaultFont");
-        return base == null ? new Font(Font.SANS_SERIF, Font.PLAIN, fontSize) : base.deriveFont((float) fontSize);
+        if (systemFont == null) {
+            Font base = UIManager.getFont("defaultFont");
+            return base == null ? new Font(Font.SANS_SERIF, Font.PLAIN, fontSize)
+                    : base.deriveFont((float) fontSize);
+        }
+        return fontSize == DEFAULT_FONT_SIZE ? systemFont
+                : systemFont.deriveFont(systemFont.getSize2D() * fontSize / DEFAULT_FONT_SIZE);
     }
 
     record Palette(

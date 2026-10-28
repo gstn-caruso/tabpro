@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.icons;
 
 import com.gstncaruso.tabpro.ui.font.BravuraFont;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -50,6 +51,8 @@ public final class GlyphIcon implements Icon {
     public void paintIcon(Component component, Graphics graphics, int x, int y) {
         Graphics2D canvas = (Graphics2D) graphics.create();
         canvas.translate(x, y);
+        double scale = getIconWidth() / (double) size;
+        canvas.scale(scale, scale);
         canvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         canvas.setColor(component == null ? canvas.getColor() : component.getForeground());
         canvas.fill(content);
@@ -58,12 +61,12 @@ public final class GlyphIcon implements Icon {
 
     @Override
     public int getIconWidth() {
-        return size;
+        return UiSizing.scaled(size);
     }
 
     @Override
     public int getIconHeight() {
-        return size;
+        return UiSizing.scaled(size);
     }
 
     private static void requireEveryGlyphDisplayable(Font font, String[] rows) {

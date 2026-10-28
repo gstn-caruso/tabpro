@@ -3,6 +3,7 @@ package com.gstncaruso.tabpro.ui.icons;
 import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.parser.SVGLoader;
 import com.github.weisj.jsvg.view.ViewBox;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -30,17 +31,17 @@ public final class SvgIcon implements Icon {
         canvas.translate(x, y);
         canvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         canvas.setColor(component == null ? canvas.getColor() : component.getForeground());
-        document.render(component, canvas, new ViewBox(0, 0, size, size));
+        document.render(component, canvas, new ViewBox(0, 0, getIconWidth(), getIconHeight()));
         canvas.dispose();
     }
 
     @Override
     public int getIconWidth() {
-        return size;
+        return UiSizing.scaled(size);
     }
 
     @Override
     public int getIconHeight() {
-        return size;
+        return UiSizing.scaled(size);
     }
 }

@@ -5,6 +5,7 @@ import com.gstncaruso.tabpro.ui.actions.Command;
 import com.gstncaruso.tabpro.ui.actions.Commands;
 import com.gstncaruso.tabpro.ui.score.ZoomHolder;
 import com.gstncaruso.tabpro.ui.theme.Palette;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -224,8 +225,8 @@ public final class ToolBars {
         button.setContentAreaFilled(false);
         button.setToolTipText(tooltipOf(command));
         button.getAccessibleContext().setAccessibleName(command.label());
-        button.setPreferredSize(new Dimension(26, 24));
-        button.setMaximumSize(new Dimension(26, 24));
+        button.setPreferredSize(new Dimension(UiSizing.scaled(26), UiSizing.scaled(24)));
+        button.setMaximumSize(new Dimension(UiSizing.scaled(26), UiSizing.scaled(24)));
         button.addChangeListener(event -> button.setContentAreaFilled(
                 button.getModel().isRollover() || button.getModel().isPressed()));
         return button;
@@ -243,8 +244,8 @@ public final class ToolBars {
         button.setContentAreaFilled(button.isSelected());
         button.setToolTipText(tooltipOf(command));
         button.getAccessibleContext().setAccessibleName(command.label());
-        button.setPreferredSize(new Dimension(26, 24));
-        button.setMaximumSize(new Dimension(26, 24));
+        button.setPreferredSize(new Dimension(UiSizing.scaled(26), UiSizing.scaled(24)));
+        button.setMaximumSize(new Dimension(UiSizing.scaled(26), UiSizing.scaled(24)));
         button.addChangeListener(event -> button.setContentAreaFilled(
                 button.getModel().isRollover() || button.getModel().isPressed() || button.isSelected()));
         return button;

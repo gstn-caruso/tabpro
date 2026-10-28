@@ -8,6 +8,7 @@ import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -28,6 +29,7 @@ public final class TrackPanel extends JPanel {
     private final Editor editor;
     private final MixTable mixTable;
     private final GlobalView globalView;
+    private final JScrollPane scrollingMixer;
 
     public TrackPanel(Editor editor) {
         this(editor, new TrackVisibility());
@@ -45,12 +47,12 @@ public final class TrackPanel extends JPanel {
         setBackground(ScoreColors.SURFACE);
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, ScoreColors.BORDER));
 
-        JScrollPane scrollingMixer = new JScrollPane(mixTable);
+        scrollingMixer = new JScrollPane(mixTable);
         scrollingMixer.setBorder(BorderFactory.createEmptyBorder());
         scrollingMixer.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollingMixer.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
         scrollingMixer.getViewport().setBackground(ScoreColors.SURFACE);
-        scrollingMixer.setPreferredSize(new Dimension(MixTable.WIDTH, 0));
+        scrollingMixer.setPreferredSize(new Dimension(MixTable.width(), 0));
 
         JScrollPane scrollingGlobalView = new JScrollPane(globalView);
         scrollingGlobalView.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, ScoreColors.BORDER));
@@ -71,6 +73,23 @@ public final class TrackPanel extends JPanel {
                 onEditorChanged(change);
             }
         }));
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        if (scrollingMixer != null) {
+            scrollingMixer.setPreferredSize(new Dimension(MixTable.width(), 0));
+        }
+    }
+
+    @Override
+    public void doLayout() {
+        int availableWidth = Math.max(0, getWidth() - getInsets().left - getInsets().right);
+        // Keep a quarter for measures; scroll the mixer rather than shrinking its columns.
+        int mixerWidth = Math.min(MixTable.width(), availableWidth - availableWidth / 4);
+        scrollingMixer.setPreferredSize(new Dimension(mixerWidth, 0));
+        super.doLayout();
     }
 
     public void showPlayingMeasure(OptionalInt measure) {
@@ -123,8 +142,16 @@ public final class TrackPanel extends JPanel {
         }
     }
 
+    static int rowHeight() {
+        return UiSizing.scaled(ROW_HEIGHT);
+    }
+
+    static int headerHeight() {
+        return UiSizing.scaled(HEADER_HEIGHT);
+    }
+
     public int preferredPanelHeight() {
-        return HEADER_HEIGHT + editor.score().trackCount() * ROW_HEIGHT + 26;
+        return headerHeight() + editor.score().trackCount() * rowHeight() + UiSizing.scaled(26);
     }
 
     List<MixTableRow> rows() {
@@ -134,7 +161,7 @@ public final class TrackPanel extends JPanel {
     @Override
     public Dimension getPreferredSize() {
         Dimension preferred = super.getPreferredSize();
-        return new Dimension(preferred.width, Math.min(preferredPanelHeight(), 220));
+        return new Dimension(preferred.width, Math.min(preferredPanelHeight(), UiSizing.scaled(220)));
     }
 
     Component gridComponent() {

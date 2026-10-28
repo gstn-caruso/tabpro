@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.Instruments;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntSupplier;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -60,6 +62,7 @@ public final class MixTable extends JPanel {
     private final JPanel rowsPanel = new JPanel();
     private final List<MixTableRow> rows = new ArrayList<>();
     private final List<JLabel> columnTitleLabels = new ArrayList<>();
+    private final List<Runnable> uiSizing = new ArrayList<>();
     private JButton reduceButton;
     private JButton restoreButton;
 
@@ -78,9 +81,22 @@ public final class MixTable extends JPanel {
 
         add(header(), BorderLayout.NORTH);
         add(rowsPanel, BorderLayout.CENTER);
-        setPreferredSize(new Dimension(WIDTH, 0));
+        onUiUpdate(() -> setPreferredSize(new Dimension(width(), 0)));
 
         rebuild();
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        if (uiSizing != null) {
+            uiSizing.forEach(Runnable::run);
+        }
+    }
+
+    private void onUiUpdate(Runnable sizing) {
+        uiSizing.add(sizing);
+        sizing.run();
     }
 
     public MixTableModel model() {
@@ -128,24 +144,27 @@ public final class MixTable extends JPanel {
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
         header.setBackground(ScoreColors.SURFACE);
-        header.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
-        header.setPreferredSize(new Dimension(WIDTH, TrackPanel.HEADER_HEIGHT));
-        header.setMaximumSize(new Dimension(Integer.MAX_VALUE, TrackPanel.HEADER_HEIGHT));
+        onUiUpdate(() -> {
+            header.setBorder(BorderFactory.createEmptyBorder(0, UiSizing.scaled(8), 0, UiSizing.scaled(8)));
+            header.setPreferredSize(new Dimension(width(), TrackPanel.headerHeight()));
+            header.setMaximumSize(new Dimension(Integer.MAX_VALUE, TrackPanel.headerHeight()));
+        });
 
         header.add(reduceRestoreButtons());
-        addTitle(header, "", VISIBLE_WIDTH - REDUCE_BUTTON_WIDTH * 2 + NUMBER_WIDTH);
-        addTitle(header, Texts.get("views.MixTable.soloColumn"), TOGGLE_WIDTH);
-        addTitle(header, Texts.get("views.MixTable.muteColumn"), TOGGLE_WIDTH);
-        addTitle(header, Texts.get("views.MixTable.nameColumn"), NAME_WIDTH);
-        addTitle(header, Texts.get("views.MixTable.portColumn"), PORT_WIDTH);
-        addTitle(header, Texts.get("views.MixTable.channelColumn"), CHANNEL_WIDTH);
-        addTitle(header, Texts.get("views.MixTable.channel2Column"), CHANNEL_WIDTH);
-        addTitle(header, Texts.get("views.MixTable.instrumentColumn"), INSTRUMENT_WIDTH);
-        addTitle(header, MixParameter.VOLUME.label(), LEVEL_WIDTH);
-        addTitle(header, MixParameter.PAN.label(), LEVEL_WIDTH);
+        addTitle(header, "", () -> UiSizing.scaled(VISIBLE_WIDTH) - UiSizing.scaled(REDUCE_BUTTON_WIDTH) * 2
+                + UiSizing.scaled(NUMBER_WIDTH));
+        addTitle(header, Texts.get("views.MixTable.soloColumn"), () -> UiSizing.scaled(TOGGLE_WIDTH));
+        addTitle(header, Texts.get("views.MixTable.muteColumn"), () -> UiSizing.scaled(TOGGLE_WIDTH));
+        addTitle(header, Texts.get("views.MixTable.nameColumn"), () -> UiSizing.scaled(NAME_WIDTH));
+        addTitle(header, Texts.get("views.MixTable.portColumn"), MixTable::portWidth);
+        addTitle(header, Texts.get("views.MixTable.channelColumn"), MixTable::channelWidth);
+        addTitle(header, Texts.get("views.MixTable.channel2Column"), MixTable::channelWidth);
+        addTitle(header, Texts.get("views.MixTable.instrumentColumn"), MixTable::instrumentWidth);
+        addTitle(header, MixParameter.VOLUME.label(), () -> UiSizing.scaled(LEVEL_WIDTH));
+        addTitle(header, MixParameter.PAN.label(), () -> UiSizing.scaled(LEVEL_WIDTH));
         for (MixParameter parameter : List.of(
                 MixParameter.CHORUS, MixParameter.REVERB, MixParameter.PHASER, MixParameter.TREMOLO)) {
-            addTitle(header, Texts.get(ABBREVIATION_KEYS.get(parameter)), PARAMETER_WIDTH);
+            addTitle(header, Texts.get(ABBREVIATION_KEYS.get(parameter)), () -> UiSizing.scaled(PARAMETER_WIDTH));
         }
         return header;
     }
@@ -158,7 +177,7 @@ public final class MixTable extends JPanel {
         restoreButton = flatButton("+", Texts.get("views.MixTable.restoreAll"), model::restoreAllParameters);
         buttons.add(reduceButton);
         buttons.add(restoreButton);
-        buttons.add(Box.createHorizontalStrut(COLUMN_GAP));
+        addGap(buttons);
         return buttons;
     }
 
@@ -168,12 +187,15 @@ public final class MixTable extends JPanel {
         button.setFocusable(false);
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
-        button.setMargin(new Insets(0, 2, 0, 2));
         button.setForeground(ScoreColors.MUTED_INK);
-        button.setFont(button.getFont().deriveFont(Font.BOLD, 11f));
-        Dimension size = new Dimension(REDUCE_BUTTON_WIDTH, TrackPanel.HEADER_HEIGHT);
-        button.setPreferredSize(size);
-        button.setMaximumSize(size);
+        onUiUpdate(() -> {
+            button.setMargin(new Insets(0, UiSizing.scaled(2), 0, UiSizing.scaled(2)));
+            button.setBorder(BorderFactory.createEmptyBorder(0, UiSizing.scaled(2), 0, UiSizing.scaled(2)));
+            button.setFont(button.getFont().deriveFont(Font.BOLD, (float) UiSizing.scaled(11)));
+            Dimension size = new Dimension(UiSizing.scaled(REDUCE_BUTTON_WIDTH), TrackPanel.headerHeight());
+            button.setPreferredSize(size);
+            button.setMaximumSize(size);
+        });
         button.addActionListener(e -> {
             action.run();
             refresh();
@@ -181,22 +203,58 @@ public final class MixTable extends JPanel {
         return button;
     }
 
-    private void addTitle(JPanel header, String text, int width) {
+    private void addTitle(JPanel header, String text, IntSupplier width) {
         JLabel title = title(text, width);
         columnTitleLabels.add(title);
         header.add(title);
-        header.add(Box.createHorizontalStrut(COLUMN_GAP));
+        addGap(header);
     }
 
-    private JLabel title(String text, int width) {
+    private void addGap(JPanel parent) {
+        Box.Filler gap = (Box.Filler) Box.createHorizontalStrut(0);
+        onUiUpdate(() -> gap.changeShape(
+                new Dimension(UiSizing.scaled(COLUMN_GAP), 0),
+                new Dimension(UiSizing.scaled(COLUMN_GAP), 0),
+                new Dimension(UiSizing.scaled(COLUMN_GAP), Short.MAX_VALUE)));
+        parent.add(gap);
+    }
+
+    private JLabel title(String text, IntSupplier width) {
         JLabel title = new JLabel(text);
-        title.setFont(title.getFont().deriveFont(Font.PLAIN, 10f));
         title.setForeground(ScoreColors.MUTED_INK);
-        Dimension size = new Dimension(width, TrackPanel.HEADER_HEIGHT);
-        title.setPreferredSize(size);
-        title.setMaximumSize(size);
-        title.setMinimumSize(size);
+        onUiUpdate(() -> {
+            title.setFont(title.getFont().deriveFont(Font.PLAIN, (float) UiSizing.scaled(10)));
+            Dimension size = new Dimension(width.getAsInt(), TrackPanel.headerHeight());
+            title.setPreferredSize(size);
+            title.setMaximumSize(size);
+            title.setMinimumSize(size);
+        });
         return title;
+    }
+
+    static int width() {
+        return List.of(
+                        UiSizing.scaled(NUMBER_WIDTH), UiSizing.scaled(VISIBLE_WIDTH),
+                        UiSizing.scaled(TOGGLE_WIDTH), UiSizing.scaled(TOGGLE_WIDTH), UiSizing.scaled(NAME_WIDTH),
+                        portWidth(), channelWidth(), channelWidth(), instrumentWidth(),
+                        UiSizing.scaled(LEVEL_WIDTH), UiSizing.scaled(LEVEL_WIDTH),
+                        UiSizing.scaled(PARAMETER_WIDTH), UiSizing.scaled(PARAMETER_WIDTH),
+                        UiSizing.scaled(PARAMETER_WIDTH), UiSizing.scaled(PARAMETER_WIDTH))
+                .stream().mapToInt(Integer::intValue).sum() + COLUMN_WIDTHS.size() * UiSizing.scaled(COLUMN_GAP)
+                + UiSizing.scaled(16);
+    }
+
+    // Preferred widths supplied by Swing already include the look-and-feel scale.
+    static int portWidth() {
+        return spinnerWidth(Channel.CHANNELS_PER_PORT);
+    }
+
+    static int channelWidth() {
+        return spinnerWidth(Channel.CHANNELS_PER_PORT);
+    }
+
+    static int instrumentWidth() {
+        return comboWidth(longestInstrumentName());
     }
 
     private static int spinnerWidth(int maxValue) {

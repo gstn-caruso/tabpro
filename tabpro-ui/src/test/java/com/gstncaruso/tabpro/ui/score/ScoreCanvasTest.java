@@ -1,5 +1,6 @@
 package com.gstncaruso.tabpro.ui.score;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,7 +19,10 @@ import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.Playhead;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -29,13 +33,95 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Isolated;
 
+@Isolated("Changes the global UI scale")
 class ScoreCanvasTest {
 
     private final Editor editor = new Editor(new Score("Test", 120, List.of(
             Track.standardGuitar("Guitarra"), Track.standardBass("Bajo"))));
     private final ScoreCanvas canvas = new ScoreCanvas(editor);
+
+    @Test
+    void givenDoubleUiScale_whenRenderingAndSelectingScoreAt100Percent_thenGeometryAndHitTargetsFollowUiScale()
+            throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            Object previousScale = UIManager.get("laf.scaleFactor");
+            try {
+                UIManager.put("laf.scaleFactor", 1f);
+                Editor scoreEditor = new Editor(new Score("Test", 120, List.of(Track.standardGuitar("Guitarra"))));
+                scoreEditor.moveTo(0, 0, 2);
+                scoreEditor.setFret(7);
+                scoreEditor.moveTo(0, 0, 6);
+                ScoreCanvas normal = new ScoreCanvas(scoreEditor);
+                normal.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+                normal.setZoom(Zoom.whole());
+                ScoreLayout layout = ScoreLayout.of(scoreEditor.score(), 1_000_000);
+                Rectangle noteRegion = layout.staffBeatBounds(0, 0, 0);
+                Rectangle normalInk = renderedInkBounds(normal, noteRegion);
+                assertFalse(normalInk.isEmpty(), "the fixture must paint a real note in the staff");
+                Dimension normalSize = normal.getPreferredSize();
+                int x = centerX(layout.beatBounds(0, 0, 0));
+                int y = layout.stringY(0, 0, 2);
+                press(normal, x, y, false);
+                var selectedAtNormalScale = scoreEditor.cursor();
+                assertEquals(Optional.of(new Note(2, 7)), scoreEditor.currentBeat().noteOn(2));
+                assertEquals(2, selectedAtNormalScale.string());
+                assertEquals(Zoom.whole(), normal.zoom());
+                scoreEditor.moveTo(0, 0, 6);
+
+                UIManager.put("laf.scaleFactor", 2f);
+                ScoreCanvas doubled = new ScoreCanvas(scoreEditor);
+                doubled.setViewMode(ViewMode.SCREEN_HORIZONTAL);
+                doubled.setZoom(Zoom.whole());
+                assertEquals(normal.zoom(), doubled.zoom(), "DPI must not change the musical zoom");
+                Rectangle doubledRegion = new Rectangle(
+                        noteRegion.x * 2, noteRegion.y * 2, noteRegion.width * 2, noteRegion.height * 2);
+                Rectangle doubledInk = renderedInkBounds(doubled, doubledRegion);
+                Dimension doubledSize = doubled.getPreferredSize();
+                press(doubled, x * 2, y * 2, false);
+
+                assertAll("screen presentation at 2x with musical zoom fixed at 100%",
+                        () -> assertEquals(normalSize.width * 2, doubledSize.width, "canvas width"),
+                        () -> assertEquals(normalSize.height * 2, doubledSize.height, "canvas height"),
+                        () -> assertFalse(doubledInk.isEmpty(), "the note must appear in its doubled screen region"),
+                        () -> assertEquals(normalInk.x * 2, doubledInk.x, 2, "note ink x"),
+                        () -> assertEquals(normalInk.y * 2, doubledInk.y, 2, "note ink y"),
+                        () -> assertEquals(normalInk.width * 2, doubledInk.width, 2, "note ink width"),
+                        () -> assertEquals(normalInk.height * 2, doubledInk.height, 2, "note ink height"),
+                        () -> assertEquals(selectedAtNormalScale, scoreEditor.cursor(), "physical 2x click selects the same note"),
+                        () -> assertEquals(Optional.of(new Note(2, 7)), scoreEditor.currentBeat().noteOn(2)),
+                        () -> assertEquals(Zoom.whole(), normal.zoom()),
+                        () -> assertEquals(Zoom.whole(), doubled.zoom()));
+            } finally {
+                UIManager.put("laf.scaleFactor", previousScale);
+            }
+        });
+    }
+
+    private static Rectangle renderedInkBounds(ScoreCanvas target, Rectangle region) {
+        target.setSize(target.getPreferredSize());
+        BufferedImage image = new BufferedImage(target.getWidth(), target.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = image.createGraphics();
+        try {
+            target.paint(graphics);
+        } finally {
+            graphics.dispose();
+        }
+        Rectangle clipped = region.intersection(new Rectangle(0, 0, image.getWidth(), image.getHeight()));
+        Rectangle ink = null;
+        for (int y = clipped.y; y < clipped.y + clipped.height; y++) {
+            for (int x = clipped.x; x < clipped.x + clipped.width; x++) {
+                if (image.getRGB(x, y) == ScoreColors.INK.getRGB()) {
+                    Rectangle pixel = new Rectangle(x, y, 1, 1);
+                    ink = ink == null ? pixel : ink.union(pixel);
+                }
+            }
+        }
+        return ink == null ? new Rectangle() : ink;
+    }
 
     @Test
     void theAccessibleNameIsAvailableInEnglish() {

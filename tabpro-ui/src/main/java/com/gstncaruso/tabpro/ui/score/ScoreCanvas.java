@@ -13,6 +13,7 @@ import com.gstncaruso.tabpro.ui.page.PageSetup;
 import com.gstncaruso.tabpro.ui.tab.FretContextMenu;
 import com.gstncaruso.tabpro.ui.tab.FretDigits;
 import com.gstncaruso.tabpro.ui.tab.KeyboardEditing;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -283,7 +284,13 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
 
     @Override
     protected void paintComponent(Graphics g) {
-        PageScorePainter.paint((Graphics2D) g, editor.score(), editor.cursor(), playhead, selection(), viewport());
+        Graphics2D screen = (Graphics2D) g.create();
+        try {
+            screen.scale(UiSizing.scaleFactor(), UiSizing.scaleFactor());
+            PageScorePainter.paint(screen, editor.score(), editor.cursor(), playhead, selection(), viewport());
+        } finally {
+            screen.dispose();
+        }
     }
 
     public void showPlayhead(Playhead playhead) {
@@ -293,13 +300,14 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
             return;
         }
         playhead.on(editor.cursor().track())
-                .ifPresent(position -> scrollRectToVisible(PageScorePainter.boundsOf(
-                        editor.score(), viewport(), position.track(), position.measure(), position.beat())));
+                .ifPresent(position -> scrollRectToVisible(screenBoundsOf(
+                        position.track(), position.measure(), position.beat())));
     }
 
     @Override
     public Dimension getPreferredSize() {
-        return PageScorePainter.canvasSize(editor.score(), viewport());
+        Dimension size = PageScorePainter.canvasSize(editor.score(), viewport());
+        return new Dimension(UiSizing.scaled(size.width), UiSizing.scaled(size.height));
     }
 
     @Override
@@ -309,7 +317,7 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
 
     @Override
     public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-        return ScoreLayout.STRING_SPACING * 2;
+        return UiSizing.scaled(ScoreLayout.STRING_SPACING * 2);
     }
 
     @Override
@@ -328,7 +336,8 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
     }
 
     private Optional<ScoreLayout.Hit> moveCursorTo(int x, int y) {
-        Optional<ScoreLayout.Hit> hit = PageScorePainter.hitTest(editor.score(), viewport(), x, y);
+        Optional<ScoreLayout.Hit> hit = PageScorePainter.hitTest(
+                editor.score(), viewport(), unscaled(x), unscaled(y));
         hit.ifPresent(h -> {
             if (h.track() != editor.cursor().track()) {
                 editor.selectTrack(h.track());
@@ -352,7 +361,7 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
     }
 
     private void extendSelectionTo(int x, int y) {
-        PageScorePainter.hitTest(editor.score(), viewport(), x, y).ifPresent(hit -> {
+        PageScorePainter.hitTest(editor.score(), viewport(), unscaled(x), unscaled(y)).ifPresent(hit -> {
             if (hit.track() != editor.cursor().track()) {
                 return;
             }
@@ -383,16 +392,20 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
     }
 
     private Rectangle cursorBounds(Cursor cursor) {
-        return PageScorePainter.boundsOf(
-                editor.score(), viewport(), cursor.track(), cursor.measure(), cursor.beat());
+        return screenBoundsOf(cursor.track(), cursor.measure(), cursor.beat());
     }
 
     private Rectangle selectionBounds(Selection selection) {
-        Rectangle from = PageScorePainter.boundsOf(
-                editor.score(), viewport(), selection.track(), selection.fromMeasure(), selection.fromBeat());
-        Rectangle to = PageScorePainter.boundsOf(
-                editor.score(), viewport(), selection.track(), selection.toMeasure(), selection.toBeat());
+        Rectangle from = screenBoundsOf(selection.track(), selection.fromMeasure(), selection.fromBeat());
+        Rectangle to = screenBoundsOf(selection.track(), selection.toMeasure(), selection.toBeat());
         return from.union(to);
+    }
+
+    private Rectangle screenBoundsOf(int track, int measure, int beat) {
+        Rectangle bounds = PageScorePainter.boundsOf(editor.score(), viewport(), track, measure, beat);
+        return new Rectangle(
+                UiSizing.scaled(bounds.x), UiSizing.scaled(bounds.y),
+                UiSizing.scaled(bounds.width), UiSizing.scaled(bounds.height));
     }
 
     private ScoreViewport viewport() {
@@ -406,6 +419,10 @@ public class ScoreCanvas extends JComponent implements Scrollable, AccessibleCon
     }
 
     private int viewportWidth() {
-        return getWidth() == 0 ? FALLBACK_WIDTH : getWidth();
+        return unscaled(getWidth() == 0 ? FALLBACK_WIDTH : getWidth());
+    }
+
+    private int unscaled(int pixels) {
+        return Math.round(pixels / UiSizing.scaleFactor());
     }
 }
