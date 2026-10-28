@@ -1,3 +1,9 @@
+## [0.61.3](https://github.com/gstn-caruso/tabpro/compare/v0.61.2...v0.61.3) (2026-10-28)
+
+### Bug Fixes
+
+* add pause and resume playback controls ([#240](https://github.com/gstn-caruso/tabpro/issues/240)) ([9f7973b](https://github.com/gstn-caruso/tabpro/commit/9f7973b8a0d5bc3ec6921596fabb94ca6d8b07c9))
+
 ## [0.61.2](https://github.com/gstn-caruso/tabpro/compare/v0.61.1...v0.61.2) (2026-10-28)
 
 ### Bug Fixes
