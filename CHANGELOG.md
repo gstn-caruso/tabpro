@@ -1,3 +1,9 @@
+## [0.61.4](https://github.com/gstn-caruso/tabpro/compare/v0.61.3...v0.61.4) (2026-10-29)
+
+### Bug Fixes
+
+* refine mixer controls to match Guitar Pro 5 ([#242](https://github.com/gstn-caruso/tabpro/issues/242)) ([3f56a18](https://github.com/gstn-caruso/tabpro/commit/3f56a18e88776bb39a26c3c9689dcb0fe232864d))
+
 ## [0.61.3](https://github.com/gstn-caruso/tabpro/compare/v0.61.2...v0.61.3) (2026-10-28)
 
 ### Bug Fixes
