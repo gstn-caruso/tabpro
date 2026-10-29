@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.files.ScoreFiles;
 import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.Score;
+import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.core.playback.PlaybackListener;
 import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.core.playback.Timeline;
@@ -254,12 +255,18 @@ final class AuditSupport {
         private volatile boolean stopCalled;
         private volatile boolean playing;
         private volatile Timeline lastTimeline;
+        private PlaybackListener listener;
 
         @Override
         public void play(Timeline timeline, PlaybackListener listener) {
             playCalled = true;
             lastTimeline = timeline;
             playing = true;
+            this.listener = listener;
+        }
+
+        void beatStarted(BeatPosition position) {
+            listener.beatStarted(position);
         }
 
         @Override

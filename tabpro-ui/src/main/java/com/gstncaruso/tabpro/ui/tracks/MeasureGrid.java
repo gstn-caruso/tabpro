@@ -149,6 +149,13 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
 
     public void showPlayingMeasure(OptionalInt measure) {
         this.playingMeasure = measure;
+        measure.ifPresent(index -> {
+            if (!isOutside(editor.score(), index)) {
+                Rectangle visible = getVisibleRect();
+                Rectangle cell = cellBounds(0, index);
+                scrollRectToVisible(new Rectangle(cell.x, visible.y, cell.width, visible.height));
+            }
+        });
         repaint();
     }
 

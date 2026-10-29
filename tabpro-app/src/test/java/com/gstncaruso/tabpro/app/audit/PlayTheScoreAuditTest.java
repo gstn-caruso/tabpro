@@ -5,6 +5,7 @@ import static com.gstncaruso.tabpro.app.audit.AuditSupport.editorWithANote;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findComponent;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.findMenuItem;
 import static com.gstncaruso.tabpro.app.audit.AuditSupport.pressKey;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -12,14 +13,21 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.playback.BeatPosition;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import com.gstncaruso.tabpro.ui.score.ScoreCanvas;
+import com.gstncaruso.tabpro.ui.tracks.MeasureGrid;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.Optional;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Tag;
@@ -72,6 +80,119 @@ class PlayTheScoreAuditTest {
                 assertTrue(player.isPlaying(), "the third Space resumes playback");
                 assertPlaybackControls(item, button, "Pausar");
                 assertArrayEquals(icons[1], iconPixels(button), "playing shows the pause icon again");
+            });
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
+    void givenPlayingMeasureManuallyHidden_whenPaused_thenViewportStaysAndPlayheadIsRetained() throws Exception {
+        Editor editor = AuditSupport.editorWithMeasures(63);
+        editor.setFret(3);
+        AuditSupport.RecordingPlayer player = new AuditSupport.RecordingPlayer();
+        MainFrame frame = AuditSupport.newFrame(editor, player);
+        try {
+            BeatPosition audibleBeat = new BeatPosition(0, 0, 0);
+            SwingUtilities.invokeAndWait(() -> {
+                frame.setSize(900, 650);
+                frame.validate();
+                frame.transport().toggle();
+                player.beatStarted(audibleBeat);
+            });
+            // The real Transport dispatches the player's beat onto the EDT before this assertion.
+            SwingUtilities.invokeAndWait(() -> {
+                assertTrue(frame.transport().isPlaying(), "setup must start playback through the real transport");
+                assertEquals(Optional.of(audibleBeat), frame.transport().playingOn(0));
+                MeasureGrid grid = findComponent(frame.getContentPane(), MeasureGrid.class);
+                assertNotNull(grid);
+                JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, grid);
+                assertNotNull(viewport);
+                Rectangle playingCell = SwingUtilities.convertRectangle(
+                        grid, grid.cellBounds(0, audibleBeat.measure()), viewport.getView());
+                assertTrue(viewport.getViewRect().contains(playingCell),
+                        "setup must initially expose the audible measure in the real mixer viewport");
+                JScrollPane pane = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, grid);
+                pane.getHorizontalScrollBar().setValue(pane.getHorizontalScrollBar().getMaximum());
+                Point manuallyScrolled = viewport.getViewPosition();
+                assertTrue(manuallyScrolled.x >= playingCell.x + playingCell.width,
+                        "manual horizontal scrolling must hide the audible measure before pausing");
+
+                frame.transport().toggle();
+
+                assertAll(
+                        () -> assertTrue(frame.transport().isPaused(), "the transport must remain paused"),
+                        () -> assertFalse(frame.transport().isPlaying(), "no audio plays while paused"),
+                        () -> assertEquals(Optional.of(audibleBeat), frame.transport().playingOn(0),
+                                "pausing must retain the playhead for resuming"),
+                        () -> assertEquals(manuallyScrolled, viewport.getViewPosition(),
+                                "pausing must not pull the manually scrolled grid back to the retained playhead"));
+            });
+        } finally {
+            AuditSupport.dispose(frame);
+        }
+    }
+
+    @Test
+    void givenPausedPlayheadManuallyHidden_whenResumed_thenRetainedMeasureIsFullyVisible() throws Exception {
+        Editor editor = AuditSupport.editorWithMeasures(63);
+        editor.setFret(3);
+        AuditSupport.RecordingPlayer player = new AuditSupport.RecordingPlayer();
+        MainFrame frame = AuditSupport.newFrame(editor, player);
+        try {
+            BeatPosition audibleBeat = new BeatPosition(0, 0, 0);
+            SwingUtilities.invokeAndWait(() -> {
+                frame.setSize(900, 650);
+                frame.validate();
+                frame.transport().toggle();
+                player.beatStarted(audibleBeat);
+            });
+            SwingUtilities.invokeAndWait(() -> {
+                assertTrue(frame.transport().isPlaying(), "setup must start playback through the real transport");
+                assertEquals(Optional.of(audibleBeat), frame.transport().playingOn(0));
+                MeasureGrid grid = findComponent(frame.getContentPane(), MeasureGrid.class);
+                assertNotNull(grid);
+                JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, grid);
+                assertNotNull(viewport);
+                Rectangle playingCell = SwingUtilities.convertRectangle(
+                        grid, grid.cellBounds(0, audibleBeat.measure()), viewport.getView());
+                assertTrue(viewport.getViewRect().contains(playingCell),
+                        "setup must initially expose the whole audible measure");
+                var cursorBefore = editor.cursor();
+                var caretBefore = grid.caret();
+
+                frame.transport().toggle();
+                assertTrue(frame.transport().isPaused(), "manual scrolling happens after pausing");
+                assertFalse(frame.transport().isPlaying());
+                assertEquals(Optional.of(audibleBeat), frame.transport().playingOn(0));
+                JScrollPane pane = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, grid);
+                pane.getHorizontalScrollBar().setValue(pane.getHorizontalScrollBar().getMaximum());
+                Point manuallyScrolled = viewport.getViewPosition();
+                assertTrue(manuallyScrolled.x >= playingCell.x + playingCell.width,
+                        "manual scrolling while paused must hide the retained measure");
+
+                frame.transport().toggleMetronome();
+
+                assertAll(
+                        () -> assertTrue(frame.transport().isPaused()),
+                        () -> assertFalse(frame.transport().isPlaying()),
+                        () -> assertEquals(Optional.of(audibleBeat), frame.transport().playingOn(0)),
+                        () -> assertEquals(manuallyScrolled, viewport.getViewPosition(),
+                                "a metronome change while paused must not scroll to the retained playhead"));
+
+                frame.transport().toggle();
+
+                assertAll(
+                        () -> assertTrue(frame.transport().isPlaying(), "resuming must restart playback"),
+                        () -> assertFalse(frame.transport().isPaused()),
+                        () -> assertEquals(Optional.of(audibleBeat), frame.transport().playingOn(0),
+                                "resuming must recover the same retained beat without another beat notification"),
+                        () -> assertTrue(viewport.getViewRect().contains(playingCell),
+                                "resuming must automatically expose the whole retained audible measure"),
+                        () -> assertEquals(manuallyScrolled.y, viewport.getViewPosition().y,
+                                "following playback must not move the grid vertically"),
+                        () -> assertEquals(cursorBefore, editor.cursor(), "following must not move the editor cursor"),
+                        () -> assertEquals(caretBefore, grid.caret(), "following must not move the grid caret"));
             });
         } finally {
             AuditSupport.dispose(frame);
