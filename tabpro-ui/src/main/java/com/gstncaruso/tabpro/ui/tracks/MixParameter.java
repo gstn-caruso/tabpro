@@ -30,6 +30,11 @@ public enum MixParameter {
         return reader.applyAsInt(track.channel());
     }
 
+    int gp5Number(int midiValue) {
+        int level = (midiValue + 1) / 8;
+        return this == PAN ? level - 8 : level;
+    }
+
     public void applyTo(Editor editor, int trackIndex, int value) {
         setter.set(editor, trackIndex, value);
     }
