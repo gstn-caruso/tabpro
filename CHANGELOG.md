@@ -1,3 +1,9 @@
+## [0.61.5](https://github.com/gstn-caruso/tabpro/compare/v0.61.4...v0.61.5) (2026-10-29)
+
+### Bug Fixes
+
+* keep measure grid following playback ([#243](https://github.com/gstn-caruso/tabpro/issues/243)) ([5f23716](https://github.com/gstn-caruso/tabpro/commit/5f237168a0ea8b27c2c15e35d044146cabf0f019))
+
 ## [0.61.4](https://github.com/gstn-caruso/tabpro/compare/v0.61.3...v0.61.4) (2026-10-29)
 
 ### Bug Fixes
