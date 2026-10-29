@@ -198,7 +198,9 @@ public final class MainFrame extends JFrame {
                 BorderFactory.createEmptyBorder(4, 8, 4, 8)));
         transport.addListener(() -> {
             canvas.showPlayhead(transport.playhead());
-            trackPanel.showPlayingMeasure(transport.playhead().measure());
+            if (transport.isPlaying() || transport.playhead().measure().isEmpty()) {
+                trackPanel.showPlayingMeasure(transport.playhead().measure());
+            }
             beatViews.showPlayhead(transport.playhead());
             updateTitle();
             updateStepCommandLabels();
