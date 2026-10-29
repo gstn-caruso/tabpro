@@ -181,6 +181,9 @@ public final class MixTableRow extends JPanel {
     }
 
     private void levelSlider(LevelSlider slider, MixParameter parameter) {
+        onUiUpdate(() -> slider.setFont(javax.swing.UIManager.getFont("Label.font").deriveFont(Font.PLAIN, (float) UiSizing.scaled(10))));
+        slider.displayValuesWith(parameter::gp5Number);
+        slider.useGp5Groove();
         slider.onUserChange(() -> parameter.applyTo(editor, trackIndex, slider.getValue()));
     }
 

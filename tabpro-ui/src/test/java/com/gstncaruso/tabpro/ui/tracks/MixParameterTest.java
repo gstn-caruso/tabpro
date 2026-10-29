@@ -8,8 +8,17 @@ import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class MixParameterTest {
+
+    @ParameterizedTest
+    @CsvSource({"VOLUME, 100, 12", "PAN, 60, -1", "PAN, 63, 0", "PAN, 68, 0"})
+    void givenIntermediateMidiLevels_whenShownAsGp5Numbers_thenExistingGuitarProStepsAreUsed(
+            MixParameter parameter, int midiValue, int expectedNumber) {
+        assertEquals(expectedNumber, parameter.gp5Number(midiValue));
+    }
 
     @Test
     void everyLabelIsAvailableInEnglish() {

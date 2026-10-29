@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.ui.tracks;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -14,6 +15,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.function.IntUnaryOperator;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleValue;
@@ -26,7 +28,7 @@ import javax.swing.UIManager;
 
 public final class LevelSlider extends JComponent implements AccessibleControl {
 
-    private static final Color BADGE_BACKGROUND = ScoreColors.PAGE_PAPER;
+    private static final Color BADGE_BACKGROUND = new Color(192, 192, 192);
     private static final Color BADGE_TEXT = ScoreColors.PAGE_INK;
 
     private final int min;
@@ -34,9 +36,11 @@ public final class LevelSlider extends JComponent implements AccessibleControl {
     private final Color fillColor;
     private final Color trackColor;
     private int value;
+    private IntUnaryOperator displayValue = value -> value;
     private Runnable onUserChange = () -> {
     };
     private boolean showsFocusRing;
+    private boolean gp5Groove;
 
     public LevelSlider(int min, int max, int value, Color fillColor, Color trackColor) {
         this.min = min;
@@ -78,14 +82,24 @@ public final class LevelSlider extends JComponent implements AccessibleControl {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         int width = getWidth();
         int height = getHeight();
-        int trackHeight = Math.max(2, height / 3);
+        int trackHeight = gp5Groove ? UiSizing.scaled(6) : Math.max(2, height / 3);
         int trackY = (height - trackHeight) / 2;
         int fillWidth = (int) Math.round((width - 1) * fraction());
 
-        g.setColor(trackColor);
-        g.fillRect(0, trackY, width, trackHeight);
-        g.setColor(fillColor);
-        g.fillRect(0, trackY, fillWidth, trackHeight);
+        if (gp5Groove) {
+            g.setColor(Color.getHSBColor((float) ((1 - fraction()) / 3), 0.85f, 0.88f));
+            g.fillRect(0, trackY, width, trackHeight);
+            int bevel = UiSizing.scaled(1);
+            g.setColor(new Color(96, 96, 96));
+            g.fillRect(0, trackY, width, bevel);
+            g.setColor(new Color(240, 240, 240));
+            g.fillRect(0, trackY + trackHeight - bevel, width, bevel);
+        } else {
+            g.setColor(trackColor);
+            g.fillRect(0, trackY, width, trackHeight);
+            g.setColor(fillColor);
+            g.fillRect(0, trackY, fillWidth, trackHeight);
+        }
 
         paintBadge(g, width, height);
 
@@ -96,18 +110,24 @@ public final class LevelSlider extends JComponent implements AccessibleControl {
     }
 
     private void paintBadge(Graphics2D g, int width, int height) {
-        String text = String.valueOf(value);
+        String text = String.valueOf(displayValue.applyAsInt(value));
         FontMetrics metrics = g.getFontMetrics();
-        int badgeWidth = metrics.stringWidth(text) + 10;
-        int badgeHeight = height - 2;
+        int badgeWidth = Math.max(UiSizing.scaled(17), metrics.stringWidth(text) + UiSizing.scaled(4));
+        int badgeHeight = Math.max(UiSizing.scaled(15), metrics.getHeight() + UiSizing.scaled(2));
         int centerX = (int) Math.round((width - 1) * fraction());
         int badgeX = Math.max(0, Math.min(width - badgeWidth, centerX - badgeWidth / 2));
         int badgeY = (height - badgeHeight) / 2;
 
         g.setColor(BADGE_BACKGROUND);
         g.fillRect(badgeX, badgeY, badgeWidth, badgeHeight);
+        int bevel = UiSizing.scaled(1);
+        g.setColor(new Color(240, 240, 240));
+        g.fillRect(badgeX, badgeY, badgeWidth, bevel);
+        g.fillRect(badgeX, badgeY, bevel, badgeHeight);
+        g.setColor(new Color(96, 96, 96));
+        g.fillRect(badgeX, badgeY + badgeHeight - bevel, badgeWidth, bevel);
+        g.fillRect(badgeX + badgeWidth - bevel, badgeY, bevel, badgeHeight);
         g.setColor(BADGE_TEXT);
-        g.drawRect(badgeX, badgeY, badgeWidth - 1, badgeHeight - 1);
         int textX = badgeX + (badgeWidth - metrics.stringWidth(text)) / 2;
         int textY = badgeY + (badgeHeight + metrics.getAscent() - metrics.getDescent()) / 2;
         g.drawString(text, textX, textY);
@@ -187,6 +207,16 @@ public final class LevelSlider extends JComponent implements AccessibleControl {
             setToolTipText(String.valueOf(this.value));
             repaint();
         }
+    }
+
+    void useGp5Groove() {
+        gp5Groove = true;
+        repaint();
+    }
+
+    void displayValuesWith(IntUnaryOperator displayValue) {
+        this.displayValue = displayValue;
+        repaint();
     }
 
     public void onUserChange(Runnable listener) {
