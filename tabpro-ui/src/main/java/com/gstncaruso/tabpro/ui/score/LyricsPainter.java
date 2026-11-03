@@ -63,7 +63,7 @@ final class LyricsPainter {
         int y = layout.tabBottom(trackIndex, measureIndex) + FIRST_LINE_GAP + lineIndex * LINE_HEIGHT;
 
         g.setFont(ScoreFonts.LYRICS_FONT);
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(syllable, centerX - metrics.stringWidth(syllable) / 2, y);
     }

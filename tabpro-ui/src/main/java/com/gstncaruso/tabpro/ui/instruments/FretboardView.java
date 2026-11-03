@@ -6,7 +6,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.notation.PitchName;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
-import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
@@ -65,7 +65,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
 
     public FretboardView() {
         setOpaque(true);
-        setBackground(ScoreColors.SURFACE);
+        setBackground(Palette.panel());
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setPreferredSize(new Dimension(0, UiSizing.scaled(PREFERRED_HEIGHT)));
         setMinimumSize(new Dimension(0, UiSizing.scaled(PREFERRED_HEIGHT)));
@@ -75,6 +75,12 @@ public final class FretboardView extends JComponent implements AccessibleControl
         installKeyboardShortcuts();
         installFocusRing();
         updateCaretAccessibleDescription();
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        setBackground(Palette.panel());
     }
 
     private void updateCaretAccessibleDescription() {
@@ -330,7 +336,7 @@ public final class FretboardView extends JComponent implements AccessibleControl
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        g.setColor(ScoreColors.SURFACE);
+        g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
 
         withHandedTransform(g, gg -> {

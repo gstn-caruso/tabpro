@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -57,7 +58,7 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
         this.caret = new Cell(editor.cursor().track(), editor.cursor().measure());
         this.cursorCellArea = cellBounds(editor.cursor().track(), editor.cursor().measure());
         setOpaque(true);
-        setBackground(ScoreColors.SURFACE);
+        setBackground(Palette.panel());
         setToolTipText(Texts.get("views.MeasureGrid.name"));
         getAccessibleContext().setAccessibleName(Texts.get("views.MeasureGrid.name"));
         addMouseListener(new MouseAdapter() {
@@ -207,7 +208,7 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         Score score = editor.score();
 
-        g.setColor(ScoreColors.SURFACE);
+        g.setColor(Palette.panel());
         g.fillRect(0, 0, getWidth(), getHeight());
 
         playingMeasure.ifPresent(measure -> tintPlayingColumn(g, score, measure));
@@ -250,7 +251,7 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
             return;
         }
         Rectangle cell = cellBounds(cursor.track(), cursor.measure());
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         g.setStroke(new BasicStroke(UiSizing.scaled(1)));
         g.drawRect(cell.x + UiSizing.scaled(1), cell.y + UiSizing.scaled(1),
                 cell.width - UiSizing.scaled(3), cell.height - UiSizing.scaled(3));
@@ -273,7 +274,7 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
 
     private void paintMeasureNumbers(Graphics2D g, Score score) {
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, UiSizing.scaled(9)));
-        g.setColor(ScoreColors.MUTED_INK);
+        g.setColor(Palette.mutedText());
         int step = numberStep(score.measureCount(), g.getFontMetrics());
         for (int measure = 0; measure < score.measureCount(); measure++) {
             if (measure == 0 || (measure + 1) % step == 0) {
@@ -304,7 +305,7 @@ public class MeasureGrid extends JComponent implements AccessibleControl {
             if (measure >= track.measureCount()) {
                 continue;
             }
-            g.setColor(selected ? ScoreColors.SURFACE_HIGHLIGHT : ScoreColors.SURFACE);
+            g.setColor(selected ? Palette.raisedPanel() : Palette.panel());
             g.fillRect(cell.x + UiSizing.scaled(1), cell.y + UiSizing.scaled(1),
                     cell.width - UiSizing.scaled(2), cell.height - UiSizing.scaled(2));
             g.setColor(ScoreColors.BORDER);

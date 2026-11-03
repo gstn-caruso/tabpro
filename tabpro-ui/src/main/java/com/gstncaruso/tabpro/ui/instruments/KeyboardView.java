@@ -6,7 +6,7 @@ import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.core.notation.PitchName;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
-import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -66,7 +66,7 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
 
     public KeyboardView() {
         setOpaque(true);
-        setBackground(ScoreColors.SURFACE);
+        setBackground(Palette.panel());
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setPreferredSize(new Dimension(0, UiSizing.scaled(PREFERRED_HEIGHT)));
         setMinimumSize(new Dimension(0, UiSizing.scaled(PREFERRED_HEIGHT)));
@@ -76,6 +76,12 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
         installKeyboardShortcuts();
         installFocusRing();
         updateCaretAccessibleDescription();
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        setBackground(Palette.panel());
     }
 
     private void updateCaretAccessibleDescription() {
@@ -264,7 +270,7 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
     protected void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D) graphics;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        g.setColor(ScoreColors.SURFACE);
+        g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
 
         KeyMarks marks = currentMarks();

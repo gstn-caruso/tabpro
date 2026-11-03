@@ -6,8 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.formdev.flatlaf.FlatSystemProperties;
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
 
@@ -20,9 +25,43 @@ class ThemeAccessibilityTest {
 
     private final Theme theme = new Theme();
 
+    private LookAndFeel originalLaf;
+    private Map<Object, Object> originalOverrides;
+    private String originalAnimation;
+
+    @BeforeEach
+    void rememberUiState() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            originalLaf = UIManager.getLookAndFeel();
+            originalOverrides = uiOverrides();
+            originalAnimation = System.getProperty(FlatSystemProperties.ANIMATION);
+        });
+    }
+
     @AfterEach
-    void restoreAnimations() {
-        System.clearProperty(FlatSystemProperties.ANIMATION);
+    void restoreUiState() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            uiOverrides().keySet().forEach(key -> UIManager.put(key, null));
+            try {
+                UIManager.setLookAndFeel(originalLaf);
+            } catch (javax.swing.UnsupportedLookAndFeelException exception) {
+                throw new AssertionError("Cannot restore the original LookAndFeel", exception);
+            } finally {
+                originalOverrides.forEach(UIManager::put);
+                if (originalAnimation == null) {
+                    System.clearProperty(FlatSystemProperties.ANIMATION);
+                } else {
+                    System.setProperty(FlatSystemProperties.ANIMATION, originalAnimation);
+                }
+            }
+        });
+    }
+
+    private static Map<Object, Object> uiOverrides() {
+        Map<Object, Object> overrides = new HashMap<>();
+        // Hashtable.forEach visits developer overrides, not the merged LookAndFeel defaults.
+        UIManager.getDefaults().forEach(overrides::put);
+        return overrides;
     }
 
     @Test

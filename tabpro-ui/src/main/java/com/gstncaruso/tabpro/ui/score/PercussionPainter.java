@@ -35,10 +35,10 @@ final class PercussionPainter {
         int centerX = bounds.x + bounds.width / 2;
         int y = layout.stringY(trackIndex, measureIndex, note.string());
 
-        g.setColor(ScoreColors.BACKGROUND);
+        g.setColor(ScoreColors.background());
         g.fillRect(centerX - RADIUS - 2, y - RADIUS - 2, (RADIUS + 2) * 2, (RADIUS + 2) * 2);
 
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         switch (shapeFor(note.fret())) {
             case CROSS -> paintGlyphNotehead(g, centerX, y, MusicFont.noteheadXBlack());
             case DIAMOND -> paintGlyphNotehead(g, centerX, y, MusicFont.noteheadDiamondBlack());

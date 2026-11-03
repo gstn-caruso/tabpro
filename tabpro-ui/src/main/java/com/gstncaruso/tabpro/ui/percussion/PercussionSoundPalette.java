@@ -3,7 +3,7 @@ package com.gstncaruso.tabpro.ui.percussion;
 import com.gstncaruso.tabpro.core.model.PercussionKit;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
-import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -31,8 +31,8 @@ public final class PercussionSoundPalette extends JPanel {
         list.getAccessibleContext().setAccessibleName(Texts.get("views.PercussionSoundPalette.sounds"));
         list.setToolTipText(Texts.get("views.PercussionSoundPalette.sounds"));
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list.setBackground(ScoreColors.SURFACE);
-        list.setForeground(ScoreColors.INK);
+        list.setBackground(Palette.panel());
+        list.setForeground(Palette.text());
         SoundRenderer renderer = new SoundRenderer();
         list.setCellRenderer(renderer);
         list.setLayoutOrientation(JList.VERTICAL_WRAP);
@@ -59,6 +59,15 @@ public final class PercussionSoundPalette extends JPanel {
         JScrollPane scroll = new JScrollPane(list);
         scroll.setBorder(BorderFactory.createEmptyBorder());
         add(scroll, BorderLayout.CENTER);
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        if (list != null) {
+            list.setBackground(Palette.panel());
+            list.setForeground(Palette.text());
+        }
     }
 
     JList<Integer> soundList() {
@@ -90,8 +99,8 @@ public final class PercussionSoundPalette extends JPanel {
             int sound = (Integer) value;
             setText(sound + " — " + Labels.percussionSoundName(sound).orElse("?"));
             if (!isSelected) {
-                setBackground(ScoreColors.SURFACE);
-                setForeground(ScoreColors.INK);
+                setBackground(Palette.panel());
+                setForeground(Palette.text());
             }
             return this;
         }

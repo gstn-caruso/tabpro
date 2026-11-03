@@ -10,7 +10,10 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.plaf.ColorUIResource;
 
 public final class Theme implements ThemeSwitch {
 
@@ -45,6 +48,29 @@ public final class Theme implements ThemeSwitch {
         Theme theme = new Theme();
         theme.apply(DARK);
         return theme;
+    }
+
+    public AutoCloseable followSystem(SystemAppearance appearance) {
+        AtomicBoolean closed = new AtomicBoolean();
+        AutoCloseable observation = appearance.observe(name -> {
+            Runnable update = () -> {
+                if (!closed.get()) {
+                    apply(name);
+                    UIManager.put("defaultFont", interfaceFont());
+                    FlatLaf.updateUI();
+                }
+            };
+            if (SwingUtilities.isEventDispatchThread()) {
+                update.run();
+            } else {
+                SwingUtilities.invokeLater(update);
+            }
+        });
+        return () -> {
+            if (closed.compareAndSet(false, true)) {
+                observation.close();
+            }
+        };
     }
 
     @Override
@@ -116,7 +142,7 @@ public final class Theme implements ThemeSwitch {
         UIManager.put("tabpro.ink", palette.ink());
         UIManager.put("tabpro.accent", palette.accent());
         UIManager.put("tabpro.warning", WARNING);
-        UIManager.put("Panel.background", palette.panel());
+        UIManager.put("Panel.background", new ColorUIResource(palette.panel()));
         UIManager.put("ToolBar.background", palette.panel());
         UIManager.put("MenuBar.background", palette.panel());
         UIManager.put("Component.borderColor", palette.separator());

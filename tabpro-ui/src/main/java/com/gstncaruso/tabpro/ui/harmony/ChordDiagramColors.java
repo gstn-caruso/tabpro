@@ -1,6 +1,7 @@
 package com.gstncaruso.tabpro.ui.harmony;
 
 import java.awt.Color;
+import javax.swing.UIManager;
 
 final class ChordDiagramColors {
 
@@ -13,6 +14,27 @@ final class ChordDiagramColors {
     static final Color OPEN_STRING = new Color(0x63BD63);
     static final Color MUTED_STRING = new Color(0xE05C5C);
     static final Color LABEL = new Color(0xD7D9DD);
+
+    static Color background() {
+        return themed("tabpro.panel", BACKGROUND);
+    }
+
+    static Color grid() {
+        return themed("tabpro.separator", GRID);
+    }
+
+    static Color nut() {
+        return themed("tabpro.text", NUT);
+    }
+
+    static Color label() {
+        return themed("tabpro.text", LABEL);
+    }
+
+    private static Color themed(String key, Color fallback) {
+        Color color = UIManager.getColor(key);
+        return color == null ? fallback : color;
+    }
 
     private ChordDiagramColors() {
     }

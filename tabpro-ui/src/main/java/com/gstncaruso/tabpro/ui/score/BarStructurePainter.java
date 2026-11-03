@@ -77,7 +77,7 @@ final class BarStructurePainter {
     }
 
     private static void paintRepeatBracket(Graphics2D g, int x, int top, int bottom, boolean opening) {
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         g.setStroke(new BasicStroke(2.4f));
         int barX = opening ? x + 3 : x - 3;
         g.draw(new Line2D.Double(barX, top, barX, bottom));
@@ -92,7 +92,7 @@ final class BarStructurePainter {
     }
 
     private static void paintRepeatCount(Graphics2D g, int rightEdge, int top, int times) {
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setFont(ScoreFonts.REPEAT_COUNT_FONT);
         String label = repeatLabel(times);
         FontMetrics metrics = g.getFontMetrics();
@@ -104,7 +104,7 @@ final class BarStructurePainter {
     }
 
     private static void paintDoubleBar(Graphics2D g, int x, int top, int bottom) {
-        g.setColor(ScoreColors.BAR_LINE);
+        g.setColor(ScoreColors.barLine());
         g.setStroke(new BasicStroke(1f));
         g.draw(new Line2D.Double(x - 4, top, x - 4, bottom));
         g.setStroke(new BasicStroke(2f));
@@ -117,7 +117,7 @@ final class BarStructurePainter {
 
     private static void paintAlternateEnding(Graphics2D g, int left, int right, int staffTop, List<Integer> passes) {
         int y = staffTop - 14;
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         g.setStroke(new BasicStroke(1.3f));
         g.draw(new Line2D.Double(left, y + 8, left, y));
         g.draw(new Line2D.Double(left, y, right - 4, y));
@@ -142,8 +142,9 @@ final class BarStructurePainter {
         int squareTop = textBaseline - MARKER_SQUARE_HEIGHT;
         g.setColor(markerColor);
         g.fillRect(x, squareTop, MARKER_SQUARE_WIDTH, MARKER_SQUARE_HEIGHT);
-        if (Contrast.ratio(markerColor, ScoreColors.BACKGROUND) < Contrast.GRAPHICAL_MINIMUM_RATIO) {
-            g.setColor(ScoreColors.INK);
+        Color background = g instanceof PaperGraphics ? ScoreColors.PAGE_PAPER : ScoreColors.background();
+        if (Contrast.ratio(markerColor, background) < Contrast.GRAPHICAL_MINIMUM_RATIO) {
+            g.setColor(ScoreColors.ink());
             g.drawRect(x, squareTop, MARKER_SQUARE_WIDTH - 1, MARKER_SQUARE_HEIGHT - 1);
         }
         int squareToTextGap = metrics.getHeight() / 4;
@@ -169,7 +170,7 @@ final class BarStructurePainter {
     }
 
     private static void paintOneCoda(Graphics2D g, int centerX, int y) {
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         g.setFont(MusicFont.sizedTo(ScoreLayout.STAFF_LINE_SPACING));
         String glyph = MusicFont.coda();
         FontMetrics metrics = g.getFontMetrics();
@@ -181,7 +182,7 @@ final class BarStructurePainter {
     }
 
     private static void paintCenteredLabel(Graphics2D g, String text, int centerX, int y) {
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         g.setFont(ScoreFonts.SECTION_MARK_FONT);
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(text, centerX - metrics.stringWidth(text) / 2, y);
