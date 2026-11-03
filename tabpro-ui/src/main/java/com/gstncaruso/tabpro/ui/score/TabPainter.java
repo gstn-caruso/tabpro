@@ -23,7 +23,7 @@ final class TabPainter {
                 layout.measureX(measureIndex), 0, layout.measureWidth(measureIndex), 0);
         int stringCount = track.tuning().stringCount();
 
-        g.setColor(ScoreColors.STAFF_LINE);
+        g.setColor(ScoreColors.staffLine());
         for (int string = 1; string <= stringCount; string++) {
             int y = layout.stringY(trackIndex, measureIndex, string);
             g.drawLine(column.x, y, column.x + column.width, y);
@@ -31,7 +31,7 @@ final class TabPainter {
 
         int top = layout.stringY(trackIndex, measureIndex, 1);
         int bottom = layout.stringY(trackIndex, measureIndex, stringCount);
-        g.setColor(ScoreColors.BAR_LINE);
+        g.setColor(ScoreColors.barLine());
         g.drawLine(column.x, top, column.x, bottom);
         g.drawLine(column.x + column.width, top, column.x + column.width, bottom);
     }
@@ -59,7 +59,7 @@ final class TabPainter {
 
         clearBehindTheDigits(g, centerX, y, textWidth);
 
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         g.drawString(fret, centerX - textWidth / 2, y + (metrics.getAscent() - metrics.getDescent()) / 2);
     }
 
@@ -74,7 +74,7 @@ final class TabPainter {
     private static void clearBehindTheDigits(Graphics2D g, int centerX, int y, int textWidth) {
         int width = textWidth + 5;
         int height = ScoreLayout.STRING_SPACING - 2;
-        g.setColor(ScoreColors.BACKGROUND);
+        g.setColor(ScoreColors.background());
         g.fillRect(centerX - width / 2, y - height / 2, width, height);
     }
 
@@ -84,7 +84,7 @@ final class TabPainter {
         int bottom = layout.stringY(trackIndex, measureIndex, stringCount);
         int letterHeight = (bottom - top) / 3;
 
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setFont(ScoreFonts.tabMarkFont(Math.max(9, letterHeight)));
         FontMetrics metrics = g.getFontMetrics();
         String[] letters = {"T", "A", "B"};
@@ -97,7 +97,7 @@ final class TabPainter {
 
     static void paintTuningLegend(Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
         int stringCount = track.tuning().stringCount();
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setFont(ScoreFonts.TUNING_LEGEND_FONT);
         int x = layout.measureX(measureIndex) + 26;
         for (int string = 1; string <= stringCount; string++) {
@@ -119,7 +119,7 @@ final class TabPainter {
             int baseY = layout.tabTop(trackIndex, measureIndex) - 4;
             int topY = baseY - 14;
 
-            g.setColor(ScoreColors.LABEL);
+            g.setColor(ScoreColors.label());
             g.setStroke(new BasicStroke(1.2f));
             g.drawLine(centerX, baseY, centerX, topY);
             int flags = Beaming.beamCount(beat.duration().value());
@@ -133,7 +133,7 @@ final class TabPainter {
     static void paintMeasureNumber(
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex) {
         boolean complete = track.measure(measureIndex).isComplete();
-        Color color = complete ? ScoreColors.MEASURE_NUMBER : ScoreColors.WARNING;
+        Color color = complete ? ScoreColors.measureNumber() : ScoreColors.warning();
         g.setColor(color);
         g.setFont(ScoreFonts.MEASURE_NUMBER_FONT);
         g.drawString(

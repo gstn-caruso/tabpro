@@ -1,7 +1,7 @@
 package com.gstncaruso.tabpro.ui.tracks;
 
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
-import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,9 +27,6 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
 public final class LevelSlider extends JComponent implements AccessibleControl {
-
-    private static final Color BADGE_BACKGROUND = new Color(192, 192, 192);
-    private static final Color BADGE_TEXT = ScoreColors.PAGE_INK;
 
     private final int min;
     private final int max;
@@ -118,7 +115,7 @@ public final class LevelSlider extends JComponent implements AccessibleControl {
         int badgeX = Math.max(0, Math.min(width - badgeWidth, centerX - badgeWidth / 2));
         int badgeY = (height - badgeHeight) / 2;
 
-        g.setColor(BADGE_BACKGROUND);
+        g.setColor(Palette.raisedPanel());
         g.fillRect(badgeX, badgeY, badgeWidth, badgeHeight);
         int bevel = UiSizing.scaled(1);
         g.setColor(new Color(240, 240, 240));
@@ -127,7 +124,7 @@ public final class LevelSlider extends JComponent implements AccessibleControl {
         g.setColor(new Color(96, 96, 96));
         g.fillRect(badgeX, badgeY + badgeHeight - bevel, badgeWidth, bevel);
         g.fillRect(badgeX + badgeWidth - bevel, badgeY, bevel, badgeHeight);
-        g.setColor(BADGE_TEXT);
+        g.setColor(Palette.text());
         int textX = badgeX + (badgeWidth - metrics.stringWidth(text)) / 2;
         int textY = badgeY + (badgeHeight + metrics.getAscent() - metrics.getDescent()) / 2;
         g.drawString(text, textX, textY);

@@ -95,7 +95,7 @@ final class TabNotationPainter {
     }
 
     private static void paintFingerCircle(Graphics2D g, int centerX, int y, String label) {
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setStroke(new BasicStroke(1f));
         g.draw(new Ellipse2D.Double(centerX - FINGER_RADIUS, y - FINGER_RADIUS, FINGER_RADIUS * 2, FINGER_RADIUS * 2));
         g.setFont(ScoreFonts.FINGER_FONT);
@@ -109,7 +109,7 @@ final class TabNotationPainter {
             Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, beatIndex);
             int y = layout.stringY(trackIndex, measureIndex, note.string());
             int x = bounds.x - 3;
-            g.setColor(ScoreColors.LABEL);
+            g.setColor(ScoreColors.label());
             g.setFont(ScoreFonts.GRACE_FONT);
             String text = String.valueOf(grace.fret());
             FontMetrics metrics = g.getFontMetrics();
@@ -123,7 +123,7 @@ final class TabNotationPainter {
         if (toX <= fromX) {
             return;
         }
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setStroke(new BasicStroke(1.1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         switch (transition) {
             case SLIDE -> g.draw(new Line2D.Double(fromX, y + 4, toX, y - 4));
@@ -147,7 +147,7 @@ final class TabNotationPainter {
         int y = layout.stringY(trackIndex, measureIndex, note.string()) - ScoreLayout.STRING_SPACING / 2;
         int top = y - 12;
 
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setStroke(new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         Path2D curve = new Path2D.Double();
         curve.moveTo(x, y);
@@ -171,7 +171,7 @@ final class TabNotationPainter {
         int from = dives ? top : bottom;
         int to = dives ? bottom : top;
 
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setStroke(new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         Path2D curve = new Path2D.Double();
         curve.moveTo(x, from);
@@ -228,7 +228,7 @@ final class TabNotationPainter {
             return;
         }
         int y = layout.stringY(trackIndex, measureIndex, string) - ScoreLayout.STRING_SPACING / 2 - 1;
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setStroke(new BasicStroke(1.1f));
         g.draw(new Arc2D.Double(fromX, y - 6, toX - fromX, 10, 20, 140, Arc2D.OPEN));
     }
@@ -244,7 +244,7 @@ final class TabNotationPainter {
         if (toX <= fromX) {
             return;
         }
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setStroke(slide.picksTheDestination()
                 ? new BasicStroke(1.4f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, new float[] {3f, 2f}, 0f)
                 : new BasicStroke(1.4f));
@@ -256,7 +256,7 @@ final class TabNotationPainter {
         Rectangle bounds = layout.beatBounds(trackIndex, measureIndex, beatIndex);
         int centerX = bounds.x + bounds.width / 2;
         int y = layout.stringY(trackIndex, measureIndex, note.string());
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setStroke(new BasicStroke(1.3f));
         int half = 7;
         Line2D line = switch (slide) {

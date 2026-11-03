@@ -4,8 +4,8 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Instruments;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
-import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.score.TrackVisibility;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -74,10 +74,10 @@ public final class MixTable extends JPanel {
         this.editor = editor;
         this.model = new MixTableModel(visibleTracks);
         setLayout(new BorderLayout());
-        setBackground(ScoreColors.SURFACE);
+        setBackground(Palette.panel());
 
         rowsPanel.setLayout(new BoxLayout(rowsPanel, BoxLayout.Y_AXIS));
-        rowsPanel.setBackground(ScoreColors.SURFACE);
+        rowsPanel.setBackground(Palette.panel());
 
         add(header(), BorderLayout.NORTH);
         add(rowsPanel, BorderLayout.CENTER);
@@ -89,6 +89,10 @@ public final class MixTable extends JPanel {
     @Override
     public void updateUI() {
         super.updateUI();
+        setBackground(Palette.panel());
+        if (rowsPanel != null) {
+            rowsPanel.setBackground(Palette.panel());
+        }
         if (uiSizing != null) {
             uiSizing.forEach(Runnable::run);
         }
@@ -143,8 +147,8 @@ public final class MixTable extends JPanel {
     private JComponent header() {
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
-        header.setBackground(ScoreColors.SURFACE);
         onUiUpdate(() -> {
+            header.setBackground(Palette.panel());
             header.setBorder(BorderFactory.createEmptyBorder(0, UiSizing.scaled(8), 0, UiSizing.scaled(8)));
             header.setPreferredSize(new Dimension(width(), TrackPanel.headerHeight()));
             header.setMaximumSize(new Dimension(Integer.MAX_VALUE, TrackPanel.headerHeight()));
@@ -187,8 +191,8 @@ public final class MixTable extends JPanel {
         button.setFocusable(false);
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
-        button.setForeground(ScoreColors.MUTED_INK);
         onUiUpdate(() -> {
+            button.setForeground(Palette.mutedText());
             button.setMargin(new Insets(0, UiSizing.scaled(2), 0, UiSizing.scaled(2)));
             button.setBorder(BorderFactory.createEmptyBorder(0, UiSizing.scaled(2), 0, UiSizing.scaled(2)));
             button.setFont(button.getFont().deriveFont(Font.BOLD, (float) UiSizing.scaled(11)));
@@ -221,8 +225,8 @@ public final class MixTable extends JPanel {
 
     private JLabel title(String text, IntSupplier width) {
         JLabel title = new JLabel(text);
-        title.setForeground(ScoreColors.MUTED_INK);
         onUiUpdate(() -> {
+            title.setForeground(Palette.mutedText());
             title.setFont(title.getFont().deriveFont(Font.PLAIN, (float) UiSizing.scaled(10)));
             Dimension size = new Dimension(width.getAsInt(), TrackPanel.headerHeight());
             title.setPreferredSize(size);

@@ -109,20 +109,20 @@ final class TabSymbolPainter {
 
     private static void paintLabel(Graphics2D g, String text, int centerX, int rowBottom) {
         g.setFont(text.length() > 3 ? ScoreFonts.EFFECT_TEXT_FONT : ScoreFonts.EFFECT_SYMBOL_FONT);
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(text, centerX - metrics.stringWidth(text) / 2, rowBottom - metrics.getDescent());
     }
 
     private static void paintFreeText(Graphics2D g, String text, int centerX, int rowBottom) {
         g.setFont(ScoreFonts.EFFECT_TEXT_FONT);
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(text, centerX - metrics.stringWidth(text) / 2, rowBottom - metrics.getDescent());
     }
 
     private static void paintStrumArrow(Graphics2D g, int centerX, int rowBottom, boolean downwards, boolean rasgueado) {
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setStroke(new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         int top = rowBottom - 8;
         int bottom = rowBottom;
@@ -142,7 +142,7 @@ final class TabSymbolPainter {
 
     private static void paintPickstroke(Graphics2D g, int centerX, int rowBottom, PickstrokeDirection direction) {
         String glyph = direction == PickstrokeDirection.DOWN ? MusicFont.stringsDownBow() : MusicFont.stringsUpBow();
-        g.setColor(ScoreColors.LABEL);
+        g.setColor(ScoreColors.label());
         g.setFont(MusicFont.sizedTo(2));
         FontMetrics metrics = g.getFontMetrics();
         g.drawString(glyph, centerX - metrics.stringWidth(glyph) / 2, rowBottom - metrics.getDescent());

@@ -77,7 +77,7 @@ public final class ScorePainter {
 
     private static void paintBackground(Graphics2D g) {
         Rectangle clip = g.getClipBounds();
-        g.setColor(ScoreColors.BACKGROUND);
+        g.setColor(ScoreColors.background());
         g.fill(clip == null ? new Rectangle(0, 0, 4000, 4000) : clip);
     }
 
@@ -152,13 +152,13 @@ public final class ScorePainter {
     private static void paintTrackLabel(
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, boolean selected) {
         g.setFont(ScoreFonts.TRACK_LABEL_FONT);
-        g.setColor(selected ? ScoreColors.INK : ScoreColors.LABEL);
+        g.setColor(selected ? ScoreColors.ink() : ScoreColors.label());
         int y = layout.trackTop(trackIndex, measureIndex) + ScoreLayout.TRACK_LABEL_HEIGHT - 4;
         int x = layout.measureX(measureIndex);
         if (selected) {
             g.setColor(ScoreColors.ACCENT);
             g.fillRect(x - 8, y - 9, 3, 11);
-            g.setColor(ScoreColors.INK);
+            g.setColor(ScoreColors.ink());
         }
         g.drawString(track.name(), x, y);
     }
@@ -251,7 +251,7 @@ public final class ScorePainter {
     private static void paintSelectedArea(Graphics2D g, Rectangle bounds) {
         g.setColor(ScoreColors.SELECTION);
         g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
-        g.setColor(ScoreColors.SELECTION_BORDER);
+        g.setColor(ScoreColors.selectionBorder());
         g.drawRect(bounds.x, bounds.y, bounds.width - 1, bounds.height - 1);
     }
 
@@ -313,7 +313,7 @@ public final class ScorePainter {
             StaffPosition position = StaffPainter.positionOf(track, clef, note, octaveShift);
             int y = layout.stepY(cursor.track(), cursor.measure(), position.step());
             Rectangle bounds = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat());
-            g.setColor(ScoreColors.CORRESPONDING_NOTE);
+            g.setColor(ScoreColors.correspondingNote());
             g.fillRect(bounds.x + 1, y - 5, bounds.width - 2, 10);
         });
     }
@@ -332,7 +332,7 @@ public final class ScorePainter {
         beat.noteOn(cursor.string()).ifPresent(note -> {
             int x = layout.beatBounds(cursor.track(), cursor.measure(), cursor.beat()).x;
             int y = layout.stringY(cursor.track(), cursor.measure(), cursor.string());
-            g.setColor(ScoreColors.CORRESPONDING_NOTE);
+            g.setColor(ScoreColors.correspondingNote());
             g.fillRect(x - 2, y - 2, 5, 5);
         });
     }

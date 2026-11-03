@@ -33,6 +33,7 @@ public class App {
     public static void main(String[] args) {
         new InterfaceLanguageStartup(Locale.getDefault(), new Preferences()).install();
         Theme theme = Theme.install();
+        AutoCloseable appearance = theme.followSystem(new PortalAppearance());
         TextsDefaultNames defaultNames = new TextsDefaultNames();
         Editor editor = new Editor(Score.blank(defaultNames), new SystemClipboardStorage());
 
@@ -51,6 +52,16 @@ public class App {
                     editor, new JsonScoreFiles(), player, theme, devices, exchange, new Microphone(),
                     new SystemPrinting());
             frame.setIconImages(AppIcon.sizes());
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent event) {
+                    try {
+                        appearance.close();
+                    } catch (Exception exception) {
+                        System.err.println("Cannot stop system appearance observation: " + exception.getMessage());
+                    }
+                }
+            });
             midiPlayer.ifPresent(midi -> frame.addWindowListener(closeOnDispose(midi, soundBank)));
             frame.setVisible(true);
             fileToOpen.ifPresent(frame::openOnStartup);

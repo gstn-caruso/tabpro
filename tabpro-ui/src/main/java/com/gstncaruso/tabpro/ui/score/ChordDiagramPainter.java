@@ -70,7 +70,7 @@ final class ChordDiagramPainter {
         int top = gridBottom - VISIBLE_FRETS * FRET_GAP;
 
         g.setFont(ScoreFonts.CHORD_NAME_FONT);
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         FontMetrics nameMetrics = g.getFontMetrics();
         g.drawString(chord.name(), x + gridWidth / 2 - nameMetrics.stringWidth(chord.name()) / 2, top - 14);
 
@@ -84,7 +84,7 @@ final class ChordDiagramPainter {
     }
 
     private static void paintGrid(Graphics2D g, int x, int top, int gridWidth, int stringCount) {
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         g.setStroke(new BasicStroke(2f));
         g.draw(new Line2D.Double(x, top, x + gridWidth, top));
         g.setStroke(new BasicStroke(1f));
@@ -103,7 +103,7 @@ final class ChordDiagramPainter {
     }
 
     private static void paintOpenAndMutedMarks(Graphics2D g, ChordDiagram chord, int x, int top, int stringCount) {
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         g.setStroke(new BasicStroke(1f));
         for (int string = 1; string <= stringCount; string++) {
             int sx = xOfString(x, stringCount, string);
@@ -117,7 +117,7 @@ final class ChordDiagramPainter {
     }
 
     private static void paintFingerDots(Graphics2D g, ChordDiagram chord, int x, int top, int stringCount) {
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         for (int string = 1; string <= stringCount; string++) {
             int fret = chord.fretOfString(string);
             if (fret <= 0) {

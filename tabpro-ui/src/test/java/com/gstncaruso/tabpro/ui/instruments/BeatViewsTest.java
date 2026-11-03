@@ -16,7 +16,6 @@ import com.gstncaruso.tabpro.ui.AwaitEdt;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
-import com.gstncaruso.tabpro.ui.score.ScoreColors;
 import com.gstncaruso.tabpro.ui.testsupport.Combos;
 import java.awt.Component;
 import java.awt.Container;
@@ -56,7 +55,7 @@ class BeatViewsTest {
                 List<Executable> observations = new ArrayList<>();
                 observations.add(() -> assertEquals(184, views.keyboard().getHeight(), "keyboard height at 2x"));
                 observations.add(() -> assertEquals(236, views.fretboard().getHeight(), "fretboard height at 2x"));
-                List<JPanel> headers = opaquePanelsBackedBy(views, ScoreColors.TITLE_BAR);
+                List<JPanel> headers = opaqueTitleBars(views);
                 assertEquals(2, headers.size(), "both instruments have a visible header");
                 for (JPanel header : headers) {
                     observations.add(() -> assertEquals(48, header.getHeight(), "header height at 2x"));
@@ -195,17 +194,17 @@ class BeatViewsTest {
     void theFretboardAndTheKeyboardEachHaveTheirOwnTitleBand() {
         BeatViews views = new BeatViews(new Editor(Score.blank(new TextsDefaultNames())), new RecordingPlayer());
 
-        assertEquals(2, opaquePanelsBackedBy(views, ScoreColors.TITLE_BAR).size());
+        assertEquals(2, opaqueTitleBars(views).size());
     }
 
-    private static List<JPanel> opaquePanelsBackedBy(Container container, java.awt.Color background) {
+    private static List<JPanel> opaqueTitleBars(Container container) {
         List<JPanel> found = new ArrayList<>();
         for (Component component : container.getComponents()) {
-            if (component instanceof JPanel panel && panel.isOpaque() && background.equals(panel.getBackground())) {
-                found.add(panel);
+            if (component instanceof PanelTitleBar titleBar && titleBar.isOpaque()) {
+                found.add(titleBar);
             }
             if (component instanceof Container nested) {
-                found.addAll(opaquePanelsBackedBy(nested, background));
+                found.addAll(opaqueTitleBars(nested));
             }
         }
         return found;

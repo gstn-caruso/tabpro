@@ -21,7 +21,14 @@ public final class ToolBars {
     private final Commands commands;
     private final Editor editor;
     private final ZoomHolder zoomHolder;
-    private final JPanel rows = new JPanel();
+    private final JPanel rows = new JPanel() {
+        @Override
+        public void updateUI() {
+            super.updateUI();
+            setBackground(Palette.panel());
+            setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Palette.separator()));
+        }
+    };
     final JToolBar documentToolBar;
     final JToolBar structureToolBar;
     final JToolBar notationToolBar;
@@ -36,8 +43,6 @@ public final class ToolBars {
         notationToolBar = leftAligned(notationRow());
         effectsToolBar = leftAligned(effectsRow());
         rows.setLayout(new BoxLayout(rows, BoxLayout.Y_AXIS));
-        rows.setBackground(Palette.panel());
-        rows.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Palette.separator()));
         rows.add(documentToolBar);
         rows.add(structureToolBar);
         rows.add(notationToolBar);
@@ -217,9 +222,14 @@ public final class ToolBars {
     }
 
     private static JButton button(Command command) {
-        JButton button = new JButton(command);
+        JButton button = new JButton(command) {
+            @Override
+            public void updateUI() {
+                super.updateUI();
+                setForeground(Palette.text());
+            }
+        };
         button.setHideActionText(true);
-        button.setForeground(Palette.text());
         button.setFocusable(false);
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);

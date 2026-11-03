@@ -24,10 +24,16 @@ public final class ScaleDegreesView extends JComponent {
 
     public ScaleDegreesView() {
         setOpaque(true);
-        setBackground(ChordDiagramColors.BACKGROUND);
+        setBackground(ChordDiagramColors.background());
         setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
         setToolTipText(Texts.get("views.ScaleDegreesView.name"));
         getAccessibleContext().setAccessibleName(Texts.get("views.ScaleDegreesView.name"));
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        setBackground(ChordDiagramColors.background());
     }
 
     public void show(List<ScaleTone> tones) {
@@ -80,13 +86,13 @@ public final class ScaleDegreesView extends JComponent {
     protected void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D) graphics;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setColor(ChordDiagramColors.BACKGROUND);
+        g.setColor(ChordDiagramColors.background());
         g.fillRect(0, 0, getWidth(), getHeight());
 
         int noteY = getHeight() / 2 - 6;
         g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
         FontMetrics noteMetrics = g.getFontMetrics();
-        g.setColor(ChordDiagramColors.NUT);
+        g.setColor(ChordDiagramColors.nut());
         for (int index = 0; index < degreeCount(); index++) {
             String label = noteLabel(index);
             g.drawString(label, degreeX(index) - noteMetrics.stringWidth(label) / 2, noteY);
@@ -95,7 +101,7 @@ public final class ScaleDegreesView extends JComponent {
         int intervalY = getHeight() / 2 + 18;
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
         FontMetrics intervalMetrics = g.getFontMetrics();
-        g.setColor(ChordDiagramColors.LABEL);
+        g.setColor(ChordDiagramColors.label());
         for (int index = 0; index < degreeCount(); index++) {
             String label = intervalLabel(index);
             g.drawString(label, degreeX(index) - intervalMetrics.stringWidth(label) / 2, intervalY);

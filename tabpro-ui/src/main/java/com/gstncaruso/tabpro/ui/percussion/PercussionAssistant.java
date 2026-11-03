@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.core.playback.Player;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.instruments.InstrumentEditing;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import javax.swing.BorderFactory;
@@ -29,14 +30,14 @@ public final class PercussionAssistant extends JPanel {
     public PercussionAssistant(Editor editor, Player player) {
         super(new BorderLayout());
         this.editor = editor;
-        setBackground(ScoreColors.SURFACE);
+        setBackground(Palette.panel());
         setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
         InstrumentEditing editing = new InstrumentEditing(editor, player);
 
         electric = new JCheckBox(Texts.get("views.PercussionAssistant.useElectricSound"));
         electric.setOpaque(false);
-        electric.setForeground(ScoreColors.LABEL);
+        electric.setForeground(Palette.text());
         electric.setFont(electric.getFont().deriveFont(11f));
 
         palette = new PercussionSoundPalette(
@@ -59,6 +60,15 @@ public final class PercussionAssistant extends JPanel {
 
         add(body, BorderLayout.CENTER);
         add(warningLabel(), BorderLayout.SOUTH);
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        setBackground(Palette.panel());
+        if (electric != null) {
+            electric.setForeground(Palette.text());
+        }
     }
 
     public static boolean appliesTo(Track track) {
@@ -90,9 +100,14 @@ public final class PercussionAssistant extends JPanel {
         panel.setOpaque(false);
         panel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
 
-        JLabel label = new JLabel(title);
+        JLabel label = new JLabel(title) {
+            @Override
+            public void updateUI() {
+                super.updateUI();
+                setForeground(Palette.mutedText());
+            }
+        };
         label.setFont(label.getFont().deriveFont(Font.BOLD, 11f));
-        label.setForeground(ScoreColors.MUTED_INK);
         label.setBorder(BorderFactory.createEmptyBorder(0, 2, 4, 0));
 
         panel.add(label, BorderLayout.NORTH);

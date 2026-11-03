@@ -2,9 +2,11 @@ package com.gstncaruso.tabpro.ui.score;
 
 import com.gstncaruso.tabpro.core.model.ScoreColor;
 import com.gstncaruso.tabpro.core.model.effects.Dynamic;
+import com.gstncaruso.tabpro.ui.theme.Contrast;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.UIManager;
 
 public final class ScoreColors {
 
@@ -32,6 +34,7 @@ public final class ScoreColors {
     public static final Color PLAYING = new Color(0x24, 0xA2, 0x5A);
     public static final Color PLAYING_MEASURE = new Color(0xE5484D);
     public static final Color WARNING = new Color(0xE5A44A);
+    private static final Color WARNING_DARKENED_TO_MEET_PAPER_CONTRAST = new Color(0x8C, 0x64, 0x2D);
     public static final Color EMPTY_MEASURE = new Color(0xB8, 0xBC, 0xC2);
 
     public static final Color PARAMETER_CHANGE = new Color(0xD32F3B);
@@ -53,16 +56,84 @@ public final class ScoreColors {
     private ScoreColors() {
     }
 
+    public static Color background() {
+        return themed("tabpro.background", BACKGROUND);
+    }
+
+    public static Color ink() {
+        return themed("tabpro.text", INK);
+    }
+
+    public static Color staffLine() {
+        return themed("tabpro.separator", STAFF_LINE);
+    }
+
+    public static Color label() {
+        return readableOnBackground(LABEL, Contrast.TEXT_MINIMUM_RATIO);
+    }
+
+    public static Color barLine() {
+        return readableOnBackground(BAR_LINE, Contrast.GRAPHICAL_MINIMUM_RATIO);
+    }
+
+    public static Color voiceInactive() {
+        return readableOnBackground(VOICE_INACTIVE, Contrast.TEXT_MINIMUM_RATIO);
+    }
+
+    public static Color correspondingNote() {
+        return readableOnBackground(CORRESPONDING_NOTE, Contrast.GRAPHICAL_MINIMUM_RATIO);
+    }
+
+    public static Color tempo() {
+        return readableOnBackground(TEMPO, Contrast.TEXT_MINIMUM_RATIO);
+    }
+
+    public static Color warning() {
+        return readableOnBackground(WARNING, Contrast.TEXT_MINIMUM_RATIO);
+    }
+
+    public static Color selectionBorder() {
+        return readableOnBackground(SELECTION_BORDER, Contrast.GRAPHICAL_MINIMUM_RATIO);
+    }
+
+    private static Color readableOnBackground(Color color, double minimumRatio) {
+        return Contrast.ratio(color, background()) >= minimumRatio
+                ? color : ON_PAPER.getOrDefault(color, color);
+    }
+
+    public static Color measureNumber() {
+        return Contrast.ratio(MEASURE_NUMBER, background()) >= Contrast.TEXT_MINIMUM_RATIO
+                ? MEASURE_NUMBER : MEASURE_NUMBER_DARKENED_TO_MEET_PAPER_CONTRAST;
+    }
+
+    private static Color themed(String key, Color fallback) {
+        Color color = UIManager.getColor(key);
+        return color == null ? fallback : color;
+    }
+
     public static Color of(ScoreColor color) {
         return new Color(color.red(), color.green(), color.blue());
     }
 
     public static Color forDynamic(Dynamic dynamic) {
+        return readableOnBackground(darkDynamic(dynamic), Contrast.GRAPHICAL_MINIMUM_RATIO);
+    }
+
+    private static Color darkDynamic(Dynamic dynamic) {
         double loudness = dynamic.ordinal() / (double) (Dynamic.values().length - 1);
         return interpolated(MUTED_INK, INK, loudness);
     }
 
     static Color onPaper(Color color) {
+        if (color.equals(background())) {
+            return PAGE_PAPER;
+        }
+        if (color.equals(ink())) {
+            return PAGE_INK;
+        }
+        if (color.equals(staffLine())) {
+            return mirrored(STAFF_LINE);
+        }
         return ON_PAPER.getOrDefault(color, color);
     }
 
@@ -89,13 +160,14 @@ public final class ScoreColors {
         onPaper.put(LABEL, mirrored(LABEL));
         onPaper.put(MUTED_INK, mirrored(MUTED_INK));
         onPaper.put(MEASURE_NUMBER, MEASURE_NUMBER_DARKENED_TO_MEET_PAPER_CONTRAST);
+        onPaper.put(WARNING, WARNING_DARKENED_TO_MEET_PAPER_CONTRAST);
         onPaper.put(SELECTION_BORDER, SELECTION_BORDER_DARKENED_TO_MEET_PAPER_CONTRAST);
         onPaper.put(STAFF_LINE, mirrored(STAFF_LINE));
         onPaper.put(BAR_LINE, mirrored(BAR_LINE));
         onPaper.put(VOICE_INACTIVE, mirrored(VOICE_INACTIVE));
         onPaper.put(CORRESPONDING_NOTE, mirrored(CORRESPONDING_NOTE));
         for (Dynamic dynamic : Dynamic.values()) {
-            Color forDynamic = forDynamic(dynamic);
+            Color forDynamic = darkDynamic(dynamic);
             onPaper.putIfAbsent(forDynamic, mirrored(forDynamic));
         }
         return Map.copyOf(onPaper);

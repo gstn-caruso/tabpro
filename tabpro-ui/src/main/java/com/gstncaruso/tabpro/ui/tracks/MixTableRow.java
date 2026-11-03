@@ -7,6 +7,7 @@ import com.gstncaruso.tabpro.core.model.Instruments;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -125,6 +126,7 @@ public final class MixTableRow extends JPanel {
         super.updateUI();
         if (uiSizing != null) {
             uiSizing.forEach(Runnable::run);
+            refresh();
         }
     }
 
@@ -155,10 +157,10 @@ public final class MixTableRow extends JPanel {
             cell.setVisible(!model.isReduced());
         });
         boolean selected = editor.cursor().track() == trackIndex;
-        setBackground(selected ? ScoreColors.SURFACE_HIGHLIGHT : ScoreColors.SURFACE);
+        setBackground(selected ? Palette.raisedPanel() : Palette.panel());
         boolean sounds = soundsRightNow(track);
-        name.setForeground(sounds ? ScoreColors.INK : ScoreColors.MUTED_INK);
-        number.setForeground(sounds ? ScoreColors.LABEL : ScoreColors.MUTED_INK);
+        name.setForeground(sounds ? Palette.text() : Palette.mutedText());
+        number.setForeground(Palette.mutedText());
         refreshAccessibleNames(track.name());
         syncing = false;
     }

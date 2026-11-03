@@ -6,6 +6,7 @@ import com.gstncaruso.tabpro.core.model.bars.Marker;
 import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -42,7 +43,7 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     public MarkerZone(Editor editor) {
         this.editor = editor;
         setOpaque(true);
-        setBackground(ScoreColors.SURFACE);
+        setBackground(Palette.panel());
         setToolTipText(Texts.get("views.MarkerZone.name"));
         getAccessibleContext().setAccessibleName(Texts.get("views.MarkerZone.name"));
         addMouseListener(new MouseAdapter() {
@@ -141,7 +142,7 @@ public final class MarkerZone extends JComponent implements AccessibleControl {
     protected void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D) graphics;
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g.setColor(ScoreColors.SURFACE);
+        g.setColor(Palette.panel());
         g.fillRect(0, 0, getWidth(), getHeight());
 
         g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, UiSizing.scaled(9)));

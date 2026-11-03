@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.ui.a11y.AccessibleControl;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.instruments.InstrumentColors;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import java.awt.BasicStroke;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -52,7 +53,7 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
 
     public PercussionStaffPicker(IntConsumer onPlay, Consumer<PercussionLine> onAdd) {
         setOpaque(true);
-        setBackground(ScoreColors.SURFACE);
+        setBackground(Palette.panel());
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setPreferredSize(new Dimension(0, PREFERRED_HEIGHT));
         setMinimumSize(new Dimension(0, PREFERRED_HEIGHT));
@@ -62,6 +63,12 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
         installClicking(onPlay, onAdd);
         installKeyboardShortcuts(onPlay, onAdd);
         installFocusRing();
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        setBackground(Palette.panel());
     }
 
     private void installFocusRing() {
@@ -210,7 +217,7 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        g.setColor(ScoreColors.SURFACE);
+        g.setColor(Palette.panel());
         g.fillRect(0, 0, getWidth(), getHeight());
 
         paintStaffLines(g);
@@ -235,7 +242,7 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
     }
 
     private void paintStaffLines(Graphics2D g) {
-        g.setColor(ScoreColors.STAFF_LINE);
+        g.setColor(Palette.separator());
         g.setStroke(new BasicStroke(1));
         for (int line = 0; line < STAFF_LINES; line++) {
             int y = TOP_MARGIN + line * STEP * 2;
@@ -254,7 +261,7 @@ public final class PercussionStaffPicker extends JComponent implements Accessibl
             g.fillOval(x - NOTE_RADIUS, y - NOTE_RADIUS, NOTE_RADIUS * 2, NOTE_RADIUS * 2);
 
             String sound = String.valueOf(soundOf(line));
-            g.setColor(InstrumentColors.CONTEXT_INK);
+            g.setColor(Palette.text());
             g.drawString(sound, x + NOTE_RADIUS + 4, y + metrics.getAscent() / 2 - 1);
         }
     }

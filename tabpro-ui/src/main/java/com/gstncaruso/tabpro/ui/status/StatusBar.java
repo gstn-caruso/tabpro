@@ -5,9 +5,11 @@ import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.score.Pagination;
 import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.util.List;
 import java.util.function.Supplier;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -35,7 +37,7 @@ public final class StatusBar extends JPanel {
         this.editor = editor;
         this.pagination = pagination;
         setLayout(new BorderLayout());
-        setBackground(ScoreColors.SURFACE);
+        setBackground(Palette.panel());
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, ScoreColors.BORDER));
 
         JPanel left = new JPanel();
@@ -54,6 +56,17 @@ public final class StatusBar extends JPanel {
 
         refresh();
         editor.addListener(EdtEditorListener.onEdt(this::refresh));
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        setBackground(Palette.panel());
+        if (editor != null) {
+            List.of(page, position, completeness, trackName, duration, credits)
+                    .forEach(label -> label.setForeground(Palette.mutedText()));
+            refresh();
+        }
     }
 
     String pageText() {
@@ -87,7 +100,7 @@ public final class StatusBar extends JPanel {
         position.setText(String.format("%03d : %03d", info.measureNumber(), info.measureCount()));
         completeness.setText(Texts.get("views.StatusBar.measureText", info.completeness().label()));
         completeness.setForeground(
-                info.completeness() == MeasureCompleteness.COMPLETE ? ScoreColors.LABEL : ScoreColors.WARNING);
+                info.completeness() == MeasureCompleteness.COMPLETE ? Palette.mutedText() : ScoreColors.warning());
         trackName.setText(info.trackName());
         duration.setText(info.measureBeatsRatioText());
         credits.setText(creditsOf(info));
@@ -112,7 +125,7 @@ public final class StatusBar extends JPanel {
 
     private JLabel styled(JLabel label) {
         label.setFont(label.getFont().deriveFont(Font.PLAIN, (float) UiSizing.scaled(11)));
-        label.setForeground(ScoreColors.LABEL);
+        label.setForeground(Palette.mutedText());
         return label;
     }
 }

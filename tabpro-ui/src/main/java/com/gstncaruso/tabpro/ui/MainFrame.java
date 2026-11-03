@@ -93,6 +93,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JViewport;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -160,9 +161,16 @@ public final class MainFrame extends JFrame {
 
         canvas = new ScoreCanvas(editor, visibleTracks);
         canvas.setAutoScrollDuringPlayback(preferences.autoScrollDuringPlayback());
-        JScrollPane scrollPane = new JScrollPane(canvas);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewport(new JViewport() {
+            @Override
+            public void updateUI() {
+                super.updateUI();
+                setBackground(Palette.background());
+            }
+        });
+        scrollPane.setViewportView(canvas);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getViewport().setBackground(ScoreColors.BACKGROUND);
 
         transport = new Transport(editor, player, SwingUtilities::invokeLater, preferences.metronomeEnabled());
         trackPanel = new TrackPanel(editor, visibleTracks);
@@ -185,8 +193,13 @@ public final class MainFrame extends JFrame {
         boolean effectsToolBarVisible = preferences.effectsToolBarVisible();
         toolBars.setEffectsToolBarVisible(effectsToolBarVisible);
         commands.get("view.toolBars.effects").putValue(javax.swing.Action.SELECTED_KEY, effectsToolBarVisible);
-        JLabel tempoLabel = new JLabel(Texts.get("window.MainFrame.tempo") + " ");
-        tempoLabel.setForeground(Palette.text());
+        JLabel tempoLabel = new JLabel(Texts.get("window.MainFrame.tempo") + " ") {
+            @Override
+            public void updateUI() {
+                super.updateUI();
+                setForeground(Palette.text());
+            }
+        };
         toolBars.addToSoundRow(tempoLabel);
         toolBars.addToSoundRow(tempoSpinner);
         setJMenuBar(new MenuBar(commands, document::recentFiles, documentActions::openRecent).build());
@@ -209,8 +222,13 @@ public final class MainFrame extends JFrame {
         canvas.onClickReposition(hit -> transport.seekTo(hit.measure(), hit.beat()));
         editor.addListener(EdtEditorListener.onEdt(this::updateTitle));
 
-        JPanel scoreWithEffects = new JPanel(new BorderLayout());
-        scoreWithEffects.setBackground(Palette.panel());
+        JPanel scoreWithEffects = new JPanel(new BorderLayout()) {
+            @Override
+            public void updateUI() {
+                super.updateUI();
+                setBackground(Palette.panel());
+            }
+        };
         scoreWithEffects.add(scrollPane, BorderLayout.CENTER);
         scoreWithEffects.add(toolBars.effectsComponent(), BorderLayout.SOUTH);
 

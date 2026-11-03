@@ -15,7 +15,7 @@ import com.gstncaruso.tabpro.ui.EdtEditorListener;
 import com.gstncaruso.tabpro.ui.dialogs.style.LabeledListCellRenderer;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.icons.Icons;
-import com.gstncaruso.tabpro.ui.score.ScoreColors;
+import com.gstncaruso.tabpro.ui.theme.Palette;
 import com.gstncaruso.tabpro.ui.theme.UiSizing;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -48,8 +48,8 @@ public final class BeatViews extends JPanel {
     public BeatViews(Editor editor, Player player) {
         this.editor = editor;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(ScoreColors.SURFACE);
-        setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ScoreColors.BORDER));
+        setBackground(Palette.panel());
+        setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Palette.separator()));
 
         fretboardBox = titled(Texts.get("views.BeatViews.fretboardTitle"), fretboard, FretboardView.PREFERRED_HEIGHT,
                 fretboardToolbar(), Texts.get("views.BeatViews.closeFretboard"), () -> onCloseFretboard.run());
@@ -61,6 +61,13 @@ public final class BeatViews extends JPanel {
         installWriting(new InstrumentEditing(editor, player));
         editor.addListener(EdtEditorListener.onEdt(this::refresh));
         refresh();
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        setBackground(Palette.panel());
+        setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Palette.separator()));
     }
 
     public void showScale(int rootPitchClass, java.util.Collection<Integer> semitones) {
@@ -312,7 +319,7 @@ public final class BeatViews extends JPanel {
             String closeAccessibleName,
             Runnable onClose) {
         JPanel box = new JPanel(new BorderLayout());
-        box.setBackground(ScoreColors.SURFACE);
+        box.setOpaque(false);
 
         PanelTitleBar header = new PanelTitleBar(title, toolbar, closeAccessibleName);
         header.onClose(onClose);

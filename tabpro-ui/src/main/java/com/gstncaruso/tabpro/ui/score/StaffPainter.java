@@ -63,13 +63,13 @@ final class StaffPainter {
         int right = left + layout.measureWidth(measureIndex);
 
         g.setStroke(THIN);
-        g.setColor(ScoreColors.STAFF_LINE);
+        g.setColor(ScoreColors.staffLine());
         for (int line = 0; line <= 4; line++) {
             int y = layout.staffLineY(trackIndex, measureIndex, line);
             g.drawLine(left, y, right, y);
         }
 
-        g.setColor(ScoreColors.BAR_LINE);
+        g.setColor(ScoreColors.barLine());
         int top = layout.staffTop(trackIndex, measureIndex);
         int bottom = layout.staffBottom(trackIndex, measureIndex);
         g.drawLine(left, top, left, bottom);
@@ -78,7 +78,7 @@ final class StaffPainter {
 
     static void paintClef(Graphics2D g, ScoreLayout layout, Clef clef, int trackIndex, int measureIndex) {
         double x = layout.measureX(measureIndex) + 4.0;
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         g.setFont(MusicFont.sizedTo(SPACE));
         String glyph = clef == Clef.TREBLE ? MusicFont.trebleClef() : MusicFont.bassClef();
         int line = clef == Clef.TREBLE ? 1 : 3;
@@ -88,7 +88,7 @@ final class StaffPainter {
     static void paintTimeSignature(
             Graphics2D g, ScoreLayout layout, Track track, int trackIndex, int measureIndex, double x) {
         Measure measure = track.measure(measureIndex);
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         g.setFont(MusicFont.sizedTo(SPACE));
         FontMetrics metrics = g.getFontMetrics();
 
@@ -119,9 +119,9 @@ final class StaffPainter {
         for (int letter : key.alteredSteps()) {
             double y = layout.stepY(trackIndex, measureIndex, steps[letter]);
             if (key.hasSharps()) {
-                paintSharp(g, glyphX, y, ScoreColors.INK);
+                paintSharp(g, glyphX, y, ScoreColors.ink());
             } else {
-                paintFlat(g, glyphX, y, ScoreColors.INK);
+                paintFlat(g, glyphX, y, ScoreColors.ink());
             }
             glyphX += SPACE * 0.95;
         }
@@ -157,7 +157,7 @@ final class StaffPainter {
             Graphics2D g, ScoreLayout layout, Track track, Clef clef, int trackIndex, int measureIndex,
             VoicePart part, Voice voice, KeySignatureAccidentals accidentals, boolean twoVoices, boolean dimmed,
             int laneCount, TimeSignature timeSignature, int octaveShift) {
-        Color ink = dimmed ? ScoreColors.VOICE_INACTIVE : ScoreColors.INK;
+        Color ink = dimmed ? ScoreColors.voiceInactive() : ScoreColors.ink();
         List<Beat> beats = voice.beats();
 
         for (int beatIndex = 0; beatIndex < beats.size(); beatIndex++) {
@@ -378,7 +378,7 @@ final class StaffPainter {
             double xEnd = noteCenterX(layout, trackIndex, measureIndex, group.lastBeat());
             double midX = (xStart + xEnd) / 2;
 
-            g.setColor(ScoreColors.INK);
+            g.setColor(ScoreColors.ink());
             g.setStroke(THIN);
             g.draw(new Line2D.Double(xStart, y + 4, xStart, y));
             g.draw(new Line2D.Double(xStart, y, midX - 6, y));
@@ -695,7 +695,7 @@ final class StaffPainter {
         int left = layout.measureX(measureIndex);
         int right = left + layout.measureWidth(measureIndex);
 
-        g.setColor(ScoreColors.INK);
+        g.setColor(ScoreColors.ink());
         g.setFont(OCTAVE_MARK_FONT);
         FontMetrics metrics = g.getFontMetrics();
         double baseline = octaveMark.aboveTheStaff()

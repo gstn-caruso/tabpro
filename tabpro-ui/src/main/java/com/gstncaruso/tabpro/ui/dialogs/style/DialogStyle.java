@@ -8,6 +8,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
 
 public final class DialogStyle {
@@ -26,7 +27,18 @@ public final class DialogStyle {
     }
 
     public static JPanel section(String title) {
-        JPanel section = new JPanel();
+        JPanel section = new JPanel() {
+            @Override
+            public void updateUI() {
+                super.updateUI();
+                if (getBorder() instanceof CompoundBorder compound
+                        && compound.getOutsideBorder() instanceof TitledBorder border) {
+                    border.setTitleFont(sectionFont());
+                    border.setTitleColor(sectionTitleColor());
+                    border.setBorder(BorderFactory.createLineBorder(sectionBorderColor()));
+                }
+            }
+        };
         section.setBorder(BorderFactory.createCompoundBorder(
                 sectionBorder(title),
                 BorderFactory.createEmptyBorder(

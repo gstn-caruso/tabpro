@@ -36,7 +36,7 @@ public final class ChordDiagramCanvas extends JComponent {
 
     public ChordDiagramCanvas() {
         setOpaque(true);
-        setBackground(ChordDiagramColors.BACKGROUND);
+        setBackground(ChordDiagramColors.background());
         setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
         addMouseListener(new MouseAdapter() {
             @Override
@@ -44,6 +44,12 @@ public final class ChordDiagramCanvas extends JComponent {
                 handleClick(event.getX(), event.getY());
             }
         });
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        setBackground(ChordDiagramColors.background());
     }
 
     public void show(ChordDiagram diagram, Tuning tuning) {
@@ -146,7 +152,7 @@ public final class ChordDiagramCanvas extends JComponent {
     protected void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D) graphics;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setColor(ChordDiagramColors.BACKGROUND);
+        g.setColor(ChordDiagramColors.background());
         g.fillRect(0, 0, getWidth(), getHeight());
 
         paintPositionLabel(g);
@@ -161,7 +167,7 @@ public final class ChordDiagramCanvas extends JComponent {
         if (hasHeader()) {
             return;
         }
-        g.setColor(ChordDiagramColors.LABEL);
+        g.setColor(ChordDiagramColors.label());
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11));
         g.drawString(diagram.baseFret() + "fr", 2, headerY() + 4);
     }
@@ -186,7 +192,7 @@ public final class ChordDiagramCanvas extends JComponent {
     }
 
     private void paintGrid(Graphics2D g) {
-        g.setColor(ChordDiagramColors.GRID);
+        g.setColor(ChordDiagramColors.grid());
         int left = stringX(stringCount());
         int right = stringX(1);
         for (int string = 1; string <= stringCount(); string++) {
@@ -195,7 +201,7 @@ public final class ChordDiagramCanvas extends JComponent {
         }
         for (int row = 0; row <= rowCount(); row++) {
             int y = fretRowY(0) - (int) (rowHeight() / 2) + row * (int) rowHeight();
-            g.setColor(row == 0 && hasHeader() ? ChordDiagramColors.NUT : ChordDiagramColors.GRID);
+            g.setColor(row == 0 && hasHeader() ? ChordDiagramColors.nut() : ChordDiagramColors.grid());
             g.drawLine(left, y, right, y);
         }
     }
@@ -268,7 +274,7 @@ public final class ChordDiagramCanvas extends JComponent {
 
     private void paintFingerRow(Graphics2D g) {
         int y = fingerRowY();
-        g.setColor(ChordDiagramColors.LABEL);
+        g.setColor(ChordDiagramColors.label());
         g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
         FontMetrics metrics = g.getFontMetrics();
         for (int string = 1; string <= stringCount(); string++) {
