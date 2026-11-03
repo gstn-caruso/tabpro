@@ -1,3 +1,13 @@
+## [0.62.0](https://github.com/gstn-caruso/tabpro/compare/v0.61.5...v0.62.0) (2026-11-03)
+
+### Features
+
+* follow system appearance across the editor interface ([648b0d1](https://github.com/gstn-caruso/tabpro/commit/648b0d1235c254a61774c88599b6e38f8502a1f9))
+
+### Bug Fixes
+
+* share mixer volume across tracks on the same MIDI channel ([df67820](https://github.com/gstn-caruso/tabpro/commit/df67820009cb807fb0c3655be836cc05d30dc44c))
+
 ## [0.61.5](https://github.com/gstn-caruso/tabpro/compare/v0.61.4...v0.61.5) (2026-10-29)
 
 ### Bug Fixes
