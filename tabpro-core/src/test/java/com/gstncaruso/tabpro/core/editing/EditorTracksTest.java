@@ -157,6 +157,71 @@ class EditorTracksTest {
     }
 
     @Test
+    void givenTwoTracksSharingPortAndChannel_whenOneVolumeChanges_thenBothVolumesMatch() {
+        Channel sharedChannel = Channel.playing(24)
+                .withPort(3).withNumber(7).withEffectChannel(8).withVolume(100);
+        Score score = Score.blank(new TestDefaultNames())
+                .withTrack(0, Track.standardGuitar("Guitar 1").withChannel(sharedChannel))
+                .withTrackAdded(Track.standardGuitar("Guitar 2").withChannel(sharedChannel));
+        Editor editor = new Editor(score);
+
+        editor.setVolume(0, 80);
+
+        assertEquals(80, editor.score().track(0).channel().volume());
+        assertEquals(80, editor.score().track(1).channel().volume());
+    }
+
+    @Test
+    void givenDifferentPortsAndSameChannel_whenOneVolumeChanges_thenOtherVolumeStaysUnchanged() {
+        Channel firstChannel = Channel.playing(24)
+                .withPort(3).withNumber(7).withEffectChannel(8).withVolume(100);
+        Channel secondChannel = Channel.playing(24)
+                .withPort(4).withNumber(7).withEffectChannel(8).withVolume(100);
+        Score score = Score.blank(new TestDefaultNames())
+                .withTrack(0, Track.standardGuitar("Guitar 1").withChannel(firstChannel))
+                .withTrackAdded(Track.standardGuitar("Guitar 2").withChannel(secondChannel));
+        Editor editor = new Editor(score);
+
+        editor.setVolume(0, 80);
+
+        assertEquals(80, editor.score().track(0).channel().volume());
+        assertEquals(100, editor.score().track(1).channel().volume());
+    }
+
+    @Test
+    void givenSamePortAndDifferentChannels_whenOneVolumeChanges_thenOtherVolumeStaysUnchanged() {
+        Channel firstChannel = Channel.playing(24)
+                .withPort(3).withNumber(7).withEffectChannel(8).withVolume(100);
+        Channel secondChannel = Channel.playing(24)
+                .withPort(3).withNumber(9).withEffectChannel(10).withVolume(100);
+        Score score = Score.blank(new TestDefaultNames())
+                .withTrack(0, Track.standardGuitar("Guitar 1").withChannel(firstChannel))
+                .withTrackAdded(Track.standardGuitar("Guitar 2").withChannel(secondChannel));
+        Editor editor = new Editor(score);
+
+        editor.setVolume(0, 80);
+
+        assertEquals(80, editor.score().track(0).channel().volume());
+        assertEquals(100, editor.score().track(1).channel().volume());
+    }
+
+    @Test
+    void givenSharedChannelTracks_whenVolumeChangeIsUndone_thenBothVolumesAreRestored() {
+        Channel sharedChannel = Channel.playing(24)
+                .withPort(3).withNumber(7).withEffectChannel(8).withVolume(100);
+        Score score = Score.blank(new TestDefaultNames())
+                .withTrack(0, Track.standardGuitar("Guitar 1").withChannel(sharedChannel))
+                .withTrackAdded(Track.standardGuitar("Guitar 2").withChannel(sharedChannel));
+        Editor editor = new Editor(score);
+
+        editor.setVolume(0, 80);
+        editor.undo();
+
+        assertEquals(100, editor.score().track(0).channel().volume());
+        assertEquals(100, editor.score().track(1).channel().volume());
+    }
+
+    @Test
     void mixerChangesCanBeUndone() {
         Editor editor = new Editor(Score.blank(new TestDefaultNames()));
 

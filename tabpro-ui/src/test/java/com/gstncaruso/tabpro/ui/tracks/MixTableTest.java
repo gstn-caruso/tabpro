@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gstncaruso.tabpro.core.editing.Editor;
+import com.gstncaruso.tabpro.core.model.Channel;
 import com.gstncaruso.tabpro.core.model.Score;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.ui.a11y.AccessibilityAssertions;
@@ -64,6 +65,26 @@ class MixTableTest {
                 () -> assertEquals(127, accessible.getMaximumAccessibleValue().intValue()),
                 () -> assertEquals(AccessibleRole.SLIDER, actual.getAccessibleContext().getAccessibleRole()),
                 () -> assertFalse(actual.getAccessibleContext().getAccessibleName().isBlank()));
+    }
+
+    @Test
+    void givenSharedChannelTracks_whenVolumeChangesAndMixerRefreshes_thenBothRowsShowUpdatedVolume() {
+        Channel sharedChannel = Channel.playing(24)
+                .withPort(3).withNumber(7).withEffectChannel(8).withVolume(100);
+        Score score = Score.blank(new TextsDefaultNames())
+                .withTrack(0, Track.standardGuitar("Guitar 1").withChannel(sharedChannel))
+                .withTrackAdded(Track.standardGuitar("Guitar 2").withChannel(sharedChannel));
+        MixTable table = new MixTable(new Editor(score));
+
+        table.rows().get(0).volumeSlider().getAccessibleContext()
+                .getAccessibleValue().setCurrentAccessibleValue(80);
+        table.refresh();
+
+        assertAll(
+                () -> assertTrue(table.rows().get(0).volumeSlider().isVisible()),
+                () -> assertTrue(table.rows().get(1).volumeSlider().isVisible()),
+                () -> assertEquals(80, table.rows().get(0).volumeSlider().getValue()),
+                () -> assertEquals(80, table.rows().get(1).volumeSlider().getValue()));
     }
 
     private static boolean[] renderedInkMask(LevelSlider slider) {

@@ -463,7 +463,14 @@ public final class Editor {
     }
 
     public void setVolume(int index, int volume) {
-        changeChannel(index, channel -> channel.withVolume(volume));
+        Channel selected = score.track(index).channel();
+        Score next = mapEveryTrack(track -> {
+            Channel channel = track.channel();
+            return channel.port() == selected.port() && channel.number() == selected.number()
+                    ? track.withChannel(channel.withVolume(volume))
+                    : track;
+        });
+        change(next, cursor);
     }
 
     public void setPan(int index, int pan) {
