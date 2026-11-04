@@ -1,3 +1,9 @@
+## [0.63.0](https://github.com/gstn-caruso/tabpro/compare/v0.62.0...v0.63.0) (2026-11-04)
+
+### Features
+
+* **harmony:** add interactive circle of fifths to scales ([#245](https://github.com/gstn-caruso/tabpro/issues/245)) ([d247f7b](https://github.com/gstn-caruso/tabpro/commit/d247f7ba991a981c050c26fc9679a04194ee12ff))
+
 ## [0.62.0](https://github.com/gstn-caruso/tabpro/compare/v0.61.5...v0.62.0) (2026-11-03)
 
 ### Features
