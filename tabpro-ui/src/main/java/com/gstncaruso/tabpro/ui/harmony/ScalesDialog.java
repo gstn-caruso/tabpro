@@ -27,6 +27,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
 import javax.swing.SpinnerNumberModel;
 
 public final class ScalesDialog {
@@ -51,6 +52,8 @@ public final class ScalesDialog {
         private final DefaultListModel<Scale> scalesModel = new DefaultListModel<>();
         private final JList<Scale> scales = new JList<>(scalesModel);
         private final ScaleDegreesView degrees = new ScaleDegreesView();
+        private final CircleOfFifths circle = new CircleOfFifths(this::selectScale);
+        private boolean updatingSelection;
         private final DefaultListModel<ScaleMatch> matches = new DefaultListModel<>();
         private final JSpinner fromMeasure;
         private final JSpinner toMeasure;
@@ -70,12 +73,17 @@ public final class ScalesDialog {
             scales.setToolTipText(Texts.get("views.ScalesDialog.scale"));
             PitchClasses.chromatic().forEach(tonicsModel::addElement);
             ScaleLibrary.all().forEach(scalesModel::addElement);
-            tonics.setSelectedValue(chosen.tonic().orElseGet(() -> PitchClass.of("C")), true);
-            scales.setSelectedValue(chosen.scale().orElseGet(ScaleLibrary::major), true);
+            selectScale(chosen.tonic().orElseGet(() -> PitchClass.of("C")),
+                    chosen.scale().orElseGet(ScaleLibrary::major));
 
             setLayout(new BorderLayout(10, 10));
-            add(chooserZone(), BorderLayout.NORTH);
-            add(degreesZone(), BorderLayout.CENTER);
+            JTabbedPane tools = new JTabbedPane();
+            tools.addTab(Texts.get("views.ScalesDialog.title"), chooserZone());
+            tools.addTab(Texts.get("views.ScalesDialog.circleTitle"), circle);
+            JPanel scaleTools = new JPanel(new BorderLayout(8, 8));
+            scaleTools.add(tools, BorderLayout.CENTER);
+            scaleTools.add(degreesZone(), BorderLayout.SOUTH);
+            add(scaleTools, BorderLayout.CENTER);
             add(finderZone(), BorderLayout.SOUTH);
             tonics.addListSelectionListener(event -> {
                 if (!event.getValueIsAdjusting()) {
@@ -152,8 +160,7 @@ public final class ScalesDialog {
             list.addListSelectionListener(event -> {
                 ScaleMatch match = list.getSelectedValue();
                 if (match != null) {
-                    tonics.setSelectedValue(match.tonic(), true);
-                    scales.setSelectedValue(match.scale(), true);
+                    selectScale(match.tonic(), match.scale());
                 }
             });
             JScrollPane scroll = new JScrollPane(list);
@@ -162,7 +169,30 @@ public final class ScalesDialog {
             return zone;
         }
 
+        private void selectScale(PitchClass tonic, Scale scale) {
+            updatingSelection = true;
+            try {
+                for (int index = 0; index < tonicsModel.size(); index++) {
+                    if (tonicsModel.get(index).semitone() == tonic.semitone()) {
+                        if (!tonicsModel.get(index).equals(tonic)) {
+                            tonicsModel.set(index, tonic);
+                        }
+                        tonics.setSelectedIndex(index);
+                        tonics.ensureIndexIsVisible(index);
+                        break;
+                    }
+                }
+                scales.setSelectedValue(scale, true);
+            } finally {
+                updatingSelection = false;
+            }
+            chooseScale();
+        }
+
         private void chooseScale() {
+            if (updatingSelection) {
+                return;
+            }
             PitchClass tonic = tonics.getSelectedValue();
             Scale scale = scales.getSelectedValue();
             if (tonic == null || scale == null) {
@@ -170,6 +200,7 @@ public final class ScalesDialog {
             }
             chosen.choose(tonic, scale);
             degrees.show(chosen.tones());
+            circle.showSelection(tonic, scale);
         }
 
         private void findScales() {
