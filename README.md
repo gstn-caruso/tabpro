@@ -203,7 +203,7 @@ For a portable copy, download `windows-x64.zip`, extract it and open
 install it:
 
 ```sh
-sudo apt install ./tabpro_0.65.0_all.deb
+sudo apt install ./tabpro_0.66.0_all.deb
 tabpro
 ```
 
@@ -215,7 +215,7 @@ with desktop support (`openjdk-25-jre`); the headless runtime is not enough.
 with Java 25:
 
 ```sh
-java -jar tabpro-app/target/tabpro-app-0.65.0.jar [file]
+java -jar tabpro-app/target/tabpro-app-0.66.0.jar [file]
 ```
 
 ## Keyboard shortcuts
