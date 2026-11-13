@@ -116,7 +116,15 @@ documents the comparison and its coverage.
   minor, `fix` and `perf` the patch; `docs`, `chore`, `refactor`, `test`, `ci`
   and `style` release nothing). It then updates the poms, the version in the
   README and `CHANGELOG.md`, tags the release, builds the `.deb` and publishes
-  it on GitHub.
+  it on GitHub. A dependent Windows job checks out that exact tag and attaches
+  an x64 `.exe` installer and portable `.zip` to the same release. Both Windows
+  packages include a Java 25 runtime, built with `jpackage` on Windows.
+- CI also builds both Windows packages and checks that the native launcher
+  opens a window before allowing a release. Debian packaging is enabled only
+  on Linux; the shaded jar is built on every platform. The Windows job is
+  called directly because tags and releases created with `GITHUB_TOKEN` do
+  not trigger another workflow. If no release is needed, its publishing job
+  is skipped.
 
 Plans and audits live next to this file: [PLAN.md](PLAN.md),
 [audit-manual.md](audit-manual.md), [audit-real-use.md](audit-real-use.md),

@@ -8,8 +8,8 @@ play.
 
 tabpro is modeled on Guitar Pro 5.2: the same toolbar layout, the effects bar
 under the score, and the same keyboard shortcuts. It opens Guitar Pro,
-TablEdit and PowerTab files, runs anywhere Java 25 does (with a `.deb` for
-Debian and Ubuntu), and ships in English and Spanish.
+TablEdit and PowerTab files, runs anywhere Java 25 does (with packages for
+Windows, Debian and Ubuntu), and ships in English and Spanish.
 
 - [Features](#features)
 - [File formats](#file-formats)
@@ -192,6 +192,12 @@ Debian and Ubuntu), and ships in English and Spanish.
 
 ## Installation
 
+**Windows (64-bit):** download the `windows-x64.exe` installer from the
+[latest release](https://github.com/gstn-caruso/tabpro/releases/latest) and
+run it. It installs tabpro for your user, with Start menu and desktop shortcuts.
+For a portable copy, download `windows-x64.zip`, extract it and open
+`tabpro/tabpro.exe`. Both packages include Java 25.
+
 **Debian and Ubuntu:** download the `.deb` from the
 [latest release](https://github.com/gstn-caruso/tabpro/releases/latest) and
 install it:
@@ -254,8 +260,18 @@ mvn verify
 ```
 
 This runs the whole test suite and builds the executable
-`tabpro-app/target/tabpro-app-<version>.jar` and the Debian package
-`tabpro-app/target/tabpro_<version>_all.deb`.
+`tabpro-app/target/tabpro-app-<version>.jar`. On Linux it also builds the Debian
+package `tabpro-app/target/tabpro_<version>_all.deb`.
+
+On Windows, use an x64 JDK 25 and install [WiX Toolset](https://wixtoolset.org/).
+After the Maven build, run this in PowerShell 7 to generate the installer and
+portable archive, including the Java runtime:
+
+```powershell
+./scripts/package-windows.ps1
+```
+
+The packages are written to `tabpro-app/target/windows/dist/`.
 
 tabpro is written in Java 25 with Swing and FlatLaf, with icons from
 [Tabler Icons](https://tabler.io/icons) and music symbols from the
