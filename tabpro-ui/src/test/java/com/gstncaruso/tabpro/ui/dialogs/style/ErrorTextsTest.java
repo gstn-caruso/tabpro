@@ -54,8 +54,8 @@ class ErrorTextsTest {
                         "no hay nada para importar",
                         "There is nothing to import"),
                 Arguments.of(ScoreFileException.damaged("missing field: tuning"),
-                        "el contenido está dañado o no se pudo interpretar\nmissing field: tuning",
-                        "The contents are damaged or could not be interpreted\nmissing field: tuning"));
+                        "el contenido está dañado o no se pudo interpretar",
+                        "The contents are damaged or could not be interpreted"));
     }
 
     @ParameterizedTest
@@ -164,6 +164,23 @@ class ErrorTextsTest {
     @Test
     void theProcessLanguageRendersTheSpanishSentence() {
         assertEquals("no se pudo leer song.gp5", ErrorTexts.of(ScoreFileException.cannotRead(SONG, CAUSE)));
+    }
+
+    @Test
+    void printerDiagnosticsStayOutOfTheTranslatedMessage() {
+        var failure = new java.awt.print.PrinterException("No print service found");
+        assertEquals("No se pudo imprimir. Revisá la impresora e intentá de nuevo.",
+                ErrorTexts.of(failure));
+        assertEquals("Could not print. Check the printer and try again.", ErrorTexts.of(failure, ENGLISH));
+    }
+
+    @Test
+    void damagedFileDiagnosticsArePreservedOnTheException() {
+        ScoreFileException failure = ScoreFileException.damaged("missing field: tuning", CAUSE);
+
+        assertEquals("el contenido está dañado o no se pudo interpretar", ErrorTexts.of(failure, SPANISH));
+        assertEquals("missing field: tuning", failure.getMessage());
+        assertEquals(CAUSE, failure.getCause());
     }
 
     @ParameterizedTest

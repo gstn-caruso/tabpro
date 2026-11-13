@@ -536,7 +536,8 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void importMusicXml() {
-            importWith(exchange::importMusicXml, new FileNameExtensionFilter("MusicXML (*.xml, *.musicxml)", "xml", "musicxml"));
+            importWith(exchange::importMusicXml, new FileNameExtensionFilter(
+                    Texts.get("window.MainFrame.musicXmlImportFilter"), "xml", "musicxml"));
         }
 
         @Override
@@ -585,7 +586,8 @@ public final class MainFrame extends JFrame {
 
         @Override
         public void exportMusicXml() {
-            exportWith(exchange::exportMusicXml, new FileNameExtensionFilter("MusicXML (*.musicxml)", "musicxml"), ".musicxml");
+            exportWith(exchange::exportMusicXml, new FileNameExtensionFilter(
+                    Texts.get("window.MainFrame.musicXmlExportFilter"), "musicxml"), ".musicxml");
         }
 
         @Override
@@ -593,7 +595,8 @@ public final class MainFrame extends JFrame {
             if (!confirmGuitarProLosses()) {
                 return;
             }
-            exportWith(exchange::exportGuitarPro, new FileNameExtensionFilter("Guitar Pro 4 (*.gp4)", "gp4"), ".gp4");
+            exportWith(exchange::exportGuitarPro, new FileNameExtensionFilter(
+                    Texts.get("window.MainFrame.guitarProExportFilter"), "gp4"), ".gp4");
         }
 
         private boolean confirmGuitarProLosses() {
@@ -615,7 +618,7 @@ public final class MainFrame extends JFrame {
         @Override
         public void exportPdf() {
             JFileChooser chooser = new JFileChooser();
-            chooser.setFileFilter(new FileNameExtensionFilter("PDF (*.pdf)", "pdf"));
+            chooser.setFileFilter(new FileNameExtensionFilter(Texts.get("window.MainFrame.pdfFilter"), "pdf"));
             if (chooser.showSaveDialog(MainFrame.this) != JFileChooser.APPROVE_OPTION) {
                 return;
             }
@@ -662,7 +665,7 @@ public final class MainFrame extends JFrame {
             } catch (java.awt.print.PrinterException e) {
                 JOptionPane.showMessageDialog(
                         MainFrame.this,
-                        Texts.get("window.error.printing", e.getMessage()),
+                        ErrorTexts.of(e),
                         "tabpro",
                         JOptionPane.ERROR_MESSAGE);
             }

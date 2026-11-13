@@ -151,8 +151,9 @@ Debian and Ubuntu), and ships in English and Spanish.
 - **Preferences > Accessibility** adjusts the interface font size, turns on
   high contrast and turns off animations.
 - **English and Spanish interface.** Preferences > Language offers Automatic,
-  English and Español. Automatic follows the system language; changes apply
-  after a restart.
+  English and Español. Automatic follows the system display language: Spanish
+  for Spanish-speaking systems, English for all others. Menus, dialogs and errors
+  use the same language; changes apply after a restart.
 
 ## File formats
 

@@ -31,6 +31,27 @@ one and sound in the other, and `tabpro-app` composes the two halves.
 | `tabpro-app` | `main`, the theme, the wiring (including composing the exchange) and packaging. |
 | `tabpro-tests` | No code of its own: it gathers the suite and runs it. |
 
+## Translations
+
+User-facing text lives in the UTF-8 resource bundles under
+`tabpro-ui/src/main/resources/com/gstncaruso/tabpro/ui/i18n`: the base `.properties`
+files contain English and `_es.properties` contain Spanish. Read text with
+`Texts.get(key, arguments...)`, and use `Labels.of` for domain values. Patterns
+use `MessageFormat` (escape literal apostrophes with `''`). Keep the same keys and
+arguments in both languages; the suite checks the files directly to catch missing
+translations that Java's bundle fallback would otherwise hide.
+
+`InterfaceLanguageStartup` resolves the system's display locale (or the saved
+language preference) before creating the theme, score or widgets. It installs the
+same language for application text and Swing's standard dialogs, while preserving
+regional number and date settings. Unsupported languages fall back to English.
+The `swing` bundles provide labels for confirmations, file choosers and color
+choosers, and remain installed when the theme changes.
+
+File errors carry a problem code and arguments; translate those through
+`ErrorTexts` at the UI boundary. Keep raw exception diagnostics out of dialogs:
+they remain available on the exception and in `ErrorTexts`'s `FINE` log output.
+
 ## Tests
 
 Tests live next to the code they test, but they do not run there. Surefire
