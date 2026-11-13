@@ -78,6 +78,8 @@ jobs:
 
       # A tag or release created by semantic-release with GITHUB_TOKEN does
       # not trigger another workflow, so CI calls this workflow explicitly.
+      # Keep the release as a draft until all packages have been attached:
+      # publishing it makes the release and its assets immutable.
       - name: Attach Windows packages to the release
         if: inputs.release-tag != ''
         shell: pwsh
@@ -88,3 +90,12 @@ jobs:
         run: |
           $assets = @(Get-ChildItem ./tabpro-app/target/windows/dist/* -File | ForEach-Object FullName)
           gh release upload $env:RELEASE_TAG @assets --clobber
+
+      - name: Publish the completed release
+        if: inputs.release-tag != ''
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.release-tag }}
+        run: gh release edit $env:RELEASE_TAG --draft=false --latest
