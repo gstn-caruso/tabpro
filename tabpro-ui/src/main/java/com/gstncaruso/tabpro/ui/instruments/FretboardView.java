@@ -507,15 +507,14 @@ public final class FretboardView extends JComponent implements AccessibleControl
 
     private void paintHover(Graphics2D g) {
         hovered.ifPresent(note -> {
-            if (note.string() > stringCount()) {
+            if (note.string() > stringCount() || note.fret() > fretCount()) {
                 return;
             }
-            int radius = Math.max(8, (int) (stringGap() * 0.5));
+            int radius = Math.max(HoverNotePainter.minimumRadius(), (int) (stringGap() * 0.5));
             int x = fretCenterX(note.fret());
             int y = stringY(note.string());
-            g.setColor(fretboardType.hoverColor());
-            g.setStroke(new BasicStroke(1.4f));
-            g.drawOval(x - radius, y - radius, radius * 2, radius * 2);
+            HoverNotePainter.paint(g, labelFor(new FretPosition(note.string(), note.fret())),
+                    x, y, radius, fretboardType.hoverColor());
         });
     }
 

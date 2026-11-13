@@ -7,13 +7,16 @@ import com.gstncaruso.tabpro.core.model.Beat;
 import com.gstncaruso.tabpro.core.model.Duration;
 import com.gstncaruso.tabpro.core.model.Measure;
 import com.gstncaruso.tabpro.core.model.Note;
+import com.gstncaruso.tabpro.core.model.Pitch;
 import com.gstncaruso.tabpro.core.model.TimeSignature;
 import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.TrackSettings;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.score.RecordingCanvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
@@ -24,6 +27,8 @@ import java.util.Optional;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 class FretboardViewTest {
 
@@ -269,6 +274,56 @@ class FretboardViewTest {
                 view.fretCenterX(4), view.stringY(2), 0, false));
 
         assertEquals(Optional.of(new Note(2, 4)), view.hoveredNote());
+    }
+
+    @ParameterizedTest
+    @EnumSource(Handedness.class)
+    void hoverNamesTheSoundingPitchEvenWithNamesHiddenAndScaleDegreesSelected(Handedness handedness) {
+        FretboardView view = sized(new FretboardView());
+        Track track = Track.standardGuitar("g")
+                .withTuning(Track.standardGuitar("g").tuning().withStringPitch(1, new Pitch(62)))
+                .mappingSettings(settings -> settings.withCapo(2));
+        view.show(locationOf(track, Beat.rest(Duration.quarter())));
+        view.setHandedness(handedness);
+        view.setNoteNameMode(NoteNameMode.NONE);
+        view.setDisplayMode(FretboardDisplayMode.BEAT_AND_SCALE);
+        view.setScale(Scale.cMajor());
+        view.setScaleLabelMode(ScaleLabelMode.DEGREE);
+        hoverFret(view, 1, 1);
+
+        RecordingCanvas canvas = new RecordingCanvas();
+        view.paint(canvas);
+        Rectangle marker = new Rectangle(view.fretCenterX(1) - 8, view.stringY(1) - 8, 16, 16);
+        assertTrue(canvas.writesTextInRegion("F", marker), "name the pitch after tuning and capo, not its scale degree");
+        canvas.dispose();
+    }
+
+    @Test
+    void theHoverNameFollowsTheMouseAndDisappearsWhenItLeaves() {
+        FretboardView view = sized(new FretboardView());
+        view.setNoteNameMode(NoteNameMode.NONE);
+        hoverFret(view, 2, 4);
+        assertTrue(paintedText(view).contains("D#"));
+
+        hoverFret(view, 2, 5);
+        assertTrue(paintedText(view).contains("E"));
+        assertTrue(!paintedText(view).contains("D#"));
+
+        view.dispatchEvent(new MouseEvent(view, MouseEvent.MOUSE_EXITED, 0, 0, -1, -1, 0, false));
+        assertTrue(!paintedText(view).contains("E"));
+    }
+
+    private static void hoverFret(FretboardView view, int string, int fret) {
+        view.dispatchEvent(new MouseEvent(view, MouseEvent.MOUSE_MOVED, 0, 0,
+                view.fretCenterX(fret), view.stringY(string), 0, false));
+    }
+
+    private static List<String> paintedText(FretboardView view) {
+        RecordingCanvas canvas = new RecordingCanvas();
+        view.paint(canvas);
+        List<String> texts = canvas.drawnTexts().stream().map(RecordingCanvas.DrawnText::text).toList();
+        canvas.dispose();
+        return texts;
     }
 
     @Test
