@@ -329,6 +329,12 @@ public final class KeyboardView extends JComponent implements AccessibleControl 
             g.setColor(InstrumentColors.HOVER);
             g.setStroke(new BasicStroke(1.6f));
             g.drawRect(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2);
+            int radius = Math.max(HoverNotePainter.minimumRadius(),
+                    (int) Math.round(bounds.width * MARK_RADIUS_RATIO));
+            int margin = Math.max(MARK_MARGIN_MIN, (int) Math.round(bounds.height * MARK_MARGIN_RATIO));
+            int x = bounds.x + bounds.width / 2;
+            int y = bounds.y + bounds.height - margin - radius;
+            HoverNotePainter.paint(g, PitchName.of(new Pitch(key)).text(), x, y, radius, InstrumentColors.HOVER);
         }));
     }
 

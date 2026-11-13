@@ -94,6 +94,8 @@ Debian and Ubuntu), and ships in English and Spanish.
 ![The fretboard and the keyboard](docs/screenshots/fretboard-and-keyboard.png)
 
 - Both show the notes under the cursor and write a note when you click them.
+- Hover over a fret or key to see its note name inside the gray marker, even
+  when note labels are hidden.
 - They follow the active track's tuning, capo and string count.
 - Display the current beat, the whole bar, the next beat, the last chord
   diagram or a chosen scale, labeling scale notes by name, interval or degree.

@@ -14,6 +14,7 @@ import com.gstncaruso.tabpro.core.model.Track;
 import com.gstncaruso.tabpro.core.model.Tuning;
 import com.gstncaruso.tabpro.core.model.VoicePart;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
+import com.gstncaruso.tabpro.ui.score.RecordingCanvas;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -27,6 +28,8 @@ import java.util.OptionalInt;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class KeyboardViewTest {
 
@@ -233,6 +236,42 @@ class KeyboardViewTest {
                 c4.x + c4.width / 2, c4.y + c4.height - 4, 0, false));
 
         assertEquals(OptionalInt.of(60), view.hoveredKey());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"60, C", "61, C#", "66, F#", "21, A", "108, C"})
+    void hoveringAKeyPaintsItsNoteName(int key, String name) {
+        KeyboardView view = sized();
+        hoverKey(view, key);
+
+        assertEquals(List.of(name), paintedText(view));
+    }
+
+    @Test
+    void theHoverNameFollowsTheMouseAndDisappearsWhenItLeaves() {
+        KeyboardView view = sized();
+        hoverKey(view, 60);
+        assertEquals(List.of("C"), paintedText(view));
+
+        hoverKey(view, 61);
+        assertEquals(List.of("C#"), paintedText(view));
+
+        view.dispatchEvent(new MouseEvent(view, MouseEvent.MOUSE_EXITED, 0, 0, -1, -1, 0, false));
+        assertEquals(List.of(), paintedText(view));
+    }
+
+    private static void hoverKey(KeyboardView view, int key) {
+        Rectangle bounds = view.keyBounds(key).orElseThrow();
+        view.dispatchEvent(new MouseEvent(view, MouseEvent.MOUSE_MOVED, 0, 0,
+                bounds.x + bounds.width / 2, bounds.y + bounds.height - 4, 0, false));
+    }
+
+    private static List<String> paintedText(KeyboardView view) {
+        RecordingCanvas canvas = new RecordingCanvas();
+        view.paint(canvas);
+        List<String> texts = canvas.drawnTexts().stream().map(RecordingCanvas.DrawnText::text).toList();
+        canvas.dispose();
+        return texts;
     }
 
     @Test
