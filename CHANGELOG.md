@@ -1,3 +1,9 @@
+## [0.66.1](https://github.com/gstn-caruso/tabpro/compare/v0.66.0...v0.66.1) (2026-11-13)
+
+### Bug Fixes
+
+* **release:** publish after Windows packages are attached ([#249](https://github.com/gstn-caruso/tabpro/issues/249)) ([fd184b9](https://github.com/gstn-caruso/tabpro/commit/fd184b9549834a94f15310653ae319d440e1da5d))
+
 ## [0.66.0](https://github.com/gstn-caruso/tabpro/compare/v0.65.0...v0.66.0) (2026-11-13)
 
 ### Features
