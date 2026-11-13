@@ -19,3 +19,9 @@ sed -i \
   README.md
 
 mvn -B -pl tabpro-app -am package
+
+# Only set for a real release, after its version and Debian package are ready.
+# The dependent Windows job checks out this exact release tag.
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+  printf 'version=%s\n' "$VERSION" >> "$GITHUB_OUTPUT"
+fi

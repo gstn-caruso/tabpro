@@ -1,0 +1,90 @@
+name: Windows packages
+
+on:
+  workflow_call:
+    inputs:
+      release-tag:
+        description: Release tag to build and attach packages to; empty for CI validation
+        type: string
+        default: ''
+
+jobs:
+  package:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.release-tag || github.sha }}
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          architecture: x64
+
+      - name: Cache the Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-
+
+      - name: Build application
+        run: mvn -B -pl tabpro-app -am package
+
+      # WiX is preinstalled on windows-2025. jpackage builds the runtime with
+      # the Windows JDK, so neither package needs Java installed by the user.
+      - name: Build installer and portable archive
+        shell: pwsh
+        run: ./scripts/package-windows.ps1
+
+      - name: Smoke test the Windows launcher
+        shell: pwsh
+        run: |
+          $archive = Get-ChildItem ./tabpro-app/target/windows/dist/*.zip
+          $portableDir = Join-Path $env:RUNNER_TEMP 'tabpro portable'
+          Expand-Archive -LiteralPath $archive.FullName -DestinationPath $portableDir
+          $launcher = (Resolve-Path (Join-Path $portableDir 'tabpro/tabpro.exe')).Path
+          $app = Start-Process -FilePath $launcher -PassThru
+          try {
+            $deadline = (Get-Date).AddSeconds(30)
+            do {
+              Start-Sleep -Seconds 1
+              $app.Refresh()
+              if ($app.HasExited) {
+                throw "tabpro exited during startup (exit code $($app.ExitCode))"
+              }
+              # jpackage can restart the launcher as a child process.
+              $window = Get-Process -Name tabpro -ErrorAction SilentlyContinue |
+                Where-Object { $_.Path -eq $launcher -and $_.MainWindowHandle -ne 0 } |
+                Select-Object -First 1
+            } while (-not $window -and (Get-Date) -lt $deadline)
+            if (-not $window) {
+              throw 'tabpro did not open its main window'
+            }
+          } finally {
+            Get-Process -Name tabpro -ErrorAction SilentlyContinue |
+              Stop-Process -Force -ErrorAction SilentlyContinue
+          }
+
+      - name: Store Windows packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: tabpro-windows-x64${{ inputs.release-tag && format('-{0}', inputs.release-tag) || '' }}
+          path: tabpro-app/target/windows/dist/*
+          if-no-files-found: error
+
+      # A tag or release created by semantic-release with GITHUB_TOKEN does
+      # not trigger another workflow, so CI calls this workflow explicitly.
+      - name: Attach Windows packages to the release
+        if: inputs.release-tag != ''
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.release-tag }}
+        run: |
+          $assets = @(Get-ChildItem ./tabpro-app/target/windows/dist/* -File | ForEach-Object FullName)
+          gh release upload $env:RELEASE_TAG @assets --clobber

@@ -41,14 +41,21 @@ jobs:
       - name: Integration tests
         run: xvfb-run -a mvn -B test -Dtests.headless=false -Dgroups=integration -Dtests.excluded.groups= -Dsurefire.failIfNoSpecifiedTests=false
 
+  build-windows:
+    uses: ./.github/workflows/windows.yml
+    permissions:
+      contents: read
+
   release:
-    needs: build
+    needs: [build, build-windows]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       issues: write
       pull-requests: write
+    outputs:
+      version: ${{ steps.release.outputs.version }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -81,6 +88,16 @@ jobs:
         run: npm ci
 
       - name: Release
+        id: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
+
+  release-windows:
+    needs: release
+    if: needs.release.outputs.version != ''
+    uses: ./.github/workflows/windows.yml
+    permissions:
+      contents: write
+    with:
+      release-tag: v${{ needs.release.outputs.version }}
