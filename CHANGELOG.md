@@ -1,3 +1,9 @@
+## [0.65.0](https://github.com/gstn-caruso/tabpro/compare/v0.64.0...v0.65.0) (2026-11-13)
+
+### Features
+
+* **instruments:** show note names on hovered frets and keys ([#247](https://github.com/gstn-caruso/tabpro/issues/247)) ([dfa794e](https://github.com/gstn-caruso/tabpro/commit/dfa794edb9089eea81fa9deaebac71187e4acee3))
+
 ## [0.64.0](https://github.com/gstn-caruso/tabpro/compare/v0.63.0...v0.64.0) (2026-11-13)
 
 ### Features
