@@ -1,3 +1,9 @@
+## [0.64.0](https://github.com/gstn-caruso/tabpro/compare/v0.63.0...v0.64.0) (2026-11-13)
+
+### Features
+
+* **i18n:** complete system-language dialogs and error translations ([#246](https://github.com/gstn-caruso/tabpro/issues/246)) ([ed1ff65](https://github.com/gstn-caruso/tabpro/commit/ed1ff65c39297c224c60c49ec591528c3ec000e9))
+
 ## [0.63.0](https://github.com/gstn-caruso/tabpro/compare/v0.62.0...v0.63.0) (2026-11-04)
 
 ### Features

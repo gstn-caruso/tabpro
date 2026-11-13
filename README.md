@@ -195,7 +195,7 @@ Debian and Ubuntu), and ships in English and Spanish.
 install it:
 
 ```sh
-sudo apt install ./tabpro_0.63.0_all.deb
+sudo apt install ./tabpro_0.64.0_all.deb
 tabpro
 ```
 
@@ -207,7 +207,7 @@ with desktop support (`openjdk-25-jre`); the headless runtime is not enough.
 with Java 25:
 
 ```sh
-java -jar tabpro-app/target/tabpro-app-0.63.0.jar [file]
+java -jar tabpro-app/target/tabpro-app-0.64.0.jar [file]
 ```
 
 ## Keyboard shortcuts
