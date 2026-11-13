@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
 
@@ -22,7 +22,7 @@ jobs:
       # each release would start with an empty repository and re-download everything. With restore-keys,
       # the new version starts from the previous one and only downloads what changed.
       - name: Cache the Maven repository
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2/repository
           key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
@@ -49,7 +49,7 @@ jobs:
   release:
     needs: [build, build-windows]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
       issues: write
@@ -71,7 +71,7 @@ jobs:
       # each release would start with an empty repository and re-download everything. With restore-keys,
       # the new version starts from the previous one and only downloads what changed.
       - name: Cache the Maven repository
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2/repository
           key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
