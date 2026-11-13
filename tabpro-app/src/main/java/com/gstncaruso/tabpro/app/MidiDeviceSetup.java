@@ -9,6 +9,7 @@ import com.gstncaruso.tabpro.midi.SoundFontBank;
 import com.gstncaruso.tabpro.midi.SoundFontStatus;
 import com.gstncaruso.tabpro.midi.SoundFonts;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -60,7 +61,7 @@ final class MidiDeviceSetup implements Ports.Devices {
             device.open();
             MidiTestTone.play(device.getReceiver(), 0, MidiTestTone.DEFAULT_DURATION_MILLIS, device::close);
         } catch (MidiUnavailableException e) {
-            System.err.println("Could not test the MIDI output " + info.getName() + ": " + e.getMessage());
+            System.err.println(Texts.get("window.MidiDeviceSetup.cannotTestOutput", info.getName(), e.getMessage()));
         }
     }
 
@@ -97,7 +98,7 @@ final class MidiDeviceSetup implements Ports.Devices {
             capture.start();
         } catch (MidiUnavailableException e) {
             capture = null;
-            System.err.println("Could not open the MIDI input: " + e.getMessage());
+            System.err.println(Texts.get("window.MidiDeviceSetup.cannotOpenInput", e.getMessage()));
         }
     }
 

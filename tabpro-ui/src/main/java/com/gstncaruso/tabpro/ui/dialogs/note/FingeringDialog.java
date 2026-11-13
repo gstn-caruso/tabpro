@@ -4,6 +4,7 @@ import com.gstncaruso.tabpro.core.editing.Editor;
 import com.gstncaruso.tabpro.core.model.effects.Finger;
 import com.gstncaruso.tabpro.ui.dialogs.style.DialogShell;
 import com.gstncaruso.tabpro.ui.dialogs.style.FormPanel;
+import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.Component;
 import java.util.Optional;
@@ -71,7 +72,7 @@ public final class FingeringDialog {
                     javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean focused) {
                 super.getListCellRendererComponent(list, value, index, isSelected, focused);
                 if (value instanceof Finger finger) {
-                    setText(symbol.apply(finger) + " — " + finger.name().toLowerCase(java.util.Locale.ROOT));
+                    setText(symbol.apply(finger) + " — " + Labels.of(finger));
                 }
                 return this;
             }

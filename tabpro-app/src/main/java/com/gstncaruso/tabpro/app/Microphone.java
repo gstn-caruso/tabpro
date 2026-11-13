@@ -2,6 +2,7 @@ package com.gstncaruso.tabpro.app;
 
 import com.gstncaruso.tabpro.midi.MicrophonePitch;
 import com.gstncaruso.tabpro.ui.actions.Ports;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.util.function.Consumer;
 
 final class Microphone implements Ports.Microphone {
@@ -19,7 +20,7 @@ final class Microphone implements Ports.Microphone {
             input.start(detected -> heard.accept(new Ports.HeardPitch(
                     detected.isAudible(), detected.nearestMidiNumber(), detected.frequencyHz())));
         } catch (IllegalStateException e) {
-            System.err.println(e.getMessage());
+            System.err.println(Texts.get("window.Microphone.cannotOpenInput", e.getMessage()));
             heard.accept(Ports.HeardPitch.nothing());
         }
     }

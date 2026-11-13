@@ -9,7 +9,7 @@ public final class Texts {
 
     public static final List<String> AREAS = List.of(
             "common", "menus", "domain", "library", "edit_dialogs",
-            "score_dialogs", "views", "window", "defaults");
+            "score_dialogs", "views", "window", "defaults", "swing");
 
     private static final ResourceBundle.Control NO_FALLBACK =
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES);
@@ -35,7 +35,7 @@ public final class Texts {
     }
 
     public String text(String key, Object... arguments) {
-        return MessageFormat.format(patternFor(key), arguments);
+        return new MessageFormat(patternFor(key), locale).format(arguments);
     }
 
     private String patternFor(String key) {

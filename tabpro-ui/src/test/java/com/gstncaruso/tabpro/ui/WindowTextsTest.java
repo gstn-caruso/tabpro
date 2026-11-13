@@ -59,10 +59,9 @@ class WindowTextsTest {
                 Arguments.of("window.MainFrame.exportGuitarProAnyway", new Object[] {"- a loss"},
                         "Al exportar a Guitar Pro 4 se va a perder:\n\n- a loss\n\n¿Exportar de todos modos?",
                         "Exporting to Guitar Pro 4 will lose:\n\n- a loss\n\nExport anyway?"),
-                Arguments.of("window.error.printing", new Object[] {"no printer"},
-                        "No se pudo imprimir: no printer", "Could not print: no printer"),
-                Arguments.of("window.error.readingTheFile", new Object[] {"song.txt"},
-                        "No se pudo leer el archivo: song.txt", "Could not read the file: song.txt"));
+                Arguments.of("window.error.printing", new Object[] {},
+                        "No se pudo imprimir. Revisá la impresora e intentá de nuevo.",
+                        "Could not print. Check the printer and try again."));
     }
 
     @ParameterizedTest

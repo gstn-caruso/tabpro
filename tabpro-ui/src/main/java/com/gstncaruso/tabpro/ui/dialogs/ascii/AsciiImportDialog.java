@@ -50,7 +50,7 @@ public final class AsciiImportDialog {
         try {
             panel.setText(java.nio.file.Files.readString(chooser.getSelectedFile().toPath()));
         } catch (IOException e) {
-            showError(parent, Texts.get("window.error.readingTheFile", e.getMessage()));
+            showError(parent, ErrorTexts.of(ScoreFileException.cannotRead(chooser.getSelectedFile().toPath(), e)));
         }
     }
 
@@ -58,7 +58,7 @@ public final class AsciiImportDialog {
         try {
             AsciiPrinting.print(text, "tabpro");
         } catch (PrinterException e) {
-            showError(parent, Texts.get("window.error.printing", e.getMessage()));
+            showError(parent, ErrorTexts.of(e));
         }
     }
 

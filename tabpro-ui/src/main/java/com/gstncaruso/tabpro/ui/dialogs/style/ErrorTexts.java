@@ -3,18 +3,32 @@ package com.gstncaruso.tabpro.ui.dialogs.style;
 import com.gstncaruso.tabpro.core.files.ExportWarning;
 import com.gstncaruso.tabpro.core.files.ScoreFeature;
 import com.gstncaruso.tabpro.core.files.ScoreFileException;
-import com.gstncaruso.tabpro.core.files.ScoreFileProblem;
 import com.gstncaruso.tabpro.core.files.ScoreOperation;
 import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.print.ImageExportException;
+import java.awt.print.PrinterException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class ErrorTexts {
+
+    private static final Logger LOG = Logger.getLogger(ErrorTexts.class.getName());
 
     private ErrorTexts() {
     }
 
     public static String of(ScoreFileException failure) {
+        LOG.log(Level.FINE, failure.getMessage(), failure);
         return render(failure, Texts::get);
+    }
+
+    public static String of(PrinterException failure) {
+        LOG.log(Level.FINE, failure.getMessage(), failure);
+        return Texts.get("window.error.printing");
+    }
+
+    static String of(PrinterException failure, Texts texts) {
+        return texts.text("window.error.printing");
     }
 
     static String of(ScoreFileException failure, Texts texts) {
@@ -39,8 +53,7 @@ public final class ErrorTexts {
 
     private static String render(ScoreFileException failure, TextSource texts) {
         Object[] arguments = failure.arguments().stream().map(argument -> localized(argument, texts)).toArray();
-        String sentence = texts.text("window.error." + failure.problem().name(), arguments);
-        return failure.problem() == ScoreFileProblem.DAMAGED ? sentence + "\n" + failure.getMessage() : sentence;
+        return texts.text("window.error." + failure.problem().name(), arguments);
     }
 
     private static String render(ImageExportException failure, TextSource texts) {

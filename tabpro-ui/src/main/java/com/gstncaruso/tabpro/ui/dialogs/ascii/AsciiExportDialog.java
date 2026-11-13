@@ -53,7 +53,7 @@ public final class AsciiExportDialog {
         try {
             AsciiPrinting.print(text, "tabpro");
         } catch (PrinterException e) {
-            showError(parent, Texts.get("window.error.printing", e.getMessage()));
+            showError(parent, ErrorTexts.of(e));
         }
     }
 

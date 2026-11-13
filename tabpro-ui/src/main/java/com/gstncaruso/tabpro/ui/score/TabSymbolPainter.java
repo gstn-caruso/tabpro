@@ -10,6 +10,7 @@ import com.gstncaruso.tabpro.core.model.effects.Ornament;
 import com.gstncaruso.tabpro.core.model.effects.PickstrokeDirection;
 import com.gstncaruso.tabpro.core.notation.VerticalStack;
 import com.gstncaruso.tabpro.ui.dialogs.style.Labels;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import java.awt.BasicStroke;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -77,13 +78,13 @@ final class TabSymbolPainter {
             labels.add("P");
         }
         if (effects.fadeIn()) {
-            labels.add("fade in");
+            labels.add(Texts.get("views.TabSymbolPainter.fadeIn"));
         }
         if (has(beat, Ornament.PALM_MUTE)) {
             labels.add("P.M.");
         }
         if (has(beat, Ornament.LET_RING)) {
-            labels.add("let ring");
+            labels.add(Texts.get("views.TabSymbolPainter.letRing"));
         }
         harmonicOf(beat).ifPresent(harmonic -> labels.add(harmonic.symbol()));
         if (beat.notes().stream().anyMatch(note -> note.effects().trill().isPresent())) {
@@ -95,7 +96,7 @@ final class TabSymbolPainter {
         if (effects.wideVibrato() || has(beat, Ornament.VIBRATO)) {
             labels.add(effects.wideVibrato() ? "~~" : "~");
         }
-        effects.wah().ifPresent(wah -> labels.add("wah " + Labels.of(wah).toLowerCase(Locale.ROOT)));
+        effects.wah().ifPresent(wah -> labels.add(Texts.get("views.TabSymbolPainter.wah", Labels.of(wah).toLowerCase(Locale.ROOT))));
         return labels;
     }
 

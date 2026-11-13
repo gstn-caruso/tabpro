@@ -15,6 +15,7 @@ import com.gstncaruso.tabpro.midi.SoundFontBank;
 import com.gstncaruso.tabpro.midi.WaveRenderer;
 import com.gstncaruso.tabpro.ui.MainFrame;
 import com.gstncaruso.tabpro.ui.Preferences;
+import com.gstncaruso.tabpro.ui.i18n.Texts;
 import com.gstncaruso.tabpro.ui.i18n.TextsDefaultNames;
 import com.gstncaruso.tabpro.ui.print.SystemPrinting;
 import java.awt.event.WindowAdapter;
@@ -31,7 +32,7 @@ import javax.swing.SwingUtilities;
 public class App {
 
     public static void main(String[] args) {
-        new InterfaceLanguageStartup(Locale.getDefault(), new Preferences()).install();
+        new InterfaceLanguageStartup(Locale.getDefault(Locale.Category.DISPLAY), new Preferences()).install();
         Theme theme = Theme.install();
         AutoCloseable appearance = theme.followSystem(new PortalAppearance());
         TextsDefaultNames defaultNames = new TextsDefaultNames();
@@ -58,7 +59,7 @@ public class App {
                     try {
                         appearance.close();
                     } catch (Exception exception) {
-                        System.err.println("Cannot stop system appearance observation: " + exception.getMessage());
+                        System.err.println(Texts.get("window.App.cannotStopAppearance", exception.getMessage()));
                     }
                 }
             });
@@ -77,7 +78,7 @@ public class App {
             Sequencer sequencer = MidiSystem.getSequencer();
             return Optional.of(new MidiPlayer(sequencer, soundBank::receiverForPort));
         } catch (MidiUnavailableException e) {
-            System.err.println("MIDI unavailable, playback will stay silent: " + e.getMessage());
+            System.err.println(Texts.get("window.App.midiUnavailable", e.getMessage()));
             return Optional.empty();
         }
     }
@@ -86,7 +87,7 @@ public class App {
         try {
             return soundBank.freshSynthesizer();
         } catch (MidiUnavailableException e) {
-            throw new IllegalStateException("No synthesizer available to export WAVE.", e);
+            throw new IllegalStateException(Texts.get("window.App.noSynthesizer"), e);
         }
     }
 
