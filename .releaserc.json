@@ -46,6 +46,7 @@
     [
       "@semantic-release/github",
       {
+        "draftRelease": true,
         "assets": [
           {
             "path": "tabpro-app/target/tabpro_*_all.deb",
